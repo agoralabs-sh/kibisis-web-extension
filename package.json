@@ -30,10 +30,11 @@
     "node": ">=14.0.0"
   },
   "scripts": {
-    "build": "tsc -b",
+    "build": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack",
     "lint": "eslint . --ext .ts --ext .js",
     "prepare": "husky install",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
+    "start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack --watch",
     "test": "exit 0"
   },
   "devDependencies": {
@@ -45,14 +46,21 @@
     "@semantic-release/github": "^8.0.7",
     "@semantic-release/npm": "^9.0.2",
     "@semantic-release/release-notes-generator": "^10.0.3",
+    "@types/node": "^18.14.2",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.6.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.2",
     "prettier": "^2.8.4",
     "semantic-release": "^20.1.1",
-    "typescript": "4.9.5"
+    "ts-loader": "^9.4.2",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^3.14.2",
+    "typescript": "4.9.5",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   }
 }

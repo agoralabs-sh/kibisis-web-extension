@@ -277,3 +277,5 @@ fabric.properties
 
 # testing
 /coverage
+
+build/
