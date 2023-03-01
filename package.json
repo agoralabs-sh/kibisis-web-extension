@@ -1,0 +1,58 @@
+{
+  "name": "@agoralabs-sh/agora-wallet-firefox",
+  "version": "1.0.0",
+  "description": "An Algorand wallet for Firefox",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "CONTRIBUTING.md",
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agoralabs-sh/agora-wallet-firefox"
+  },
+  "author": {
+    "name": "Kieran O'Neill",
+    "email": "kieran@agoralabs.sh",
+    "url": "https://github.com/kieranroneill"
+  },
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "algorand",
+    "wallet",
+    "algosdk",
+    "blockchain"
+  ],
+  "private": false,
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "eslint . --ext .ts --ext .js",
+    "prepare": "husky install",
+    "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
+    "test": "exit 0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
+    "@semantic-release/changelog": "^6.0.2",
+    "@semantic-release/commit-analyzer": "^9.0.2",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^8.0.7",
+    "@semantic-release/npm": "^9.0.2",
+    "@semantic-release/release-notes-generator": "^10.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.6.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.2",
+    "prettier": "^2.8.4",
+    "semantic-release": "^20.1.1",
+    "typescript": "4.9.5"
+  }
+}
