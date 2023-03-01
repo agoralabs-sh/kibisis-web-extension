@@ -2,8 +2,8 @@ import CopyPlugin from 'copy-webpack-plugin';
 import { resolve } from 'path';
 import { Configuration } from 'webpack';
 
-const buildDir: string = resolve(__dirname, 'build');
-const srcDir: string = resolve(__dirname, 'src');
+const buildDir: string = resolve(process.cwd(), 'build');
+const srcDir: string = resolve(process.cwd(), 'src');
 
 const config: Configuration = {
   entry: {
@@ -18,7 +18,7 @@ const config: Configuration = {
           {
             loader: 'ts-loader',
             options: {
-              configFile: resolve(__dirname, 'tsconfig.json'),
+              configFile: resolve(process.cwd(), 'tsconfig.json'),
             },
           },
         ],
