@@ -1,1 +1,1 @@
-export { default as IWindow } from './IWindow';
+export type { default as IWindow } from './IWindow';

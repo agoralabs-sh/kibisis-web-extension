@@ -9,6 +9,7 @@ import WebExtPlugin from './plugins/WebExtPlugin';
 
 const configs: Configuration[] = [
   merge(commonConfig, {
+    devtool: 'cheap-module-source-map',
     mode: 'development',
     name: 'development',
     plugins: [new WebExtPlugin()],
