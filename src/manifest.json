@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "Agora Wallet",
+  "version": "1.0.0",
+  "description": "An Algorand wallet browser extension to sign data, send transactions and rekey with another account.",
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "agorawallet@agoralabs.sh"
+    }
+  },
+  "browser_action": {
+    "default_title": "Agora Wallet",
+    "default_popup": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["resources/content.js"]
+    }
+  ],
+  "web_accessible_resources": ["agora-wallet.js"]
+}

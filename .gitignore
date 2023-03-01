@@ -277,3 +277,6 @@ fabric.properties
 
 # testing
 /coverage
+
+.firefox/
+build/
