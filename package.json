@@ -25,17 +25,18 @@
     "algosdk",
     "blockchain"
   ],
-  "private": false,
+  "private": true,
   "engines": {
     "node": ">=14.0.0"
   },
   "scripts": {
     "build": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name production",
     "lint": "eslint . --ext .ts --ext .js",
+    "package": "web-ext build",
     "prepare": "husky install && ./bin/install_firefox.sh",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
     "start": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",
-    "start:firefox": "web-ext run --source-dir build --firefox .firefox/firefox",
+    "start:firefox": "web-ext run",
     "test": "exit 0"
   },
   "devDependencies": {
@@ -43,6 +44,7 @@
     "@commitlint/config-conventional": "^17.4.4",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/commit-analyzer": "^9.0.2",
+    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^8.0.7",
     "@semantic-release/npm": "^9.0.2",
