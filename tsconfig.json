@@ -8,7 +8,9 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "lib": ["DOM", "ESNext"],
+    "isolatedModules": true,
+    "jsx": "react",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "CommonJS",
     "moduleResolution": "Node",
     "noImplicitAny": true,
@@ -24,6 +26,6 @@
     "suppressImplicitAnyIndexErrors": true,
     "target": "ES5"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "src/**/*.test.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "src/**/*.test.*"]
 }
