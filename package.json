@@ -1,14 +1,8 @@
 {
   "name": "@agoralabs-sh/agora-wallet-firefox",
   "version": "1.0.0",
-  "description": "An Algorand wallet for Firefox",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "CONTRIBUTING.md",
-    "dist",
-    "README.md"
-  ],
+  "description": "An Algorand wallet browser extension to sign data, send transactions and rekey with another account.",
+  "main": "build/popup/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/agoralabs-sh/agora-wallet-firefox"
@@ -21,9 +15,11 @@
   "license": "GPL-2.0-or-later",
   "keywords": [
     "algorand",
-    "wallet",
     "algosdk",
-    "blockchain"
+    "blockchain",
+    "browser",
+    "firefox",
+    "wallet"
   ],
   "private": true,
   "engines": {

@@ -1,20 +1,28 @@
 {
-  "branches": ["main", {"name": "beta", "prerelease": true}],
+  "branches": ["main", { "name": "beta", "prerelease": true }],
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
     "@semantic-release/npm",
     [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version}",
+        "publishCmd": "yarn package"
+      }
+    ],
+    [
       "@semantic-release/git",
       {
-        "assets": ["package.json", "CHANGELOG.md"],
+        "assets": ["src/manifest.json", "package.json", "CHANGELOG.md"],
         "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
       }
     ],
     [
       "@semantic-release/github",
       {
+        "assets": ["dist/*.zip"],
         "releasedLabels": ["🚀 released"]
       }
     ]
