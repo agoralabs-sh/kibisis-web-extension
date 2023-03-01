@@ -32,6 +32,7 @@ export default class WebExtPlugin {
   private run(sourceDir: string): void {
     let runCommand: string[] = [
       'run',
+      '--no-config-discovery', // ignore the config file
       `--source-dir=${sourceDir}`,
       `--firefox=${resolve(process.cwd(), '.firefox', 'firefox')}`, // use the installed version from the npm prepare script
       ...this.startUrls.map((value) => `--start-url=${value}`),
