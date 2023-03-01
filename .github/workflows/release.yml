@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 'lts/*'
       - name: "📦 Install"
-        run: yarn install
+        run: yarn install --ignore-scripts
       - name: "🏗️ Build"
         run: yarn build
       - name: "🔖 Release"
