@@ -10,6 +10,7 @@ const config: Configuration = {
   entry: {
     ['agora-wallet']: resolve(SRC_PATH, 'agora-wallet.ts'),
     ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
+    ['onboard']: resolve(SRC_PATH, 'onboard.ts'),
     ['popup']: resolve(SRC_PATH, 'popup.ts'),
   },
   module: {
@@ -54,6 +55,13 @@ const config: Configuration = {
           from: resolve(SRC_PATH, 'manifest.json'),
         },
       ],
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['onboard'],
+      filename: 'onboard.html',
+      inject: 'head',
+      template: resolve(SRC_PATH, 'onboard.hbs'),
+      title: APP_TITLE,
     }),
     new HtmlWebpackPlugin({
       chunks: ['popup'],

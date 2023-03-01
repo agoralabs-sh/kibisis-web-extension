@@ -12,7 +12,11 @@ const configs: Configuration[] = [
     devtool: 'cheap-module-source-map',
     mode: 'development',
     name: 'development',
-    plugins: [new WebExtPlugin()],
+    plugins: [
+      new WebExtPlugin({
+        devtools: true,
+      }),
+    ],
   }),
   merge(commonConfig, {
     mode: 'production',
