@@ -11,11 +11,7 @@ const configs: Configuration[] = [
   merge(commonConfig, {
     mode: 'development',
     name: 'development',
-    plugins: [
-      new WebExtPlugin({
-        devtools: true,
-      }),
-    ],
+    plugins: [new WebExtPlugin()],
   }),
   merge(commonConfig, {
     mode: 'production',

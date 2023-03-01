@@ -9,27 +9,32 @@ export default class WebExtPlugin {
   private readonly browserConsole: boolean;
   private readonly devtools: boolean;
   private readonly pluginName: string = 'WebExtPlugin';
+  private readonly startUrls: string[];
   private webExtRunProcess: ChildProcess | null;
 
   constructor(options?: IOptions) {
     this.browserConsole = options?.browserConsole || false;
     this.devtools = options?.devtools || false;
+    this.startUrls = options?.startUrls || [
+      'http://info.cern.ch/hypertext/WWW/TheProject.html',
+    ];
     this.webExtRunProcess = null;
   }
 
   private afterEmit(compiler: Compiler): ICompilationHookFunction {
     return async (): Promise<void> => {
-      this.run(compiler.outputPath);
+      if (!this.webExtRunProcess) {
+        this.run(compiler.outputPath);
+      }
     };
   }
 
   private run(sourceDir: string): void {
     let runCommand: string[] = [
       'run',
-      '--source-dir',
-      sourceDir,
-      '--firefox',
-      resolve(process.cwd(), '.firefox', 'firefox'), // use the installed version from the npm prepare script
+      `--source-dir=${sourceDir}`,
+      `--firefox=${resolve(process.cwd(), '.firefox', 'firefox')}`, // use the installed version from the npm prepare script
+      ...this.startUrls.map((value) => `--start-url=${value}`),
     ];
 
     if (this.browserConsole) {
