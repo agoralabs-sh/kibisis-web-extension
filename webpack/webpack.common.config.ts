@@ -8,13 +8,9 @@ import { APP_TITLE, BUILD_PATH, SRC_PATH } from './constants';
 
 const config: Configuration = {
   entry: {
-    ['resources/agora-wallet']: resolve(
-      SRC_PATH,
-      'resources',
-      'agora-wallet.ts'
-    ),
-    ['resources/content']: resolve(SRC_PATH, 'resources', 'content.ts'),
-    ['popup/index']: resolve(SRC_PATH, 'popup', 'index.ts'),
+    ['agora-wallet']: resolve(SRC_PATH, 'agora-wallet.ts'),
+    ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
+    ['popup']: resolve(SRC_PATH, 'popup.ts'),
   },
   module: {
     rules: [
@@ -33,6 +29,13 @@ const config: Configuration = {
             },
           },
         ],
+      },
+      {
+        test: /\.(svg?.+|ttf?.+|woff?.+|woff2?.+)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[hash][ext][query]',
+        },
       },
     ],
   },
@@ -53,10 +56,10 @@ const config: Configuration = {
       ],
     }),
     new HtmlWebpackPlugin({
-      chunks: ['popup/index'],
-      filename: 'popup/popup.html',
+      chunks: ['popup'],
+      filename: 'popup.html',
       inject: 'head',
-      template: resolve(SRC_PATH, 'popup', 'index.hbs'),
+      template: resolve(SRC_PATH, 'popup.hbs'),
       title: APP_TITLE,
     }),
   ],

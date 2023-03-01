@@ -1,8 +1,8 @@
 import { createElement } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
-// App
-import App from './App';
+// Components
+import PopupApp from './components/PopupApp';
 
 (() => {
   const rootElement: HTMLElement | null = document.getElementById('root');
@@ -14,5 +14,5 @@ import App from './App';
 
   root = createRoot(rootElement);
 
-  root.render(createElement(App));
+  root.render(createElement(PopupApp));
 })();

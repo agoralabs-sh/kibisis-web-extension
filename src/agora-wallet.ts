@@ -1,5 +1,5 @@
 // Types
-import { IWindow } from '../types';
+import { IWindow } from './types';
 
 (() => {
   if (!(window as IWindow).algorand) {
