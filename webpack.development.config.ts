@@ -4,8 +4,5 @@ import { merge } from 'webpack-merge';
 import commonConfig from './webpack.common.config';
 
 export default merge(commonConfig, {
-  mode: 'production',
-  output: {
-    clean: true,
-  },
+  mode: 'development',
 });
