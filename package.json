@@ -33,7 +33,7 @@
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
     "start": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",
     "start:firefox": "web-ext run",
-    "test": "exit 0"
+    "test": "jest"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",

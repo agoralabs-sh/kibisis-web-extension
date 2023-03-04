@@ -7,14 +7,18 @@
     "48": "icons/icon-48.png",
     "96": "icons/icon-96.png"
   },
+  "permissions": ["storage"],
   "browser_specific_settings": {
     "gecko": {
       "id": "agorawallet@agoralabs.sh"
     }
   },
   "browser_action": {
-    "default_title": "Agora Wallet",
-    "default_popup": "popup.html"
+    "default_title": "Agora Wallet"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "content_scripts": [
     {

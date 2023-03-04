@@ -9,6 +9,7 @@ import { APP_TITLE, BUILD_PATH, SRC_PATH } from './constants';
 const config: Configuration = {
   entry: {
     ['agora-wallet']: resolve(SRC_PATH, 'agora-wallet.ts'),
+    ['background']: resolve(SRC_PATH, 'background.ts'),
     ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
     ['onboard']: resolve(SRC_PATH, 'onboard.ts'),
     ['popup']: resolve(SRC_PATH, 'popup.ts'),
