@@ -1,2 +1,2 @@
-export const DEFAULT_PANEL_HEIGHT: number = 600;
-export const DEFAULT_PANEL_WIDTH: number = 400;
+export const DEFAULT_POPUP_HEIGHT: number = 600;
+export const DEFAULT_POPUP_WIDTH: number = 400;
