@@ -11,8 +11,7 @@ const config: Configuration = {
     ['agora-wallet']: resolve(SRC_PATH, 'agora-wallet.ts'),
     ['background']: resolve(SRC_PATH, 'background.ts'),
     ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
-    ['onboard']: resolve(SRC_PATH, 'onboard.ts'),
-    ['popup']: resolve(SRC_PATH, 'popup.ts'),
+    ['register']: resolve(SRC_PATH, 'register.ts'),
   },
   module: {
     rules: [
@@ -42,6 +41,7 @@ const config: Configuration = {
     ],
   },
   output: {
+    clean: true,
     filename: '[name].js',
     path: BUILD_PATH,
   },
@@ -58,17 +58,10 @@ const config: Configuration = {
       ],
     }),
     new HtmlWebpackPlugin({
-      chunks: ['onboard'],
-      filename: 'onboard.html',
+      chunks: ['register'],
+      filename: 'register.html',
       inject: 'head',
-      template: resolve(SRC_PATH, 'onboard.hbs'),
-      title: APP_TITLE,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['popup'],
-      filename: 'popup.html',
-      inject: 'head',
-      template: resolve(SRC_PATH, 'popup.hbs'),
+      template: resolve(SRC_PATH, 'register.hbs'),
       title: APP_TITLE,
     }),
   ],

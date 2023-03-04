@@ -1,4 +1,5 @@
 import {
+  Center,
   Flex,
 } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
@@ -8,16 +9,20 @@ interface IProps {
 }
 
 const PopupShell: FC<IProps> = ({ children }: IProps) => (
-  <Flex
-    as="main"
-    direction="column"
-    h={600}
-    pt={5}
-    px={5}
-    w={400}
-  >
-    {children}
-  </Flex>
+  <Center as="main" backgroundColor="white">
+    <Flex
+      alignItems="center"
+      direction="column"
+      justifyContent="center"
+      maxW={500}
+      minH="100vh"
+      pt={5}
+      px={10}
+      w="full"
+    >
+      {children}
+    </Flex>
+  </Center>
 );
 
 export default PopupShell;

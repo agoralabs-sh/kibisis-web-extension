@@ -29,9 +29,6 @@ const configs: Configuration[] = [
   merge(commonConfig, {
     mode: 'production',
     name: PRODUCTION_ENVIRONMENT,
-    output: {
-      clean: true,
-    },
     plugins: [
       new DefinePlugin({
         __ENV__: JSON.stringify(PRODUCTION_ENVIRONMENT),

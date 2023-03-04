@@ -1,5 +1,8 @@
+// Entities
+import { Algorand } from '../algorand-provider';
+
 interface IWindow extends Window {
-  algorand?: any;
+  algorand?: Algorand;
 }
 
 export default IWindow;

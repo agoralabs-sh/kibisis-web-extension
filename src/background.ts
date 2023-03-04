@@ -19,4 +19,7 @@ import { createLogger } from './utils';
   browser.browserAction.onClicked.addListener(
     backgroundService.onExtensionClick.bind(backgroundService)
   );
+  browser.windows.onRemoved.addListener(
+    backgroundService.onWindowRemove.bind(backgroundService)
+  );
 })();
