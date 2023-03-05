@@ -78,6 +78,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@reduxjs/toolkit": "^1.9.3",
+    "@types/zxcvbn": "^4.4.1",
     "algosdk": "^2.1.0",
     "buffer": "^6.0.3",
     "framer-motion": "^10.0.1",
@@ -88,6 +89,7 @@
     "react-icons": "^4.7.1",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.2",
-    "react-slide-routes": "^3.0.3"
+    "react-slide-routes": "^3.0.3",
+    "zxcvbn": "^4.4.2"
   }
 }
