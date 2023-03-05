@@ -6,6 +6,7 @@ const translation: IResourceLanguage = {
     create: 'Create',
     getStarted: 'Get Started',
     import: 'Import',
+    next: 'Next',
     previous: 'Previous',
   },
   captions: {
@@ -13,6 +14,7 @@ const translation: IResourceLanguage = {
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
     importAccount: `Add your mnemonic phrase to import your account.`,
+    nameAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be more at least 8 characters.',
   },
@@ -22,9 +24,11 @@ const translation: IResourceLanguage = {
       code_2000: 'The password seems to be invalid.',
     },
     inputs: {
+      invalidMnemonic: 'Invalid mnemonic phrase',
       passwordMinLength: 'Must be at least 8 characters',
       passwordTooWeak: 'This password is too weak',
       required: '{{name}} is required',
+      unknown: `Something doesn't look right`,
     },
     titles: {
       code: 'Well this is embarrassing...',
@@ -34,8 +38,10 @@ const translation: IResourceLanguage = {
   headings: {
     createPassword: 'Secure your device',
     importAccount: 'Import your account',
+    nameAccount: 'Name your account',
   },
   labels: {
+    mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
   },
   placeholders: {
