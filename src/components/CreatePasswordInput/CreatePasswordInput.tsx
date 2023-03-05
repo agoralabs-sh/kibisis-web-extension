@@ -37,7 +37,7 @@ const CreatePasswordInput: FC<IProps> = ({ onChange, score, value }: IProps) => 
   return (
     <VStack>
       <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-        <Text color="gray.500" textAlign="left">{t<string>('labels.password')}</Text>
+        <Text color={error ? 'red.300' : 'gray.500'} textAlign="left">{t<string>('labels.password')}</Text>
         <Text color="red.300" fontSize="xs" textAlign="right">{error}</Text>
       </HStack>
       <InputGroup size="md">

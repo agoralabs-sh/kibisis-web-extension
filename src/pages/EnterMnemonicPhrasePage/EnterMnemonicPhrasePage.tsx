@@ -16,7 +16,7 @@ import { NAME_ACCOUNT_ROUTE } from '../../constants';
 import { setPrivateKey } from '../../features/register';
 
 // Selectors
-import { useSelectLogger } from '../../selectors';
+import { useSelectLogger, useSelectRegisterEncryptedPrivateKey } from '../../selectors';
 
 // Types
 import { IAppThunkDispatch, ILogger, IRootState } from '../../types';
@@ -27,7 +27,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const logger: ILogger = useSelectLogger();
-  const encryptedPrivateKey: string | null = useSelector<IRootState, string | null>((state) => state.register.encryptedPrivateKey);
+  const encryptedPrivateKey: string | null = useSelectRegisterEncryptedPrivateKey();
   const encrypting: boolean = useSelector<IRootState, boolean>((state) => state.register.encrypting);
   const [error, setError] = useState<string | null>(null);
   const [phrases, setPhrases] = useState<string[]>(Array.from({ length: 25 }, () => ''));

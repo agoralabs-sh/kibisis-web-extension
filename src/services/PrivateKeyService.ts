@@ -159,7 +159,7 @@ export default class PrivateKeyService {
     try {
       encryptedData = await window.crypto.subtle.encrypt(
         {
-          name: '',
+          name: 'AES-GCM',
           iv,
         },
         derivedKey,

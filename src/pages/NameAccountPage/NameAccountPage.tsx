@@ -1,5 +1,5 @@
 import { Heading, HStack, Text, VStack } from '@chakra-ui/react';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
@@ -9,22 +9,34 @@ import Button from '../../components/Button';
 import PopupShell from '../../components/PopupShell';
 
 // Features
-import { setPrivateKey } from '../../features/register';
+import { clearPrivateKey } from '../../features/register';
+
+// Selectors
+import { useSelectLogger, useSelectRegisterEncryptedPrivateKey } from '../../selectors';
 
 // Types
-import { IAppThunkDispatch, IRootState } from '../../types';
+import { IAppThunkDispatch, ILogger, IRootState } from '../../types';
 
 const NameAccountPage: FC = () => {
+  const componentName: string = 'NameAccountPage';
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const dispatch = useDispatch<IAppThunkDispatch>();
-  const encrypting: boolean = useSelector<IRootState, boolean>((state) => state.register.saving);
+  const logger: ILogger = useSelectLogger();
+  const encryptedPrivateKey: string | null = useSelectRegisterEncryptedPrivateKey();
+  const saving: boolean = useSelector<IRootState, boolean>((state) => state.register.saving);
   const handleImportClick = () => {
     console.log('import wallet!');
   };
   const handlePreviousClick = () => {
-    navigate(-1);
+    dispatch(clearPrivateKey());
   };
+
+  useEffect(() => {
+    if (!encryptedPrivateKey) {
+      navigate(-1);
+    }
+  }, [encryptedPrivateKey]);
 
   return (
     <PopupShell>
@@ -44,7 +56,7 @@ const NameAccountPage: FC = () => {
         </Button>
         <Button
           colorScheme="primary"
-          isLoading={encrypting}
+          isLoading={saving}
           onClick={handleImportClick}
           size="lg"
           variant="solid"

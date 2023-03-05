@@ -16,6 +16,9 @@ const slice = createSlice({
   name: StoreNameEnum.Register,
   initialState: getInitialState(),
   reducers: {
+    clearPrivateKey: (state: Draft<IRegisterState>) => {
+      state.encryptedPrivateKey = null;
+    },
     reset: (state: Draft<IRegisterState>) => {
       const initialState: IRegisterState = getInitialState();
 
@@ -76,4 +79,4 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { reset, setPassword } = slice.actions;
+export const { clearPrivateKey, reset, setPassword } = slice.actions;

@@ -32,7 +32,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({ disabled, error, onChange, phras
   return (
     <VStack>
       <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-        <Text color="gray.500" textAlign="left">{t<string>('labels.mnemonicPhrase')}</Text>
+        <Text color={error ? 'red.300' : 'gray.500'} textAlign="left">{t<string>('labels.mnemonicPhrase')}</Text>
         <Text color="red.300" fontSize="xs" textAlign="right">{error}</Text>
       </HStack>
       <SimpleGrid columns={3} justifyItems="center" spacing={2}>
@@ -48,6 +48,8 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({ disabled, error, onChange, phras
             <Input
               autoFocus={currentFocusIndex === index}
               disabled={disabled}
+              focusBorderColor={error ? 'red.300' : 'primary.500'}
+              isInvalid={!!error}
               onChange={handleOnChange(index)}
               onFocus={handleOnFocus(index)}
               onPaste={handleOnPaste}
