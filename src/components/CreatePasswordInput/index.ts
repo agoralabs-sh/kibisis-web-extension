@@ -1,2 +1,2 @@
-export { default } from './PasswordInput';
+export { default } from './CreatePasswordInput';
 export * from './utils';

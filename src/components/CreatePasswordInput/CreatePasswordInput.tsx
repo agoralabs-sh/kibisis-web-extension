@@ -16,7 +16,7 @@ interface IProps {
   value: string;
 }
 
-const PasswordInput: FC<IProps> = ({ onChange, score, value }: IProps) => {
+const CreatePasswordInput: FC<IProps> = ({ onChange, score, value }: IProps) => {
   const { t } = useTranslation();
   const [show, setShow] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(value.length > 0 ? validate(value, score, t) : null);
@@ -67,5 +67,5 @@ const PasswordInput: FC<IProps> = ({ onChange, score, value }: IProps) => {
   );
 }
 
-export default PasswordInput;
+export default CreatePasswordInput;
 
