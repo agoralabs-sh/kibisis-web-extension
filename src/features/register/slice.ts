@@ -1,4 +1,4 @@
-import { createSlice, Draft, Reducer } from '@reduxjs/toolkit';
+import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // Enums
 import { StoreNameEnum } from '../../enums';
@@ -7,7 +7,7 @@ import { StoreNameEnum } from '../../enums';
 import { saveCredentials, setPrivateKey } from './thunks';
 
 // Types
-import { IRegisterState } from './types';
+import { IRegisterState, ISetPasswordPayload } from './types';
 
 // Utils
 import { getInitialState } from './utils';
@@ -17,13 +17,39 @@ const slice = createSlice({
   initialState: getInitialState(),
   reducers: {
     reset: (state: Draft<IRegisterState>) => {
-      state = getInitialState();
+      const initialState: IRegisterState = getInitialState();
+
+      state.encryptedPrivateKey = initialState.encryptedPrivateKey;
+      state.encrypting = initialState.encrypting;
+      state.password = initialState.password;
+      state.saving = initialState.saving;
+      state.score = initialState.score;
+    },
+    setPassword: (
+      state: Draft<IRegisterState>,
+      action: PayloadAction<ISetPasswordPayload>
+    ) => {
+      if (action.payload.password.length <= 0) {
+        state.password = null;
+        state.score = -1;
+
+        return;
+      }
+
+      state.password = action.payload.password;
+      state.score = action.payload.score;
     },
   },
   extraReducers: (builder) => {
     /** Save credentials **/
     builder.addCase(saveCredentials.fulfilled, (state: IRegisterState) => {
-      state = getInitialState();
+      const initialState: IRegisterState = getInitialState();
+
+      state.encryptedPrivateKey = initialState.encryptedPrivateKey;
+      state.encrypting = initialState.encrypting;
+      state.password = initialState.password;
+      state.saving = initialState.saving;
+      state.score = initialState.score;
     });
     builder.addCase(saveCredentials.pending, (state: IRegisterState) => {
       state.saving = true;
@@ -50,4 +76,4 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { reset } = slice.actions;
+export const { reset, setPassword } = slice.actions;

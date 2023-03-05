@@ -3,6 +3,7 @@ interface IRegisterState {
   encrypting: boolean;
   password: string | null;
   saving: boolean;
+  score: number;
 }
 
 export default IRegisterState;

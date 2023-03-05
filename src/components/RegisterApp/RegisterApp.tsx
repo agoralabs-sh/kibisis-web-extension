@@ -10,11 +10,12 @@ import SlideRoutes from 'react-slide-routes';
 import Fonts from '../Fonts';
 
 // Constants
-import { CREATE_PASSWORD_ROUTE, GET_STARTED_ROUTE } from '../../constants';
+import { CREATE_PASSWORD_ROUTE, GET_STARTED_ROUTE, IMPORT_ACCOUNT_ROUTE } from '../../constants';
 
 // Pages
 import CreatePasswordPage from '../../pages/CreatePasswordPage';
 import GetStartedPage from '../../pages/GetStartedPage';
+import ImportAccountPage from '../../pages/ImportAccountPage';
 
 // Theme
 import { theme } from '../../theme';
@@ -35,6 +36,7 @@ const RegisterApp: FC<IProps> = ({ i18next }: IProps) => (
           <SlideRoutes>
             <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
             <Route element={<CreatePasswordPage />} path={CREATE_PASSWORD_ROUTE} />
+            <Route element={<ImportAccountPage />} path={IMPORT_ACCOUNT_ROUTE} />
           </SlideRoutes>
         </HashRouter>
       </ChakraProvider>

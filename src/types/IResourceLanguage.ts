@@ -3,6 +3,7 @@ interface IResourceLanguage {
   captions: Record<string, string>;
   errors: {
     descriptions: Record<string, string>;
+    inputs: Record<string, string>;
     titles: Record<string, string>;
   };
   headings: Record<string, string>;

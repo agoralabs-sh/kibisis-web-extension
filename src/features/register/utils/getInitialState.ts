@@ -7,5 +7,6 @@ export default function getInitialState(): IRegisterState {
     encrypting: false,
     password: null,
     saving: false,
+    score: -1,
   };
 }

@@ -1,10 +1,11 @@
 import {
   Center,
   Flex,
+  FlexProps,
 } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 
-interface IProps {
+interface IProps extends FlexProps {
   children: ReactNode;
 }
 
@@ -16,7 +17,8 @@ const PopupShell: FC<IProps> = ({ children }: IProps) => (
       justifyContent="center"
       maxW={500}
       minH="100vh"
-      p={10}
+      pt={8}
+      px={8}
       w="full"
     >
       {children}
