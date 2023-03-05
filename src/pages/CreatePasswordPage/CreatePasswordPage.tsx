@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // Components
 import Button from '../../components/Button';
-import PasswordInput, { validate } from '../../components/PasswordInput';
+import CreatePasswordInput, { validate } from '../../components/CreatePasswordInput';
 import PopupShell from '../../components/PopupShell';
 
 // Constants
@@ -45,7 +45,7 @@ const CreatePasswordPage: FC = () => {
         <Heading color="gray.500">{t<string>('headings.createPassword')}</Heading>
         <Text color="gray.400">{t<string>('captions.createPassword1')}</Text>
         <Text color="gray.400">{t<string>('captions.createPassword2')}</Text>
-        <PasswordInput
+        <CreatePasswordInput
           onChange={handlePasswordChange}
           score={score}
           value={password || ''}
