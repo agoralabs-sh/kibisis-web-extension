@@ -3,10 +3,9 @@ import { IResourceLanguage } from '../types';
 
 const translation: IResourceLanguage = {
   buttons: {
-    cancel: 'Cancel',
+    create: 'Create',
     getStarted: 'Get Started',
-    confirm: 'Confirm',
-    ok: 'OK',
+    previous: 'Previous',
   },
   captions: {},
   errors: {

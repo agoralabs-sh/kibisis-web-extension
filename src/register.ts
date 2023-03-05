@@ -4,7 +4,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { initReactI18next } from 'react-i18next';
 
 // Components
-import App from './components/App';
+import RegisterApp from './components/RegisterApp';
 
 // Translations
 import { en } from './translations';
@@ -35,7 +35,7 @@ async function onLoad(): Promise<void> {
     },
   });
 
-  root.render(createElement(App, { i18next }));
+  root.render(createElement(RegisterApp, { i18next }));
 }
 
 window.onload = onLoad;

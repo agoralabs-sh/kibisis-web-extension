@@ -16,8 +16,7 @@ const PopupShell: FC<IProps> = ({ children }: IProps) => (
       justifyContent="center"
       maxW={500}
       minH="100vh"
-      pt={5}
-      px={10}
+      p={10}
       w="full"
     >
       {children}
