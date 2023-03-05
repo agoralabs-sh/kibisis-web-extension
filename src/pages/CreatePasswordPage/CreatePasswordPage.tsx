@@ -10,7 +10,7 @@ import CreatePasswordInput, { validate } from '../../components/CreatePasswordIn
 import PopupShell from '../../components/PopupShell';
 
 // Constants
-import { IMPORT_ACCOUNT_ROUTE } from '../../constants';
+import { ENTER_MNEMONIC_PHRASE_ROUTE } from '../../constants';
 
 // Features
 import { setPassword } from '../../features/register';
@@ -24,9 +24,9 @@ const CreatePasswordPage: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const password: string | null = useSelector<IRootState, string | null>((state) => state.register.password);
   const score: number = useSelector<IRootState, number>((state) => state.register.score);
-  const handleCreatePasswordClick = () => {
+  const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
-      navigate(IMPORT_ACCOUNT_ROUTE);
+      navigate(ENTER_MNEMONIC_PHRASE_ROUTE);
     }
   };
   const handlePasswordChange = (password: string, score: number) => {
@@ -63,12 +63,12 @@ const CreatePasswordPage: FC = () => {
         </Button>
         <Button
           colorScheme="primary"
-          onClick={handleCreatePasswordClick}
+          onClick={handleNextClick}
           size="lg"
           variant="solid"
           w="full"
         >
-          {t<string>('buttons.create')}
+          {t<string>('buttons.next')}
         </Button>
       </HStack>
     </PopupShell>
