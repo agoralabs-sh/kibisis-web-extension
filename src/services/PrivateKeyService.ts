@@ -17,9 +17,6 @@ export default class PrivateKeyService {
   private static readonly iterations: number = 2500000;
   private static readonly saltSize: number = 64;
 
-  // public static variables
-  public static readonly name: string = 'PrivateKeyService';
-
   // private variables
   private readonly logger: ILogger | null;
   private readonly passwordTagKeyName: string = 'agora_wallet_pks_password_tag';

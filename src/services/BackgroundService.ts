@@ -11,14 +11,14 @@ export default class BackgroundService {
   // private variables
   private readonly logger: ILogger | null;
   private readonly privateKeyService: PrivateKeyService;
-  private onRegisterWindow: browser.windows.Window | null;
+  private onPopupWindow: browser.windows.Window | null;
 
   // public variables
   public readonly name: string = 'BackgroundService';
 
   constructor(options: IBaseOptions) {
     this.logger = options?.logger || null;
-    this.onRegisterWindow = null;
+    this.onPopupWindow = null;
     this.privateKeyService = new PrivateKeyService(options);
   }
 
@@ -29,13 +29,13 @@ export default class BackgroundService {
   public async onExtensionClick(): Promise<void> {
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
 
-    if (!isInitialized && !this.onRegisterWindow) {
+    if (!isInitialized && !this.onPopupWindow) {
       this.logger &&
         this.logger.debug(
-          `${this.name}#onExtensionClick(): on-boarding new user`
+          `${BackgroundService.name}#onExtensionClick(): on-boarding new user`
         );
 
-      this.onRegisterWindow = await browser.windows.create({
+      this.onPopupWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
         url: 'register.html',
@@ -44,14 +44,18 @@ export default class BackgroundService {
     }
   }
 
+  public async onRegistrationComplete(): Promise<void> {
+    // TODO: close registration popup and load app
+  }
+
   public onWindowRemove(windowId: number): void {
-    if (this.onRegisterWindow && this.onRegisterWindow.id === windowId) {
+    if (this.onPopupWindow && this.onPopupWindow.id === windowId) {
       this.logger &&
         this.logger.debug(
-          `${this.name}#onWindowRemove(): removed register window`
+          `${BackgroundService.name}#onWindowRemove(): removed popup window`
         );
 
-      this.onRegisterWindow = null;
+      this.onPopupWindow = null;
     }
   }
 }
