@@ -4,6 +4,5 @@
     "target": "ES6",
     "types": ["jest", "node"]
   },
-  "include": ["src/**/*.test.ts"],
-  "exclude": ["node_modules"]
+  "include": ["../src/@types/**/*", "../src/**/*.test.*"]
 }
