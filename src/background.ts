@@ -32,7 +32,7 @@ type IEvents = RegistrationCompletedEvent;
   browser.runtime.onMessage.addListener(async (message: IEvents) => {
     switch (message.event) {
       case EventNameEnum.RegistrationCompleted:
-        await backgroundService.onRegistrationComplete.bind(backgroundService);
+        await backgroundService.onRegistrationComplete();
 
         break;
       default:
