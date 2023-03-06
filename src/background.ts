@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 // Enums
 import { EventNameEnum } from './enums';
 

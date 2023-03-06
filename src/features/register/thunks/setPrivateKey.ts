@@ -1,7 +1,11 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { Account, mnemonicToSecretKey } from 'algosdk';
 
 // Enums
 import { RegisterThunkEnum } from '../../../enums';
+
+// Features
+import { setName } from '../slice';
 
 // Services
 import { PrivateKeyService } from '../../../services';
@@ -15,10 +19,11 @@ const setPrivateKey: AsyncThunk<
   Record<string, never>
 > = createAsyncThunk<string | null, string, { state: IRootState }>(
   RegisterThunkEnum.SetPrivateKey,
-  async (privateKey, { getState }) => {
+  async (privateKey, { dispatch, getState }) => {
     const functionName: string = 'setPrivateKey';
     const logger: ILogger = getState().application.logger;
     const password: string | null = getState().register.password;
+    let account: Account;
     let encryptedPrivateKey: string;
 
     if (!password) {
@@ -31,6 +36,7 @@ const setPrivateKey: AsyncThunk<
     logger.debug(`${functionName}(): encrypting private key`);
 
     try {
+      account = mnemonicToSecretKey(privateKey);
       encryptedPrivateKey = await PrivateKeyService.encrypt(
         password,
         privateKey,
@@ -44,6 +50,8 @@ const setPrivateKey: AsyncThunk<
     }
 
     logger.debug(`${functionName}(): private key successfully encrypted`);
+
+    dispatch(setName(account.addr));
 
     return encryptedPrivateKey;
   }

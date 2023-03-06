@@ -24,9 +24,19 @@ const slice = createSlice({
 
       state.encryptedPrivateKey = initialState.encryptedPrivateKey;
       state.encrypting = initialState.encrypting;
+      state.name = initialState.name;
       state.password = initialState.password;
       state.saving = initialState.saving;
       state.score = initialState.score;
+    },
+    setName: (state: Draft<IRegisterState>, action: PayloadAction<string>) => {
+      if (action.payload.length <= 0) {
+        state.name = null;
+
+        return;
+      }
+
+      state.name = action.payload;
     },
     setPassword: (
       state: Draft<IRegisterState>,
@@ -79,4 +89,4 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { clearPrivateKey, reset, setPassword } = slice.actions;
+export const { clearPrivateKey, reset, setName, setPassword } = slice.actions;

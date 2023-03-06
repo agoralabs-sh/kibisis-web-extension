@@ -41,11 +41,13 @@ const translation: IResourceLanguage = {
     nameAccount: 'Name your account',
   },
   labels: {
+    accountName: 'Account Name',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
   },
   placeholders: {
     enterPassword: 'Enter password',
+    nameAccount: 'Enter a name for this account (optional)',
   },
   titles: {
     page: '',

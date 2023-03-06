@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 // Utils
 import { injectScript } from './utils';
 
