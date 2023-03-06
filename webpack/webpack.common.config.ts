@@ -11,6 +11,7 @@ const config: Configuration = {
     ['agora-wallet']: resolve(SRC_PATH, 'agora-wallet.ts'),
     ['background']: resolve(SRC_PATH, 'background.ts'),
     ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
+    ['main']: resolve(SRC_PATH, 'main.ts'),
     ['register']: resolve(SRC_PATH, 'register.ts'),
   },
   module: {
@@ -58,10 +59,17 @@ const config: Configuration = {
       ],
     }),
     new HtmlWebpackPlugin({
+      chunks: ['main'],
+      filename: 'main.html',
+      inject: 'head',
+      template: resolve(SRC_PATH, 'index.hbs'),
+      title: APP_TITLE,
+    }),
+    new HtmlWebpackPlugin({
       chunks: ['register'],
       filename: 'register.html',
       inject: 'head',
-      template: resolve(SRC_PATH, 'register.hbs'),
+      template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,
     }),
   ],
