@@ -9,7 +9,7 @@ interface IProps extends FlexProps {
   children: ReactNode;
 }
 
-const PopupShell: FC<IProps> = ({ children }: IProps) => (
+const PageShell: FC<IProps> = ({ children }: IProps) => (
   <Center as="main" backgroundColor="white">
     <Flex
       alignItems="center"
@@ -26,4 +26,4 @@ const PopupShell: FC<IProps> = ({ children }: IProps) => (
   </Center>
 );
 
-export default PopupShell;
+export default PageShell;

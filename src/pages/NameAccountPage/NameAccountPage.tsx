@@ -6,7 +6,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // Components
 import Button from '../../components/Button';
-import PopupShell from '../../components/PopupShell';
+import PageShell from '../../components/PageShell';
 
 // Features
 import { clearPrivateKey, saveCredentials, setName } from '../../features/register';
@@ -41,7 +41,7 @@ const NameAccountPage: FC = () => {
   }, [encryptedPrivateKey]);
 
   return (
-    <PopupShell>
+    <PageShell>
       <VStack flexGrow={1} mb={8}  spacing={3} w="full">
         <Heading color="gray.500">{t<string>('headings.nameAccount')}</Heading>
         <Text color="gray.400">{t<string>('captions.nameAccount')}</Text>
@@ -81,7 +81,7 @@ const NameAccountPage: FC = () => {
           {t<string>('buttons.import')}
         </Button>
       </HStack>
-    </PopupShell>
+    </PageShell>
   );
 }
 

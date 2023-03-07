@@ -1,5 +1,6 @@
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { NavigateFunction } from 'react-router-dom';
 
 // Enums
 import { StoreNameEnum } from '../../enums';
@@ -23,6 +24,12 @@ const slice = createSlice({
     ) => {
       state.error = action.payload;
     },
+    setNavigate: (
+      state: Draft<IApplicationState>,
+      action: PayloadAction<NavigateFunction>
+    ) => {
+      state.navigate = action.payload;
+    },
     setToast: (
       state: Draft<IApplicationState>,
       action: PayloadAction<CreateToastFnReturn>
@@ -33,4 +40,4 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setError, setToast } = slice.actions;
+export const { setError, setNavigate, setToast } = slice.actions;

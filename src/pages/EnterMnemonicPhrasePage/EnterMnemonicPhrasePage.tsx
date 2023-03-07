@@ -7,7 +7,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 // Components
 import Button from '../../components/Button';
 import EnterMnemonicPhraseInput, { validate } from '../../components/EnterMnemonicPhraseInput';
-import PopupShell from '../../components/PopupShell';
+import PageShell from '../../components/PageShell';
 
 // Constants
 import { NAME_ACCOUNT_ROUTE } from '../../constants';
@@ -58,7 +58,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   }, [encryptedPrivateKey]);
 
   return (
-    <PopupShell>
+    <PageShell>
       <VStack flexGrow={1} mb={8}  spacing={3} w="full">
         <Heading color="gray.500">{t<string>('headings.importAccount')}</Heading>
         <Text color="gray.400">{t<string>('captions.importAccount')}</Text>
@@ -90,7 +90,7 @@ const EnterMnemonicPhrasePage: FC = () => {
           {t<string>('buttons.next')}
         </Button>
       </HStack>
-    </PopupShell>
+    </PageShell>
   );
 }
 

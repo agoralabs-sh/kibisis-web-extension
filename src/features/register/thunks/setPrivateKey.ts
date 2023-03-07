@@ -1,10 +1,15 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Account, mnemonicToSecretKey } from 'algosdk';
+import { NavigateFunction } from 'react-router-dom';
 
 // Enums
 import { RegisterThunkEnum } from '../../../enums';
 
+// Constants
+import { CREATE_PASSWORD_ROUTE } from '../../../constants';
+
 // Features
+import { setError } from '../../application';
 import { setName } from '../slice';
 
 // Services
@@ -12,6 +17,7 @@ import { PrivateKeyService } from '../../../services';
 
 // Types
 import { ILogger, IRootState } from '../../../types';
+import { BaseError, MalformedDataError } from '../../../errors';
 
 const setPrivateKey: AsyncThunk<
   string | null, // return
@@ -22,15 +28,20 @@ const setPrivateKey: AsyncThunk<
   async (privateKey, { dispatch, getState }) => {
     const functionName: string = 'setPrivateKey';
     const logger: ILogger = getState().application.logger;
+    const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().register.password;
     let account: Account;
     let encryptedPrivateKey: string;
+    let error: BaseError;
 
     if (!password) {
-      logger.error(`${functionName}(): no password found`);
+      error = new MalformedDataError('no password found');
 
-      // TODO: go back to password screen
-      return null;
+      logger.error(`${functionName}(): ${error.message}`);
+
+      navigate && navigate(CREATE_PASSWORD_ROUTE);
+
+      throw error;
     }
 
     logger.debug(`${functionName}(): encrypting private key`);
@@ -45,8 +56,9 @@ const setPrivateKey: AsyncThunk<
     } catch (error) {
       logger.error(`${functionName}(): ${error.message}`);
 
-      // TODO: handle encryption error
-      return null;
+      dispatch(setError(error));
+
+      throw error;
     }
 
     logger.debug(`${functionName}(): private key successfully encrypted`);

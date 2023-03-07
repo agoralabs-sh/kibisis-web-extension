@@ -2,13 +2,13 @@ import { Heading } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
 // Components
-import PopupShell from '../../components/PopupShell';
+import PageShell from '../../components/PageShell';
 
 const DashboardPage: FC = () => {
   return (
-    <PopupShell>
+    <PageShell>
       <Heading color="gray.500">Agora Wallet - Dashboard</Heading>
-    </PopupShell>
+    </PageShell>
   );
 }
 

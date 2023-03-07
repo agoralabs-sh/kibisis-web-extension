@@ -7,6 +7,7 @@ const translation: IResourceLanguage = {
     getStarted: 'Get Started',
     import: 'Import',
     next: 'Next',
+    ok: 'OK',
     previous: 'Previous',
   },
   captions: {
@@ -16,7 +17,9 @@ const translation: IResourceLanguage = {
     importAccount: `Add your mnemonic phrase to import your account.`,
     nameAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     passwordScoreInfo:
-      'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be more at least 8 characters.',
+      'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
+    support:
+      'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
   },
   errors: {
     descriptions: {

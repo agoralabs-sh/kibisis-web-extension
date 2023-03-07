@@ -7,6 +7,7 @@ import { HashRouter, Route } from 'react-router-dom';
 import SlideRoutes from 'react-slide-routes';
 
 // Components
+import AppProvider from '../AppProvider';
 import Fonts from '../Fonts';
 
 // Constants
@@ -34,12 +35,14 @@ const RegisterApp: FC<IProps> = ({ i18next }: IProps) => (
       <ChakraProvider theme={theme}>
         <Fonts />
         <HashRouter>
-          <SlideRoutes>
-            <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
-            <Route element={<CreatePasswordPage />} path={CREATE_PASSWORD_ROUTE} />
-            <Route element={<EnterMnemonicPhrasePage />} path={ENTER_MNEMONIC_PHRASE_ROUTE} />
-            <Route element={<NameAccountPage />} path={NAME_ACCOUNT_ROUTE} />
-          </SlideRoutes>
+          <AppProvider>
+            <SlideRoutes>
+              <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
+              <Route element={<CreatePasswordPage />} path={CREATE_PASSWORD_ROUTE} />
+              <Route element={<EnterMnemonicPhrasePage />} path={ENTER_MNEMONIC_PHRASE_ROUTE} />
+              <Route element={<NameAccountPage />} path={NAME_ACCOUNT_ROUTE} />
+            </SlideRoutes>
+          </AppProvider>
         </HashRouter>
       </ChakraProvider>
     </I18nextProvider>

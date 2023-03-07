@@ -1,6 +1,13 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Account, mnemonicToSecretKey } from 'algosdk';
+import { NavigateFunction } from 'react-router-dom';
 import browser from 'webextension-polyfill';
+
+// Constants
+import {
+  CREATE_PASSWORD_ROUTE,
+  ENTER_MNEMONIC_PHRASE_ROUTE,
+} from '../../../constants';
 
 // Enums
 import { RegisterThunkEnum } from '../../../enums';
@@ -8,12 +15,17 @@ import { RegisterThunkEnum } from '../../../enums';
 // Errors
 import { BaseError, MalformedDataError } from '../../../errors';
 
+// Events
+import { RegistrationCompletedEvent } from '../../../events';
+
+// Features
+import { setError } from '../../application';
+
 // Services
 import { PrivateKeyService } from '../../../services';
 
 // Types
 import { ILogger, IRootState } from '../../../types';
-import { RegistrationCompletedEvent } from '../../../events';
 
 const saveCredentials: AsyncThunk<
   void, // return
@@ -21,12 +33,13 @@ const saveCredentials: AsyncThunk<
   Record<string, never>
 > = createAsyncThunk<void, undefined, { state: IRootState }>(
   RegisterThunkEnum.SaveCredentials,
-  async (_, { getState }) => {
+  async (_, { dispatch, getState }) => {
     const functionName: string = 'saveCredentials';
     const logger: ILogger = getState().application.logger;
     const encryptedPrivateKey: string | null =
       getState().register.encryptedPrivateKey;
     const name: string | null = getState().register.name;
+    const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().register.password;
     let account: Account;
     let error: BaseError;
@@ -38,7 +51,8 @@ const saveCredentials: AsyncThunk<
 
       logger.error(`${functionName}(): ${error.message}`);
 
-      // TODO: go back to password screen
+      navigate && navigate(CREATE_PASSWORD_ROUTE);
+
       throw error;
     }
 
@@ -47,7 +61,8 @@ const saveCredentials: AsyncThunk<
 
       logger.error(`${functionName}(): ${error.message}`);
 
-      // TODO: go back to private key screen
+      navigate && navigate(ENTER_MNEMONIC_PHRASE_ROUTE);
+
       throw error;
     }
 
@@ -87,7 +102,8 @@ const saveCredentials: AsyncThunk<
       );
     } catch (error) {
       logger.error(`${functionName}(): ${error.message}`);
-      // TODO: handle error
+
+      dispatch(setError(error));
 
       throw error;
     }
@@ -95,7 +111,7 @@ const saveCredentials: AsyncThunk<
     logger.debug(`${functionName}(): successfully saved credentials`);
 
     logger.debug(
-      `${functionName}(): posting registration complete to background service`
+      `${functionName}(): sending registration complete event to background service`
     );
 
     // send a message that registration has been completed

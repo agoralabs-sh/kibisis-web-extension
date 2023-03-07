@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // Components
 import Button from '../../components/Button';
 import CreatePasswordInput, { validate } from '../../components/CreatePasswordInput';
-import PopupShell from '../../components/PopupShell';
+import PageShell from '../../components/PageShell';
 
 // Constants
 import { ENTER_MNEMONIC_PHRASE_ROUTE } from '../../constants';
@@ -40,7 +40,7 @@ const CreatePasswordPage: FC = () => {
   };
 
   return (
-    <PopupShell>
+    <PageShell>
       <VStack flexGrow={1} spacing={3} w="full">
         <Heading color="gray.500">{t<string>('headings.createPassword')}</Heading>
         <Text color="gray.400">{t<string>('captions.createPassword1')}</Text>
@@ -71,7 +71,7 @@ const CreatePasswordPage: FC = () => {
           {t<string>('buttons.next')}
         </Button>
       </HStack>
-    </PopupShell>
+    </PageShell>
   );
 }
 

@@ -9,6 +9,7 @@ import {
 import {
   reducer as applicationReducer,
   setError,
+  setNavigate,
   setToast,
 } from '../features/application';
 import { reducer as registerReducer } from '../features/register';
@@ -26,13 +27,14 @@ export default function makeStore(): Store<IRootState> {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {
-          ignoredActions: [setError.type, setToast.type],
+          ignoredActions: [setError.type, setNavigate.type, setToast.type],
           ignoredPaths: [
             'application.error',
             'application.logger.debug',
             'application.logger.error',
             'application.logger.info',
             'application.logger.warn',
+            'application.navigate',
             'application.toast',
           ],
         },
