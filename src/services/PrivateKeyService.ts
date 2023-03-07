@@ -11,7 +11,7 @@ import {
 import StorageManager from './StorageManager';
 
 // Utils
-import { fromHexString, toHexString } from '../utils';
+import { bytesToHexString, hexStringToBytes } from '../utils';
 
 // Types
 import type {
@@ -29,7 +29,7 @@ interface INewOptions extends IBaseOptions {
 
 export default class PrivateKeyService {
   // private static variables
-  private static readonly ivByteSize: number = 16;
+  private static readonly ivByteSize: number = 12;
   private static readonly iterations: number = 2500000;
   private static readonly saltByteSize: number = 64;
 
@@ -89,7 +89,7 @@ export default class PrivateKeyService {
 
   /**
    * Decrypts some data using the supplied password.
-   * @param {string} encryptedData - the encrypted data as hex string.
+   * @param {string} data - the IV + salt + encrypted data as hex string.
    * @param {string} password - the password used to decrypt the data.
    * @param {IBaseOptions} options - options such as the logger.
    * @returns {string} the decrypted data.
@@ -97,30 +97,25 @@ export default class PrivateKeyService {
    * @static
    */
   public static async decrypt(
-    encryptedData: string,
+    data: string,
     password: string,
     { logger }: IBaseOptions
   ): Promise<string> {
-    const iv: Uint8Array = fromHexString(
-      encryptedData.substring(0, PrivateKeyService.ivByteSize * 2)
-    );
+    const buffer: Uint8Array = hexStringToBytes(data);
+    const [iv, salt, encryptedData] = [
+      buffer.slice(0, this.ivByteSize),
+      buffer.slice(this.ivByteSize, this.ivByteSize + this.saltByteSize),
+      buffer.slice(this.ivByteSize + this.saltByteSize),
+    ];
     let decoder: TextDecoder;
     let derivedKey: CryptoKey;
     let decryptedData: ArrayBuffer;
-    let salt: Uint8Array;
 
-    if (!iv || iv.length !== PrivateKeyService.ivByteSize) {
+    if (!iv || iv.byteLength !== PrivateKeyService.ivByteSize) {
       throw new DecryptionError('invalid initial vector');
     }
 
-    salt = fromHexString(
-      encryptedData.substring(
-        PrivateKeyService.ivByteSize * 2,
-        PrivateKeyService.ivByteSize * 2 + PrivateKeyService.saltByteSize * 2
-      )
-    );
-
-    if (!salt || salt.length !== this.saltByteSize) {
+    if (!salt || salt.byteLength !== this.saltByteSize) {
       throw new DecryptionError('invalid salt');
     }
 
@@ -133,12 +128,7 @@ export default class PrivateKeyService {
           iv,
         },
         derivedKey,
-        fromHexString(
-          encryptedData.substring(
-            PrivateKeyService.ivByteSize * 2 +
-              PrivateKeyService.saltByteSize * 2
-          )
-        )
+        encryptedData
       );
     } catch (error) {
       logger &&
@@ -175,6 +165,7 @@ export default class PrivateKeyService {
     const derivedKey: CryptoKey =
       await PrivateKeyService.createDerivedKeyFromPassword(password, salt);
     let encryptedData: ArrayBuffer;
+    let buffer: Uint8Array;
 
     try {
       encryptedData = await window.crypto.subtle.encrypt(
@@ -192,9 +183,15 @@ export default class PrivateKeyService {
       throw new EncryptionError(error.message);
     }
 
-    return `${toHexString(iv)}${toHexString(salt)}${toHexString(
-      new Uint8Array(encryptedData)
-    )}`;
+    buffer = new Uint8Array(
+      iv.byteLength + salt.byteLength + encryptedData.byteLength
+    );
+
+    buffer.set(iv, 0);
+    buffer.set(salt, iv.byteLength);
+    buffer.set(new Uint8Array(encryptedData), iv.byteLength + salt.byteLength);
+
+    return bytesToHexString(buffer);
   }
 
   /**

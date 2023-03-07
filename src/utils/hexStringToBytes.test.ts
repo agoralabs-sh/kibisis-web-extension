@@ -1,17 +1,17 @@
 // Utils
-import fromHexString from './fromHexString';
+import hexStringToBytes from './hexStringToBytes';
 import isHexString from './isHexString';
-import toHexString from './toHexString';
+import bytesToHexString from './bytesToHexString';
 
-describe('utils#fromHexString()', () => {
+describe('utils#hexStringToBytes()', () => {
   it('should convert a hex string to bytes', () => {
     // Arrange
     const hexString: string = '5de24fa8d70743787c18';
     // Act
-    const bytes: Uint8Array = fromHexString(hexString);
+    const bytes: Uint8Array = hexStringToBytes(hexString);
 
     // Assert
-    const result: string = toHexString(bytes);
+    const result: string = bytesToHexString(bytes);
 
     expect(isHexString(result)).toBe(true);
     expect(result).toBe(hexString);
