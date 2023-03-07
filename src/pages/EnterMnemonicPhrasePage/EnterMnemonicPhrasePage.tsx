@@ -6,7 +6,9 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // Components
 import Button from '../../components/Button';
-import EnterMnemonicPhraseInput, { validate } from '../../components/EnterMnemonicPhraseInput';
+import EnterMnemonicPhraseInput, {
+  validate,
+} from '../../components/EnterMnemonicPhraseInput';
 import PageShell from '../../components/PageShell';
 
 // Constants
@@ -16,7 +18,10 @@ import { NAME_ACCOUNT_ROUTE } from '../../constants';
 import { setPrivateKey } from '../../features/register';
 
 // Selectors
-import { useSelectLogger, useSelectRegisterEncryptedPrivateKey } from '../../selectors';
+import {
+  useSelectLogger,
+  useSelectRegisterEncryptedPrivateKey,
+} from '../../selectors';
 
 // Types
 import { IAppThunkDispatch, ILogger, IRootState } from '../../types';
@@ -27,10 +32,15 @@ const EnterMnemonicPhrasePage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const logger: ILogger = useSelectLogger();
-  const encryptedPrivateKey: string | null = useSelectRegisterEncryptedPrivateKey();
-  const encrypting: boolean = useSelector<IRootState, boolean>((state) => state.register.encrypting);
+  const encryptedPrivateKey: string | null =
+    useSelectRegisterEncryptedPrivateKey();
+  const encrypting: boolean = useSelector<IRootState, boolean>(
+    (state) => state.register.encrypting
+  );
   const [error, setError] = useState<string | null>(null);
-  const [phrases, setPhrases] = useState<string[]>(Array.from({ length: 25 }, () => ''));
+  const [phrases, setPhrases] = useState<string[]>(
+    Array.from({ length: 25 }, () => '')
+  );
   const handleNextClick = () => {
     const validateError: string | null = validate(phrases, t);
 
@@ -51,7 +61,9 @@ const EnterMnemonicPhrasePage: FC = () => {
 
   useEffect(() => {
     if (encryptedPrivateKey) {
-      logger.debug(`${componentName}: mnemonic encrypted, navigating "${NAME_ACCOUNT_ROUTE}"`);
+      logger.debug(
+        `${componentName}: mnemonic encrypted, navigating "${NAME_ACCOUNT_ROUTE}"`
+      );
 
       navigate(NAME_ACCOUNT_ROUTE);
     }
@@ -59,8 +71,10 @@ const EnterMnemonicPhrasePage: FC = () => {
 
   return (
     <PageShell>
-      <VStack flexGrow={1} mb={8}  spacing={3} w="full">
-        <Heading color="gray.500">{t<string>('headings.importAccount')}</Heading>
+      <VStack flexGrow={1} mb={8} spacing={3} w="full">
+        <Heading color="gray.500">
+          {t<string>('headings.importAccount')}
+        </Heading>
         <Text color="gray.400">{t<string>('captions.importAccount')}</Text>
         <EnterMnemonicPhraseInput
           disabled={encrypting}
@@ -92,6 +106,6 @@ const EnterMnemonicPhrasePage: FC = () => {
       </HStack>
     </PageShell>
   );
-}
+};
 
 export default EnterMnemonicPhrasePage;

@@ -1,4 +1,12 @@
-import { HStack, Input, InputGroup, InputLeftElement, SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import {
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  SimpleGrid,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, ClipboardEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,12 +18,22 @@ interface IProps {
   phrases: string[];
 }
 
-const EnterMnemonicPhraseInput: FC<IProps> = ({ disabled, error, onChange, phrases }: IProps) => {
+const EnterMnemonicPhraseInput: FC<IProps> = ({
+  disabled,
+  error,
+  onChange,
+  phrases,
+}: IProps) => {
   const { t } = useTranslation();
   const [currentFocusIndex, setCurrentFocusIndex] = useState<number>(0);
-  const handleOnChange = (phrasesIndex: number) => (event: ChangeEvent<HTMLInputElement>) => {
-    onChange(phrases.map((value, index) => index === phrasesIndex ? event.target.value : value));
-  };
+  const handleOnChange =
+    (phrasesIndex: number) => (event: ChangeEvent<HTMLInputElement>) => {
+      onChange(
+        phrases.map((value, index) =>
+          index === phrasesIndex ? event.target.value : value
+        )
+      );
+    };
   const handleOnFocus = (index: number) => () => {
     setCurrentFocusIndex(index);
   };
@@ -32,8 +50,12 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({ disabled, error, onChange, phras
   return (
     <VStack>
       <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-        <Text color={error ? 'red.300' : 'gray.500'} textAlign="left">{t<string>('labels.mnemonicPhrase')}</Text>
-        <Text color="red.300" fontSize="xs" textAlign="right">{error}</Text>
+        <Text color={error ? 'red.300' : 'gray.500'} textAlign="left">
+          {t<string>('labels.mnemonicPhrase')}
+        </Text>
+        <Text color="red.300" fontSize="xs" textAlign="right">
+          {error}
+        </Text>
       </HStack>
       <SimpleGrid columns={3} justifyItems="center" spacing={2}>
         {phrases.map((value, index) => (
@@ -43,7 +65,9 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({ disabled, error, onChange, phras
               pointerEvents="none"
               width="1.75rem"
             >
-              <Text color="gray.300" fontSize="xs">{index + 1}</Text>
+              <Text color="gray.300" fontSize="xs">
+                {index + 1}
+              </Text>
             </InputLeftElement>
             <Input
               autoFocus={currentFocusIndex === index}
@@ -62,6 +86,6 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({ disabled, error, onChange, phras
       </SimpleGrid>
     </VStack>
   );
-}
+};
 
 export default EnterMnemonicPhraseInput;

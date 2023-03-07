@@ -26,11 +26,11 @@ const GetStartedPage: FC = () => {
         {__VERSION__ && (
           <Text color="gray.400" fontSize="sm">{`v${__VERSION__}`}</Text>
         )}
-        {
-          __ENV__ === 'development' && (
-            <Badge colorScheme="green" variant="subtle">{__ENV__}</Badge>
-          )
-        }
+        {__ENV__ === 'development' && (
+          <Badge colorScheme="green" variant="subtle">
+            {__ENV__}
+          </Badge>
+        )}
       </VStack>
       <Button
         colorScheme="primary"
@@ -43,6 +43,6 @@ const GetStartedPage: FC = () => {
       </Button>
     </PageShell>
   );
-}
+};
 
 export default GetStartedPage;

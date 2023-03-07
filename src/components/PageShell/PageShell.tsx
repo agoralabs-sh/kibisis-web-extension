@@ -1,8 +1,4 @@
-import {
-  Center,
-  Flex,
-  FlexProps,
-} from '@chakra-ui/react';
+import { Center, Flex, FlexProps } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 
 interface IProps extends FlexProps {

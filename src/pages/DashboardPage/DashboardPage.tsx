@@ -10,6 +10,6 @@ const DashboardPage: FC = () => {
       <Heading color="gray.500">Agora Wallet - Dashboard</Heading>
     </PageShell>
   );
-}
+};
 
 export default DashboardPage;

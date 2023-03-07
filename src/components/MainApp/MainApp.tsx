@@ -38,6 +38,6 @@ const MainApp: FC<IProps> = ({ i18next }: IProps) => (
       </ChakraProvider>
     </I18nextProvider>
   </Provider>
-)
+);
 
 export default MainApp;

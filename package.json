@@ -27,10 +27,10 @@
   },
   "scripts": {
     "build": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name production",
-    "lint": "eslint . --ext .ts --ext .js",
+    "lint": "eslint . --ext .ts --ext .tsx --ext .js",
     "package": "web-ext build",
     "prepare": "husky install && ./bin/install_firefox.sh",
-    "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts}\"",
+    "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts,tsx}\"",
     "start": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",
     "start:firefox": "web-ext run",
     "test": "jest"

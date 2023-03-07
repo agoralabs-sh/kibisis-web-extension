@@ -73,6 +73,6 @@ const StrengthMeter: FC<IProps> = ({ score }: IProps) => {
       />
     </Box>
   );
-}
+};
 
 export default StrengthMeter;

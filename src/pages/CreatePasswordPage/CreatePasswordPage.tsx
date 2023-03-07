@@ -6,7 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // Components
 import Button from '../../components/Button';
-import CreatePasswordInput, { validate } from '../../components/CreatePasswordInput';
+import CreatePasswordInput, {
+  validate,
+} from '../../components/CreatePasswordInput';
 import PageShell from '../../components/PageShell';
 
 // Constants
@@ -22,18 +24,24 @@ const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const dispatch = useDispatch<IAppThunkDispatch>();
-  const password: string | null = useSelector<IRootState, string | null>((state) => state.register.password);
-  const score: number = useSelector<IRootState, number>((state) => state.register.score);
+  const password: string | null = useSelector<IRootState, string | null>(
+    (state) => state.register.password
+  );
+  const score: number = useSelector<IRootState, number>(
+    (state) => state.register.score
+  );
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
       navigate(ENTER_MNEMONIC_PHRASE_ROUTE);
     }
   };
   const handlePasswordChange = (password: string, score: number) => {
-    dispatch(setPassword({
-      password,
-      score,
-    }));
+    dispatch(
+      setPassword({
+        password,
+        score,
+      })
+    );
   };
   const handlePreviousClick = () => {
     navigate(-1);
@@ -42,7 +50,9 @@ const CreatePasswordPage: FC = () => {
   return (
     <PageShell>
       <VStack flexGrow={1} spacing={3} w="full">
-        <Heading color="gray.500">{t<string>('headings.createPassword')}</Heading>
+        <Heading color="gray.500">
+          {t<string>('headings.createPassword')}
+        </Heading>
         <Text color="gray.400">{t<string>('captions.createPassword1')}</Text>
         <Text color="gray.400">{t<string>('captions.createPassword2')}</Text>
         <CreatePasswordInput
@@ -73,6 +83,6 @@ const CreatePasswordPage: FC = () => {
       </HStack>
     </PageShell>
   );
-}
+};
 
 export default CreatePasswordPage;

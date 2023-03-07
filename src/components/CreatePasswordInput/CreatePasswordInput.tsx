@@ -1,4 +1,12 @@
-import { HStack, IconButton, Input, InputGroup, InputRightElement, Text, VStack } from '@chakra-ui/react';
+import {
+  HStack,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import zxcvbn from 'zxcvbn';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,10 +24,16 @@ interface IProps {
   value: string;
 }
 
-const CreatePasswordInput: FC<IProps> = ({ onChange, score, value }: IProps) => {
+const CreatePasswordInput: FC<IProps> = ({
+  onChange,
+  score,
+  value,
+}: IProps) => {
   const { t } = useTranslation();
   const [show, setShow] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(value.length > 0 ? validate(value, score, t) : null);
+  const [error, setError] = useState<string | null>(
+    value.length > 0 ? validate(value, score, t) : null
+  );
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
     const newScore: number = value.length <= 0 ? -1 : zxcvbn(value).score;
@@ -37,8 +51,12 @@ const CreatePasswordInput: FC<IProps> = ({ onChange, score, value }: IProps) => 
   return (
     <VStack>
       <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-        <Text color={error ? 'red.300' : 'gray.500'} textAlign="left">{t<string>('labels.password')}</Text>
-        <Text color="red.300" fontSize="xs" textAlign="right">{error}</Text>
+        <Text color={error ? 'red.300' : 'gray.500'} textAlign="left">
+          {t<string>('labels.password')}
+        </Text>
+        <Text color="red.300" fontSize="xs" textAlign="right">
+          {error}
+        </Text>
       </HStack>
       <InputGroup size="md">
         <Input
@@ -60,12 +78,12 @@ const CreatePasswordInput: FC<IProps> = ({ onChange, score, value }: IProps) => 
           />
         </InputRightElement>
       </InputGroup>
-      <Text color="gray.400" fontSize="xs" textAlign="left">{t<string>('captions.passwordScoreInfo')}</Text>
+      <Text color="gray.400" fontSize="xs" textAlign="left">
+        {t<string>('captions.passwordScoreInfo')}
+      </Text>
       <StrengthMeter score={score} />
     </VStack>
-
   );
-}
+};
 
 export default CreatePasswordInput;
-

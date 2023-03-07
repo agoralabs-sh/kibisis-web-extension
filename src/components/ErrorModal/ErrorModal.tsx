@@ -58,9 +58,7 @@ const ErrorModal: FC<IProps> = ({ error, onClose }: IProps) => {
         borderTopRadius={25}
         borderBottomRadius={0}
       >
-        <Center
-          flex={1}
-        >
+        <Center flex={1}>
           <Flex
             alignItems="center"
             direction="column"
@@ -79,7 +77,7 @@ const ErrorModal: FC<IProps> = ({ error, onClose }: IProps) => {
               <Text color="white" fontSize="sm" textAlign="center">
                 {t<string>('errors.descriptions.code')}
               </Text>
-              <Text color="white"  fontSize="sm" textAlign="center">
+              <Text color="white" fontSize="sm" textAlign="center">
                 <Trans i18nKey="captions.support">
                   Please{' '}
                   <Link

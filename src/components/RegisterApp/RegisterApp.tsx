@@ -11,7 +11,12 @@ import AppProvider from '../AppProvider';
 import Fonts from '../Fonts';
 
 // Constants
-import { CREATE_PASSWORD_ROUTE, GET_STARTED_ROUTE, ENTER_MNEMONIC_PHRASE_ROUTE, NAME_ACCOUNT_ROUTE } from '../../constants';
+import {
+  CREATE_PASSWORD_ROUTE,
+  GET_STARTED_ROUTE,
+  ENTER_MNEMONIC_PHRASE_ROUTE,
+  NAME_ACCOUNT_ROUTE,
+} from '../../constants';
 
 // Pages
 import CreatePasswordPage from '../../pages/CreatePasswordPage';
@@ -38,8 +43,14 @@ const RegisterApp: FC<IProps> = ({ i18next }: IProps) => (
           <AppProvider>
             <SlideRoutes>
               <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
-              <Route element={<CreatePasswordPage />} path={CREATE_PASSWORD_ROUTE} />
-              <Route element={<EnterMnemonicPhrasePage />} path={ENTER_MNEMONIC_PHRASE_ROUTE} />
+              <Route
+                element={<CreatePasswordPage />}
+                path={CREATE_PASSWORD_ROUTE}
+              />
+              <Route
+                element={<EnterMnemonicPhrasePage />}
+                path={ENTER_MNEMONIC_PHRASE_ROUTE}
+              />
               <Route element={<NameAccountPage />} path={NAME_ACCOUNT_ROUTE} />
             </SlideRoutes>
           </AppProvider>
@@ -47,6 +58,6 @@ const RegisterApp: FC<IProps> = ({ i18next }: IProps) => (
       </ChakraProvider>
     </I18nextProvider>
   </Provider>
-)
+);
 
 export default RegisterApp;
