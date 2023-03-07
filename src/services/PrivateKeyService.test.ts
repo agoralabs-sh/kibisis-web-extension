@@ -25,7 +25,7 @@ describe(PrivateKeyService.name, () => {
   });
 
   describe(`${PrivateKeyService.name}#decrypt`, () => {
-    it('should decrypt a private key', async () => {
+    it('should encrypt and decrypt a private key', async () => {
       // Arrange
       const mnemonic: string = secretKeyToMnemonic(account.sk);
       const encryptedPrivateKey: string = await PrivateKeyService.encrypt(

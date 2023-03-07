@@ -23,7 +23,7 @@
   ],
   "private": true,
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=15.0.0"
   },
   "scripts": {
     "build": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name production",
