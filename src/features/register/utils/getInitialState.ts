@@ -1,0 +1,13 @@
+// Types
+import { IRegisterState } from '../types';
+
+export default function getInitialState(): IRegisterState {
+  return {
+    encryptedPrivateKey: null,
+    encrypting: false,
+    name: null,
+    password: null,
+    saving: false,
+    score: -1,
+  };
+}

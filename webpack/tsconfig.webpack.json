@@ -11,6 +11,7 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": false,
     "strictBindCallApply": false,
