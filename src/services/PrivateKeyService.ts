@@ -1,3 +1,7 @@
+import { decode as decodeHex, encode as encodeHex } from '@stablelib/hex';
+import { decode as decodeUtf8, encode as encodeUtf8 } from '@stablelib/utf8';
+import scrypt from 'scrypt-async';
+import { hash, randomBytes, secretbox } from 'tweetnacl';
 import { v4 as uuid } from 'uuid';
 
 // Errors
@@ -9,9 +13,6 @@ import {
 
 // Services
 import StorageManager from './StorageManager';
-
-// Utils
-import { bytesToHexString, hexStringToBytes } from '../utils';
 
 // Types
 import type {
@@ -29,8 +30,6 @@ interface INewOptions extends IBaseOptions {
 
 export default class PrivateKeyService {
   // private static variables
-  private static readonly ivByteSize: number = 12;
-  private static readonly iterations: number = 2500000;
   private static readonly saltByteSize: number = 64;
 
   // private variables
@@ -56,31 +55,23 @@ export default class PrivateKeyService {
   private static async createDerivedKeyFromPassword(
     password: string,
     salt: Uint8Array
-  ): Promise<CryptoKey> {
-    const encoder: TextEncoder = new TextEncoder();
-    const baseKey: CryptoKey = await window.crypto.subtle.importKey(
-      'raw',
-      encoder.encode(password),
-      'PBKDF2',
-      false,
-      ['deriveKey']
-    );
+  ): Promise<Uint8Array> {
+    return new Promise<Uint8Array>((resolve) => {
+      const passwordHash: Uint8Array = hash(encodeUtf8(password));
 
-    return await window.crypto.subtle.deriveKey(
-      {
-        hash: 'SHA-512',
-        iterations: PrivateKeyService.iterations,
-        name: 'PBKDF2',
+      scrypt(
+        passwordHash,
         salt,
-      },
-      baseKey,
-      {
-        length: 256,
-        name: 'AES-GCM',
-      },
-      false,
-      ['decrypt', 'encrypt']
-    );
+        {
+          N: 16384,
+          r: 8,
+          p: 1,
+          dkLen: secretbox.keyLength,
+          encoding: 'binary',
+        },
+        (derivedKey: Uint8Array) => resolve(derivedKey)
+      );
+    });
   }
 
   /**
@@ -101,18 +92,21 @@ export default class PrivateKeyService {
     password: string,
     { logger }: IBaseOptions
   ): Promise<string> {
-    const buffer: Uint8Array = hexStringToBytes(data);
-    const [iv, salt, encryptedData] = [
-      buffer.slice(0, this.ivByteSize),
-      buffer.slice(this.ivByteSize, this.ivByteSize + this.saltByteSize),
-      buffer.slice(this.ivByteSize + this.saltByteSize),
+    const buffer: Uint8Array = decodeHex(data);
+    const [nonce, salt, encryptedData] = [
+      buffer.slice(0, secretbox.nonceLength),
+      buffer.slice(
+        secretbox.nonceLength,
+        secretbox.nonceLength + this.saltByteSize
+      ),
+      buffer.slice(secretbox.nonceLength + this.saltByteSize),
     ];
-    let decoder: TextDecoder;
-    let derivedKey: CryptoKey;
-    let decryptedData: ArrayBuffer;
+    let derivedKey: Uint8Array;
+    let decryptedData: Uint8Array | null;
+    let errorMessage: string;
 
-    if (!iv || iv.byteLength !== PrivateKeyService.ivByteSize) {
-      throw new DecryptionError('invalid initial vector');
+    if (!nonce || nonce.byteLength !== secretbox.nonceLength) {
+      throw new DecryptionError('invalid nonce');
     }
 
     if (!salt || salt.byteLength !== this.saltByteSize) {
@@ -120,26 +114,18 @@ export default class PrivateKeyService {
     }
 
     derivedKey = await this.createDerivedKeyFromPassword(password, salt);
+    decryptedData = secretbox.open(encryptedData, nonce, derivedKey);
 
-    try {
-      decryptedData = await window.crypto.subtle.decrypt(
-        {
-          name: 'AES-GCM',
-          iv,
-        },
-        derivedKey,
-        encryptedData
-      );
-    } catch (error) {
+    if (!decryptedData) {
+      errorMessage = 'failed to decrypt key';
+
       logger &&
-        logger.debug(`${PrivateKeyService.name}#decrypt(): ${error.message}`);
+        logger.debug(`${PrivateKeyService.name}#decrypt(): ${errorMessage}`);
 
-      throw new DecryptionError(error.message);
+      throw new DecryptionError(errorMessage);
     }
 
-    decoder = new TextDecoder();
-
-    return decoder.decode(decryptedData);
+    return decodeUtf8(decryptedData);
   }
 
   /**
@@ -155,27 +141,19 @@ export default class PrivateKeyService {
     data: string,
     { logger }: IBaseOptions
   ): Promise<string> {
-    const encoder: TextEncoder = new TextEncoder();
-    const iv: Uint8Array = PrivateKeyService.generateRandomBytes(
-      PrivateKeyService.ivByteSize
-    );
     const salt: Uint8Array = PrivateKeyService.generateRandomBytes(
       PrivateKeyService.saltByteSize
     );
-    const derivedKey: CryptoKey =
+    const derivedKey: Uint8Array =
       await PrivateKeyService.createDerivedKeyFromPassword(password, salt);
-    let encryptedData: ArrayBuffer;
+    const nonce: Uint8Array = PrivateKeyService.generateRandomBytes(
+      secretbox.nonceLength
+    );
+    let encryptedData: Uint8Array;
     let buffer: Uint8Array;
 
     try {
-      encryptedData = await window.crypto.subtle.encrypt(
-        {
-          name: 'AES-GCM',
-          iv,
-        },
-        derivedKey,
-        encoder.encode(data)
-      );
+      encryptedData = secretbox(encodeUtf8(data), nonce, derivedKey);
     } catch (error) {
       logger &&
         logger.error(`${PrivateKeyService.name}#encrypt(): ${error.message}`);
@@ -183,15 +161,13 @@ export default class PrivateKeyService {
       throw new EncryptionError(error.message);
     }
 
-    buffer = new Uint8Array(
-      iv.byteLength + salt.byteLength + encryptedData.byteLength
-    );
+    buffer = new Uint8Array(nonce.length + salt.length + encryptedData.length);
 
-    buffer.set(iv, 0);
-    buffer.set(salt, iv.byteLength);
-    buffer.set(new Uint8Array(encryptedData), iv.byteLength + salt.byteLength);
+    buffer.set(nonce, 0);
+    buffer.set(salt, nonce.length);
+    buffer.set(new Uint8Array(encryptedData), nonce.length + salt.length);
 
-    return bytesToHexString(buffer);
+    return encodeHex(buffer);
   }
 
   /**
@@ -201,7 +177,7 @@ export default class PrivateKeyService {
    * @static
    */
   public static generateRandomBytes(size: number = 32): Uint8Array {
-    return window.crypto.getRandomValues(new Uint8Array(size));
+    return randomBytes(size);
   }
 
   /**
