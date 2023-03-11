@@ -1,10 +1,10 @@
-import { Algorand } from './algorand-provider';
+// import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 
 // Types
 import { IWindow } from './types';
 
 (() => {
-  if (!(window as IWindow).algorand) {
-    (window as IWindow).algorand = new Algorand();
-  }
+  // if (!(window as IWindow).algorand) {
+  //   (window as IWindow).algorand = new AlgorandProvider();
+  // }
 })();
