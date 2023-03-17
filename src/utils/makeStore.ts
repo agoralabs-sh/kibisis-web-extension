@@ -1,28 +1,14 @@
-import {
-  configureStore,
-  combineReducers,
-  Store,
-  Reducer,
-} from '@reduxjs/toolkit';
+import { configureStore, Store, Reducer } from '@reduxjs/toolkit';
 
 // Features
-import {
-  reducer as applicationReducer,
-  setError,
-  setNavigate,
-  setToast,
-} from '../features/application';
-import { reducer as registerReducer } from '../features/register';
+import { setError, setNavigate, setToast } from '../features/application';
 
 // Types
-import { IRootState } from '../types';
+import { IBaseRootState } from '../types';
 
-export default function makeStore(): Store<IRootState> {
-  const reducer: Reducer<IRootState> = combineReducers<IRootState>({
-    application: applicationReducer,
-    register: registerReducer,
-  });
-
+export default function makeStore<T extends IBaseRootState>(
+  reducer: Reducer<T>
+): Store<T> {
   return configureStore({
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

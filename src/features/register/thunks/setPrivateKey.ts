@@ -16,14 +16,14 @@ import { setName } from '../slice';
 import { PrivateKeyService } from '../../../services';
 
 // Types
-import { ILogger, IRootState } from '../../../types';
+import { ILogger, IRegistrationRootState } from '../../../types';
 import { BaseError, MalformedDataError } from '../../../errors';
 
 const setPrivateKey: AsyncThunk<
   string | null, // return
   string, // args
   Record<string, never>
-> = createAsyncThunk<string | null, string, { state: IRootState }>(
+> = createAsyncThunk<string | null, string, { state: IRegistrationRootState }>(
   RegisterThunkEnum.SetPrivateKey,
   async (privateKey, { dispatch, getState }) => {
     const functionName: string = 'setPrivateKey';

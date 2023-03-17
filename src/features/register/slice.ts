@@ -13,8 +13,41 @@ import { IRegisterState, ISetPasswordPayload } from './types';
 import { getInitialState } from './utils';
 
 const slice = createSlice({
-  name: StoreNameEnum.Register,
+  extraReducers: (builder) => {
+    /** Save credentials **/
+    builder.addCase(saveCredentials.fulfilled, (state: IRegisterState) => {
+      const initialState: IRegisterState = getInitialState();
+
+      state.encryptedPrivateKey = initialState.encryptedPrivateKey;
+      state.encrypting = initialState.encrypting;
+      state.password = initialState.password;
+      state.saving = initialState.saving;
+      state.score = initialState.score;
+    });
+    builder.addCase(saveCredentials.pending, (state: IRegisterState) => {
+      state.saving = true;
+    });
+    builder.addCase(saveCredentials.rejected, (state: IRegisterState) => {
+      state.saving = false;
+    });
+    /** Set private key **/
+    builder.addCase(
+      setPrivateKey.fulfilled,
+      (state: IRegisterState, action) => {
+        state.encryptedPrivateKey = action.payload;
+        state.encrypting = false;
+      }
+    );
+    builder.addCase(setPrivateKey.pending, (state: IRegisterState) => {
+      state.encrypting = true;
+    });
+    builder.addCase(setPrivateKey.rejected, (state: IRegisterState) => {
+      state.encryptedPrivateKey = null;
+      state.encrypting = false;
+    });
+  },
   initialState: getInitialState(),
+  name: StoreNameEnum.Register,
   reducers: {
     clearPrivateKey: (state: Draft<IRegisterState>) => {
       state.encryptedPrivateKey = null;
@@ -52,39 +85,6 @@ const slice = createSlice({
       state.password = action.payload.password;
       state.score = action.payload.score;
     },
-  },
-  extraReducers: (builder) => {
-    /** Save credentials **/
-    builder.addCase(saveCredentials.fulfilled, (state: IRegisterState) => {
-      const initialState: IRegisterState = getInitialState();
-
-      state.encryptedPrivateKey = initialState.encryptedPrivateKey;
-      state.encrypting = initialState.encrypting;
-      state.password = initialState.password;
-      state.saving = initialState.saving;
-      state.score = initialState.score;
-    });
-    builder.addCase(saveCredentials.pending, (state: IRegisterState) => {
-      state.saving = true;
-    });
-    builder.addCase(saveCredentials.rejected, (state: IRegisterState) => {
-      state.saving = false;
-    });
-    /** Set private key **/
-    builder.addCase(
-      setPrivateKey.fulfilled,
-      (state: IRegisterState, action) => {
-        state.encryptedPrivateKey = action.payload;
-        state.encrypting = false;
-      }
-    );
-    builder.addCase(setPrivateKey.pending, (state: IRegisterState) => {
-      state.encrypting = true;
-    });
-    builder.addCase(setPrivateKey.rejected, (state: IRegisterState) => {
-      state.encryptedPrivateKey = null;
-      state.encrypting = false;
-    });
   },
 });
 

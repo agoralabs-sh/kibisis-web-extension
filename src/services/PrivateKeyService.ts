@@ -63,10 +63,10 @@ export default class PrivateKeyService {
         passwordHash,
         salt,
         {
-          N: 16384,
-          r: 8,
-          p: 1,
-          dkLen: secretbox.keyLength,
+          N: 16384, // cpu/memory cost parameter (must be power of two; alternatively, you can specify logN where N = 2^logN).
+          r: 8, // block size parameter
+          p: 1, // parallelization parameter
+          dkLen: secretbox.keyLength, // derived key length
           encoding: 'binary',
         },
         (derivedKey: Uint8Array) => resolve(derivedKey)
@@ -194,11 +194,15 @@ export default class PrivateKeyService {
   }
 
   /**
+   * Public functions
+   */
+
+  /**
    * Gets all the accounts from storage.
-   * @returns {Promise<IPksAccountStorageItem[]>} all the account sin local storage.
+   * @returns {Promise<IPksAccountStorageItem[]>} all the accounts in local storage.
    * @private
    */
-  private async getAccounts(): Promise<IPksAccountStorageItem[]> {
+  public async getAccounts(): Promise<IPksAccountStorageItem[]> {
     const items: Record<string, unknown> =
       await this.storageManager.getAllItems();
 
@@ -210,10 +214,6 @@ export default class PrivateKeyService {
       []
     );
   }
-
-  /**
-   * Public functions
-   */
 
   /**
    * Gets the decrypted private key from local storage for a given public key.

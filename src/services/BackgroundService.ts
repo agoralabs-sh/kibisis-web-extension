@@ -1,4 +1,4 @@
-import browser, { Tabs, Windows } from 'webextension-polyfill';
+import browser, { Windows } from 'webextension-polyfill';
 
 // Constants
 import { DEFAULT_POPUP_HEIGHT, DEFAULT_POPUP_WIDTH } from '../constants';
@@ -13,52 +13,17 @@ export default class BackgroundService {
   // private variables
   private readonly logger: ILogger | null;
   private readonly privateKeyService: PrivateKeyService;
-  private popupWindow: Windows.Window | null;
+  private registrationWindow: Windows.Window | null;
+  private mainWindow: Windows.Window | null;
 
   constructor({ logger }: IBaseOptions) {
     this.logger = logger || null;
-    this.popupWindow = null;
+    this.mainWindow = null;
+    this.registrationWindow = null;
     this.privateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
     });
-  }
-
-  /**
-   * Private functions
-   */
-
-  private async createOrUpdateWindow(url: string): Promise<void> {
-    let tab: Tabs.Tab | null = null;
-
-    if (this.popupWindow && this.popupWindow.id) {
-      if (this.popupWindow.tabs) {
-        tab = this.popupWindow.tabs.find((value) => value.url === url) || null;
-      }
-
-      // if the tab is already present, ignore
-      if (tab) {
-        return;
-      }
-
-      // if there is no tab, create one
-      await browser.tabs.create({
-        url,
-        windowId: this.popupWindow.id,
-      });
-
-      return;
-    }
-
-    // if we don't have the popup window open, create a new one
-    this.popupWindow = await browser.windows.create({
-      height: DEFAULT_POPUP_HEIGHT,
-      type: 'popup',
-      url,
-      width: DEFAULT_POPUP_WIDTH,
-    });
-
-    return;
   }
 
   /**
@@ -74,52 +39,69 @@ export default class BackgroundService {
           `${BackgroundService.name}#onExtensionClick(): no account detected, registering new account`
         );
 
-      return this.createOrUpdateWindow('register.html');
+      this.registrationWindow = await browser.windows.create({
+        height: DEFAULT_POPUP_HEIGHT,
+        type: 'popup',
+        url: 'register.html',
+        width: DEFAULT_POPUP_WIDTH,
+      });
+
+      return;
     }
 
     this.logger &&
       this.logger.debug(
-        `${BackgroundService.name}#onExtensionClick(): previous account detected`
+        `${BackgroundService.name}#onExtensionClick(): previous account detected, opening main app`
       );
 
-    return this.createOrUpdateWindow('main.html');
+    this.mainWindow = await browser.windows.create({
+      height: DEFAULT_POPUP_HEIGHT,
+      type: 'popup',
+      url: 'main.html',
+      width: DEFAULT_POPUP_WIDTH,
+    });
+
+    return;
   }
 
   public async onRegistrationComplete(): Promise<void> {
-    let registerTab: Tabs.Tab | null;
-    let mainTab: Tabs.Tab | null;
+    // if there is no main window, create a new one
+    if (!this.mainWindow) {
+      this.mainWindow = await browser.windows.create({
+        height: DEFAULT_POPUP_HEIGHT,
+        type: 'popup',
+        url: 'main.html',
+        width: DEFAULT_POPUP_WIDTH,
+        ...(this.registrationWindow && {
+          left: this.registrationWindow.left,
+          top: this.registrationWindow.top,
+        }),
+      });
+    }
 
-    if (this.popupWindow && this.popupWindow.id && this.popupWindow.tabs) {
-      registerTab =
-        this.popupWindow.tabs.find((value) => value.url === 'register.html') ||
-        null;
-      mainTab =
-        this.popupWindow.tabs.find((value) => value.url === 'main.html') ||
-        null;
-
-      // if there is no main tab, create a new tab
-      if (!mainTab) {
-        await browser.tabs.create({
-          url: 'main.html',
-          windowId: this.popupWindow.id,
-        });
-      }
-
-      // if the register tab exists remove it
-      if (registerTab && registerTab.id) {
-        await browser.tabs.remove(registerTab.id);
-      }
+    // if the register window exists remove it
+    if (this.registrationWindow && this.registrationWindow.id) {
+      await browser.windows.remove(this.registrationWindow.id);
     }
   }
 
   public onWindowRemove(windowId: number): void {
-    if (this.popupWindow && this.popupWindow.id === windowId) {
+    if (this.mainWindow && this.mainWindow.id === windowId) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundService.name}#onWindowRemove(): removed popup window`
+          `${BackgroundService.name}#onWindowRemove(): removed main app window`
         );
 
-      this.popupWindow = null;
+      this.mainWindow = null;
+    }
+
+    if (this.registrationWindow && this.registrationWindow.id === windowId) {
+      this.logger &&
+        this.logger.debug(
+          `${BackgroundService.name}#onWindowRemove(): removed registration app window`
+        );
+
+      this.registrationWindow = null;
     }
   }
 }

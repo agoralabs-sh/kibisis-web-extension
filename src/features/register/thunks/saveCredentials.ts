@@ -25,13 +25,13 @@ import { setError } from '../../application';
 import { PrivateKeyService } from '../../../services';
 
 // Types
-import { ILogger, IRootState } from '../../../types';
+import { ILogger, IRegistrationRootState } from '../../../types';
 
 const saveCredentials: AsyncThunk<
   void, // return
   undefined, // args
   Record<string, never>
-> = createAsyncThunk<void, undefined, { state: IRootState }>(
+> = createAsyncThunk<void, undefined, { state: IRegistrationRootState }>(
   RegisterThunkEnum.SaveCredentials,
   async (_, { dispatch, getState }) => {
     const functionName: string = 'saveCredentials';

@@ -3,6 +3,7 @@ import { IResourceLanguage } from '../types';
 
 const translation: IResourceLanguage = {
   buttons: {
+    addAccount: 'Add Account',
     create: 'Create',
     getStarted: 'Get Started',
     import: 'Import',
@@ -11,6 +12,8 @@ const translation: IResourceLanguage = {
     previous: 'Previous',
   },
   captions: {
+    addressCopied: 'Address copied!',
+    copied: 'Copied!',
     createPassword1: `First, let's create a new password to secure this device.`,
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
@@ -42,9 +45,11 @@ const translation: IResourceLanguage = {
     createPassword: 'Secure your device',
     importAccount: 'Import your account',
     nameAccount: 'Name your account',
+    noAccountsFound: 'No accounts found.',
   },
   labels: {
     accountName: 'Account Name',
+    balance: 'Balance',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
   },

@@ -15,8 +15,8 @@ import { IApplicationState } from './types';
 import { getInitialState } from './utils';
 
 const slice = createSlice({
-  name: StoreNameEnum.Application,
   initialState: getInitialState(),
+  name: StoreNameEnum.Application,
   reducers: {
     setError: (
       state: Draft<IApplicationState>,

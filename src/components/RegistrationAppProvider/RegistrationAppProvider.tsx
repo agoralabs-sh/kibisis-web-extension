@@ -21,7 +21,7 @@ import { theme } from '../../theme';
 // Types
 import { IAppThunkDispatch } from '../../types';
 
-const AppProvider: FC<PropsWithChildren> = ({ children }) => {
+const RegistrationAppProvider: FC<PropsWithChildren> = ({ children }) => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
@@ -44,4 +44,4 @@ const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export default AppProvider;
+export default RegistrationAppProvider;

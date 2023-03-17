@@ -24,7 +24,11 @@ import {
 } from '../../selectors';
 
 // Types
-import { IAppThunkDispatch, ILogger, IRootState } from '../../types';
+import {
+  IAppThunkDispatch,
+  ILogger,
+  IRegistrationRootState,
+} from '../../types';
 
 const EnterMnemonicPhrasePage: FC = () => {
   const componentName: string = 'EnterMnemonicPhrasePage';
@@ -34,7 +38,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();
-  const encrypting: boolean = useSelector<IRootState, boolean>(
+  const encrypting: boolean = useSelector<IRegistrationRootState, boolean>(
     (state) => state.register.encrypting
   );
   const [error, setError] = useState<string | null>(null);

@@ -29,7 +29,11 @@ import {
 } from '../../selectors';
 
 // Types
-import { IAppThunkDispatch, ILogger, IRootState } from '../../types';
+import {
+  IAppThunkDispatch,
+  ILogger,
+  IRegistrationRootState,
+} from '../../types';
 
 const NameAccountPage: FC = () => {
   const componentName: string = 'NameAccountPage';
@@ -39,10 +43,11 @@ const NameAccountPage: FC = () => {
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();
-  const name: string | null = useSelector<IRootState, string | null>(
-    (state) => state.register.name
-  );
-  const saving: boolean = useSelector<IRootState, boolean>(
+  const name: string | null = useSelector<
+    IRegistrationRootState,
+    string | null
+  >((state) => state.register.name);
+  const saving: boolean = useSelector<IRegistrationRootState, boolean>(
     (state) => state.register.saving
   );
   const handleImportClick = () => {

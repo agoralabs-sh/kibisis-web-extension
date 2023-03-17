@@ -4,10 +4,10 @@ import { useSelector } from 'react-redux';
 import { BaseError } from '../errors';
 
 // Types
-import { IRootState } from '../types';
+import { IBaseRootState } from '../types';
 
 export default function useSelectError(): BaseError | null {
-  return useSelector<IRootState, BaseError | null>(
+  return useSelector<IBaseRootState, BaseError | null>(
     (state) => state.application.error
   );
 }

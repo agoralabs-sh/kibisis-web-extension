@@ -3,18 +3,18 @@ import React, { FC, ReactNode } from 'react';
 
 interface IProps extends FlexProps {
   children: ReactNode;
+  noPadding?: boolean;
 }
 
-const PageShell: FC<IProps> = ({ children }: IProps) => (
+const PageShell: FC<IProps> = ({ children, noPadding = false }: IProps) => (
   <Center as="main" backgroundColor="white">
     <Flex
       alignItems="center"
       direction="column"
       justifyContent="center"
-      maxW={500}
       minH="100vh"
-      pt={8}
-      px={8}
+      pt={noPadding ? 0 : 8}
+      px={noPadding ? 0 : 8}
       w="full"
     >
       {children}

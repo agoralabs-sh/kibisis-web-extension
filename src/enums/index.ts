@@ -1,3 +1,4 @@
+export { default as AccountsThunkEnum } from './AccountsThunkEnum';
 export { default as ErrorCodeEnum } from './ErrorCodeEnum';
 export { default as EventNameEnum } from './EventNameEnum';
 export { default as RegisterThunkEnum } from './RegisterThunkEnum';
