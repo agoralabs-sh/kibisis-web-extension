@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@agoralabs-sh/algorand-provider@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@agoralabs-sh/algorand-provider/-/algorand-provider-1.0.0.tgz#b0f7d6c0200a14683b607574e8169a401ae9669b"
+  integrity sha512-344rxMremCVjjxwoZfM9WNVIxbPEYScTaCN6TXGwHphVFOHzZav4aOahJDd1gjY1/GN/kDAuVyGVBSSjcJUqww==
+  dependencies:
+    algosdk "^2.1.0"
+
 "@ampproject/remapping@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.0.tgz#56c133824780de3174aed5ab6834f3026790154d"
