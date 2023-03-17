@@ -49,12 +49,14 @@ const CreatePasswordPage: FC = () => {
 
   return (
     <PageShell>
-      <VStack flexGrow={1} spacing={3} w="full">
-        <Heading color="gray.500">
-          {t<string>('headings.createPassword')}
-        </Heading>
-        <Text color="gray.400">{t<string>('captions.createPassword1')}</Text>
-        <Text color="gray.400">{t<string>('captions.createPassword2')}</Text>
+      <VStack flexGrow={1} mb={8} spacing={8} w="full">
+        <VStack spacing={3} w="full">
+          <Heading color="gray.500">
+            {t<string>('headings.createPassword')}
+          </Heading>
+          <Text color="gray.400">{t<string>('captions.createPassword1')}</Text>
+          <Text color="gray.400">{t<string>('captions.createPassword2')}</Text>
+        </VStack>
         <CreatePasswordInput
           onChange={handlePasswordChange}
           score={score}

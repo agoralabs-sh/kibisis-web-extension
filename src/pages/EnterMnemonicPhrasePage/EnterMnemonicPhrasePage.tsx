@@ -71,11 +71,13 @@ const EnterMnemonicPhrasePage: FC = () => {
 
   return (
     <PageShell>
-      <VStack flexGrow={1} mb={8} spacing={3} w="full">
-        <Heading color="gray.500">
-          {t<string>('headings.importAccount')}
-        </Heading>
-        <Text color="gray.400">{t<string>('captions.importAccount')}</Text>
+      <VStack flexGrow={1} mb={8} spacing={8} w="full">
+        <VStack spacing={3} w="full">
+          <Heading color="gray.500">
+            {t<string>('headings.importAccount')}
+          </Heading>
+          <Text color="gray.400">{t<string>('captions.importAccount')}</Text>
+        </VStack>
         <EnterMnemonicPhraseInput
           disabled={encrypting}
           error={error}
