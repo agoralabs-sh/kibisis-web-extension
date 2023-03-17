@@ -4,8 +4,7 @@ import { i18n } from 'i18next';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
-import { HashRouter, Navigate, Route } from 'react-router-dom';
-import SlideRoutes from 'react-slide-routes';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 // Components
 import MainAppProvider from '../MainAppProvider';
@@ -49,7 +48,7 @@ const MainApp: FC<IProps> = ({ i18next }: IProps) => {
           <Fonts />
           <HashRouter>
             <MainAppProvider>
-              <SlideRoutes>
+              <Routes>
                 <Route
                   element={<Navigate replace={true} to={ACCOUNTS_ROUTE} />}
                   path="/"
@@ -59,7 +58,7 @@ const MainApp: FC<IProps> = ({ i18next }: IProps) => {
                   path={`${ACCOUNTS_ROUTE}/:address`}
                 />
                 <Route element={<AccountPage />} path={ACCOUNTS_ROUTE} />
-              </SlideRoutes>
+              </Routes>
             </MainAppProvider>
           </HashRouter>
         </ChakraProvider>

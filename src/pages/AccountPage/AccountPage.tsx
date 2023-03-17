@@ -8,10 +8,16 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAdd } from 'react-icons/io5';
-import { useParams } from 'react-router-dom';
+import {
+  Location,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 // Components
 import AlgorandIcon from '../../components/AlgorandIcon';
@@ -28,9 +34,12 @@ import { IAccount } from '../../types';
 
 // Utils
 import { ellipseAddress } from '../../utils';
+import { ACCOUNTS_ROUTE } from '../../constants';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
+  const location: Location = useLocation();
+  const navigate: NavigateFunction = useNavigate();
   const { address } = useParams();
   const account: IAccount | null = useSelectAccount(address);
   const fetching: boolean = useSelectFetchingAccounts();
@@ -127,6 +136,14 @@ const AccountPage: FC = () => {
       </>
     );
   };
+
+  useEffect(() => {
+    if (account && !location.pathname.includes(account.address)) {
+      navigate(`${ACCOUNTS_ROUTE}/${account.address}`, {
+        replace: true,
+      });
+    }
+  }, [account]);
 
   return (
     <PageShell noPadding={true}>
