@@ -38,13 +38,14 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
     setCurrentFocusIndex(index);
   };
   const handleOnPaste = (event: ClipboardEvent<HTMLInputElement>) => {
-    let phrases: string[];
+    let newPhrases: string[];
 
     event.preventDefault();
 
-    phrases = event.clipboardData.getData('text').split(' ');
+    // split the phrases by whitespace
+    newPhrases = event.clipboardData.getData('text').split(' ');
 
-    onChange(phrases.map((value, index) => phrases[index] || value));
+    onChange(phrases.map((value, index) => newPhrases[index] || value));
   };
 
   return (
