@@ -1,7 +1,7 @@
 module.exports = {
   // global options
   artifactsDir: 'dist',
-  sourceDir: 'build',
+  sourceDir: '.build',
 
   // build options
   build: {

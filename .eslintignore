@@ -1,4 +1,6 @@
-build/
+.build/
+.dapp/
+.firefox/
 coverage/
 dist/
 node_modules/
