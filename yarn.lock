@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@agoralabs-sh/algorand-provider@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@agoralabs-sh/algorand-provider/-/algorand-provider-1.0.0.tgz#b0f7d6c0200a14683b607574e8169a401ae9669b"
-  integrity sha512-344rxMremCVjjxwoZfM9WNVIxbPEYScTaCN6TXGwHphVFOHzZav4aOahJDd1gjY1/GN/kDAuVyGVBSSjcJUqww==
+"@agoralabs-sh/algorand-provider@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@agoralabs-sh/algorand-provider/-/algorand-provider-1.1.0.tgz#4bab3668715131692b37882231d3d023b9c8cd78"
+  integrity sha512-BKXkA7fc7/gE9Vrp6ZBee3QTQfKo+fTNZ0RtfY0gPHw32zLwkMmJCsxtmQwXGJybsNetsMglJT3DCgUPbVlIQA==
   dependencies:
     algosdk "^2.1.0"
 
