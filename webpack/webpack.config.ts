@@ -3,6 +3,7 @@ import { merge } from 'webpack-merge';
 
 // Config
 import { version } from '../package.json';
+import { browser_specific_settings } from '../src/manifest.json';
 import commonConfig from './webpack.common.config';
 
 // Constants
@@ -18,6 +19,9 @@ const configs: Configuration[] = [
     name: DEVELOPMENT_ENVIRONMENT,
     plugins: [
       new DefinePlugin({
+        __AGORA_WALLET_EXTENSION_ID__: JSON.stringify(
+          browser_specific_settings.gecko.id
+        ),
         __ENV__: JSON.stringify(DEVELOPMENT_ENVIRONMENT),
         __VERSION__: JSON.stringify(version),
       }),
@@ -31,6 +35,9 @@ const configs: Configuration[] = [
     name: PRODUCTION_ENVIRONMENT,
     plugins: [
       new DefinePlugin({
+        __AGORA_WALLET_EXTENSION_ID__: JSON.stringify(
+          browser_specific_settings.gecko.id
+        ),
         __ENV__: JSON.stringify(PRODUCTION_ENVIRONMENT),
         __VERSION__: JSON.stringify(version),
       }),
