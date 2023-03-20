@@ -1,3 +1,4 @@
+import { IEnableResult } from '@agoralabs-sh/algorand-provider';
 import {
   Center,
   ChakraProvider,
@@ -15,9 +16,18 @@ import Fonts from '../src/components/Fonts';
 // Theme
 import { theme } from '../src/theme';
 
+// Types
+import { IWindow } from '../src/types';
+
 const App: FC = () => {
-  const handleEnableClick = () => {
-    console.log('enabling');
+  const handleEnableClick = async () => {
+    if ((window as IWindow).algorand) {
+      const result: IEnableResult = await (window as IWindow).algorand.enable({
+        genesisHash: 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=',
+      });
+
+      console.log('App#handleEnableClick(): ', result);
+    }
   };
 
   return (

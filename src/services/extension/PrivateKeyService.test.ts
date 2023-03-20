@@ -5,10 +5,10 @@ import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
 import PrivateKeyService from './PrivateKeyService';
 
 // Types
-import type { ILogger } from '../types';
+import type { ILogger } from '../../types';
 
 // Utils
-import { createLogger } from '../utils';
+import { createLogger } from '../../utils';
 
 describe(PrivateKeyService.name, () => {
   let account: Account;

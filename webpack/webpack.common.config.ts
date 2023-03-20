@@ -21,18 +21,6 @@ const config: Configuration = {
         test: /\.hbs$/,
       },
       {
-        exclude: /node_modules/,
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              configFile: resolve(process.cwd(), 'tsconfig.json'),
-            },
-          },
-        ],
-      },
-      {
         test: /\.(svg?.+|ttf?.+|woff?.+|woff2?.+)$/,
         type: 'asset/resource',
         generator: {

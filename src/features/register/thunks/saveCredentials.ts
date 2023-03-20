@@ -22,7 +22,7 @@ import { RegistrationCompletedEvent } from '../../../events';
 import { setError } from '../../application';
 
 // Services
-import { PrivateKeyService } from '../../../services';
+import { PrivateKeyService } from '../../../services/extension';
 
 // Types
 import { ILogger, IRegistrationRootState } from '../../../types';

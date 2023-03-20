@@ -51,7 +51,6 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
     optimization: {
       removeAvailableModules: false,
       removeEmptyChunks: false,
-      runtimeChunk: true,
       splitChunks: false,
     },
     output: {
@@ -76,6 +75,22 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
    */
   merge(commonConfig, {
     mode: 'production',
+    module: {
+      rules: [
+        {
+          exclude: /node_modules/,
+          test: /\.tsx?$/,
+          use: [
+            {
+              loader: 'ts-loader',
+              options: {
+                configFile: resolve(process.cwd(), 'tsconfig.json'),
+              },
+            },
+          ],
+        },
+      ],
+    },
     name: PRODUCTION_ENVIRONMENT,
     plugins: [
       new DefinePlugin({
@@ -100,7 +115,24 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
       ['main']: resolve(DAPP_SRC_PATH, 'index.ts'),
     },
     mode: 'development',
-    module: commonConfig.module,
+    module: {
+      rules: [
+        ...(commonConfig.module?.rules ? commonConfig.module.rules : []),
+        {
+          exclude: /node_modules/,
+          test: /\.tsx?$/,
+          use: [
+            {
+              loader: 'ts-loader',
+              options: {
+                configFile: resolve(process.cwd(), 'tsconfig.json'),
+                transpileOnly: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
     name: DAPP_ENVIRONMENT,
     output: {
       clean: true,

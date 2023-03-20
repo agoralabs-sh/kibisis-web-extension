@@ -1,7 +1,7 @@
-// import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
+import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 
 interface IWindow extends Window {
-  // algorand?: AlgorandProvider;
+  algorand?: AlgorandProvider;
 }
 
 export default IWindow;

@@ -7,7 +7,7 @@ import browser from 'webextension-polyfill';
 import { AccountsThunkEnum } from '../../../enums';
 
 // Services
-import { PrivateKeyService } from '../../../services';
+import { PrivateKeyService } from '../../../services/extension';
 
 // Types
 import {

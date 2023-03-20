@@ -9,7 +9,7 @@ import {
   DecryptionError,
   EncryptionError,
   InvalidPasswordError,
-} from '../errors';
+} from '../../errors';
 
 // Services
 import StorageManager from './StorageManager';
@@ -21,7 +21,7 @@ import type {
   IPksAccountStorageItem,
   IPksPasswordTagStorageItem,
   ISetAccountOptions,
-} from '../types';
+} from '../../types';
 
 interface INewOptions extends IBaseOptions {
   storageManager?: StorageManager;

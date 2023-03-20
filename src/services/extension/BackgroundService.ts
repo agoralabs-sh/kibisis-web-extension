@@ -1,13 +1,17 @@
+import { IEnableResult } from '@agoralabs-sh/algorand-provider';
 import browser, { Windows } from 'webextension-polyfill';
 
 // Constants
-import { DEFAULT_POPUP_HEIGHT, DEFAULT_POPUP_WIDTH } from '../constants';
+import { DEFAULT_POPUP_HEIGHT, DEFAULT_POPUP_WIDTH } from '../../constants';
+
+// Events
+import { EnableRequestEvent } from '../../events';
 
 // Services
 import PrivateKeyService from './PrivateKeyService';
 
 // Types
-import { IBaseOptions, ILogger } from '../types';
+import { IBaseOptions, ILogger } from '../../types';
 
 export default class BackgroundService {
   // private variables
@@ -29,6 +33,17 @@ export default class BackgroundService {
   /**
    * Public functions
    */
+
+  public async onEnableRequest(
+    event: EnableRequestEvent,
+    host: string,
+    callback: (result: IEnableResult) => void
+  ): Promise<void> {
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundService.name}#onEnableRequest(): "${host}" has requested to connect`
+      );
+  }
 
   public async onExtensionClick(): Promise<void> {
     const isInitialized: boolean = await this.privateKeyService.isInitialized();

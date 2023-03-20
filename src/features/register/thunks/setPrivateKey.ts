@@ -13,7 +13,7 @@ import { setError } from '../../application';
 import { setName } from '../slice';
 
 // Services
-import { PrivateKeyService } from '../../../services';
+import { PrivateKeyService } from '../../../services/extension';
 
 // Types
 import { ILogger, IRegistrationRootState } from '../../../types';
