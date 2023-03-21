@@ -16,7 +16,7 @@ import { RegisterThunkEnum } from '../../../enums';
 import { BaseError, MalformedDataError } from '../../../errors';
 
 // Events
-import { RegistrationCompletedEvent } from '../../../events';
+import { InternalRegistrationCompletedEvent } from '../../../events';
 
 // Features
 import { setError } from '../../application';
@@ -115,7 +115,7 @@ const saveCredentials: AsyncThunk<
     );
 
     // send a message that registration has been completed
-    await browser.runtime.sendMessage(new RegistrationCompletedEvent());
+    await browser.runtime.sendMessage(new InternalRegistrationCompletedEvent());
   }
 );
 

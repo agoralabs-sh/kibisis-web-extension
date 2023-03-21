@@ -1,9 +1,12 @@
 enum EventNameEnum {
-  // wallet manager
-  EnableRequest = 'enable_request',
-  EnableResponse = 'enable_response',
+  // bridge
+  BridgeEnableRequest = 'bridge_enable_request',
+  // external
+  ExternalEnableRequest = 'external_enable_request',
+  ExternalEnableResponse = 'external_enable_response',
   // internal
-  RegistrationCompleted = 'registration_completed',
+  InternalEnableRequest = 'internal_enable_request',
+  InternalRegistrationCompleted = 'internal_registration_completed',
 }
 
 export default EventNameEnum;

@@ -19,20 +19,18 @@ import { REQUEST_TIMEOUT, WALLET_ID } from '../../constants';
 import { EventNameEnum } from '../../enums';
 
 // Events
-import {
-  BaseEvent,
-  EnableRequestEvent,
-  EnableResponseEvent,
-} from '../../events';
+import { BaseEvent, ExternalEnableRequestEvent } from '../../events';
 
 // Types
-import type { IBaseOptions, ILogger } from '../../types';
+import type {
+  IBaseOptions,
+  IExternalResponseEvents,
+  ILogger,
+} from '../../types';
 
 interface INewOptions extends IBaseOptions {
   extensionId: string;
 }
-
-type IResponseEvents = EnableResponseEvent;
 
 export default class AgoraWalletManager extends BaseWalletManager {
   private readonly extensionId: string;
@@ -58,7 +56,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
   ): Promise<ResponsePayload> {
     return new Promise<ResponsePayload>((resolve, reject) => {
       const controller: AbortController = new AbortController();
-      let eventListener: (event: MessageEvent<IResponseEvents>) => void;
+      let eventListener: (event: MessageEvent<IExternalResponseEvents>) => void;
       let timer: number;
 
       this.logger &&
@@ -66,7 +64,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
           `${AgoraWalletManager.name}#handleEvent(): handling request event "${message.event}"`
         );
 
-      eventListener = (event: MessageEvent<IResponseEvents>) => {
+      eventListener = (event: MessageEvent<IExternalResponseEvents>) => {
         if (
           event.source !== window ||
           !event.data ||
@@ -130,8 +128,8 @@ export default class AgoraWalletManager extends BaseWalletManager {
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
     return await this.handleEvent<IEnableResult>(
-      new EnableRequestEvent(options),
-      EventNameEnum.EnableResponse
+      new ExternalEnableRequestEvent(options),
+      EventNameEnum.ExternalEnableResponse
     );
   }
 

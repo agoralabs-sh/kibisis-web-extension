@@ -1,8 +1,13 @@
 export type { default as IAccount } from './IAccount';
 export type { default as IAlgorandAccountInformation } from './IAlgorandAccountInformation';
 export type { default as IAppThunkDispatch } from './IAppThunkDispatch';
+export type { default as IBaseEnableRequestPayload } from './IBaseEnableRequestPayload';
 export type { default as IBaseOptions } from './IBaseOptions';
 export type { default as IBaseRootState } from './IBaseRootState';
+export type { default as IBridgeEvents } from './IBridgeEvents';
+export type { default as IExternalRequestEvents } from './IExternalRequestEvents';
+export type { default as IExternalResponseEvents } from './IExternalResponseEvents';
+export type { default as IInternalEvents } from './IInternalEvents';
 export type { default as ILogger } from './ILogger';
 export type { default as ILogLevel } from './ILogLevel';
 export type { default as IMainRootState } from './IMainRootState';

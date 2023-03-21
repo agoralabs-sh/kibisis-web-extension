@@ -1,20 +1,18 @@
-import { IEnableResult } from '@agoralabs-sh/algorand-provider';
 import browser, { Windows } from 'webextension-polyfill';
 
 // Constants
 import { DEFAULT_POPUP_HEIGHT, DEFAULT_POPUP_WIDTH } from '../../constants';
 
-// Events
-import { EnableRequestEvent } from '../../events';
+// Enums
+import { EventNameEnum } from '../../enums';
 
 // Services
 import PrivateKeyService from './PrivateKeyService';
 
 // Types
-import { IBaseOptions, ILogger } from '../../types';
+import { IBaseOptions, IInternalEvents, ILogger } from '../../types';
 
 export default class BackgroundService {
-  // private variables
   private readonly logger: ILogger | null;
   private readonly privateKeyService: PrivateKeyService;
   private registrationWindow: Windows.Window | null;
@@ -31,18 +29,46 @@ export default class BackgroundService {
   }
 
   /**
+   * Private functions
+   */
+
+  private async onRegistrationComplete(): Promise<void> {
+    // if there is no main window, create a new one
+    if (!this.mainWindow) {
+      this.mainWindow = await browser.windows.create({
+        height: DEFAULT_POPUP_HEIGHT,
+        type: 'popup',
+        url: 'main.html',
+        width: DEFAULT_POPUP_WIDTH,
+        ...(this.registrationWindow && {
+          left: this.registrationWindow.left,
+          top: this.registrationWindow.top,
+        }),
+      });
+    }
+
+    // if the register window exists remove it
+    if (this.registrationWindow && this.registrationWindow.id) {
+      await browser.windows.remove(this.registrationWindow.id);
+    }
+  }
+
+  /**
    * Public functions
    */
 
-  public async onEnableRequest(
-    event: EnableRequestEvent,
-    host: string,
-    callback: (result: IEnableResult) => void
-  ): Promise<void> {
+  public async onInternalMessage(message: IInternalEvents): Promise<void> {
     this.logger &&
       this.logger.debug(
-        `${BackgroundService.name}#onEnableRequest(): "${host}" has requested to connect`
+        `${BackgroundService.name}#onInternalMessage(): internal "${message.event}" dispatched`
       );
+
+    switch (message.event) {
+      case EventNameEnum.InternalRegistrationCompleted:
+        return await this.onRegistrationComplete();
+      default:
+        break;
+    }
   }
 
   public async onExtensionClick(): Promise<void> {
@@ -77,27 +103,6 @@ export default class BackgroundService {
     });
 
     return;
-  }
-
-  public async onRegistrationComplete(): Promise<void> {
-    // if there is no main window, create a new one
-    if (!this.mainWindow) {
-      this.mainWindow = await browser.windows.create({
-        height: DEFAULT_POPUP_HEIGHT,
-        type: 'popup',
-        url: 'main.html',
-        width: DEFAULT_POPUP_WIDTH,
-        ...(this.registrationWindow && {
-          left: this.registrationWindow.left,
-          top: this.registrationWindow.top,
-        }),
-      });
-    }
-
-    // if the register window exists remove it
-    if (this.registrationWindow && this.registrationWindow.id) {
-      await browser.windows.remove(this.registrationWindow.id);
-    }
   }
 
   public onWindowRemove(windowId: number): void {
