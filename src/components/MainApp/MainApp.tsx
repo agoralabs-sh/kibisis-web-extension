@@ -16,6 +16,7 @@ import { ACCOUNTS_ROUTE } from '../../constants';
 // Features
 import { reducer as accountsReducer } from '../../features/accounts';
 import { reducer as applicationReducer } from '../../features/application';
+import { reducer as sessionsReducer } from '../../features/sessions';
 
 // Pages
 import AccountPage from '../../pages/AccountPage';
@@ -38,6 +39,7 @@ const MainApp: FC<IProps> = ({ i18next }: IProps) => {
     combineReducers({
       accounts: accountsReducer,
       application: applicationReducer,
+      sessions: sessionsReducer,
     })
   );
 

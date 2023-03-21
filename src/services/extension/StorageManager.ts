@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 
 // Types
-import { IStorageItemTypes } from '../types';
+import { IStorageItemTypes } from '../../types';
 
 export default class StorageManager {
   /**

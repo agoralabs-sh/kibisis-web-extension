@@ -12,6 +12,7 @@ import { BaseError } from '../../errors';
 // Features
 import { fetchAccounts } from '../../features/accounts';
 import { setError, setNavigate, setToast } from '../../features/application';
+import { fetchSessions } from '../../features/sessions';
 
 // Selectors
 import { useSelectError } from '../../selectors';
@@ -35,6 +36,7 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
     dispatch(setNavigate(navigate));
     dispatch(setToast(toast));
     dispatch(fetchAccounts());
+    dispatch(fetchSessions());
   }, []);
 
   return (

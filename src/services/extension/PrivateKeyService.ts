@@ -4,6 +4,9 @@ import scrypt from 'scrypt-async';
 import { hash, randomBytes, secretbox } from 'tweetnacl';
 import { v4 as uuid } from 'uuid';
 
+// Constants
+import { PKS_ACCOUNT_KEY_PREFIX, PKS_PASSWORD_TAG_KEY } from '../../constants';
+
 // Errors
 import {
   DecryptionError,
@@ -33,9 +36,7 @@ export default class PrivateKeyService {
   private static readonly saltByteSize: number = 64;
 
   // private variables
-  private readonly accountPrefix: string = 'pks_account_';
   private readonly logger: ILogger | null;
-  private readonly passwordTagKeyName: string = 'pks_password_tag';
   private readonly passwordTag: string;
   private readonly storageManager: StorageManager;
 
@@ -190,7 +191,7 @@ export default class PrivateKeyService {
    * @returns {string} the account item key.
    */
   public createAccountItemKey(publicKey: string): string {
-    return `${this.accountPrefix}${publicKey}`;
+    return `${PKS_ACCOUNT_KEY_PREFIX}${publicKey}`;
   }
 
   /**
@@ -206,9 +207,9 @@ export default class PrivateKeyService {
     const items: Record<string, unknown> =
       await this.storageManager.getAllItems();
 
-    return Object.keys(items).reduce(
+    return Object.keys(items).reduce<IPksAccountStorageItem[]>(
       (acc, key) =>
-        key.startsWith(this.accountPrefix)
+        key.startsWith(PKS_ACCOUNT_KEY_PREFIX)
           ? [...acc, items[key] as IPksAccountStorageItem]
           : acc,
       []
@@ -240,7 +241,7 @@ export default class PrivateKeyService {
     }
 
     account = await this.storageManager.getItem<IPksAccountStorageItem>(
-      `${this.accountPrefix}${publicKey}`
+      `${PKS_ACCOUNT_KEY_PREFIX}${publicKey}`
     );
 
     if (!account) {
@@ -298,7 +299,7 @@ export default class PrivateKeyService {
    */
   public async isInitialized(): Promise<boolean> {
     const encryptedPasswordTag: string | null =
-      await this.storageManager.getItem(this.passwordTagKeyName);
+      await this.storageManager.getItem(PKS_PASSWORD_TAG_KEY);
 
     return !!encryptedPasswordTag;
   }
@@ -310,12 +311,12 @@ export default class PrivateKeyService {
     const items: Record<string, unknown> =
       await this.storageManager.getAllItems();
     const filteredKeyNames: string[] = Object.keys(items).filter((value) =>
-      value.startsWith(this.accountPrefix)
+      value.startsWith(PKS_ACCOUNT_KEY_PREFIX)
     );
 
     return await this.storageManager.remove([
       ...filteredKeyNames,
-      this.passwordTagKeyName, // remove the password tag
+      PKS_PASSWORD_TAG_KEY, // remove the password tag
     ]);
   }
 
@@ -362,7 +363,7 @@ export default class PrivateKeyService {
       this.createAccountItemKey(publicKey)
     );
     passwordTag = await this.storageManager.getItem<IPksPasswordTagStorageItem>(
-      this.passwordTagKeyName
+      PKS_PASSWORD_TAG_KEY
     );
 
     if (!passwordTag) {
@@ -443,7 +444,7 @@ export default class PrivateKeyService {
         );
 
       return await this.storageManager.setItems({
-        [this.passwordTagKeyName]: passwordTagItem,
+        [PKS_PASSWORD_TAG_KEY]: passwordTagItem,
       });
     }
 
@@ -511,7 +512,7 @@ export default class PrivateKeyService {
 
     // add the new password tag and the re-encrypted keys
     return await this.storageManager.setItems({
-      [this.passwordTagKeyName]: passwordTagItem, // add the new password tag
+      [PKS_PASSWORD_TAG_KEY]: passwordTagItem, // add the new password tag
       ...newAccounts.reduce(
         (acc, value) => ({
           ...acc,
@@ -532,7 +533,7 @@ export default class PrivateKeyService {
   public async verifyPassword(password: string): Promise<boolean> {
     const passwordTag: IPksPasswordTagStorageItem | null =
       await this.storageManager.getItem<IPksPasswordTagStorageItem>(
-        this.passwordTagKeyName
+        PKS_PASSWORD_TAG_KEY
       );
     let decryptedPasswordTag: string;
 
