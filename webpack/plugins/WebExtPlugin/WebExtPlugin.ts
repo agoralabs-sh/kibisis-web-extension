@@ -2,12 +2,16 @@ import { ChildProcess, spawn } from 'child_process';
 import { resolve } from 'path';
 import { Compiler } from 'webpack';
 
+// Constants
+import { DEVELOPMENT_PROFILE } from './constants';
+
 // Types
 import { ICompilationHookFunction, IOptions } from './types';
 
 export default class WebExtPlugin {
   private readonly browserConsole: boolean;
   private readonly devtools: boolean;
+  private readonly persistState: boolean;
   private readonly pluginName: string = 'WebExtPlugin';
   private readonly startUrls: string[];
   private webExtRunProcess: ChildProcess | null;
@@ -15,6 +19,7 @@ export default class WebExtPlugin {
   constructor(options?: IOptions) {
     this.browserConsole = options?.browserConsole || false;
     this.devtools = options?.devtools || false;
+    this.persistState = options?.persistState || false;
     this.startUrls = options?.startUrls || [
       'http://info.cern.ch/hypertext/WWW/TheProject.html',
     ];
@@ -44,6 +49,15 @@ export default class WebExtPlugin {
 
     if (this.devtools) {
       runCommand = [...runCommand, '--devtools'];
+    }
+
+    if (this.persistState) {
+      runCommand = [
+        ...runCommand,
+        '--keep-profile-changes',
+        '--profile-create-if-missing',
+        `--firefox-profile=${resolve(process.cwd(), '.firefox_profile')}`,
+      ];
     }
 
     // start web-ext

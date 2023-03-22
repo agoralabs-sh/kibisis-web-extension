@@ -1,6 +1,7 @@
 .build/
 .dapp/
 .firefox/
+.firefox_profile/
 coverage/
 dist/
 node_modules/

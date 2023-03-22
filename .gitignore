@@ -282,3 +282,4 @@ fabric.properties
 .build/
 .dapp/
 .firefox/
+.firefox_profile/

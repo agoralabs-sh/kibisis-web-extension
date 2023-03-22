@@ -66,6 +66,7 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
       }),
       new WebExtPlugin({
         devtools: true,
+        persistState: true,
         startUrls: [`http://localhost:${dappPort}`], // navigate to the dapp
       }),
     ],
@@ -134,10 +135,16 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
       ],
     },
     name: DAPP_ENVIRONMENT,
+    optimization: {
+      removeAvailableModules: false,
+      removeEmptyChunks: false,
+      splitChunks: false,
+    },
     output: {
       clean: true,
       filename: '[name].js',
       path: DAPP_BUILD_PATH,
+      pathinfo: false,
     },
     plugins: [
       new HtmlWebpackPlugin({
