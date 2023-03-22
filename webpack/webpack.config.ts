@@ -149,6 +149,7 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
     plugins: [
       new HtmlWebpackPlugin({
         chunks: ['main'],
+        favicon: resolve(DAPP_SRC_PATH, 'favicon.png'),
         filename: 'index.html',
         inject: 'body',
         template: resolve(DAPP_SRC_PATH, 'index.hbs'),
