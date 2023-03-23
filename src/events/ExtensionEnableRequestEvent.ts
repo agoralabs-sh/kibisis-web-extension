@@ -8,15 +8,16 @@ import BaseEvent from './BaseEvent';
 import { IBaseEnableRequestPayload } from '../types';
 
 interface IPayload extends IBaseEnableRequestPayload {
+  appName: string;
   host: string;
   iconUrl: string | null;
 }
 
-export default class InternalEnableRequestEvent extends BaseEvent {
+export default class ExtensionEnableRequestEvent extends BaseEvent {
   public readonly payload: IPayload;
 
   constructor(payload: IPayload) {
-    super(EventNameEnum.InternalEnableRequest);
+    super(EventNameEnum.ExtensionEnableRequest);
 
     this.payload = payload;
   }

@@ -61,7 +61,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
 
       this.logger &&
         this.logger.debug(
-          `${AgoraWalletManager.name}#handleEvent(): handling request event "${message.event}"`
+          `${AgoraWalletManager.name}#handleEvent(): handling event "${message.event}"`
         );
 
       eventListener = (event: MessageEvent<IExternalResponseEvents>) => {
@@ -128,7 +128,9 @@ export default class AgoraWalletManager extends BaseWalletManager {
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
     return await this.handleEvent<IEnableResult>(
-      new ExternalEnableRequestEvent(options),
+      new ExternalEnableRequestEvent({
+        genesisHash: options?.genesisHash || null,
+      }),
       EventNameEnum.ExternalEnableResponse
     );
   }

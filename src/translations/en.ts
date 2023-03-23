@@ -4,6 +4,8 @@ import { IResourceLanguage } from '../types';
 const translation: IResourceLanguage = {
   buttons: {
     addAccount: 'Add Account',
+    cancel: 'Cancel',
+    connect: 'Connect',
     create: 'Create',
     getStarted: 'Get Started',
     import: 'Import',
@@ -42,10 +44,12 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    connectRequest:
+      'Would like to connect. Select which accounts you would like to enable.',
     createPassword: 'Secure your device',
     importAccount: 'Import your account',
     nameAccount: 'Name your account',
-    noAccountsFound: 'No accounts found.',
+    noAccountsFound: 'No accounts found!',
   },
   labels: {
     accountName: 'Account Name',

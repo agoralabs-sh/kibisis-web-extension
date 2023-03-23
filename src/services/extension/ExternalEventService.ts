@@ -1,77 +1,163 @@
-import browser, { Runtime } from 'webextension-polyfill';
+import browser from 'webextension-polyfill';
 
 // Enums
-import { ConnectionNameEnum, EventNameEnum } from '../../enums';
+import { EventNameEnum } from '../../enums';
 
 // Events
 import {
-  BridgeEnableRequestEvent,
+  ExtensionEnableRequestEvent,
+  ExtensionEnableResponseEvent,
   ExternalEnableRequestEvent,
+  ExternalEnableResponseEvent,
 } from '../../events';
 
 // Types
-import { IBaseOptions, IExternalRequestEvents, ILogger } from '../../types';
+import {
+  IBaseOptions,
+  IExtensionEvents,
+  IExternalRequestEvents,
+  ILogger,
+} from '../../types';
 
 export default class ExternalEventService {
   // private variables
-  private readonly connection: Runtime.Port;
   private readonly logger: ILogger | null;
 
   constructor({ logger }: IBaseOptions) {
     this.logger = logger || null;
-    this.connection = browser.runtime.connect({
-      name: ConnectionNameEnum.BridgeConnection,
-    }); // connect to the background script
-
-    // listen to background messages
-    // this.connection.onMessage.addListener(this.onBridgeMessage);
   }
 
   /**
    * Private functions
    */
 
-  private onEnableRequest(event: ExternalEnableRequestEvent): void {
-    // window.postMessage(
-    //   new EnableResponseEvent({
-    //     accounts: [],
-    //     genesisId: 'testnet-v1.0',
-    //     genesisHash: payload?.genesisHash || 'unknwn',
-    //   })
-    // );
-    this.logger &&
-      this.logger.debug(
-        `${ExternalEventService.name}#onEnableRequest(): "${event.event}" event received in the content script`
-      );
+  /**
+   * Utility function to extract the favicon URL.
+   * @returns {string} the favicon URL or null if no favicon is found.
+   * @see {@link https://stackoverflow.com/a/16844961}
+   * @private
+   */
+  private extractFaviconUrl(): string | null {
+    const links: HTMLCollectionOf<HTMLElementTagNameMap['link']> =
+      document.getElementsByTagName('link');
+    const iconUrls: string[] = [];
 
-    // post the message to the background bridge
-    this.connection.postMessage(
-      new BridgeEnableRequestEvent({
-        ...event.payload,
-        host: window.location.host,
-        iconUrl: null, // TODO: get favicon
-      })
+    for (const link of links) {
+      const rel: string | null = link.getAttribute('rel');
+      let href: string | null;
+      let origin: string;
+
+      // if the link is not an icon; a favicon, ignore
+      if (!rel || !rel.toLowerCase().includes('icon')) {
+        continue;
+      }
+
+      href = link.getAttribute('href');
+
+      // if there is no href attribute there is no url
+      if (!href) {
+        continue;
+      }
+
+      // if it is an absolute url, just use it
+      if (
+        href.toLowerCase().indexOf('https:') === 0 ||
+        href.toLowerCase().indexOf('http:') === 0
+      ) {
+        iconUrls.push(href);
+
+        continue;
+      }
+
+      // if is an absolute url without a protocol,add the protocol
+      if (href.toLowerCase().indexOf('//') === 0) {
+        iconUrls.push(`${window.location.protocol}${href}`);
+
+        continue;
+      }
+
+      // whats left is relative urls
+      origin = `${window.location.protocol}//${window.location.host}`;
+
+      // if there is no forward slash prepended, the favicon is relative to the page
+      if (href.indexOf('/') === -1) {
+        href = window.location.pathname
+          .split('/')
+          .map((value, index, array) =>
+            !href || index < array.length - 1 ? value : href
+          ) // replace the current path with the href
+          .join('/');
+      }
+
+      iconUrls.push(`${origin}${href}`);
+    }
+
+    return (
+      iconUrls.find((value) => value.match(/\.(jpg|jpeg|png|gif)$/i)) || // favour image files over ico
+      iconUrls[0] ||
+      null
     );
   }
 
-  // private onBridgeMessage(message: string): void {
-  //
-  // }
+  private handleExtensionEnableResponse(
+    event: ExtensionEnableResponseEvent
+  ): void {
+    this.logger &&
+      this.logger.debug(
+        `${ExternalEventService.name}#handleExtensionEnableResponse(): extension message "${event.event}" received`
+      );
+
+    // send the response to the web page
+    return window.postMessage(new ExternalEnableResponseEvent(event.payload));
+  }
+
+  private async handleExternalEnableRequest(
+    event: ExternalEnableRequestEvent
+  ): Promise<void> {
+    this.logger &&
+      this.logger.debug(
+        `${ExternalEventService.name}#onExternalEnableRequest(): external message "${event.event}" received`
+      );
+
+    // send the message to the extension (popup)
+    return await browser.runtime.sendMessage(
+      new ExtensionEnableRequestEvent({
+        ...event.payload,
+        appName:
+          document
+            .querySelector('meta[name="application-name"]')
+            ?.getAttribute('content') || document.title,
+        host: `${window.location.protocol}//${window.location.host}`,
+        iconUrl: this.extractFaviconUrl(),
+      })
+    );
+  }
 
   /**
    * Public functions
    */
 
+  public onExtensionMessage(message: IExtensionEvents): void {
+    switch (message.event) {
+      case EventNameEnum.ExtensionEnableResponse:
+        return this.handleExtensionEnableResponse(
+          message as ExtensionEnableResponseEvent
+        );
+      default:
+        break;
+    }
+  }
+
   public async onExternalMessage(
-    event: MessageEvent<IExternalRequestEvents>
+    message: MessageEvent<IExternalRequestEvents>
   ): Promise<void> {
-    if (event.source !== window || !event.data) {
+    if (message.source !== window || !message.data) {
       return;
     }
 
-    switch (event.data.event) {
+    switch (message.data.event) {
       case EventNameEnum.ExternalEnableRequest:
-        return this.onEnableRequest(event.data);
+        return await this.handleExternalEnableRequest(message.data);
       default:
         break;
     }

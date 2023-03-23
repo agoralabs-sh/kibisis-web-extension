@@ -15,11 +15,9 @@ import { RegisterThunkEnum } from '../../../enums';
 // Errors
 import { BaseError, MalformedDataError } from '../../../errors';
 
-// Events
-import { InternalRegistrationCompletedEvent } from '../../../events';
-
 // Features
 import { setError } from '../../application';
+import { sendRegistrationCompleted } from '../../messages';
 
 // Services
 import { PrivateKeyService } from '../../../services/extension';
@@ -110,12 +108,8 @@ const saveCredentials: AsyncThunk<
 
     logger.debug(`${functionName}(): successfully saved credentials`);
 
-    logger.debug(
-      `${functionName}(): sending registration complete event to background service`
-    );
-
     // send a message that registration has been completed
-    await browser.runtime.sendMessage(new InternalRegistrationCompletedEvent());
+    dispatch(sendRegistrationCompleted());
   }
 );
 

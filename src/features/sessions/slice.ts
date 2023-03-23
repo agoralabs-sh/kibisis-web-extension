@@ -4,11 +4,11 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '../../enums';
 
 // Thunks
-import { fetchSessions } from './thunks';
+import { fetchSessions, saveSession } from './thunks';
 
 // Types
 import { ISession } from '../../types';
-import { ISessionsState } from './types';
+import { IConnectRequest, ISessionsState } from './types';
 
 // Utils
 import { getInitialState } from './utils';
@@ -29,16 +29,28 @@ const slice = createSlice({
     builder.addCase(fetchSessions.rejected, (state: ISessionsState) => {
       state.fetching = false;
     });
+    /** Saving session **/
+    builder.addCase(saveSession.fulfilled, (state: ISessionsState) => {
+      state.saving = false;
+    });
+    builder.addCase(saveSession.pending, (state: ISessionsState) => {
+      state.saving = true;
+    });
+    builder.addCase(saveSession.rejected, (state: ISessionsState) => {
+      state.saving = false;
+    });
   },
   initialState: getInitialState(),
   name: StoreNameEnum.Sessions,
   reducers: {
-    reset: (state: Draft<ISessionsState>) => {
-      state.fetching = false;
-      state.items = [];
-      state.saving = false;
+    setConnectRequest: (
+      state: Draft<ISessionsState>,
+      action: PayloadAction<IConnectRequest | null>
+    ) => {
+      state.request = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
+export const { setConnectRequest } = slice.actions;

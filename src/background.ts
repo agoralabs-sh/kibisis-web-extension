@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 
 // Services
-import { BridgeEventService, BackgroundService } from './services/extension';
+import { BackgroundService } from './services/extension';
 
 // Types
 import { ILogger } from './types';
@@ -16,19 +16,15 @@ import { createLogger } from './utils';
   const backgroundService: BackgroundService = new BackgroundService({
     logger,
   });
-  const bridgeEventService: BridgeEventService = new BridgeEventService({
-    logger,
-  });
 
-  // register events
-  browser.runtime.onConnect.addListener(
-    bridgeEventService.onConnected.bind(bridgeEventService)
+  // listen to extension messages
+  browser.runtime.onMessage.addListener(
+    backgroundService.onExtensionMessage.bind(backgroundService)
   );
+
+  // listen to special events
   browser.browserAction.onClicked.addListener(
     backgroundService.onExtensionClick.bind(backgroundService)
-  );
-  browser.runtime.onMessage.addListener(
-    backgroundService.onInternalMessage.bind(backgroundService)
   );
   browser.windows.onRemoved.addListener(
     backgroundService.onWindowRemove.bind(backgroundService)

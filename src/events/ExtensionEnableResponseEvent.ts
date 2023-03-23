@@ -8,12 +8,14 @@ import BaseResponseEvent from './BaseResponseEvent';
 
 type IPayload = IEnableResult;
 
-export default class ExternalEnableResponseEvent extends BaseResponseEvent {
+export default class ExtensionEnableResponseEvent extends BaseResponseEvent {
   public readonly payload: IPayload | null;
+  public readonly tabId: number;
 
-  constructor(payload: IPayload | null, error?: BaseError) {
-    super(EventNameEnum.ExternalEnableResponse, error);
+  constructor(tabId: number, payload: IPayload | null, error?: BaseError) {
+    super(EventNameEnum.ExtensionEnableResponse, error);
 
     this.payload = payload;
+    this.tabId = tabId;
   }
 }

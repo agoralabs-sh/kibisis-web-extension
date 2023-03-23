@@ -10,7 +10,7 @@ import { EventNameEnum } from '../../enums';
 import PrivateKeyService from './PrivateKeyService';
 
 // Types
-import { IBaseOptions, IInternalEvents, ILogger } from '../../types';
+import { IBaseOptions, IExtensionEvents, ILogger } from '../../types';
 
 export default class BackgroundService {
   private readonly logger: ILogger | null;
@@ -32,7 +32,12 @@ export default class BackgroundService {
    * Private functions
    */
 
-  private async onRegistrationComplete(): Promise<void> {
+  private async handleRegistrationCompleted(): Promise<void> {
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundService.name}#handleRegistrationCompleted(): extension message "${EventNameEnum.ExtensionRegistrationCompleted}" received from the popup`
+      );
+
     // if there is no main window, create a new one
     if (!this.mainWindow) {
       this.mainWindow = await browser.windows.create({
@@ -57,15 +62,10 @@ export default class BackgroundService {
    * Public functions
    */
 
-  public async onInternalMessage(message: IInternalEvents): Promise<void> {
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundService.name}#onInternalMessage(): internal "${message.event}" dispatched`
-      );
-
+  public async onExtensionMessage(message: IExtensionEvents): Promise<void> {
     switch (message.event) {
-      case EventNameEnum.InternalRegistrationCompleted:
-        return await this.onRegistrationComplete();
+      case EventNameEnum.ExtensionRegistrationCompleted:
+        return await this.handleRegistrationCompleted();
       default:
         break;
     }

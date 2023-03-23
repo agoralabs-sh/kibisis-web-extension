@@ -1,12 +1,14 @@
 enum EventNameEnum {
   // bridge
-  BridgeEnableRequest = 'bridge_enable_request',
+  BridgeEnableRequest = 'bridge.enable_request',
+  BridgeEnableResponse = 'bridge.enable_response',
   // external
-  ExternalEnableRequest = 'external_enable_request',
-  ExternalEnableResponse = 'external_enable_response',
+  ExternalEnableRequest = 'external.enable_request',
+  ExternalEnableResponse = 'external.enable_response',
   // internal
-  InternalEnableRequest = 'internal_enable_request',
-  InternalRegistrationCompleted = 'internal_registration_completed',
+  ExtensionEnableRequest = 'extension.enable_request',
+  ExtensionEnableResponse = 'extension.enable_response',
+  ExtensionRegistrationCompleted = 'extension.registration_completed',
 }
 
 export default EventNameEnum;
