@@ -1,3 +1,4 @@
+import { OperationCanceledError } from '@agoralabs-sh/algorand-provider';
 import {
   Avatar,
   Checkbox,
@@ -32,7 +33,11 @@ import {
 } from '../../features/sessions';
 
 // Selectors
-import { useSelectAccounts, useSelectSavingSessions } from '../../selectors';
+import {
+  useSelectAccounts,
+  useSelectConnectRequest,
+  useSelectSavingSessions,
+} from '../../selectors';
 
 // Types
 import { IAccount, IAppThunkDispatch, ISession } from '../../types';
@@ -41,15 +46,29 @@ import { IAccount, IAppThunkDispatch, ISession } from '../../types';
 import { ellipseAddress } from '../../utils';
 
 interface IProps {
-  connectRequest: IConnectRequest | null;
   onClose: () => void;
 }
 
-const ConnectModal: FC<IProps> = ({ connectRequest, onClose }: IProps) => {
+const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const accounts: IAccount[] = useSelectAccounts();
+  const connectRequest: IConnectRequest | null = useSelectConnectRequest();
   const saving: boolean = useSelectSavingSessions();
+  const handleClose = () => {};
+  const handleCancelClick = () => {
+    if (connectRequest) {
+      dispatch(
+        sendEnableResponse({
+          error: new OperationCanceledError(`user dismissed connect modal`),
+          session: null,
+          tabId: connectRequest.tabId,
+        })
+      );
+    }
+
+    onClose();
+  };
   const handleConnectClick = () => {
     let session: ISession;
 
@@ -63,6 +82,7 @@ const ConnectModal: FC<IProps> = ({ connectRequest, onClose }: IProps) => {
     dispatch(saveSession(session));
     dispatch(
       sendEnableResponse({
+        error: null,
         session,
         tabId: connectRequest.tabId,
       })
@@ -188,7 +208,7 @@ const ConnectModal: FC<IProps> = ({ connectRequest, onClose }: IProps) => {
           <HStack spacing={4} w="full">
             <Button
               colorScheme="primary"
-              onClick={onClose}
+              onClick={handleCancelClick}
               size="lg"
               variant="outline"
               w="full"

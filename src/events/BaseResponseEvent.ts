@@ -9,9 +9,9 @@ import BaseEvent from './BaseEvent';
 export default class BaseResponseEvent extends BaseEvent {
   public readonly error: BaseError | null;
 
-  constructor(name: EventNameEnum, error?: BaseError) {
+  constructor(name: EventNameEnum, error: BaseError | null) {
     super(name);
 
-    this.error = error || null;
+    this.error = error;
   }
 }

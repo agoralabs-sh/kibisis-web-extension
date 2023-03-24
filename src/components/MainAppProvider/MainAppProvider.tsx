@@ -7,23 +7,13 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import ConnectModal from '../ConnectModal';
 import ErrorModal from '../ErrorModal';
 
-// Errors
-import { BaseError } from '../../errors';
-
 // Features
 import { fetchAccounts } from '../../features/accounts';
 import { setError, setNavigate, setToast } from '../../features/application';
-import {
-  fetchSessions,
-  IConnectRequest,
-  setConnectRequest,
-} from '../../features/sessions';
+import { fetchSessions, setConnectRequest } from '../../features/sessions';
 
 // Hooks
 import useOnMessage from '../../hooks/useOnMessage';
-
-// Selectors
-import { useSelectConnectRequest, useSelectError } from '../../selectors';
 
 // Theme
 import { theme } from '../../theme';
@@ -35,10 +25,7 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
-  const connectRequest: IConnectRequest | null = useSelectConnectRequest();
-  const error: BaseError | null = useSelectError();
   const handleConnectModalClose = () => {
-    // TODO: send operation canceled error
     dispatch(setConnectRequest(null));
   };
   const handleErrorModalClose = () => {
@@ -55,11 +42,8 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <>
-      <ErrorModal error={error} onClose={handleErrorModalClose} />
-      <ConnectModal
-        connectRequest={connectRequest}
-        onClose={handleConnectModalClose}
-      />
+      <ErrorModal onClose={handleErrorModalClose} />
+      <ConnectModal onClose={handleConnectModalClose} />
       <ToastContainer />
       {children}
     </>

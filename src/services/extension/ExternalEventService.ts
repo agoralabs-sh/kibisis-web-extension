@@ -100,29 +100,31 @@ export default class ExternalEventService {
   }
 
   private handleExtensionEnableResponse(
-    event: ExtensionEnableResponseEvent
+    message: ExtensionEnableResponseEvent
   ): void {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#handleExtensionEnableResponse(): extension message "${event.event}" received`
+        `${ExternalEventService.name}#handleExtensionEnableResponse(): extension message "${message.event}" received`
       );
 
     // send the response to the web page
-    return window.postMessage(new ExternalEnableResponseEvent(event.payload));
+    return window.postMessage(
+      new ExternalEnableResponseEvent(message.payload, message.error)
+    );
   }
 
   private async handleExternalEnableRequest(
-    event: ExternalEnableRequestEvent
+    message: ExternalEnableRequestEvent
   ): Promise<void> {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#onExternalEnableRequest(): external message "${event.event}" received`
+        `${ExternalEventService.name}#onExternalEnableRequest(): external message "${message.event}" received`
       );
 
     // send the message to the extension (popup)
     return await browser.runtime.sendMessage(
       new ExtensionEnableRequestEvent({
-        ...event.payload,
+        ...message.payload,
         appName:
           document
             .querySelector('meta[name="application-name"]')
