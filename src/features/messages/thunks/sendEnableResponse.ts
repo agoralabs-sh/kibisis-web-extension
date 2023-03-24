@@ -63,8 +63,8 @@ const sendEnableResponse: AsyncThunk<
                 };
               }
             ),
-            genesisHash: '',
-            genesisId: '',
+            genesisHash: session.genesisHash,
+            genesisId: session.genesisId,
             sessionId: session.id,
           },
           null

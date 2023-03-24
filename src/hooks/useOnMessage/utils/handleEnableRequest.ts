@@ -20,30 +20,32 @@ export default function handleEnableRequest(
   enableRequest: IIncomingEnableRequest,
   { networks, selectedNetwork, sessions }: IOptions
 ): void {
-  let defaultNetwork: INetwork;
   let filteredSessions: ISession[] = sessions;
+  let network: INetwork = selectedNetwork || networks[0]; // get the selected network or use the default
   let session: ISession | null;
 
-  // check if the incoming network is supported
-  if (
-    enableRequest.genesisHash &&
-    !networks.find((value) => value.genesisHash === enableRequest.genesisHash)
-  ) {
-    dispatch(
-      sendEnableResponse({
-        error: new SerializableNetworkNotSupportedError(
-          enableRequest.genesisHash
-        ),
-        session: null,
-        tabId: enableRequest.tabId,
-      })
+  // get the network if a genesis hash is present
+  if (enableRequest.genesisHash) {
+    network = networks.find(
+      (value) => value.genesisHash === enableRequest.genesisHash
     );
 
-    return;
-  }
+    // if there is no network for the genesis hash, it isn't supported
+    if (!network) {
+      dispatch(
+        sendEnableResponse({
+          error: new SerializableNetworkNotSupportedError(
+            enableRequest.genesisHash
+          ),
+          session: null,
+          tabId: enableRequest.tabId,
+        })
+      );
 
-  // if there is a genesis hash specified, filter the sessions by genesis hash
-  if (enableRequest.genesisHash) {
+      return;
+    }
+
+    // filter the sessions by the specified genesis hash
     filteredSessions = sessions.filter(
       (value) => value.genesisHash === enableRequest.genesisHash
     );
@@ -52,7 +54,7 @@ export default function handleEnableRequest(
   session =
     filteredSessions.find((value) => value.host === enableRequest.host) || null;
 
-  // if we have a session, just return that
+  // if we have a session, update its use and return it
   if (session) {
     session = {
       ...session,
@@ -71,14 +73,13 @@ export default function handleEnableRequest(
     return;
   }
 
-  defaultNetwork = selectedNetwork || networks[0]; // get the selected network or use the default
-
   // otherwise, show the connect modal
   dispatch(
     setConnectRequest({
       authorizedAddresses: [],
       appName: enableRequest.appName,
-      genesisHash: enableRequest.genesisHash || defaultNetwork.genesisHash,
+      genesisHash: network.genesisHash,
+      genesisId: network.genesisId,
       host: enableRequest.host,
       iconUrl: enableRequest.iconUrl,
       tabId: enableRequest.tabId,

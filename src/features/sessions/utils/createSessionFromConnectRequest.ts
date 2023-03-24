@@ -7,6 +7,8 @@ import { IConnectRequest } from '../types';
 export default function createSessionFromConnectRequest({
   appName,
   authorizedAddresses,
+  genesisHash,
+  genesisId,
   host,
 }: IConnectRequest): ISession {
   const id: string = uuid();
@@ -16,6 +18,8 @@ export default function createSessionFromConnectRequest({
     appName,
     authorizedAddresses,
     createdAt: Math.round(now.getTime() / 1000),
+    genesisHash,
+    genesisId,
     host,
     id,
     usedAt: Math.round(now.getTime() / 1000),

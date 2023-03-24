@@ -76,7 +76,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleConnectClick = () => {
     let session: ISession;
 
-    if (!connectRequest) {
+    if (!connectRequest || connectRequest.authorizedAddresses.length <= 0) {
       return;
     }
 
