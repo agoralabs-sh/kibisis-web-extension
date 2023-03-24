@@ -17,7 +17,7 @@ import { PrivateKeyService } from '../../../services/extension';
 
 // Types
 import { ILogger, IRegistrationRootState } from '../../../types';
-import { BaseError, MalformedDataError } from '../../../errors';
+import { BaseExtensionError, MalformedDataError } from '../../../errors';
 
 const setPrivateKey: AsyncThunk<
   string | null, // return
@@ -32,7 +32,7 @@ const setPrivateKey: AsyncThunk<
     const password: string | null = getState().register.password;
     let account: Account;
     let encryptedPrivateKey: string;
-    let error: BaseError;
+    let error: BaseExtensionError;
 
     if (!password) {
       error = new MalformedDataError('no password found');

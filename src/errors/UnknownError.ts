@@ -2,9 +2,9 @@
 import { ErrorCodeEnum } from '../enums';
 
 // Errors
-import BaseError from './BaseError';
+import BaseExtensionError from './BaseExtensionError';
 
-export default class UnknownError extends BaseError {
+export default class UnknownError extends BaseExtensionError {
   public readonly code: ErrorCodeEnum = ErrorCodeEnum.UnknownError;
   public readonly name: string = 'UnknownError';
 }

@@ -19,19 +19,19 @@ import Button from '../Button';
 // Constants
 import { SUPPORT_MAIL_TO_LINK } from '../../constants';
 
-// Enums
-// import { ErrorCodeEnum } from '../../enums';
-
 // Errors
-import { BaseError } from '../../errors';
+import { BaseExtensionError } from '../../errors';
+
+// Selectors
+import { useSelectError } from '../../selectors';
 
 interface IProps {
-  error: BaseError | null;
   onClose: () => void;
 }
 
-const ErrorModal: FC<IProps> = ({ error, onClose }: IProps) => {
+const ErrorModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
+  const error: BaseExtensionError | null = useSelectError();
   const requiresRefresh: () => boolean = (): boolean => {
     switch (error?.code) {
       default:

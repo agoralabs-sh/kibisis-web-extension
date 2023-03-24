@@ -7,7 +7,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import ErrorModal from '../ErrorModal';
 
 // Errors
-import { BaseError } from '../../errors';
+import { BaseExtensionError } from '../../errors';
 
 // Features
 import { setError, setNavigate, setToast } from '../../features/application';
@@ -25,7 +25,7 @@ const RegistrationAppProvider: FC<PropsWithChildren> = ({ children }) => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
-  const error: BaseError | null = useSelectError();
+  const error: BaseExtensionError | null = useSelectError();
   const handleErrorModalClose = () => {
     dispatch(setError(null));
   };

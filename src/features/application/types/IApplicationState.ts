@@ -2,13 +2,13 @@ import { CreateToastFnReturn } from '@chakra-ui/react';
 import { NavigateFunction } from 'react-router-dom';
 
 // Errors
-import { BaseError } from '../../../errors';
+import { BaseExtensionError } from '../../../errors';
 
 // Types
 import { ILogger } from '../../../types';
 
 interface IApplicationState {
-  error: BaseError | null;
+  error: BaseExtensionError | null;
   logger: ILogger;
   navigate: NavigateFunction | null;
   toast: CreateToastFnReturn | null;

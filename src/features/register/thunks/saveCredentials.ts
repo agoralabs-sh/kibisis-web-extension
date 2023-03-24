@@ -13,7 +13,7 @@ import {
 import { RegisterThunkEnum } from '../../../enums';
 
 // Errors
-import { BaseError, MalformedDataError } from '../../../errors';
+import { BaseExtensionError, MalformedDataError } from '../../../errors';
 
 // Features
 import { setError } from '../../application';
@@ -40,7 +40,7 @@ const saveCredentials: AsyncThunk<
     const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().register.password;
     let account: Account;
-    let error: BaseError;
+    let error: BaseExtensionError;
     let decryptedPrivateKey: string;
     let privateKeyService: PrivateKeyService;
 
