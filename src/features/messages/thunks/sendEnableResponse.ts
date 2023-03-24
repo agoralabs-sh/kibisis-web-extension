@@ -1,9 +1,12 @@
-import { BaseError, IWalletAccount } from '@agoralabs-sh/algorand-provider';
+import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
 // Enums
 import { EventNameEnum, MessagesThunkEnum } from '../../../enums';
+
+// Errors
+import { BaseSerializableError } from '../../../errors';
 
 // Events
 import { ExtensionEnableResponseEvent } from '../../../events';
@@ -12,7 +15,7 @@ import { ExtensionEnableResponseEvent } from '../../../events';
 import { IAccount, ILogger, IMainRootState, ISession } from '../../../types';
 
 interface IPayload {
-  error: BaseError | null;
+  error: BaseSerializableError | null;
   session: ISession | null;
   tabId: number;
 }

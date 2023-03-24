@@ -61,7 +61,6 @@ const App: FC = () => {
         setAuthorizedAccounts(result.accounts);
         setGenesisId(result.genesisId);
       } catch (error: BaseError) {
-        console.log(error);
         toast({
           description: error.message,
           duration: 3000,

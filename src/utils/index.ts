@@ -4,3 +4,4 @@ export { default as injectScript } from './injectScript';
 export { default as isHexString } from './isHexString';
 export { default as isMnemonicValid } from './isMnemonicValid';
 export { default as makeStore } from './makeStore';
+export { default as mapSerializableErrors } from './mapSerializableErrors';

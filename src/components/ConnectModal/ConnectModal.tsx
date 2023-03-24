@@ -1,4 +1,3 @@
-import { OperationCanceledError } from '@agoralabs-sh/algorand-provider';
 import {
   Avatar,
   Checkbox,
@@ -22,6 +21,9 @@ import Button from '../Button';
 
 // Constants
 import { DEFAULT_GAP } from '../../constants';
+
+// Errors
+import { SerializableOperationCanceledError } from '../../errors';
 
 // Features
 import { sendEnableResponse } from '../../features/messages';
@@ -60,7 +62,9 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
     if (connectRequest) {
       dispatch(
         sendEnableResponse({
-          error: new OperationCanceledError(`user dismissed connect modal`),
+          error: new SerializableOperationCanceledError(
+            `user dismissed connect modal`
+          ),
           session: null,
           tabId: connectRequest.tabId,
         })

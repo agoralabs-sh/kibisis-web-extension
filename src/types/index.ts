@@ -14,6 +14,7 @@ export type { default as IPksAccountStorageItem } from './IPksAccountStorageItem
 export type { default as IPksPasswordTagStorageItem } from './IPksPasswordTagStorageItem';
 export type { default as IRegistrationRootState } from './IRegistrationRootState';
 export type { default as IResourceLanguage } from './IResourceLanguage';
+export type { default as ISerializableErrors } from './ISerializableErrors';
 export type { default as ISession } from './ISession';
 export type { default as ISetAccountOptions } from './ISetAccountOptions';
 export type { default as IStorageItemTypes } from './IStorageItemTypes';
