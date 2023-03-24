@@ -28,6 +28,9 @@ import type {
   ILogger,
 } from '../../types';
 
+// Utils
+import { mapSerializableErrors } from '../../utils';
+
 interface INewOptions extends IBaseOptions {
   extensionId: string;
 }
@@ -83,7 +86,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
 
         // if there was an error, throw it
         if (event.data.error) {
-          reject(event.data.error);
+          reject(mapSerializableErrors(event.data.error));
 
           // remove the event
           return controller.abort();
