@@ -10,12 +10,13 @@ export type { default as IExternalResponseEvents } from './IExternalResponseEven
 export type { default as ILogger } from './ILogger';
 export type { default as ILogLevel } from './ILogLevel';
 export type { default as IMainRootState } from './IMainRootState';
+export type { default as INetwork } from './INetwork';
 export type { default as IPksAccountStorageItem } from './IPksAccountStorageItem';
 export type { default as IPksPasswordTagStorageItem } from './IPksPasswordTagStorageItem';
 export type { default as IRegistrationRootState } from './IRegistrationRootState';
 export type { default as IResourceLanguage } from './IResourceLanguage';
-export type { default as ISerializableErrors } from './ISerializableErrors';
 export type { default as ISession } from './ISession';
+export type { default as ISettings } from './ISettings';
 export type { default as ISetAccountOptions } from './ISetAccountOptions';
 export type { default as IStorageItemTypes } from './IStorageItemTypes';
 export type { default as IWindow } from './IWindow';

@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 
 // Components
 import Button from '../Button';
+import NetworkBadge from '../NetworkBadge';
 
 // Constants
 import { DEFAULT_GAP } from '../../constants';
@@ -57,7 +58,6 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const accounts: IAccount[] = useSelectAccounts();
   const connectRequest: IConnectRequest | null = useSelectConnectRequest();
   const saving: boolean = useSelectSavingSessions();
-  const handleClose = () => {};
   const handleCancelClick = () => {
     if (connectRequest) {
       dispatch(
@@ -150,8 +150,11 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
               <Text color="gray.400" fontSize="sm" textAlign="center">
                 {connectRequest?.host || 'unknown host'}
               </Text>
+              <NetworkBadge
+                genesisHash={connectRequest?.genesisHash || 'unknown'}
+              />
               <Text color="gray.500" fontSize="md" textAlign="center">
-                {t<string>('headings.connectRequest')}
+                {t<string>('captions.connectRequest')}
               </Text>
             </VStack>
           </VStack>

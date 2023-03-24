@@ -15,6 +15,8 @@ const translation: IResourceLanguage = {
   },
   captions: {
     addressCopied: 'Address copied!',
+    connectRequest:
+      'An application is requesting to connect. Select which accounts you would like to enable:',
     copied: 'Copied!',
     createPassword1: `First, let's create a new password to secure this device.`,
     createPassword2:
@@ -44,8 +46,6 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
-    connectRequest:
-      'Would like to connect. Select which accounts you would like to enable.',
     createPassword: 'Secure your device',
     importAccount: 'Import your account',
     nameAccount: 'Name your account',

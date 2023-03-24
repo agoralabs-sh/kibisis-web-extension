@@ -8,33 +8,35 @@ import { EventNameEnum } from '../../enums';
 // Events
 import { ExtensionEnableRequestEvent } from '../../events';
 
-// Features
-import { sendEnableResponse } from '../../features/messages';
-import {
-  IConnectRequest,
-  saveSession,
-  setConnectRequest,
-} from '../../features/sessions';
-
 // Selectors
-import { useSelectLogger, useSelectSessions } from '../../selectors';
+import {
+  useSelectLogger,
+  useSelectNetworks,
+  useSelectSelectedNetwork,
+  useSelectSessions,
+} from '../../selectors';
 
 // Types
 import {
   IAppThunkDispatch,
   IExtensionEvents,
   ILogger,
+  INetwork,
   ISession,
 } from '../../types';
+import { IIncomingEnableRequest } from './types';
+
+// Utils
+import { handleEnableRequest } from './utils';
 
 export default function useOnMessage(): void {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const logger: ILogger = useSelectLogger();
+  const networks: INetwork[] = useSelectNetworks();
+  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const sessions: ISession[] = useSelectSessions();
-  const [incomingConnectRequest, setIncomingConnectRequest] = useState<Omit<
-    IConnectRequest,
-    'authorizedAddresses'
-  > | null>(null);
+  const [incomingEnableRequest, setIncomingEnableRequest] =
+    useState<IIncomingEnableRequest | null>(null);
   const handleOnExtensionMessage = (
     message: IExtensionEvents,
     sender: Runtime.MessageSender
@@ -46,7 +48,7 @@ export default function useOnMessage(): void {
     switch (message.event) {
       case EventNameEnum.ExtensionEnableRequest:
         if (sender.tab?.id) {
-          setIncomingConnectRequest({
+          setIncomingEnableRequest({
             appName: (message as ExtensionEnableRequestEvent).payload.appName,
             genesisHash: (message as ExtensionEnableRequestEvent).payload
               .genesisHash,
@@ -71,40 +73,13 @@ export default function useOnMessage(): void {
     };
   }, []);
   useEffect(() => {
-    let session: ISession | null;
-
-    if (incomingConnectRequest) {
-      session =
-        sessions.find((value) => value.host === incomingConnectRequest.host) ||
-        null;
-
-      // if we have a session, just return that
-      if (session) {
-        session = {
-          ...session,
-          usedAt: Math.round(new Date().getTime() / 1000),
-        };
-
-        dispatch(saveSession(session));
-        dispatch(
-          sendEnableResponse({
-            session,
-            tabId: incomingConnectRequest.tabId,
-          })
-        );
-        setIncomingConnectRequest(null);
-
-        return;
-      }
-
-      // otherwise, show the connect modal
-      dispatch(
-        setConnectRequest({
-          ...incomingConnectRequest,
-          authorizedAddresses: [],
-        })
-      );
-      setIncomingConnectRequest(null);
+    if (incomingEnableRequest) {
+      handleEnableRequest(dispatch, incomingEnableRequest, {
+        networks,
+        selectedNetwork,
+        sessions,
+      });
+      setIncomingEnableRequest(null);
     }
-  }, [incomingConnectRequest]);
+  }, [incomingEnableRequest]);
 }

@@ -27,7 +27,11 @@ import MainLayout from '../../components/MainLayout';
 import PageShell from '../../components/PageShell';
 
 // Selectors
-import { useSelectAccount, useSelectFetchingAccounts } from '../../selectors';
+import {
+  useSelectAccount,
+  useSelectFetchingAccounts,
+  useSelectFetchingSettings,
+} from '../../selectors';
 
 // Types
 import { IAccount } from '../../types';
@@ -42,10 +46,11 @@ const AccountPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { address } = useParams();
   const account: IAccount | null = useSelectAccount(address);
-  const fetching: boolean = useSelectFetchingAccounts();
+  const fetchingAccounts: boolean = useSelectFetchingAccounts();
+  const fetchingSettings: boolean = useSelectFetchingSettings();
   const handleAddAccountClick = () => {};
   const renderContent = () => {
-    if (fetching) {
+    if (fetchingAccounts || fetchingSettings) {
       return (
         <VStack alignItems="flex-start" w="full">
           <HStack alignItems="center" w="full">
