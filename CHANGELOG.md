@@ -1,3 +1,10 @@
+# [1.1.0-beta.2](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2023-03-26)
+
+
+### Features
+
+* connect wallet ([#3](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/3)) ([5cb013d](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/5cb013d52109e20e669d73b238a60a755f54bf05))
+
 # [1.1.0-beta.1](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.0.0...v1.1.0-beta.1) (2023-03-07)
 
 
