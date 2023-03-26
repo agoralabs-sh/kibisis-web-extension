@@ -8,6 +8,8 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Skeleton,
+  SkeletonCircle,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -39,6 +41,7 @@ import {
 import {
   useSelectAccounts,
   useSelectConnectRequest,
+  useSelectFetchingAccounts,
   useSelectSavingSessions,
 } from '../../selectors';
 
@@ -47,6 +50,7 @@ import { IAccount, IAppThunkDispatch, ISession } from '../../types';
 
 // Utils
 import { ellipseAddress } from '../../utils';
+import { randomBytes } from 'tweetnacl';
 
 interface IProps {
   onClose: () => void;
@@ -56,6 +60,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const accounts: IAccount[] = useSelectAccounts();
+  const fetching: boolean = useSelectFetchingAccounts();
   const connectRequest: IConnectRequest | null = useSelectConnectRequest();
   const saving: boolean = useSelectSavingSessions();
   const handleCancelClick = () => {
@@ -91,7 +96,8 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
         tabId: connectRequest.tabId,
       })
     );
-    dispatch(setConnectRequest(null));
+
+    onClose();
   };
   const handleOnAccountCheckChange =
     (address: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -127,6 +133,75 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
         })
       );
     };
+  const renderContent = () => {
+    if (fetching) {
+      return Array.from({ length: 3 }, () => (
+        <HStack key={nanoid()} py={4} spacing={4} w="full">
+          <SkeletonCircle size="12" />
+          <Skeleton flexGrow={1}>
+            <Text color="gray.500" fontSize="md" textAlign="center">
+              {ellipseAddress(randomBytes(52).toString(), {
+                end: 10,
+                start: 10,
+              })}
+            </Text>
+          </Skeleton>
+        </HStack>
+      ));
+    }
+
+    if (accounts.length > 0) {
+      return accounts.map((account) => (
+        <HStack key={nanoid()} py={4} spacing={4} w="full">
+          <Avatar name={account.name || account.address} />
+          {account.name ? (
+            <VStack
+              alignItems="flex-start"
+              flexGrow={1}
+              justifyContent="space-evenly"
+              spacing={0}
+            >
+              <Text color="gray.500" fontSize="md" textAlign="center">
+                {account.name}
+              </Text>
+              <Text color="gray.400" fontSize="sm" textAlign="center">
+                {ellipseAddress(account.address, {
+                  end: 10,
+                  start: 10,
+                })}
+              </Text>
+            </VStack>
+          ) : (
+            <Text
+              color="gray.500"
+              flexGrow={1}
+              fontSize="md"
+              textAlign="center"
+            >
+              {ellipseAddress(account.address, {
+                end: 10,
+                start: 10,
+              })}
+            </Text>
+          )}
+          <Checkbox
+            colorScheme="primary"
+            isChecked={
+              !!connectRequest?.authorizedAddresses?.find(
+                (value) => value === account.address
+              )
+            }
+            onChange={handleOnAccountCheckChange(account.address)}
+          />
+        </HStack>
+      ));
+    }
+    return (
+      <Heading color="gray.400" size="md" textAlign="center" w="full">
+        {t<string>('headings.noAccountsFound')}
+      </Heading>
+    );
+  };
 
   return (
     <Modal
@@ -159,58 +234,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
             </VStack>
           </VStack>
         </ModalHeader>
-        <ModalBody px={DEFAULT_GAP}>
-          {accounts.length > 0 ? (
-            accounts.map((account) => (
-              <HStack key={nanoid()} py={4} spacing={4} w="full">
-                <Avatar name={account.name || account.address} />
-                {account.name ? (
-                  <VStack
-                    alignItems="flex-start"
-                    flexGrow={1}
-                    justifyContent="space-evenly"
-                    spacing={0}
-                  >
-                    <Text color="gray.500" fontSize="md" textAlign="center">
-                      {account.name}
-                    </Text>
-                    <Text color="gray.400" fontSize="sm" textAlign="center">
-                      {ellipseAddress(account.address, {
-                        end: 10,
-                        start: 10,
-                      })}
-                    </Text>
-                  </VStack>
-                ) : (
-                  <Text
-                    color="gray.500"
-                    flexGrow={1}
-                    fontSize="md"
-                    textAlign="center"
-                  >
-                    {ellipseAddress(account.address, {
-                      end: 10,
-                      start: 10,
-                    })}
-                  </Text>
-                )}
-                <Checkbox
-                  colorScheme="primary"
-                  isChecked={
-                    !!connectRequest?.authorizedAddresses?.find(
-                      (value) => value === account.address
-                    )
-                  }
-                  onChange={handleOnAccountCheckChange(account.address)}
-                />
-              </HStack>
-            ))
-          ) : (
-            <Heading color="gray.400" size="md" textAlign="center" w="full">
-              {t<string>('headings.noAccountsFound')}
-            </Heading>
-          )}
-        </ModalBody>
+        <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
             <Button

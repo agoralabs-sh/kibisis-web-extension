@@ -21,14 +21,15 @@ export default function handleEnableRequest(
   { networks, selectedNetwork, sessions }: IOptions
 ): void {
   let filteredSessions: ISession[] = sessions;
-  let network: INetwork = selectedNetwork || networks[0]; // get the selected network or use the default
+  let network: INetwork | null = selectedNetwork || networks[0]; // get the selected network or use the default
   let session: ISession | null;
 
   // get the network if a genesis hash is present
   if (enableRequest.genesisHash) {
-    network = networks.find(
-      (value) => value.genesisHash === enableRequest.genesisHash
-    );
+    network =
+      networks.find(
+        (value) => value.genesisHash === enableRequest.genesisHash
+      ) || null;
 
     // if there is no network for the genesis hash, it isn't supported
     if (!network) {
@@ -76,8 +77,8 @@ export default function handleEnableRequest(
   // otherwise, show the connect modal
   dispatch(
     setConnectRequest({
-      authorizedAddresses: [],
       appName: enableRequest.appName,
+      authorizedAddresses: [],
       genesisHash: network.genesisHash,
       genesisId: network.genesisId,
       host: enableRequest.host,

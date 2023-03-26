@@ -1,7 +1,4 @@
 enum EventNameEnum {
-  // bridge
-  BridgeEnableRequest = 'bridge.enable_request',
-  BridgeEnableResponse = 'bridge.enable_response',
   // external
   ExternalEnableRequest = 'external.enable_request',
   ExternalEnableResponse = 'external.enable_response',

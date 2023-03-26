@@ -10,16 +10,10 @@ type IPayload = IEnableResult;
 
 export default class ExtensionEnableResponseEvent extends BaseResponseEvent {
   public readonly payload: IPayload | null;
-  public readonly tabId: number;
 
-  constructor(
-    tabId: number,
-    payload: IPayload | null,
-    error: BaseError | null
-  ) {
+  constructor(payload: IPayload | null, error: BaseError | null) {
     super(EventNameEnum.ExtensionEnableResponse, error);
 
     this.payload = payload;
-    this.tabId = tabId;
   }
 }

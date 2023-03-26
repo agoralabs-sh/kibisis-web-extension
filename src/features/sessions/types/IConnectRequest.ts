@@ -1,6 +1,6 @@
 interface IConnectRequest {
-  authorizedAddresses: string[];
   appName: string;
+  authorizedAddresses: string[];
   genesisHash: string;
   genesisId: string;
   host: string;
