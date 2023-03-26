@@ -20,7 +20,7 @@ import {
   clearPrivateKey,
   saveCredentials,
   setName,
-} from '../../features/register';
+} from '../../features/registration';
 
 // Selectors
 import {
@@ -29,7 +29,11 @@ import {
 } from '../../selectors';
 
 // Types
-import { IAppThunkDispatch, ILogger, IRootState } from '../../types';
+import {
+  IAppThunkDispatch,
+  ILogger,
+  IRegistrationRootState,
+} from '../../types';
 
 const NameAccountPage: FC = () => {
   const componentName: string = 'NameAccountPage';
@@ -39,11 +43,12 @@ const NameAccountPage: FC = () => {
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();
-  const name: string | null = useSelector<IRootState, string | null>(
-    (state) => state.register.name
-  );
-  const saving: boolean = useSelector<IRootState, boolean>(
-    (state) => state.register.saving
+  const name: string | null = useSelector<
+    IRegistrationRootState,
+    string | null
+  >((state) => state.registration.name);
+  const saving: boolean = useSelector<IRegistrationRootState, boolean>(
+    (state) => state.registration.saving
   );
   const handleImportClick = () => {
     logger.debug(`${componentName}: importing account`);
@@ -62,9 +67,13 @@ const NameAccountPage: FC = () => {
 
   return (
     <PageShell>
-      <VStack flexGrow={1} mb={8} spacing={3} w="full">
-        <Heading color="gray.500">{t<string>('headings.nameAccount')}</Heading>
-        <Text color="gray.400">{t<string>('captions.nameAccount')}</Text>
+      <VStack flexGrow={1} mb={8} spacing={8} w="full">
+        <VStack spacing={3} w="full">
+          <Heading color="gray.500">
+            {t<string>('headings.nameAccount')}
+          </Heading>
+          <Text color="gray.400">{t<string>('captions.nameAccount')}</Text>
+        </VStack>
         <VStack w="full">
           <Text color="gray.500" textAlign="left" w="full">
             {t<string>('labels.accountName')}

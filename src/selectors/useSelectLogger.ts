@@ -1,8 +1,10 @@
 import { useSelector } from 'react-redux';
 
 // Types
-import { ILogger, IRootState } from '../types';
+import { ILogger, IBaseRootState } from '../types';
 
 export default function useSelectLogger(): ILogger {
-  return useSelector<IRootState, ILogger>((state) => state.application.logger);
+  return useSelector<IBaseRootState, ILogger>(
+    (state) => state.application.logger
+  );
 }

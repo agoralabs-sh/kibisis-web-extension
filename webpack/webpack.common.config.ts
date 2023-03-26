@@ -11,26 +11,15 @@ const config: Configuration = {
     ['agora-wallet']: resolve(SRC_PATH, 'agora-wallet.ts'),
     ['background']: resolve(SRC_PATH, 'background.ts'),
     ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
+    ['connect']: resolve(SRC_PATH, 'connect.ts'),
     ['main']: resolve(SRC_PATH, 'main.ts'),
-    ['register']: resolve(SRC_PATH, 'register.ts'),
+    ['registration']: resolve(SRC_PATH, 'registration.ts'),
   },
   module: {
     rules: [
       {
         loader: 'handlebars-loader',
         test: /\.hbs$/,
-      },
-      {
-        exclude: /node_modules/,
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              configFile: resolve(process.cwd(), 'tsconfig.json'),
-            },
-          },
-        ],
       },
       {
         test: /\.(svg?.+|ttf?.+|woff?.+|woff2?.+)$/,
@@ -56,7 +45,17 @@ const config: Configuration = {
         {
           from: resolve(SRC_PATH, 'manifest.json'),
         },
+        {
+          from: resolve(SRC_PATH, 'networks.json'),
+        },
       ],
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['connect'],
+      filename: 'connect.html',
+      inject: 'head',
+      template: resolve(SRC_PATH, 'index.hbs'),
+      title: APP_TITLE,
     }),
     new HtmlWebpackPlugin({
       chunks: ['main'],
@@ -66,8 +65,8 @@ const config: Configuration = {
       title: APP_TITLE,
     }),
     new HtmlWebpackPlugin({
-      chunks: ['register'],
-      filename: 'register.html',
+      chunks: ['registration'],
+      filename: 'registration.html',
       inject: 'head',
       template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,

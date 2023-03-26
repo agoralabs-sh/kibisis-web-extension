@@ -1,7 +1,9 @@
-export default class BaseEvent {
-  public readonly event: string;
+import { EventNameEnum } from '../enums';
 
-  constructor(event: string) {
+export default class BaseEvent {
+  public readonly event: EventNameEnum;
+
+  constructor(event: EventNameEnum) {
     this.event = event;
   }
 }

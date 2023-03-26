@@ -1,8 +1,7 @@
-// Entities
-import { Algorand } from '../algorand-provider';
+import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 
 interface IWindow extends Window {
-  algorand?: Algorand;
+  algorand?: AlgorandProvider;
 }
 
 export default IWindow;

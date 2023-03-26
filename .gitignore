@@ -278,5 +278,8 @@ fabric.properties
 # testing
 /coverage
 
+# intermediary directories
+.build/
+.dapp/
 .firefox/
-build/
+.firefox_profile/

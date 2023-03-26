@@ -15,7 +15,7 @@ import PageShell from '../../components/PageShell';
 import { NAME_ACCOUNT_ROUTE } from '../../constants';
 
 // Features
-import { setPrivateKey } from '../../features/register';
+import { setPrivateKey } from '../../features/registration';
 
 // Selectors
 import {
@@ -24,7 +24,11 @@ import {
 } from '../../selectors';
 
 // Types
-import { IAppThunkDispatch, ILogger, IRootState } from '../../types';
+import {
+  IAppThunkDispatch,
+  ILogger,
+  IRegistrationRootState,
+} from '../../types';
 
 const EnterMnemonicPhrasePage: FC = () => {
   const componentName: string = 'EnterMnemonicPhrasePage';
@@ -34,8 +38,8 @@ const EnterMnemonicPhrasePage: FC = () => {
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();
-  const encrypting: boolean = useSelector<IRootState, boolean>(
-    (state) => state.register.encrypting
+  const encrypting: boolean = useSelector<IRegistrationRootState, boolean>(
+    (state) => state.registration.encrypting
   );
   const [error, setError] = useState<string | null>(null);
   const [phrases, setPhrases] = useState<string[]>(
@@ -71,11 +75,13 @@ const EnterMnemonicPhrasePage: FC = () => {
 
   return (
     <PageShell>
-      <VStack flexGrow={1} mb={8} spacing={3} w="full">
-        <Heading color="gray.500">
-          {t<string>('headings.importAccount')}
-        </Heading>
-        <Text color="gray.400">{t<string>('captions.importAccount')}</Text>
+      <VStack flexGrow={1} mb={8} spacing={8} w="full">
+        <VStack spacing={3} w="full">
+          <Heading color="gray.500">
+            {t<string>('headings.importAccount')}
+          </Heading>
+          <Text color="gray.400">{t<string>('captions.importAccount')}</Text>
+        </VStack>
         <EnterMnemonicPhraseInput
           disabled={encrypting}
           error={error}

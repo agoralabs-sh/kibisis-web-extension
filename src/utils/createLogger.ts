@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Types
 import { ILogger, ILogLevel } from '../types';
 

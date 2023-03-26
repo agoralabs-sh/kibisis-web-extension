@@ -15,20 +15,21 @@ import PageShell from '../../components/PageShell';
 import { ENTER_MNEMONIC_PHRASE_ROUTE } from '../../constants';
 
 // Features
-import { setPassword } from '../../features/register';
+import { setPassword } from '../../features/registration';
 
 // Types
-import { IAppThunkDispatch, IRootState } from '../../types';
+import { IAppThunkDispatch, IRegistrationRootState } from '../../types';
 
 const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const dispatch = useDispatch<IAppThunkDispatch>();
-  const password: string | null = useSelector<IRootState, string | null>(
-    (state) => state.register.password
-  );
-  const score: number = useSelector<IRootState, number>(
-    (state) => state.register.score
+  const password: string | null = useSelector<
+    IRegistrationRootState,
+    string | null
+  >((state) => state.registration.password);
+  const score: number = useSelector<IRegistrationRootState, number>(
+    (state) => state.registration.score
   );
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
@@ -49,12 +50,14 @@ const CreatePasswordPage: FC = () => {
 
   return (
     <PageShell>
-      <VStack flexGrow={1} spacing={3} w="full">
-        <Heading color="gray.500">
-          {t<string>('headings.createPassword')}
-        </Heading>
-        <Text color="gray.400">{t<string>('captions.createPassword1')}</Text>
-        <Text color="gray.400">{t<string>('captions.createPassword2')}</Text>
+      <VStack flexGrow={1} mb={8} spacing={8} w="full">
+        <VStack spacing={3} w="full">
+          <Heading color="gray.500">
+            {t<string>('headings.createPassword')}
+          </Heading>
+          <Text color="gray.400">{t<string>('captions.createPassword1')}</Text>
+          <Text color="gray.400">{t<string>('captions.createPassword2')}</Text>
+        </VStack>
         <CreatePasswordInput
           onChange={handlePasswordChange}
           score={score}

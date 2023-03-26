@@ -6,7 +6,7 @@ import { NavigateFunction } from 'react-router-dom';
 import { StoreNameEnum } from '../../enums';
 
 // Errors
-import { BaseError } from '../../errors';
+import { BaseExtensionError } from '../../errors';
 
 // Types
 import { IApplicationState } from './types';
@@ -15,12 +15,12 @@ import { IApplicationState } from './types';
 import { getInitialState } from './utils';
 
 const slice = createSlice({
-  name: StoreNameEnum.Application,
   initialState: getInitialState(),
+  name: StoreNameEnum.Application,
   reducers: {
     setError: (
       state: Draft<IApplicationState>,
-      action: PayloadAction<BaseError | null>
+      action: PayloadAction<BaseExtensionError | null>
     ) => {
       state.error = action.payload;
     },
