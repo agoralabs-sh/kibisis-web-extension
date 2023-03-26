@@ -48,7 +48,9 @@ const AccountPage: FC = () => {
   const account: IAccount | null = useSelectAccount(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
-  const handleAddAccountClick = () => {};
+  const handleAddAccountClick = () => {
+    console.log('add account');
+  };
   const renderContent = () => {
     if (fetchingAccounts || fetchingSettings) {
       return (

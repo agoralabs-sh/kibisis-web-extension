@@ -37,6 +37,7 @@ const ConnectPage: FC = () => {
   useEffect(() => {
     const url: URL = new URL(window.location.href);
     let network: INetwork;
+    let tabId: number;
 
     if (selectedNetwork) {
       dispatch(fetchAccounts());
@@ -45,16 +46,18 @@ const ConnectPage: FC = () => {
         networks.find(
           (value) => value.genesisHash === url.searchParams.get('genesisHash')
         ) || selectedNetwork;
+      tabId = parseInt(url.searchParams.get('tabId') || 'unknwon');
 
       dispatch(
         setConnectRequest({
-          appName: url.searchParams.get('appName'),
+          appName:
+            url.searchParams.get('appName') || t<string>('labels.unknownApp'),
           authorizedAddresses: [],
           genesisHash: network.genesisHash,
           genesisId: network.genesisId,
-          host: url.searchParams.get('host'),
+          host: url.searchParams.get('host') || t<string>('labels.unknownHost'),
           iconUrl: url.searchParams.get('iconUrl'),
-          tabId: parseInt(url.searchParams.get('tabId')),
+          tabId,
         })
       );
     }

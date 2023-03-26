@@ -9,12 +9,13 @@ import { BaseSerializableError } from '../errors';
 // Events
 import BaseResponseEvent from './BaseResponseEvent';
 
-type IPayload = IEnableResult;
-
 export default class ExternalEnableResponseEvent extends BaseResponseEvent {
-  public readonly payload: IPayload | null;
+  public readonly payload: IEnableResult | null;
 
-  constructor(payload: IPayload | null, error: BaseSerializableError | null) {
+  constructor(
+    payload: IEnableResult | null,
+    error: BaseSerializableError | null
+  ) {
     super(EventNameEnum.ExternalEnableResponse, error);
 
     this.payload = payload;

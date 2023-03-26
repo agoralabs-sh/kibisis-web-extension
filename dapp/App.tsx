@@ -60,13 +60,13 @@ const App: FC = () => {
 
         setAuthorizedAccounts(result.accounts);
         setGenesisId(result.genesisId);
-      } catch (error: BaseError) {
+      } catch (error) {
         toast({
-          description: error.message,
+          description: (error as BaseError).message,
           duration: 3000,
           isClosable: true,
           status: 'error',
-          title: `${error.code}: ${error.name}`,
+          title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
         });
       }
     }

@@ -2,9 +2,6 @@ import { ChildProcess, spawn } from 'child_process';
 import { resolve } from 'path';
 import { Compiler } from 'webpack';
 
-// Constants
-import { DEVELOPMENT_PROFILE } from './constants';
-
 // Types
 import { ICompilationHookFunction, IOptions } from './types';
 

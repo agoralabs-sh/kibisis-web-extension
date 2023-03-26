@@ -108,8 +108,9 @@ export default class BackgroundService {
 
     if (payload.genesisHash) {
       network =
-        networks.find((value) => value.genesisHash === payload.genesisHash) ||
-        null;
+        networks.find(
+          (value: INetwork) => value.genesisHash === payload.genesisHash
+        ) || null;
 
       // if there is no network for the genesis hash, it isn't supported
       if (!network) {

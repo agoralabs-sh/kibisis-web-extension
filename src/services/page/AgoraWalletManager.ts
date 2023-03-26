@@ -9,6 +9,7 @@ import {
   ISignTxnsOptions,
   ISignTxnsResult,
   OperationCanceledError,
+  UnknownError,
   WalletOperationNotSupportedError,
 } from '@agoralabs-sh/algorand-provider';
 
@@ -31,6 +32,8 @@ import type {
 // Utils
 import { mapSerializableErrors } from '../../utils';
 
+type IResults = IEnableResult;
+
 interface INewOptions extends IBaseOptions {
   extensionId: string;
 }
@@ -52,12 +55,12 @@ export default class AgoraWalletManager extends BaseWalletManager {
    * Private functions
    */
 
-  private async handleEvent<ResponsePayload>(
+  private async handleEvent(
     message: BaseEvent,
     responseEvent?: string,
     timeout?: number
-  ): Promise<ResponsePayload> {
-    return new Promise<ResponsePayload>((resolve, reject) => {
+  ): Promise<IResults> {
+    return new Promise<IResults>((resolve, reject) => {
       const controller: AbortController = new AbortController();
       let eventListener: (event: MessageEvent<IExternalResponseEvents>) => void;
       let timer: number;
@@ -87,6 +90,17 @@ export default class AgoraWalletManager extends BaseWalletManager {
         // if there was an error, throw it
         if (event.data.error) {
           reject(mapSerializableErrors(event.data.error));
+
+          // remove the event
+          return controller.abort();
+        }
+
+        if (!event.data.payload) {
+          reject(
+            new UnknownError(
+              'no result was returned from the wallet and no error was thrown'
+            )
+          );
 
           // remove the event
           return controller.abort();
@@ -130,7 +144,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
    */
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
-    return await this.handleEvent<IEnableResult>(
+    return await this.handleEvent(
       new ExternalEnableRequestEvent({
         genesisHash: options?.genesisHash || null,
       }),

@@ -56,6 +56,8 @@ const translation: IResourceLanguage = {
     balance: 'Balance',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
+    unknownApp: 'Unknown App',
+    unknownHost: 'unknown host',
   },
   placeholders: {
     enterPassword: 'Enter password',

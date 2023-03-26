@@ -42,7 +42,7 @@ export default class ExternalEventService {
       document.getElementsByTagName('link');
     const iconUrls: string[] = [];
 
-    for (const link of links) {
+    for (const link of Array.from(links)) {
       const rel: string | null = link.getAttribute('rel');
       let href: string | null;
       let origin: string;

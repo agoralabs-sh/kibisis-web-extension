@@ -17,6 +17,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "removeComments": false,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": false,
