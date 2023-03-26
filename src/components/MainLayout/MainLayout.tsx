@@ -1,6 +1,11 @@
-import { Box, HStack, IconButton, VStack } from '@chakra-ui/react';
+import { HStack, VStack } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
-import { IoChevronForward } from 'react-icons/io5';
+
+// Components
+import SideBar from '../SideBar';
+
+// Constants
+import { SIDEBAR_BORDER_WIDTH, SIDEBAR_MIN_WIDTH } from '../../constants';
 
 interface IProps {
   children: ReactNode;
@@ -9,27 +14,14 @@ interface IProps {
 const MainLayout: FC<IProps> = ({ children }: IProps) => {
   return (
     <HStack alignItems="flex-start" minH="100vh" w="full">
+      <SideBar />
       <VStack
-        borderRightColor="gray.300"
-        borderRightStyle="solid"
-        borderRightWidth={1}
+        flexGrow={1}
         minH="100vh"
-        spacing={0}
+        pl={`${SIDEBAR_MIN_WIDTH + SIDEBAR_BORDER_WIDTH}px`}
+        pr={4}
+        pt={4}
       >
-        <IconButton
-          aria-label="Open drawer"
-          icon={<IoChevronForward />}
-          variant="ghost"
-        />
-        <Box
-          borderTopColor="gray.300"
-          borderTopStyle="solid"
-          borderTopWidth={1}
-          m={0}
-          w="full"
-        />
-      </VStack>
-      <VStack flexGrow={1} minH="100vh" pt={4} px={4}>
         {children}
       </VStack>
     </HStack>

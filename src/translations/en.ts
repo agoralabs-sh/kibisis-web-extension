@@ -52,10 +52,12 @@ const translation: IResourceLanguage = {
     noAccountsFound: 'No accounts found!',
   },
   labels: {
+    addAccount: 'Add Account',
     accountName: 'Account Name',
     balance: 'Balance',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
+    settings: 'Settings',
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
   },
