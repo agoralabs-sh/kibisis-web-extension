@@ -22,7 +22,7 @@ const GetStartedPage: FC = () => {
     <PageShell>
       <VStack flexGrow={1} justifyContent="center" spacing={1} w="full">
         <AgoraIcon color="primary.500" h={12} w={12} />
-        <Heading color="gray.500">Agora Wallet</Heading>
+        <Heading color="gray.500">{__APP_TITLE__}</Heading>
         {__VERSION__ && (
           <Text color="gray.400" fontSize="sm">{`v${__VERSION__}`}</Text>
         )}
