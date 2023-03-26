@@ -29,7 +29,7 @@ const setPrivateKey: AsyncThunk<
     const functionName: string = 'setPrivateKey';
     const logger: ILogger = getState().application.logger;
     const navigate: NavigateFunction | null = getState().application.navigate;
-    const password: string | null = getState().register.password;
+    const password: string | null = getState().registration.password;
     let account: Account;
     let encryptedPrivateKey: string;
     let error: BaseExtensionError;

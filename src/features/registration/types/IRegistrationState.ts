@@ -6,7 +6,7 @@
  * @property {saving} saving - whether the credentials are being saved or not.
  * @property {number} score - the score of the password.
  */
-interface IRegisterState {
+interface IRegistrationState {
   encryptedPrivateKey: string | null;
   encrypting: boolean;
   name: string | null;
@@ -15,4 +15,4 @@ interface IRegisterState {
   score: number;
 }
 
-export default IRegisterState;
+export default IRegistrationState;

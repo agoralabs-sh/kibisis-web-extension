@@ -20,7 +20,7 @@ import {
   clearPrivateKey,
   saveCredentials,
   setName,
-} from '../../features/register';
+} from '../../features/registration';
 
 // Selectors
 import {
@@ -46,9 +46,9 @@ const NameAccountPage: FC = () => {
   const name: string | null = useSelector<
     IRegistrationRootState,
     string | null
-  >((state) => state.register.name);
+  >((state) => state.registration.name);
   const saving: boolean = useSelector<IRegistrationRootState, boolean>(
-    (state) => state.register.saving
+    (state) => state.registration.saving
   );
   const handleImportClick = () => {
     logger.debug(`${componentName}: importing account`);

@@ -276,7 +276,7 @@ export default class BackgroundService {
       this.registrationWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
-        url: 'register.html',
+        url: 'registration.html',
         width: DEFAULT_POPUP_WIDTH,
       });
 

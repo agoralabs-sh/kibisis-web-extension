@@ -5,6 +5,6 @@ import { IRegistrationRootState } from '../types';
 
 export default function useSelectRegisterEncryptedPrivateKey(): string | null {
   return useSelector<IRegistrationRootState, string | null>(
-    (state) => state.register.encryptedPrivateKey
+    (state) => state.registration.encryptedPrivateKey
   );
 }

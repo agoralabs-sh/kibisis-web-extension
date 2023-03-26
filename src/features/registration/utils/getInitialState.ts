@@ -1,7 +1,7 @@
 // Types
-import { IRegisterState } from '../types';
+import { IRegistrationState } from '../types';
 
-export default function getInitialState(): IRegisterState {
+export default function getInitialState(): IRegistrationState {
   return {
     encryptedPrivateKey: null,
     encrypting: false,

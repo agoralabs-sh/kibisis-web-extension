@@ -35,10 +35,10 @@ const saveCredentials: AsyncThunk<
     const functionName: string = 'saveCredentials';
     const logger: ILogger = getState().application.logger;
     const encryptedPrivateKey: string | null =
-      getState().register.encryptedPrivateKey;
-    const name: string | null = getState().register.name;
+      getState().registration.encryptedPrivateKey;
+    const name: string | null = getState().registration.name;
     const navigate: NavigateFunction | null = getState().application.navigate;
-    const password: string | null = getState().register.password;
+    const password: string | null = getState().registration.password;
     let account: Account;
     let error: BaseExtensionError;
     let decryptedPrivateKey: string;

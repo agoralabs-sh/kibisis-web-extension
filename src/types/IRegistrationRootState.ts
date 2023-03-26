@@ -1,11 +1,11 @@
 // Features
-import { IRegisterState } from '../features/register';
+import { IRegistrationState } from '../features/registration';
 
 // Types
 import IBaseRootState from './IBaseRootState';
 
 interface IRegistrationRootState extends IBaseRootState {
-  register: IRegisterState;
+  registration: IRegistrationState;
 }
 
 export default IRegistrationRootState;

@@ -15,7 +15,7 @@ import PageShell from '../../components/PageShell';
 import { ENTER_MNEMONIC_PHRASE_ROUTE } from '../../constants';
 
 // Features
-import { setPassword } from '../../features/register';
+import { setPassword } from '../../features/registration';
 
 // Types
 import { IAppThunkDispatch, IRegistrationRootState } from '../../types';
@@ -27,9 +27,9 @@ const CreatePasswordPage: FC = () => {
   const password: string | null = useSelector<
     IRegistrationRootState,
     string | null
-  >((state) => state.register.password);
+  >((state) => state.registration.password);
   const score: number = useSelector<IRegistrationRootState, number>(
-    (state) => state.register.score
+    (state) => state.registration.score
   );
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {

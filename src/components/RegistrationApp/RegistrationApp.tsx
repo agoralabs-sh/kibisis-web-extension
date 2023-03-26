@@ -4,7 +4,7 @@ import { i18n } from 'i18next';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
-import { HashRouter, Route } from 'react-router-dom';
+import { HashRouter, Navigate, Route } from 'react-router-dom';
 import SlideRoutes from 'react-slide-routes';
 
 // Components
@@ -17,11 +17,12 @@ import {
   GET_STARTED_ROUTE,
   ENTER_MNEMONIC_PHRASE_ROUTE,
   NAME_ACCOUNT_ROUTE,
+  ACCOUNTS_ROUTE,
 } from '../../constants';
 
 // Features
 import { reducer as applicationReducer } from '../../features/application';
-import { reducer as registerReducer } from '../../features/register';
+import { reducer as registrationReducer } from '../../features/registration';
 
 // Pages
 import CreatePasswordPage from '../../pages/CreatePasswordPage';
@@ -42,12 +43,12 @@ interface IProps {
   i18next: i18n;
 }
 
-const RegisterApp: FC<IProps> = ({ i18next }: IProps) => {
+const RegistrationApp: FC<IProps> = ({ i18next }: IProps) => {
   const store: Store<IRegistrationRootState> =
     makeStore<IRegistrationRootState>(
       combineReducers({
         application: applicationReducer,
-        register: registerReducer,
+        registration: registrationReducer,
       })
     );
 
@@ -59,6 +60,10 @@ const RegisterApp: FC<IProps> = ({ i18next }: IProps) => {
           <HashRouter>
             <RegistrationAppProvider>
               <SlideRoutes>
+                <Route
+                  element={<Navigate replace={true} to={GET_STARTED_ROUTE} />}
+                  path="/"
+                />
                 <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
                 <Route
                   element={<CreatePasswordPage />}
@@ -81,4 +86,4 @@ const RegisterApp: FC<IProps> = ({ i18next }: IProps) => {
   );
 };
 
-export default RegisterApp;
+export default RegistrationApp;

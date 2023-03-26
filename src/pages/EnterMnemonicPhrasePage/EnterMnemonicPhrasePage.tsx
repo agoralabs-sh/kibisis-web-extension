@@ -15,7 +15,7 @@ import PageShell from '../../components/PageShell';
 import { NAME_ACCOUNT_ROUTE } from '../../constants';
 
 // Features
-import { setPrivateKey } from '../../features/register';
+import { setPrivateKey } from '../../features/registration';
 
 // Selectors
 import {
@@ -39,7 +39,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();
   const encrypting: boolean = useSelector<IRegistrationRootState, boolean>(
-    (state) => state.register.encrypting
+    (state) => state.registration.encrypting
   );
   const [error, setError] = useState<string | null>(null);
   const [phrases, setPhrases] = useState<string[]>(

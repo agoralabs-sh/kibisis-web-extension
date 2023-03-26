@@ -13,7 +13,7 @@ const config: Configuration = {
     ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
     ['connect']: resolve(SRC_PATH, 'connect.ts'),
     ['main']: resolve(SRC_PATH, 'main.ts'),
-    ['register']: resolve(SRC_PATH, 'register.ts'),
+    ['registration']: resolve(SRC_PATH, 'registration.ts'),
   },
   module: {
     rules: [
@@ -65,8 +65,8 @@ const config: Configuration = {
       title: APP_TITLE,
     }),
     new HtmlWebpackPlugin({
-      chunks: ['register'],
-      filename: 'register.html',
+      chunks: ['registration'],
+      filename: 'registration.html',
       inject: 'head',
       template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,
