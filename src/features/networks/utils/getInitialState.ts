@@ -1,4 +1,4 @@
-import networks from '../../../networks.json';
+import networks from '../../../networks';
 
 // Types
 import { INetworksState } from '../types';

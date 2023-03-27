@@ -5,7 +5,7 @@ import { IMainRootState, INetwork } from '../types';
 
 /**
  * Fetches all the available networks.
- * @returns {INetwork[]} the available sessions.
+ * @returns {INetwork[]} the available networks.
  */
 export default function useSelectNetworks(): INetwork[] {
   return useSelector<IMainRootState, INetwork[]>(

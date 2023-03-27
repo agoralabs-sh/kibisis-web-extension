@@ -15,6 +15,8 @@ import {
   IAlgorandAccountInformation,
   ILogger,
   IMainRootState,
+  INetwork,
+  INode,
   IPksAccountStorageItem,
 } from '../../../types';
 
@@ -27,17 +29,20 @@ const fetchAccounts: AsyncThunk<
   async (_, { getState }) => {
     const functionName: string = 'fetchAccounts';
     const logger: ILogger = getState().application.logger;
+    const networks: INetwork[] = getState().networks.items;
+    const selectedNetwork: INetwork =
+      getState().settings.network || networks[0];
+    const node: INode =
+      selectedNetwork.nodes[
+        Math.floor(Math.random() * selectedNetwork.nodes.length)
+      ]; // get random node
     const privateKeyService: PrivateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
     });
     const accounts: IPksAccountStorageItem[] =
       await privateKeyService.getAccounts();
-    const client: Algodv2 = new Algodv2( // TODO: use node based on network selection
-      '',
-      'https://node.testnet.algoexplorerapi.io',
-      ''
-    );
+    const client: Algodv2 = new Algodv2('', node.url, node.port);
 
     return await Promise.all(
       accounts.map(async (value) => {
@@ -45,7 +50,7 @@ const fetchAccounts: AsyncThunk<
 
         try {
           logger.debug(
-            `${functionName}(): fetching account information for "${value.publicKey}"`
+            `${functionName}(): fetching account information for "${value.publicKey}" from "${node.name}"`
           );
 
           accountInformation = (await client
@@ -59,6 +64,7 @@ const fetchAccounts: AsyncThunk<
               String(accountInformation.amount as bigint)
             ).toString(),
             authAddress: accountInformation['auth-addr'] || null,
+            id: value.id,
             minAtomicBalance: new BigNumber(
               String(accountInformation['min-balance'] as bigint)
             ).toString(),
@@ -66,7 +72,7 @@ const fetchAccounts: AsyncThunk<
           };
         } catch (error) {
           logger.error(
-            `${functionName}(): failed to get account information for "${value.publicKey}": ${error.message}`
+            `${functionName}(): failed to get account information for "${value.publicKey}" on "${node.name}": ${error.message}`
           );
 
           return {

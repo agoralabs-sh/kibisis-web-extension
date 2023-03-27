@@ -8,6 +8,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
+import BigNumber from 'bignumber.js';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAdd } from 'react-icons/io5';
@@ -26,19 +27,26 @@ import CopyButton from '../../components/CopyButton';
 import MainLayout from '../../components/MainLayout';
 import PageShell from '../../components/PageShell';
 
+// Constants
+import { ACCOUNTS_ROUTE } from '../../constants';
+
 // Selectors
 import {
   useSelectAccount,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
+  useSelectSelectedNetwork,
 } from '../../selectors';
 
 // Types
-import { IAccount } from '../../types';
+import { IAccount, INetwork } from '../../types';
 
 // Utils
-import { ellipseAddress } from '../../utils';
-import { ACCOUNTS_ROUTE } from '../../constants';
+import {
+  convertToStandardUnit,
+  ellipseAddress,
+  formatCurrencyUnit,
+} from '../../utils';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -48,10 +56,13 @@ const AccountPage: FC = () => {
   const account: IAccount | null = useSelectAccount(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
+  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const handleAddAccountClick = () => {
     console.log('add account');
   };
   const renderContent = () => {
+    let standardUnit: BigNumber;
+
     if (fetchingAccounts || fetchingSettings) {
       return (
         <VStack alignItems="flex-start" w="full">
@@ -83,7 +94,12 @@ const AccountPage: FC = () => {
       );
     }
 
-    if (account) {
+    if (account && selectedNetwork) {
+      standardUnit = convertToStandardUnit(
+        new BigNumber(account.atomicBalance),
+        selectedNetwork.nativeCurrency.decimals
+      );
+
       return (
         <VStack alignItems="flex-start" spacing={1} w="full">
           <HStack alignItems="center" w="full">
@@ -102,7 +118,7 @@ const AccountPage: FC = () => {
                 'labels.balance'
               )}:`}</Text>
               <Text color="gray.500" fontSize="sm">
-                {account.atomicBalance}
+                {formatCurrencyUnit(standardUnit)}
               </Text>
               <AlgorandIcon color="black" h={3} w={3} />
             </HStack>

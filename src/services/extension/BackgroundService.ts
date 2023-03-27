@@ -2,7 +2,7 @@ import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
 import browser, { Runtime, Windows } from 'webextension-polyfill';
 
 // Config
-import networks from '../../networks.json';
+import networks from '../../networks';
 
 // Constants
 import {

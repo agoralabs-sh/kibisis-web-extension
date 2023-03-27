@@ -97,6 +97,7 @@
     "framer-motion": "^10.0.1",
     "i18next": "^22.4.10",
     "nanoid": "^4.0.1",
+    "numbro": "^2.3.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.2.0",
