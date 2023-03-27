@@ -170,7 +170,14 @@ const AccountPage: FC = () => {
 
   return (
     <PageShell noPadding={true}>
-      <MainLayout>{renderContent()}</MainLayout>
+      <MainLayout
+        showHeader={false}
+        title={
+          account?.address || t<string>('titles.page', { context: 'accounts' })
+        }
+      >
+        {renderContent()}
+      </MainLayout>
     </PageShell>
   );
 };

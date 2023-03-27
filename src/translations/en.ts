@@ -67,7 +67,9 @@ const translation: IResourceLanguage = {
   },
   titles: {
     page: '',
+    page_accounts: 'Accounts',
     page_getStarted: 'Get Started',
+    page_settings: 'Settings',
   },
 };
 

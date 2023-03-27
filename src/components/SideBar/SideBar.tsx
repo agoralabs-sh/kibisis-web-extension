@@ -26,16 +26,19 @@ import {
   IoWalletOutline,
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { randomBytes } from 'tweetnacl';
 
 // Components
 import AgoraIcon from '../AgoraIcon';
+import Divider from '../Divider';
 import SideBarActionItem from './SideBarActionItem';
-import SideBarDivider from './SideBarDivider';
 
 // Constants
 import {
+  SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
+  SIDEBAR_ITEM_HEIGHT,
   SIDEBAR_MAX_WIDTH,
   SIDEBAR_MIN_WIDTH,
 } from '../../constants';
@@ -51,6 +54,7 @@ import { ellipseAddress } from '../../utils';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
+  const navigate: NavigateFunction = useNavigate();
   const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const [width, setWidth] = useState<number>(SIDEBAR_MIN_WIDTH);
@@ -77,7 +81,7 @@ const SideBar: FC = () => {
   };
   const handleSettingsClick = () => {
     onCloseSideBar();
-    console.log('go to settings page');
+    navigate(SETTINGS_ROUTE);
   };
   const handleTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.propertyName === 'width' && width >= SIDEBAR_MAX_WIDTH) {
@@ -88,15 +92,17 @@ const SideBar: FC = () => {
     if (fetchingAccounts) {
       return Array.from({ length: 3 }, () => (
         <Button
+          borderRadius={0}
           colorScheme="gray"
           fontSize="md"
+          h={SIDEBAR_ITEM_HEIGHT}
           justifyContent="start"
           key={nanoid()}
           p={0}
           variant="ghost"
           w="full"
         >
-          <HStack py={1} spacing={0} w="full">
+          <HStack m={0} p={0} spacing={0} w="full">
             <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
               <SkeletonCircle size="9" />
             </Center>
@@ -115,8 +121,10 @@ const SideBar: FC = () => {
 
     return accounts.map((value) => (
       <Button
+        borderRadius={0}
         colorScheme="gray"
         fontSize="md"
+        h={SIDEBAR_ITEM_HEIGHT}
         justifyContent="start"
         key={nanoid()}
         onClick={handleAccountClick(value.address)}
@@ -124,7 +132,7 @@ const SideBar: FC = () => {
         variant="ghost"
         w="full"
       >
-        <HStack pr={2} py={1} spacing={0} w="full">
+        <HStack m={0} p={0} spacing={0} w="full">
           <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
             <Avatar bg="primary.500" icon={<IoWalletOutline />} size="sm" />
           </Center>
@@ -185,38 +193,31 @@ const SideBar: FC = () => {
       top={0}
       transition="width 0.3s ease"
       w={`${width}px`}
+      zIndex={10}
     >
       <HStack justifyContent="flex-end" w="full">
         {isHeaderShowing && (
           <HStack flexGrow={1} px={2} spacing={1} w="full">
             <AgoraIcon color="primary.500" h={5} w={5} />
-            <VStack
-              alignItems="flex-start"
-              flexGrow={1}
-              justifyContent="space-evenly"
-              spacing={0}
-            >
-              <Text color="gray.500" fontSize="sm">
-                {__APP_TITLE__}
-              </Text>
-              <Text color="gray.400" fontSize="xs">
-                {`v${__VERSION__}`}
-              </Text>
-            </VStack>
+            <Text color="gray.500" fontSize="sm">
+              {__APP_TITLE__}
+            </Text>
           </HStack>
         )}
         <IconButton
           aria-label="Open drawer"
+          borderRadius={0}
+          colorScheme="gray"
           icon={sideBarIcon}
           onClick={handleOpenToggleClick}
           variant="ghost"
         />
       </HStack>
-      <SideBarDivider />
+      <Divider />
       <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
         {renderAccounts()}
       </VStack>
-      <SideBarDivider />
+      <Divider />
       <SideBarActionItem
         icon={IoAddCircleOutline}
         label={t<string>('labels.addAccount')}

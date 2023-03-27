@@ -11,7 +11,7 @@ import MainAppProvider from '../MainAppProvider';
 import Fonts from '../Fonts';
 
 // Constants
-import { ACCOUNTS_ROUTE } from '../../constants';
+import { ACCOUNTS_ROUTE, SETTINGS_ROUTE } from '../../constants';
 
 // Features
 import { reducer as accountsReducer } from '../../features/accounts';
@@ -22,6 +22,7 @@ import { reducer as settingsReducer } from '../../features/settings';
 
 // Pages
 import AccountPage from '../../pages/AccountPage';
+import SettingsPage from '../../pages/SettingsPage';
 
 // Theme
 import { theme } from '../../theme';
@@ -64,6 +65,7 @@ const MainApp: FC<IProps> = ({ i18next }: IProps) => {
                   path={`${ACCOUNTS_ROUTE}/:address`}
                 />
                 <Route element={<AccountPage />} path={ACCOUNTS_ROUTE} />
+                <Route element={<SettingsPage />} path={SETTINGS_ROUTE} />
               </Routes>
             </MainAppProvider>
           </HashRouter>

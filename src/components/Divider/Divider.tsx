@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-const SideBarDivider: FC = () => (
+const Divider: FC = () => (
   <Box
     borderTopColor="gray.300"
     borderTopStyle="solid"
@@ -11,4 +11,4 @@ const SideBarDivider: FC = () => (
   />
 );
 
-export default SideBarDivider;
+export default Divider;

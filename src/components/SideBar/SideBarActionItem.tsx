@@ -3,7 +3,7 @@ import React, { FC, MouseEvent } from 'react';
 import { IconType } from 'react-icons';
 
 // Constants
-import { SIDEBAR_MIN_WIDTH } from '../../constants';
+import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '../../constants';
 
 interface IProps {
   icon: IconType;
@@ -13,8 +13,10 @@ interface IProps {
 
 const SideBarActionItem: FC<IProps> = ({ icon, label, onClick }: IProps) => (
   <Button
+    borderRadius={0}
     colorScheme="gray"
     fontSize="md"
+    h={SIDEBAR_ITEM_HEIGHT}
     justifyContent="start"
     onClick={onClick}
     p={0}
