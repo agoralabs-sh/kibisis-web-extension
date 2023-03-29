@@ -22,6 +22,7 @@ const translation: IResourceLanguage = {
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
     importAccount: `Add your mnemonic phrase to import your account.`,
+    minimumBalance: `Based on you account configuration, the minimum balance needed to keep your account open is {{amount}} algo.`,
     nameAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
@@ -69,6 +70,7 @@ const translation: IResourceLanguage = {
     page: '',
     page_accounts: 'Accounts',
     page_getStarted: 'Get Started',
+    page_networks: 'Networks',
     page_settings: 'Settings',
   },
 };

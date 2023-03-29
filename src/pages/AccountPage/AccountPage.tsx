@@ -2,6 +2,7 @@ import {
   Button as ChakraButton,
   Heading,
   HStack,
+  Icon,
   Menu,
   MenuButton,
   MenuItem,
@@ -17,7 +18,11 @@ import BigNumber from 'bignumber.js';
 import { nanoid } from 'nanoid';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAdd, IoChevronDown } from 'react-icons/io5';
+import {
+  IoAdd,
+  IoChevronDown,
+  IoInformationCircleOutline,
+} from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import {
   Location,
@@ -84,7 +89,8 @@ const AccountPage: FC = () => {
     );
   };
   const renderContent = () => {
-    let standardUnit: BigNumber;
+    let balanceStandardUnit: BigNumber;
+    let minumumStandardUnit: BigNumber;
 
     if (fetchingAccounts || fetchingSettings) {
       return (
@@ -121,13 +127,22 @@ const AccountPage: FC = () => {
               </HStack>
             </Skeleton>
           </HStack>
+          <Skeleton flexGrow="1">
+            <Text color="gray.500" fontSize="xs">
+              {ellipseAddress(faker.random.alphaNumeric(52).toUpperCase())}
+            </Text>
+          </Skeleton>
         </VStack>
       );
     }
 
     if (account && settings.network) {
-      standardUnit = convertToStandardUnit(
+      balanceStandardUnit = convertToStandardUnit(
         new BigNumber(account.atomicBalance),
+        settings.network.nativeCurrency.decimals
+      );
+      minumumStandardUnit = convertToStandardUnit(
+        new BigNumber(account.minAtomicBalance),
         settings.network.nativeCurrency.decimals
       );
 
@@ -157,28 +172,50 @@ const AccountPage: FC = () => {
             </Menu>
           </HStack>
           <HStack alignItems="center" w="full">
+            {/* Name/address */}
             <Heading color="gray.500" size="md">
               {account.name || ellipseAddress(account.address)}
             </Heading>
             <Spacer />
-            <HStack
-              backgroundColor="gray.200"
-              borderRadius={25}
-              px={2}
-              py={1}
-              spacing={1}
-            >
-              <Text color="gray.500" fontSize="sm">{`${t<string>(
-                'labels.balance'
-              )}:`}</Text>
-              <Text color="gray.500" fontSize="sm">
-                {formatCurrencyUnit(standardUnit)}
-              </Text>
-              {createIconFromDataUri(settings.network.nativeCurrency.iconUri, {
-                color: 'black.500',
-                h: 3,
-                w: 3,
-              })}
+            {/* Balance */}
+            <HStack alignItems="center" justifyContent="center" spacing={1}>
+              <Tooltip
+                aria-label="Minimum balance information"
+                label={t<string>('captions.minimumBalance', {
+                  amount: formatCurrencyUnit(minumumStandardUnit),
+                })}
+              >
+                <span
+                  style={{
+                    height: '1em',
+                    lineHeight: '1em',
+                  }}
+                >
+                  <Icon as={IoInformationCircleOutline} color="gray.500" />
+                </span>
+              </Tooltip>
+              <HStack
+                backgroundColor="gray.200"
+                borderRadius={25}
+                px={2}
+                py={1}
+                spacing={1}
+              >
+                <Text color="gray.500" fontSize="sm">{`${t<string>(
+                  'labels.balance'
+                )}:`}</Text>
+                <Text color="gray.500" fontSize="sm">
+                  {formatCurrencyUnit(balanceStandardUnit)}
+                </Text>
+                {createIconFromDataUri(
+                  settings.network.nativeCurrency.iconUri,
+                  {
+                    color: 'black.500',
+                    h: 3,
+                    w: 3,
+                  }
+                )}
+              </HStack>
             </HStack>
           </HStack>
           <HStack alignItems="center" w="full">
