@@ -7,7 +7,6 @@ import { ISettings } from '../../../types';
  */
 interface ISettingsState extends ISettings {
   fetching: boolean;
-  loaded: boolean;
   saving: boolean;
 }
 

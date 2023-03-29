@@ -4,14 +4,14 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '../../enums';
 
 // Thunks
-import { fetchSettings } from './thunks';
+import { fetchSettings, setSettings } from './thunks';
 
 // Types
 import { ISettings } from '../../types';
 import { ISettingsState } from './types';
 
 // Utils
-import { getInitialState } from './utils';
+import { getInitialState, mapSettingsToState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
@@ -20,7 +20,6 @@ const slice = createSlice({
       fetchSettings.fulfilled,
       (state: ISettingsState, action: PayloadAction<ISettings>) => {
         state.fetching = false;
-        state.loaded = true;
         state.network = action.payload.network;
       }
     );
@@ -29,6 +28,21 @@ const slice = createSlice({
     });
     builder.addCase(fetchSettings.rejected, (state: ISettingsState) => {
       state.fetching = false;
+    });
+    /** Set settings **/
+    builder.addCase(
+      setSettings.fulfilled,
+      (state: ISettingsState, action: PayloadAction<ISettings>) => {
+        state.saving = false;
+
+        mapSettingsToState(state, action.payload);
+      }
+    );
+    builder.addCase(setSettings.pending, (state: ISettingsState) => {
+      state.saving = true;
+    });
+    builder.addCase(setSettings.rejected, (state: ISettingsState) => {
+      state.saving = false;
     });
   },
   initialState: getInitialState(),

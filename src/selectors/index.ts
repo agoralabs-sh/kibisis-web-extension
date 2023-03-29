@@ -12,4 +12,4 @@ export { default as useSelectSavingSessions } from './useSelectSavingSessions';
 export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';
 export { default as useSelectSessions } from './useSelectSessions';
-export { default as useSelectSettingsLoaded } from './useSelectSettingsLoaded';
+export { default as useSelectSettings } from './useSelectSettings';

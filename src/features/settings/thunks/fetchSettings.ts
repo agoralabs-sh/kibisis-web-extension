@@ -4,13 +4,16 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { SETTINGS_NETWORK_KEY } from '../../../constants';
 
 // Enums
-import { NetworkTypeEnum, SettingsThunkEnum } from '../../../enums';
+import { SettingsThunkEnum } from '../../../enums';
 
 // Services
 import { StorageManager } from '../../../services/extension';
 
 // Types
 import { IMainRootState, INetwork, ISettings } from '../../../types';
+
+// Utils
+import { createDefaultSettings } from '../utils';
 
 const fetchSettings: AsyncThunk<
   ISettings, // return
@@ -23,10 +26,6 @@ const fetchSettings: AsyncThunk<
     const storageManager: StorageManager = new StorageManager();
     const storageItems: Record<string, unknown> =
       await storageManager.getAllItems();
-    const defaultSettings: ISettings = {
-      network:
-        networks.find((value) => value.type === NetworkTypeEnum.Stable) || null,
-    };
 
     return Object.keys(storageItems).reduce<ISettings>((acc, value) => {
       switch (value) {
@@ -38,7 +37,7 @@ const fetchSettings: AsyncThunk<
         default:
           return acc;
       }
-    }, defaultSettings);
+    }, createDefaultSettings(networks));
   }
 );
 

@@ -36,6 +36,7 @@ import SideBarActionItem from './SideBarActionItem';
 
 // Constants
 import {
+  ACCOUNTS_ROUTE,
   SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
   SIDEBAR_ITEM_HEIGHT,
@@ -51,6 +52,7 @@ import { IAccount } from '../../types';
 
 // Utils
 import { ellipseAddress } from '../../utils';
+import { add } from 'husky';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
@@ -73,7 +75,7 @@ const SideBar: FC = () => {
   };
   const handleAccountClick = (address: string) => () => {
     onCloseSideBar();
-    console.log(`got to accounts/${address}`);
+    navigate(`${ACCOUNTS_ROUTE}/${address}`);
   };
   const handleAddAccountClick = () => {
     onCloseSideBar();

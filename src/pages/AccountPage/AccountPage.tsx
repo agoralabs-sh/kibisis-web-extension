@@ -14,9 +14,11 @@ import {
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
+import { nanoid } from 'nanoid';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAdd, IoChevronDown } from 'react-icons/io5';
+import { useDispatch } from 'react-redux';
 import {
   Location,
   NavigateFunction,
@@ -28,6 +30,7 @@ import {
 // Components
 import AlgorandIcon from '../../components/AlgorandIcon';
 import Button from '../../components/Button';
+import ChainBadge from '../../components/ChainBadge';
 import CopyButton from '../../components/CopyButton';
 import MainLayout from '../../components/MainLayout';
 import PageShell from '../../components/PageShell';
@@ -35,17 +38,20 @@ import PageShell from '../../components/PageShell';
 // Constants
 import { ACCOUNTS_ROUTE } from '../../constants';
 
+// Features
+import { setSettings } from '../../features/settings';
+
 // Selectors
 import {
   useSelectAccount,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
   useSelectNetworks,
-  useSelectSelectedNetwork,
+  useSelectSettings,
 } from '../../selectors';
 
 // Types
-import { IAccount, INetwork } from '../../types';
+import { IAccount, IAppThunkDispatch, INetwork, ISettings } from '../../types';
 
 // Utils
 import {
@@ -54,11 +60,10 @@ import {
   ellipseAddress,
   formatCurrencyUnit,
 } from '../../utils';
-import ChainBadge from '../../components/ChainBadge';
-import { nanoid } from 'nanoid';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
   const { address } = useParams();
@@ -66,9 +71,17 @@ const AccountPage: FC = () => {
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
   const networks: INetwork[] = useSelectNetworks();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const settings: ISettings = useSelectSettings();
   const handleAddAccountClick = () => {
     console.log('add account');
+  };
+  const handleNetworkClick = (network: INetwork) => () => {
+    dispatch(
+      setSettings({
+        ...settings,
+        network,
+      })
+    );
   };
   const renderContent = () => {
     let standardUnit: BigNumber;
@@ -76,6 +89,14 @@ const AccountPage: FC = () => {
     if (fetchingAccounts || fetchingSettings) {
       return (
         <VStack alignItems="flex-start" pt={4} px={4} w="full">
+          {/* Header */}
+          <HStack justifyContent="flex-end" w="full">
+            <Skeleton>
+              <ChakraButton rightIcon={<IoChevronDown />} variant="ghost">
+                <ChainBadge network={networks[0]} />
+              </ChakraButton>
+            </Skeleton>
+          </HStack>
           <HStack alignItems="center" w="full">
             <Skeleton flexGrow="1">
               <Heading color="gray.500" size="md">
@@ -104,10 +125,10 @@ const AccountPage: FC = () => {
       );
     }
 
-    if (account && selectedNetwork) {
+    if (account && settings.network) {
       standardUnit = convertToStandardUnit(
         new BigNumber(account.atomicBalance),
-        selectedNetwork.nativeCurrency.decimals
+        settings.network.nativeCurrency.decimals
       );
 
       return (
@@ -120,11 +141,15 @@ const AccountPage: FC = () => {
                 rightIcon={<IoChevronDown />}
                 variant="ghost"
               >
-                <ChainBadge network={selectedNetwork} />
+                <ChainBadge network={settings.network} />
               </MenuButton>
               <MenuList>
                 {networks.map((value) => (
-                  <MenuItem key={nanoid()} minH="48px">
+                  <MenuItem
+                    key={nanoid()}
+                    minH="48px"
+                    onClick={handleNetworkClick(value)}
+                  >
                     <ChainBadge network={value} />
                   </MenuItem>
                 ))}
@@ -149,7 +174,7 @@ const AccountPage: FC = () => {
               <Text color="gray.500" fontSize="sm">
                 {formatCurrencyUnit(standardUnit)}
               </Text>
-              {createIconFromDataUri(selectedNetwork.nativeCurrency.iconUri, {
+              {createIconFromDataUri(settings.network.nativeCurrency.iconUri, {
                 color: 'black.500',
                 h: 3,
                 w: 3,
