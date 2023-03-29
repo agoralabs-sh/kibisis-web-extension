@@ -23,7 +23,7 @@ import { IAppThunkDispatch, IRegistrationRootState } from '../../types';
 const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const password: string | null = useSelector<
     IRegistrationRootState,
     string | null

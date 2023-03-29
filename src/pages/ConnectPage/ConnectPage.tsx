@@ -23,7 +23,7 @@ import { IAppThunkDispatch, INetwork } from '../../types';
 
 const ConnectPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const networks: INetwork[] = useSelectNetworks();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const handleConnectModalClose = () => {
@@ -40,7 +40,11 @@ const ConnectPage: FC = () => {
     let tabId: number;
 
     if (selectedNetwork) {
-      dispatch(fetchAccounts());
+      dispatch(
+        fetchAccounts({
+          onlyFetchFromStorage: true, // only get the accounts from storage, we only need public addresses
+        })
+      );
 
       network =
         networks.find(

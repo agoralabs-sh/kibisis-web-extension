@@ -16,7 +16,7 @@ import { theme } from '../../theme';
 import { IAppThunkDispatch } from '../../types';
 
 const RegistrationAppProvider: FC<PropsWithChildren> = ({ children }) => {
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
   const handleErrorModalClose = () => {

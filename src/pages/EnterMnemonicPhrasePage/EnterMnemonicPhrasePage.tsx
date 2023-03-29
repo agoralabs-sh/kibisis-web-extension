@@ -34,7 +34,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   const componentName: string = 'EnterMnemonicPhrasePage';
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();

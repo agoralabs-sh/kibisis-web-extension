@@ -59,7 +59,7 @@ interface IProps {
 
 const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const accounts: IAccount[] = useSelectAccounts();
   const connectRequest: IConnectRequest | null = useSelectConnectRequest();
   const fetching: boolean = useSelectFetchingAccounts();
