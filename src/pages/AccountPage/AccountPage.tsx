@@ -3,6 +3,7 @@ import {
   Heading,
   HStack,
   Icon,
+  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -12,6 +13,7 @@ import {
   Text,
   Tooltip,
   VStack,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
@@ -22,6 +24,7 @@ import {
   IoAdd,
   IoChevronDown,
   IoInformationCircleOutline,
+  IoQrCodeOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import {
@@ -65,6 +68,7 @@ import {
   ellipseAddress,
   formatCurrencyUnit,
 } from '../../utils';
+import AddressQrCodeModal from '../../components/AddressQrCodeModal';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -72,6 +76,11 @@ const AccountPage: FC = () => {
   const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
   const { address } = useParams();
+  const {
+    isOpen: isQrCodeModalOpen,
+    onClose: onQrModalClose,
+    onOpen: onQrCodeModalOpen,
+  } = useDisclosure();
   const account: IAccount | null = useSelectAccount(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
@@ -218,7 +227,8 @@ const AccountPage: FC = () => {
               </HStack>
             </HStack>
           </HStack>
-          <HStack alignItems="center" w="full">
+          {/* Address and interactions */}
+          <HStack alignItems="center" spacing={1} w="full">
             <Tooltip label={account.address}>
               <Text color="gray.500" fontSize="xs">
                 {ellipseAddress(account.address, { end: 10, start: 10 })}
@@ -229,6 +239,13 @@ const AccountPage: FC = () => {
               ariaLabel="Copy address"
               copiedTooltipLabel={t<string>('captions.addressCopied')}
               value={account.address}
+            />
+            <IconButton
+              aria-label="Show QR code"
+              icon={<Icon as={IoQrCodeOutline} color="gray.500" />}
+              onClick={onQrCodeModalOpen}
+              size="sm"
+              variant="ghost"
             />
           </HStack>
         </VStack>
@@ -264,16 +281,26 @@ const AccountPage: FC = () => {
   }, [account]);
 
   return (
-    <PageShell noPadding={true}>
-      <MainLayout
-        showHeader={false}
-        title={
-          account?.address || t<string>('titles.page', { context: 'accounts' })
-        }
-      >
-        {renderContent()}
-      </MainLayout>
-    </PageShell>
+    <>
+      {account && (
+        <AddressQrCodeModal
+          address={account.address}
+          isOpen={isQrCodeModalOpen}
+          onClose={onQrModalClose}
+        />
+      )}
+      <PageShell noPadding={true}>
+        <MainLayout
+          showHeader={false}
+          title={
+            account?.address ||
+            t<string>('titles.page', { context: 'accounts' })
+          }
+        >
+          {renderContent()}
+        </MainLayout>
+      </PageShell>
+    </>
   );
 };
 
