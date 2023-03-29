@@ -1,8 +1,8 @@
-// Enums
-import { NetworkTypeEnum } from '../../../enums';
-
 // Types
 import { INetwork, ISettings } from '../../../types';
+
+// Utils
+import { selectDefaultNetwork } from '../../../utils';
 
 /**
  * Creates a default settings object.
@@ -11,8 +11,6 @@ import { INetwork, ISettings } from '../../../types';
  */
 export default function createDefaultSettings(networks: INetwork[]): ISettings {
   return {
-    network:
-      networks.find((value) => value.type === NetworkTypeEnum.Stable) ||
-      networks[0],
+    network: selectDefaultNetwork(networks),
   };
 }

@@ -39,6 +39,9 @@ import {
   IStorageItemTypes,
 } from '../../types';
 
+// Utils
+import { selectDefaultNetwork } from '../../utils';
+
 export default class BackgroundService {
   private connectWindow: Windows.Window | null;
   private readonly logger: ILogger | null;
@@ -104,7 +107,7 @@ export default class BackgroundService {
     );
     network =
       (storageItems[SETTINGS_NETWORK_KEY] as INetwork | undefined) ||
-      (networks[0] as INetwork); // get the network from the settings or get the default one (mainnet)
+      (selectDefaultNetwork(networks) as INetwork); // get the network from the settings or get the default one (mainnet)
 
     if (payload.genesisHash) {
       network =
