@@ -1,4 +1,5 @@
-import networks from '../../../networks';
+// Config
+import { networks } from '../../../config';
 
 // Types
 import { INetworksState } from '../types';

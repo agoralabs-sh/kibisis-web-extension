@@ -50,7 +50,7 @@ const fetchAccounts: AsyncThunk<
 
         try {
           logger.debug(
-            `${functionName}(): fetching account information for "${value.publicKey}" from "${node.name}"`
+            `${functionName}(): fetching account information for "${value.publicKey}" from "${node.name}" on "${selectedNetwork.genesisId}"`
           );
 
           accountInformation = (await client
