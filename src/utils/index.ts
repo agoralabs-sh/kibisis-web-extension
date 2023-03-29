@@ -1,5 +1,6 @@
 export { default as convertToAtomicUnit } from './convertToAtomicUnit';
 export { default as convertToStandardUnit } from './convertToStandardUnit';
+export { default as createIconFromDataUri } from './createIconFromDataUri';
 export { default as createLogger } from './createLogger';
 export { default as ellipseAddress } from './ellipseAddress';
 export { default as formatCurrencyUnit } from './formatCurrencyUnit';

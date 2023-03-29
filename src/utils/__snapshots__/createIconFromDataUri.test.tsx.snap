@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createIconFromDataUri() should return a an icon from a base64 encoded string 1`] = `
+<Icon
+  h={3}
+  viewBox="0 0 200 200"
+  w={3}
+>
+  <path
+    d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
+    fill="currentColor"
+  />
+</Icon>
+`;
+
+exports[`createIconFromDataUri() should return a an icon from a string 1`] = `
+<Icon
+  h={3}
+  viewBox="0 0 200 200"
+  w={3}
+>
+  <path
+    d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
+    fill="currentColor"
+  />
+</Icon>
+`;
