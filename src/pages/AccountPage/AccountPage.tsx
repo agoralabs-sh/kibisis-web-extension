@@ -21,7 +21,6 @@ import {
 } from 'react-router-dom';
 
 // Components
-import AlgorandIcon from '../../components/AlgorandIcon';
 import Button from '../../components/Button';
 import CopyButton from '../../components/CopyButton';
 import MainLayout from '../../components/MainLayout';
@@ -43,6 +42,7 @@ import { IAccount, INetwork } from '../../types';
 
 // Utils
 import {
+  createIconFromDataUri,
   convertToStandardUnit,
   ellipseAddress,
   formatCurrencyUnit,
@@ -65,7 +65,7 @@ const AccountPage: FC = () => {
 
     if (fetchingAccounts || fetchingSettings) {
       return (
-        <VStack alignItems="flex-start" w="full">
+        <VStack alignItems="flex-start" pt={4} px={4} w="full">
           <HStack alignItems="center" w="full">
             <Skeleton flexGrow="1">
               <Heading color="gray.500" size="md">
@@ -101,7 +101,7 @@ const AccountPage: FC = () => {
       );
 
       return (
-        <VStack alignItems="flex-start" spacing={1} w="full">
+        <VStack alignItems="flex-start" pt={4} px={4} w="full">
           <HStack alignItems="center" w="full">
             <Heading color="gray.500" size="md">
               {account.name || ellipseAddress(account.address)}
@@ -120,7 +120,11 @@ const AccountPage: FC = () => {
               <Text color="gray.500" fontSize="sm">
                 {formatCurrencyUnit(standardUnit)}
               </Text>
-              <AlgorandIcon color="black" h={3} w={3} />
+              {createIconFromDataUri(selectedNetwork.nativeCurrency.iconUri, {
+                color: 'black.500',
+                h: 3,
+                w: 3,
+              })}
             </HStack>
           </HStack>
           <HStack alignItems="center" w="full">
