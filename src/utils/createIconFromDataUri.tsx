@@ -1,4 +1,5 @@
 import { Icon, IconProps } from '@chakra-ui/react';
+import { sanitize } from 'dompurify';
 import React, { ReactNode } from 'react';
 
 /**
@@ -15,6 +16,7 @@ export default function createIconFromDataUri(
   let data: string | undefined;
   let document: Document;
   let parser: DOMParser;
+  let svg: string;
   let viewBox: string | undefined;
 
   if (dataUri.indexOf('data:') !== 0) {
@@ -44,7 +46,11 @@ export default function createIconFromDataUri(
   }
 
   parser = new DOMParser();
-  document = parser.parseFromString(decodeURIComponent(data), mimeType);
+  svg = decodeURIComponent(data);
+  document = parser.parseFromString(
+    sanitize(svg, { USE_PROFILES: { svg: true, svgFilters: true } }),
+    mimeType
+  ); // sanitize for any nastiness
   viewBox =
     document.getElementsByTagName('svg').item(0)?.getAttribute('viewBox') ||
     undefined;
