@@ -7,6 +7,7 @@ import INode from './INode';
 
 interface INetwork {
   canonicalName: string;
+  chakraTheme: string;
   genesisHash: string;
   genesisId: string;
   nativeCurrency: INativeCurrency;

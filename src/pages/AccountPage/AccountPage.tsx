@@ -1,6 +1,11 @@
 import {
+  Button as ChakraButton,
   Heading,
   HStack,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Skeleton,
   Spacer,
   Text,
@@ -11,7 +16,7 @@ import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAdd } from 'react-icons/io5';
+import { IoAdd, IoChevronDown } from 'react-icons/io5';
 import {
   Location,
   NavigateFunction,
@@ -21,6 +26,7 @@ import {
 } from 'react-router-dom';
 
 // Components
+import AlgorandIcon from '../../components/AlgorandIcon';
 import Button from '../../components/Button';
 import CopyButton from '../../components/CopyButton';
 import MainLayout from '../../components/MainLayout';
@@ -34,6 +40,7 @@ import {
   useSelectAccount,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
+  useSelectNetworks,
   useSelectSelectedNetwork,
 } from '../../selectors';
 
@@ -47,6 +54,8 @@ import {
   ellipseAddress,
   formatCurrencyUnit,
 } from '../../utils';
+import ChainBadge from '../../components/ChainBadge';
+import { nanoid } from 'nanoid';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -56,6 +65,7 @@ const AccountPage: FC = () => {
   const account: IAccount | null = useSelectAccount(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
+  const networks: INetwork[] = useSelectNetworks();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const handleAddAccountClick = () => {
     console.log('add account');
@@ -102,6 +112,25 @@ const AccountPage: FC = () => {
 
       return (
         <VStack alignItems="flex-start" pt={4} px={4} w="full">
+          {/* Header */}
+          <HStack justifyContent="flex-end" w="full">
+            <Menu>
+              <MenuButton
+                as={ChakraButton}
+                rightIcon={<IoChevronDown />}
+                variant="ghost"
+              >
+                <ChainBadge network={selectedNetwork} />
+              </MenuButton>
+              <MenuList>
+                {networks.map((value) => (
+                  <MenuItem key={nanoid()} minH="48px">
+                    <ChainBadge network={value} />
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
+          </HStack>
           <HStack alignItems="center" w="full">
             <Heading color="gray.500" size="md">
               {account.name || ellipseAddress(account.address)}
