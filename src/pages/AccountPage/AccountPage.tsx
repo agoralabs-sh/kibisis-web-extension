@@ -41,7 +41,7 @@ import Button from '../../components/Button';
 import ChainBadge from '../../components/ChainBadge';
 import CopyButton from '../../components/CopyButton';
 import MainLayout from '../../components/MainLayout';
-import PageShell from '../../components/PageShell';
+import MainPageShell from '../../components/MainPageShell';
 
 // Constants
 import { ACCOUNTS_ROUTE } from '../../constants';
@@ -289,17 +289,9 @@ const AccountPage: FC = () => {
           onClose={onQrModalClose}
         />
       )}
-      <PageShell noPadding={true}>
-        <MainLayout
-          showHeader={false}
-          title={
-            account?.address ||
-            t<string>('titles.page', { context: 'accounts' })
-          }
-        >
-          {renderContent()}
-        </MainLayout>
-      </PageShell>
+      <MainPageShell>
+        <MainLayout>{renderContent()}</MainLayout>
+      </MainPageShell>
     </>
   );
 };

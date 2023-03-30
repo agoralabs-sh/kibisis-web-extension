@@ -22,7 +22,7 @@ import { reducer as settingsReducer } from '../../features/settings';
 
 // Pages
 import AccountPage from '../../pages/AccountPage';
-import SettingsPage from '../../pages/SettingsPage';
+import SettingsRouter from '../../pages/SettingsRouter';
 
 // Theme
 import { theme } from '../../theme';
@@ -65,7 +65,10 @@ const MainApp: FC<IProps> = ({ i18next }: IProps) => {
                   path={`${ACCOUNTS_ROUTE}/:address`}
                 />
                 <Route element={<AccountPage />} path={ACCOUNTS_ROUTE} />
-                <Route element={<SettingsPage />} path={SETTINGS_ROUTE} />
+                <Route
+                  element={<SettingsRouter />}
+                  path={`${SETTINGS_ROUTE}/*`}
+                />
               </Routes>
             </MainAppProvider>
           </HashRouter>

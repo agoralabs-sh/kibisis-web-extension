@@ -13,7 +13,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // Components
 import Button from '../../components/Button';
-import PageShell from '../../components/PageShell';
+import RegistrationPageShell from '../../components/RegistrationPageShell';
 
 // Features
 import {
@@ -66,7 +66,7 @@ const NameAccountPage: FC = () => {
   }, [encryptedPrivateKey]);
 
   return (
-    <PageShell>
+    <RegistrationPageShell>
       <VStack flexGrow={1} mb={8} spacing={8} w="full">
         <VStack spacing={3} w="full">
           <Heading color="gray.500">
@@ -112,7 +112,7 @@ const NameAccountPage: FC = () => {
           {t<string>('buttons.import')}
         </Button>
       </HStack>
-    </PageShell>
+    </RegistrationPageShell>
   );
 };
 

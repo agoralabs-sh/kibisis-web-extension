@@ -54,8 +54,8 @@ const translation: IResourceLanguage = {
     noAccountsFound: 'No accounts found!',
   },
   labels: {
-    addAccount: 'Add Account',
     accountName: 'Account Name',
+    addAccount: 'Add Account',
     balance: 'Balance',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
@@ -69,9 +69,7 @@ const translation: IResourceLanguage = {
   },
   titles: {
     page: '',
-    page_accounts: 'Accounts',
-    page_getStarted: 'Get Started',
-    page_networks: 'Networks',
+    page_advanced: 'Advanced',
     page_settings: 'Settings',
   },
 };

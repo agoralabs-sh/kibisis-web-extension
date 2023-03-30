@@ -5,7 +5,7 @@ import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
 import ConnectModal from '../../components/ConnectModal';
-import PageShell from '../../components/PageShell';
+import MainPageShell from '../../components/MainPageShell';
 
 // Features
 import { fetchAccounts } from '../../features/accounts';
@@ -70,9 +70,9 @@ const ConnectPage: FC = () => {
   return (
     <>
       <ConnectModal onClose={handleConnectModalClose} />
-      <PageShell noPadding={true}>
+      <MainPageShell noPadding={true}>
         <InfinitySpin color={theme.colors.primary['500']} width="200" />
-      </PageShell>
+      </MainPageShell>
     </>
   );
 };

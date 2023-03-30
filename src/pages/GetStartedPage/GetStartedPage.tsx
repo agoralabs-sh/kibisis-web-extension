@@ -6,7 +6,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 // Components
 import AgoraIcon from '../../components/AgoraIcon';
 import Button from '../../components/Button';
-import PageShell from '../../components/PageShell';
+import RegistrationPageShell from '../../components/RegistrationPageShell';
 
 // Constants
 import { CREATE_PASSWORD_ROUTE } from '../../constants';
@@ -19,7 +19,7 @@ const GetStartedPage: FC = () => {
   };
 
   return (
-    <PageShell>
+    <RegistrationPageShell>
       <VStack flexGrow={1} justifyContent="center" spacing={1} w="full">
         <AgoraIcon color="primary.500" h={12} w={12} />
         <Heading color="gray.500">{__APP_TITLE__}</Heading>
@@ -41,7 +41,7 @@ const GetStartedPage: FC = () => {
       >
         {t<string>('buttons.getStarted')}
       </Button>
-    </PageShell>
+    </RegistrationPageShell>
   );
 };
 
