@@ -1,7 +1,10 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Constants
-import { SETTINGS_NETWORK_KEY } from '../../../constants';
+import {
+  SETTINGS_ADVANCED_KEY,
+  SETTINGS_NETWORK_KEY,
+} from '../../../constants';
 
 // Enums
 import { SettingsThunkEnum } from '../../../enums';
@@ -10,7 +13,12 @@ import { SettingsThunkEnum } from '../../../enums';
 import { StorageManager } from '../../../services/extension';
 
 // Types
-import { IMainRootState, INetwork, ISettings } from '../../../types';
+import {
+  IAdvancedSettings,
+  IMainRootState,
+  INetwork,
+  ISettings,
+} from '../../../types';
 
 // Utils
 import { createDefaultSettings } from '../utils';
@@ -29,6 +37,11 @@ const fetchSettings: AsyncThunk<
 
     return Object.keys(storageItems).reduce<ISettings>((acc, value) => {
       switch (value) {
+        case SETTINGS_ADVANCED_KEY:
+          return {
+            ...acc,
+            advanced: storageItems[SETTINGS_ADVANCED_KEY] as IAdvancedSettings,
+          };
         case SETTINGS_NETWORK_KEY:
           return {
             ...acc,

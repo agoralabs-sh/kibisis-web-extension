@@ -20,7 +20,8 @@ const slice = createSlice({
       fetchSettings.fulfilled,
       (state: ISettingsState, action: PayloadAction<ISettings>) => {
         state.fetching = false;
-        state.network = action.payload.network;
+
+        mapSettingsToState(state, action.payload);
       }
     );
     builder.addCase(fetchSettings.pending, (state: ISettingsState) => {

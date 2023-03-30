@@ -11,5 +11,6 @@ export default function mapSettingsToState(
   state: ISettingsState,
   settings: ISettings
 ): void {
+  state.advanced = settings.advanced;
   state.network = settings.network;
 }

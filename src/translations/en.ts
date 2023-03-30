@@ -15,6 +15,8 @@ const translation: IResourceLanguage = {
   },
   captions: {
     addressCopied: 'Address copied!',
+    allowBetaNet: 'Let BetaNet networks appear in the networks list.',
+    allowTestNet: 'Let TestNet networks appear in the networks list.',
     connectRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     copied: 'Copied!',
@@ -47,7 +49,9 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    beta: 'Beta',
     createPassword: 'Secure your device',
+    developer: 'Developer',
     importAccount: 'Import your account',
     qrCode: 'QR Code',
     nameAccount: 'Name your account',
@@ -56,6 +60,8 @@ const translation: IResourceLanguage = {
   labels: {
     accountName: 'Account Name',
     addAccount: 'Add Account',
+    allowBetaNet: 'Allow BetaNet networks?',
+    allowTestNet: 'Allow TestNet networks?',
     balance: 'Balance',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',

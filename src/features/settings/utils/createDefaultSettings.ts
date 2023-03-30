@@ -11,6 +11,10 @@ import { selectDefaultNetwork } from '../../../utils';
  */
 export default function createDefaultSettings(networks: INetwork[]): ISettings {
   return {
+    advanced: {
+      allowBetaNet: false,
+      allowTestNet: false,
+    },
     network: selectDefaultNetwork(networks),
   };
 }
