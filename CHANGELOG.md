@@ -1,3 +1,10 @@
+# [1.1.0-beta.3](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2023-03-30)
+
+
+### Features
+
+* switch networks ([#4](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/4)) ([a487eb0](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/a487eb0d24aa368c6934adca62d02110aed5489c))
+
 # [1.1.0-beta.2](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2023-03-26)
 
 
