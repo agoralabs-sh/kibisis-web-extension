@@ -5,7 +5,7 @@ import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
 import ConnectModal from '../../components/ConnectModal';
-import PageShell from '../../components/PageShell';
+import MainPageShell from '../../components/MainPageShell';
 
 // Features
 import { fetchAccounts } from '../../features/accounts';
@@ -23,7 +23,7 @@ import { IAppThunkDispatch, INetwork } from '../../types';
 
 const ConnectPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const networks: INetwork[] = useSelectNetworks();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const handleConnectModalClose = () => {
@@ -40,7 +40,11 @@ const ConnectPage: FC = () => {
     let tabId: number;
 
     if (selectedNetwork) {
-      dispatch(fetchAccounts());
+      dispatch(
+        fetchAccounts({
+          onlyFetchFromStorage: true, // only get the accounts from storage, we only need public addresses
+        })
+      );
 
       network =
         networks.find(
@@ -66,9 +70,9 @@ const ConnectPage: FC = () => {
   return (
     <>
       <ConnectModal onClose={handleConnectModalClose} />
-      <PageShell noPadding={true}>
+      <MainPageShell>
         <InfinitySpin color={theme.colors.primary['500']} width="200" />
-      </PageShell>
+      </MainPageShell>
     </>
   );
 };

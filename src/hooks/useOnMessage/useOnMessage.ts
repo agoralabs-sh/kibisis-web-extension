@@ -30,7 +30,7 @@ import { IIncomingEnableRequest } from './types';
 import { handleEnableRequest } from './utils';
 
 export default function useOnMessage(): void {
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();

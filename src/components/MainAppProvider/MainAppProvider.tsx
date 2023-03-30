@@ -26,7 +26,7 @@ import { theme } from '../../theme';
 import { IAppThunkDispatch, INetwork } from '../../types';
 
 const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const { toast, ToastContainer } = createStandaloneToast({ theme });

@@ -9,7 +9,7 @@ import Button from '../../components/Button';
 import CreatePasswordInput, {
   validate,
 } from '../../components/CreatePasswordInput';
-import PageShell from '../../components/PageShell';
+import RegistrationPageShell from '../../components/RegistrationPageShell';
 
 // Constants
 import { ENTER_MNEMONIC_PHRASE_ROUTE } from '../../constants';
@@ -23,7 +23,7 @@ import { IAppThunkDispatch, IRegistrationRootState } from '../../types';
 const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const password: string | null = useSelector<
     IRegistrationRootState,
     string | null
@@ -49,7 +49,7 @@ const CreatePasswordPage: FC = () => {
   };
 
   return (
-    <PageShell>
+    <RegistrationPageShell>
       <VStack flexGrow={1} mb={8} spacing={8} w="full">
         <VStack spacing={3} w="full">
           <Heading color="gray.500">
@@ -84,7 +84,7 @@ const CreatePasswordPage: FC = () => {
           {t<string>('buttons.next')}
         </Button>
       </HStack>
-    </PageShell>
+    </RegistrationPageShell>
   );
 };
 

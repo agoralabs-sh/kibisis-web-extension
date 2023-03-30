@@ -45,9 +45,6 @@ const config: Configuration = {
         {
           from: resolve(SRC_PATH, 'manifest.json'),
         },
-        {
-          from: resolve(SRC_PATH, 'networks.json'),
-        },
       ],
     }),
     new HtmlWebpackPlugin({

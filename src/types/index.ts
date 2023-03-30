@@ -1,4 +1,5 @@
 export type { default as IAccount } from './IAccount';
+export type { default as IAdvancedSettings } from './IAdvancedSettings';
 export type { default as IAlgorandAccountInformation } from './IAlgorandAccountInformation';
 export type { default as IAppThunkDispatch } from './IAppThunkDispatch';
 export type { default as IBaseEnableRequestPayload } from './IBaseEnableRequestPayload';
@@ -10,7 +11,9 @@ export type { default as IExternalResponseEvents } from './IExternalResponseEven
 export type { default as ILogger } from './ILogger';
 export type { default as ILogLevel } from './ILogLevel';
 export type { default as IMainRootState } from './IMainRootState';
+export type { default as INativeCurrency } from './INativeCurrency';
 export type { default as INetwork } from './INetwork';
+export type { default as INode } from './INode';
 export type { default as IPksAccountStorageItem } from './IPksAccountStorageItem';
 export type { default as IPksPasswordTagStorageItem } from './IPksPasswordTagStorageItem';
 export type { default as IRegistrationRootState } from './IRegistrationRootState';

@@ -15,6 +15,8 @@ const translation: IResourceLanguage = {
   },
   captions: {
     addressCopied: 'Address copied!',
+    allowBetaNet: 'Let BetaNet networks appear in the networks list.',
+    allowTestNet: 'Let TestNet networks appear in the networks list.',
     connectRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     copied: 'Copied!',
@@ -22,6 +24,7 @@ const translation: IResourceLanguage = {
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
     importAccount: `Add your mnemonic phrase to import your account.`,
+    minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
     nameAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
@@ -46,16 +49,23 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    beta: 'Beta',
     createPassword: 'Secure your device',
+    developer: 'Developer',
     importAccount: 'Import your account',
+    qrCode: 'QR Code',
     nameAccount: 'Name your account',
     noAccountsFound: 'No accounts found!',
   },
   labels: {
     accountName: 'Account Name',
+    addAccount: 'Add Account',
+    allowBetaNet: 'Allow BetaNet networks?',
+    allowTestNet: 'Allow TestNet networks?',
     balance: 'Balance',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
+    settings: 'Settings',
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
   },
@@ -65,7 +75,8 @@ const translation: IResourceLanguage = {
   },
   titles: {
     page: '',
-    page_getStarted: 'Get Started',
+    page_advanced: 'Advanced',
+    page_settings: 'Settings',
   },
 };
 

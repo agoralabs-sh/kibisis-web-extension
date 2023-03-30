@@ -9,7 +9,7 @@ import Button from '../../components/Button';
 import EnterMnemonicPhraseInput, {
   validate,
 } from '../../components/EnterMnemonicPhraseInput';
-import PageShell from '../../components/PageShell';
+import RegistrationPageShell from '../../components/RegistrationPageShell';
 
 // Constants
 import { NAME_ACCOUNT_ROUTE } from '../../constants';
@@ -34,7 +34,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   const componentName: string = 'EnterMnemonicPhrasePage';
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();
@@ -74,7 +74,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   }, [encryptedPrivateKey]);
 
   return (
-    <PageShell>
+    <RegistrationPageShell>
       <VStack flexGrow={1} mb={8} spacing={8} w="full">
         <VStack spacing={3} w="full">
           <Heading color="gray.500">
@@ -110,7 +110,7 @@ const EnterMnemonicPhrasePage: FC = () => {
           {t<string>('buttons.next')}
         </Button>
       </HStack>
-    </PageShell>
+    </RegistrationPageShell>
   );
 };
 

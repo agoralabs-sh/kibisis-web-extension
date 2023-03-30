@@ -9,6 +9,9 @@ import { saveSession, setConnectRequest } from '../../../features/sessions';
 import { IAppThunkDispatch, INetwork, ISession } from '../../../types';
 import { IIncomingEnableRequest } from '../types';
 
+// Utils
+import { selectDefaultNetwork } from '../../../utils';
+
 interface IOptions {
   networks: INetwork[];
   selectedNetwork: INetwork | null;
@@ -21,7 +24,8 @@ export default function handleEnableRequest(
   { networks, selectedNetwork, sessions }: IOptions
 ): void {
   let filteredSessions: ISession[] = sessions;
-  let network: INetwork | null = selectedNetwork || networks[0]; // get the selected network or use the default
+  let network: INetwork | null =
+    selectedNetwork || selectDefaultNetwork(networks); // get the selected network or use the default
   let session: ISession | null;
 
   // get the network if a genesis hash is present

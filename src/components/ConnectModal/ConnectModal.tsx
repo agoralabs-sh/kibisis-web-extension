@@ -17,10 +17,11 @@ import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { randomBytes } from 'tweetnacl';
 
 // Components
 import Button from '../Button';
-import NetworkBadge from '../NetworkBadge';
+import ChainBadge from '../ChainBadge';
 
 // Constants
 import { DEFAULT_GAP } from '../../constants';
@@ -42,15 +43,15 @@ import {
   useSelectAccounts,
   useSelectConnectRequest,
   useSelectFetchingAccounts,
+  useSelectNetworks,
   useSelectSavingSessions,
 } from '../../selectors';
 
 // Types
-import { IAccount, IAppThunkDispatch, ISession } from '../../types';
+import { IAccount, IAppThunkDispatch, INetwork, ISession } from '../../types';
 
 // Utils
 import { ellipseAddress } from '../../utils';
-import { randomBytes } from 'tweetnacl';
 
 interface IProps {
   onClose: () => void;
@@ -58,11 +59,16 @@ interface IProps {
 
 const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const accounts: IAccount[] = useSelectAccounts();
-  const fetching: boolean = useSelectFetchingAccounts();
   const connectRequest: IConnectRequest | null = useSelectConnectRequest();
+  const fetching: boolean = useSelectFetchingAccounts();
+  const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
+  const network: INetwork | null =
+    networks.find(
+      (value) => value.genesisHash === connectRequest?.genesisHash
+    ) || null;
   const handleCancelClick = () => {
     if (connectRequest) {
       dispatch(
@@ -225,9 +231,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
               <Text color="gray.400" fontSize="sm" textAlign="center">
                 {connectRequest?.host || 'unknown host'}
               </Text>
-              <NetworkBadge
-                genesisHash={connectRequest?.genesisHash || 'unknown'}
-              />
+              {network && <ChainBadge network={network} />}
               <Text color="gray.500" fontSize="md" textAlign="center">
                 {t<string>('captions.connectRequest')}
               </Text>
