@@ -70,7 +70,7 @@ const ConnectPage: FC = () => {
   return (
     <>
       <ConnectModal onClose={handleConnectModalClose} />
-      <MainPageShell noPadding={true}>
+      <MainPageShell>
         <InfinitySpin color={theme.colors.primary['500']} width="200" />
       </MainPageShell>
     </>
