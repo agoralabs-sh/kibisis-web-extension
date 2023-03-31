@@ -16,6 +16,8 @@ const translation: IResourceLanguage = {
   captions: {
     addressCopied: 'Address copied!',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
+    allowDidTokenFormat:
+      'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
     allowTestNet: 'Let TestNet networks appear in the networks list.',
     connectRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
@@ -53,19 +55,23 @@ const translation: IResourceLanguage = {
     createPassword: 'Secure your device',
     developer: 'Developer',
     importAccount: 'Import your account',
-    qrCode: 'QR Code',
     nameAccount: 'Name your account',
     noAccountsFound: 'No accounts found!',
+    shareAddress: 'Share address',
   },
   labels: {
     accountName: 'Account Name',
     addAccount: 'Add Account',
     allowBetaNet: 'Allow BetaNet networks?',
+    allowDidTokenFormat: 'Allow DID token format in address sharing?',
     allowTestNet: 'Allow TestNet networks?',
     balance: 'Balance',
+    default: 'Default',
+    did: 'DID',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
     settings: 'Settings',
+    shareAddress: 'Share address',
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
   },

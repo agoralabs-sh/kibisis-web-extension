@@ -42,6 +42,7 @@ import ChainBadge from '../../components/ChainBadge';
 import CopyButton from '../../components/CopyButton';
 import MainLayout from '../../components/MainLayout';
 import MainPageShell from '../../components/MainPageShell';
+import ShareAddressModal from '../../components/ShareAddressModal';
 
 // Constants
 import { ACCOUNTS_ROUTE } from '../../constants';
@@ -68,7 +69,6 @@ import {
   ellipseAddress,
   formatCurrencyUnit,
 } from '../../utils';
-import AddressQrCodeModal from '../../components/AddressQrCodeModal';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -77,9 +77,9 @@ const AccountPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { address } = useParams();
   const {
-    isOpen: isQrCodeModalOpen,
-    onClose: onQrModalClose,
-    onOpen: onQrCodeModalOpen,
+    isOpen: isShareAddressModalOpen,
+    onClose: onShareAddressModalClose,
+    onOpen: onShareAddressModalOpen,
   } = useDisclosure();
   const account: IAccount | null = useSelectAccount(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
@@ -240,13 +240,15 @@ const AccountPage: FC = () => {
               copiedTooltipLabel={t<string>('captions.addressCopied')}
               value={account.address}
             />
-            <IconButton
-              aria-label="Show QR code"
-              icon={<Icon as={IoQrCodeOutline} color="gray.500" />}
-              onClick={onQrCodeModalOpen}
-              size="sm"
-              variant="ghost"
-            />
+            <Tooltip label={t<string>('labels.shareAddress')}>
+              <IconButton
+                aria-label="Show QR code"
+                icon={<Icon as={IoQrCodeOutline} color="gray.500" />}
+                onClick={onShareAddressModalOpen}
+                size="sm"
+                variant="ghost"
+              />
+            </Tooltip>
           </HStack>
         </VStack>
       );
@@ -283,10 +285,10 @@ const AccountPage: FC = () => {
   return (
     <>
       {account && (
-        <AddressQrCodeModal
+        <ShareAddressModal
           address={account.address}
-          isOpen={isQrCodeModalOpen}
-          onClose={onQrModalClose}
+          isOpen={isShareAddressModalOpen}
+          onClose={onShareAddressModalClose}
         />
       )}
       <MainPageShell>

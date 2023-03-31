@@ -1,1 +1,1 @@
-export { default } from './AddressQrCodeModal';
+export { default } from './ShareAddressModal';

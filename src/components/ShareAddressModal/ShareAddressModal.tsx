@@ -21,12 +21,19 @@ import { useTranslation } from 'react-i18next';
 // Components
 import Button from '../Button';
 import CopyButton from '../CopyButton';
+import PillSwitch from '../PillSwitch';
 
 // Constants
 import { DEFAULT_GAP } from '../../constants';
 
+// Selectors
+import { useSelectSettings } from '../../selectors';
+
 // Theme
 import { theme } from '../../theme';
+
+// Types
+import { ISettings } from '../../types';
 
 // Utils
 import { ellipseAddress } from '../../utils';
@@ -37,28 +44,43 @@ interface IProps {
   onClose: () => void;
 }
 
-const AddressQrCodeModal: FC<IProps> = ({
+const ShareAddressModal: FC<IProps> = ({
   address,
   isOpen,
   onClose,
 }: IProps) => {
   const { t } = useTranslation();
-  const qrCodeSize: number = 350;
+  const settings: ISettings = useSelectSettings();
+  const [pillIndex, setPillIndex] = useState<number>(0);
   const [svgString, setSvgString] = useState<string | null>(null);
+  const qrCodeSize: number = 350;
+  const handlePillChange = (index: number) => setPillIndex(index);
+  const getFormatFromIndex = (index: number, value: string): string => {
+    switch (index) {
+      case 1:
+        return `did:algo:${value}`;
+      case 0:
+      default:
+        return value;
+    }
+  };
 
   useEffect(() => {
     (async () => {
       try {
-        const svg: string = await toString(`algorand://${address}`, {
-          type: 'svg',
-          width: qrCodeSize,
-        });
+        const svg: string = await toString(
+          getFormatFromIndex(pillIndex, address),
+          {
+            type: 'svg',
+            width: qrCodeSize,
+          }
+        );
         setSvgString(svg);
       } catch (error) {
         console.error(error);
       }
     })();
-  }, []);
+  }, [pillIndex]);
 
   return (
     <Modal
@@ -67,14 +89,21 @@ const AddressQrCodeModal: FC<IProps> = ({
       onClose={onClose}
       size="full"
     >
-      <ModalContent borderTopRadius={25} borderBottomRadius={0}>
+      <ModalContent borderTopRadius={theme.radii['3xl']} borderBottomRadius={0}>
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <Heading color="gray.500" size="md" textAlign="center">
-            {t<string>('headings.qrCode')}
+            {t<string>('headings.shareAddress')}
           </Heading>
         </ModalHeader>
         <ModalBody px={DEFAULT_GAP}>
           <VStack alignItems="center" spacing={2} w="full">
+            {settings.advanced.allowDidTokenFormat && (
+              <PillSwitch
+                index={pillIndex}
+                labels={[t<string>('labels.default'), t<string>('labels.did')]}
+                onChange={handlePillChange}
+              />
+            )}
             {svgString ? (
               <Box
                 dangerouslySetInnerHTML={{
@@ -99,26 +128,28 @@ const AddressQrCodeModal: FC<IProps> = ({
               spacing={1}
               w="full"
             >
-              <HStack
+              <Box
                 backgroundColor="gray.200"
-                borderRadius={25}
+                borderRadius={theme.radii['3xl']}
                 px={2}
                 py={1}
-                spacing={1}
               >
-                <Tooltip label={address}>
+                <Tooltip label={getFormatFromIndex(pillIndex, address)}>
                   <Text color="gray.500" fontSize="xs">
-                    {ellipseAddress(address, {
-                      end: 10,
-                      start: 10,
-                    })}
+                    {getFormatFromIndex(
+                      pillIndex,
+                      ellipseAddress(address, {
+                        end: 10,
+                        start: 10,
+                      })
+                    )}
                   </Text>
                 </Tooltip>
-              </HStack>
+              </Box>
               <CopyButton
                 ariaLabel="Copy address"
                 copiedTooltipLabel={t<string>('captions.addressCopied')}
-                value={address}
+                value={getFormatFromIndex(pillIndex, address)}
               />
             </HStack>
           </VStack>
@@ -139,4 +170,4 @@ const AddressQrCodeModal: FC<IProps> = ({
   );
 };
 
-export default AddressQrCodeModal;
+export default ShareAddressModal;
