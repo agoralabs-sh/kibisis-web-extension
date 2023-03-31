@@ -40,12 +40,18 @@ const fetchSettings: AsyncThunk<
         case SETTINGS_ADVANCED_KEY:
           return {
             ...acc,
-            advanced: storageItems[SETTINGS_ADVANCED_KEY] as IAdvancedSettings,
+            advanced: {
+              ...acc.advanced,
+              ...(storageItems[SETTINGS_ADVANCED_KEY] as IAdvancedSettings),
+            },
           };
         case SETTINGS_NETWORK_KEY:
           return {
             ...acc,
-            network: storageItems[SETTINGS_NETWORK_KEY] as INetwork,
+            network: {
+              ...acc.network,
+              ...(storageItems[SETTINGS_NETWORK_KEY] as INetwork),
+            },
           };
         default:
           return acc;

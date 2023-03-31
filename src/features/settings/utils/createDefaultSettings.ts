@@ -13,6 +13,7 @@ export default function createDefaultSettings(networks: INetwork[]): ISettings {
   return {
     advanced: {
       allowBetaNet: false,
+      allowDidTokenFormat: false,
       allowTestNet: false,
     },
     network: selectDefaultNetwork(networks),
