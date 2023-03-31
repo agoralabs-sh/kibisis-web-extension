@@ -43,6 +43,7 @@ const AdvancedSettingsPage: FC = () => {
         title={t<string>('titles.page', { context: 'advanced' })}
       />
       <VStack w="full">
+        {/* Developer */}
         <Text
           color="gray.500"
           fontSize="sm"
@@ -58,6 +59,7 @@ const AdvancedSettingsPage: FC = () => {
           label={t<string>('labels.allowTestNet')}
           onChange={handleOnSwitchChange('allowTestNet')}
         />
+        {/* Beta */}
         <Text
           color="gray.500"
           fontSize="sm"
@@ -72,6 +74,12 @@ const AdvancedSettingsPage: FC = () => {
           description={t<string>('captions.allowBetaNet')}
           label={t<string>('labels.allowBetaNet')}
           onChange={handleOnSwitchChange('allowBetaNet')}
+        />
+        <SettingsSwitchItem
+          checked={settings.advanced.allowDidTokenFormat}
+          description={t<string>('captions.allowDidTokenFormat')}
+          label={t<string>('labels.allowDidTokenFormat')}
+          onChange={handleOnSwitchChange('allowDidTokenFormat')}
         />
       </VStack>
     </>

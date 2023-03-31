@@ -6,7 +6,7 @@ interface IProps extends FlexProps {
 }
 
 const MainPageShell: FC<IProps> = ({ children }: IProps) => (
-  <Center as="main" backgroundColor="white">
+  <Center as="main" backgroundColor="var(--chakra-colors-chakra-body-bg)">
     <Flex
       alignItems="center"
       direction="column"
