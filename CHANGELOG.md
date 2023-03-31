@@ -1,3 +1,10 @@
+# [1.1.0-beta.4](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2023-03-31)
+
+
+### Features
+
+* allow did token to be rendered as qr code ([#5](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/5)) ([d5eea62](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/d5eea62d9a97a37fb757dc6fb24463ae554453c9))
+
 # [1.1.0-beta.3](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2023-03-30)
 
 
