@@ -35,7 +35,6 @@ const PillSwitch: FC<IProps> = ({ index, labels, onChange }: IProps) => {
       <TabList
         bg={useColorModeValue('gray.300', 'whiteAlpha.400')}
         borderRadius={theme.radii['3xl']}
-        index={index}
         py={padding}
         px={padding * 2}
       >
@@ -54,9 +53,9 @@ const PillSwitch: FC<IProps> = ({ index, labels, onChange }: IProps) => {
       <TabIndicator
         bg={theme.colors['white']}
         borderRadius={theme.radii['3xl']}
-        h={`calc(${theme.sizes[10]} - (${theme.space[padding]} + ${theme.space[padding]}))`}
+        h={`calc(${theme.sizes[height]} - (${theme.space[padding]} + ${theme.space[padding]}))`}
         minW={minWidth}
-        mt={`calc(-${theme.sizes[10]} + (-${theme.space[padding]} + ${theme.space[padding]}))`}
+        mt={`calc(-${theme.sizes[height]} + (-${theme.space[padding]} + ${theme.space[padding]}))`}
       >
         <Center alignItems="center" h="full">
           <Text color="gray.500" textAlign="center" w="full">
