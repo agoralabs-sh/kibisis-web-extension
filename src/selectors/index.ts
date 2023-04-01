@@ -1,7 +1,8 @@
 export { default as useSelectAccount } from './useSelectAccount';
 export { default as useSelectAccounts } from './useSelectAccounts';
-export { default as useSelectError } from './useSelectError';
+export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConnectRequest } from './useSelectConnectRequest';
+export { default as useSelectError } from './useSelectError';
 export { default as useSelectFetchingAccounts } from './useSelectFetchingAccounts';
 export { default as useSelectFetchingSessions } from './useSelectFetchingSessions';
 export { default as useSelectFetchingSettings } from './useSelectFetchingSettings';
