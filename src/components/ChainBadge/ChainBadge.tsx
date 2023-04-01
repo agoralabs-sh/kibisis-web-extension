@@ -1,4 +1,4 @@
-import { HStack, Tag, TagLabel } from '@chakra-ui/react';
+import { ColorMode, HStack, Tag, TagLabel } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
 // Enums
@@ -10,13 +10,21 @@ import { INetwork } from '../../types';
 // Utils
 import { createIconFromDataUri } from '../../utils';
 
+// Selectors
+import { useSelectColorMode } from '../../selectors';
+
 interface IProps {
   network: INetwork;
 }
 
 const ChainBadge: FC<IProps> = ({ network }: IProps) => {
+  const colorMode: ColorMode = useSelectColorMode();
   const renderChainTag = () => (
-    <Tag colorScheme={network.chakraTheme} size="sm" variant="outline">
+    <Tag
+      colorScheme={network.chakraTheme}
+      size="sm"
+      variant={colorMode === 'dark' ? 'solid' : 'outline'}
+    >
       {createIconFromDataUri(network.nativeCurrency.iconUri, {
         color: network.chakraTheme,
         h: 3,
@@ -32,7 +40,11 @@ const ChainBadge: FC<IProps> = ({ network }: IProps) => {
       return (
         <HStack alignItems="center" justifyContent="flex-start" spacing={1}>
           {renderChainTag()}
-          <Tag colorScheme="blue" size="sm" variant="subtle">
+          <Tag
+            colorScheme="blue"
+            size="sm"
+            variant={colorMode === 'dark' ? 'solid' : 'subtle'}
+          >
             <TagLabel>BetaNet</TagLabel>
           </Tag>
         </HStack>
@@ -41,7 +53,11 @@ const ChainBadge: FC<IProps> = ({ network }: IProps) => {
       return (
         <HStack alignItems="center" justifyContent="flex-start" spacing={1}>
           {renderChainTag()}
-          <Tag colorScheme="yellow" size="sm" variant="subtle">
+          <Tag
+            colorScheme="yellow"
+            size="sm"
+            variant={colorMode === 'dark' ? 'solid' : 'subtle'}
+          >
             <TagLabel>TestNet</TagLabel>
           </Tag>
         </HStack>

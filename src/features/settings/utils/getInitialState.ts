@@ -8,6 +8,9 @@ export default function getInitialState(): ISettingsState {
       allowDidTokenFormat: false,
       allowTestNet: false,
     },
+    appearance: {
+      theme: 'light',
+    },
     fetching: false,
     network: null,
     saving: false,

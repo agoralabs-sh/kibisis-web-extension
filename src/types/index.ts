@@ -1,6 +1,8 @@
 export type { default as IAccount } from './IAccount';
 export type { default as IAdvancedSettings } from './IAdvancedSettings';
 export type { default as IAlgorandAccountInformation } from './IAlgorandAccountInformation';
+export type { default as IAppearanceSettings } from './IAppearanceSettings';
+export type { default as IAppProps } from './IAppProps';
 export type { default as IAppThunkDispatch } from './IAppThunkDispatch';
 export type { default as IBaseEnableRequestPayload } from './IBaseEnableRequestPayload';
 export type { default as IBaseOptions } from './IBaseOptions';

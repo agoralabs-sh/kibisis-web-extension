@@ -3,6 +3,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // Constants
 import {
   SETTINGS_ADVANCED_KEY,
+  SETTINGS_APPEARANCE_KEY,
   SETTINGS_NETWORK_KEY,
 } from '../../../constants';
 
@@ -40,6 +41,7 @@ const setSettings: AsyncThunk<
 
     await storageManager.setItems({
       [SETTINGS_ADVANCED_KEY]: settings.advanced,
+      [SETTINGS_APPEARANCE_KEY]: settings.appearance,
       ...(settings.network && {
         [SETTINGS_NETWORK_KEY]: settings.network,
       }),

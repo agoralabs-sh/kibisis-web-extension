@@ -26,6 +26,10 @@ import PillSwitch from '../PillSwitch';
 // Constants
 import { DEFAULT_GAP } from '../../constants';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useTextBackgroundColor from '../../hooks/useTextBackgroundColor';
+
 // Selectors
 import { useSelectSettings } from '../../selectors';
 
@@ -50,6 +54,8 @@ const ShareAddressModal: FC<IProps> = ({
   onClose,
 }: IProps) => {
   const { t } = useTranslation();
+  const defaultTextColor: string = useDefaultTextColor();
+  const textBackgroundColor: string = useTextBackgroundColor();
   const settings: ISettings = useSelectSettings();
   const [pillIndex, setPillIndex] = useState<number>(0);
   const [svgString, setSvgString] = useState<string | null>(null);
@@ -89,9 +95,13 @@ const ShareAddressModal: FC<IProps> = ({
       onClose={onClose}
       size="full"
     >
-      <ModalContent borderTopRadius={theme.radii['3xl']} borderBottomRadius={0}>
+      <ModalContent
+        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        borderTopRadius={theme.radii['3xl']}
+        borderBottomRadius={0}
+      >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          <Heading color="gray.500" size="md" textAlign="center">
+          <Heading color={defaultTextColor} size="md" textAlign="center">
             {t<string>('headings.shareAddress')}
           </Heading>
         </ModalHeader>
@@ -129,13 +139,13 @@ const ShareAddressModal: FC<IProps> = ({
               w="full"
             >
               <Box
-                backgroundColor="gray.200"
+                backgroundColor={textBackgroundColor}
                 borderRadius={theme.radii['3xl']}
                 px={2}
                 py={1}
               >
                 <Tooltip label={getFormatFromIndex(pillIndex, address)}>
-                  <Text color="gray.500" fontSize="xs">
+                  <Text color={defaultTextColor} fontSize="xs">
                     {getFormatFromIndex(
                       pillIndex,
                       ellipseAddress(address, {

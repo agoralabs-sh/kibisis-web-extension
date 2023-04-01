@@ -1,6 +1,5 @@
 import {
   HStack,
-  IconButton,
   Input,
   InputGroup,
   InputRightElement,
@@ -13,7 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 
 // Components
+import IconButton from '../IconButton';
 import StrengthMeter from '../StrengthMeter';
+
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
 
 // Utils
 import { validate } from './utils';
@@ -30,6 +34,8 @@ const CreatePasswordInput: FC<IProps> = ({
   value,
 }: IProps) => {
   const { t } = useTranslation();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const [show, setShow] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(
     value.length > 0 ? validate(value, score, t) : null
@@ -51,7 +57,7 @@ const CreatePasswordInput: FC<IProps> = ({
   return (
     <VStack>
       <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-        <Text color={error ? 'red.300' : 'gray.500'} textAlign="left">
+        <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
           {t<string>('labels.password')}
         </Text>
         <Text color="red.300" fontSize="xs" textAlign="right">
@@ -70,15 +76,14 @@ const CreatePasswordInput: FC<IProps> = ({
         <InputRightElement>
           <IconButton
             aria-label="Eye open and closed"
-            colorScheme="gray"
-            icon={show ? <IoEye /> : <IoEyeOff />}
+            icon={show ? IoEye : IoEyeOff}
             onClick={handleShowHideClick}
             size="sm"
             variant="solid"
           />
         </InputRightElement>
       </InputGroup>
-      <Text color="gray.400" fontSize="xs" textAlign="left">
+      <Text color={subTextColor} fontSize="xs" textAlign="left">
         {t<string>('captions.passwordScoreInfo')}
       </Text>
       <StrengthMeter score={score} />

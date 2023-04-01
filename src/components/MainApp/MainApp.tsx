@@ -1,6 +1,4 @@
-import { ChakraProvider } from '@chakra-ui/react';
 import { combineReducers, Store } from '@reduxjs/toolkit';
-import { i18n } from 'i18next';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
@@ -9,6 +7,7 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 // Components
 import MainAppProvider from '../MainAppProvider';
 import Fonts from '../Fonts';
+import ThemeProvider from '../ThemeProvider';
 
 // Constants
 import { ACCOUNTS_ROUTE, SETTINGS_ROUTE } from '../../constants';
@@ -24,20 +23,13 @@ import { reducer as settingsReducer } from '../../features/settings';
 import AccountPage from '../../pages/AccountPage';
 import SettingsRouter from '../../pages/SettingsRouter';
 
-// Theme
-import { theme } from '../../theme';
-
 // Types
-import { IMainRootState } from '../../types';
+import { IAppProps, IMainRootState } from '../../types';
 
 // Utils
 import { makeStore } from '../../utils';
 
-interface IProps {
-  i18next: i18n;
-}
-
-const MainApp: FC<IProps> = ({ i18next }: IProps) => {
+const MainApp: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IMainRootState> = makeStore<IMainRootState>(
     combineReducers({
       accounts: accountsReducer,
@@ -51,7 +43,7 @@ const MainApp: FC<IProps> = ({ i18next }: IProps) => {
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18next}>
-        <ChakraProvider theme={theme}>
+        <ThemeProvider initialColorMode={initialColorMode}>
           <Fonts />
           <HashRouter>
             <MainAppProvider>
@@ -72,7 +64,7 @@ const MainApp: FC<IProps> = ({ i18next }: IProps) => {
               </Routes>
             </MainAppProvider>
           </HashRouter>
-        </ChakraProvider>
+        </ThemeProvider>
       </I18nextProvider>
     </Provider>
   );

@@ -22,6 +22,10 @@ import {
   setName,
 } from '../../features/registration';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // Selectors
 import {
   useSelectLogger,
@@ -40,6 +44,8 @@ const NameAccountPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();
@@ -69,13 +75,13 @@ const NameAccountPage: FC = () => {
     <RegistrationPageShell>
       <VStack flexGrow={1} mb={8} spacing={8} w="full">
         <VStack spacing={3} w="full">
-          <Heading color="gray.500">
+          <Heading color={defaultTextColor}>
             {t<string>('headings.nameAccount')}
           </Heading>
-          <Text color="gray.400">{t<string>('captions.nameAccount')}</Text>
+          <Text color={subTextColor}>{t<string>('captions.nameAccount')}</Text>
         </VStack>
         <VStack w="full">
-          <Text color="gray.500" textAlign="left" w="full">
+          <Text color={defaultTextColor} textAlign="left" w="full">
             {t<string>('labels.accountName')}
           </Text>
           <InputGroup size="md">

@@ -8,6 +8,7 @@ import ErrorModal from '../ErrorModal';
 
 // Features
 import { setError, setNavigate, setToast } from '../../features/application';
+import { fetchSettings } from '../../features/settings';
 
 // Theme
 import { theme } from '../../theme';
@@ -26,6 +27,7 @@ const RegistrationAppProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     dispatch(setNavigate(navigate));
     dispatch(setToast(toast));
+    dispatch(fetchSettings());
   }, []);
 
   return (

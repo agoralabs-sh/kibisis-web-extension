@@ -1,4 +1,4 @@
-import { Badge, Heading, Text, VStack } from '@chakra-ui/react';
+import { Heading, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
@@ -11,9 +11,15 @@ import RegistrationPageShell from '../../components/RegistrationPageShell';
 // Constants
 import { CREATE_PASSWORD_ROUTE } from '../../constants';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 const GetStartedPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const handleGetStartedClick = () => {
     navigate(CREATE_PASSWORD_ROUTE);
   };
@@ -22,14 +28,9 @@ const GetStartedPage: FC = () => {
     <RegistrationPageShell>
       <VStack flexGrow={1} justifyContent="center" spacing={1} w="full">
         <AgoraIcon color="primary.500" h={12} w={12} />
-        <Heading color="gray.500">{__APP_TITLE__}</Heading>
+        <Heading color={defaultTextColor}>{__APP_TITLE__}</Heading>
         {__VERSION__ && (
-          <Text color="gray.400" fontSize="sm">{`v${__VERSION__}`}</Text>
-        )}
-        {__ENV__ === 'development' && (
-          <Badge colorScheme="green" variant="subtle">
-            {__ENV__}
-          </Badge>
+          <Text color={subTextColor} fontSize="sm">{`v${__VERSION__}`}</Text>
         )}
       </VStack>
       <Button

@@ -3,6 +3,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // Constants
 import {
   SETTINGS_ADVANCED_KEY,
+  SETTINGS_APPEARANCE_KEY,
   SETTINGS_NETWORK_KEY,
 } from '../../../constants';
 
@@ -15,6 +16,7 @@ import { StorageManager } from '../../../services/extension';
 // Types
 import {
   IAdvancedSettings,
+  IAppearanceSettings,
   IMainRootState,
   INetwork,
   ISettings,
@@ -43,6 +45,14 @@ const fetchSettings: AsyncThunk<
             advanced: {
               ...acc.advanced,
               ...(storageItems[SETTINGS_ADVANCED_KEY] as IAdvancedSettings),
+            },
+          };
+        case SETTINGS_APPEARANCE_KEY:
+          return {
+            ...acc,
+            appearance: {
+              ...acc.appearance,
+              ...(storageItems[SETTINGS_APPEARANCE_KEY] as IAppearanceSettings),
             },
           };
         case SETTINGS_NETWORK_KEY:
