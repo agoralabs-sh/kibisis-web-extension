@@ -17,6 +17,10 @@ import { ENTER_MNEMONIC_PHRASE_ROUTE } from '../../constants';
 // Features
 import { setPassword } from '../../features/registration';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // Types
 import { IAppThunkDispatch, IRegistrationRootState } from '../../types';
 
@@ -31,6 +35,8 @@ const CreatePasswordPage: FC = () => {
   const score: number = useSelector<IRegistrationRootState, number>(
     (state) => state.registration.score
   );
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
       navigate(ENTER_MNEMONIC_PHRASE_ROUTE);
@@ -52,11 +58,15 @@ const CreatePasswordPage: FC = () => {
     <RegistrationPageShell>
       <VStack flexGrow={1} mb={8} spacing={8} w="full">
         <VStack spacing={3} w="full">
-          <Heading color="gray.500">
+          <Heading color={defaultTextColor}>
             {t<string>('headings.createPassword')}
           </Heading>
-          <Text color="gray.400">{t<string>('captions.createPassword1')}</Text>
-          <Text color="gray.400">{t<string>('captions.createPassword2')}</Text>
+          <Text color={subTextColor}>
+            {t<string>('captions.createPassword1')}
+          </Text>
+          <Text color={subTextColor}>
+            {t<string>('captions.createPassword2')}
+          </Text>
         </VStack>
         <CreatePasswordInput
           onChange={handlePasswordChange}

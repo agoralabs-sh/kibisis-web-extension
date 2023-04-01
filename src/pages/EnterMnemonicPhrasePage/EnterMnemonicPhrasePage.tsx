@@ -17,6 +17,10 @@ import { NAME_ACCOUNT_ROUTE } from '../../constants';
 // Features
 import { setPrivateKey } from '../../features/registration';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // Selectors
 import {
   useSelectLogger,
@@ -35,6 +39,8 @@ const EnterMnemonicPhrasePage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
     useSelectRegisterEncryptedPrivateKey();
@@ -77,10 +83,12 @@ const EnterMnemonicPhrasePage: FC = () => {
     <RegistrationPageShell>
       <VStack flexGrow={1} mb={8} spacing={8} w="full">
         <VStack spacing={3} w="full">
-          <Heading color="gray.500">
+          <Heading color={defaultTextColor}>
             {t<string>('headings.importAccount')}
           </Heading>
-          <Text color="gray.400">{t<string>('captions.importAccount')}</Text>
+          <Text color={subTextColor}>
+            {t<string>('captions.importAccount')}
+          </Text>
         </VStack>
         <EnterMnemonicPhraseInput
           disabled={encrypting}

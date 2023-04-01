@@ -11,6 +11,10 @@ import { nanoid } from 'nanoid';
 import React, { ChangeEvent, ClipboardEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 interface IProps {
   disabled: boolean;
   error: string | null;
@@ -25,6 +29,8 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
   phrases,
 }: IProps) => {
   const { t } = useTranslation();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const [currentFocusIndex, setCurrentFocusIndex] = useState<number>(0);
   const handleOnChange =
     (phrasesIndex: number) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +57,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
   return (
     <VStack>
       <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-        <Text color={error ? 'red.300' : 'gray.500'} textAlign="left">
+        <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
           {t<string>('labels.mnemonicPhrase')}
         </Text>
         <Text color="red.300" fontSize="xs" textAlign="right">
@@ -62,11 +68,11 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
         {phrases.map((value, index) => (
           <InputGroup key={nanoid()} size="md">
             <InputLeftElement
-              color="gray.300"
+              color={subTextColor}
               pointerEvents="none"
               width="1.75rem"
             >
-              <Text color="gray.300" fontSize="xs">
+              <Text color={subTextColor} fontSize="xs">
                 {index + 1}
               </Text>
             </InputLeftElement>

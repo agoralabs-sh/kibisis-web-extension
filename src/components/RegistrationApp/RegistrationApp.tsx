@@ -1,6 +1,4 @@
-import { ChakraProvider } from '@chakra-ui/react';
 import { combineReducers, Store } from '@reduxjs/toolkit';
-import { i18n } from 'i18next';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
@@ -10,6 +8,7 @@ import SlideRoutes from 'react-slide-routes';
 // Components
 import Fonts from '../Fonts';
 import RegistrationAppProvider from '../RegistrationAppProvider';
+import ThemeProvider from '../ThemeProvider';
 
 // Constants
 import {
@@ -17,11 +16,11 @@ import {
   GET_STARTED_ROUTE,
   ENTER_MNEMONIC_PHRASE_ROUTE,
   NAME_ACCOUNT_ROUTE,
-  ACCOUNTS_ROUTE,
 } from '../../constants';
 
 // Features
 import { reducer as applicationReducer } from '../../features/application';
+import { reducer as settingsReducer } from '../../features/settings';
 import { reducer as registrationReducer } from '../../features/registration';
 
 // Pages
@@ -30,24 +29,21 @@ import EnterMnemonicPhrasePage from '../../pages/EnterMnemonicPhrasePage';
 import GetStartedPage from '../../pages/GetStartedPage';
 import NameAccountPage from '../../pages/NameAccountPage';
 
-// Theme
-import { theme } from '../../theme';
-
 // Types
-import { IRegistrationRootState } from '../../types';
+import { IAppProps, IRegistrationRootState } from '../../types';
 
 // Utils
 import { makeStore } from '../../utils';
 
-interface IProps {
-  i18next: i18n;
-}
-
-const RegistrationApp: FC<IProps> = ({ i18next }: IProps) => {
+const RegistrationApp: FC<IAppProps> = ({
+  i18next,
+  initialColorMode,
+}: IAppProps) => {
   const store: Store<IRegistrationRootState> =
     makeStore<IRegistrationRootState>(
       combineReducers({
         application: applicationReducer,
+        settings: settingsReducer,
         registration: registrationReducer,
       })
     );
@@ -55,7 +51,7 @@ const RegistrationApp: FC<IProps> = ({ i18next }: IProps) => {
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18next}>
-        <ChakraProvider theme={theme}>
+        <ThemeProvider initialColorMode={initialColorMode}>
           <Fonts />
           <HashRouter>
             <RegistrationAppProvider>
@@ -80,7 +76,7 @@ const RegistrationApp: FC<IProps> = ({ i18next }: IProps) => {
               </SlideRoutes>
             </RegistrationAppProvider>
           </HashRouter>
-        </ChakraProvider>
+        </ThemeProvider>
       </I18nextProvider>
     </Provider>
   );
