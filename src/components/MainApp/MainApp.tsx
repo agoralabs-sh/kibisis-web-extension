@@ -1,6 +1,4 @@
-import { ColorMode } from '@chakra-ui/react';
 import { combineReducers, Store } from '@reduxjs/toolkit';
-import { i18n } from 'i18next';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
@@ -26,17 +24,12 @@ import AccountPage from '../../pages/AccountPage';
 import SettingsRouter from '../../pages/SettingsRouter';
 
 // Types
-import { IMainRootState } from '../../types';
+import { IAppProps, IMainRootState } from '../../types';
 
 // Utils
 import { makeStore } from '../../utils';
 
-interface IProps {
-  i18next: i18n;
-  initialColorMode: ColorMode;
-}
-
-const MainApp: FC<IProps> = ({ i18next, initialColorMode }: IProps) => {
+const MainApp: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IMainRootState> = makeStore<IMainRootState>(
     combineReducers({
       accounts: accountsReducer,

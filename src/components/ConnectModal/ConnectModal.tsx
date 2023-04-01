@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Checkbox,
   Heading,
   HStack,
@@ -38,6 +39,11 @@ import {
   setConnectRequest,
 } from '../../features/sessions';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+import useTextBackgroundColor from '../../hooks/useTextBackgroundColor';
+
 // Selectors
 import {
   useSelectAccounts,
@@ -46,6 +52,9 @@ import {
   useSelectNetworks,
   useSelectSavingSessions,
 } from '../../selectors';
+
+// Theme
+import { theme } from '../../theme';
 
 // Types
 import { IAccount, IAppThunkDispatch, INetwork, ISession } from '../../types';
@@ -60,6 +69,9 @@ interface IProps {
 const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
+  const textBackgroundColor: string = useTextBackgroundColor();
   const accounts: IAccount[] = useSelectAccounts();
   const connectRequest: IConnectRequest | null = useSelectConnectRequest();
   const fetching: boolean = useSelectFetchingAccounts();
@@ -145,7 +157,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
         <HStack key={nanoid()} py={4} spacing={4} w="full">
           <SkeletonCircle size="12" />
           <Skeleton flexGrow={1}>
-            <Text color="gray.500" fontSize="md" textAlign="center">
+            <Text color={defaultTextColor} fontSize="md" textAlign="center">
               {ellipseAddress(randomBytes(52).toString(), {
                 end: 10,
                 start: 10,
@@ -167,10 +179,10 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
               justifyContent="space-evenly"
               spacing={0}
             >
-              <Text color="gray.500" fontSize="md" textAlign="center">
+              <Text color={defaultTextColor} fontSize="md" textAlign="center">
                 {account.name}
               </Text>
-              <Text color="gray.400" fontSize="sm" textAlign="center">
+              <Text color={subTextColor} fontSize="sm" textAlign="center">
                 {ellipseAddress(account.address, {
                   end: 10,
                   start: 10,
@@ -179,7 +191,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
             </VStack>
           ) : (
             <Text
-              color="gray.500"
+              color={defaultTextColor}
               flexGrow={1}
               fontSize="md"
               textAlign="center"
@@ -203,7 +215,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
       ));
     }
     return (
-      <Heading color="gray.400" size="md" textAlign="center" w="full">
+      <Heading color={defaultTextColor} size="md" textAlign="center" w="full">
         {t<string>('headings.noAccountsFound')}
       </Heading>
     );
@@ -217,7 +229,11 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
       size="full"
       scrollBehavior="inside"
     >
-      <ModalContent borderTopRadius={25} borderBottomRadius={0}>
+      <ModalContent
+        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        borderTopRadius={theme.radii['3xl']}
+        borderBottomRadius={0}
+      >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <VStack alignItems="center" spacing={5} w="full">
             <Avatar
@@ -225,14 +241,21 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
               src={connectRequest?.iconUrl || undefined}
             />
             <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
-              <Heading color="gray.500" size="md" textAlign="center">
+              <Heading color={defaultTextColor} size="md" textAlign="center">
                 {connectRequest?.appName || 'Unknown'}
               </Heading>
-              <Text color="gray.400" fontSize="sm" textAlign="center">
-                {connectRequest?.host || 'unknown host'}
-              </Text>
+              <Box
+                backgroundColor={textBackgroundColor}
+                borderRadius={theme.radii['3xl']}
+                px={2}
+                py={1}
+              >
+                <Text color={defaultTextColor} fontSize="xs" textAlign="center">
+                  {connectRequest?.host || 'unknown host'}
+                </Text>
+              </Box>
               {network && <ChainBadge network={network} />}
-              <Text color="gray.500" fontSize="md" textAlign="center">
+              <Text color={subTextColor} fontSize="md" textAlign="center">
                 {t<string>('captions.connectRequest')}
               </Text>
             </VStack>
