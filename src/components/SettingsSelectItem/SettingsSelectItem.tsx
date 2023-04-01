@@ -1,4 +1,4 @@
-import { Box, HStack, Select, Spacer, Text, VStack } from '@chakra-ui/react';
+import { Box, HStack, Select, Text, VStack } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC } from 'react';
 

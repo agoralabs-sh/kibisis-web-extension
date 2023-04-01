@@ -13,7 +13,6 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
-  ColorMode,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
@@ -59,7 +58,6 @@ import useTextBackgroundColor from '../../hooks/useTextBackgroundColor';
 // Selectors
 import {
   useSelectAccount,
-  useSelectColorMode,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
   useSelectNetworks,

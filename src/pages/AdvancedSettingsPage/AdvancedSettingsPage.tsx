@@ -14,7 +14,6 @@ import { DEFAULT_GAP } from '../../constants';
 import { setSettings } from '../../features/settings';
 
 // Hooks
-import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 import useSubTextColor from '../../hooks/useSubTextColor';
 
 // Selectors
@@ -26,7 +25,6 @@ import { IAdvancedSettings, IAppThunkDispatch, ISettings } from '../../types';
 const AdvancedSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const settings: ISettings = useSelectSettings();
   const handleOnSwitchChange =

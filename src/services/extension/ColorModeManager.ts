@@ -11,7 +11,7 @@ export default class ColorModeManager implements ChakraStorageManager {
     this.colorMode = colorMode;
   }
 
-  public get(init?: ColorMode): ColorMode | undefined {
+  public get(): ColorMode | undefined {
     return this.colorMode;
   }
 
