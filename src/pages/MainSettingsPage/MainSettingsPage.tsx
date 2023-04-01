@@ -1,13 +1,18 @@
 import { Heading, Spacer, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { IoConstructOutline } from 'react-icons/io5';
+import { IoColorPaletteOutline, IoConstructOutline } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 
 // Components
 import SettingsLinkItem from '../../components/SettingsLinkItem';
 
 // Constants
-import { ADVANCED_ROUTE, DEFAULT_GAP, SETTINGS_ROUTE } from '../../constants';
+import {
+  ADVANCED_ROUTE,
+  APPEARANCE_ROUTE,
+  DEFAULT_GAP,
+  SETTINGS_ROUTE,
+} from '../../constants';
 
 const MainSettingsPage: FC = () => {
   const { t } = useTranslation();
@@ -24,6 +29,11 @@ const MainSettingsPage: FC = () => {
       >
         {t<string>('titles.page', { context: 'settings' })}
       </Heading>
+      <SettingsLinkItem
+        icon={IoColorPaletteOutline}
+        label={t<string>('titles.page', { context: 'appearance' })}
+        to={`${SETTINGS_ROUTE}${APPEARANCE_ROUTE}`}
+      />
       <SettingsLinkItem
         icon={IoConstructOutline}
         label={t<string>('titles.page', { context: 'advanced' })}

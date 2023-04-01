@@ -19,6 +19,7 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
     allowTestNet: 'Let TestNet networks appear in the networks list.',
+    changeTheme: 'Choose between dark and light mode.',
     connectRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     copied: 'Copied!',
@@ -66,12 +67,15 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
     allowTestNet: 'Allow TestNet networks?',
     balance: 'Balance',
+    dark: 'Dark',
     default: 'Default',
     did: 'DID',
+    light: 'Light',
     mnemonicPhrase: 'Mnemonic Phrase',
     password: 'Password',
     settings: 'Settings',
     shareAddress: 'Share address',
+    theme: 'Theme',
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
   },
@@ -82,6 +86,7 @@ const translation: IResourceLanguage = {
   titles: {
     page: '',
     page_advanced: 'Advanced',
+    page_appearance: 'Appearance',
     page_settings: 'Settings',
   },
 };

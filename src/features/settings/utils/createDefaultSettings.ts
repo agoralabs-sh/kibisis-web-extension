@@ -16,6 +16,9 @@ export default function createDefaultSettings(networks: INetwork[]): ISettings {
       allowDidTokenFormat: false,
       allowTestNet: false,
     },
+    appearance: {
+      theme: 'light',
+    },
     network: selectDefaultNetwork(networks),
   };
 }
