@@ -1,3 +1,10 @@
+# [1.1.0-beta.5](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2023-04-01)
+
+
+### Features
+
+* switch to dark mode ([#6](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/6)) ([fe44316](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/fe44316fd050f5906a2b41289a0e9e5242b44a10))
+
 # [1.1.0-beta.4](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2023-03-31)
 
 
