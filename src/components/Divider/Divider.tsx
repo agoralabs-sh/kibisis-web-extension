@@ -1,9 +1,12 @@
 import { Box } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
+// Hooks
+import useBorderColor from '../../hooks/useBorderColor';
+
 const Divider: FC = () => (
   <Box
-    borderTopColor="gray.300"
+    borderTopColor={useBorderColor()}
     borderTopStyle="solid"
     borderTopWidth={1}
     m={0}
