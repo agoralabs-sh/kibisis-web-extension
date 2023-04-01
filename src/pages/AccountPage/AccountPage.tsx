@@ -3,7 +3,6 @@ import {
   Heading,
   HStack,
   Icon,
-  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -14,6 +13,7 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
+  ColorMode,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
@@ -40,6 +40,7 @@ import AlgorandIcon from '../../components/AlgorandIcon';
 import Button from '../../components/Button';
 import ChainBadge from '../../components/ChainBadge';
 import CopyButton from '../../components/CopyButton';
+import IconButton from '../../components/IconButton';
 import MainLayout from '../../components/MainLayout';
 import MainPageShell from '../../components/MainPageShell';
 import ShareAddressModal from '../../components/ShareAddressModal';
@@ -50,14 +51,23 @@ import { ACCOUNTS_ROUTE } from '../../constants';
 // Features
 import { setSettings } from '../../features/settings';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+import useTextBackgroundColor from '../../hooks/useTextBackgroundColor';
+
 // Selectors
 import {
   useSelectAccount,
+  useSelectColorMode,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
   useSelectNetworks,
   useSelectSettings,
 } from '../../selectors';
+
+// Theme
+import { theme } from '../../theme';
 
 // Types
 import { IAccount, IAppThunkDispatch, INetwork, ISettings } from '../../types';
@@ -81,6 +91,9 @@ const AccountPage: FC = () => {
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
+  const textBackgroundColor: string = useTextBackgroundColor();
   const account: IAccount | null = useSelectAccount(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
@@ -112,9 +125,10 @@ const AccountPage: FC = () => {
               </ChakraButton>
             </Skeleton>
           </HStack>
+          {/* Balance */}
           <HStack alignItems="center" w="full">
             <Skeleton flexGrow="1">
-              <Heading color="gray.500" size="md">
+              <Heading color={defaultTextColor} size="md">
                 {ellipseAddress(faker.random.alphaNumeric(52).toUpperCase())}
               </Heading>
             </Skeleton>
@@ -136,6 +150,7 @@ const AccountPage: FC = () => {
               </HStack>
             </Skeleton>
           </HStack>
+          {/* Address */}
           <Skeleton flexGrow="1">
             <Text color="gray.500" fontSize="xs">
               {ellipseAddress(faker.random.alphaNumeric(52).toUpperCase())}
@@ -182,7 +197,7 @@ const AccountPage: FC = () => {
           </HStack>
           <HStack alignItems="center" w="full">
             {/* Name/address */}
-            <Heading color="gray.500" size="md">
+            <Heading color={defaultTextColor} size="md">
               {account.name || ellipseAddress(account.address)}
             </Heading>
             <Spacer />
@@ -200,20 +215,23 @@ const AccountPage: FC = () => {
                     lineHeight: '1em',
                   }}
                 >
-                  <Icon as={IoInformationCircleOutline} color="gray.500" />
+                  <Icon
+                    as={IoInformationCircleOutline}
+                    color={defaultTextColor}
+                  />
                 </span>
               </Tooltip>
               <HStack
-                backgroundColor="gray.200"
-                borderRadius={25}
+                backgroundColor={textBackgroundColor}
+                borderRadius={theme.radii['3xl']}
                 px={2}
                 py={1}
                 spacing={1}
               >
-                <Text color="gray.500" fontSize="sm">{`${t<string>(
+                <Text color={defaultTextColor} fontSize="sm">{`${t<string>(
                   'labels.balance'
                 )}:`}</Text>
-                <Text color="gray.500" fontSize="sm">
+                <Text color={defaultTextColor} fontSize="sm">
                   {formatCurrencyUnit(balanceStandardUnit)}
                 </Text>
                 {createIconFromDataUri(
@@ -230,7 +248,7 @@ const AccountPage: FC = () => {
           {/* Address and interactions */}
           <HStack alignItems="center" spacing={1} w="full">
             <Tooltip label={account.address}>
-              <Text color="gray.500" fontSize="xs">
+              <Text color={subTextColor} fontSize="xs">
                 {ellipseAddress(account.address, { end: 10, start: 10 })}
               </Text>
             </Tooltip>
@@ -243,7 +261,7 @@ const AccountPage: FC = () => {
             <Tooltip label={t<string>('labels.shareAddress')}>
               <IconButton
                 aria-label="Show QR code"
-                icon={<Icon as={IoQrCodeOutline} color="gray.500" />}
+                icon={IoQrCodeOutline}
                 onClick={onShareAddressModalOpen}
                 size="sm"
                 variant="ghost"

@@ -14,13 +14,17 @@ import {
   SETTINGS_ROUTE,
 } from '../../constants';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+
 const MainSettingsPage: FC = () => {
   const { t } = useTranslation();
+  const defaultTextColor: string = useDefaultTextColor();
 
   return (
-    <VStack flexGrow={1} pt={4} w="full">
+    <VStack flexGrow={1} pt={4} spacing={0} w="full">
       <Heading
-        color="gray.500"
+        color={defaultTextColor}
         pb={DEFAULT_GAP - 2}
         px={DEFAULT_GAP - 2}
         size="md"
@@ -40,7 +44,13 @@ const MainSettingsPage: FC = () => {
         to={`${SETTINGS_ROUTE}${ADVANCED_ROUTE}`}
       />
       <Spacer />
-      <Text color="gray.500" fontSize="sm" py={4} textAlign="center" w="full">
+      <Text
+        color={defaultTextColor}
+        fontSize="sm"
+        py={4}
+        textAlign="center"
+        w="full"
+      >
         {`v${__VERSION__}`}
       </Text>
     </VStack>

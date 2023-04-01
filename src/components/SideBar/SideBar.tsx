@@ -2,7 +2,6 @@ import {
   Button,
   Center,
   HStack,
-  IconButton,
   Skeleton,
   SkeletonCircle,
   Text,
@@ -12,7 +11,6 @@ import { nanoid } from 'nanoid';
 import React, {
   FC,
   ReactNode,
-  ReactElement,
   TransitionEvent,
   useState,
   useEffect,
@@ -30,6 +28,7 @@ import { randomBytes } from 'tweetnacl';
 // Components
 import AgoraIcon from '../AgoraIcon';
 import Divider from '../Divider';
+import IconButton from '../IconButton';
 import SideBarAccountItem from './SideBarAccountItem';
 import SideBarActionItem from './SideBarActionItem';
 
@@ -65,9 +64,6 @@ const SideBar: FC = () => {
   const defaultTextColor: string = useDefaultTextColor();
   const [width, setWidth] = useState<number>(SIDEBAR_MIN_WIDTH);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [sideBarIcon, setSideBarIcon] = useState<ReactElement>(
-    <IoChevronForward />
-  );
   const [isHeaderShowing, setIsHeaderShowing] = useState<boolean>(false);
   const onCloseSideBar = () => {
     setIsHeaderShowing(false);
@@ -77,7 +73,7 @@ const SideBar: FC = () => {
     setIsHeaderShowing(false);
     setIsOpen(!isOpen);
   };
-  const handleAccountClick = (address: string) => () => {
+  const handleAccountClick = (address: string) => {
     onCloseSideBar();
     navigate(`${ACCOUNTS_ROUTE}/${address}`);
   };
@@ -136,13 +132,11 @@ const SideBar: FC = () => {
 
   useEffect(() => {
     if (isOpen) {
-      setSideBarIcon(<IoChevronBack />);
       setWidth(SIDEBAR_MAX_WIDTH);
 
       return;
     }
 
-    setSideBarIcon(<IoChevronForward />);
     setWidth(SIDEBAR_MIN_WIDTH);
   }, [isOpen]);
 
@@ -176,7 +170,7 @@ const SideBar: FC = () => {
           aria-label="Open drawer"
           borderRadius={0}
           colorScheme="gray"
-          icon={sideBarIcon}
+          icon={isOpen ? IoChevronBack : IoChevronForward}
           onClick={handleOpenToggleClick}
           variant="ghost"
         />

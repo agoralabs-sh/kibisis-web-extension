@@ -13,6 +13,10 @@ import { DEFAULT_GAP } from '../../constants';
 // Features
 import { setSettings } from '../../features/settings';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // Selectors
 import { useSelectSettings } from '../../selectors';
 
@@ -22,6 +26,8 @@ import { IAdvancedSettings, IAppThunkDispatch, ISettings } from '../../types';
 const AdvancedSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const settings: ISettings = useSelectSettings();
   const handleOnSwitchChange =
     (key: keyof IAdvancedSettings) =>
@@ -45,7 +51,7 @@ const AdvancedSettingsPage: FC = () => {
       <VStack w="full">
         {/* Developer */}
         <Text
-          color="gray.500"
+          color={subTextColor}
           fontSize="sm"
           px={DEFAULT_GAP - 2}
           textAlign="left"
@@ -61,7 +67,7 @@ const AdvancedSettingsPage: FC = () => {
         />
         {/* Beta */}
         <Text
-          color="gray.500"
+          color={subTextColor}
           fontSize="sm"
           px={DEFAULT_GAP - 2}
           textAlign="left"

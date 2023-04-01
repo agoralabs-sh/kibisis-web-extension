@@ -5,6 +5,10 @@ import React, { ChangeEvent, FC } from 'react';
 // Constants
 import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '../../constants';
 
+// Hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 interface IOption {
   label: string;
   value: string | readonly string[] | number;
@@ -23,40 +27,45 @@ const SettingsSelectItem: FC<IProps> = ({
   onChange,
   options,
   value,
-}: IProps) => (
-  <HStack
-    alignItems="center"
-    h={SETTINGS_ITEM_HEIGHT}
-    justifyContent="space-between"
-    px={DEFAULT_GAP - 2}
-    spacing={2}
-    w="full"
-  >
-    <VStack
-      alignItems="flex-start"
-      flexGrow={1}
-      justifyContent="center"
-      spacing={1}
+}: IProps) => {
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
+
+  return (
+    <HStack
+      alignItems="center"
+      h={SETTINGS_ITEM_HEIGHT}
+      justifyContent="space-between"
+      px={DEFAULT_GAP - 2}
+      spacing={2}
+      w="full"
     >
-      <Text color="gray.500" fontSize="sm">
-        {label}
-      </Text>
-      {description && (
-        <Text color="gray.400" fontSize="xs">
-          {description}
+      <VStack
+        alignItems="flex-start"
+        flexGrow={1}
+        justifyContent="center"
+        spacing={1}
+      >
+        <Text color={defaultTextColor} fontSize="sm">
+          {label}
         </Text>
-      )}
-    </VStack>
-    <Box>
-      <Select onChange={onChange} value={value}>
-        {options.map((option) => (
-          <option key={nanoid()} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
-    </Box>
-  </HStack>
-);
+        {description && (
+          <Text color={subTextColor} fontSize="xs">
+            {description}
+          </Text>
+        )}
+      </VStack>
+      <Box>
+        <Select onChange={onChange} value={value}>
+          {options.map((option) => (
+            <option key={nanoid()} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Select>
+      </Box>
+    </HStack>
+  );
+};
 
 export default SettingsSelectItem;

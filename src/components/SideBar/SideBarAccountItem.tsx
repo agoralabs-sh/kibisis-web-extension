@@ -37,9 +37,7 @@ const SideBarAccountItem: FC<IProps> = ({ account, onClick }: IProps) => {
   const subTextColor: string = useSubTextColor();
   const [active, setActive] = useState<boolean>(false);
   const handleMouseOver = () => setActive(!active);
-  const handleOnClick = () => {
-    onClick(account.address);
-  };
+  const handleOnClick = () => onClick(account.address);
 
   return (
     <Button

@@ -5,10 +5,13 @@ import {
   TabList,
   Tabs,
   Text,
-  useColorModeValue,
 } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import React, { FC } from 'react';
+
+// Hooks
+import useBorderColor from '../../hooks/useBorderColor';
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 
 // Theme
 import { theme } from '../../theme';
@@ -20,6 +23,8 @@ interface IProps {
 }
 
 const PillSwitch: FC<IProps> = ({ index, labels, onChange }: IProps) => {
+  const borderColor: string = useBorderColor();
+  const defaultTextColor: string = useDefaultTextColor();
   const height: number = 10; // 2.5rem > 40px > md
   const minWidth: number = 24;
   const padding: number = 0.5;
@@ -33,18 +38,14 @@ const PillSwitch: FC<IProps> = ({ index, labels, onChange }: IProps) => {
       variant="unstyled"
     >
       <TabList
-        bg={useColorModeValue('gray.300', 'whiteAlpha.400')}
+        bg={borderColor}
         borderRadius={theme.radii['3xl']}
         py={padding}
         px={padding * 2}
       >
         {labels.map((value) => (
           <Tab key={nanoid()} minW={minWidth}>
-            <Text
-              color={useColorModeValue('gray.500', 'whiteAlpha.800')}
-              textAlign="center"
-              w="full"
-            >
+            <Text color={defaultTextColor} textAlign="center" w="full">
               {value}
             </Text>
           </Tab>
