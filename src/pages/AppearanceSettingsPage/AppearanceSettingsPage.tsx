@@ -1,4 +1,4 @@
-import { Text, VStack } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -6,9 +6,6 @@ import { useDispatch } from 'react-redux';
 // Components
 import SettingsHeader from '../../components/SettingsHeader';
 import SettingsSelectItem from '../../components/SettingsSelectItem';
-
-// Constants
-import { DEFAULT_GAP } from '../../constants';
 
 // Features
 import { setSettings } from '../../features/settings';
