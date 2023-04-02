@@ -25,9 +25,11 @@ import {
   useToast,
   VStack,
   HStack,
+  Text,
+  Select,
 } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
-import React, { FC, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // Components
 import Button from '../src/components/Button';
@@ -48,11 +50,9 @@ const App: FC = () => {
   const [enabledAccounts, setEnabledAccounts] = useState<IWalletAccount[]>([]);
   const [genesisId, setGenesisId] = useState<string | null>(null);
   const [genesisHash, setGenesisHash] = useState<string | null>(null);
-  const handleEnableComplete = (enabledResult: IEnableResult) => {
-    setEnabledAccounts(enabledResult.accounts);
-    setGenesisId(enabledResult.genesisId);
-    setGenesisHash(enabledResult.genesisHash);
-  };
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const handleAddressSelect = (event: ChangeEvent<HTMLSelectElement>) =>
+    setSelectedAddress(event.target.value);
   const handleEnableClick = (genesisHash: string) => async () => {
     if (!(window as IWindow).algorand) {
       toast({
@@ -94,6 +94,12 @@ const App: FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!selectedAddress) {
+      setSelectedAddress(enabledAccounts[0]?.address || null);
+    }
+  }, [enabledAccounts]);
+
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
@@ -112,6 +118,7 @@ const App: FC = () => {
             <Heading color="gray.500" textAlign="center">
               Agora Wallet DApp Example
             </Heading>
+            {/* Enabled accounts table */}
             <TableContainer
               borderColor="gray.200"
               borderRadius={15}
@@ -137,6 +144,7 @@ const App: FC = () => {
                 </Tbody>
               </Table>
             </TableContainer>
+            {/* Enable CTAs */}
             <HStack justifyContent="center" spacing={2} w="full">
               <Button
                 colorScheme="primary"
@@ -159,22 +167,29 @@ const App: FC = () => {
                 Enable Voi TestNet
               </Button>
             </HStack>
+            {/* Select address */}
+            <HStack spacing={2} w="full">
+              <Text>Address:</Text>
+              <Select
+                onChange={handleAddressSelect}
+                placeholder="Select an address"
+                value={selectedAddress || undefined}
+              >
+                {enabledAccounts.map((value) => (
+                  <option key={nanoid()} value={value.address}>
+                    {value.address}
+                  </option>
+                ))}
+              </Select>
+            </HStack>
             <Tabs w="full">
               <TabList>
                 <Tab>Sign Data</Tab>
                 <Tab>Sign JWT</Tab>
               </TabList>
               <TabPanels>
-                <SignDataTab
-                  enabledAccounts={enabledAccounts}
-                  genesisHash={genesisHash}
-                  toast={toast}
-                />
-                <SignJwtTab
-                  enabledAccounts={enabledAccounts}
-                  genesisHash={genesisHash}
-                  toast={toast}
-                />
+                <SignDataTab address={selectedAddress} toast={toast} />
+                <SignJwtTab address={selectedAddress} toast={toast} />
               </TabPanels>
             </Tabs>
           </VStack>

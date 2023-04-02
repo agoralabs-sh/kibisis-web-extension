@@ -2,10 +2,8 @@ import {
   BaseError,
   IBaseResult,
   ISignBytesResult,
-  IWalletAccount,
 } from '@agoralabs-sh/algorand-provider';
 import {
-  Box,
   Code,
   CreateToastFnReturn,
   HStack,
@@ -17,7 +15,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { verifyBytes } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from 'react-icons/io5';
 import { v4 as uuid } from 'uuid';
@@ -31,27 +28,19 @@ import { IWindow } from '../src/types';
 // Utils
 import encodeBase64Url from '../src/utils/encodeBase64Url';
 import { isValidJwt } from './utils';
-import { theme } from '../src/theme';
 
 interface IProps {
-  enabledAccounts: IWalletAccount[];
-  genesisHash: string | null;
+  address: string | null;
   toast: CreateToastFnReturn;
 }
 
-const SignDataTab: FC<IProps> = ({
-  enabledAccounts,
-  genesisHash,
-  toast,
-}: IProps) => {
+const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
   const [header, setHeader] = useState<string | null>(null);
   const [payload, setPayload] = useState<string | null>(null);
-  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [signedData, setSignedData] = useState<string | null>(null);
   const handleClearClick = () => {
     setHeader('');
     setPayload('');
-    setSelectedAddress(null);
     setSignedData(null);
   };
   const handleSignJwtClick = async () => {
@@ -60,12 +49,9 @@ const SignDataTab: FC<IProps> = ({
     let result: IBaseResult & ISignBytesResult;
     let signature: string;
 
-    if (
-      !header ||
-      !payload ||
-      !selectedAddress ||
-      !isValidJwt(header, payload)
-    ) {
+    if (!header || !payload || !address || !isValidJwt(header, payload)) {
+      console.error('no data/address or the jwt is invalid');
+
       return;
     }
 
@@ -89,8 +75,20 @@ const SignDataTab: FC<IProps> = ({
       encoder = new TextEncoder();
       result = await (window as IWindow).algorand.signBytes({
         data: encoder.encode(signature),
-        signer: selectedAddress,
+        signer: address,
       });
+
+      toast({
+        description: `Successfully signed JWT for wallet "${result.id}".`,
+        duration: 3000,
+        isClosable: true,
+        status: 'success',
+        title: 'JWT Signed!',
+      });
+
+      decoder = new TextDecoder();
+
+      setSignedData(decoder.decode(result.signature));
     } catch (error) {
       toast({
         description: (error as BaseError).message,
@@ -111,7 +109,7 @@ const SignDataTab: FC<IProps> = ({
     let encoder: TextEncoder;
     let verifiedResult: boolean;
 
-    if (!header || !payload || !signedData || !selectedAddress) {
+    if (!header || !payload || !signedData || !address) {
       toast({
         duration: 3000,
         isClosable: true,
@@ -126,7 +124,7 @@ const SignDataTab: FC<IProps> = ({
     verifiedResult = verifyBytes(
       encoder.encode(''),
       encoder.encode(signedData),
-      selectedAddress
+      address
     ); // verify using the algosdk
 
     if (!verifiedResult) {
@@ -160,27 +158,16 @@ const SignDataTab: FC<IProps> = ({
   "aud": "${window.location.protocol}//${window.location.host}",
   "exp": ${now + 300},
   "iat": ${now},
-  "iss": "did:algo:${selectedAddress}",
+  "iss": "did:algo:${address}",
   "jti": "${uuid()}",
   "gty": "did",
-  "sub": "${selectedAddress}"
+  "sub": "${address}"
 }`);
   };
 
   return (
     <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
-        {/* Address */}
-        <HStack spacing={2} w="full">
-          <Text>Address:</Text>
-          <Select placeholder="Select an address">
-            {enabledAccounts.map((value) => (
-              <option key={nanoid()} value={value.address}>
-                {value.address}
-              </option>
-            ))}
-          </Select>
-        </HStack>
         {/* Header */}
         <VStack alignItems="flex-start" spacing={2} w="full">
           <Text>Header:</Text>

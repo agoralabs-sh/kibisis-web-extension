@@ -2,20 +2,17 @@ import {
   BaseError,
   IBaseResult,
   ISignBytesResult,
-  IWalletAccount,
 } from '@agoralabs-sh/algorand-provider';
 import {
   Code,
   CreateToastFnReturn,
   HStack,
-  Select,
   TabPanel,
   Text,
   Textarea,
   VStack,
 } from '@chakra-ui/react';
 import { verifyBytes } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useState } from 'react';
 
 // Components
@@ -25,22 +22,15 @@ import Button from '../src/components/Button';
 import { IWindow } from '../src/types';
 
 interface IProps {
-  enabledAccounts: IWalletAccount[];
-  genesisHash: string | null;
+  address: string | null;
   toast: CreateToastFnReturn;
 }
 
-const SignDataTab: FC<IProps> = ({
-  enabledAccounts,
-  genesisHash,
-  toast,
-}: IProps) => {
+const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
   const [dataToSign, setDataToSign] = useState<string | null>(null);
-  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [signedData, setSignedData] = useState<string | null>(null);
   const handleClearClick = () => {
-    setDataToSign(null);
-    setSelectedAddress(null);
+    setDataToSign('');
     setSignedData(null);
   };
   const handleSignDataClick = async () => {
@@ -48,7 +38,9 @@ const SignDataTab: FC<IProps> = ({
     let encoder: TextEncoder;
     let result: IBaseResult & ISignBytesResult;
 
-    if (!dataToSign || !selectedAddress) {
+    if (!dataToSign || !address) {
+      console.error('no data or address');
+
       return;
     }
 
@@ -69,7 +61,7 @@ const SignDataTab: FC<IProps> = ({
       encoder = new TextEncoder();
       result = await (window as IWindow).algorand.signBytes({
         data: encoder.encode(dataToSign),
-        signer: selectedAddress,
+        signer: address,
       });
 
       toast({
@@ -99,7 +91,7 @@ const SignDataTab: FC<IProps> = ({
     let encoder: TextEncoder;
     let verifiedResult: boolean;
 
-    if (!dataToSign || !signedData || !selectedAddress) {
+    if (!dataToSign || !signedData || !address) {
       toast({
         duration: 3000,
         isClosable: true,
@@ -114,7 +106,7 @@ const SignDataTab: FC<IProps> = ({
     verifiedResult = verifyBytes(
       encoder.encode(dataToSign),
       encoder.encode(signedData),
-      selectedAddress
+      address
     ); // verify using the algosdk
 
     if (!verifiedResult) {
@@ -141,16 +133,6 @@ const SignDataTab: FC<IProps> = ({
   return (
     <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
-        <HStack spacing={2} w="full">
-          <Text>Address:</Text>
-          <Select placeholder="Select an address">
-            {enabledAccounts.map((value) => (
-              <option key={nanoid()} value={value.address}>
-                {value.address}
-              </option>
-            ))}
-          </Select>
-        </HStack>
         <Textarea
           onChange={handleTextareaOnChange}
           placeholder="Add data to be signed"

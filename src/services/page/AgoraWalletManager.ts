@@ -166,7 +166,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
   ): Promise<ISignBytesResult> {
     const decoder: TextDecoder = new TextDecoder();
     const encoder: TextEncoder = new TextEncoder();
-    const encodedBase64Data: string = window.atob(decoder.decode(options.data));
+    const encodedBase64Data: string = window.btoa(decoder.decode(options.data));
     const result: IBaseSignBytesResponsePayload = (await this.handleEvent(
       new ExternalSignBytesRequestEvent({
         encodedData: encodedBase64Data,
@@ -174,7 +174,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
       }),
       EventNameEnum.ExtensionSignBytesRequest
     )) as IBaseSignBytesResponsePayload;
-    const decodedBase64Signature: string = window.btoa(result.encodedSignature);
+    const decodedBase64Signature: string = window.atob(result.encodedSignature);
 
     return {
       signature: encoder.encode(decodedBase64Signature),
