@@ -10,17 +10,21 @@ import {
   CreateToastFnReturn,
   Flex,
   Heading,
+  Tab,
   Table,
   TableCaption,
   TableContainer,
+  TabList,
+  Tabs,
+  TabPanels,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
   useToast,
   VStack,
+  HStack,
 } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import React, { FC, useState } from 'react';
@@ -28,6 +32,10 @@ import React, { FC, useState } from 'react';
 // Components
 import Button from '../src/components/Button';
 import Fonts from '../src/components/Fonts';
+
+// Tabs
+import SignDataTab from './SignDataTab';
+import SignJwtTab from './SignJwtTab';
 
 // Theme
 import { theme } from '../src/theme';
@@ -37,38 +45,52 @@ import { IWindow } from '../src/types';
 
 const App: FC = () => {
   const toast: CreateToastFnReturn = useToast();
-  const [authorizedAccounts, setAuthorizedAccounts] = useState<
-    IWalletAccount[]
-  >([]);
+  const [enabledAccounts, setEnabledAccounts] = useState<IWalletAccount[]>([]);
   const [genesisId, setGenesisId] = useState<string | null>(null);
-  const handleEnableClick = async () => {
-    if ((window as IWindow).algorand) {
-      try {
-        const result: IBaseResult & IEnableResult = await (
-          window as IWindow
-        ).algorand.enable({
-          genesisHash: 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=',
-        });
+  const [genesisHash, setGenesisHash] = useState<string | null>(null);
+  const handleEnableComplete = (enabledResult: IEnableResult) => {
+    setEnabledAccounts(enabledResult.accounts);
+    setGenesisId(enabledResult.genesisId);
+    setGenesisHash(enabledResult.genesisHash);
+  };
+  const handleEnableClick = (genesisHash: string) => async () => {
+    if (!(window as IWindow).algorand) {
+      toast({
+        description:
+          'Algorand Provider has been intialized; there is no supported wallet',
+        duration: 3000,
+        isClosable: true,
+        status: 'error',
+        title: 'window.algorand not found!',
+      });
 
-        toast({
-          description: `Successfully connected to "${result.id}".`,
-          duration: 3000,
-          isClosable: true,
-          status: 'success',
-          title: 'Connected!',
-        });
+      return;
+    }
 
-        setAuthorizedAccounts(result.accounts);
-        setGenesisId(result.genesisId);
-      } catch (error) {
-        toast({
-          description: (error as BaseError).message,
-          duration: 3000,
-          isClosable: true,
-          status: 'error',
-          title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
-        });
-      }
+    try {
+      const result: IBaseResult & IEnableResult = await (
+        window as IWindow
+      ).algorand.enable({ genesisHash });
+
+      toast({
+        description: `Successfully connected to "${result.id}".`,
+        duration: 3000,
+        isClosable: true,
+        status: 'success',
+        title: 'Connected!',
+      });
+
+      setEnabledAccounts(result.accounts);
+      setGenesisHash(result.genesisHash);
+      setGenesisId(result.genesisId);
+    } catch (error) {
+      toast({
+        description: (error as BaseError).message,
+        duration: 3000,
+        isClosable: true,
+        status: 'error',
+        title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
+      });
     }
   };
 
@@ -81,7 +103,7 @@ const App: FC = () => {
           direction="column"
           justifyContent="center"
           minH="100vh"
-          maxW={1024}
+          maxW={800}
           pt={8}
           px={8}
           w="full"
@@ -106,7 +128,7 @@ const App: FC = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {authorizedAccounts.map((value) => (
+                  {enabledAccounts.map((value) => (
                     <Tr key={nanoid()}>
                       <Td>{value.address}</Td>
                       <Td>{value.name || '-'}</Td>
@@ -115,17 +137,46 @@ const App: FC = () => {
                 </Tbody>
               </Table>
             </TableContainer>
-            <Text color="gray.400">Select an operation:</Text>
-            <VStack spacing={3} w={500}>
+            <HStack justifyContent="center" spacing={2} w="full">
               <Button
                 colorScheme="primary"
-                onClick={handleEnableClick}
+                minW={250}
+                onClick={handleEnableClick(
+                  'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=' // algorand testnet
+                )}
                 size="lg"
-                w="full"
               >
-                Enable
+                Enable Algorand TestNet
               </Button>
-            </VStack>
+              <Button
+                colorScheme="primary"
+                minW={250}
+                onClick={handleEnableClick(
+                  'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2/zGwEEcg3C8Gg=' // voi testnet
+                )}
+                size="lg"
+              >
+                Enable Voi TestNet
+              </Button>
+            </HStack>
+            <Tabs w="full">
+              <TabList>
+                <Tab>Sign Data</Tab>
+                <Tab>Sign JWT</Tab>
+              </TabList>
+              <TabPanels>
+                <SignDataTab
+                  enabledAccounts={enabledAccounts}
+                  genesisHash={genesisHash}
+                  toast={toast}
+                />
+                <SignJwtTab
+                  enabledAccounts={enabledAccounts}
+                  genesisHash={genesisHash}
+                  toast={toast}
+                />
+              </TabPanels>
+            </Tabs>
           </VStack>
         </Flex>
       </Center>
