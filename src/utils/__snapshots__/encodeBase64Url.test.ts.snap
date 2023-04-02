@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`encodeBase64Url() should throw an error if the input is not a unicode character 1`] = `[InvalidCharacterError: The string to be encoded contains invalid characters.]`;
