@@ -7,18 +7,16 @@ import { BaseSerializableError } from '../errors';
 // Events
 import BaseResponseEvent from './BaseResponseEvent';
 
-/**
- * @property {string} signature - the base64 encoded signature of the signed data with the MX prefix.
- */
-interface IPayload {
-  signature: string;
-}
+// Types
+import { IBaseSignBytesResponsePayload } from '../types';
 
-export default class ExternalSignDataResponseEvent extends BaseResponseEvent {
+type IPayload = IBaseSignBytesResponsePayload;
+
+export default class ExternalSignBytesResponseEvent extends BaseResponseEvent {
   public readonly payload: IPayload | null;
 
   constructor(payload: IPayload | null, error: BaseSerializableError | null) {
-    super(EventNameEnum.ExtensionSignDataResponse, error);
+    super(EventNameEnum.ExternalSignBytesResponse, error);
 
     this.payload = payload;
   }

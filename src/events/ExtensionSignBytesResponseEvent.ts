@@ -6,18 +6,16 @@ import { EventNameEnum } from '../enums';
 // Events
 import BaseResponseEvent from './BaseResponseEvent';
 
-/**
- * @property {string} signature - the base64 encoded signature of the signed data with the MX prefix.
- */
-interface IPayload {
-  signature: string;
-}
+// Types
+import { IBaseSignBytesResponsePayload } from '../types';
 
-export default class ExtensionSignDataResponseEvent extends BaseResponseEvent {
+type IPayload = IBaseSignBytesResponsePayload;
+
+export default class ExtensionSignBytesResponseEvent extends BaseResponseEvent {
   public readonly payload: IPayload | null;
 
   constructor(payload: IPayload | null, error: BaseError | null) {
-    super(EventNameEnum.ExtensionSignDataResponse, error);
+    super(EventNameEnum.ExtensionSignBytesResponse, error);
 
     this.payload = payload;
   }

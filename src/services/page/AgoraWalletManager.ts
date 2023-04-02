@@ -20,11 +20,16 @@ import { REQUEST_TIMEOUT, WALLET_ID } from '../../constants';
 import { EventNameEnum } from '../../enums';
 
 // Events
-import { BaseEvent, ExternalEnableRequestEvent } from '../../events';
+import {
+  BaseEvent,
+  ExternalEnableRequestEvent,
+  ExternalSignBytesRequestEvent,
+} from '../../events';
 
 // Types
 import type {
   IBaseOptions,
+  IBaseSignBytesResponsePayload,
   IExternalResponseEvents,
   ILogger,
 } from '../../types';
@@ -32,7 +37,7 @@ import type {
 // Utils
 import { mapSerializableErrors } from '../../utils';
 
-type IResults = IEnableResult;
+type IResults = IEnableResult | IBaseSignBytesResponsePayload;
 
 interface INewOptions extends IBaseOptions {
   extensionId: string;
@@ -144,12 +149,12 @@ export default class AgoraWalletManager extends BaseWalletManager {
    */
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
-    return await this.handleEvent(
+    return (await this.handleEvent(
       new ExternalEnableRequestEvent({
         genesisHash: options?.genesisHash || null,
       }),
       EventNameEnum.ExternalEnableResponse
-    );
+    )) as IEnableResult;
   }
 
   public async postTxns(options: IPostTxnsOptions): Promise<IPostTxnsResult> {
@@ -159,7 +164,21 @@ export default class AgoraWalletManager extends BaseWalletManager {
   public async signBytes(
     options: ISignBytesOptions
   ): Promise<ISignBytesResult> {
-    throw new WalletOperationNotSupportedError(this.id, 'signBytes');
+    const decoder: TextDecoder = new TextDecoder();
+    const encoder: TextEncoder = new TextEncoder();
+    const encodedBase64Data: string = window.atob(decoder.decode(options.data));
+    const result: IBaseSignBytesResponsePayload = (await this.handleEvent(
+      new ExternalSignBytesRequestEvent({
+        encodedData: encodedBase64Data,
+        signer: options.signer || null,
+      }),
+      EventNameEnum.ExtensionSignBytesRequest
+    )) as IBaseSignBytesResponsePayload;
+    const decodedBase64Signature: string = window.btoa(result.encodedSignature);
+
+    return {
+      signature: encoder.encode(decodedBase64Signature),
+    };
   }
 
   public async signTxns(options: ISignTxnsOptions): Promise<ISignTxnsResult> {

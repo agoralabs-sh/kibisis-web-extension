@@ -5,20 +5,20 @@ import { EventNameEnum } from '../enums';
 import BaseEvent from './BaseEvent';
 
 // Types
-import { IBaseSignDataRequestPayload } from '../types';
+import { IBaseSignBytesRequestPayload } from '../types';
 
 /**
  * @property {string} host - used in the identity of the dapp.
  */
-interface IPayload extends IBaseSignDataRequestPayload {
+interface IPayload extends IBaseSignBytesRequestPayload {
   host: string;
 }
 
-export default class ExtensionSignDataRequestEvent extends BaseEvent {
+export default class ExtensionSignBytesRequestEvent extends BaseEvent {
   public readonly payload: IPayload;
 
   constructor(payload: IPayload) {
-    super(EventNameEnum.ExtensionSignDataRequest);
+    super(EventNameEnum.ExtensionSignBytesRequest);
 
     this.payload = payload;
   }
