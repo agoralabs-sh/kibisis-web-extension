@@ -158,7 +158,8 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     const now: number = new Date().getTime(); // now in milliseconds
 
     setHeader(`{
-  "alg": "ES256",
+  "alg": "EdDSA",
+  "crv": "Ed25519",
   "typ": "JWT"
 }`);
     setPayload(`{
@@ -182,11 +183,12 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
             onChange={handleHeaderTextareaChange}
             placeholder={`A valid JWT header, e.g.:
 {
-  "alg": "ES256",
+  "alg": "EdDSA",
+  "crv": "Ed25519",
   "typ": "JWT"
 }
             `}
-            rows={4}
+            rows={5}
             value={header || ''}
           />
           <HStack spacing={2} w="full">
@@ -204,7 +206,7 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
             placeholder={`A valid JWT payload, e.g.:
 {
   "aud": "https://exmaple.com",
-  "exp": 109282718,
+  "exp": 109282718234,
   ...
 }
             `}

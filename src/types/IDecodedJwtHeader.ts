@@ -1,5 +1,6 @@
 interface IDecodedJwtHeader {
   algorithm: string;
+  curve?: string;
   type: string;
 }
 

@@ -1,33 +1,18 @@
-function padString(input: string): string {
-  const segmentLength: number = 4;
-  const diff: number = input.length % segmentLength;
-  let buffer: Uint8Array;
-  let encoder: TextEncoder;
-  let padLength: number;
-  let position: number;
-
-  if (!diff) {
-    return input;
-  }
-
-  encoder = new TextEncoder();
-  padLength = segmentLength - diff;
-  position = input.length;
-  buffer = new Uint8Array(input.length + padLength);
-
-  buffer.set(encoder.encode(input));
-
-  while (padLength--) {
-    buffer.set(encoder.encode('='), position++);
-  }
-
-  return buffer.toString();
-}
-
 export default function decodeBase64Url(input: string): string {
-  const base64String: string = padString(input)
-    .replace(/\-/g, '+')
+  let result: string = input
+    .replace(/-/g, '+') // replace non-url compatible chars with base64 standard chars
     .replace(/_/g, '/');
+  let padLength: number = result.length % 4;
 
-  return window.atob(base64String);
+  if (padLength > 0) {
+    if (padLength === 1) {
+      throw new Error(
+        'InvalidLengthError: input base64url string is the wrong length to determine padding'
+      );
+    }
+
+    result += new Array(5 - padLength).join('=');
+  }
+
+  return window.atob(result);
 }
