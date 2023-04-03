@@ -3,6 +3,7 @@ export { default as convertToStandardUnit } from './convertToStandardUnit';
 export { default as createIconFromDataUri } from './createIconFromDataUri';
 export { default as createLogger } from './createLogger';
 export { default as decodeBase64Url } from './decodeBase64Url';
+export { default as decodeJwt } from './decodeJwt';
 export { default as ellipseAddress } from './ellipseAddress';
 export { default as encodeBase64Url } from './encodeBase64Url';
 export { default as formatCurrencyUnit } from './formatCurrencyUnit';

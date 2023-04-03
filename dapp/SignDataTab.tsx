@@ -33,12 +33,12 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     setDataToSign('');
     setSignedData(null);
   };
-  const handleSignDataClick = async () => {
+  const handleSignDataClick = (withSigner: boolean) => async () => {
     let decoder: TextDecoder;
     let encoder: TextEncoder;
     let result: IBaseResult & ISignBytesResult;
 
-    if (!dataToSign || !address) {
+    if (!dataToSign || (withSigner && !address)) {
       console.error('no data or address');
 
       return;
@@ -61,7 +61,9 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
       encoder = new TextEncoder();
       result = await (window as IWindow).algorand.signBytes({
         data: encoder.encode(dataToSign),
-        signer: address,
+        ...(withSigner && {
+          signer: address || undefined,
+        }),
       });
 
       toast({
@@ -146,10 +148,18 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
           <Button
             colorScheme="primary"
             minW={250}
-            onClick={handleSignDataClick}
+            onClick={handleSignDataClick(true)}
             size="lg"
           >
             Sign Data
+          </Button>
+          <Button
+            colorScheme="primary"
+            minW={250}
+            onClick={handleSignDataClick(false)}
+            size="lg"
+          >
+            Sign Data Without Signer
           </Button>
           <Button
             colorScheme="primary"

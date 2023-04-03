@@ -46,6 +46,7 @@ const AccountSelect: FC<IProps> = ({ accounts, onSelect, value }: IProps) => {
         px={4}
         py={2}
         transition="all 0.2s"
+        w="full"
       >
         <HStack justifyContent="space-between" w="full">
           <AccountItem account={value} />

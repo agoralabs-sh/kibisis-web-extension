@@ -6,9 +6,10 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 // Components
 import ConnectModal from '../ConnectModal';
 import ErrorModal from '../ErrorModal';
+import SignDataModal from '../SignDataModal';
 
 // Features
-import { fetchAccounts } from '../../features/accounts';
+import { fetchAccounts, setSignDataRequest } from '../../features/accounts';
 import { setError, setNavigate, setToast } from '../../features/application';
 import { fetchSessions, setConnectRequest } from '../../features/sessions';
 import { fetchSettings } from '../../features/settings';
@@ -36,6 +37,9 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
   const handleErrorModalClose = () => {
     dispatch(setError(null));
   };
+  const handleSignDataModalClose = () => {
+    dispatch(setSignDataRequest(null));
+  };
 
   useEffect(() => {
     dispatch(setNavigate(navigate));
@@ -55,6 +59,7 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
     <>
       <ErrorModal onClose={handleErrorModalClose} />
       <ConnectModal onClose={handleConnectModalClose} />
+      <SignDataModal onClose={handleSignDataModalClose} />
       <ToastContainer />
       {children}
     </>

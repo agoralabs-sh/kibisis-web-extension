@@ -43,13 +43,18 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     setPayload('');
     setSignedData(null);
   };
-  const handleSignJwtClick = async () => {
+  const handleSignJwtClick = (withSigner: boolean) => async () => {
     let decoder: TextDecoder;
     let encoder: TextEncoder;
     let result: IBaseResult & ISignBytesResult;
     let signature: string;
 
-    if (!header || !payload || !address || !isValidJwt(header, payload)) {
+    if (
+      !header ||
+      !payload ||
+      (withSigner && !address) ||
+      !isValidJwt(header, payload)
+    ) {
       console.error('no data/address or the jwt is invalid');
 
       return;
@@ -69,13 +74,15 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     }
 
     try {
-      signature = `${encodeBase64Url(JSON.stringify(header))}.${encodeBase64Url(
-        JSON.stringify(payload)
-      )}`;
+      signature = `${encodeBase64Url(
+        JSON.parse(JSON.stringify(header))
+      )}.${encodeBase64Url(JSON.parse(JSON.stringify(payload)))}`;
       encoder = new TextEncoder();
       result = await (window as IWindow).algorand.signBytes({
         data: encoder.encode(signature),
-        signer: address,
+        ...(withSigner && {
+          signer: address || undefined,
+        }),
       });
 
       toast({
@@ -148,7 +155,7 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     });
   };
   const handleUseJwtPreset = () => {
-    const now: number = Math.round(new Date().getTime() / 1000); // now in seconds
+    const now: number = new Date().getTime(); // now in milliseconds
 
     setHeader(`{
   "alg": "ES256",
@@ -156,7 +163,7 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
 }`);
     setPayload(`{
   "aud": "${window.location.protocol}//${window.location.host}",
-  "exp": ${now + 300},
+  "exp": ${now + 300000},
   "iat": ${now},
   "iss": "did:algo:${address}",
   "jti": "${uuid()}",
@@ -233,10 +240,18 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
           <Button
             colorScheme="primary"
             minW={250}
-            onClick={handleSignJwtClick}
+            onClick={handleSignJwtClick(true)}
             size="lg"
           >
             Sign JWT
+          </Button>
+          <Button
+            colorScheme="primary"
+            minW={250}
+            onClick={handleSignJwtClick(false)}
+            size="lg"
+          >
+            Sign JWT Without Signer
           </Button>
           <Button
             colorScheme="primary"
