@@ -172,7 +172,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
         encodedData: encodedBase64Data,
         signer: options.signer || null,
       }),
-      EventNameEnum.ExtensionSignBytesRequest
+      EventNameEnum.ExternalSignBytesResponse
     )) as IBaseSignBytesResponsePayload;
     const decodedBase64Signature: string = window.atob(result.encodedSignature);
 

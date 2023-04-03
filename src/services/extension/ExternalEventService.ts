@@ -165,7 +165,12 @@ export default class ExternalEventService {
     return await browser.runtime.sendMessage(
       new ExtensionSignBytesRequestEvent({
         ...message.payload,
+        appName:
+          document
+            .querySelector('meta[name="application-name"]')
+            ?.getAttribute('content') || document.title,
         host: `${window.location.protocol}//${window.location.host}`,
+        iconUrl: this.extractFaviconUrl(),
       })
     );
   }
@@ -180,7 +185,7 @@ export default class ExternalEventService {
         return this.handleExtensionEnableResponse(
           message as ExtensionEnableResponseEvent
         );
-      case EventNameEnum.ExternalSignBytesResponse:
+      case EventNameEnum.ExtensionSignBytesResponse:
         return this.handleExtensionSignBytesResponse(
           message as ExtensionSignBytesResponseEvent
         );

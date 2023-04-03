@@ -5,7 +5,9 @@ import { IBaseSignBytesRequestPayload } from './index';
  */
 interface IExtensionSignBytesRequestPayload
   extends IBaseSignBytesRequestPayload {
+  appName: string;
   host: string;
+  iconUrl: string | null;
 }
 
 export default IExtensionSignBytesRequestPayload;

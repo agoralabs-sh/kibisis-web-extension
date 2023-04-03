@@ -8,7 +8,7 @@ import { fetchAccounts } from './thunks';
 
 // Types
 import { IAccount } from '../../types';
-import { IAccountsState } from './types';
+import { IAccountsState, ISignDataRequest } from './types';
 
 // Utils
 import { getInitialState } from './utils';
@@ -33,11 +33,14 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Accounts,
   reducers: {
-    reset: (state: Draft<IAccountsState>) => {
-      state.fetching = false;
-      state.items = [];
+    setSignDataRequest: (
+      state: Draft<IAccountsState>,
+      action: PayloadAction<ISignDataRequest | null>
+    ) => {
+      state.signDataRequest = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
+export const { setSignDataRequest } = slice.actions;

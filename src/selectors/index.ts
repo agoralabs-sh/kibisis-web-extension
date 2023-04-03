@@ -14,3 +14,4 @@ export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';
 export { default as useSelectSessions } from './useSelectSessions';
 export { default as useSelectSettings } from './useSelectSettings';
+export { default as useSelectSignDataRequest } from './useSelectSignDataRequest';

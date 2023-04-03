@@ -69,9 +69,11 @@ export default function useOnMessage(): void {
       case EventNameEnum.ExtensionSignBytesRequest:
         if (sender.tab?.id) {
           setIncomingSignBytesRequest({
+            appName: (message as ExtensionEnableRequestEvent).payload.appName,
             encodedData: (message as ExtensionSignBytesRequestEvent).payload
               .encodedData,
             host: (message as ExtensionSignBytesRequestEvent).payload.host,
+            iconUrl: (message as ExtensionEnableRequestEvent).payload.iconUrl,
             signer: (message as ExtensionSignBytesRequestEvent).payload.signer,
             tabId: sender.tab.id,
           });
