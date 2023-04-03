@@ -8,10 +8,8 @@ import { Link } from 'react-router-dom';
 import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '../../constants';
 
 // Hooks
+import useButtonHoverBackgroundColor from '../../hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
-
-// Selectors
-import { useSelectColorMode } from '../../selectors';
 
 interface IProps {
   icon: IconType;
@@ -20,28 +18,22 @@ interface IProps {
 }
 
 const SettingsLinkItem: FC<IProps> = ({ icon, label, to }: IProps) => {
-  const colorMode: ColorMode = useSelectColorMode();
+  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
-  const [active, setActive] = useState<boolean>(false);
-  const handleMouseOver = () => setActive(!active);
 
   return (
     <Button
+      _hover={{
+        bg: buttonHoverBackgroundColor,
+      }}
       as={Link}
       borderRadius={0}
       fontSize="md"
       h={SETTINGS_ITEM_HEIGHT}
       justifyContent="start"
-      onMouseEnter={handleMouseOver}
-      onMouseLeave={handleMouseOver}
       px={DEFAULT_GAP - 2}
       rightIcon={
-        <Icon
-          as={IoChevronForward}
-          color={active && colorMode === 'dark' ? 'gray.500' : defaultTextColor}
-          h={6}
-          w={6}
-        />
+        <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />
       }
       to={to}
       variant="ghost"
@@ -53,16 +45,8 @@ const SettingsLinkItem: FC<IProps> = ({ icon, label, to }: IProps) => {
         spacing={2}
         w="full"
       >
-        <Icon
-          as={icon}
-          color={active && colorMode === 'dark' ? 'gray.500' : defaultTextColor}
-          h={6}
-          w={6}
-        />
-        <Text
-          color={active && colorMode === 'dark' ? 'gray.500' : defaultTextColor}
-          fontSize="md"
-        >
+        <Icon as={icon} color={defaultTextColor} h={6} w={6} />
+        <Text color={defaultTextColor} fontSize="md">
           {label}
         </Text>
       </HStack>

@@ -7,18 +7,16 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
 // Constants
 import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '../../constants';
 
 // Hooks
+import useButtonHoverBackgroundColor from '../../hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 import useSubTextColor from '../../hooks/useSubTextColor';
-
-// Selectors
-import { useSelectColorMode } from '../../selectors';
 
 // Types
 import { IAccount } from '../../types';
@@ -32,22 +30,21 @@ interface IProps {
 }
 
 const SideBarAccountItem: FC<IProps> = ({ account, onClick }: IProps) => {
-  const colorMode: ColorMode = useSelectColorMode();
+  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
-  const [active, setActive] = useState<boolean>(false);
-  const handleMouseOver = () => setActive(!active);
   const handleOnClick = () => onClick(account.address);
 
   return (
     <Button
+      _hover={{
+        bg: buttonHoverBackgroundColor,
+      }}
       borderRadius={0}
       fontSize="md"
       h={SIDEBAR_ITEM_HEIGHT}
       justifyContent="start"
       onClick={handleOnClick}
-      onMouseEnter={handleMouseOver}
-      onMouseLeave={handleMouseOver}
       p={0}
       variant="ghost"
       w="full"
@@ -64,19 +61,14 @@ const SideBarAccountItem: FC<IProps> = ({ account, onClick }: IProps) => {
             spacing={0}
           >
             <Text
-              color={
-                active && colorMode === 'dark' ? 'gray.500' : defaultTextColor
-              }
+              color={defaultTextColor}
               fontSize="sm"
               maxW={195}
               noOfLines={1}
             >
               {account.name}
             </Text>
-            <Text
-              color={active && colorMode === 'dark' ? 'gray.400' : subTextColor}
-              fontSize="xs"
-            >
+            <Text color={subTextColor} fontSize="xs">
               {ellipseAddress(account.address, {
                 end: 10,
                 start: 10,
@@ -84,13 +76,7 @@ const SideBarAccountItem: FC<IProps> = ({ account, onClick }: IProps) => {
             </Text>
           </VStack>
         ) : (
-          <Text
-            color={
-              active && colorMode === 'dark' ? 'gray.500' : defaultTextColor
-            }
-            flexGrow={1}
-            fontSize="sm"
-          >
+          <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
             {ellipseAddress(account.address, {
               end: 10,
               start: 10,

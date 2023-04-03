@@ -44,6 +44,7 @@ import {
 
 // Hooks
 import useBorderColor from '../../hooks/useBorderColor';
+import useButtonHoverBackgroundColor from '../../hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 
 // Selectors
@@ -61,6 +62,7 @@ const SideBar: FC = () => {
   const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const borderColor: string = useBorderColor();
+  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const [width, setWidth] = useState<number>(SIDEBAR_MIN_WIDTH);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -94,8 +96,10 @@ const SideBar: FC = () => {
     if (fetchingAccounts) {
       return Array.from({ length: 3 }, () => (
         <Button
+          _hover={{
+            bg: buttonHoverBackgroundColor,
+          }}
           borderRadius={0}
-          colorScheme="gray"
           fontSize="md"
           h={SIDEBAR_ITEM_HEIGHT}
           justifyContent="start"

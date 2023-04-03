@@ -79,7 +79,7 @@ const CreatePasswordInput: FC<IProps> = ({
             icon={show ? IoEye : IoEyeOff}
             onClick={handleShowHideClick}
             size="sm"
-            variant="solid"
+            variant="ghost"
           />
         </InputRightElement>
       </InputGroup>
