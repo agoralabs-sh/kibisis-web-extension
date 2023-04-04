@@ -1,8 +1,7 @@
+import { decodeURLSafe as decodeBase64Url } from '@stablelib/base64';
+
 // Types
 import { IDecodedJwt, IDecodedJwtHeader, IDecodedJwtPayload } from '../types';
-
-// Utils
-import decodeBase64Url from './decodeBase64Url';
 
 /**
  * Decodes a JWT header and payload into a JSON.
@@ -14,15 +13,20 @@ export default function decodeJwt(input: string): IDecodedJwt | null {
   const [encodedHeader, encodedPayload] = input.split('.');
   let decodedHeader: Record<string, string>;
   let decodedPayload: Record<string, string | number>;
+  let decoder: TextDecoder;
   let header: IDecodedJwtHeader;
   let payload: IDecodedJwtPayload;
+  let rawHeader: Uint8Array;
+  let rawPayload: Uint8Array;
 
   if (!encodedHeader || !encodedPayload) {
     return null;
   }
 
   try {
-    decodedHeader = JSON.parse(decodeBase64Url(encodedHeader));
+    decoder = new TextDecoder();
+    rawHeader = decodeBase64Url(encodedHeader);
+    decodedHeader = JSON.parse(decoder.decode(rawHeader));
 
     header = {
       algorithm: decodedHeader['alg'],
@@ -34,7 +38,8 @@ export default function decodeJwt(input: string): IDecodedJwt | null {
       return null;
     }
 
-    decodedPayload = JSON.parse(decodeBase64Url(encodedPayload));
+    rawPayload = decodeBase64Url(encodedPayload);
+    decodedPayload = JSON.parse(decoder.decode(rawPayload));
 
     payload = {
       expiresAt: new Date(decodedPayload['exp']),

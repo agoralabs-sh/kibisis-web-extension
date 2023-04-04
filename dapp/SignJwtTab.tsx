@@ -8,12 +8,12 @@ import {
   CreateToastFnReturn,
   HStack,
   Icon,
-  Select,
   TabPanel,
   Text,
   Textarea,
   VStack,
 } from '@chakra-ui/react';
+import { encodeURLSafe as encodeBase64Url } from '@stablelib/base64';
 import { verifyBytes } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from 'react-icons/io5';
@@ -26,33 +26,45 @@ import Button from '../src/components/Button';
 import { IWindow } from '../src/types';
 
 // Utils
-import encodeBase64Url from '../src/utils/encodeBase64Url';
 import { isValidJwt } from './utils';
+import { encode as encodeHex } from '@stablelib/hex';
 
 interface IProps {
-  address: string | null;
+  signer: string | null;
   toast: CreateToastFnReturn;
 }
 
-const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
+function createSignatureToSign(header: string, payload: string): Uint8Array {
+  const encoder: TextEncoder = new TextEncoder();
+  const rawHeader: Uint8Array = encoder.encode(
+    JSON.stringify(JSON.parse(header))
+  );
+  const rawPayload: Uint8Array = encoder.encode(
+    JSON.stringify(JSON.parse(payload))
+  );
+
+  return encoder.encode(
+    `${encodeBase64Url(rawHeader)}.${encodeBase64Url(rawPayload)}`
+  );
+}
+
+const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
   const [header, setHeader] = useState<string | null>(null);
   const [payload, setPayload] = useState<string | null>(null);
-  const [signedData, setSignedData] = useState<string | null>(null);
+  const [signedData, setSignedData] = useState<Uint8Array | null>(null);
+  const encoder: TextEncoder = new TextEncoder();
   const handleClearClick = () => {
     setHeader('');
     setPayload('');
     setSignedData(null);
   };
   const handleSignJwtClick = (withSigner: boolean) => async () => {
-    let decoder: TextDecoder;
-    let encoder: TextEncoder;
     let result: IBaseResult & ISignBytesResult;
-    let signature: string;
 
     if (
       !header ||
       !payload ||
-      (withSigner && !address) ||
+      (withSigner && !signer) ||
       !isValidJwt(header, payload)
     ) {
       console.error('no data/address or the jwt is invalid');
@@ -74,14 +86,10 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     }
 
     try {
-      signature = `${encodeBase64Url(
-        JSON.parse(JSON.stringify(header))
-      )}.${encodeBase64Url(JSON.parse(JSON.stringify(payload)))}`;
-      encoder = new TextEncoder();
       result = await (window as IWindow).algorand.signBytes({
-        data: encoder.encode(signature),
+        data: createSignatureToSign(header, payload),
         ...(withSigner && {
-          signer: address || undefined,
+          signer: signer || undefined,
         }),
       });
 
@@ -93,9 +101,7 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
         title: 'JWT Signed!',
       });
 
-      decoder = new TextDecoder();
-
-      setSignedData(decoder.decode(result.signature));
+      setSignedData(result.signature);
     } catch (error) {
       toast({
         description: (error as BaseError).message,
@@ -116,7 +122,7 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     let encoder: TextEncoder;
     let verifiedResult: boolean;
 
-    if (!header || !payload || !signedData || !address) {
+    if (!header || !payload || !signedData || !signer) {
       toast({
         duration: 3000,
         isClosable: true,
@@ -129,9 +135,9 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
 
     encoder = new TextEncoder();
     verifiedResult = verifyBytes(
-      encoder.encode(''),
-      encoder.encode(signedData),
-      address
+      createSignatureToSign(header, payload),
+      signedData,
+      signer
     ); // verify using the algosdk
 
     if (!verifiedResult) {
@@ -166,10 +172,10 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
   "aud": "${window.location.protocol}//${window.location.host}",
   "exp": ${now + 300000},
   "iat": ${now},
-  "iss": "did:algo:${address}",
+  "iss": "did:algo:${signer}",
   "jti": "${uuid()}",
   "gty": "did",
-  "sub": "${address}"
+  "sub": "${signer}"
 }`);
   };
 
@@ -194,7 +200,11 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
           <HStack spacing={2} w="full">
             <Text>Encoded:</Text>
             {header && (
-              <Code wordBreak="break-word">{encodeBase64Url(header)}</Code>
+              <Code wordBreak="break-word">
+                {encodeBase64Url(
+                  encoder.encode(JSON.stringify(JSON.parse(header)))
+                )}
+              </Code>
             )}
           </HStack>
         </VStack>
@@ -216,7 +226,11 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
           <HStack spacing={2} w="full">
             <Text>Encoded:</Text>
             {payload && (
-              <Code wordBreak="break-word">{encodeBase64Url(payload)}</Code>
+              <Code wordBreak="break-word">
+                {encodeBase64Url(
+                  encoder.encode(JSON.stringify(JSON.parse(payload)))
+                )}
+              </Code>
             )}
           </HStack>
         </VStack>
@@ -227,6 +241,15 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
             <Icon as={IoCheckmarkCircleSharp} color="green.500" size="md" />
           ) : (
             <Icon as={IoCloseCircleSharp} color="red.500" size="md" />
+          )}
+        </HStack>
+        {/* Signed data */}
+        <HStack spacing={2} w="full">
+          <Text>Encoded signed data (hex):</Text>
+          {signedData && (
+            <Code fontSize="sm" wordBreak="break-word">
+              {encodeHex(signedData).toUpperCase()}
+            </Code>
           )}
         </HStack>
         {/* CTAs */}
@@ -279,4 +302,4 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
   );
 };
 
-export default SignDataTab;
+export default SignJwtTab;

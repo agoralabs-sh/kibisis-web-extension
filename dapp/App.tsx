@@ -188,8 +188,8 @@ const App: FC = () => {
                 <Tab>Sign JWT</Tab>
               </TabList>
               <TabPanels>
-                <SignDataTab address={selectedAddress} toast={toast} />
-                <SignJwtTab address={selectedAddress} toast={toast} />
+                <SignDataTab signer={selectedAddress} toast={toast} />
+                <SignJwtTab signer={selectedAddress} toast={toast} />
               </TabPanels>
             </Tabs>
           </VStack>

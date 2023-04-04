@@ -59,9 +59,7 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
     },
     plugins: [
       new DefinePlugin({
-        __AGORA_WALLET_EXTENSION_ID__: JSON.stringify(
-          browser_specific_settings.gecko.id
-        ),
+        __EXTENSION_ID__: JSON.stringify(browser_specific_settings.gecko.id),
         __APP_TITLE__: JSON.stringify(APP_TITLE),
         __ENV__: JSON.stringify(DEVELOPMENT_ENVIRONMENT),
         __VERSION__: JSON.stringify(version),
@@ -97,9 +95,7 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
     name: PRODUCTION_ENVIRONMENT,
     plugins: [
       new DefinePlugin({
-        __AGORA_WALLET_EXTENSION_ID__: JSON.stringify(
-          browser_specific_settings.gecko.id
-        ),
+        __EXTENSION_ID__: JSON.stringify(browser_specific_settings.gecko.id),
         __APP_TITLE__: JSON.stringify(APP_TITLE),
         __ENV__: JSON.stringify(PRODUCTION_ENVIRONMENT),
         __VERSION__: JSON.stringify(version),

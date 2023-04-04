@@ -47,6 +47,7 @@ import { sendSignBytesResponse } from '../../features/messages';
 
 // Hooks
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSignBytes from '../../hooks/useSignBytes';
 import useSubTextColor from '../../hooks/useSubTextColor';
 import useTextBackgroundColor from '../../hooks/useTextBackgroundColor';
 
@@ -74,6 +75,7 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const defaultTextColor: string = useDefaultTextColor();
+  const { encodedSignedBytes, error, signBytes } = useSignBytes();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const accounts: IAccount[] = useSelectAccounts();
@@ -81,7 +83,6 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
   const fetching: boolean = useSelectFetchingAccounts();
   const [decodedJwt, setDecodedJwt] = useState<IDecodedJwt | null>(null);
   const [password, setPassword] = useState<string>('');
-  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [selectedSigner, setSelectedSigner] = useState<IAccount | null>(null);
   const handleAccountSelect = (account: IAccount) => setSelectedSigner(account);
   const handleCancelClick = () => {
@@ -97,14 +98,25 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
       );
     }
 
+    handleClose();
+  };
+  const handleClose = () => {
+    setPassword('');
     onClose();
   };
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPasswordError(null);
     setPassword(event.target.value);
   };
-  const handleSignClick = () => {
-    console.log('get private key and sign!');
+  const handleSignClick = async () => {
+    if (!signDataRequest || !selectedSigner) {
+      return;
+    }
+
+    await signBytes({
+      encodedData: signDataRequest.encodedData,
+      password,
+      signer: selectedSigner.address,
+    });
   };
   const renderContent = () => {
     if (fetching || !signDataRequest || !selectedSigner) {
@@ -435,12 +447,25 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
       setDecodedJwt(decodeJwt(window.atob(signDataRequest.encodedData)));
     }
   }, [signDataRequest]);
+  useEffect(() => {
+    if (encodedSignedBytes && signDataRequest) {
+      dispatch(
+        sendSignBytesResponse({
+          encodedSignature: encodedSignedBytes,
+          error: null,
+          tabId: signDataRequest.tabId,
+        })
+      );
+
+      handleClose();
+    }
+  }, [encodedSignedBytes]);
 
   return (
     <Modal
       isOpen={!!signDataRequest}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >
@@ -486,7 +511,7 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
         <ModalFooter p={DEFAULT_GAP}>
           <VStack alignItems="flex-start" spacing={4} w="full">
             <PasswordInput
-              error={passwordError}
+              error={error}
               hint={t<string>('captions.mustEnterPasswordToSign')}
               onChange={handlePasswordChange}
               value={password}

@@ -10,6 +10,9 @@ import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 
+// Errors
+import { BaseExtensionError } from '../../errors';
+
 // Components
 import IconButton from '../IconButton';
 
@@ -18,7 +21,7 @@ import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 import useSubTextColor from '../../hooks/useSubTextColor';
 
 interface IProps {
-  error: string | null;
+  error: BaseExtensionError | null;
   hint: string | null;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   value: string;
@@ -44,9 +47,11 @@ const PasswordInput: FC<IProps> = ({
         <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
           {t<string>('labels.password')}
         </Text>
-        <Text color="red.300" fontSize="xs" textAlign="right">
-          {error}
-        </Text>
+        {error && (
+          <Text color="red.300" fontSize="xs" textAlign="right">
+            {error.message}
+          </Text>
+        )}
       </HStack>
       <InputGroup size="md">
         <Input

@@ -12,6 +12,10 @@ import {
   UnknownError,
   WalletOperationNotSupportedError,
 } from '@agoralabs-sh/algorand-provider';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
 
 // Constants
 import { REQUEST_TIMEOUT, WALLET_ID } from '../../constants';
@@ -164,20 +168,16 @@ export default class AgoraWalletManager extends BaseWalletManager {
   public async signBytes(
     options: ISignBytesOptions
   ): Promise<ISignBytesResult> {
-    const decoder: TextDecoder = new TextDecoder();
-    const encoder: TextEncoder = new TextEncoder();
-    const encodedBase64Data: string = window.btoa(decoder.decode(options.data));
     const result: IBaseSignBytesResponsePayload = (await this.handleEvent(
       new ExternalSignBytesRequestEvent({
-        encodedData: encodedBase64Data,
+        encodedData: encodeBase64(options.data),
         signer: options.signer || null,
       }),
       EventNameEnum.ExternalSignBytesResponse
     )) as IBaseSignBytesResponsePayload;
-    const decodedBase64Signature: string = window.atob(result.encodedSignature);
 
     return {
-      signature: encoder.encode(decodedBase64Signature),
+      signature: decodeBase64(result.encodedSignature),
     };
   }
 

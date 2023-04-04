@@ -12,6 +12,7 @@ import {
   Textarea,
   VStack,
 } from '@chakra-ui/react';
+import { encode as encodeHex } from '@stablelib/hex';
 import { verifyBytes } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
@@ -22,23 +23,22 @@ import Button from '../src/components/Button';
 import { IWindow } from '../src/types';
 
 interface IProps {
-  address: string | null;
+  signer: string | null;
   toast: CreateToastFnReturn;
 }
 
-const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
+const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
   const [dataToSign, setDataToSign] = useState<string | null>(null);
-  const [signedData, setSignedData] = useState<string | null>(null);
+  const [signedData, setSignedData] = useState<Uint8Array | null>(null);
+  const encoder: TextEncoder = new TextEncoder();
   const handleClearClick = () => {
     setDataToSign('');
     setSignedData(null);
   };
   const handleSignDataClick = (withSigner: boolean) => async () => {
-    let decoder: TextDecoder;
-    let encoder: TextEncoder;
     let result: IBaseResult & ISignBytesResult;
 
-    if (!dataToSign || (withSigner && !address)) {
+    if (!dataToSign || (withSigner && !signer)) {
       console.error('no data or address');
 
       return;
@@ -58,11 +58,10 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     }
 
     try {
-      encoder = new TextEncoder();
       result = await (window as IWindow).algorand.signBytes({
         data: encoder.encode(dataToSign),
         ...(withSigner && {
-          signer: address || undefined,
+          signer: signer || undefined,
         }),
       });
 
@@ -74,9 +73,7 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
         title: 'Data Signed!',
       });
 
-      decoder = new TextDecoder();
-
-      setSignedData(decoder.decode(result.signature));
+      setSignedData(result.signature);
     } catch (error) {
       toast({
         description: (error as BaseError).message,
@@ -93,7 +90,7 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     let encoder: TextEncoder;
     let verifiedResult: boolean;
 
-    if (!dataToSign || !signedData || !address) {
+    if (!dataToSign || !signedData || !signer) {
       toast({
         duration: 3000,
         isClosable: true,
@@ -107,8 +104,8 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
     encoder = new TextEncoder();
     verifiedResult = verifyBytes(
       encoder.encode(dataToSign),
-      encoder.encode(signedData),
-      address
+      signedData,
+      signer
     ); // verify using the algosdk
 
     if (!verifiedResult) {
@@ -141,8 +138,12 @@ const SignDataTab: FC<IProps> = ({ address, toast }: IProps) => {
           value={dataToSign || ''}
         />
         <HStack spacing={2} w="full">
-          <Text>Decoded signed data:</Text>
-          {signedData && <Code fontSize="sm">{signedData}</Code>}
+          <Text>Encoded signed data (hex):</Text>
+          {signedData && (
+            <Code fontSize="sm" wordBreak="break-word">
+              {encodeHex(signedData).toUpperCase()}
+            </Code>
+          )}
         </HStack>
         <VStack justifyContent="center" spacing={3} w="full">
           <Button

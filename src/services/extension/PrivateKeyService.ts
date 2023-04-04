@@ -258,9 +258,11 @@ export default class PrivateKeyService {
         `${PrivateKeyService.name}#getPrivateKey(): decrypting private key for public key "${publicKey}"`
       );
 
+    console.log('password: ');
+
     return await PrivateKeyService.decrypt(
-      password,
       account.encryptedPrivateKey,
+      password,
       {
         ...(this.logger && {
           logger: this.logger,
