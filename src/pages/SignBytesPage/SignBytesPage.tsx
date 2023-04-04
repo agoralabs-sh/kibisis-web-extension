@@ -9,10 +9,11 @@ import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
 import MainPageShell from '../../components/MainPageShell';
-import SignDataModal from '../../components/SignDataModal';
+import SignBytesModal from '../../components/SignBytesModal';
 
 // Features
-import { fetchAccounts, setSignDataRequest } from '../../features/accounts';
+import { fetchAccounts } from '../../features/accounts';
+import { setSignBytesRequest } from '../../features/messages';
 import { fetchSessions } from '../../features/sessions';
 import { fetchSettings } from '../../features/settings';
 
@@ -33,7 +34,7 @@ const SignBytesPage: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const accounts: IAccount[] = useSelectAccounts();
   const sessions: ISession[] = useSelectSessions();
-  const handleSignBytesModalClose = () => dispatch(setSignDataRequest(null));
+  const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
 
   useEffect(() => {
     dispatch(fetchSettings());
@@ -58,7 +59,7 @@ const SignBytesPage: FC = () => {
       tabId = parseInt(url.searchParams.get('tabId') || 'unknown');
 
       dispatch(
-        setSignDataRequest({
+        setSignBytesRequest({
           appName:
             url.searchParams.get('appName') || t<string>('labels.unknownApp'),
           authorizedAddresses: getAuthorizedAddressesForHost(host, sessions),
@@ -74,7 +75,7 @@ const SignBytesPage: FC = () => {
 
   return (
     <>
-      <SignDataModal onClose={handleSignBytesModalClose} />
+      <SignBytesModal onClose={handleSignBytesModalClose} />
       <MainPageShell>
         <InfinitySpin color={theme.colors.primary['500']} width="200" />
       </MainPageShell>

@@ -2,8 +2,11 @@
 import { SerializableNetworkNotSupportedError } from '../../../errors';
 
 // Features
-import { sendEnableResponse } from '../../../features/messages';
-import { saveSession, setConnectRequest } from '../../../features/sessions';
+import {
+  setEnableRequest,
+  sendEnableResponse,
+} from '../../../features/messages';
+import { saveSession } from '../../../features/sessions';
 
 // Types
 import {
@@ -82,7 +85,7 @@ export default function handleEnableRequest(
 
   // otherwise, show the connect modal
   dispatch(
-    setConnectRequest({
+    setEnableRequest({
       appName: request.appName,
       authorizedAddresses: [],
       genesisHash: network.genesisHash,

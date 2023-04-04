@@ -1,11 +1,11 @@
-interface IConnectRequest {
+interface ISignBytesRequest {
   appName: string;
   authorizedAddresses: string[];
-  genesisHash: string;
-  genesisId: string;
+  encodedData: string;
   host: string;
   iconUrl: string | null;
+  signer: string | null;
   tabId: number;
 }
 
-export default IConnectRequest;
+export default ISignBytesRequest;

@@ -31,13 +31,8 @@ import { DEFAULT_GAP } from '../../constants';
 import { SerializableOperationCanceledError } from '../../errors';
 
 // Features
-import { sendEnableResponse } from '../../features/messages';
-import {
-  createSessionFromConnectRequest,
-  IConnectRequest,
-  saveSession,
-  setConnectRequest,
-} from '../../features/sessions';
+import { sendEnableResponse, setEnableRequest } from '../../features/messages';
+import { saveSession } from '../../features/sessions';
 
 // Hooks
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
@@ -47,7 +42,7 @@ import useTextBackgroundColor from '../../hooks/useTextBackgroundColor';
 // Selectors
 import {
   useSelectAccounts,
-  useSelectConnectRequest,
+  useSelectEnableRequest,
   useSelectFetchingAccounts,
   useSelectNetworks,
   useSelectSavingSessions,
@@ -57,39 +52,45 @@ import {
 import { theme } from '../../theme';
 
 // Types
-import { IAccount, IAppThunkDispatch, INetwork, ISession } from '../../types';
+import {
+  IAccount,
+  IAppThunkDispatch,
+  IEnableRequest,
+  INetwork,
+  ISession,
+} from '../../types';
 
 // Utils
-import { ellipseAddress } from '../../utils';
+import { ellipseAddress, mapSessionFromEnableRequest } from '../../utils';
 
 interface IProps {
   onClose: () => void;
 }
 
-const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
+const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const accounts: IAccount[] = useSelectAccounts();
-  const connectRequest: IConnectRequest | null = useSelectConnectRequest();
+  const enableRequest: IEnableRequest | null = useSelectEnableRequest();
   const fetching: boolean = useSelectFetchingAccounts();
   const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
   const network: INetwork | null =
     networks.find(
-      (value) => value.genesisHash === connectRequest?.genesisHash
+      (value) => value.genesisHash === enableRequest?.genesisHash
     ) || null;
   const handleCancelClick = () => {
-    if (connectRequest) {
+    if (enableRequest) {
       dispatch(
         sendEnableResponse({
           error: new SerializableOperationCanceledError(
             `user dismissed connect modal`
           ),
           session: null,
-          tabId: connectRequest.tabId,
+          tabId: enableRequest.tabId,
         })
       );
     }
@@ -99,11 +100,11 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleConnectClick = () => {
     let session: ISession;
 
-    if (!connectRequest || connectRequest.authorizedAddresses.length <= 0) {
+    if (!enableRequest || enableRequest.authorizedAddresses.length <= 0) {
       return;
     }
 
-    session = createSessionFromConnectRequest(connectRequest);
+    session = mapSessionFromEnableRequest(enableRequest);
 
     // save the session, send an enable response and remove the connect request
     dispatch(saveSession(session));
@@ -111,7 +112,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
       sendEnableResponse({
         error: null,
         session,
-        tabId: connectRequest.tabId,
+        tabId: enableRequest.tabId,
       })
     );
 
@@ -119,19 +120,19 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handleOnAccountCheckChange =
     (address: string) => (event: ChangeEvent<HTMLInputElement>) => {
-      if (!connectRequest) {
+      if (!enableRequest) {
         return;
       }
 
       if (event.target.checked) {
         if (
-          !connectRequest.authorizedAddresses.find((value) => value === address)
+          !enableRequest.authorizedAddresses.find((value) => value === address)
         ) {
           dispatch(
-            setConnectRequest({
-              ...connectRequest,
+            setEnableRequest({
+              ...enableRequest,
               authorizedAddresses: [
-                ...connectRequest.authorizedAddresses,
+                ...enableRequest.authorizedAddresses,
                 address,
               ],
             })
@@ -143,9 +144,9 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
       // remove if unchecked
       dispatch(
-        setConnectRequest({
-          ...connectRequest,
-          authorizedAddresses: connectRequest.authorizedAddresses.filter(
+        setEnableRequest({
+          ...enableRequest,
+          authorizedAddresses: enableRequest.authorizedAddresses.filter(
             (value) => value !== address
           ),
         })
@@ -205,7 +206,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
           <Checkbox
             colorScheme="primary"
             isChecked={
-              !!connectRequest?.authorizedAddresses?.find(
+              !!enableRequest?.authorizedAddresses?.find(
                 (value) => value === account.address
               )
             }
@@ -223,7 +224,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
   return (
     <Modal
-      isOpen={!!connectRequest}
+      isOpen={!!enableRequest}
       motionPreset="slideInBottom"
       onClose={onClose}
       size="full"
@@ -237,12 +238,12 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <VStack alignItems="center" spacing={5} w="full">
             <Avatar
-              name={connectRequest?.appName || 'unknown'}
-              src={connectRequest?.iconUrl || undefined}
+              name={enableRequest?.appName || 'unknown'}
+              src={enableRequest?.iconUrl || undefined}
             />
             <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
               <Heading color={defaultTextColor} size="md" textAlign="center">
-                {connectRequest?.appName || 'Unknown'}
+                {enableRequest?.appName || 'Unknown'}
               </Heading>
               <Box
                 backgroundColor={textBackgroundColor}
@@ -251,7 +252,7 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
                 py={1}
               >
                 <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-                  {connectRequest?.host || 'unknown host'}
+                  {enableRequest?.host || 'unknown host'}
                 </Text>
               </Box>
               {network && <ChainBadge network={network} />}
@@ -290,4 +291,4 @@ const ConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   );
 };
 
-export default ConnectModal;
+export default EnableModal;

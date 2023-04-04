@@ -5,7 +5,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Avatar,
-  Badge,
   Box,
   Code,
   Heading,
@@ -42,7 +41,6 @@ import { DEFAULT_GAP } from '../../constants';
 import { SerializableOperationCanceledError } from '../../errors';
 
 // Features
-import { ISignDataRequest } from '../../features/accounts';
 import { sendSignBytesResponse } from '../../features/messages';
 
 // Hooks
@@ -55,14 +53,19 @@ import useTextBackgroundColor from '../../hooks/useTextBackgroundColor';
 import {
   useSelectAccounts,
   useSelectFetchingAccounts,
-  useSelectSignDataRequest,
+  useSelectSignBytesRequest,
 } from '../../selectors';
 
 // Theme
 import { theme } from '../../theme';
 
 // Types
-import { IAccount, IAppThunkDispatch, IDecodedJwt } from '../../types';
+import {
+  IAccount,
+  IAppThunkDispatch,
+  IDecodedJwt,
+  ISignBytesRequest,
+} from '../../types';
 
 // Utils
 import { decodeJwt, ellipseAddress } from '../../utils';
@@ -71,7 +74,7 @@ interface IProps {
   onClose: () => void;
 }
 
-const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
+const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const defaultTextColor: string = useDefaultTextColor();
@@ -79,21 +82,22 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const accounts: IAccount[] = useSelectAccounts();
-  const signDataRequest: ISignDataRequest | null = useSelectSignDataRequest();
+  const signBytesRequest: ISignBytesRequest | null =
+    useSelectSignBytesRequest();
   const fetching: boolean = useSelectFetchingAccounts();
   const [decodedJwt, setDecodedJwt] = useState<IDecodedJwt | null>(null);
   const [password, setPassword] = useState<string>('');
   const [selectedSigner, setSelectedSigner] = useState<IAccount | null>(null);
   const handleAccountSelect = (account: IAccount) => setSelectedSigner(account);
   const handleCancelClick = () => {
-    if (signDataRequest) {
+    if (signBytesRequest) {
       dispatch(
         sendSignBytesResponse({
           encodedSignature: null,
           error: new SerializableOperationCanceledError(
-            `user dismissed sign data modal`
+            `user dismissed sign bytes modal`
           ),
-          tabId: signDataRequest.tabId,
+          tabId: signBytesRequest.tabId,
         })
       );
     }
@@ -108,18 +112,18 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
     setPassword(event.target.value);
   };
   const handleSignClick = async () => {
-    if (!signDataRequest || !selectedSigner) {
+    if (!signBytesRequest || !selectedSigner) {
       return;
     }
 
     await signBytes({
-      encodedData: signDataRequest.encodedData,
+      encodedData: signBytesRequest.encodedData,
       password,
       signer: selectedSigner.address,
     });
   };
   const renderContent = () => {
-    if (fetching || !signDataRequest || !selectedSigner) {
+    if (fetching || !signBytesRequest || !selectedSigner) {
       return (
         <VStack spacing={4} w="full">
           <HStack py={4} spacing={4} w="full">
@@ -152,7 +156,7 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
       <VStack spacing={4} w="full">
         {/* Account select */}
         <VStack spacing={2} w="full">
-          {signDataRequest.signer ? (
+          {signBytesRequest.signer ? (
             <>
               <Text textAlign="left" w="full">{`${t<string>(
                 'labels.addressToSign'
@@ -166,7 +170,7 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
               )}:`}</Text>
               <AccountSelect
                 accounts={accounts.filter((account) =>
-                  signDataRequest.authorizedAddresses.some(
+                  signBytesRequest.authorizedAddresses.some(
                     (value) => value === account.address
                   )
                 )}
@@ -235,7 +239,7 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
                     {decodedJwt.payload.audience}
                   </Text>
                 </Box>
-                {decodedJwt.payload.audience !== signDataRequest?.host && (
+                {decodedJwt.payload.audience !== signBytesRequest?.host && (
                   <Tooltip
                     aria-label="Audience does not match the host"
                     label={t<string>('captions.audienceDoesNotMatch')}
@@ -429,9 +433,9 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
             <Text textAlign="left" w="full">{`${t<string>(
               'labels.message'
             )}:`}</Text>
-            {signDataRequest && (
+            {signBytesRequest && (
               <Code borderRadius="md" w="full">
-                {window.atob(signDataRequest.encodedData)}
+                {window.atob(signBytesRequest.encodedData)}
               </Code>
             )}
           </VStack>
@@ -444,27 +448,27 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
     let account: IAccount | null = null;
 
     if (accounts.length >= 0 && !selectedSigner) {
-      if (signDataRequest?.signer) {
+      if (signBytesRequest?.signer) {
         account =
-          accounts.find((value) => value.address === signDataRequest.signer) ||
+          accounts.find((value) => value.address === signBytesRequest.signer) ||
           null;
       }
 
       setSelectedSigner(account || accounts[0]);
     }
-  }, [accounts, signDataRequest]);
+  }, [accounts, signBytesRequest]);
   useEffect(() => {
-    if (signDataRequest) {
-      setDecodedJwt(decodeJwt(window.atob(signDataRequest.encodedData)));
+    if (signBytesRequest) {
+      setDecodedJwt(decodeJwt(window.atob(signBytesRequest.encodedData)));
     }
-  }, [signDataRequest]);
+  }, [signBytesRequest]);
   useEffect(() => {
-    if (encodedSignedBytes && signDataRequest) {
+    if (encodedSignedBytes && signBytesRequest) {
       dispatch(
         sendSignBytesResponse({
           encodedSignature: encodedSignedBytes,
           error: null,
-          tabId: signDataRequest.tabId,
+          tabId: signBytesRequest.tabId,
         })
       );
 
@@ -474,7 +478,7 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
 
   return (
     <Modal
-      isOpen={!!signDataRequest}
+      isOpen={!!signBytesRequest}
       motionPreset="slideInBottom"
       onClose={handleClose}
       size="full"
@@ -488,12 +492,12 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <VStack alignItems="center" spacing={5} w="full">
             <Avatar
-              name={signDataRequest?.appName || 'unknown'}
-              src={signDataRequest?.iconUrl || undefined}
+              name={signBytesRequest?.appName || 'unknown'}
+              src={signBytesRequest?.iconUrl || undefined}
             />
             <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
               <Heading color={defaultTextColor} size="md" textAlign="center">
-                {signDataRequest?.appName || 'Unknown'}
+                {signBytesRequest?.appName || 'Unknown'}
               </Heading>
               <Box
                 backgroundColor={textBackgroundColor}
@@ -502,10 +506,10 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
                 py={1}
               >
                 <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-                  {signDataRequest?.host || 'unknown host'}
+                  {signBytesRequest?.host || 'unknown host'}
                 </Text>
               </Box>
-              {signDataRequest &&
+              {signBytesRequest &&
                 (decodedJwt ? (
                   <Text color={subTextColor} fontSize="md" textAlign="center">
                     {t<string>('captions.signJwtRequest')}
@@ -554,4 +558,4 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
   );
 };
 
-export default SignDataModal;
+export default SignBytesModal;

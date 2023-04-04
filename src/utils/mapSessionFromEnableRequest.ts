@@ -1,16 +1,15 @@
 import { v4 as uuid } from 'uuid';
 
 // Types
-import { ISession } from '../../../types';
-import { IConnectRequest } from '../types';
+import { IEnableRequest, ISession } from '../types';
 
-export default function createSessionFromConnectRequest({
+export default function mapSessionFromEnableRequest({
   appName,
   authorizedAddresses,
   genesisHash,
   genesisId,
   host,
-}: IConnectRequest): ISession {
+}: IEnableRequest): ISession {
   const id: string = uuid();
   const now: Date = new Date();
 

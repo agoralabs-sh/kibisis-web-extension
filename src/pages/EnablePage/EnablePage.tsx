@@ -4,13 +4,13 @@ import { useDispatch } from 'react-redux';
 import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
-import ConnectModal from '../../components/ConnectModal';
+import EnableModal from '../../components/EnableModal';
 import MainPageShell from '../../components/MainPageShell';
 
 // Features
 import { fetchAccounts } from '../../features/accounts';
+import { setEnableRequest } from '../../features/messages';
 import { fetchSettings } from '../../features/settings';
-import { setConnectRequest } from '../../features/sessions';
 
 // Selectors
 import { useSelectNetworks, useSelectSelectedNetwork } from '../../selectors';
@@ -21,12 +21,12 @@ import { theme } from '../../theme';
 // Types
 import { IAppThunkDispatch, INetwork } from '../../types';
 
-const ConnectPage: FC = () => {
+const EnablePage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const networks: INetwork[] = useSelectNetworks();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const handleConnectModalClose = () => dispatch(setConnectRequest(null));
+  const handleEnableModalClose = () => dispatch(setEnableRequest(null));
 
   useEffect(() => {
     dispatch(fetchSettings());
@@ -48,10 +48,10 @@ const ConnectPage: FC = () => {
         networks.find(
           (value) => value.genesisHash === url.searchParams.get('genesisHash')
         ) || selectedNetwork;
-      tabId = parseInt(url.searchParams.get('tabId') || 'unknwon');
+      tabId = parseInt(url.searchParams.get('tabId') || 'unknown');
 
       dispatch(
-        setConnectRequest({
+        setEnableRequest({
           appName:
             url.searchParams.get('appName') || t<string>('labels.unknownApp'),
           authorizedAddresses: [],
@@ -67,7 +67,7 @@ const ConnectPage: FC = () => {
 
   return (
     <>
-      <ConnectModal onClose={handleConnectModalClose} />
+      <EnableModal onClose={handleEnableModalClose} />
       <MainPageShell>
         <InfinitySpin color={theme.colors.primary['500']} width="200" />
       </MainPageShell>
@@ -75,4 +75,4 @@ const ConnectPage: FC = () => {
   );
 };
 
-export default ConnectPage;
+export default EnablePage;

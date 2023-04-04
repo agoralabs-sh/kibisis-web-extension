@@ -55,7 +55,7 @@ import {
 } from '../../utils';
 
 export default class BackgroundService {
-  private connectWindow: Windows.Window | null;
+  private enableWindow: Windows.Window | null;
   private readonly logger: ILogger | null;
   private mainWindow: Windows.Window | null;
   private readonly privateKeyService: PrivateKeyService;
@@ -64,7 +64,7 @@ export default class BackgroundService {
   private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
-    this.connectWindow = null;
+    this.enableWindow = null;
     this.logger = logger || null;
     this.mainWindow = null;
     this.privateKeyService = new PrivateKeyService({
@@ -197,19 +197,19 @@ export default class BackgroundService {
       );
     }
 
-    if (!this.connectWindow) {
+    if (!this.enableWindow) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundService.name}#handleEnableRequest(): no previous session found for "${payload.host}", launching connect app`
+          `${BackgroundService.name}#handleEnableRequest(): no previous session found for "${payload.host}", launching enable app`
         );
 
-      url = `connect.html?appName=${payload.appName}&genesisHash=${
+      url = `enable.html?appName=${payload.appName}&genesisHash=${
         network.genesisHash
       }&host=${payload.host}&tabId=${sender.tab.id}${
         payload.iconUrl ? `&iconUrl=${payload.iconUrl}` : ''
       }`;
 
-      this.connectWindow = await browser.windows.create({
+      this.enableWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
         url,
@@ -227,8 +227,8 @@ export default class BackgroundService {
       );
 
     // if this was a response from the connect app, remove the window
-    if (this.connectWindow && this.connectWindow.id) {
-      await browser.windows.remove(this.connectWindow.id);
+    if (this.enableWindow && this.enableWindow.id) {
+      await browser.windows.remove(this.enableWindow.id);
     }
   }
 
@@ -435,13 +435,13 @@ export default class BackgroundService {
   }
 
   public onWindowRemove(windowId: number): void {
-    if (this.connectWindow && this.connectWindow.id === windowId) {
+    if (this.enableWindow && this.enableWindow.id === windowId) {
       this.logger &&
         this.logger.debug(
           `${BackgroundService.name}#onWindowRemove(): removed connect app window`
         );
 
-      this.connectWindow = null;
+      this.enableWindow = null;
     }
 
     if (this.mainWindow && this.mainWindow.id === windowId) {

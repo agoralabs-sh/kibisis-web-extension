@@ -1,5 +1,5 @@
-// Components
-import MainApp from './components/MainApp';
+// Apps
+import MainApp from './apps/MainApp';
 
 // Utils
 import bootstrapApp from './bootstrapApp';

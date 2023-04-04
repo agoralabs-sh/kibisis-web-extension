@@ -4,7 +4,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { initReactI18next } from 'react-i18next';
 
 // Components
-import ConnectApp from './components/ConnectApp';
+import EnableApp from './components/ConnectApp';
 import MainApp from './components/MainApp';
 import RegistrationApp from './components/RegistrationApp';
 

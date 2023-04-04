@@ -1,4 +1,4 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // Enums
 import { StoreNameEnum } from '../../enums';
@@ -8,7 +8,7 @@ import { fetchAccounts } from './thunks';
 
 // Types
 import { IAccount } from '../../types';
-import { IAccountsState, ISignDataRequest } from './types';
+import { IAccountsState } from './types';
 
 // Utils
 import { getInitialState } from './utils';
@@ -33,14 +33,8 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Accounts,
   reducers: {
-    setSignDataRequest: (
-      state: Draft<IAccountsState>,
-      action: PayloadAction<ISignDataRequest | null>
-    ) => {
-      state.signDataRequest = action.payload;
-    },
+    noop: () => {},
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setSignDataRequest } = slice.actions;

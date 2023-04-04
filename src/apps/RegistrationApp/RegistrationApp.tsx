@@ -6,9 +6,9 @@ import { HashRouter, Navigate, Route } from 'react-router-dom';
 import SlideRoutes from 'react-slide-routes';
 
 // Components
-import Fonts from '../Fonts';
-import RegistrationAppProvider from '../RegistrationAppProvider';
-import ThemeProvider from '../ThemeProvider';
+import Fonts from '../../components/Fonts';
+import RegistrationAppProvider from '../../components/RegistrationAppProvider';
+import ThemeProvider from '../../components/ThemeProvider';
 
 // Constants
 import {

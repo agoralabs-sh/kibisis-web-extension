@@ -12,6 +12,7 @@ export type { default as IBaseSignBytesResponsePayload } from './IBaseSignBytesR
 export type { default as IDecodedJwt } from './IDecodedJwt';
 export type { default as IDecodedJwtHeader } from './IDecodedJwtHeader';
 export type { default as IDecodedJwtPayload } from './IDecodedJwtPayload';
+export type { default as IEnableRequest } from './IEnableRequest';
 export type { default as IExtensionEnableRequestPayload } from './IExtensionEnableRequestPayload';
 export type { default as IExtensionEvents } from './IExtensionEvents';
 export type { default as IExtensionSignBytesRequestPayload } from './IExtensionSignBytesRequestPayload';
@@ -31,4 +32,5 @@ export type { default as ISession } from './ISession';
 export type { default as ISettings } from './ISettings';
 export type { default as ISetAccountOptions } from './ISetAccountOptions';
 export type { default as IStorageItemTypes } from './IStorageItemTypes';
+export type { default as ISignBytesRequest } from './ISignBytesRequest';
 export type { default as IWindow } from './IWindow';

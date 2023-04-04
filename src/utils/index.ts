@@ -11,4 +11,5 @@ export { default as isHexString } from './isHexString';
 export { default as isMnemonicValid } from './isMnemonicValid';
 export { default as makeStore } from './makeStore';
 export { default as mapSerializableErrors } from './mapSerializableErrors';
+export { default as mapSessionFromEnableRequest } from './mapSessionFromEnableRequest';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';

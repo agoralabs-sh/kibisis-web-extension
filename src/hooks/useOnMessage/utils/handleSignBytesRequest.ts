@@ -1,6 +1,8 @@
 // Features
-import { setSignDataRequest } from '../../../features/accounts';
-import { sendSignBytesResponse } from '../../../features/messages';
+import {
+  setSignBytesRequest,
+  sendSignBytesResponse,
+} from '../../../features/messages';
 
 // Errors
 import { SerializableUnauthorizedSignerError } from '../../../errors';
@@ -71,7 +73,7 @@ export default function handleSignBytesRequest(
 
   // show the sign data modal
   dispatch(
-    setSignDataRequest({
+    setSignBytesRequest({
       appName,
       authorizedAddresses,
       encodedData,

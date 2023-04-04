@@ -5,9 +5,9 @@ import { Provider } from 'react-redux';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 // Components
-import MainAppProvider from '../MainAppProvider';
-import Fonts from '../Fonts';
-import ThemeProvider from '../ThemeProvider';
+import Fonts from '../../components/Fonts';
+import MainAppProvider from '../../components/MainAppProvider';
+import ThemeProvider from '../../components/ThemeProvider';
 
 // Constants
 import { ACCOUNTS_ROUTE, SETTINGS_ROUTE } from '../../constants';
@@ -15,6 +15,7 @@ import { ACCOUNTS_ROUTE, SETTINGS_ROUTE } from '../../constants';
 // Features
 import { reducer as accountsReducer } from '../../features/accounts';
 import { reducer as applicationReducer } from '../../features/application';
+import { reducer as messagesReducer } from '../../features/messages';
 import { reducer as networksReducer } from '../../features/networks';
 import { reducer as sessionsReducer } from '../../features/sessions';
 import { reducer as settingsReducer } from '../../features/settings';
@@ -34,6 +35,7 @@ const MainApp: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     combineReducers({
       accounts: accountsReducer,
       application: applicationReducer,
+      messages: messagesReducer,
       networks: networksReducer,
       sessions: sessionsReducer,
       settings: settingsReducer,

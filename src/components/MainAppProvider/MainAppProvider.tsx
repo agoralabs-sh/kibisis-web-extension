@@ -4,14 +4,15 @@ import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // Components
-import ConnectModal from '../ConnectModal';
+import EnableModal from '../EnableModal';
 import ErrorModal from '../ErrorModal';
-import SignDataModal from '../SignDataModal';
+import SignBytesModal from '../SignBytesModal';
 
 // Features
-import { fetchAccounts, setSignDataRequest } from '../../features/accounts';
+import { fetchAccounts } from '../../features/accounts';
 import { setError, setNavigate, setToast } from '../../features/application';
-import { fetchSessions, setConnectRequest } from '../../features/sessions';
+import { setEnableRequest, setSignBytesRequest } from '../../features/messages';
+import { fetchSessions } from '../../features/sessions';
 import { fetchSettings } from '../../features/settings';
 
 // Hooks
@@ -31,14 +32,14 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
   const navigate: NavigateFunction = useNavigate();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
-  const handleConnectModalClose = () => {
-    dispatch(setConnectRequest(null));
+  const handleEnableModalClose = () => {
+    dispatch(setEnableRequest(null));
   };
   const handleErrorModalClose = () => {
     dispatch(setError(null));
   };
   const handleSignDataModalClose = () => {
-    dispatch(setSignDataRequest(null));
+    dispatch(setSignBytesRequest(null));
   };
 
   useEffect(() => {
@@ -58,8 +59,8 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <>
       <ErrorModal onClose={handleErrorModalClose} />
-      <ConnectModal onClose={handleConnectModalClose} />
-      <SignDataModal onClose={handleSignDataModalClose} />
+      <EnableModal onClose={handleEnableModalClose} />
+      <SignBytesModal onClose={handleSignDataModalClose} />
       <ToastContainer />
       {children}
     </>

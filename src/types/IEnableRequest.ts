@@ -1,11 +1,11 @@
-interface ISignDataRequest {
+interface IEnableRequest {
   appName: string;
   authorizedAddresses: string[];
-  encodedData: string;
+  genesisHash: string;
+  genesisId: string;
   host: string;
   iconUrl: string | null;
-  signer: string | null;
   tabId: number;
 }
 
-export default ISignDataRequest;
+export default IEnableRequest;
