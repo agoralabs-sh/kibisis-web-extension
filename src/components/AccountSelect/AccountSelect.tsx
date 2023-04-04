@@ -15,8 +15,6 @@ import AccountItem from '../AccountItem';
 
 // Hooks
 import useButtonHoverBackgroundColor from '../../hooks/useButtonHoverBackgroundColor';
-import useDefaultTextColor from '../../hooks/useDefaultTextColor';
-import useSubTextColor from '../../hooks/useSubTextColor';
 
 // Types
 import { IAccount } from '../../types';
@@ -29,8 +27,6 @@ interface IProps {
 
 const AccountSelect: FC<IProps> = ({ accounts, onSelect, value }: IProps) => {
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
   const handleAccountClick = (account: IAccount) => () => onSelect(account);
   const minimumHeight: number = 48;
 

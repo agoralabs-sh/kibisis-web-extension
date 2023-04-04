@@ -1,5 +1,5 @@
-import { Button, ColorMode, HStack, Icon, Text } from '@chakra-ui/react';
-import React, { FC, useState } from 'react';
+import { Button, HStack, Icon, Text } from '@chakra-ui/react';
+import React, { FC } from 'react';
 import { IconType } from 'react-icons';
 import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';

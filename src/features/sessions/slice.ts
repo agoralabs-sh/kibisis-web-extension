@@ -43,7 +43,9 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Sessions,
   reducers: {
-    noop: () => {},
+    noop: () => {
+      return;
+    },
   },
 });
 

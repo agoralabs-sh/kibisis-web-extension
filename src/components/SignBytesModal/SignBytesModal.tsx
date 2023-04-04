@@ -151,7 +151,6 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
       );
     }
 
-    // @ts-ignore
     return (
       <VStack spacing={4} w="full">
         {/* Account select */}

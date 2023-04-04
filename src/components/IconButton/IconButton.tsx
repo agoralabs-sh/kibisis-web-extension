@@ -1,5 +1,4 @@
 import {
-  ColorMode,
   Icon,
   IconButton as ChakraIconButton,
   IconButtonProps,
@@ -10,7 +9,6 @@ import React, {
   forwardRef,
   LegacyRef,
   RefAttributes,
-  useState,
 } from 'react';
 import { IconType } from 'react-icons';
 

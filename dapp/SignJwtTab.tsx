@@ -119,7 +119,6 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
     event: ChangeEvent<HTMLTextAreaElement>
   ) => setPayload(event.target.value);
   const handleVerifySignedJWT = () => {
-    let encoder: TextEncoder;
     let verifiedResult: boolean;
 
     if (!header || !payload || !signedData || !signer) {
@@ -133,7 +132,6 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
       return;
     }
 
-    encoder = new TextEncoder();
     verifiedResult = verifyBytes(
       createSignatureToSign(header, payload),
       signedData,

@@ -33,7 +33,9 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Accounts,
   reducers: {
-    noop: () => {},
+    noop: () => {
+      return;
+    },
   },
 });
 

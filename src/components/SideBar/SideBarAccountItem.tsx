@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Center,
-  ColorMode,
-  HStack,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Avatar, Button, Center, HStack, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
