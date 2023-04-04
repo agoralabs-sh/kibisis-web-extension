@@ -1,4 +1,8 @@
 import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
+import {
+  decode as decodeBase64,
+  encodeURLSafe as encodeBase64Url,
+} from '@stablelib/base64';
 import browser, { Runtime, Windows } from 'webextension-polyfill';
 
 // Config
@@ -16,12 +20,17 @@ import {
 import { EventNameEnum } from '../../enums';
 
 // Errors
-import { SerializableNetworkNotSupportedError } from '../../errors';
+import {
+  SerializableNetworkNotSupportedError,
+  SerializableUnauthorizedSignerError,
+} from '../../errors';
 
 // Events
 import {
   ExtensionEnableRequestEvent,
   ExtensionEnableResponseEvent,
+  ExtensionSignBytesRequestEvent,
+  ExtensionSignBytesResponseEvent,
 } from '../../events';
 
 // Services
@@ -40,7 +49,10 @@ import {
 } from '../../types';
 
 // Utils
-import { selectDefaultNetwork } from '../../utils';
+import {
+  getAuthorizedAddressesForHost,
+  selectDefaultNetwork,
+} from '../../utils';
 
 export default class BackgroundService {
   private connectWindow: Windows.Window | null;
@@ -48,6 +60,7 @@ export default class BackgroundService {
   private mainWindow: Windows.Window | null;
   private readonly privateKeyService: PrivateKeyService;
   private registrationWindow: Windows.Window | null;
+  private signBytesWindow: Windows.Window | null;
   private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
@@ -59,6 +72,7 @@ export default class BackgroundService {
       passwordTag: browser.runtime.id,
     });
     this.registrationWindow = null;
+    this.signBytesWindow = null;
     this.storageManager = new StorageManager();
   }
 
@@ -244,6 +258,118 @@ export default class BackgroundService {
     }
   }
 
+  private async handleEnableSignBytesRequest(
+    { payload }: ExtensionSignBytesRequestEvent,
+    sender: Runtime.MessageSender
+  ): Promise<void> {
+    const isInitialized: boolean = await this.privateKeyService.isInitialized();
+    let authorizedAddresses: string[];
+    let filteredSessions: ISession[];
+    let rawDecodedData: Uint8Array;
+    let storageItems: Record<string, IStorageItemTypes | unknown>;
+    let url: string;
+
+    // if the app is not initialized, ignore
+    if (!isInitialized) {
+      return;
+    }
+
+    if (!sender.tab?.id) {
+      return;
+    }
+
+    // if the main window is open, let it handle the request
+    if (this.mainWindow) {
+      return;
+    }
+
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundService.name}#handleEnableSignBytesRequest(): extension message "${EventNameEnum.ExtensionSignBytesRequest}" received from the content script`
+      );
+
+    storageItems = await this.storageManager.getAllItems();
+    filteredSessions = Object.keys(storageItems)
+      .reduce<ISession[]>(
+        (acc, key) =>
+          key.startsWith(SESSION_KEY_PREFIX)
+            ? [...acc, storageItems[key] as ISession]
+            : acc,
+        []
+      )
+      .filter((value) => value.host === payload.host);
+
+    // if the host has not been enabled in the wallet
+    if (filteredSessions.length <= 0) {
+      return await browser.tabs.sendMessage(
+        sender.tab.id,
+        new ExtensionSignBytesResponseEvent(
+          null,
+          new SerializableUnauthorizedSignerError( // TODO: use a more relevant error
+            '',
+            'app has not been authorized'
+          )
+        )
+      );
+    }
+
+    authorizedAddresses = getAuthorizedAddressesForHost(
+      payload.host,
+      filteredSessions
+    );
+
+    // if the requested signer has not been authorized
+    if (
+      payload.signer &&
+      !authorizedAddresses.find((value) => value === payload.signer)
+    ) {
+      return await browser.tabs.sendMessage(
+        sender.tab.id,
+        new ExtensionSignBytesResponseEvent(
+          null,
+          new SerializableUnauthorizedSignerError(payload.signer)
+        )
+      );
+    }
+
+    if (!this.signBytesWindow) {
+      this.logger &&
+        this.logger.debug(
+          `${BackgroundService.name}#handleEnableSignBytesRequest(): launching sign bytes app`
+        );
+
+      rawDecodedData = decodeBase64(payload.encodedData); // we need to make the base64 URL safe as we will be passing it as a search param
+      url = `sign_bytes.html?appName=${
+        payload.appName
+      }&encodedData=${encodeBase64Url(rawDecodedData)}&host=${
+        payload.host
+      }&tabId=${sender.tab.id}${
+        payload.iconUrl ? `&iconUrl=${payload.iconUrl}` : ''
+      }${payload.signer ? `&signer=${payload.signer}` : ''}`;
+
+      this.signBytesWindow = await browser.windows.create({
+        height: DEFAULT_POPUP_HEIGHT,
+        type: 'popup',
+        url,
+        width: DEFAULT_POPUP_WIDTH,
+      });
+
+      return;
+    }
+  }
+
+  private async handleSignBytesResponse(): Promise<void> {
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundService.name}#handleSignBytesResponse(): extension message "${EventNameEnum.ExtensionSignBytesResponse}" received from the popup`
+      );
+
+    // if this was a response from the sign bytes app, remove the window
+    if (this.signBytesWindow && this.signBytesWindow.id) {
+      await browser.windows.remove(this.signBytesWindow.id);
+    }
+  }
+
   /**
    * Public functions
    */
@@ -262,6 +388,13 @@ export default class BackgroundService {
         return await this.handleEnableResponse();
       case EventNameEnum.ExtensionRegistrationCompleted:
         return await this.handleRegistrationCompleted();
+      case EventNameEnum.ExtensionSignBytesRequest:
+        return await this.handleEnableSignBytesRequest(
+          message as ExtensionSignBytesRequestEvent,
+          sender
+        );
+      case EventNameEnum.ExtensionSignBytesResponse:
+        return await this.handleSignBytesResponse();
       default:
         break;
     }
@@ -327,6 +460,15 @@ export default class BackgroundService {
         );
 
       this.registrationWindow = null;
+    }
+
+    if (this.signBytesWindow && this.signBytesWindow.id === windowId) {
+      this.logger &&
+        this.logger.debug(
+          `${BackgroundService.name}#onWindowRemove(): removed sign bytes app window`
+        );
+
+      this.signBytesWindow = null;
     }
   }
 }

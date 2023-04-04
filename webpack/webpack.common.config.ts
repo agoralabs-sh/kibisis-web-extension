@@ -14,6 +14,7 @@ const config: Configuration = {
     ['connect']: resolve(SRC_PATH, 'connect.ts'),
     ['main']: resolve(SRC_PATH, 'main.ts'),
     ['registration']: resolve(SRC_PATH, 'registration.ts'),
+    ['sign-bytes']: resolve(SRC_PATH, 'sign-bytes.ts'),
   },
   module: {
     rules: [
@@ -64,6 +65,13 @@ const config: Configuration = {
     new HtmlWebpackPlugin({
       chunks: ['registration'],
       filename: 'registration.html',
+      inject: 'head',
+      template: resolve(SRC_PATH, 'index.hbs'),
+      title: APP_TITLE,
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['sign-bytes'],
+      filename: 'sign_bytes.html',
       inject: 'head',
       template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,

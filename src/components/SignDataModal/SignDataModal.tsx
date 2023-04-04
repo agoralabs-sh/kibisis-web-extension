@@ -152,17 +152,28 @@ const SignDataModal: FC<IProps> = ({ onClose }: IProps) => {
       <VStack spacing={4} w="full">
         {/* Account select */}
         <VStack spacing={2} w="full">
-          <Text textAlign="left" w="full">{`${t<string>(
-            'labels.addressToSign'
-          )}:`}</Text>
           {signDataRequest.signer ? (
-            <AccountItem account={selectedSigner} />
+            <>
+              <Text textAlign="left" w="full">{`${t<string>(
+                'labels.addressToSign'
+              )}:`}</Text>
+              <AccountItem account={selectedSigner} />
+            </>
           ) : (
-            <AccountSelect
-              accounts={accounts}
-              onSelect={handleAccountSelect}
-              value={selectedSigner}
-            />
+            <>
+              <Text textAlign="left" w="full">{`${t<string>(
+                'labels.authorizedAddresses'
+              )}:`}</Text>
+              <AccountSelect
+                accounts={accounts.filter((account) =>
+                  signDataRequest.authorizedAddresses.some(
+                    (value) => value === account.address
+                  )
+                )}
+                onSelect={handleAccountSelect}
+                value={selectedSigner}
+              />
+            </>
           )}
         </VStack>
         {/* Data display */}

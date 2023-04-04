@@ -26,9 +26,7 @@ const ConnectPage: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const networks: INetwork[] = useSelectNetworks();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const handleConnectModalClose = () => {
-    dispatch(setConnectRequest(null));
-  };
+  const handleConnectModalClose = () => dispatch(setConnectRequest(null));
 
   useEffect(() => {
     dispatch(fetchSettings());

@@ -13,6 +13,9 @@ import {
 } from '../../../types';
 import { IIncomingRequest } from '../types';
 
+// Utils
+import { getAuthorizedAddressesForHost } from '../../../utils';
+
 interface IOptions {
   sessions: ISession[];
 }
@@ -32,14 +35,9 @@ export default function handleSignBytesRequest(
   const filteredSessions: ISession[] = sessions.filter(
     (value) => value.host === host
   );
-  const authorizedAddresses: string[] = filteredSessions.reduce<string[]>(
-    (acc, session) => [
-      ...acc,
-      ...session.authorizedAddresses.filter(
-        (address) => !acc.some((value) => address === value)
-      ), // get unique any addresses
-    ],
-    []
+  const authorizedAddresses: string[] = getAuthorizedAddressesForHost(
+    host,
+    filteredSessions
   );
 
   // if the app has not been enabled
@@ -47,7 +45,7 @@ export default function handleSignBytesRequest(
     dispatch(
       sendSignBytesResponse({
         encodedSignature: null,
-        error: new SerializableUnauthorizedSignerError(
+        error: new SerializableUnauthorizedSignerError( // TODO: use a more relevant error
           '',
           'app has not been authorized'
         ),
