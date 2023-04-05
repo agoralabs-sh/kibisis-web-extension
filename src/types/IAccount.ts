@@ -5,6 +5,7 @@ interface IAccount {
   id: string;
   minAtomicBalance: string;
   name: string | null;
+  updatedAt: number | null;
 }
 
 export default IAccount;
