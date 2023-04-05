@@ -1,3 +1,10 @@
+# [1.1.0-beta.6](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2023-04-05)
+
+
+### Features
+
+* sign jwt ([#7](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/7)) ([e671573](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/e671573338a8e97ed777310f022f7e6211e975cd))
+
 # [1.1.0-beta.5](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2023-04-01)
 
 
