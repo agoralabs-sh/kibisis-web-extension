@@ -3,11 +3,6 @@ import { createElement, FC } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { initReactI18next } from 'react-i18next';
 
-// Components
-import ConnectApp from './components/ConnectApp';
-import MainApp from './components/MainApp';
-import RegistrationApp from './components/RegistrationApp';
-
 // Constants
 import { SETTINGS_APPEARANCE_KEY } from './constants';
 

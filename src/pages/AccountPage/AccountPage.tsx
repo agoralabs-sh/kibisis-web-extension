@@ -51,6 +51,7 @@ import { ACCOUNTS_ROUTE } from '../../constants';
 import { setSettings } from '../../features/settings';
 
 // Hooks
+import useButtonHoverBackgroundColor from '../../hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 import useSubTextColor from '../../hooks/useSubTextColor';
 import useTextBackgroundColor from '../../hooks/useTextBackgroundColor';
@@ -89,6 +90,7 @@ const AccountPage: FC = () => {
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
+  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
@@ -174,11 +176,16 @@ const AccountPage: FC = () => {
           <HStack justifyContent="flex-end" w="full">
             <Menu>
               <MenuButton
-                as={ChakraButton}
-                rightIcon={<IoChevronDown />}
-                variant="ghost"
+                _hover={{ bg: buttonHoverBackgroundColor }}
+                borderRadius="md"
+                px={4}
+                py={2}
+                transition="all 0.2s"
               >
-                <ChainBadge network={settings.network} />
+                <HStack justifyContent="space-between" w="full">
+                  <ChainBadge network={settings.network} />
+                  <Icon as={IoChevronDown} />
+                </HStack>
               </MenuButton>
               <MenuList>
                 {networks.map((value) => (

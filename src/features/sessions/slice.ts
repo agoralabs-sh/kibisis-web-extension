@@ -1,4 +1,4 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // Enums
 import { StoreNameEnum } from '../../enums';
@@ -8,7 +8,7 @@ import { fetchSessions, saveSession } from './thunks';
 
 // Types
 import { ISession } from '../../types';
-import { IConnectRequest, ISessionsState } from './types';
+import { ISessionsState } from './types';
 
 // Utils
 import { getInitialState } from './utils';
@@ -43,14 +43,10 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Sessions,
   reducers: {
-    setConnectRequest: (
-      state: Draft<ISessionsState>,
-      action: PayloadAction<IConnectRequest | null>
-    ) => {
-      state.request = action.payload;
+    noop: () => {
+      return;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setConnectRequest } = slice.actions;

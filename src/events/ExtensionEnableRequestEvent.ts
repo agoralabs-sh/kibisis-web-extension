@@ -5,13 +5,9 @@ import { EventNameEnum } from '../enums';
 import BaseEvent from './BaseEvent';
 
 // Types
-import { IBaseEnableRequestPayload } from '../types';
+import { IExtensionEnableRequestPayload } from '../types';
 
-interface IPayload extends IBaseEnableRequestPayload {
-  appName: string;
-  host: string;
-  iconUrl: string | null;
-}
+type IPayload = IExtensionEnableRequestPayload;
 
 export default class ExtensionEnableRequestEvent extends BaseEvent {
   public readonly payload: IPayload;

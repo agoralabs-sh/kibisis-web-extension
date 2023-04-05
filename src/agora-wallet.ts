@@ -27,7 +27,7 @@ import { createLogger } from './utils';
   }
 
   walletManager = new AgoraWalletManager({
-    extensionId: __AGORA_WALLET_EXTENSION_ID__,
+    extensionId: __EXTENSION_ID__,
     logger,
   });
 

@@ -4,6 +4,8 @@ export { default as DecryptionError } from './DecryptionError';
 export { default as EncryptionError } from './EncryptionError';
 export { default as InvalidPasswordError } from './InvalidPasswordError';
 export { default as MalformedDataError } from './MalformedDataError';
+export { default as ParsingError } from './ParsingError';
 export { default as SerializableNetworkNotSupportedError } from './SerializableNetworkNotSupportedError';
 export { default as SerializableOperationCanceledError } from './SerializableOperationCanceledError';
+export { default as SerializableUnauthorizedSignerError } from './SerializableUnauthorizedSignerError';
 export { default as UnknownError } from './UnknownError';

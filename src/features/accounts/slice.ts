@@ -1,4 +1,4 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // Enums
 import { StoreNameEnum } from '../../enums';
@@ -33,9 +33,8 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Accounts,
   reducers: {
-    reset: (state: Draft<IAccountsState>) => {
-      state.fetching = false;
-      state.items = [];
+    noop: () => {
+      return;
     },
   },
 });

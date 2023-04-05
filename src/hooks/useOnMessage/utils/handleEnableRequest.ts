@@ -2,12 +2,20 @@
 import { SerializableNetworkNotSupportedError } from '../../../errors';
 
 // Features
-import { sendEnableResponse } from '../../../features/messages';
-import { saveSession, setConnectRequest } from '../../../features/sessions';
+import {
+  setEnableRequest,
+  sendEnableResponse,
+} from '../../../features/messages';
+import { saveSession } from '../../../features/sessions';
 
 // Types
-import { IAppThunkDispatch, INetwork, ISession } from '../../../types';
-import { IIncomingEnableRequest } from '../types';
+import {
+  IAppThunkDispatch,
+  IExtensionEnableRequestPayload,
+  INetwork,
+  ISession,
+} from '../../../types';
+import { IIncomingRequest } from '../types';
 
 // Utils
 import { selectDefaultNetwork } from '../../../utils';
@@ -20,7 +28,7 @@ interface IOptions {
 
 export default function handleEnableRequest(
   dispatch: IAppThunkDispatch,
-  enableRequest: IIncomingEnableRequest,
+  request: IIncomingRequest<IExtensionEnableRequestPayload>,
   { networks, selectedNetwork, sessions }: IOptions
 ): void {
   let filteredSessions: ISession[] = sessions;
@@ -29,21 +37,18 @@ export default function handleEnableRequest(
   let session: ISession | null;
 
   // get the network if a genesis hash is present
-  if (enableRequest.genesisHash) {
+  if (request.genesisHash) {
     network =
-      networks.find(
-        (value) => value.genesisHash === enableRequest.genesisHash
-      ) || null;
+      networks.find((value) => value.genesisHash === request.genesisHash) ||
+      null;
 
     // if there is no network for the genesis hash, it isn't supported
     if (!network) {
       dispatch(
         sendEnableResponse({
-          error: new SerializableNetworkNotSupportedError(
-            enableRequest.genesisHash
-          ),
+          error: new SerializableNetworkNotSupportedError(request.genesisHash),
           session: null,
-          tabId: enableRequest.tabId,
+          tabId: request.tabId,
         })
       );
 
@@ -52,12 +57,12 @@ export default function handleEnableRequest(
 
     // filter the sessions by the specified genesis hash
     filteredSessions = sessions.filter(
-      (value) => value.genesisHash === enableRequest.genesisHash
+      (value) => value.genesisHash === request.genesisHash
     );
   }
 
   session =
-    filteredSessions.find((value) => value.host === enableRequest.host) || null;
+    filteredSessions.find((value) => value.host === request.host) || null;
 
   // if we have a session, update its use and return it
   if (session) {
@@ -71,7 +76,7 @@ export default function handleEnableRequest(
       sendEnableResponse({
         error: null,
         session,
-        tabId: enableRequest.tabId,
+        tabId: request.tabId,
       })
     );
 
@@ -80,14 +85,14 @@ export default function handleEnableRequest(
 
   // otherwise, show the connect modal
   dispatch(
-    setConnectRequest({
-      appName: enableRequest.appName,
+    setEnableRequest({
+      appName: request.appName,
       authorizedAddresses: [],
       genesisHash: network.genesisHash,
       genesisId: network.genesisId,
-      host: enableRequest.host,
-      iconUrl: enableRequest.iconUrl,
-      tabId: enableRequest.tabId,
+      host: request.host,
+      iconUrl: request.iconUrl,
+      tabId: request.tabId,
     })
   );
 }

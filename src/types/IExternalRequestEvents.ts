@@ -1,6 +1,11 @@
 // Events
-import { ExternalEnableRequestEvent } from '../events';
+import {
+  ExternalEnableRequestEvent,
+  ExternalSignBytesRequestEvent,
+} from '../events';
 
-type IExternalRequestEvents = ExternalEnableRequestEvent;
+type IExternalRequestEvents =
+  | ExternalEnableRequestEvent
+  | ExternalSignBytesRequestEvent;
 
 export default IExternalRequestEvents;

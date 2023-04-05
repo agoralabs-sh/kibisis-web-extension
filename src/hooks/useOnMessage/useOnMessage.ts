@@ -6,7 +6,10 @@ import browser, { Runtime } from 'webextension-polyfill';
 import { EventNameEnum } from '../../enums';
 
 // Events
-import { ExtensionEnableRequestEvent } from '../../events';
+import {
+  ExtensionEnableRequestEvent,
+  ExtensionSignBytesRequestEvent,
+} from '../../events';
 
 // Selectors
 import {
@@ -19,15 +22,17 @@ import {
 // Types
 import {
   IAppThunkDispatch,
+  IExtensionEnableRequestPayload,
   IExtensionEvents,
+  IExtensionSignBytesRequestPayload,
   ILogger,
   INetwork,
   ISession,
 } from '../../types';
-import { IIncomingEnableRequest } from './types';
+import { IIncomingRequest } from './types';
 
 // Utils
-import { handleEnableRequest } from './utils';
+import { handleEnableRequest, handleSignBytesRequest } from './utils';
 
 export default function useOnMessage(): void {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -36,7 +41,9 @@ export default function useOnMessage(): void {
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const sessions: ISession[] = useSelectSessions();
   const [incomingEnableRequest, setIncomingEnableRequest] =
-    useState<IIncomingEnableRequest | null>(null);
+    useState<IIncomingRequest<IExtensionEnableRequestPayload> | null>(null);
+  const [incomingSignBytesRequest, setIncomingSignBytesRequest] =
+    useState<IIncomingRequest<IExtensionSignBytesRequestPayload> | null>(null);
   const handleOnExtensionMessage = (
     message: IExtensionEvents,
     sender: Runtime.MessageSender
@@ -54,6 +61,20 @@ export default function useOnMessage(): void {
               .genesisHash,
             host: (message as ExtensionEnableRequestEvent).payload.host,
             iconUrl: (message as ExtensionEnableRequestEvent).payload.iconUrl,
+            tabId: sender.tab.id,
+          });
+        }
+
+        break;
+      case EventNameEnum.ExtensionSignBytesRequest:
+        if (sender.tab?.id) {
+          setIncomingSignBytesRequest({
+            appName: (message as ExtensionEnableRequestEvent).payload.appName,
+            encodedData: (message as ExtensionSignBytesRequestEvent).payload
+              .encodedData,
+            host: (message as ExtensionSignBytesRequestEvent).payload.host,
+            iconUrl: (message as ExtensionEnableRequestEvent).payload.iconUrl,
+            signer: (message as ExtensionSignBytesRequestEvent).payload.signer,
             tabId: sender.tab.id,
           });
         }
@@ -82,4 +103,12 @@ export default function useOnMessage(): void {
       setIncomingEnableRequest(null);
     }
   }, [incomingEnableRequest]);
+  useEffect(() => {
+    if (incomingSignBytesRequest) {
+      handleSignBytesRequest(dispatch, incomingSignBytesRequest, {
+        sessions,
+      });
+      setIncomingSignBytesRequest(null);
+    }
+  }, [incomingSignBytesRequest]);
 }

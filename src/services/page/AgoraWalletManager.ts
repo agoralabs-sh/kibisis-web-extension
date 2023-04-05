@@ -12,6 +12,10 @@ import {
   UnknownError,
   WalletOperationNotSupportedError,
 } from '@agoralabs-sh/algorand-provider';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
 
 // Constants
 import { REQUEST_TIMEOUT, WALLET_ID } from '../../constants';
@@ -20,11 +24,16 @@ import { REQUEST_TIMEOUT, WALLET_ID } from '../../constants';
 import { EventNameEnum } from '../../enums';
 
 // Events
-import { BaseEvent, ExternalEnableRequestEvent } from '../../events';
+import {
+  BaseEvent,
+  ExternalEnableRequestEvent,
+  ExternalSignBytesRequestEvent,
+} from '../../events';
 
 // Types
 import type {
   IBaseOptions,
+  IBaseSignBytesResponsePayload,
   IExternalResponseEvents,
   ILogger,
 } from '../../types';
@@ -32,7 +41,7 @@ import type {
 // Utils
 import { mapSerializableErrors } from '../../utils';
 
-type IResults = IEnableResult;
+type IResults = IEnableResult | IBaseSignBytesResponsePayload;
 
 interface INewOptions extends IBaseOptions {
   extensionId: string;
@@ -144,12 +153,12 @@ export default class AgoraWalletManager extends BaseWalletManager {
    */
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
-    return await this.handleEvent(
+    return (await this.handleEvent(
       new ExternalEnableRequestEvent({
         genesisHash: options?.genesisHash || null,
       }),
       EventNameEnum.ExternalEnableResponse
-    );
+    )) as IEnableResult;
   }
 
   public async postTxns(options: IPostTxnsOptions): Promise<IPostTxnsResult> {
@@ -159,7 +168,17 @@ export default class AgoraWalletManager extends BaseWalletManager {
   public async signBytes(
     options: ISignBytesOptions
   ): Promise<ISignBytesResult> {
-    throw new WalletOperationNotSupportedError(this.id, 'signBytes');
+    const result: IBaseSignBytesResponsePayload = (await this.handleEvent(
+      new ExternalSignBytesRequestEvent({
+        encodedData: encodeBase64(options.data),
+        signer: options.signer || null,
+      }),
+      EventNameEnum.ExternalSignBytesResponse
+    )) as IBaseSignBytesResponsePayload;
+
+    return {
+      signature: decodeBase64(result.encodedSignature),
+    };
   }
 
   public async signTxns(options: ISignTxnsOptions): Promise<ISignTxnsResult> {

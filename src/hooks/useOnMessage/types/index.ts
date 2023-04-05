@@ -1,1 +1,1 @@
-export type { default as IIncomingEnableRequest } from './IIncomingEnableRequest';
+export type { default as IIncomingRequest } from './IIncomingRequest';

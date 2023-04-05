@@ -11,9 +11,10 @@ const config: Configuration = {
     ['agora-wallet']: resolve(SRC_PATH, 'agora-wallet.ts'),
     ['background']: resolve(SRC_PATH, 'background.ts'),
     ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
-    ['connect']: resolve(SRC_PATH, 'connect.ts'),
+    ['enable']: resolve(SRC_PATH, 'enable.ts'),
     ['main']: resolve(SRC_PATH, 'main.ts'),
     ['registration']: resolve(SRC_PATH, 'registration.ts'),
+    ['sign-bytes']: resolve(SRC_PATH, 'sign-bytes.ts'),
   },
   module: {
     rules: [
@@ -48,8 +49,8 @@ const config: Configuration = {
       ],
     }),
     new HtmlWebpackPlugin({
-      chunks: ['connect'],
-      filename: 'connect.html',
+      chunks: ['enable'],
+      filename: 'enable.html',
       inject: 'head',
       template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,
@@ -64,6 +65,13 @@ const config: Configuration = {
     new HtmlWebpackPlugin({
       chunks: ['registration'],
       filename: 'registration.html',
+      inject: 'head',
+      template: resolve(SRC_PATH, 'index.hbs'),
+      title: APP_TITLE,
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['sign-bytes'],
+      filename: 'sign_bytes.html',
       inject: 'head',
       template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,

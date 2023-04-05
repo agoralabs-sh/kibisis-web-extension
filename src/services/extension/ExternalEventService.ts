@@ -7,8 +7,12 @@ import { EventNameEnum } from '../../enums';
 import {
   ExtensionEnableRequestEvent,
   ExtensionEnableResponseEvent,
+  ExtensionSignBytesRequestEvent,
+  ExtensionSignBytesResponseEvent,
   ExternalEnableRequestEvent,
   ExternalEnableResponseEvent,
+  ExternalSignBytesRequestEvent,
+  ExternalSignBytesResponseEvent,
 } from '../../events';
 
 // Types
@@ -113,6 +117,20 @@ export default class ExternalEventService {
     );
   }
 
+  private handleExtensionSignBytesResponse(
+    message: ExtensionSignBytesResponseEvent
+  ): void {
+    this.logger &&
+      this.logger.debug(
+        `${ExternalEventService.name}#handleExtensionSignBytesResponse(): extension message "${message.event}" received`
+      );
+
+    // send the response to the web page
+    return window.postMessage(
+      new ExternalSignBytesResponseEvent(message.payload, message.error)
+    );
+  }
+
   private async handleExternalEnableRequest(
     message: ExternalEnableRequestEvent
   ): Promise<void> {
@@ -135,6 +153,28 @@ export default class ExternalEventService {
     );
   }
 
+  private async handleExternalSignBytesRequest(
+    message: ExternalSignBytesRequestEvent
+  ): Promise<void> {
+    this.logger &&
+      this.logger.debug(
+        `${ExternalEventService.name}#handleExternalSignBytesRequest(): external message "${message.event}" received`
+      );
+
+    // send the message to the extension (popup)
+    return await browser.runtime.sendMessage(
+      new ExtensionSignBytesRequestEvent({
+        ...message.payload,
+        appName:
+          document
+            .querySelector('meta[name="application-name"]')
+            ?.getAttribute('content') || document.title,
+        host: `${window.location.protocol}//${window.location.host}`,
+        iconUrl: this.extractFaviconUrl(),
+      })
+    );
+  }
+
   /**
    * Public functions
    */
@@ -144,6 +184,10 @@ export default class ExternalEventService {
       case EventNameEnum.ExtensionEnableResponse:
         return this.handleExtensionEnableResponse(
           message as ExtensionEnableResponseEvent
+        );
+      case EventNameEnum.ExtensionSignBytesResponse:
+        return this.handleExtensionSignBytesResponse(
+          message as ExtensionSignBytesResponseEvent
         );
       default:
         break;
@@ -159,7 +203,13 @@ export default class ExternalEventService {
 
     switch (message.data.event) {
       case EventNameEnum.ExternalEnableRequest:
-        return await this.handleExternalEnableRequest(message.data);
+        return await this.handleExternalEnableRequest(
+          message.data as ExternalEnableRequestEvent
+        );
+      case EventNameEnum.ExternalSignBytesRequest:
+        return await this.handleExternalSignBytesRequest(
+          message.data as ExternalSignBytesRequestEvent
+        );
       default:
         break;
     }
