@@ -1,6 +1,8 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Account, mnemonicToSecretKey } from 'algosdk';
+import { decode as decodeHex } from '@stablelib/hex';
+import { encodeAddress } from 'algosdk';
 import { NavigateFunction } from 'react-router-dom';
+import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
 
 // Constants
@@ -39,10 +41,10 @@ const saveCredentials: AsyncThunk<
     const name: string | null = getState().registration.name;
     const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().registration.password;
-    let account: Account;
     let error: BaseExtensionError;
-    let decryptedPrivateKey: string;
+    let decryptedPrivateKey: Uint8Array;
     let privateKeyService: PrivateKeyService;
+    let publicKey: Uint8Array;
 
     if (!password) {
       error = new MalformedDataError('no password found');
@@ -68,21 +70,23 @@ const saveCredentials: AsyncThunk<
       logger.debug(`${functionName}(): decrypting private key`);
 
       decryptedPrivateKey = await PrivateKeyService.decrypt(
-        encryptedPrivateKey,
+        decodeHex(encryptedPrivateKey),
         password,
         { logger }
       );
 
       logger.debug(`${functionName}(): inferring public key`);
 
-      account = mnemonicToSecretKey(decryptedPrivateKey);
+      publicKey = sign.keyPair.fromSecretKey(decryptedPrivateKey).publicKey;
       privateKeyService = new PrivateKeyService({
         logger,
         passwordTag: browser.runtime.id,
       });
 
       logger.debug(
-        `${functionName}(): saving account "${account.addr}" to storage`
+        `${functionName}(): saving account "${encodeAddress(
+          publicKey
+        )}" to storage`
       );
 
       // reset any previous credentials, set the password and the account
@@ -91,7 +95,7 @@ const saveCredentials: AsyncThunk<
       await privateKeyService.setAccount(
         {
           privateKey: decryptedPrivateKey,
-          publicKey: account.addr,
+          publicKey: sign.keyPair.fromSecretKey(decryptedPrivateKey).publicKey,
           ...(name && {
             name,
           }),

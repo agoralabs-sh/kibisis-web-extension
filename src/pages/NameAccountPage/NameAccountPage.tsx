@@ -29,7 +29,7 @@ import useSubTextColor from '../../hooks/useSubTextColor';
 // Selectors
 import {
   useSelectLogger,
-  useSelectRegisterEncryptedPrivateKey,
+  useSelectRegistrationEncryptedPrivateKey,
 } from '../../selectors';
 
 // Types
@@ -48,7 +48,7 @@ const NameAccountPage: FC = () => {
   const subTextColor: string = useSubTextColor();
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
-    useSelectRegisterEncryptedPrivateKey();
+    useSelectRegistrationEncryptedPrivateKey();
   const name: string | null = useSelector<
     IRegistrationRootState,
     string | null
@@ -63,7 +63,7 @@ const NameAccountPage: FC = () => {
   };
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) =>
     dispatch(setName(event.target.value));
-  const handlePreviousClick = () => dispatch(clearPrivateKey());
+  const handlePreviousClick = () => dispatch(clearPrivateKey()); // clearing the key will trigger the page to navigate back
 
   useEffect(() => {
     if (!encryptedPrivateKey) {

@@ -1,5 +1,6 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Algodv2, IntDecoding } from 'algosdk';
+import { decode as decodeHex } from '@stablelib/hex';
+import { Algodv2, encodeAddress, IntDecoding } from 'algosdk';
 import { BigNumber } from 'bignumber.js';
 import browser from 'webextension-polyfill';
 
@@ -55,7 +56,7 @@ const fetchAccounts: AsyncThunk<
     logger.debug(`${functionName}(): only fetching accounts from storage`);
 
     return accounts.map<IAccount>((value) => ({
-      address: value.publicKey,
+      address: encodeAddress(decodeHex(value.publicKey)), // the public key is stored as hexadecimal
       atomicBalance: 'N/A',
       authAddress: null,
       id: value.id,
@@ -66,24 +67,25 @@ const fetchAccounts: AsyncThunk<
 
   return await Promise.all(
     accounts.map(async (value) => {
+      const address: string = encodeAddress(decodeHex(value.publicKey));
       let accountInformation: IAlgorandAccountInformation;
 
       try {
         logger.debug(
-          `${functionName}(): fetching account information for "${value.publicKey}" from "${node.name}" on "${selectedNetwork.genesisId}"`
+          `${functionName}(): fetching account information for "${address}" from "${node.name}" on "${selectedNetwork.genesisId}"`
         );
 
         accountInformation = (await client
-          .accountInformation(value.publicKey)
+          .accountInformation(address)
           .setIntDecoding(IntDecoding.BIGINT)
           .do()) as IAlgorandAccountInformation;
 
         logger.debug(
-          `${functionName}(): successfully fetched account information for "${value.publicKey}" from "${node.name}" on "${selectedNetwork.genesisId}"`
+          `${functionName}(): successfully fetched account information for "${address}" from "${node.name}" on "${selectedNetwork.genesisId}"`
         );
 
         return {
-          address: value.publicKey,
+          address,
           atomicBalance: new BigNumber(
             String(accountInformation.amount as bigint)
           ).toString(),
@@ -96,11 +98,11 @@ const fetchAccounts: AsyncThunk<
         };
       } catch (error) {
         logger.error(
-          `${functionName}(): failed to get account information for "${value.publicKey}" from "${node.name}" on ${selectedNetwork.genesisId}: ${error.message}`
+          `${functionName}(): failed to get account information for "${address}" from "${node.name}" on ${selectedNetwork.genesisId}: ${error.message}`
         );
 
         return {
-          address: value.publicKey,
+          address,
           atomicBalance: 'N/A',
           authAddress: null,
           id: value.id,

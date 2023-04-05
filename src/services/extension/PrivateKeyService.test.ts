@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
+import { encode as encodeHex } from '@stablelib/hex';
+import { Account, generateAccount } from 'algosdk';
 
 // Services
 import PrivateKeyService from './PrivateKeyService';
@@ -27,21 +28,20 @@ describe(PrivateKeyService.name, () => {
   describe(`${PrivateKeyService.name}#decrypt`, () => {
     it('should encrypt and decrypt a private key', async () => {
       // Arrange
-      const mnemonic: string = secretKeyToMnemonic(account.sk);
-      const encryptedPrivateKey: string = await PrivateKeyService.encrypt(
+      const encryptedPrivateKey: Uint8Array = await PrivateKeyService.encrypt(
+        account.sk,
         password,
-        mnemonic,
         { logger }
       );
       // Act
-      const decryptedPrivateKey: string = await PrivateKeyService.decrypt(
+      const decryptedPrivateKey: Uint8Array = await PrivateKeyService.decrypt(
         encryptedPrivateKey,
         password,
         { logger }
       );
 
       // Assert
-      expect(decryptedPrivateKey).toBe(mnemonic);
+      expect(encodeHex(decryptedPrivateKey)).toBe(encodeHex(account.sk));
     });
   });
 });

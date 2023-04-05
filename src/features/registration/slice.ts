@@ -4,7 +4,7 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '../../enums';
 
 // Thunks
-import { saveCredentials, setPrivateKey } from './thunks';
+import { saveCredentials, setMnemonic } from './thunks';
 
 // Types
 import { IRegistrationState, ISetPasswordPayload } from './types';
@@ -30,18 +30,18 @@ const slice = createSlice({
     builder.addCase(saveCredentials.rejected, (state: IRegistrationState) => {
       state.saving = false;
     });
-    /** Set private key **/
+    /** Set mnemonic **/
     builder.addCase(
-      setPrivateKey.fulfilled,
+      setMnemonic.fulfilled,
       (state: IRegistrationState, action) => {
         state.encryptedPrivateKey = action.payload;
         state.encrypting = false;
       }
     );
-    builder.addCase(setPrivateKey.pending, (state: IRegistrationState) => {
+    builder.addCase(setMnemonic.pending, (state: IRegistrationState) => {
       state.encrypting = true;
     });
-    builder.addCase(setPrivateKey.rejected, (state: IRegistrationState) => {
+    builder.addCase(setMnemonic.rejected, (state: IRegistrationState) => {
       state.encryptedPrivateKey = null;
       state.encrypting = false;
     });
