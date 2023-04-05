@@ -7,6 +7,7 @@ import browser from 'webextension-polyfill';
 
 // Constants
 import {
+  ACCOUNT_KEY_PREFIX,
   CREATE_PASSWORD_ROUTE,
   ENTER_MNEMONIC_PHRASE_ROUTE,
 } from '../../../constants';
@@ -22,10 +23,13 @@ import { setError } from '../../application';
 import { sendRegistrationCompleted } from '../../messages';
 
 // Services
-import { PrivateKeyService } from '../../../services/extension';
+import { PrivateKeyService, StorageManager } from '../../../services/extension';
 
 // Types
-import { ILogger, IRegistrationRootState } from '../../../types';
+import { IAccount, ILogger, IRegistrationRootState } from '../../../types';
+
+// Utils
+import { initializeDefaultAccount } from '../../../utils';
 
 const saveCredentials: AsyncThunk<
   void, // return
@@ -41,10 +45,12 @@ const saveCredentials: AsyncThunk<
     const name: string | null = getState().registration.name;
     const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().registration.password;
+    let address: string;
     let error: BaseExtensionError;
     let decryptedPrivateKey: Uint8Array;
     let privateKeyService: PrivateKeyService;
     let publicKey: Uint8Array;
+    let storageManager: StorageManager;
 
     if (!password) {
       error = new MalformedDataError('no password found');
@@ -82,11 +88,10 @@ const saveCredentials: AsyncThunk<
         logger,
         passwordTag: browser.runtime.id,
       });
+      address = encodeAddress(publicKey);
 
       logger.debug(
-        `${functionName}(): saving account "${encodeAddress(
-          publicKey
-        )}" to storage`
+        `${functionName}(): saving private/public key pair for "${address}" to storage`
       );
 
       // reset any previous credentials, set the password and the account
@@ -111,6 +116,20 @@ const saveCredentials: AsyncThunk<
     }
 
     logger.debug(`${functionName}(): successfully saved credentials`);
+
+    storageManager = new StorageManager();
+
+    // save the account to storage
+    await storageManager.setItems({
+      [`${ACCOUNT_KEY_PREFIX}${address}`]: initializeDefaultAccount({
+        address,
+        ...(name && {
+          name,
+        }),
+      }),
+    });
+
+    logger.debug(`${functionName}(): saved account "${address}" to storage`);
 
     // send a message that registration has been completed
     dispatch(sendRegistrationCompleted());
