@@ -26,7 +26,12 @@ import { sendRegistrationCompleted } from '../../messages';
 import { PrivateKeyService, StorageManager } from '../../../services/extension';
 
 // Types
-import { IAccount, ILogger, IRegistrationRootState } from '../../../types';
+import {
+  IAccount,
+  ILogger,
+  INetwork,
+  IRegistrationRootState,
+} from '../../../types';
 
 // Utils
 import { initializeDefaultAccount } from '../../../utils';
@@ -42,9 +47,11 @@ const saveCredentials: AsyncThunk<
     const logger: ILogger = getState().application.logger;
     const encryptedPrivateKey: string | null =
       getState().registration.encryptedPrivateKey;
+    const networks: INetwork[] = getState().networks.items;
     const name: string | null = getState().registration.name;
     const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().registration.password;
+    let accounts: IAccount[];
     let address: string;
     let error: BaseExtensionError;
     let decryptedPrivateKey: Uint8Array;
@@ -118,18 +125,27 @@ const saveCredentials: AsyncThunk<
     logger.debug(`${functionName}(): successfully saved credentials`);
 
     storageManager = new StorageManager();
-
-    // save the account to storage
-    await storageManager.setItems({
-      [`${ACCOUNT_KEY_PREFIX}${address}`]: initializeDefaultAccount({
+    accounts = networks.map((value) =>
+      initializeDefaultAccount({
         address,
-        ...(name && {
-          name,
-        }),
-      }),
-    });
+        genesisHash: value.genesisHash,
+      })
+    );
 
-    logger.debug(`${functionName}(): saved account "${address}" to storage`);
+    // save an account for each genesis hash to storage
+    await storageManager.setItems(
+      accounts.reduce(
+        (acc, value) => ({
+          ...acc,
+          [`${ACCOUNT_KEY_PREFIX}${value.id}`]: value,
+        }),
+        {}
+      )
+    );
+
+    logger.debug(
+      `${functionName}(): saved accounts for "${address}" to storage`
+    );
 
     // send a message that registration has been completed
     dispatch(sendRegistrationCompleted());

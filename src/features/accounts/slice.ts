@@ -34,7 +34,7 @@ const slice = createSlice({
       removeAccount.fulfilled,
       (state: IAccountsState, action: PayloadAction<string>) => {
         state.items = state.items.filter(
-          (value) => value.address !== action.payload
+          (value) => value.id !== action.payload
         ); // filter the accounts excluding the removed account
         state.saving = false;
       }

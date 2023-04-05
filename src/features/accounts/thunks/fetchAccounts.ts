@@ -41,13 +41,15 @@ const fetchAccounts: AsyncThunk<
   const storageManager: StorageManager = new StorageManager();
   const storageItems: Record<string, unknown> =
     await storageManager.getAllItems();
-  const accounts: IAccount[] = Object.keys(storageItems).reduce<IAccount[]>(
-    (acc, key) =>
-      key.startsWith(ACCOUNT_KEY_PREFIX)
-        ? [...acc, storageItems[key] as IAccount]
-        : acc,
-    []
-  );
+  let accounts: IAccount[] = Object.keys(storageItems)
+    .reduce<IAccount[]>(
+      (acc, key) =>
+        key.startsWith(ACCOUNT_KEY_PREFIX)
+          ? [...acc, storageItems[key] as IAccount]
+          : acc,
+      []
+    )
+    .filter((value) => value.genesisHash === selectedNetwork.genesisHash); // filter by the selected network
   let client: Algodv2;
   let node: INode;
 
@@ -61,51 +63,65 @@ const fetchAccounts: AsyncThunk<
   node =
     selectedNetwork.nodes[
       Math.floor(Math.random() * selectedNetwork.nodes.length)
-    ]; // get random node
+    ]; // get a random node
   client = new Algodv2('', node.url, node.port);
 
-  return await Promise.all(
-    accounts.map(async (value) => {
+  accounts = await Promise.all(
+    accounts.map(async (account) => {
       let accountInformation: IAlgorandAccountInformation;
 
       // TODO: only fetch if the updatedAt date is outdated
 
       try {
         logger.debug(
-          `${functionName}(): fetching account information for "${value.address}" from "${node.name}" on "${selectedNetwork.genesisId}"`
+          `${functionName}(): fetching account information for "${account.address}" from "${node.name}" on "${selectedNetwork.genesisId}"`
         );
 
         accountInformation = (await client
-          .accountInformation(value.address)
+          .accountInformation(account.address)
           .setIntDecoding(IntDecoding.BIGINT)
           .do()) as IAlgorandAccountInformation;
 
         logger.debug(
-          `${functionName}(): successfully fetched account information for "${value.address}" from "${node.name}" on "${selectedNetwork.genesisId}"`
+          `${functionName}(): successfully fetched account information for "${account.address}" from "${node.name}" on "${selectedNetwork.genesisId}"`
         );
 
         return {
-          address: value.address,
+          address: account.address,
           atomicBalance: new BigNumber(
             String(accountInformation.amount as bigint)
           ).toString(),
           authAddress: accountInformation['auth-addr'] || null,
-          id: value.id,
+          genesisHash: account.genesisHash,
+          id: account.id,
           minAtomicBalance: new BigNumber(
             String(accountInformation['min-balance'] as bigint)
           ).toString(),
-          name: value.name,
+          name: account.name,
           updatedAt: new Date().getTime(),
         };
       } catch (error) {
         logger.error(
-          `${functionName}(): failed to get account information for "${value.address}" from "${node.name}" on ${selectedNetwork.genesisId}: ${error.message}`
+          `${functionName}(): failed to get account information for "${account.address}" from "${node.name}" on ${selectedNetwork.genesisId}: ${error.message}`
         );
 
-        return value;
+        return account;
       }
     })
   );
+
+  // update the storage with the latest account information
+  await storageManager.setItems(
+    accounts.reduce(
+      (acc, value) => ({
+        ...acc,
+        [`${ACCOUNT_KEY_PREFIX}${value.id}`]: value,
+      }),
+      {}
+    )
+  );
+
+  return accounts;
 });
 
 export default fetchAccounts;

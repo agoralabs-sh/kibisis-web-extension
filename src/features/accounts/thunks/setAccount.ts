@@ -24,11 +24,11 @@ const setAccount: AsyncThunk<
     const storageManager: StorageManager = new StorageManager();
 
     logger.debug(
-      `${functionName}(): saving account "${account.address}" to storage`
+      `${functionName}(): saving account "${account.id}" to storage`
     );
 
     await storageManager.setItems({
-      [`${ACCOUNT_KEY_PREFIX}${account.address}`]: account,
+      [`${ACCOUNT_KEY_PREFIX}${account.id}`]: account,
     });
 
     return account;

@@ -18,16 +18,16 @@ const removeAccount: AsyncThunk<
   Record<string, never>
 > = createAsyncThunk<string, string, { state: IMainRootState }>(
   AccountsThunkEnum.RemoveAccount,
-  async (address, { getState }) => {
+  async (id, { getState }) => {
     const functionName: string = 'removeAccount';
     const logger: ILogger = getState().application.logger;
     const storageManager: StorageManager = new StorageManager();
 
-    logger.debug(`${functionName}(): removing account "${address}" to storage`);
+    logger.debug(`${functionName}(): removing account "${id}" to storage`);
 
-    await storageManager.remove(`${ACCOUNT_KEY_PREFIX}${address}`);
+    await storageManager.remove(`${ACCOUNT_KEY_PREFIX}${id}`);
 
-    return address;
+    return id;
   }
 );
 

@@ -6,6 +6,7 @@ import { IAccount } from '../types';
 interface IOptions {
   address: string;
   authAddress?: string;
+  genesisHash: string;
   id?: string;
   name?: string;
 }
@@ -18,6 +19,7 @@ interface IOptions {
 export default function initializeDefaultAccount({
   address,
   authAddress,
+  genesisHash,
   id,
   name,
 }: IOptions): IAccount {
@@ -25,6 +27,7 @@ export default function initializeDefaultAccount({
     address,
     atomicBalance: 'N/A',
     authAddress: authAddress || null,
+    genesisHash,
     id: id || uuid(),
     minAtomicBalance: 'N/A',
     name: name || null,

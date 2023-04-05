@@ -20,6 +20,7 @@ import {
 
 // Features
 import { reducer as applicationReducer } from '../../features/application';
+import { reducer as networksReducer } from '../../features/networks';
 import { reducer as settingsReducer } from '../../features/settings';
 import { reducer as registrationReducer } from '../../features/registration';
 
@@ -43,6 +44,7 @@ const RegistrationApp: FC<IAppProps> = ({
     makeStore<IRegistrationRootState>(
       combineReducers({
         application: applicationReducer,
+        networks: networksReducer,
         settings: settingsReducer,
         registration: registrationReducer,
       })

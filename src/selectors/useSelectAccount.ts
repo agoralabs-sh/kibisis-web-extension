@@ -10,11 +10,11 @@ import { IAccount, IMainRootState } from '../types';
  */
 export default function useSelectAccount(address?: string): IAccount | null {
   return useSelector<IMainRootState, IAccount | null>((state) => {
+    const accounts: IAccount[] = state.accounts.items;
+
     // if we have an address, find the account associated
     if (address) {
-      return (
-        state.accounts.items.find((value) => value.address === address) || null
-      );
+      return accounts.find((value) => value.address === address) || null;
     }
 
     // return the account at the top of the list, or null
