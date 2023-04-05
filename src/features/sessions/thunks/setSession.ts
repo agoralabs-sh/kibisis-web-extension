@@ -6,23 +6,20 @@ import { SESSION_KEY_PREFIX } from '../../../constants';
 // Enums
 import { SessionsThunkEnum } from '../../../enums';
 
-// Features
-import fetchSessions from './fetchSessions';
-
 // Services
 import { StorageManager } from '../../../services/extension';
 
 // Types
 import { ILogger, IMainRootState, ISession } from '../../../types';
 
-const saveSession: AsyncThunk<
-  void, // return
+const setSession: AsyncThunk<
+  ISession, // return
   ISession, // args
   Record<string, never>
-> = createAsyncThunk<void, ISession, { state: IMainRootState }>(
-  SessionsThunkEnum.SaveSession,
+> = createAsyncThunk<ISession, ISession, { state: IMainRootState }>(
+  SessionsThunkEnum.SetSession,
   async (session, { dispatch, getState }) => {
-    const functionName: string = 'saveSession';
+    const functionName: string = 'setSession';
     const logger: ILogger = getState().application.logger;
     const storageManager: StorageManager = new StorageManager();
 
@@ -31,12 +28,11 @@ const saveSession: AsyncThunk<
     );
 
     await storageManager.setItems({
-      [`${SESSION_KEY_PREFIX}_${session.id}`]: session,
+      [`${SESSION_KEY_PREFIX}${session.id}`]: session,
     });
 
-    // refetch sessions
-    dispatch(fetchSessions());
+    return session;
   }
 );
 
-export default saveSession;
+export default setSession;

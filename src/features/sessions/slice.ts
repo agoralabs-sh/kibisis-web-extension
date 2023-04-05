@@ -4,14 +4,14 @@ import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '../../enums';
 
 // Thunks
-import { fetchSessions, saveSession } from './thunks';
+import { fetchSessions, setSession } from './thunks';
 
 // Types
 import { ISession } from '../../types';
 import { ISessionsState } from './types';
 
 // Utils
-import { getInitialState } from './utils';
+import { getInitialState, upsertSession } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
@@ -29,14 +29,18 @@ const slice = createSlice({
     builder.addCase(fetchSessions.rejected, (state: ISessionsState) => {
       state.fetching = false;
     });
-    /** Saving session **/
-    builder.addCase(saveSession.fulfilled, (state: ISessionsState) => {
-      state.saving = false;
-    });
-    builder.addCase(saveSession.pending, (state: ISessionsState) => {
+    /** Set session **/
+    builder.addCase(
+      setSession.fulfilled,
+      (state: ISessionsState, action: PayloadAction<ISession>) => {
+        state.items = upsertSession(state.items, action.payload);
+        state.saving = false;
+      }
+    );
+    builder.addCase(setSession.pending, (state: ISessionsState) => {
       state.saving = true;
     });
-    builder.addCase(saveSession.rejected, (state: ISessionsState) => {
+    builder.addCase(setSession.rejected, (state: ISessionsState) => {
       state.saving = false;
     });
   },

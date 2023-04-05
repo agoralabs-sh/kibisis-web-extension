@@ -32,7 +32,7 @@ import { SerializableOperationCanceledError } from '../../errors';
 
 // Features
 import { sendEnableResponse, setEnableRequest } from '../../features/messages';
-import { saveSession } from '../../features/sessions';
+import { setSession } from '../../features/sessions';
 
 // Hooks
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
@@ -107,7 +107,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     session = mapSessionFromEnableRequest(enableRequest);
 
     // save the session, send an enable response and remove the connect request
-    dispatch(saveSession(session));
+    dispatch(setSession(session));
     dispatch(
       sendEnableResponse({
         error: null,

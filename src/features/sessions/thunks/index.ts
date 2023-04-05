@@ -1,2 +1,2 @@
 export { default as fetchSessions } from './fetchSessions';
-export { default as saveSession } from './saveSession';
+export { default as setSession } from './setSession';
