@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Constants
-import { ACCOUNT_INFORMATION_REFRESH } from '../../../constants';
+import { ACCOUNT_INFORMATION_REFRESH_INTERVAL } from '../../../constants';
 
 // Enums
 import { AccountsThunkEnum } from '../../../enums';
@@ -27,7 +27,7 @@ const startPollingForAccountInformationThunk: AsyncThunk<
 
     return window.setInterval(
       () => dispatch(updateAccountInformationThunk()),
-      ACCOUNT_INFORMATION_REFRESH
+      ACCOUNT_INFORMATION_REFRESH_INTERVAL
     ); // update every 2 minutes
   }
 );

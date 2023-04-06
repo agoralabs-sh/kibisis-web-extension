@@ -20,6 +20,7 @@ import { fetchSettings } from '../../features/settings';
 
 // Hooks
 import useOnMessage from '../../hooks/useOnMessage';
+import useOnNetworkConnectivity from '../../hooks/useOnNetworkConnectivity';
 
 // Selectors
 import { useSelectSelectedNetwork } from '../../selectors';
@@ -62,6 +63,7 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
       dispatch(startPollingForAccountInformationThunk());
     }
   }, [selectedNetwork]);
+  useOnNetworkConnectivity(); // listen to network connectivity
   useOnMessage(); // handle incoming messages
 
   return (

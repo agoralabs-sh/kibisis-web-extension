@@ -30,6 +30,12 @@ const slice = createSlice({
     ) => {
       state.navigate = action.payload;
     },
+    setOnline: (
+      state: Draft<IApplicationState>,
+      action: PayloadAction<boolean>
+    ) => {
+      state.online = action.payload;
+    },
     setToast: (
       state: Draft<IApplicationState>,
       action: PayloadAction<CreateToastFnReturn>
@@ -40,4 +46,4 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setError, setNavigate, setToast } = slice.actions;
+export const { setError, setNavigate, setOnline, setToast } = slice.actions;

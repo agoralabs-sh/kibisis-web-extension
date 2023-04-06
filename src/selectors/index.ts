@@ -6,6 +6,7 @@ export { default as useSelectError } from './useSelectError';
 export { default as useSelectFetchingAccounts } from './useSelectFetchingAccounts';
 export { default as useSelectFetchingSessions } from './useSelectFetchingSessions';
 export { default as useSelectFetchingSettings } from './useSelectFetchingSettings';
+export { default as useSelectIsOnline } from './useSelectIsOnline';
 export { default as useSelectLogger } from './useSelectLogger';
 export { default as useSelectNetworks } from './useSelectNetworks';
 export { default as useSelectRegistrationEncryptedPrivateKey } from './useSelectRegistrationEncryptedPrivateKey';

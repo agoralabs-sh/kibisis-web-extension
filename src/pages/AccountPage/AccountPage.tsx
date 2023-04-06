@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
   IoChevronDown,
+  IoCloudOfflineOutline,
   IoInformationCircleOutline,
   IoQrCodeOutline,
 } from 'react-icons/io5';
@@ -61,6 +62,7 @@ import {
   useSelectAccount,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
+  useSelectIsOnline,
   useSelectNetworks,
   useSelectSettings,
 } from '../../selectors';
@@ -97,6 +99,7 @@ const AccountPage: FC = () => {
   const account: IAccount | null = useSelectAccount(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
+  const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
   const settings: ISettings = useSelectSettings();
   const handleAddAccountClick = () => {
@@ -173,7 +176,23 @@ const AccountPage: FC = () => {
       return (
         <VStack alignItems="flex-start" pt={4} px={4} w="full">
           {/* Header */}
-          <HStack justifyContent="flex-end" w="full">
+          <HStack w="full">
+            {!online && (
+              <Tooltip
+                aria-label="Offline icon"
+                label={t<string>('captions.offline')}
+              >
+                <span
+                  style={{
+                    height: '1em',
+                    lineHeight: '1em',
+                  }}
+                >
+                  <Icon as={IoCloudOfflineOutline} color="red.500" />
+                </span>
+              </Tooltip>
+            )}
+            <Spacer flexGrow={1} />
             <Menu>
               <MenuButton
                 _hover={{ bg: buttonHoverBackgroundColor }}
