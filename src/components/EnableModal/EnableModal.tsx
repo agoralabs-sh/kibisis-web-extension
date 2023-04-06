@@ -180,10 +180,10 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
               justifyContent="space-evenly"
               spacing={0}
             >
-              <Text color={defaultTextColor} fontSize="md" textAlign="center">
+              <Text color={defaultTextColor} fontSize="md" textAlign="left">
                 {account.name}
               </Text>
-              <Text color={subTextColor} fontSize="sm" textAlign="center">
+              <Text color={subTextColor} fontSize="sm" textAlign="left">
                 {ellipseAddress(account.address, {
                   end: 10,
                   start: 10,
@@ -195,7 +195,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
               color={defaultTextColor}
               flexGrow={1}
               fontSize="md"
-              textAlign="center"
+              textAlign="left"
             >
               {ellipseAddress(account.address, {
                 end: 10,
