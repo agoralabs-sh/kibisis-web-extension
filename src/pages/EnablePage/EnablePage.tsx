@@ -8,7 +8,7 @@ import EnableModal from '../../components/EnableModal';
 import MainPageShell from '../../components/MainPageShell';
 
 // Features
-import { fetchAccounts } from '../../features/accounts';
+import { fetchAccountsThunk } from '../../features/accounts';
 import { setEnableRequest } from '../../features/messages';
 import { fetchSettings } from '../../features/settings';
 
@@ -38,11 +38,7 @@ const EnablePage: FC = () => {
     let tabId: number;
 
     if (selectedNetwork) {
-      dispatch(
-        fetchAccounts({
-          onlyFetchFromStorage: true, // only get the accounts from storage, we only need public addresses
-        })
-      );
+      dispatch(fetchAccountsThunk());
 
       network =
         networks.find(

@@ -15,7 +15,7 @@ import RegistrationPageShell from '../../components/RegistrationPageShell';
 import { NAME_ACCOUNT_ROUTE } from '../../constants';
 
 // Features
-import { setPrivateKey } from '../../features/registration';
+import { setMnemonic } from '../../features/registration';
 
 // Hooks
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
@@ -24,7 +24,7 @@ import useSubTextColor from '../../hooks/useSubTextColor';
 // Selectors
 import {
   useSelectLogger,
-  useSelectRegisterEncryptedPrivateKey,
+  useSelectRegistrationEncryptedPrivateKey,
 } from '../../selectors';
 
 // Types
@@ -43,7 +43,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   const subTextColor: string = useSubTextColor();
   const logger: ILogger = useSelectLogger();
   const encryptedPrivateKey: string | null =
-    useSelectRegisterEncryptedPrivateKey();
+    useSelectRegistrationEncryptedPrivateKey();
   const encrypting: boolean = useSelector<IRegistrationRootState, boolean>(
     (state) => state.registration.encrypting
   );
@@ -59,7 +59,7 @@ const EnterMnemonicPhrasePage: FC = () => {
     if (!validateError) {
       logger.debug(`${componentName}: mnemonic valid, encrypting`);
 
-      dispatch(setPrivateKey(phrases.join(' ')));
+      dispatch(setMnemonic(phrases.join(' ')));
     }
   };
   const handleOnChange = (phrases: string[]) => {

@@ -11,6 +11,7 @@ interface IApplicationState {
   error: BaseExtensionError | null;
   logger: ILogger;
   navigate: NavigateFunction | null;
+  online: boolean;
   toast: CreateToastFnReturn | null;
 }
 

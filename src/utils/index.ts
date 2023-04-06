@@ -6,6 +6,7 @@ export { default as decodeJwt } from './decodeJwt';
 export { default as ellipseAddress } from './ellipseAddress';
 export { default as formatCurrencyUnit } from './formatCurrencyUnit';
 export { default as getAuthorizedAddressesForHost } from './getAuthorizedAddressesForHost';
+export { default as initializeDefaultAccount } from './initializeDefaultAccount';
 export { default as injectScript } from './injectScript';
 export { default as isHexString } from './isHexString';
 export { default as isMnemonicValid } from './isMnemonicValid';

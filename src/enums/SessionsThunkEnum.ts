@@ -1,6 +1,6 @@
 enum SessionsThunkEnum {
   FetchSessions = 'sessions/fetchSessions',
-  SaveSession = 'sessions/saveSession',
+  SetSession = 'sessions/setSession',
 }
 
 export default SessionsThunkEnum;

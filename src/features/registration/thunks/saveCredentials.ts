@@ -1,10 +1,13 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Account, mnemonicToSecretKey } from 'algosdk';
+import { decode as decodeHex } from '@stablelib/hex';
+import { encodeAddress } from 'algosdk';
 import { NavigateFunction } from 'react-router-dom';
+import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
 
 // Constants
 import {
+  ACCOUNT_KEY_PREFIX,
   CREATE_PASSWORD_ROUTE,
   ENTER_MNEMONIC_PHRASE_ROUTE,
 } from '../../../constants';
@@ -20,10 +23,18 @@ import { setError } from '../../application';
 import { sendRegistrationCompleted } from '../../messages';
 
 // Services
-import { PrivateKeyService } from '../../../services/extension';
+import { PrivateKeyService, StorageManager } from '../../../services/extension';
 
 // Types
-import { ILogger, IRegistrationRootState } from '../../../types';
+import {
+  IAccount,
+  ILogger,
+  INetwork,
+  IRegistrationRootState,
+} from '../../../types';
+
+// Utils
+import { initializeDefaultAccount } from '../../../utils';
 
 const saveCredentials: AsyncThunk<
   void, // return
@@ -36,13 +47,17 @@ const saveCredentials: AsyncThunk<
     const logger: ILogger = getState().application.logger;
     const encryptedPrivateKey: string | null =
       getState().registration.encryptedPrivateKey;
+    const networks: INetwork[] = getState().networks.items;
     const name: string | null = getState().registration.name;
     const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().registration.password;
-    let account: Account;
+    let accounts: IAccount[];
+    let address: string;
     let error: BaseExtensionError;
-    let decryptedPrivateKey: string;
+    let decryptedPrivateKey: Uint8Array;
     let privateKeyService: PrivateKeyService;
+    let publicKey: Uint8Array;
+    let storageManager: StorageManager;
 
     if (!password) {
       error = new MalformedDataError('no password found');
@@ -68,21 +83,22 @@ const saveCredentials: AsyncThunk<
       logger.debug(`${functionName}(): decrypting private key`);
 
       decryptedPrivateKey = await PrivateKeyService.decrypt(
-        encryptedPrivateKey,
+        decodeHex(encryptedPrivateKey),
         password,
         { logger }
       );
 
       logger.debug(`${functionName}(): inferring public key`);
 
-      account = mnemonicToSecretKey(decryptedPrivateKey);
+      publicKey = sign.keyPair.fromSecretKey(decryptedPrivateKey).publicKey;
       privateKeyService = new PrivateKeyService({
         logger,
         passwordTag: browser.runtime.id,
       });
+      address = encodeAddress(publicKey);
 
       logger.debug(
-        `${functionName}(): saving account "${account.addr}" to storage`
+        `${functionName}(): saving private/public key pair for "${address}" to storage`
       );
 
       // reset any previous credentials, set the password and the account
@@ -91,7 +107,7 @@ const saveCredentials: AsyncThunk<
       await privateKeyService.setAccount(
         {
           privateKey: decryptedPrivateKey,
-          publicKey: account.addr,
+          publicKey: sign.keyPair.fromSecretKey(decryptedPrivateKey).publicKey,
           ...(name && {
             name,
           }),
@@ -107,6 +123,35 @@ const saveCredentials: AsyncThunk<
     }
 
     logger.debug(`${functionName}(): successfully saved credentials`);
+
+    storageManager = new StorageManager();
+    accounts = networks.map(
+      (
+        value // save a default account for each genesis hash
+      ) =>
+        initializeDefaultAccount({
+          address,
+          genesisHash: value.genesisHash,
+          ...(name && {
+            name,
+          }),
+        })
+    );
+
+    // save an account for each genesis hash to storage
+    await storageManager.setItems(
+      accounts.reduce(
+        (acc, value) => ({
+          ...acc,
+          [`${ACCOUNT_KEY_PREFIX}${value.id}`]: value,
+        }),
+        {}
+      )
+    );
+
+    logger.debug(
+      `${functionName}(): saved accounts for "${address}" to storage`
+    );
 
     // send a message that registration has been completed
     dispatch(sendRegistrationCompleted());

@@ -35,6 +35,7 @@ const translation: IResourceLanguage = {
     minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
     mustEnterPasswordToSign: 'You must enter your password to sign.',
     nameAccount: `Give your account a nickname. Don't worry you can change this later on.`,
+    offline: 'It looks like you are offline, some features may not work',
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
     securityTokenExpired: 'This token has expired',

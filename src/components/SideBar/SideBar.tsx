@@ -51,7 +51,7 @@ import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 import { useSelectAccounts, useSelectFetchingAccounts } from '../../selectors';
 
 // Types
-import { IAccount } from '../../types';
+import { IAccount, INetwork } from '../../types';
 
 // Utils
 import { ellipseAddress } from '../../utils';

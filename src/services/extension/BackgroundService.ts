@@ -10,6 +10,7 @@ import { networks } from '../../config';
 
 // Constants
 import {
+  ACCOUNT_KEY_PREFIX,
   DEFAULT_POPUP_HEIGHT,
   DEFAULT_POPUP_WIDTH,
   SESSION_KEY_PREFIX,
@@ -39,11 +40,11 @@ import StorageManager from './StorageManager';
 
 // Types
 import {
+  IAccount,
   IBaseOptions,
   IExtensionEvents,
   ILogger,
   INetwork,
-  IPksAccountStorageItem,
   ISession,
   IStorageItemTypes,
 } from '../../types';
@@ -85,7 +86,7 @@ export default class BackgroundService {
     sender: Runtime.MessageSender
   ): Promise<void> {
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
-    let accounts: IPksAccountStorageItem[];
+    let accounts: IAccount[];
     let network: INetwork | null;
     let session: ISession | null;
     let sessions: ISession[];
@@ -155,15 +156,23 @@ export default class BackgroundService {
     session = sessions.find((value) => value.host === payload.host) || null;
 
     if (session) {
-      accounts = await this.privateKeyService.getAccounts();
+      accounts = Object.keys(storageItems)
+        .reduce<IAccount[]>(
+          (acc, key) =>
+            key.startsWith(ACCOUNT_KEY_PREFIX)
+              ? [...acc, storageItems[key] as IAccount]
+              : acc,
+          []
+        )
+        .filter((value) => value.genesisHash === session?.genesisHash); // filter by session genesis hash
       session = {
         ...session,
-        usedAt: Math.round(new Date().getTime() / 1000),
+        usedAt: new Date().getTime(),
       };
 
       // save the updated session
       await this.storageManager.setItems({
-        [`${SESSION_KEY_PREFIX}_${session.id}`]: session,
+        [`${SESSION_KEY_PREFIX}${session.id}`]: session,
       });
 
       this.logger &&
@@ -177,8 +186,8 @@ export default class BackgroundService {
           {
             accounts: session.authorizedAddresses.map<IWalletAccount>(
               (address) => {
-                const account: IPksAccountStorageItem | null =
-                  accounts.find((value) => value.publicKey === address) || null;
+                const account: IAccount | null =
+                  accounts.find((value) => value.address === address) || null;
 
                 return {
                   address,

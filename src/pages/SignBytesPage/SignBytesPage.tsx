@@ -12,19 +12,23 @@ import MainPageShell from '../../components/MainPageShell';
 import SignBytesModal from '../../components/SignBytesModal';
 
 // Features
-import { fetchAccounts } from '../../features/accounts';
+import { fetchAccountsThunk } from '../../features/accounts';
 import { setSignBytesRequest } from '../../features/messages';
 import { fetchSessions } from '../../features/sessions';
 import { fetchSettings } from '../../features/settings';
 
 // Selectors
-import { useSelectAccounts, useSelectSessions } from '../../selectors';
+import {
+  useSelectAccounts,
+  useSelectSelectedNetwork,
+  useSelectSessions,
+} from '../../selectors';
 
 // Theme
 import { theme } from '../../theme';
 
 // Types
-import { IAccount, IAppThunkDispatch, ISession } from '../../types';
+import { IAccount, IAppThunkDispatch, INetwork, ISession } from '../../types';
 
 // Utils
 import { getAuthorizedAddressesForHost } from '../../utils';
@@ -33,16 +37,12 @@ const SignBytesPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const accounts: IAccount[] = useSelectAccounts();
+  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const sessions: ISession[] = useSelectSessions();
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
 
   useEffect(() => {
     dispatch(fetchSettings());
-    dispatch(
-      fetchAccounts({
-        onlyFetchFromStorage: true, // only get the accounts from storage, we only need public addresses
-      })
-    );
     dispatch(fetchSessions());
   }, []);
   useEffect(() => {
@@ -53,7 +53,9 @@ const SignBytesPage: FC = () => {
     let rawDecodedData: Uint8Array;
     let tabId: number;
 
-    if (accounts.length > 0 && sessions.length > 0 && encodedDataUrlSafe) {
+    if (selectedNetwork && sessions.length > 0 && encodedDataUrlSafe) {
+      dispatch(fetchAccountsThunk());
+
       host = url.searchParams.get('host') || t<string>('labels.unknownHost');
       rawDecodedData = decodeBase64Url(encodedDataUrlSafe);
       tabId = parseInt(url.searchParams.get('tabId') || 'unknown');
@@ -71,7 +73,7 @@ const SignBytesPage: FC = () => {
         })
       );
     }
-  }, [accounts, sessions]);
+  }, [selectedNetwork, sessions]);
 
   return (
     <>

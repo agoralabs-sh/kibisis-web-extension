@@ -43,10 +43,15 @@ const AccountItem: FC<IProps> = ({
             fontSize="sm"
             maxW={195}
             noOfLines={1}
+            textAlign="left"
           >
             {account.name}
           </Text>
-          <Text color={subTextColor || defaultSubTextColor} fontSize="xs">
+          <Text
+            color={subTextColor || defaultSubTextColor}
+            fontSize="xs"
+            textAlign="left"
+          >
             {ellipseAddress(account.address, {
               end: 10,
               start: 10,
@@ -54,7 +59,12 @@ const AccountItem: FC<IProps> = ({
           </Text>
         </VStack>
       ) : (
-        <Text color={textColor || defaultTextColor} flexGrow={1} fontSize="sm">
+        <Text
+          color={textColor || defaultTextColor}
+          flexGrow={1}
+          fontSize="sm"
+          textAlign="left"
+        >
           {ellipseAddress(account.address, {
             end: 10,
             start: 10,

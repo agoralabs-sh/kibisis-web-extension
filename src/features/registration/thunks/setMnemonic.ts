@@ -1,4 +1,5 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { encode as encodeHex } from '@stablelib/hex';
 import { Account, mnemonicToSecretKey } from 'algosdk';
 import { NavigateFunction } from 'react-router-dom';
 
@@ -19,19 +20,19 @@ import { PrivateKeyService } from '../../../services/extension';
 import { ILogger, IRegistrationRootState } from '../../../types';
 import { BaseExtensionError, MalformedDataError } from '../../../errors';
 
-const setPrivateKey: AsyncThunk<
+const setMnemonic: AsyncThunk<
   string | null, // return
   string, // args
   Record<string, never>
 > = createAsyncThunk<string | null, string, { state: IRegistrationRootState }>(
-  RegisterThunkEnum.SetPrivateKey,
-  async (privateKey, { dispatch, getState }) => {
-    const functionName: string = 'setPrivateKey';
+  RegisterThunkEnum.SetMnemonic,
+  async (mnemonic, { dispatch, getState }) => {
+    const functionName: string = 'setMnemonic';
     const logger: ILogger = getState().application.logger;
     const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().registration.password;
     let account: Account;
-    let encryptedPrivateKey: string;
+    let encryptedPrivateKey: Uint8Array;
     let error: BaseExtensionError;
 
     if (!password) {
@@ -47,10 +48,10 @@ const setPrivateKey: AsyncThunk<
     logger.debug(`${functionName}(): encrypting private key`);
 
     try {
-      account = mnemonicToSecretKey(privateKey);
+      account = mnemonicToSecretKey(mnemonic);
       encryptedPrivateKey = await PrivateKeyService.encrypt(
+        account.sk,
         password,
-        privateKey,
         { logger }
       );
     } catch (error) {
@@ -65,8 +66,9 @@ const setPrivateKey: AsyncThunk<
 
     dispatch(setName(account.addr));
 
-    return encryptedPrivateKey;
+    // encode in hexadecimal as redux screams about serialization of byte arrays
+    return encodeHex(encryptedPrivateKey);
   }
 );
 
-export default setPrivateKey;
+export default setMnemonic;

@@ -1,9 +1,9 @@
 /**
- * @property {boolean} onlyFetchFromStorage - [optional] instruct the trunk to only fetch the accounts from storage with
- * default values.
+ * @property {boolean} updateAccountInformation - [optional] instruct the thunk to dispatch an action to also update
+ * account information.
  */
 interface IFetchAccountsOptions {
-  onlyFetchFromStorage?: boolean;
+  updateAccountInformation?: boolean;
 }
 
 export default IFetchAccountsOptions;

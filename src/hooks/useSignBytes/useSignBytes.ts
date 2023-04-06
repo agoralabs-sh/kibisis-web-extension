@@ -2,11 +2,7 @@ import {
   decode as decodeBase64,
   encode as encodeBase64,
 } from '@stablelib/base64';
-import {
-  Account,
-  signBytes as algoSignBytes,
-  mnemonicToSecretKey,
-} from 'algosdk';
+import { Address, decodeAddress, signBytes as algoSignBytes } from 'algosdk';
 import { useState } from 'react';
 
 // Errors
@@ -25,6 +21,7 @@ import { PrivateKeyService } from '../../services/extension';
 // Types
 import { ILogger } from '../../types';
 import { ISignBytesOptions, IUseSignBytesState } from './types';
+import browser from 'webextension-polyfill';
 
 export default function useSignBytes(): IUseSignBytesState {
   const logger: ILogger = useSelectLogger();
@@ -40,11 +37,11 @@ export default function useSignBytes(): IUseSignBytesState {
     const functionName: string = 'signBytes';
     const privateKeyService: PrivateKeyService = new PrivateKeyService({
       logger,
-      passwordTag: __EXTENSION_ID__,
+      passwordTag: browser.runtime.id,
     });
-    let account: Account;
+    let decodedAddress: Address;
     let bytes: Uint8Array;
-    let privateKey: string | null;
+    let privateKey: Uint8Array | null;
     let signedBytes: Uint8Array;
 
     setSignError(null);
@@ -62,7 +59,11 @@ export default function useSignBytes(): IUseSignBytesState {
     );
 
     try {
-      privateKey = await privateKeyService.getPrivateKey(signer, password);
+      decodedAddress = decodeAddress(signer);
+      privateKey = await privateKeyService.getPrivateKey(
+        decodedAddress.publicKey,
+        password
+      );
 
       if (!privateKey) {
         throw new DecryptionError(
@@ -80,8 +81,7 @@ export default function useSignBytes(): IUseSignBytesState {
     );
 
     try {
-      account = mnemonicToSecretKey(privateKey);
-      signedBytes = algoSignBytes(bytes, account.sk);
+      signedBytes = algoSignBytes(bytes, privateKey);
 
       logger.debug(
         `useSignBytes#${functionName}(): signed bytes with signer "${signer}"`

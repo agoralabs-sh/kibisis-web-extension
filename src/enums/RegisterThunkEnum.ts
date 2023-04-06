@@ -1,6 +1,6 @@
 enum RegisterThunkEnum {
   SaveCredentials = 'register/saveCredentials',
-  SetPrivateKey = 'register/setPrivateKey',
+  SetMnemonic = 'register/setMnemonic',
 }
 
 export default RegisterThunkEnum;

@@ -6,7 +6,7 @@ import {
   setEnableRequest,
   sendEnableResponse,
 } from '../../../features/messages';
-import { saveSession } from '../../../features/sessions';
+import { setSession } from '../../../features/sessions';
 
 // Types
 import {
@@ -68,10 +68,10 @@ export default function handleEnableRequest(
   if (session) {
     session = {
       ...session,
-      usedAt: Math.round(new Date().getTime() / 1000),
+      usedAt: new Date().getTime(),
     };
 
-    dispatch(saveSession(session));
+    dispatch(setSession(session));
     dispatch(
       sendEnableResponse({
         error: null,

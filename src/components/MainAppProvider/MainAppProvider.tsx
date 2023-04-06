@@ -9,7 +9,10 @@ import ErrorModal from '../ErrorModal';
 import SignBytesModal from '../SignBytesModal';
 
 // Features
-import { fetchAccounts } from '../../features/accounts';
+import {
+  fetchAccountsThunk,
+  startPollingForAccountInformationThunk,
+} from '../../features/accounts';
 import { setError, setNavigate, setToast } from '../../features/application';
 import { setEnableRequest, setSignBytesRequest } from '../../features/messages';
 import { fetchSessions } from '../../features/sessions';
@@ -17,6 +20,7 @@ import { fetchSettings } from '../../features/settings';
 
 // Hooks
 import useOnMessage from '../../hooks/useOnMessage';
+import useOnNetworkConnectivity from '../../hooks/useOnNetworkConnectivity';
 
 // Selectors
 import { useSelectSelectedNetwork } from '../../selectors';
@@ -51,9 +55,15 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
   // fetch accounts when the selected network has been found
   useEffect(() => {
     if (selectedNetwork) {
-      dispatch(fetchAccounts());
+      dispatch(
+        fetchAccountsThunk({
+          updateAccountInformation: true,
+        })
+      );
+      dispatch(startPollingForAccountInformationThunk());
     }
   }, [selectedNetwork]);
+  useOnNetworkConnectivity(); // listen to network connectivity
   useOnMessage(); // handle incoming messages
 
   return (
