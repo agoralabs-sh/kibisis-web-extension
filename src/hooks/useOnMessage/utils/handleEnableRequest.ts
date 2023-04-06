@@ -68,7 +68,7 @@ export default function handleEnableRequest(
   if (session) {
     session = {
       ...session,
-      usedAt: Math.round(new Date().getTime() / 1000),
+      usedAt: new Date().getTime(),
     };
 
     dispatch(setSession(session));

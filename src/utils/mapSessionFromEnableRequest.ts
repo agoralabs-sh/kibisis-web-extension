@@ -16,11 +16,11 @@ export default function mapSessionFromEnableRequest({
   return {
     appName,
     authorizedAddresses,
-    createdAt: Math.round(now.getTime() / 1000),
+    createdAt: now.getTime(),
     genesisHash,
     genesisId,
     host,
     id,
-    usedAt: Math.round(now.getTime() / 1000),
+    usedAt: now.getTime(),
   };
 }

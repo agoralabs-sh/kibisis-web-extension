@@ -167,7 +167,7 @@ export default class BackgroundService {
         .filter((value) => value.genesisHash === session?.genesisHash); // filter by session genesis hash
       session = {
         ...session,
-        usedAt: Math.round(new Date().getTime() / 1000),
+        usedAt: new Date().getTime(),
       };
 
       // save the updated session
