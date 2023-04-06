@@ -12,7 +12,7 @@ import { StorageManager } from '../../../services/extension';
 // Types
 import { ILogger, IMainRootState } from '../../../types';
 
-const removeAccount: AsyncThunk<
+const removeAccountThunk: AsyncThunk<
   string, // return
   string, // args
   Record<string, never>
@@ -31,4 +31,4 @@ const removeAccount: AsyncThunk<
   }
 );
 
-export default removeAccount;
+export default removeAccountThunk;

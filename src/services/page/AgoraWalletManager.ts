@@ -18,7 +18,7 @@ import {
 } from '@stablelib/base64';
 
 // Constants
-import { REQUEST_TIMEOUT, WALLET_ID } from '../../constants';
+import { MESSAGE_REQUEST_TIMEOUT, WALLET_ID } from '../../constants';
 
 // Enums
 import { EventNameEnum } from '../../enums';
@@ -141,7 +141,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
             `no response from wallet for "${message.event}"`
           )
         );
-      }, timeout || REQUEST_TIMEOUT);
+      }, timeout || MESSAGE_REQUEST_TIMEOUT);
 
       // send the event
       window.postMessage(message);

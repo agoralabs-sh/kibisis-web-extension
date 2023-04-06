@@ -12,7 +12,7 @@ import { StorageManager } from '../../../services/extension';
 // Types
 import { IAccount, ILogger, IMainRootState } from '../../../types';
 
-const setAccount: AsyncThunk<
+const setAccountThunk: AsyncThunk<
   IAccount, // return
   IAccount, // args
   Record<string, never>
@@ -35,4 +35,4 @@ const setAccount: AsyncThunk<
   }
 );
 
-export default setAccount;
+export default setAccountThunk;

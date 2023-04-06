@@ -12,7 +12,7 @@ import MainPageShell from '../../components/MainPageShell';
 import SignBytesModal from '../../components/SignBytesModal';
 
 // Features
-import { fetchAccounts } from '../../features/accounts';
+import { fetchAccountsThunk } from '../../features/accounts';
 import { setSignBytesRequest } from '../../features/messages';
 import { fetchSessions } from '../../features/sessions';
 import { fetchSettings } from '../../features/settings';
@@ -54,11 +54,7 @@ const SignBytesPage: FC = () => {
     let tabId: number;
 
     if (selectedNetwork && sessions.length > 0 && encodedDataUrlSafe) {
-      dispatch(
-        fetchAccounts({
-          onlyFetchFromStorage: true, // only get the accounts from storage, we only need public addresses
-        })
-      );
+      dispatch(fetchAccountsThunk());
 
       host = url.searchParams.get('host') || t<string>('labels.unknownHost');
       rawDecodedData = decodeBase64Url(encodedDataUrlSafe);
