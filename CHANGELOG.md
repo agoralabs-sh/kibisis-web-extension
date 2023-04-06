@@ -1,3 +1,10 @@
+# [1.1.0-beta.7](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.6...v1.1.0-beta.7) (2023-04-06)
+
+
+### Features
+
+* cache account information ([#8](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/8)) ([102f4cc](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/102f4cce73c1107720a780d6bdef030316816d22))
+
 # [1.1.0-beta.6](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2023-04-05)
 
 
