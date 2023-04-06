@@ -125,11 +125,17 @@ const saveCredentials: AsyncThunk<
     logger.debug(`${functionName}(): successfully saved credentials`);
 
     storageManager = new StorageManager();
-    accounts = networks.map((value) =>
-      initializeDefaultAccount({
-        address,
-        genesisHash: value.genesisHash,
-      })
+    accounts = networks.map(
+      (
+        value // save a default account for each genesis hash
+      ) =>
+        initializeDefaultAccount({
+          address,
+          genesisHash: value.genesisHash,
+          ...(name && {
+            name,
+          }),
+        })
     );
 
     // save an account for each genesis hash to storage
