@@ -27,6 +27,7 @@ const fetchAccountsThunk: AsyncThunk<
 >(AccountsThunkEnum.FetchAccounts, async (options, { getState }) => {
   const logger: ILogger = getState().application.logger;
   const networks: INetwork[] = getState().networks.items;
+  const online: boolean = getState().application.online;
   const selectedNetwork: INetwork =
     getState().settings.network || selectDefaultNetwork(networks);
   const storageManager: StorageManager = new StorageManager();
@@ -49,7 +50,7 @@ const fetchAccountsThunk: AsyncThunk<
     .filter((value) => value.genesisHash === selectedNetwork.genesisHash); // filter by the selected network
 
   // update account information, if requested
-  if (options?.updateAccountInformation) {
+  if (options?.updateAccountInformation && online) {
     logger.debug(
       `${AccountsThunkEnum.FetchAccounts}: updating account information`
     );

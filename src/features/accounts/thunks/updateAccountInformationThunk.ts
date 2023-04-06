@@ -16,9 +16,18 @@ const updateAccountInformationThunk: AsyncThunk<
 > = createAsyncThunk<IAccount[], undefined, { state: IMainRootState }>(
   AccountsThunkEnum.UpdateAccountInformation,
   async (_, { getState }) => {
-    const logger: ILogger = getState().application.logger;
     const accounts: IAccount[] = getState().accounts.items;
+    const logger: ILogger = getState().application.logger;
     const networks: INetwork[] = getState().networks.items;
+    const online: boolean = getState().application.online;
+
+    if (!online) {
+      logger.debug(
+        `${AccountsThunkEnum.UpdateAccountInformation}: the extension appears to be offline, skipping`
+      );
+
+      return accounts;
+    }
 
     return await updateAccountInformation(accounts, {
       logger,
