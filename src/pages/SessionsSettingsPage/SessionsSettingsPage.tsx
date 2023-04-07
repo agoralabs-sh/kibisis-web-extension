@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux';
 
 // Components
 import Button from '../../components/Button';
-import ConfirmDialog from '../../components/ConfirmDialog';
+import ConfirmModal from '../../components/ConfirmModal';
 import ManageSessionModal from '../../components/ManageSessionModal';
 import SettingsHeader from '../../components/SettingsHeader';
 import SettingsSessionItem from '../../components/SettingsSessionItem';
@@ -132,7 +132,7 @@ const SessionsSettingsPage: FC = () => {
         onClose={handleManageSessionClose}
         session={managedSession}
       />
-      <ConfirmDialog
+      <ConfirmModal
         description={t<string>('captions.removeAllSessions')}
         isOpen={isOpen}
         onCancel={onClose}
