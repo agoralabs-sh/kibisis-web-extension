@@ -6,6 +6,7 @@ const translation: IResourceLanguage = {
     addAccount: 'Add Account',
     cancel: 'Cancel',
     connect: 'Connect',
+    confirm: 'Confirm',
     create: 'Create',
     getStarted: 'Get Started',
     import: 'Import',
@@ -40,7 +41,9 @@ const translation: IResourceLanguage = {
     offline: 'It looks like you are offline, some features may not work',
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
-    removeAllAccounts: 'Removing all accounts will also remove this session',
+    removeAllSessions: 'Are you sure you want to remove all sessions?',
+    removeAllAccountsWarning:
+      'Removing all accounts will also remove this session',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
@@ -72,6 +75,7 @@ const translation: IResourceLanguage = {
     nameAccount: 'Name your account',
     noAccountsFound: 'No accounts found!',
     noSessionsFound: 'No sessions found!',
+    removeAllSessions: 'Remove All Sessions',
     shareAddress: 'Share address',
   },
   labels: {

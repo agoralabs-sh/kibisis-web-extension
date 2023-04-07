@@ -7,6 +7,7 @@ import {
   Spacer,
   Stack,
   Text,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
@@ -18,6 +19,7 @@ import { useDispatch } from 'react-redux';
 
 // Components
 import Button from '../../components/Button';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import ManageSessionModal from '../../components/ManageSessionModal';
 import SettingsHeader from '../../components/SettingsHeader';
 import SettingsSessionItem from '../../components/SettingsSessionItem';
@@ -41,15 +43,20 @@ import { IAppThunkDispatch, ISession } from '../../types';
 const SessionsSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const fetching: boolean = useSelectFetchingSessions();
   const sessions: ISession[] = useSelectSessions();
   const defaultSubTextColor: string = useSubTextColor();
   const defaultTextColor: string = useDefaultTextColor();
   const [managedSession, setManagedSession] = useState<ISession | null>(null);
+  const handleConfirmRemoveAllSessions = () => {
+    dispatch(clearSessionsThunk());
+    onClose();
+  };
   const handleManageSessionClose = () => setManagedSession(null);
   const handleManageSession = (id: string) =>
     setManagedSession(sessions.find((value) => value.id === id) || null);
-  const handleRemoveAllSessionsClick = () => dispatch(clearSessionsThunk());
+  const handleRemoveAllSessionsClick = () => onOpen();
   const handleRemoveSession = (id: string) => dispatch(removeSessionThunk(id));
   const renderContent = () => {
     if (fetching) {
@@ -95,7 +102,7 @@ const SessionsSettingsPage: FC = () => {
             spacing={2}
             w="full"
           >
-            <Icon as={IoLinkOutline} h={12} w={12} />
+            <Icon as={IoLinkOutline} color={defaultTextColor} h={12} w={12} />
             <Heading color={defaultTextColor} size="md" textAlign="center">
               {t<string>('headings.noSessionsFound')}
             </Heading>
@@ -124,6 +131,13 @@ const SessionsSettingsPage: FC = () => {
       <ManageSessionModal
         onClose={handleManageSessionClose}
         session={managedSession}
+      />
+      <ConfirmDialog
+        description={t<string>('captions.removeAllSessions')}
+        isOpen={isOpen}
+        onCancel={onClose}
+        onConfirm={handleConfirmRemoveAllSessions}
+        title={t<string>('headings.removeAllSessions')}
       />
       <SettingsHeader
         title={t<string>('titles.page', { context: 'sessions' })}
