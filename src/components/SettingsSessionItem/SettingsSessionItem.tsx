@@ -122,13 +122,15 @@ const SettingsSessionItem: FC<IProps> = ({
         />
         <MenuList>
           <MenuItem
-            icon={<Icon as={IoWalletOutline} />}
+            color={defaultTextColor}
+            icon={<Icon as={IoWalletOutline} color={defaultTextColor} />}
             onClick={handleMangeAccountsClick}
           >
             {t<string>('labels.manageAccounts')}
           </MenuItem>
           <MenuItem
-            icon={<Icon as={IoUnlinkOutline} />}
+            color={defaultTextColor}
+            icon={<Icon as={IoUnlinkOutline} color={defaultTextColor} />}
             onClick={handleRemoveSessionClick}
           >
             {t<string>('labels.removeSession')}

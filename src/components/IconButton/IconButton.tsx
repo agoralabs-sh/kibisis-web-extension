@@ -30,6 +30,9 @@ const IconButton: ForwardRefExoticComponent<
     return (
       <ChakraIconButton
         {...iconProps}
+        _active={{
+          bg: buttonHoverBackgroundColor,
+        }}
         _hover={{
           bg: buttonHoverBackgroundColor,
         }}

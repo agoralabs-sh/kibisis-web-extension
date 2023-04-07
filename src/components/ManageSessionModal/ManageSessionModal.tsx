@@ -248,12 +248,12 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
               {session.host}
             </Text>
           </Box>
-          {/* Creation date */}
-          <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-            {new Date(session.createdAt).toLocaleString()}
-          </Text>
           {/* Network */}
           {network && <ChainBadge network={network} />}
+          {/* Creation date */}
+          <Text color={defaultTextColor} fontSize="xs" textAlign="center">
+            {new Date(session.createdAt).toLocaleString()}
+          </Text>
           {/* Remove warning */}
           {authorizedAddresses.length <= 0 && (
             <HStack
@@ -267,7 +267,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
             >
               <Icon as={IoWarningOutline} color="red.500" h={3} w={3} />
               <Text color="red.500" fontSize="xs" textAlign="left">
-                {t<string>('captions.removeAllAccounts')}
+                {t<string>('captions.removeAllAccountsWarning')}
               </Text>
             </HStack>
           )}
