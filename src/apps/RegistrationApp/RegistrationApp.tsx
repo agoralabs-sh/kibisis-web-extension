@@ -2,8 +2,7 @@ import { combineReducers, Store } from '@reduxjs/toolkit';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
-import { HashRouter, Navigate, Route } from 'react-router-dom';
-import SlideRoutes from 'react-slide-routes';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 // Components
 import Fonts from '../../components/Fonts';
@@ -34,7 +33,7 @@ import NameAccountPage from '../../pages/NameAccountPage';
 import { IAppProps, IRegistrationRootState } from '../../types';
 
 // Utils
-import { makeStore } from '../../utils';
+import { makeStore } from '../../utils/extension';
 
 const RegistrationApp: FC<IAppProps> = ({
   i18next,
@@ -57,7 +56,7 @@ const RegistrationApp: FC<IAppProps> = ({
           <Fonts />
           <HashRouter>
             <RegistrationAppProvider>
-              <SlideRoutes>
+              <Routes>
                 <Route
                   element={<Navigate replace={true} to={GET_STARTED_ROUTE} />}
                   path="/"
@@ -75,7 +74,7 @@ const RegistrationApp: FC<IAppProps> = ({
                   element={<NameAccountPage />}
                   path={NAME_ACCOUNT_ROUTE}
                 />
-              </SlideRoutes>
+              </Routes>
             </RegistrationAppProvider>
           </HashRouter>
         </ThemeProvider>

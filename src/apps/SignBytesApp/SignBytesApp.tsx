@@ -22,7 +22,7 @@ import SignBytesPage from '../../pages/SignBytesPage';
 import { IAppProps, IMainRootState } from '../../types';
 
 // Utils
-import { makeStore } from '../../utils';
+import { makeStore } from '../../utils/extension';
 
 const SignBytesApp: FC<IAppProps> = ({
   i18next,

@@ -1,10 +1,10 @@
 import { configureStore, Store, Reducer } from '@reduxjs/toolkit';
 
 // Features
-import { setError, setNavigate, setToast } from '../features/application';
+import { setError, setNavigate, setToast } from '../../features/application';
 
 // Types
-import { IBaseRootState } from '../types';
+import { IBaseRootState } from '../../types';
 
 export default function makeStore<T extends IBaseRootState>(
   reducer: Reducer<T>

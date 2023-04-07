@@ -28,7 +28,7 @@ import SettingsRouter from '../../pages/SettingsRouter';
 import { IAppProps, IMainRootState } from '../../types';
 
 // Utils
-import { makeStore } from '../../utils';
+import { makeStore } from '../../utils/extension';
 
 const MainApp: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IMainRootState> = makeStore<IMainRootState>(

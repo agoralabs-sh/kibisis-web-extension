@@ -22,7 +22,7 @@ import EnablePage from '../../pages/EnablePage';
 import { IAppProps, IMainRootState } from '../../types';
 
 // Utils
-import { makeStore } from '../../utils';
+import { makeStore } from '../../utils/extension';
 
 const EnableApp: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IMainRootState> = makeStore<IMainRootState>(
