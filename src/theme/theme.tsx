@@ -1,6 +1,9 @@
 import { extendTheme } from '@chakra-ui/react';
 import { Dict } from '@chakra-ui/utils';
 
+// Themes
+import Tag from './tag';
+
 const theme: Dict = extendTheme({
   breakpoints: {
     sm: '40em',
@@ -45,6 +48,9 @@ const theme: Dict = extendTheme({
       800: '#441492',
       900: '#2f0e65',
     },
+  },
+  components: {
+    Tag,
   },
   fonts: {
     heading: 'Outfit - Bold',
