@@ -6,7 +6,7 @@ import {
   setEnableRequest,
   sendEnableResponse,
 } from '../../../features/messages';
-import { setSession } from '../../../features/sessions';
+import { setSessionThunk } from '../../../features/sessions';
 
 // Types
 import {
@@ -71,7 +71,7 @@ export default function handleEnableRequest(
       usedAt: new Date().getTime(),
     };
 
-    dispatch(setSession(session));
+    dispatch(setSessionThunk(session));
     dispatch(
       sendEnableResponse({
         error: null,
@@ -88,6 +88,7 @@ export default function handleEnableRequest(
     setEnableRequest({
       appName: request.appName,
       authorizedAddresses: [],
+      description: request.description,
       genesisHash: network.genesisHash,
       genesisId: network.genesisId,
       host: request.host,

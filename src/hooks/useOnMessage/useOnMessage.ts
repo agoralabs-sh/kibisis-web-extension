@@ -57,6 +57,8 @@ export default function useOnMessage(): void {
         if (sender.tab?.id) {
           setIncomingEnableRequest({
             appName: (message as ExtensionEnableRequestEvent).payload.appName,
+            description: (message as ExtensionEnableRequestEvent).payload
+              .description,
             genesisHash: (message as ExtensionEnableRequestEvent).payload
               .genesisHash,
             host: (message as ExtensionEnableRequestEvent).payload.host,

@@ -21,6 +21,9 @@ import { theme } from '../../theme';
 // Types
 import { IAppThunkDispatch, INetwork } from '../../types';
 
+// Utils
+import { decodeURLSearchParam } from '../../utils';
+
 const EnablePage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -42,19 +45,27 @@ const EnablePage: FC = () => {
 
       network =
         networks.find(
-          (value) => value.genesisHash === url.searchParams.get('genesisHash')
+          (value) =>
+            value.genesisHash ===
+            decodeURLSearchParam('genesisHash', url.searchParams)
         ) || selectedNetwork;
-      tabId = parseInt(url.searchParams.get('tabId') || 'unknown');
+      tabId = parseInt(
+        decodeURLSearchParam('tabId', url.searchParams) || 'unknown'
+      );
 
       dispatch(
         setEnableRequest({
           appName:
-            url.searchParams.get('appName') || t<string>('labels.unknownApp'),
+            decodeURLSearchParam('appName', url.searchParams) ||
+            t<string>('labels.unknownApp'),
           authorizedAddresses: [],
+          description: decodeURLSearchParam('description', url.searchParams),
           genesisHash: network.genesisHash,
           genesisId: network.genesisId,
-          host: url.searchParams.get('host') || t<string>('labels.unknownHost'),
-          iconUrl: url.searchParams.get('iconUrl'),
+          host:
+            decodeURLSearchParam('host', url.searchParams) ||
+            t<string>('labels.unknownHost'),
+          iconUrl: decodeURLSearchParam('iconUrl', url.searchParams),
           tabId,
         })
       );

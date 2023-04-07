@@ -12,13 +12,13 @@ import { StorageManager } from '../../../services/extension';
 // Types
 import { ILogger, IMainRootState, ISession } from '../../../types';
 
-const setSession: AsyncThunk<
+const setSessionThunk: AsyncThunk<
   ISession, // return
   ISession, // args
   Record<string, never>
 > = createAsyncThunk<ISession, ISession, { state: IMainRootState }>(
   SessionsThunkEnum.SetSession,
-  async (session, { dispatch, getState }) => {
+  async (session, { getState }) => {
     const functionName: string = 'setSession';
     const logger: ILogger = getState().application.logger;
     const storageManager: StorageManager = new StorageManager();
@@ -35,4 +35,4 @@ const setSession: AsyncThunk<
   }
 );
 
-export default setSession;
+export default setSessionThunk;
