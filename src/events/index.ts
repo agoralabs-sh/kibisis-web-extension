@@ -5,6 +5,7 @@ export { default as ExtensionEnableResponseEvent } from './ExtensionEnableRespon
 export { default as ExternalSignBytesRequestEvent } from './ExternalSignBytesRequestEvent';
 export { default as ExternalSignBytesResponseEvent } from './ExternalSignBytesResponseEvent';
 export { default as ExtensionRegistrationCompletedEvent } from './ExtensionRegistrationCompletedEvent';
+export { default as ExtensionResetEvent } from './ExtensionResetEvent';
 export { default as ExternalEnableRequestEvent } from './ExternalEnableRequestEvent';
 export { default as ExternalEnableResponseEvent } from './ExternalEnableResponseEvent';
 export { default as ExtensionSignBytesRequestEvent } from './ExtensionSignBytesRequestEvent';

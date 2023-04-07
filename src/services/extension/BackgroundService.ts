@@ -248,32 +248,6 @@ export default class BackgroundService {
     }
   }
 
-  private async handleRegistrationCompleted(): Promise<void> {
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundService.name}#handleRegistrationCompleted(): extension message "${EventNameEnum.ExtensionRegistrationCompleted}" received from the popup`
-      );
-
-    // if there is no main window, create a new one
-    if (!this.mainWindow) {
-      this.mainWindow = await browser.windows.create({
-        height: DEFAULT_POPUP_HEIGHT,
-        type: 'popup',
-        url: 'main.html',
-        width: DEFAULT_POPUP_WIDTH,
-        ...(this.registrationWindow && {
-          left: this.registrationWindow.left,
-          top: this.registrationWindow.top,
-        }),
-      });
-    }
-
-    // if the register window exists remove it
-    if (this.registrationWindow && this.registrationWindow.id) {
-      await browser.windows.remove(this.registrationWindow.id);
-    }
-  }
-
   private async handleEnableSignBytesRequest(
     { payload }: ExtensionSignBytesRequestEvent,
     sender: Runtime.MessageSender
@@ -374,6 +348,56 @@ export default class BackgroundService {
     }
   }
 
+  private async handleRegistrationCompleted(): Promise<void> {
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundService.name}#handleRegistrationCompleted(): extension message "${EventNameEnum.ExtensionRegistrationCompleted}" received from the popup`
+      );
+
+    // if there is no main window, create a new one
+    if (!this.mainWindow) {
+      this.mainWindow = await browser.windows.create({
+        height: DEFAULT_POPUP_HEIGHT,
+        type: 'popup',
+        url: 'main.html',
+        width: DEFAULT_POPUP_WIDTH,
+        ...(this.registrationWindow && {
+          left: this.registrationWindow.left,
+          top: this.registrationWindow.top,
+        }),
+      });
+    }
+
+    // if the register window exists remove it
+    if (this.registrationWindow && this.registrationWindow.id) {
+      await browser.windows.remove(this.registrationWindow.id);
+    }
+  }
+
+  private async handleReset(): Promise<void> {
+    const storageItems: Record<string, IStorageItemTypes | unknown> =
+      await this.storageManager.getAllItems();
+
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundService.name}#handleReset(): extension message "${EventNameEnum.ExtensionReset}" received from the popup`
+      );
+
+    // if any of the main app windows exists, remove them
+    await Promise.all(
+      [this.mainWindow, this.enableWindow, this.signBytesWindow].map(
+        async (value) => {
+          if (value?.id) {
+            return await browser.windows.remove(value.id);
+          }
+        }
+      )
+    );
+
+    // remove all keys from storage
+    await this.storageManager.remove(Object.keys(storageItems));
+  }
+
   private async handleSignBytesResponse(): Promise<void> {
     this.logger &&
       this.logger.debug(
@@ -404,6 +428,8 @@ export default class BackgroundService {
         return await this.handleEnableResponse();
       case EventNameEnum.ExtensionRegistrationCompleted:
         return await this.handleRegistrationCompleted();
+      case EventNameEnum.ExtensionReset:
+        return await this.handleReset();
       case EventNameEnum.ExtensionSignBytesRequest:
         return await this.handleEnableSignBytesRequest(
           message as ExtensionSignBytesRequestEvent,

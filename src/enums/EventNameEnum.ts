@@ -5,6 +5,7 @@ enum EventNameEnum {
   ExternalSignBytesRequest = 'external.sign_bytes_request',
   ExternalSignBytesResponse = 'external.sign_bytes_response',
   // internal
+  ExtensionReset = 'extension.reset',
   ExtensionEnableRequest = 'extension.enable_request',
   ExtensionEnableResponse = 'extension.enable_response',
   ExtensionRegistrationCompleted = 'extension.registration_completed',

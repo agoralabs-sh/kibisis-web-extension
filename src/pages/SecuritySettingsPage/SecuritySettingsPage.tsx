@@ -9,7 +9,7 @@ import ConfirmModal from '../../components/ConfirmModal';
 import SettingsHeader from '../../components/SettingsHeader';
 
 // Features
-import { clearAllDataThunk } from '../../features/application';
+import { sendResetThunk } from '../../features/messages';
 
 // Types
 import { IAppThunkDispatch } from '../../types';
@@ -19,8 +19,10 @@ const SecuritySettingsPage: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const handleConfirmClearAllData = () => {
-    dispatch(clearAllDataThunk());
     onClose();
+
+    // dispatch an event to the background
+    dispatch(sendResetThunk());
   };
   const handleClearAllDataClick = () => onOpen();
 
