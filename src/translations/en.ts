@@ -13,6 +13,7 @@ const translation: IResourceLanguage = {
     ok: 'OK',
     previous: 'Previous',
     removeAllSessions: 'Remove All Sessions',
+    save: 'Save',
     sign: 'Sign',
   },
   captions: {
@@ -39,6 +40,7 @@ const translation: IResourceLanguage = {
     offline: 'It looks like you are offline, some features may not work',
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
+    removeAllAccounts: 'Removing all accounts will also remove this session',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',

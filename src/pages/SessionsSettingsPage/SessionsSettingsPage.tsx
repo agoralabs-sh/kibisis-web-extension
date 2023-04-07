@@ -11,13 +11,14 @@ import {
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import { nanoid } from 'nanoid';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoLinkOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // Components
 import Button from '../../components/Button';
+import ManageSessionModal from '../../components/ManageSessionModal';
 import SettingsHeader from '../../components/SettingsHeader';
 import SettingsSessionItem from '../../components/SettingsSessionItem';
 
@@ -44,12 +45,16 @@ const SessionsSettingsPage: FC = () => {
   const sessions: ISession[] = useSelectSessions();
   const defaultSubTextColor: string = useSubTextColor();
   const defaultTextColor: string = useDefaultTextColor();
+  const [managedSession, setManagedSession] = useState<ISession | null>(null);
+  const handleManageSessionClose = () => setManagedSession(null);
+  const handleManageSession = (id: string) =>
+    setManagedSession(sessions.find((value) => value.id === id) || null);
   const handleRemoveAllSessionsClick = () => dispatch(clearSessionsThunk());
   const handleRemoveSession = (id: string) => dispatch(removeSessionThunk(id));
   const renderContent = () => {
     if (fetching) {
       return (
-        <VStack spacing={0} w="full">
+        <VStack spacing={2} w="full">
           {Array.from({ length: 3 }, () => (
             <HStack key={nanoid()} m={0} pt={2} px={4} spacing={2} w="full">
               <SkeletonCircle size="10" />
@@ -101,10 +106,11 @@ const SessionsSettingsPage: FC = () => {
     }
 
     return (
-      <VStack spacing={0} w="full">
+      <VStack spacing={2} w="full">
         {sessions.map((session, index) => (
           <SettingsSessionItem
             key={nanoid()}
+            onManageSession={handleManageSession}
             onRemoveSession={handleRemoveSession}
             session={session}
           />
@@ -115,6 +121,10 @@ const SessionsSettingsPage: FC = () => {
 
   return (
     <>
+      <ManageSessionModal
+        onClose={handleManageSessionClose}
+        session={managedSession}
+      />
       <SettingsHeader
         title={t<string>('titles.page', { context: 'sessions' })}
       />
