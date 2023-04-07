@@ -4,6 +4,7 @@ import {
   IoColorPaletteOutline,
   IoConstructOutline,
   IoLinkOutline,
+  IoShieldCheckmarkOutline,
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +16,7 @@ import {
   ADVANCED_ROUTE,
   APPEARANCE_ROUTE,
   DEFAULT_GAP,
+  SECURITY_ROUTE,
   SESSIONS_ROUTE,
   SETTINGS_ROUTE,
 } from '../../constants';
@@ -38,6 +40,11 @@ const MainSettingsPage: FC = () => {
       >
         {t<string>('titles.page', { context: 'settings' })}
       </Heading>
+      <SettingsLinkItem
+        icon={IoShieldCheckmarkOutline}
+        label={t<string>('titles.page', { context: 'security' })}
+        to={`${SETTINGS_ROUTE}${SECURITY_ROUTE}`}
+      />
       <SettingsLinkItem
         icon={IoColorPaletteOutline}
         label={t<string>('titles.page', { context: 'appearance' })}

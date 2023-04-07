@@ -5,6 +5,7 @@ const translation: IResourceLanguage = {
   buttons: {
     addAccount: 'Add Account',
     cancel: 'Cancel',
+    clearAllData: 'Clear All Data',
     connect: 'Connect',
     confirm: 'Confirm',
     create: 'Create',
@@ -27,6 +28,9 @@ const translation: IResourceLanguage = {
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
     changeTheme: 'Choose between dark and light mode.',
+    clearAllData: 'Are you sure you want to clear all your data?',
+    clearAllDataWarning:
+      'Once this has been completed, it cannot be reversed. All your settings and accounts will be removed',
     connectRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     copied: 'Copied!',
@@ -69,6 +73,7 @@ const translation: IResourceLanguage = {
   },
   headings: {
     beta: 'Beta',
+    clearAllData: 'Clea All Data',
     createPassword: 'Secure your device',
     developer: 'Developer',
     importAccount: 'Import your account',
@@ -120,6 +125,7 @@ const translation: IResourceLanguage = {
     page: '',
     page_advanced: 'Advanced',
     page_appearance: 'Appearance',
+    page_security: 'Security',
     page_sessions: 'Sessions',
     page_settings: 'Settings',
   },

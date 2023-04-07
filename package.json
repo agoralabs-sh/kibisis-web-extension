@@ -114,7 +114,6 @@
     "react-loader-spinner": "^5.3.4",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.2",
-    "react-slide-routes": "^3.0.3",
     "scrypt-async": "^2.0.1",
     "tweetnacl": "^1.0.3",
     "uuid": "^9.0.0",
