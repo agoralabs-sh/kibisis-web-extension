@@ -4,7 +4,6 @@ import {
   Checkbox,
   Heading,
   HStack,
-  Icon,
   Modal,
   ModalBody,
   ModalContent,
@@ -19,13 +18,13 @@ import { faker } from '@faker-js/faker';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoWarningOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { randomBytes } from 'tweetnacl';
 
 // Components
 import Button from '../Button';
 import ChainBadge from '../ChainBadge';
+import Warning from '../Warning';
 
 // Constants
 import { DEFAULT_GAP } from '../../constants';
@@ -256,20 +255,10 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
           </Text>
           {/* Remove warning */}
           {authorizedAddresses.length <= 0 && (
-            <HStack
-              borderColor="red.500"
-              borderRadius={theme.radii['3xl']}
-              borderStyle="solid"
-              borderWidth={1}
-              px={2}
-              py={1}
-              spacing={2}
-            >
-              <Icon as={IoWarningOutline} color="red.500" h={3} w={3} />
-              <Text color="red.500" fontSize="xs" textAlign="left">
-                {t<string>('captions.removeAllAccountsWarning')}
-              </Text>
-            </HStack>
+            <Warning
+              message={t<string>('captions.removeAllAccountsWarning')}
+              size="xs"
+            />
           )}
         </VStack>
       </VStack>

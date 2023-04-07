@@ -8,12 +8,14 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import React, { createRef, FC, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Components
 import Button from '../Button';
+import Warning from '../Warning';
 
 // Constants
 import { DEFAULT_GAP } from '../../constants';
@@ -30,6 +32,7 @@ interface IProps {
   onCancel: () => void;
   onConfirm: () => void;
   title: string;
+  warningText?: string;
 }
 
 const ConfirmModal: FC<IProps> = ({
@@ -38,6 +41,7 @@ const ConfirmModal: FC<IProps> = ({
   onConfirm,
   onCancel,
   title,
+  warningText,
 }: IProps) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
@@ -68,9 +72,12 @@ const ConfirmModal: FC<IProps> = ({
           </Heading>
         </ModalHeader>
         <ModalBody>
-          <Text color={defaultTextColor} fontSize="md" textAlign="left">
-            {description}
-          </Text>
+          <VStack spacing={4} w="full">
+            <Text color={defaultTextColor} fontSize="md" textAlign="left">
+              {description}
+            </Text>
+            {warningText && <Warning message={warningText} size="sm" />}
+          </VStack>
         </ModalBody>
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
