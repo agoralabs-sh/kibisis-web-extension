@@ -23,7 +23,7 @@ const clearAllDataThunk: AsyncThunk<
 
     logger.debug(`${clearAllDataThunk.name}: clearing all data from storage`);
 
-    // await storageManager.remove(Object.keys(storageItems));
+    await storageManager.remove(Object.keys(storageItems));
   }
 );
 
