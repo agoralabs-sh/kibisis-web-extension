@@ -22,7 +22,10 @@ import SettingsHeader from '../../components/SettingsHeader';
 import SettingsSessionItem from '../../components/SettingsSessionItem';
 
 // Features
-import { setSessionThunk } from '../../features/sessions';
+import {
+  clearSessionsThunk,
+  removeSessionThunk,
+} from '../../features/sessions';
 
 // Hooks
 import useSubTextColor from '../../hooks/useSubTextColor';
@@ -41,12 +44,8 @@ const SessionsSettingsPage: FC = () => {
   const sessions: ISession[] = useSelectSessions();
   const defaultSubTextColor: string = useSubTextColor();
   const defaultTextColor: string = useDefaultTextColor();
-  const handleRemoveAllSessionsClick = () => {
-    console.log('remove session ALL sessions');
-  };
-  const handleRemoveSession = (id: string) => {
-    console.log('remove session: ', id);
-  };
+  const handleRemoveAllSessionsClick = () => dispatch(clearSessionsThunk());
+  const handleRemoveSession = (id: string) => dispatch(removeSessionThunk(id));
   const renderContent = () => {
     if (fetching) {
       return (

@@ -19,12 +19,11 @@ const setSessionThunk: AsyncThunk<
 > = createAsyncThunk<ISession, ISession, { state: IMainRootState }>(
   SessionsThunkEnum.SetSession,
   async (session, { getState }) => {
-    const functionName: string = 'setSession';
     const logger: ILogger = getState().application.logger;
     const storageManager: StorageManager = new StorageManager();
 
     logger.debug(
-      `${functionName}(): saving session "${session.id}" to storage`
+      `${SessionsThunkEnum.SetSession}: saving session "${session.id}" to storage`
     );
 
     await storageManager.setItems({
