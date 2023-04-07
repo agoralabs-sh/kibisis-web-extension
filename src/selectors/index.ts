@@ -8,6 +8,7 @@ export { default as useSelectFetchingSessions } from './useSelectFetchingSession
 export { default as useSelectFetchingSettings } from './useSelectFetchingSettings';
 export { default as useSelectIsOnline } from './useSelectIsOnline';
 export { default as useSelectLogger } from './useSelectLogger';
+export { default as useSelectNetworkByGenesisHash } from './useSelectNetworkByGenesisHash';
 export { default as useSelectNetworks } from './useSelectNetworks';
 export { default as useSelectRegistrationEncryptedPrivateKey } from './useSelectRegistrationEncryptedPrivateKey';
 export { default as useSelectSavingSessions } from './useSelectSavingSessions';

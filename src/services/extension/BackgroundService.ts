@@ -91,7 +91,7 @@ export default class BackgroundService {
     let session: ISession | null;
     let sessions: ISession[];
     let storageItems: Record<string, IStorageItemTypes | unknown>;
-    let url: string;
+    let searchParams: URLSearchParams;
 
     // if the app is not initialized, ignore
     if (!isInitialized) {
@@ -212,16 +212,23 @@ export default class BackgroundService {
           `${BackgroundService.name}#handleEnableRequest(): no previous session found for "${payload.host}", launching enable app`
         );
 
-      url = `enable.html?appName=${payload.appName}&genesisHash=${
-        network.genesisHash
-      }&host=${payload.host}&tabId=${sender.tab.id}${
-        payload.iconUrl ? `&iconUrl=${payload.iconUrl}` : ''
-      }`;
+      searchParams = new URLSearchParams({
+        appName: encodeURIComponent(payload.appName),
+        genesisHash: encodeURIComponent(network.genesisHash),
+        host: encodeURIComponent(payload.host),
+        tabId: encodeURIComponent(sender.tab.id.toString()),
+        ...(payload.description && {
+          description: encodeURIComponent(payload.description),
+        }),
+        ...(payload.iconUrl && {
+          iconUrl: encodeURIComponent(payload.iconUrl),
+        }),
+      });
 
       this.enableWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
-        url,
+        url: `enable.html?${searchParams.toString()}`,
         width: DEFAULT_POPUP_WIDTH,
       });
 

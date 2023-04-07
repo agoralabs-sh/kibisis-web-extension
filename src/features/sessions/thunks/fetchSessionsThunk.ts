@@ -12,7 +12,7 @@ import { StorageManager } from '../../../services/extension';
 // Types
 import { IMainRootState, ISession, IStorageItemTypes } from '../../../types';
 
-const fetchSessions: AsyncThunk<
+const fetchSessionsThunk: AsyncThunk<
   ISession[], // return
   undefined, // args
   Record<string, never>
@@ -33,4 +33,4 @@ const fetchSessions: AsyncThunk<
   }
 );
 
-export default fetchSessions;
+export default fetchSessionsThunk;

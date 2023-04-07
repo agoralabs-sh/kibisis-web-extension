@@ -300,7 +300,7 @@ const AccountPage: FC = () => {
       <>
         <Spacer />
         <VStack spacing={5} w="full">
-          <Heading color="gray.500" size="md">
+          <Heading color={defaultTextColor} size="md">
             {t<string>('headings.noAccountsFound')}
           </Heading>
           <Button

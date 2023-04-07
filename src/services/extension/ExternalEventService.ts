@@ -147,6 +147,10 @@ export default class ExternalEventService {
           document
             .querySelector('meta[name="application-name"]')
             ?.getAttribute('content') || document.title,
+        description:
+          document
+            .querySelector('meta[name="description"]')
+            ?.getAttribute('content') || null,
         host: `${window.location.protocol}//${window.location.host}`,
         iconUrl: this.extractFaviconUrl(),
       })

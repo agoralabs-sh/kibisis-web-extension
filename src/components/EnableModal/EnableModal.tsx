@@ -32,7 +32,7 @@ import { SerializableOperationCanceledError } from '../../errors';
 
 // Features
 import { sendEnableResponse, setEnableRequest } from '../../features/messages';
-import { setSession } from '../../features/sessions';
+import { setSessionThunk } from '../../features/sessions';
 
 // Hooks
 import useDefaultTextColor from '../../hooks/useDefaultTextColor';
@@ -107,7 +107,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     session = mapSessionFromEnableRequest(enableRequest);
 
     // save the session, send an enable response and remove the connect request
-    dispatch(setSession(session));
+    dispatch(setSessionThunk(session));
     dispatch(
       sendEnableResponse({
         error: null,
@@ -237,14 +237,23 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <VStack alignItems="center" spacing={5} w="full">
+            {/* App icon */}
             <Avatar
               name={enableRequest?.appName || 'unknown'}
               src={enableRequest?.iconUrl || undefined}
             />
             <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
+              {/* App name */}
               <Heading color={defaultTextColor} size="md" textAlign="center">
                 {enableRequest?.appName || 'Unknown'}
               </Heading>
+              {/* App description */}
+              {enableRequest?.description && (
+                <Text color={defaultTextColor} fontSize="sm" textAlign="center">
+                  {enableRequest.description}
+                </Text>
+              )}
+              {/* App host */}
               <Box
                 backgroundColor={textBackgroundColor}
                 borderRadius={theme.radii['3xl']}
@@ -255,6 +264,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
                   {enableRequest?.host || 'unknown host'}
                 </Text>
               </Box>
+              {/* Network */}
               {network && <ChainBadge network={network} />}
               <Text color={subTextColor} fontSize="md" textAlign="center">
                 {t<string>('captions.connectRequest')}

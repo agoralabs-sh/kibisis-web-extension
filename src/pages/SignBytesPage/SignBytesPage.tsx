@@ -14,7 +14,7 @@ import SignBytesModal from '../../components/SignBytesModal';
 // Features
 import { fetchAccountsThunk } from '../../features/accounts';
 import { setSignBytesRequest } from '../../features/messages';
-import { fetchSessions } from '../../features/sessions';
+import { fetchSessionsThunk } from '../../features/sessions';
 import { fetchSettings } from '../../features/settings';
 
 // Selectors
@@ -43,7 +43,7 @@ const SignBytesPage: FC = () => {
 
   useEffect(() => {
     dispatch(fetchSettings());
-    dispatch(fetchSessions());
+    dispatch(fetchSessionsThunk());
   }, []);
   useEffect(() => {
     const url: URL = new URL(window.location.href);

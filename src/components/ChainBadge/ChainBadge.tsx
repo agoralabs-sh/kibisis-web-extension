@@ -15,14 +15,15 @@ import { useSelectColorMode } from '../../selectors';
 
 interface IProps {
   network: INetwork;
+  size?: string;
 }
 
-const ChainBadge: FC<IProps> = ({ network }: IProps) => {
+const ChainBadge: FC<IProps> = ({ network, size = 'sm' }: IProps) => {
   const colorMode: ColorMode = useSelectColorMode();
   const renderChainTag = () => (
     <Tag
       colorScheme={network.chakraTheme}
-      size="sm"
+      size={size}
       variant={colorMode === 'dark' ? 'solid' : 'outline'}
     >
       {createIconFromDataUri(network.nativeCurrency.iconUri, {
@@ -42,7 +43,7 @@ const ChainBadge: FC<IProps> = ({ network }: IProps) => {
           {renderChainTag()}
           <Tag
             colorScheme="blue"
-            size="sm"
+            size={size}
             variant={colorMode === 'dark' ? 'solid' : 'subtle'}
           >
             <TagLabel>BetaNet</TagLabel>
@@ -55,7 +56,7 @@ const ChainBadge: FC<IProps> = ({ network }: IProps) => {
           {renderChainTag()}
           <Tag
             colorScheme="yellow"
-            size="sm"
+            size={size}
             variant={colorMode === 'dark' ? 'solid' : 'subtle'}
           >
             <TagLabel>TestNet</TagLabel>

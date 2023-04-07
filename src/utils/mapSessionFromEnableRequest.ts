@@ -6,9 +6,11 @@ import { IEnableRequest, ISession } from '../types';
 export default function mapSessionFromEnableRequest({
   appName,
   authorizedAddresses,
+  description,
   genesisHash,
   genesisId,
   host,
+  iconUrl,
 }: IEnableRequest): ISession {
   const id: string = uuid();
   const now: Date = new Date();
@@ -17,9 +19,11 @@ export default function mapSessionFromEnableRequest({
     appName,
     authorizedAddresses,
     createdAt: now.getTime(),
+    description,
     genesisHash,
     genesisId,
     host,
+    iconUrl,
     id,
     usedAt: now.getTime(),
   };

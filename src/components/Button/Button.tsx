@@ -7,12 +7,15 @@ import React, {
 } from 'react';
 import { Button as ChakraButton, ButtonProps } from '@chakra-ui/react';
 
+// Theme
+import { theme } from '../../theme';
+
 const Button: ForwardRefExoticComponent<
   PropsWithoutRef<ButtonProps> & RefAttributes<HTMLButtonElement>
 > = forwardRef<HTMLButtonElement, ButtonProps>((props: ButtonProps, ref) => (
   <ChakraButton
     {...props}
-    borderRadius={25}
+    borderRadius={theme.radii['3xl']}
     ref={ref as LegacyRef<HTMLButtonElement>}
   />
 ));

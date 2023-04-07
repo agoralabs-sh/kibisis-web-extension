@@ -15,7 +15,7 @@ import {
 } from '../../features/accounts';
 import { setError, setNavigate, setToast } from '../../features/application';
 import { setEnableRequest, setSignBytesRequest } from '../../features/messages';
-import { fetchSessions } from '../../features/sessions';
+import { fetchSessionsThunk } from '../../features/sessions';
 import { fetchSettings } from '../../features/settings';
 
 // Hooks
@@ -50,7 +50,7 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
     dispatch(setNavigate(navigate));
     dispatch(setToast(toast));
     dispatch(fetchSettings());
-    dispatch(fetchSessions());
+    dispatch(fetchSessionsThunk());
   }, []);
   // fetch accounts when the selected network has been found
   useEffect(() => {
