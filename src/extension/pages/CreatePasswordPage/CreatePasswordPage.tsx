@@ -9,10 +9,11 @@ import Button from '@extension/components/Button';
 import CreatePasswordInput, {
   validate,
 } from '@extension/components/CreatePasswordInput';
-import RegistrationPageShell from '@extension/components/RegistrationPageShell';
+import PageHeader from '@extension/components/PageHeader';
+import PageShell from '@extension/components/PageShell';
 
 // Constants
-import { ENTER_MNEMONIC_PHRASE_ROUTE } from '@extension/constants';
+import { ACCOUNT_SETUP_ROUTE, DEFAULT_GAP } from '@extension/constants';
 
 // Features
 import { setPassword } from '@extension/features/registration';
@@ -39,7 +40,7 @@ const CreatePasswordPage: FC = () => {
   const subTextColor: string = useSubTextColor();
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
-      navigate(ENTER_MNEMONIC_PHRASE_ROUTE);
+      navigate(ACCOUNT_SETUP_ROUTE);
     }
   };
   const handlePasswordChange = (password: string, score: number) => {
@@ -50,40 +51,28 @@ const CreatePasswordPage: FC = () => {
       })
     );
   };
-  const handlePreviousClick = () => {
-    navigate(-1);
-  };
 
   return (
-    <RegistrationPageShell>
-      <VStack flexGrow={1} mb={8} spacing={8} w="full">
-        <VStack spacing={3} w="full">
-          <Heading color={defaultTextColor}>
-            {t<string>('headings.createPassword')}
-          </Heading>
-          <Text color={subTextColor}>
-            {t<string>('captions.createPassword1')}
-          </Text>
-          <Text color={subTextColor}>
-            {t<string>('captions.createPassword2')}
-          </Text>
+    <PageShell>
+      <PageHeader
+        title={t<string>('titles.page', { context: 'createPassword' })}
+      />
+      <VStack flexGrow={1} pb={DEFAULT_GAP} px={DEFAULT_GAP} spacing={8}>
+        <VStack flexGrow={1} spacing={8} w="full">
+          <VStack spacing={3} w="full">
+            <Text color={defaultTextColor}>
+              {t<string>('captions.createPassword1')}
+            </Text>
+            <Text color={subTextColor}>
+              {t<string>('captions.createPassword2')}
+            </Text>
+          </VStack>
+          <CreatePasswordInput
+            onChange={handlePasswordChange}
+            score={score}
+            value={password || ''}
+          />
         </VStack>
-        <CreatePasswordInput
-          onChange={handlePasswordChange}
-          score={score}
-          value={password || ''}
-        />
-      </VStack>
-      <HStack mb={8} spacing={4} w="full">
-        <Button
-          colorScheme="primary"
-          onClick={handlePreviousClick}
-          size="lg"
-          variant="outline"
-          w="full"
-        >
-          {t<string>('buttons.previous')}
-        </Button>
         <Button
           colorScheme="primary"
           onClick={handleNextClick}
@@ -93,8 +82,8 @@ const CreatePasswordPage: FC = () => {
         >
           {t<string>('buttons.next')}
         </Button>
-      </HStack>
-    </RegistrationPageShell>
+      </VStack>
+    </PageShell>
   );
 };
 

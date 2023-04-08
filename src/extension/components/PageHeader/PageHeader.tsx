@@ -16,7 +16,7 @@ interface IProps {
   title: string;
 }
 
-const SettingsHeader: FC<IProps> = ({ title }: IProps) => {
+const PageHeader: FC<IProps> = ({ title }: IProps) => {
   const navigate: NavigateFunction = useNavigate();
   const defaultTextColor: string = useDefaultTextColor();
   const handleBackClick = () => navigate(-1);
@@ -42,4 +42,4 @@ const SettingsHeader: FC<IProps> = ({ title }: IProps) => {
   );
 };
 
-export default SettingsHeader;
+export default PageHeader;

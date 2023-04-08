@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
-import MainPageShell from '@extension/components/MainPageShell';
+import PageShell from '@extension/components/PageShell';
 import SignBytesModal from '@extension/components/SignBytesModal';
 
 // Features
@@ -77,9 +77,9 @@ const SignBytesPage: FC = () => {
   return (
     <>
       <SignBytesModal onClose={handleSignBytesModalClose} />
-      <MainPageShell>
+      <PageShell>
         <InfinitySpin color={theme.colors.primary['500']} width="200" />
-      </MainPageShell>
+      </PageShell>
     </>
   );
 };

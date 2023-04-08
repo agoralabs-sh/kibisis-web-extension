@@ -32,18 +32,18 @@ import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // Components
-import Button from '../src/components/Button';
-import Fonts from '../src/components/Fonts';
+import Button from '@extension/components/Button';
+import Fonts from '@extension/components/Fonts';
 
 // Tabs
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
 
 // Theme
-import { theme } from '../src/theme';
+import { theme } from '@extension/theme';
 
 // Types
-import { IWindow } from '../src/types';
+import { IWindow } from '@external/types';
 
 const App: FC = () => {
   const toast: CreateToastFnReturn = useToast();

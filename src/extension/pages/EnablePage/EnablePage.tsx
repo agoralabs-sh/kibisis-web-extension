@@ -5,7 +5,7 @@ import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
 import EnableModal from '@extension/components/EnableModal';
-import MainPageShell from '@extension/components/MainPageShell';
+import PageShell from '@extension/components/PageShell';
 
 // Features
 import { fetchAccountsThunk } from '@extension/features/accounts';
@@ -78,9 +78,9 @@ const EnablePage: FC = () => {
   return (
     <>
       <EnableModal onClose={handleEnableModalClose} />
-      <MainPageShell>
+      <PageShell>
         <InfinitySpin color={theme.colors.primary['500']} width="200" />
-      </MainPageShell>
+      </PageShell>
     </>
   );
 };

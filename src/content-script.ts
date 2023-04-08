@@ -18,7 +18,7 @@ import { injectScript } from '@extension/utils';
     logger,
   });
 
-  // inject the web resources to the web page to initialise the window.algorand object
+  // inject the web resources in to the web page to initialize the window.algorand object
   injectScript(browser.runtime.getURL('wallet-initializer.js'));
 
   // listen to incoming external messages (from the web page)

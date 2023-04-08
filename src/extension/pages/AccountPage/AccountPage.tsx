@@ -42,7 +42,7 @@ import ChainBadge from '@extension/components/ChainBadge';
 import CopyButton from '@extension/components/CopyButton';
 import IconButton from '@extension/components/IconButton';
 import MainLayout from '@extension/components/MainLayout';
-import MainPageShell from '@extension/components/MainPageShell';
+import PageShell from '@extension/components/PageShell';
 import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // Constants
@@ -338,9 +338,9 @@ const AccountPage: FC = () => {
           onClose={onShareAddressModalClose}
         />
       )}
-      <MainPageShell>
+      <PageShell>
         <MainLayout>{renderContent()}</MainLayout>
-      </MainPageShell>
+      </PageShell>
     </>
   );
 };

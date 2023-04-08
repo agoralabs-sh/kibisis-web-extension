@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // Components
-import SettingsHeader from '@extension/components/SettingsHeader';
+import PageHeader from '@extension/components/PageHeader';
 import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 
 // Constants
@@ -47,9 +47,7 @@ const AdvancedSettingsPage: FC = () => {
 
   return (
     <>
-      <SettingsHeader
-        title={t<string>('titles.page', { context: 'advanced' })}
-      />
+      <PageHeader title={t<string>('titles.page', { context: 'advanced' })} />
       <VStack w="full">
         {/* Developer */}
         <Text

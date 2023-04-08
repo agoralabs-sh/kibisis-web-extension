@@ -11,7 +11,7 @@ import {
 
 // Components
 import MainLayout from '@extension/components/MainLayout';
-import MainPageShell from '@extension/components/MainPageShell';
+import PageShell from '@extension/components/PageShell';
 
 // Pages
 import AdvancedSettingsPage from '../AdvancedSettingsPage';
@@ -21,7 +21,7 @@ import SecuritySettingsPage from '../SecuritySettingsPage';
 import SessionsSettingsPage from '../SessionsSettingsPage';
 
 const SettingsRouter: FC = () => (
-  <MainPageShell>
+  <PageShell>
     <MainLayout>
       <Routes>
         <Route element={<MainSettingsPage />} path="/" />
@@ -31,7 +31,7 @@ const SettingsRouter: FC = () => (
         <Route element={<AdvancedSettingsPage />} path={ADVANCED_ROUTE} />
       </Routes>
     </MainLayout>
-  </MainPageShell>
+  </PageShell>
 );
 
 export default SettingsRouter;

@@ -6,10 +6,10 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 // Components
 import AgoraIcon from '@extension/components/AgoraIcon';
 import Button from '@extension/components/Button';
-import RegistrationPageShell from '@extension/components/RegistrationPageShell';
+import PageShell from '@extension/components/PageShell';
 
 // Constants
-import { CREATE_PASSWORD_ROUTE } from '@extension/constants';
+import { CREATE_PASSWORD_ROUTE, DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -20,12 +20,10 @@ const GetStartedPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
-  const handleGetStartedClick = () => {
-    navigate(CREATE_PASSWORD_ROUTE);
-  };
+  const handleGetStartedClick = () => navigate(CREATE_PASSWORD_ROUTE);
 
   return (
-    <RegistrationPageShell>
+    <PageShell withPadding={true}>
       <VStack flexGrow={1} justifyContent="center" spacing={1} w="full">
         <AgoraIcon color="primary.500" h={12} w={12} />
         <Heading color={defaultTextColor}>{__APP_TITLE__}</Heading>
@@ -35,14 +33,14 @@ const GetStartedPage: FC = () => {
       </VStack>
       <Button
         colorScheme="primary"
-        mb={8}
+        mb={DEFAULT_GAP}
         onClick={handleGetStartedClick}
         size="lg"
         w="full"
       >
         {t<string>('buttons.getStarted')}
       </Button>
-    </RegistrationPageShell>
+    </PageShell>
   );
 };
 

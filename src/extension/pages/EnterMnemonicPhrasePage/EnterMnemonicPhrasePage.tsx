@@ -9,7 +9,7 @@ import Button from '@extension/components/Button';
 import EnterMnemonicPhraseInput, {
   validate,
 } from '@extension/components/EnterMnemonicPhraseInput';
-import RegistrationPageShell from '@extension/components/RegistrationPageShell';
+import PageShell from '@extension/components/PageShell';
 
 // Constants
 import { NAME_ACCOUNT_ROUTE } from '@extension/constants';
@@ -77,7 +77,7 @@ const EnterMnemonicPhrasePage: FC = () => {
   }, [encryptedPrivateKey]);
 
   return (
-    <RegistrationPageShell>
+    <PageShell withPadding={true}>
       <VStack flexGrow={1} mb={8} spacing={8} w="full">
         <VStack spacing={3} w="full">
           <Heading color={defaultTextColor}>
@@ -115,7 +115,7 @@ const EnterMnemonicPhrasePage: FC = () => {
           {t<string>('buttons.next')}
         </Button>
       </HStack>
-    </RegistrationPageShell>
+    </PageShell>
   );
 };
 

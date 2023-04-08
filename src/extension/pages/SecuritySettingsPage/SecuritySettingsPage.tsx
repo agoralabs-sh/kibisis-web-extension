@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 // Components
 import Button from '@extension/components/Button';
 import ConfirmModal from '@extension/components/ConfirmModal';
-import SettingsHeader from '@extension/components/SettingsHeader';
+import PageHeader from '@extension/components/PageHeader';
 
 // Features
 import { sendResetThunk } from '@extension/features/messages';
@@ -36,9 +36,7 @@ const SecuritySettingsPage: FC = () => {
         title={t<string>('headings.clearAllData')}
         warningText={t<string>('captions.clearAllDataWarning')}
       />
-      <SettingsHeader
-        title={t<string>('titles.page', { context: 'security' })}
-      />
+      <PageHeader title={t<string>('titles.page', { context: 'security' })} />
       <VStack w="full">
         {/* Clear data */}
         <Stack

@@ -34,10 +34,14 @@ const translation: IResourceLanguage = {
     connectRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     copied: 'Copied!',
+    createNewAccount:
+      'Create a new account. You will be prompted to save a mnemonic seed phrase.',
     createPassword1: `First, let's create a new password to secure this device.`,
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
     importAccount: `Add your mnemonic phrase to import your account.`,
+    importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
+    importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
     minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
     mustEnterPasswordToSign: 'You must enter your password to sign.',
@@ -74,14 +78,16 @@ const translation: IResourceLanguage = {
   headings: {
     beta: 'Beta',
     clearAllData: 'Clea All Data',
-    createPassword: 'Secure your device',
+    createNewAccount: 'Create New Account',
     developer: 'Developer',
     importAccount: 'Import your account',
-    nameAccount: 'Name your account',
+    importExistingAccount: 'Import An Existing Account',
+    importRekeyedAccount: 'Import A Rekeyed Account',
+    nameAccount: 'Name Your Account',
     noAccountsFound: 'No accounts found!',
     noSessionsFound: 'No sessions found!',
     removeAllSessions: 'Remove All Sessions',
-    shareAddress: 'Share address',
+    shareAddress: 'Share Address',
   },
   labels: {
     address: 'Address',
@@ -123,6 +129,8 @@ const translation: IResourceLanguage = {
   },
   titles: {
     page: '',
+    page_accountSetup: 'Choose How To Add An Account',
+    page_createPassword: 'Secure Your Device',
     page_advanced: 'Advanced',
     page_appearance: 'Appearance',
     page_security: 'Security',

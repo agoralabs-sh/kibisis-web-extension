@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // Components
-import SettingsHeader from '@extension/components/SettingsHeader';
+import PageHeader from '@extension/components/PageHeader';
 import SettingsSelectItem from '@extension/components/SettingsSelectItem';
 
 // Features
@@ -34,9 +34,7 @@ const AppearanceSettingsPage: FC = () => {
 
   return (
     <>
-      <SettingsHeader
-        title={t<string>('titles.page', { context: 'appearance' })}
-      />
+      <PageHeader title={t<string>('titles.page', { context: 'appearance' })} />
       <VStack w="full">
         <SettingsSelectItem
           description={t<string>('captions.changeTheme')}

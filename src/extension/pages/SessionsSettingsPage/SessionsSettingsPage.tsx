@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@extension/components/Button';
 import ConfirmModal from '@extension/components/ConfirmModal';
 import ManageSessionModal from '@extension/components/ManageSessionModal';
-import SettingsHeader from '@extension/components/SettingsHeader';
+import PageHeader from '@extension/components/PageHeader';
 import SettingsSessionItem from '@extension/components/SettingsSessionItem';
 
 // Features
@@ -142,9 +142,7 @@ const SessionsSettingsPage: FC = () => {
         onConfirm={handleConfirmRemoveAllSessions}
         title={t<string>('headings.removeAllSessions')}
       />
-      <SettingsHeader
-        title={t<string>('titles.page', { context: 'sessions' })}
-      />
+      <PageHeader title={t<string>('titles.page', { context: 'sessions' })} />
       <Stack alignItems="center" justifyContent="center" px={4} py={4} w="full">
         <Button
           colorScheme="red"
