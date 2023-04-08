@@ -1,13 +1,13 @@
 import browser from 'webextension-polyfill';
 
 // Services
-import { BackgroundService } from './services/extension';
+import { BackgroundService } from '@extension/services';
 
 // Types
-import { ILogger } from './types';
+import { ILogger } from '@common/types';
 
 // Utils
-import { createLogger } from './utils';
+import { createLogger } from '@common/utils';
 
 (() => {
   const logger: ILogger = createLogger(
