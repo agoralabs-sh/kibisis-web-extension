@@ -32,7 +32,7 @@ const PageHeader: FC<IProps> = ({ title }: IProps) => {
       <Heading
         color={defaultTextColor}
         flexGrow={1}
-        size="sm"
+        size="md"
         textAlign="center"
       >
         {title}
