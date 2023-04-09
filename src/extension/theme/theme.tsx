@@ -1,5 +1,6 @@
 import { extendTheme } from '@chakra-ui/react';
 import { Dict } from '@chakra-ui/utils';
+import { StepsTheme as Steps } from 'chakra-ui-steps';
 
 // Themes
 import Tag from './tag';
@@ -50,6 +51,7 @@ const theme: Dict = extendTheme({
     },
   },
   components: {
+    Steps,
     Tag,
   },
   fonts: {
