@@ -12,6 +12,7 @@ import ThemeProvider from '@extension/components/ThemeProvider';
 // Constants
 import {
   ACCOUNT_SETUP_ROUTE,
+  CREATE_NEW_ACCOUNT_ROUTE,
   CREATE_PASSWORD_ROUTE,
   GET_STARTED_ROUTE,
   ENTER_MNEMONIC_PHRASE_ROUTE,
@@ -26,6 +27,7 @@ import { reducer as registrationReducer } from '@extension/features/registration
 
 // Pages
 import AccountSetupPage from '@extension/pages/AccountSetupPage';
+import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
 import EnterMnemonicPhrasePage from '@extension/pages/EnterMnemonicPhrasePage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
@@ -62,12 +64,16 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
                 />
                 <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
                 <Route
+                  element={<CreatePasswordPage />}
+                  path={CREATE_PASSWORD_ROUTE}
+                />
+                <Route
                   element={<AccountSetupPage />}
                   path={ACCOUNT_SETUP_ROUTE}
                 />
                 <Route
-                  element={<CreatePasswordPage />}
-                  path={CREATE_PASSWORD_ROUTE}
+                  element={<CreateNewAccountPage />}
+                  path={CREATE_NEW_ACCOUNT_ROUTE}
                 />
                 <Route
                   element={<EnterMnemonicPhrasePage />}

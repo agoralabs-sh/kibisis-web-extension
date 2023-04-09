@@ -9,6 +9,7 @@ const translation: IResourceLanguage = {
     connect: 'Connect',
     confirm: 'Confirm',
     create: 'Create',
+    finish: 'Finish',
     getStarted: 'Get Started',
     import: 'Import',
     next: 'Next',
@@ -52,6 +53,9 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Are you sure you want to remove all sessions?',
     removeAllAccountsWarning:
       'Removing all accounts will also remove this session',
+    saveMnemonicPhrase1:
+      'Here is your mnemonic seed phrase, it is the key to your account.',
+    saveMnemonicPhrase2: `You will need to save this in a secure place because if you want to import your account to another wallet, or another device, you will need this seed phrase.`,
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
@@ -101,6 +105,8 @@ const translation: IResourceLanguage = {
     authorizedAccounts: 'Authorized accounts',
     authorizedAddresses: 'Authorized addresses',
     balance: 'Balance',
+    createNewAccountSteps: 'Generate Mnemonic Seed Phrase',
+    createNewAccountSteps_1: 'Name Your New Account',
     dark: 'Dark',
     default: 'Default',
     did: 'DID',
@@ -130,6 +136,7 @@ const translation: IResourceLanguage = {
   titles: {
     page: '',
     page_accountSetup: 'Choose How To Add An Account',
+    page_createNewAccount: 'Create A New Account',
     page_createPassword: 'Secure Your Device',
     page_advanced: 'Advanced',
     page_appearance: 'Appearance',

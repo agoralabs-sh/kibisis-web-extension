@@ -12,14 +12,23 @@ import PageShell from '@extension/components/PageShell';
 import AccountTypeItem from './AccountTypeItem';
 
 // Constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { CREATE_NEW_ACCOUNT_ROUTE, DEFAULT_GAP } from '@extension/constants';
 
 const AccountSetupPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const handleAccountTypeClick =
     (type: 'create' | 'import' | 'rekey') => () => {
-      console.log('create an account: ', type);
+      switch (type) {
+        case 'create':
+          navigate(CREATE_NEW_ACCOUNT_ROUTE);
+
+          break;
+        case 'import':
+        case 'rekey':
+        default:
+          break;
+      }
     };
 
   return (
