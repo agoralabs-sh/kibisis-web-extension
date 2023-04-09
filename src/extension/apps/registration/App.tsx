@@ -15,6 +15,7 @@ import {
   CREATE_NEW_ACCOUNT_ROUTE,
   CREATE_PASSWORD_ROUTE,
   GET_STARTED_ROUTE,
+  IMPORT_ACCOUNT_ROUTE,
   ENTER_MNEMONIC_PHRASE_ROUTE,
   NAME_ACCOUNT_ROUTE,
 } from '@extension/constants';
@@ -31,6 +32,7 @@ import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
 import EnterMnemonicPhrasePage from '@extension/pages/EnterMnemonicPhrasePage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
+import ImportNewAccountPage from '@extension/pages/ImportNewAccountPage';
 import NameAccountPage from '@extension/pages/NameAccountPage';
 
 // Types
@@ -74,6 +76,10 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
                 <Route
                   element={<CreateNewAccountPage />}
                   path={CREATE_NEW_ACCOUNT_ROUTE}
+                />
+                <Route
+                  element={<ImportNewAccountPage />}
+                  path={IMPORT_ACCOUNT_ROUTE}
                 />
                 <Route
                   element={<EnterMnemonicPhrasePage />}

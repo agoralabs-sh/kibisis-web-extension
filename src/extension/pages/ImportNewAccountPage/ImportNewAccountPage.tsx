@@ -16,7 +16,7 @@ import { DEFAULT_GAP } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-const CreateNewAccountPage: FC = () => {
+const ImportNewAccountPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const defaultTextColor: string = useDefaultTextColor();
@@ -25,7 +25,7 @@ const CreateNewAccountPage: FC = () => {
     initialStep: 0,
   });
   const stepsLabels: string[] = [
-    t<string>('headings.generateMnemonicSeedPhrase'),
+    t<string>('headings.enterYourMnemonicSeedPhrase'),
     t<string>('headings.nameYourAccount'),
   ];
   const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
@@ -46,7 +46,7 @@ const CreateNewAccountPage: FC = () => {
   return (
     <PageShell>
       <PageHeader
-        title={t<string>('titles.page', { context: 'createNewAccount' })}
+        title={t<string>('titles.page', { context: 'importExistingAccount' })}
       />
       <VStack
         flexGrow={1}
@@ -63,14 +63,11 @@ const CreateNewAccountPage: FC = () => {
           orientation="vertical"
           variant="circles"
         >
-          {/* Save mnemonic */}
+          {/* Enter mnemonic */}
           <Step label={stepsLabels[0]}>
             <VStack spacing={2} w="full">
               <Text color={subTextColor} size="md" textAlign="left">
-                {t<string>('captions.saveMnemonicPhrase1')}
-              </Text>
-              <Text color={subTextColor} size="md" textAlign="left">
-                {t<string>('captions.saveMnemonicPhrase2')}
+                {t<string>('captions.enterMnemonicSeedPhrase')}
               </Text>
             </VStack>
           </Step>
@@ -104,7 +101,7 @@ const CreateNewAccountPage: FC = () => {
             w="full"
           >
             {hasCompletedAllSteps
-              ? t<string>('buttons.save')
+              ? t<string>('buttons.import')
               : t<string>('buttons.next')}
           </Button>
         </HStack>
@@ -113,4 +110,4 @@ const CreateNewAccountPage: FC = () => {
   );
 };
 
-export default CreateNewAccountPage;
+export default ImportNewAccountPage;

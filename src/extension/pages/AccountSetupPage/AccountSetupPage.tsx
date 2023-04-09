@@ -12,7 +12,11 @@ import PageShell from '@extension/components/PageShell';
 import AccountTypeItem from './AccountTypeItem';
 
 // Constants
-import { CREATE_NEW_ACCOUNT_ROUTE, DEFAULT_GAP } from '@extension/constants';
+import {
+  CREATE_NEW_ACCOUNT_ROUTE,
+  DEFAULT_GAP,
+  IMPORT_ACCOUNT_ROUTE,
+} from '@extension/constants';
 
 const AccountSetupPage: FC = () => {
   const { t } = useTranslation();
@@ -25,6 +29,9 @@ const AccountSetupPage: FC = () => {
 
           break;
         case 'import':
+          navigate(IMPORT_ACCOUNT_ROUTE);
+
+          break;
         case 'rekey':
         default:
           break;
