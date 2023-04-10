@@ -16,6 +16,9 @@ import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
 
+// Selectors
+import { useSelectSavingRegistration } from '@extension/selectors';
+
 // Types
 import {
   IAddAccountCompleteFunction,
@@ -25,6 +28,7 @@ import {
 
 const RegistrationAddAccountRouter: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const saving: boolean = useSelectSavingRegistration();
   const handleOnAddAccountComplete: IAddAccountCompleteFunction = ({
     name,
     privateKey,
@@ -42,13 +46,19 @@ const RegistrationAddAccountRouter: FC = () => {
       <Route element={<AccountSetupPage />} path="/" />
       <Route
         element={
-          <CreateNewAccountPage onComplete={handleOnAddAccountComplete} />
+          <CreateNewAccountPage
+            onComplete={handleOnAddAccountComplete}
+            saving={saving}
+          />
         }
         path={CREATE_NEW_ACCOUNT_ROUTE}
       />
       <Route
         element={
-          <ImportExistingAccountPage onComplete={handleOnAddAccountComplete} />
+          <ImportExistingAccountPage
+            onComplete={handleOnAddAccountComplete}
+            saving={saving}
+          />
         }
         path={IMPORT_EXISTING_ACCOUNT_ROUTE}
       />

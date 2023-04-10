@@ -24,7 +24,11 @@ import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
 
 // Selectors
-import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
+import {
+  useSelectAccounts,
+  useSelectLogger,
+  useSelectSavingAccounts,
+} from '@extension/selectors';
 
 // Types
 import { ILogger } from '@common/types';
@@ -43,6 +47,7 @@ const MainAddAccountRouter: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const logger: ILogger = useSelectLogger();
   const accounts: IAccount[] = useSelectAccounts();
+  const saving: boolean = useSelectSavingAccounts();
   const [addAccountResult, setAddAccountResult] =
     useState<IAddAccountCompleteResult | null>(null);
   const handleOnAddAccountComplete: IAddAccountCompleteFunction = ({
@@ -96,7 +101,10 @@ const MainAddAccountRouter: FC = () => {
         <Route element={<AccountSetupPage />} path="/" />
         <Route
           element={
-            <CreateNewAccountPage onComplete={handleOnAddAccountComplete} />
+            <CreateNewAccountPage
+              onComplete={handleOnAddAccountComplete}
+              saving={saving}
+            />
           }
           path={CREATE_NEW_ACCOUNT_ROUTE}
         />
@@ -104,6 +112,7 @@ const MainAddAccountRouter: FC = () => {
           element={
             <ImportExistingAccountPage
               onComplete={handleOnAddAccountComplete}
+              saving={saving}
             />
           }
           path={IMPORT_EXISTING_ACCOUNT_ROUTE}

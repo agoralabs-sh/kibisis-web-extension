@@ -31,20 +31,17 @@ import { DEFAULT_GAP } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
-import { useSelectSavingAccounts } from '@extension/selectors';
-
 // Types
 import { IAddAccountCompleteFunction } from '@extension/types';
 
 interface IProps {
   onComplete: IAddAccountCompleteFunction;
+  saving: boolean;
 }
 
-const CreateNewAccountPage: FC<IProps> = ({ onComplete }: IProps) => {
+const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
-  const saving: boolean = useSelectSavingAccounts();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const { nextStep, prevStep, activeStep } = useSteps({
