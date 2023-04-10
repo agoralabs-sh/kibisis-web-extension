@@ -13,7 +13,7 @@ interface IProps {
   value: string;
 }
 
-const CopyButton: FC<IProps> = ({
+const CopyIconButton: FC<IProps> = ({
   ariaLabel,
   copiedTooltipLabel,
   value,
@@ -50,4 +50,4 @@ const CopyButton: FC<IProps> = ({
   );
 };
 
-export default CopyButton;
+export default CopyIconButton;

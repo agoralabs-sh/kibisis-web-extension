@@ -18,7 +18,7 @@ import PageShell from '@extension/components/PageShell';
 // Features
 import {
   clearPrivateKey,
-  saveCredentials,
+  saveCredentialsThunk,
   setName,
 } from '@extension/features/registration';
 
@@ -56,7 +56,7 @@ const NameAccountPage: FC = () => {
   const handleImportClick = () => {
     logger.debug(`${componentName}: importing account`);
 
-    dispatch(saveCredentials());
+    dispatch(saveCredentialsThunk());
   };
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) =>
     dispatch(setName(event.target.value));

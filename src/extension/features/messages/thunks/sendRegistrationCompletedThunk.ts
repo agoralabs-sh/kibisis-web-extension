@@ -5,29 +5,30 @@ import browser from 'webextension-polyfill';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // Events
-import { ExtensionRegistrationCompletedEvent } from '@common/events';
+import { ExtensionRegistrationCompletedEvent } from '@extension/events';
 
 // Types
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 
-const sendRegistrationCompleted: AsyncThunk<
+const sendRegistrationCompletedThunk: AsyncThunk<
   void, // return
   undefined, // args
   Record<string, never>
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
   MessagesThunkEnum.SendRegistrationCompleted,
   async (_, { getState }) => {
-    const functionName: string = 'sendRegistrationCompleted';
     const logger: ILogger = getState().application.logger;
     const event: ExtensionRegistrationCompletedEvent =
       new ExtensionRegistrationCompletedEvent();
 
-    logger.debug(`${functionName}(): sending "${event.event}" to the bridge`);
+    logger.debug(
+      `${sendRegistrationCompletedThunk.name}: sending "${event.event}" to the bridge`
+    );
 
     // send the message
     await browser.runtime.sendMessage(event);
   }
 );
 
-export default sendRegistrationCompleted;
+export default sendRegistrationCompletedThunk;

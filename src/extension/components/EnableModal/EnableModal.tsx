@@ -295,7 +295,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
               variant="solid"
               w="full"
             >
-              {t<string>('buttons.connect')}
+              {t<string>('buttons.allow')}
             </Button>
           </HStack>
         </ModalFooter>

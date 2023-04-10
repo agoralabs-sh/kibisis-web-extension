@@ -16,8 +16,6 @@ import {
   CREATE_PASSWORD_ROUTE,
   GET_STARTED_ROUTE,
   IMPORT_ACCOUNT_ROUTE,
-  ENTER_MNEMONIC_PHRASE_ROUTE,
-  NAME_ACCOUNT_ROUTE,
 } from '@extension/constants';
 
 // Features
@@ -30,10 +28,8 @@ import { reducer as registrationReducer } from '@extension/features/registration
 import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
-import EnterMnemonicPhrasePage from '@extension/pages/EnterMnemonicPhrasePage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
 import ImportNewAccountPage from '@extension/pages/ImportNewAccountPage';
-import NameAccountPage from '@extension/pages/NameAccountPage';
 
 // Types
 import { IAppProps, IRegistrationRootState } from '@extension/types';
@@ -61,9 +57,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
             <AppProvider>
               <Routes>
                 <Route
-                  element={
-                    <Navigate replace={true} to={CREATE_NEW_ACCOUNT_ROUTE} />
-                  }
+                  element={<Navigate replace={true} to={GET_STARTED_ROUTE} />}
                   path="/"
                 />
                 <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
@@ -82,14 +76,6 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
                 <Route
                   element={<ImportNewAccountPage />}
                   path={IMPORT_ACCOUNT_ROUTE}
-                />
-                <Route
-                  element={<EnterMnemonicPhrasePage />}
-                  path={ENTER_MNEMONIC_PHRASE_ROUTE}
-                />
-                <Route
-                  element={<NameAccountPage />}
-                  path={NAME_ACCOUNT_ROUTE}
                 />
               </Routes>
             </AppProvider>

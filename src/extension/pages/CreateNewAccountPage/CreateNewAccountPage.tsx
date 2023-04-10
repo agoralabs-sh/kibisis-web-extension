@@ -1,37 +1,75 @@
-import { HStack, Spacer, Text, VStack } from '@chakra-ui/react';
+import {
+  Checkbox,
+  Code,
+  Grid,
+  GridItem,
+  Heading,
+  HStack,
+  Input,
+  InputGroup,
+  Spacer,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
 import { Step, Steps, useSteps } from 'chakra-ui-steps';
-import React, { FC } from 'react';
+import { nanoid } from 'nanoid';
+import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // Components
 import Button from '@extension/components/Button';
+import CopyButton from '@extension/components/CopyButton';
 import PageHeader from '@extension/components/PageHeader';
 import PageShell from '@extension/components/PageShell';
 
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// Features
+import { saveCredentialsThunk } from '@extension/features/registration';
+
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// Selectors
+import { useSelectIsInitialized } from '@extension/selectors';
+
+// Types
+import { IAppThunkDispatch } from '@extension/types';
+
 const CreateNewAccountPage: FC = () => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
+  const isInitialized: boolean | null = useSelectIsInitialized();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
-  const { nextStep, prevStep, reset, activeStep } = useSteps({
+  const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
   });
+  const [account] = useState<Account>(generateAccount());
+  const [error, setError] = useState<string | null>(null);
+  const [name, setName] = useState<string>(account.addr);
+  const [copySeedPhraseConfirm, setCopySeedPhraseConfirm] =
+    useState<boolean>(false);
   const stepsLabels: string[] = [
     t<string>('headings.generateMnemonicSeedPhrase'),
     t<string>('headings.nameYourAccount'),
   ];
   const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
-  const handleNextClick = () => {
-    nextStep();
+  const handleCopySeedPhraseConfirmChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    setError(null);
+    setCopySeedPhraseConfirm(event.target.checked);
   };
+  const handleNextClick = () => nextStep();
+  const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setName(event.target.value);
   const handlePreviousClick = () => {
     // if the step is on the first step, navigate back
     if (activeStep <= 0) {
@@ -41,6 +79,27 @@ const CreateNewAccountPage: FC = () => {
     }
 
     prevStep();
+  };
+  const handleSaveClick = () => {
+    if (!copySeedPhraseConfirm) {
+      setError(t<string>('errors.inputs.copySeedPhraseRequired'));
+
+      return;
+    }
+
+    // if the app is not initialized, dispatch to the registration
+    if (!isInitialized) {
+      dispatch(
+        saveCredentialsThunk({
+          name,
+          privateKey: account.sk,
+        })
+      );
+
+      return;
+    }
+
+    console.log('request password!!');
   };
 
   return (
@@ -65,24 +124,97 @@ const CreateNewAccountPage: FC = () => {
         >
           {/* Save mnemonic */}
           <Step label={stepsLabels[0]}>
-            <VStack spacing={2} w="full">
+            <VStack
+              alignItems="flex-start"
+              mb={DEFAULT_GAP}
+              spacing={2}
+              w="full"
+            >
               <Text color={subTextColor} size="md" textAlign="left">
                 {t<string>('captions.saveMnemonicPhrase1')}
               </Text>
               <Text color={subTextColor} size="md" textAlign="left">
                 {t<string>('captions.saveMnemonicPhrase2')}
               </Text>
+              <Grid gap={2} templateColumns="repeat(3, 1fr)" w="full">
+                {secretKeyToMnemonic(account.sk)
+                  .split(' ')
+                  .map((value, index, array) => {
+                    if (index >= array.length - 1) {
+                      return (
+                        <GridItem colEnd={2} colStart={2} key={nanoid()}>
+                          <Code w="full">{value}</Code>
+                        </GridItem>
+                      );
+                    }
+
+                    return (
+                      <GridItem key={nanoid()}>
+                        <Code w="full">{value}</Code>
+                      </GridItem>
+                    );
+                  })}
+              </Grid>
             </VStack>
+            <CopyButton
+              colorScheme="primary"
+              size="md"
+              value={secretKeyToMnemonic(account.sk)}
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.copySeedPhrase')}
+            </CopyButton>
           </Step>
           {/* Name account */}
           <Step label={stepsLabels[1]}>
-            <VStack spacing={2} w="full">
+            <VStack alignItems="flex-start" spacing={2} w="full">
               <Text color={subTextColor} size="md" textAlign="left">
                 {t<string>('captions.nameYourAccount')}
               </Text>
+              <VStack w="full">
+                <Text color={defaultTextColor} textAlign="left" w="full">
+                  {t<string>('labels.accountName')}
+                </Text>
+                <InputGroup size="md">
+                  <Input
+                    focusBorderColor="primary.500"
+                    onChange={handleOnNameChange}
+                    placeholder={t<string>('placeholders.nameAccount')}
+                    type="text"
+                    value={name || ''}
+                  />
+                </InputGroup>
+              </VStack>
             </VStack>
           </Step>
         </Steps>
+
+        {/* Confirm completed */}
+        {hasCompletedAllSteps && (
+          <VStack alignItems="flex-start" spacing={2} w="full">
+            <Heading color={defaultTextColor} fontSize="md" textAlign="left">
+              {t<string>('headings.newAccountComplete')}
+            </Heading>
+            <Text color={subTextColor} fontSize="md" textAlign="left">
+              {t<string>('captions.newAccountComplete')}
+            </Text>
+            <Checkbox
+              colorScheme={error ? 'red' : 'primary'}
+              isChecked={copySeedPhraseConfirm}
+              onChange={handleCopySeedPhraseConfirmChange}
+            >
+              <Text color={subTextColor} fontSize="sm">
+                {t<string>('labels.copySeedPhraseConfirm')}
+              </Text>
+            </Checkbox>
+            {error && (
+              <Text color="red.500" fontSize="xs" textAlign="left">
+                {error}
+              </Text>
+            )}
+          </VStack>
+        )}
 
         <Spacer />
 
@@ -96,17 +228,27 @@ const CreateNewAccountPage: FC = () => {
           >
             {t<string>('buttons.previous')}
           </Button>
-          <Button
-            colorScheme="primary"
-            onClick={handleNextClick}
-            size="lg"
-            variant="solid"
-            w="full"
-          >
-            {hasCompletedAllSteps
-              ? t<string>('buttons.save')
-              : t<string>('buttons.next')}
-          </Button>
+          {hasCompletedAllSteps ? (
+            <Button
+              colorScheme="primary"
+              onClick={handleSaveClick}
+              size="lg"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.save')}
+            </Button>
+          ) : (
+            <Button
+              colorScheme="primary"
+              onClick={handleNextClick}
+              size="lg"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.next')}
+            </Button>
+          )}
         </HStack>
       </VStack>
     </PageShell>

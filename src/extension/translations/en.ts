@@ -4,10 +4,11 @@ import { IResourceLanguage } from '@extension/types';
 const translation: IResourceLanguage = {
   buttons: {
     addAccount: 'Add Account',
+    allow: 'Allow',
     cancel: 'Cancel',
     clearAllData: 'Clear All Data',
-    connect: 'Connect',
     confirm: 'Confirm',
+    copySeedPhrase: 'Copy Seed Phrase',
     create: 'Create',
     getStarted: 'Get Started',
     import: 'Import',
@@ -46,6 +47,8 @@ const translation: IResourceLanguage = {
     minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
     mustEnterPasswordToSign: 'You must enter your password to sign.',
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
+    newAccountComplete:
+      'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
     offline: 'It looks like you are offline, some features may not work',
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
@@ -53,8 +56,8 @@ const translation: IResourceLanguage = {
     removeAllAccountsWarning:
       'Removing all accounts will also remove this session',
     saveMnemonicPhrase1:
-      'Here is your mnemonic seed phrase, it is the key to your account.',
-    saveMnemonicPhrase2: `You will need to save this in a secure place because if you want to import your account to another wallet, or another device, you will need this seed phrase.`,
+      'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
+    saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
@@ -67,6 +70,8 @@ const translation: IResourceLanguage = {
       code_2000: 'The password seems to be invalid.',
     },
     inputs: {
+      copySeedPhraseRequired:
+        'You must confirm you have copied the seed phrase',
       invalidMnemonic: 'Invalid mnemonic phrase',
       passwordMinLength: 'Must be at least 8 characters',
       passwordTooWeak: 'This password is too weak',
@@ -88,6 +93,7 @@ const translation: IResourceLanguage = {
     importExistingAccount: 'Import An Existing Account',
     importRekeyedAccount: 'Import A Rekeyed Account',
     nameYourAccount: 'Name your account',
+    newAccountComplete: 'Almost There...',
     noAccountsFound: 'No accounts found!',
     noSessionsFound: 'No sessions found!',
     removeAllSessions: 'Remove All Sessions',
@@ -105,6 +111,8 @@ const translation: IResourceLanguage = {
     authorizedAccounts: 'Authorized accounts',
     authorizedAddresses: 'Authorized addresses',
     balance: 'Balance',
+    copySeedPhraseConfirm:
+      'I confirm I have copied my seed phrase to a secure place.',
     dark: 'Dark',
     default: 'Default',
     did: 'DID',

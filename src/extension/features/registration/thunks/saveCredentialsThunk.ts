@@ -1,5 +1,4 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { decode as decodeHex } from '@stablelib/hex';
 import { encodeAddress } from 'algosdk';
 import { NavigateFunction } from 'react-router-dom';
 import { sign } from 'tweetnacl';
@@ -20,7 +19,7 @@ import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
 // Features
 import { setError } from '@extension/features/application';
-import { sendRegistrationCompleted } from '@extension/features/messages';
+import { sendRegistrationCompletedThunk } from '@extension/features/messages';
 
 // Services
 import { PrivateKeyService, StorageManager } from '@extension/services';
@@ -28,29 +27,29 @@ import { PrivateKeyService, StorageManager } from '@extension/services';
 // Types
 import { ILogger } from '@common/types';
 import { IAccount, INetwork, IRegistrationRootState } from '@extension/types';
+import { ISaveCredentialsPayload } from '../types';
 
 // Utils
 import { initializeDefaultAccount } from '@extension/utils';
 
-const saveCredentials: AsyncThunk<
+const saveCredentialsThunk: AsyncThunk<
   void, // return
-  undefined, // args
+  ISaveCredentialsPayload, // args
   Record<string, never>
-> = createAsyncThunk<void, undefined, { state: IRegistrationRootState }>(
+> = createAsyncThunk<
+  void,
+  ISaveCredentialsPayload,
+  { state: IRegistrationRootState }
+>(
   RegisterThunkEnum.SaveCredentials,
-  async (_, { dispatch, getState }) => {
-    const functionName: string = 'saveCredentials';
+  async ({ name, privateKey }, { dispatch, getState }) => {
     const logger: ILogger = getState().application.logger;
-    const encryptedPrivateKey: string | null =
-      getState().registration.encryptedPrivateKey;
     const networks: INetwork[] = getState().networks.items;
-    const name: string | null = getState().registration.name;
     const navigate: NavigateFunction | null = getState().application.navigate;
     const password: string | null = getState().registration.password;
     let accounts: IAccount[];
     let address: string;
     let error: BaseExtensionError;
-    let decryptedPrivateKey: Uint8Array;
     let privateKeyService: PrivateKeyService;
     let publicKey: Uint8Array;
     let storageManager: StorageManager;
@@ -58,35 +57,17 @@ const saveCredentials: AsyncThunk<
     if (!password) {
       error = new MalformedDataError('no password found');
 
-      logger.error(`${functionName}(): ${error.message}`);
+      logger.error(`${saveCredentialsThunk.name}: ${error.message}`);
 
       navigate && navigate(CREATE_PASSWORD_ROUTE);
 
       throw error;
     }
 
-    if (!encryptedPrivateKey) {
-      error = new MalformedDataError('no encrypted private key found');
-
-      logger.error(`${functionName}(): ${error.message}`);
-
-      navigate && navigate(ENTER_MNEMONIC_PHRASE_ROUTE);
-
-      throw error;
-    }
-
     try {
-      logger.debug(`${functionName}(): decrypting private key`);
+      logger.debug(`${saveCredentialsThunk.name}: inferring public key`);
 
-      decryptedPrivateKey = await PrivateKeyService.decrypt(
-        decodeHex(encryptedPrivateKey),
-        password,
-        { logger }
-      );
-
-      logger.debug(`${functionName}(): inferring public key`);
-
-      publicKey = sign.keyPair.fromSecretKey(decryptedPrivateKey).publicKey;
+      publicKey = sign.keyPair.fromSecretKey(privateKey).publicKey;
       privateKeyService = new PrivateKeyService({
         logger,
         passwordTag: browser.runtime.id,
@@ -94,7 +75,7 @@ const saveCredentials: AsyncThunk<
       address = encodeAddress(publicKey);
 
       logger.debug(
-        `${functionName}(): saving private/public key pair for "${address}" to storage`
+        `${saveCredentialsThunk.name}: saving private/public key pair for "${address}" to storage`
       );
 
       // reset any previous credentials, set the password and the account
@@ -102,8 +83,8 @@ const saveCredentials: AsyncThunk<
       await privateKeyService.setPassword(password);
       await privateKeyService.setAccount(
         {
-          privateKey: decryptedPrivateKey,
-          publicKey: sign.keyPair.fromSecretKey(decryptedPrivateKey).publicKey,
+          privateKey,
+          publicKey,
           ...(name && {
             name,
           }),
@@ -111,14 +92,16 @@ const saveCredentials: AsyncThunk<
         password
       );
     } catch (error) {
-      logger.error(`${functionName}(): ${error.message}`);
+      logger.error(`${saveCredentialsThunk.name}: ${error.message}`);
 
       dispatch(setError(error));
 
       throw error;
     }
 
-    logger.debug(`${functionName}(): successfully saved credentials`);
+    logger.debug(
+      `${saveCredentialsThunk.name}: successfully saved credentials`
+    );
 
     storageManager = new StorageManager();
     accounts = networks.map(
@@ -146,12 +129,12 @@ const saveCredentials: AsyncThunk<
     );
 
     logger.debug(
-      `${functionName}(): saved accounts for "${address}" to storage`
+      `${saveCredentialsThunk.name}: saved accounts for "${address}" to storage`
     );
 
     // send a message that registration has been completed
-    dispatch(sendRegistrationCompleted());
+    dispatch(sendRegistrationCompletedThunk());
   }
 );
 
-export default saveCredentials;
+export default saveCredentialsThunk;

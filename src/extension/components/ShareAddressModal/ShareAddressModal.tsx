@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 // Components
 import Button from '@extension/components/Button';
-import CopyButton from '@extension/components/CopyButton';
+import CopyIconButton from '@extension/components/CopyIconButton';
 import PillSwitch from '@extension/components/PillSwitch';
 
 // Constants
@@ -156,7 +156,7 @@ const ShareAddressModal: FC<IProps> = ({
                   </Text>
                 </Tooltip>
               </Box>
-              <CopyButton
+              <CopyIconButton
                 ariaLabel="Copy address"
                 copiedTooltipLabel={t<string>('captions.addressCopied')}
                 value={getFormatFromIndex(pillIndex, address)}

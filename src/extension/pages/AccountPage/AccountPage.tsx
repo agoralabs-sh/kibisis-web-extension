@@ -39,7 +39,7 @@ import {
 import AlgorandIcon from '@extension/components/AlgorandIcon';
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
-import CopyButton from '@extension/components/CopyButton';
+import CopyIconButton from '@extension/components/CopyIconButton';
 import IconButton from '@extension/components/IconButton';
 import MainLayout from '@extension/components/MainLayout';
 import PageShell from '@extension/components/PageShell';
@@ -282,7 +282,7 @@ const AccountPage: FC = () => {
               </Text>
             </Tooltip>
             <Spacer />
-            <CopyButton
+            <CopyIconButton
               ariaLabel="Copy address"
               copiedTooltipLabel={t<string>('captions.addressCopied')}
               value={account.address}
