@@ -113,7 +113,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
             <PasswordInput
               disabled={verifying}
               error={error}
-              hint={t<string>('captions.mustEnterPasswordToSign')}
+              hint={t<string>('captions.mustEnterPasswordToConfirm')}
               onChange={handlePasswordChange}
               value={password || ''}
             />

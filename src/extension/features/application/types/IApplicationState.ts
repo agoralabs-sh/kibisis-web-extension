@@ -9,7 +9,6 @@ import { ILogger } from '@common/types';
 
 interface IApplicationState {
   error: BaseExtensionError | null;
-  isInitialized: boolean | null;
   logger: ILogger;
   navigate: NavigateFunction | null;
   online: boolean;
