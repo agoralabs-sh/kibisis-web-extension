@@ -15,7 +15,7 @@ import {
   CREATE_NEW_ACCOUNT_ROUTE,
   CREATE_PASSWORD_ROUTE,
   GET_STARTED_ROUTE,
-  IMPORT_ACCOUNT_ROUTE,
+  IMPORT_EXISTING_ACCOUNT_ROUTE,
 } from '@extension/constants';
 
 // Features
@@ -29,7 +29,7 @@ import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
-import ImportNewAccountPage from '@extension/pages/ImportNewAccountPage';
+import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
 
 // Types
 import { IAppProps, IRegistrationRootState } from '@extension/types';
@@ -74,8 +74,8 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
                   path={CREATE_NEW_ACCOUNT_ROUTE}
                 />
                 <Route
-                  element={<ImportNewAccountPage />}
-                  path={IMPORT_ACCOUNT_ROUTE}
+                  element={<ImportExistingAccountPage />}
+                  path={IMPORT_EXISTING_ACCOUNT_ROUTE}
                 />
               </Routes>
             </AppProvider>

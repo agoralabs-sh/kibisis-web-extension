@@ -8,7 +8,6 @@ import browser from 'webextension-polyfill';
 import {
   ACCOUNT_KEY_PREFIX,
   CREATE_PASSWORD_ROUTE,
-  ENTER_MNEMONIC_PHRASE_ROUTE,
 } from '@extension/constants';
 
 // Enums

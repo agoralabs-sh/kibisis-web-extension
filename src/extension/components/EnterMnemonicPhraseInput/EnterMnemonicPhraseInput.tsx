@@ -1,14 +1,21 @@
 import {
+  Grid,
+  GridItem,
   HStack,
   Input,
   InputGroup,
   InputLeftElement,
-  SimpleGrid,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
-import React, { ChangeEvent, ClipboardEvent, FC, useState } from 'react';
+import React, {
+  ChangeEvent,
+  ClipboardEvent,
+  FC,
+  ReactNode,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Hooks
@@ -16,7 +23,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps {
-  disabled: boolean;
+  disabled?: boolean;
   error: string | null;
   onChange: (phrases: string[]) => void;
   phrases: string[];
@@ -58,39 +65,51 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
     <VStack>
       <HStack alignItems="flex-end" justifyContent="space-between" w="full">
         <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
-          {t<string>('labels.mnemonicPhrase')}
+          {t<string>('labels.seedPhrase')}
         </Text>
         <Text color="red.300" fontSize="xs" textAlign="right">
           {error}
         </Text>
       </HStack>
-      <SimpleGrid columns={3} justifyItems="center" spacing={2}>
-        {phrases.map((value, index) => (
-          <InputGroup key={nanoid()} size="md">
-            <InputLeftElement
-              color={subTextColor}
-              pointerEvents="none"
-              width="1.75rem"
-            >
-              <Text color={subTextColor} fontSize="xs">
-                {index + 1}
-              </Text>
-            </InputLeftElement>
-            <Input
-              autoFocus={currentFocusIndex === index}
-              disabled={disabled}
-              focusBorderColor={error ? 'red.300' : 'primary.500'}
-              isInvalid={!!error}
-              onChange={handleOnChange(index)}
-              onFocus={handleOnFocus(index)}
-              onPaste={handleOnPaste}
-              pl="1.75rem"
-              type="text"
-              value={value}
-            />
-          </InputGroup>
-        ))}
-      </SimpleGrid>
+      <Grid gap={2} templateColumns="repeat(3, 1fr)" w="full">
+        {phrases.map((value, index, array) => {
+          const input: ReactNode = (
+            <InputGroup key={nanoid()} size="md">
+              <InputLeftElement
+                color={subTextColor}
+                pointerEvents="none"
+                width="1.75rem"
+              >
+                <Text color={subTextColor} fontSize="xs">
+                  {index + 1}
+                </Text>
+              </InputLeftElement>
+              <Input
+                autoFocus={currentFocusIndex === index}
+                disabled={disabled}
+                focusBorderColor={error ? 'red.300' : 'primary.500'}
+                isInvalid={!!error}
+                onChange={handleOnChange(index)}
+                onFocus={handleOnFocus(index)}
+                onPaste={handleOnPaste}
+                pl="1.75rem"
+                type="text"
+                value={value}
+              />
+            </InputGroup>
+          );
+
+          if (index >= array.length - 1) {
+            return (
+              <GridItem colEnd={2} colStart={2} key={nanoid()}>
+                {input}
+              </GridItem>
+            );
+          }
+
+          return <GridItem key={nanoid()}>{input}</GridItem>;
+        })}
+      </Grid>
     </VStack>
   );
 };

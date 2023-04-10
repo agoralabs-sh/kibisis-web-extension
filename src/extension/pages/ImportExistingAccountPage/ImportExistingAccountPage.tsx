@@ -1,8 +1,4 @@
 import {
-  Checkbox,
-  Code,
-  Grid,
-  GridItem,
   Heading,
   HStack,
   Input,
@@ -11,17 +7,18 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
+import { Account, mnemonicToSecretKey } from 'algosdk';
 import { Step, Steps, useSteps } from 'chakra-ui-steps';
-import { nanoid } from 'nanoid';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // Components
 import Button from '@extension/components/Button';
-import CopyButton from '@extension/components/CopyButton';
+import EnterMnemonicPhraseInput, {
+  validate,
+} from '@extension/components/EnterMnemonicPhraseInput';
 import PageHeader from '@extension/components/PageHeader';
 import PageShell from '@extension/components/PageShell';
 
@@ -41,7 +38,7 @@ import { useSelectIsInitialized } from '@extension/selectors';
 // Types
 import { IAppThunkDispatch } from '@extension/types';
 
-const CreateNewAccountPage: FC = () => {
+const ImportExistingAccountPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
@@ -51,39 +48,20 @@ const CreateNewAccountPage: FC = () => {
   const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
   });
-  const [account] = useState<Account>(generateAccount());
+  const [account, setAccount] = useState<Account | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState<string>(account.addr);
-  const [copySeedPhraseConfirm, setCopySeedPhraseConfirm] =
-    useState<boolean>(false);
+  const [name, setName] = useState<string | null>(null);
+  const [phrases, setPhrases] = useState<string[]>(
+    Array.from({ length: 25 }, () => '')
+  );
   const stepsLabels: string[] = [
-    t<string>('headings.generateSeedPhrase'),
+    t<string>('headings.enterYourSeedPhrase'),
     t<string>('headings.nameYourAccount'),
   ];
   const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
-  const handleCopySeedPhraseConfirmChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    setError(null);
-    setCopySeedPhraseConfirm(event.target.checked);
-  };
-  const handleNextClick = () => nextStep();
-  const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setName(event.target.value);
-  const handlePreviousClick = () => {
-    // if the step is on the first step, navigate back
-    if (activeStep <= 0) {
-      navigate(-1);
-
-      return;
-    }
-
-    prevStep();
-  };
-  const handleSaveClick = () => {
-    if (!copySeedPhraseConfirm) {
-      setError(t<string>('errors.inputs.copySeedPhraseRequired'));
-
+  const handleImportClick = () => {
+    if (!account) {
+      // TODO: handle eventuality if the account is not defined
       return;
     }
 
@@ -101,11 +79,49 @@ const CreateNewAccountPage: FC = () => {
 
     console.log('request password!!');
   };
+  const handleOnMnemonicPhraseChange = (value: string[]) => setPhrases(value);
+  const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setName(event.target.value);
+  const handleNextClick = () => {
+    let validateError: string | null;
+
+    // if this is the first step, validate the mnemonic
+    if (activeStep <= 0) {
+      validateError = validate(phrases, t);
+
+      setError(validateError);
+
+      // if we have an error, deny the next step
+      if (validateError) {
+        return;
+      }
+
+      setAccount(mnemonicToSecretKey(phrases.join(' ')));
+    }
+
+    nextStep();
+  };
+  const handlePreviousClick = () => {
+    // if the step is on the first step, navigate back
+    if (activeStep <= 0) {
+      navigate(-1);
+
+      return;
+    }
+
+    prevStep();
+  };
+
+  useEffect(() => {
+    if (account && !name) {
+      setName(account.addr);
+    }
+  }, [account]);
 
   return (
     <PageShell>
       <PageHeader
-        title={t<string>('titles.page', { context: 'createNewAccount' })}
+        title={t<string>('titles.page', { context: 'importExistingAccount' })}
       />
       <VStack
         flexGrow={1}
@@ -122,50 +138,17 @@ const CreateNewAccountPage: FC = () => {
           orientation="vertical"
           variant="circles"
         >
-          {/* Save mnemonic */}
+          {/* Enter mnemonic */}
           <Step label={stepsLabels[0]}>
-            <VStack
-              alignItems="flex-start"
-              p={1}
-              spacing={DEFAULT_GAP}
-              w="full"
-            >
-              <VStack alignItems="flex-start" spacing={2} w="full">
-                <Text color={subTextColor} size="md" textAlign="left">
-                  {t<string>('captions.saveMnemonicPhrase1')}
-                </Text>
-                <Text color={subTextColor} size="md" textAlign="left">
-                  {t<string>('captions.saveMnemonicPhrase2')}
-                </Text>
-                <Grid gap={2} templateColumns="repeat(3, 1fr)" w="full">
-                  {secretKeyToMnemonic(account.sk)
-                    .split(' ')
-                    .map((value, index, array) => {
-                      if (index >= array.length - 1) {
-                        return (
-                          <GridItem colEnd={2} colStart={2} key={nanoid()}>
-                            <Code w="full">{value}</Code>
-                          </GridItem>
-                        );
-                      }
-
-                      return (
-                        <GridItem key={nanoid()}>
-                          <Code w="full">{value}</Code>
-                        </GridItem>
-                      );
-                    })}
-                </Grid>
-              </VStack>
-              <CopyButton
-                colorScheme="primary"
-                size="md"
-                value={secretKeyToMnemonic(account.sk)}
-                variant="solid"
-                w="full"
-              >
-                {t<string>('buttons.copySeedPhrase')}
-              </CopyButton>
+            <VStack alignItems="flex-start" p={1} spacing={2} w="full">
+              <Text color={subTextColor} size="md" textAlign="left">
+                {t<string>('captions.enterSeedPhrase')}
+              </Text>
+              <EnterMnemonicPhraseInput
+                error={error}
+                onChange={handleOnMnemonicPhraseChange}
+                phrases={phrases}
+              />
             </VStack>
           </Step>
           {/* Name account */}
@@ -196,25 +179,11 @@ const CreateNewAccountPage: FC = () => {
         {hasCompletedAllSteps && (
           <VStack alignItems="flex-start" spacing={2} w="full">
             <Heading color={defaultTextColor} fontSize="md" textAlign="left">
-              {t<string>('headings.newAccountComplete')}
+              {t<string>('headings.importExistingAccountComplete')}
             </Heading>
             <Text color={subTextColor} fontSize="md" textAlign="left">
-              {t<string>('captions.newAccountComplete')}
+              {t<string>('captions.importExistingAccountComplete')}
             </Text>
-            <Checkbox
-              colorScheme={error ? 'red' : 'primary'}
-              isChecked={copySeedPhraseConfirm}
-              onChange={handleCopySeedPhraseConfirmChange}
-            >
-              <Text color={subTextColor} fontSize="sm">
-                {t<string>('labels.copySeedPhraseConfirm')}
-              </Text>
-            </Checkbox>
-            {error && (
-              <Text color="red.500" fontSize="xs" textAlign="left">
-                {error}
-              </Text>
-            )}
           </VStack>
         )}
 
@@ -233,12 +202,12 @@ const CreateNewAccountPage: FC = () => {
           {hasCompletedAllSteps ? (
             <Button
               colorScheme="primary"
-              onClick={handleSaveClick}
+              onClick={handleImportClick}
               size="lg"
               variant="solid"
               w="full"
             >
-              {t<string>('buttons.save')}
+              {t<string>('buttons.import')}
             </Button>
           ) : (
             <Button
@@ -257,4 +226,4 @@ const CreateNewAccountPage: FC = () => {
   );
 };
 
-export default CreateNewAccountPage;
+export default ImportExistingAccountPage;

@@ -15,7 +15,7 @@ import AccountTypeItem from './AccountTypeItem';
 import {
   CREATE_NEW_ACCOUNT_ROUTE,
   DEFAULT_GAP,
-  IMPORT_ACCOUNT_ROUTE,
+  IMPORT_EXISTING_ACCOUNT_ROUTE,
 } from '@extension/constants';
 
 const AccountSetupPage: FC = () => {
@@ -29,7 +29,7 @@ const AccountSetupPage: FC = () => {
 
           break;
         case 'import':
-          navigate(IMPORT_ACCOUNT_ROUTE);
+          navigate(IMPORT_EXISTING_ACCOUNT_ROUTE);
 
           break;
         case 'rekey':
