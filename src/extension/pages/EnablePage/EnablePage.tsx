@@ -4,13 +4,10 @@ import { useDispatch } from 'react-redux';
 import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
-import EnableModal from '@extension/components/EnableModal';
 import PageShell from '@extension/components/PageShell';
 
 // Features
-import { fetchAccountsThunk } from '@extension/features/accounts';
 import { setEnableRequest } from '@extension/features/messages';
-import { fetchSettings } from '@extension/features/settings';
 
 // Selectors
 import {
@@ -32,11 +29,7 @@ const EnablePage: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const networks: INetwork[] = useSelectNetworks();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const handleEnableModalClose = () => dispatch(setEnableRequest(null));
 
-  useEffect(() => {
-    dispatch(fetchSettings());
-  }, []);
   // fetch accounts when the selected network has been found
   useEffect(() => {
     const url: URL = new URL(window.location.href);
@@ -44,8 +37,6 @@ const EnablePage: FC = () => {
     let tabId: number;
 
     if (selectedNetwork) {
-      dispatch(fetchAccountsThunk());
-
       network =
         networks.find(
           (value) =>
@@ -76,12 +67,9 @@ const EnablePage: FC = () => {
   }, [selectedNetwork]);
 
   return (
-    <>
-      <EnableModal onClose={handleEnableModalClose} />
-      <PageShell>
-        <InfinitySpin color={theme.colors.primary['500']} width="200" />
-      </PageShell>
-    </>
+    <PageShell>
+      <InfinitySpin color={theme.colors.primary['500']} width="200" />
+    </PageShell>
   );
 };
 

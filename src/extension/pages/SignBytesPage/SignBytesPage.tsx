@@ -9,17 +9,12 @@ import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
 import PageShell from '@extension/components/PageShell';
-import SignBytesModal from '@extension/components/SignBytesModal';
 
 // Features
-import { fetchAccountsThunk } from '@extension/features/accounts';
 import { setSignBytesRequest } from '@extension/features/messages';
-import { fetchSessionsThunk } from '@extension/features/sessions';
-import { fetchSettings } from '@extension/features/settings';
 
 // Selectors
 import {
-  useSelectAccounts,
   useSelectSelectedNetwork,
   useSelectSessions,
 } from '@extension/selectors';
@@ -38,12 +33,7 @@ const SignBytesPage: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const sessions: ISession[] = useSelectSessions();
-  const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
 
-  useEffect(() => {
-    dispatch(fetchSettings());
-    dispatch(fetchSessionsThunk());
-  }, []);
   useEffect(() => {
     const url: URL = new URL(window.location.href);
     const encodedDataUrlSafe: string | null =
@@ -53,8 +43,6 @@ const SignBytesPage: FC = () => {
     let tabId: number;
 
     if (selectedNetwork && sessions.length > 0 && encodedDataUrlSafe) {
-      dispatch(fetchAccountsThunk());
-
       host = url.searchParams.get('host') || t<string>('labels.unknownHost');
       rawDecodedData = decodeBase64Url(encodedDataUrlSafe);
       tabId = parseInt(url.searchParams.get('tabId') || 'unknown');
@@ -75,12 +63,9 @@ const SignBytesPage: FC = () => {
   }, [selectedNetwork, sessions]);
 
   return (
-    <>
-      <SignBytesModal onClose={handleSignBytesModalClose} />
-      <PageShell>
-        <InfinitySpin color={theme.colors.primary['500']} width="200" />
-      </PageShell>
-    </>
+    <PageShell>
+      <InfinitySpin color={theme.colors.primary['500']} width="200" />
+    </PageShell>
   );
 };
 

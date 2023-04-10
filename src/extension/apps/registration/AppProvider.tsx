@@ -8,6 +8,7 @@ import ErrorModal from '@extension/components/ErrorModal';
 
 // Features
 import {
+  checkInitializedThunk,
   setError,
   setNavigate,
   setToast,
@@ -20,7 +21,7 @@ import { theme } from '@extension/theme';
 // Types
 import { IAppThunkDispatch } from '@extension/types';
 
-const RegistrationAppProvider: FC<PropsWithChildren> = ({ children }) => {
+const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
@@ -29,6 +30,7 @@ const RegistrationAppProvider: FC<PropsWithChildren> = ({ children }) => {
   };
 
   useEffect(() => {
+    dispatch(checkInitializedThunk());
     dispatch(setNavigate(navigate));
     dispatch(setToast(toast));
     dispatch(fetchSettings());
@@ -43,4 +45,4 @@ const RegistrationAppProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export default RegistrationAppProvider;
+export default AppProvider;

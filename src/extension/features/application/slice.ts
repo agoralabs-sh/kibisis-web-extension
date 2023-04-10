@@ -8,6 +8,9 @@ import { StoreNameEnum } from '@extension/enums';
 // Errors
 import { BaseExtensionError } from '@extension/errors';
 
+// Thunks
+import { checkInitializedThunk } from './thunks';
+
 // Types
 import { IApplicationState } from './types';
 
@@ -15,6 +18,15 @@ import { IApplicationState } from './types';
 import { getInitialState } from './utils';
 
 const slice = createSlice({
+  extraReducers: (builder) => {
+    /** Fetch accounts **/
+    builder.addCase(
+      checkInitializedThunk.fulfilled,
+      (state: IApplicationState, action: PayloadAction<boolean>) => {
+        state.isInitialized = action.payload;
+      }
+    );
+  },
   initialState: getInitialState(),
   name: StoreNameEnum.Application,
   reducers: {

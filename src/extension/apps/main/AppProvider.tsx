@@ -14,6 +14,7 @@ import {
   startPollingForAccountInformationThunk,
 } from '@extension/features/accounts';
 import {
+  checkInitializedThunk,
   setError,
   setNavigate,
   setToast,
@@ -38,22 +39,18 @@ import { theme } from '@extension/theme';
 // Types
 import { IAppThunkDispatch, INetwork } from '@extension/types';
 
-const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
+const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
-  const handleEnableModalClose = () => {
-    dispatch(setEnableRequest(null));
-  };
-  const handleErrorModalClose = () => {
-    dispatch(setError(null));
-  };
-  const handleSignDataModalClose = () => {
-    dispatch(setSignBytesRequest(null));
-  };
+
+  const handleEnableModalClose = () => dispatch(setEnableRequest(null));
+  const handleErrorModalClose = () => dispatch(setError(null));
+  const handleSignDataModalClose = () => dispatch(setSignBytesRequest(null));
 
   useEffect(() => {
+    dispatch(checkInitializedThunk());
     dispatch(setNavigate(navigate));
     dispatch(setToast(toast));
     dispatch(fetchSettings());
@@ -84,4 +81,4 @@ const MainAppProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export default MainAppProvider;
+export default AppProvider;

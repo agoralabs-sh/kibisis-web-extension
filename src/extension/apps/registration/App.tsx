@@ -6,8 +6,8 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 // Components
 import Fonts from '@extension/components/Fonts';
-import RegistrationAppProvider from '@extension/components/RegistrationAppProvider';
 import ThemeProvider from '@extension/components/ThemeProvider';
+import AppProvider from './AppProvider';
 
 // Constants
 import {
@@ -58,10 +58,12 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
         <ThemeProvider initialColorMode={initialColorMode}>
           <Fonts />
           <HashRouter>
-            <RegistrationAppProvider>
+            <AppProvider>
               <Routes>
                 <Route
-                  element={<Navigate replace={true} to={GET_STARTED_ROUTE} />}
+                  element={
+                    <Navigate replace={true} to={CREATE_NEW_ACCOUNT_ROUTE} />
+                  }
                   path="/"
                 />
                 <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
@@ -90,7 +92,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
                   path={NAME_ACCOUNT_ROUTE}
                 />
               </Routes>
-            </RegistrationAppProvider>
+            </AppProvider>
           </HashRouter>
         </ThemeProvider>
       </I18nextProvider>

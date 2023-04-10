@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 // Components
 import Fonts from '@extension/components/Fonts';
 import ThemeProvider from '@extension/components/ThemeProvider';
+import AppProvider from './AppProvider';
 
 // Features
 import { reducer as accountsReducer } from '@extension/features/accounts';
@@ -41,7 +42,9 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       <I18nextProvider i18n={i18next}>
         <ThemeProvider initialColorMode={initialColorMode}>
           <Fonts />
-          <SignBytesPage />
+          <AppProvider>
+            <SignBytesPage />
+          </AppProvider>
         </ThemeProvider>
       </I18nextProvider>
     </Provider>
