@@ -1,4 +1,6 @@
 export type { default as IAccount } from './IAccount';
+export type { default as IAddAccountCompleteFunction } from './IAddAccountCompleteFunction';
+export type { default as IAddAccountCompleteResult } from './IAddAccountCompleteResult';
 export type { default as IAdvancedSettings } from './IAdvancedSettings';
 export type { default as IAlgorandAccountInformation } from './IAlgorandAccountInformation';
 export type { default as IAppearanceSettings } from './IAppearanceSettings';

@@ -12,6 +12,7 @@ export { default as useSelectLogger } from './useSelectLogger';
 export { default as useSelectNetworkByGenesisHash } from './useSelectNetworkByGenesisHash';
 export { default as useSelectNetworks } from './useSelectNetworks';
 export { default as useSelectRegistrationEncryptedPrivateKey } from './useSelectRegistrationEncryptedPrivateKey';
+export { default as useSelectSavingAccounts } from './useSelectSavingAccounts';
 export { default as useSelectSavingSessions } from './useSelectSavingSessions';
 export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';

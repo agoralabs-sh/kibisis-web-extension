@@ -11,11 +11,9 @@ import AppProvider from './AppProvider';
 
 // Constants
 import {
-  ACCOUNT_SETUP_ROUTE,
-  CREATE_NEW_ACCOUNT_ROUTE,
+  ADD_ACCOUNT_ROUTE,
   CREATE_PASSWORD_ROUTE,
   GET_STARTED_ROUTE,
-  IMPORT_EXISTING_ACCOUNT_ROUTE,
 } from '@extension/constants';
 
 // Features
@@ -25,11 +23,9 @@ import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as registrationReducer } from '@extension/features/registration';
 
 // Pages
-import AccountSetupPage from '@extension/pages/AccountSetupPage';
-import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
-import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
+import RegistrationAddAccountRouter from '@extension/pages/RegistrationAddAccountRouter';
 
 // Types
 import { IAppProps, IRegistrationRootState } from '@extension/types';
@@ -66,16 +62,8 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
                   path={CREATE_PASSWORD_ROUTE}
                 />
                 <Route
-                  element={<AccountSetupPage />}
-                  path={ACCOUNT_SETUP_ROUTE}
-                />
-                <Route
-                  element={<CreateNewAccountPage />}
-                  path={CREATE_NEW_ACCOUNT_ROUTE}
-                />
-                <Route
-                  element={<ImportExistingAccountPage />}
-                  path={IMPORT_EXISTING_ACCOUNT_ROUTE}
+                  element={<RegistrationAddAccountRouter />}
+                  path={`${ADD_ACCOUNT_ROUTE}/*`}
                 />
               </Routes>
             </AppProvider>

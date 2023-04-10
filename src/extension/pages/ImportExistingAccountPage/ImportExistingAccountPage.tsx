@@ -11,7 +11,6 @@ import { Account, mnemonicToSecretKey } from 'algosdk';
 import { Step, Steps, useSteps } from 'chakra-ui-steps';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // Components
@@ -25,24 +24,24 @@ import PageShell from '@extension/components/PageShell';
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Features
-import { saveCredentialsThunk } from '@extension/features/registration';
-
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
-import { useSelectIsInitialized } from '@extension/selectors';
+import { useSelectSavingAccounts } from '@extension/selectors';
 
 // Types
-import { IAppThunkDispatch } from '@extension/types';
+import { IAddAccountCompleteFunction } from '@extension/types';
 
-const ImportExistingAccountPage: FC = () => {
+interface IProps {
+  onComplete: IAddAccountCompleteFunction;
+}
+
+const ImportExistingAccountPage: FC<IProps> = ({ onComplete }: IProps) => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
-  const isInitialized: boolean | null = useSelectIsInitialized();
+  const saving: boolean = useSelectSavingAccounts();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const { nextStep, prevStep, activeStep } = useSteps({
@@ -65,19 +64,10 @@ const ImportExistingAccountPage: FC = () => {
       return;
     }
 
-    // if the app is not initialized, dispatch to the registration
-    if (!isInitialized) {
-      dispatch(
-        saveCredentialsThunk({
-          name,
-          privateKey: account.sk,
-        })
-      );
-
-      return;
-    }
-
-    console.log('request password!!');
+    onComplete({
+      name,
+      privateKey: account.sk,
+    });
   };
   const handleOnMnemonicPhraseChange = (value: string[]) => setPhrases(value);
   const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
@@ -145,6 +135,7 @@ const ImportExistingAccountPage: FC = () => {
                 {t<string>('captions.enterSeedPhrase')}
               </Text>
               <EnterMnemonicPhraseInput
+                disabled={saving}
                 error={error}
                 onChange={handleOnMnemonicPhraseChange}
                 phrases={phrases}
@@ -164,6 +155,7 @@ const ImportExistingAccountPage: FC = () => {
                 <InputGroup size="md">
                   <Input
                     focusBorderColor="primary.500"
+                    isDisabled={saving}
                     onChange={handleOnNameChange}
                     placeholder={t<string>('placeholders.nameAccount')}
                     type="text"
@@ -193,6 +185,7 @@ const ImportExistingAccountPage: FC = () => {
           <Button
             colorScheme="primary"
             onClick={handlePreviousClick}
+            isDisabled={saving}
             size="lg"
             variant="outline"
             w="full"
@@ -203,6 +196,7 @@ const ImportExistingAccountPage: FC = () => {
             <Button
               colorScheme="primary"
               onClick={handleImportClick}
+              isLoading={saving}
               size="lg"
               variant="solid"
               w="full"

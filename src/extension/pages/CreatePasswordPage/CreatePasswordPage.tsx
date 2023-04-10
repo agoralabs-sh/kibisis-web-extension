@@ -13,7 +13,7 @@ import PageHeader from '@extension/components/PageHeader';
 import PageShell from '@extension/components/PageShell';
 
 // Constants
-import { ACCOUNT_SETUP_ROUTE, DEFAULT_GAP } from '@extension/constants';
+import { ADD_ACCOUNT_ROUTE, DEFAULT_GAP } from '@extension/constants';
 
 // Features
 import { setPassword } from '@extension/features/registration';
@@ -40,7 +40,7 @@ const CreatePasswordPage: FC = () => {
   const subTextColor: string = useSubTextColor();
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
-      navigate(ACCOUNT_SETUP_ROUTE);
+      navigate(ADD_ACCOUNT_ROUTE);
     }
   };
   const handlePasswordChange = (password: string, score: number) => {

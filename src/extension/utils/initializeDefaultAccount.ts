@@ -25,11 +25,11 @@ export default function initializeDefaultAccount({
 }: IOptions): IAccount {
   return {
     address,
-    atomicBalance: 'N/A',
+    atomicBalance: '0',
     authAddress: authAddress || null,
     genesisHash,
     id: id || uuid(),
-    minAtomicBalance: 'N/A',
+    minAtomicBalance: '0',
     name: name || null,
     updatedAt: null,
   };

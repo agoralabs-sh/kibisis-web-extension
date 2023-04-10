@@ -10,7 +10,11 @@ import ThemeProvider from '@extension/components/ThemeProvider';
 import AppProvider from './AppProvider';
 
 // Constants
-import { ACCOUNTS_ROUTE, SETTINGS_ROUTE } from '@extension/constants';
+import {
+  ADD_ACCOUNT_ROUTE,
+  ACCOUNTS_ROUTE,
+  SETTINGS_ROUTE,
+} from '@extension/constants';
 
 // Features
 import { reducer as accountsReducer } from '@extension/features/accounts';
@@ -22,6 +26,7 @@ import { reducer as settingsReducer } from '@extension/features/settings';
 
 // Pages
 import AccountPage from '@extension/pages/AccountPage';
+import MainAddAccountRouter from '@extension/pages/MainAddAccountRouter';
 import SettingsRouter from '@extension/pages/SettingsRouter';
 
 // Types
@@ -59,6 +64,10 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
                   path={`${ACCOUNTS_ROUTE}/:address`}
                 />
                 <Route element={<AccountPage />} path={ACCOUNTS_ROUTE} />
+                <Route
+                  element={<MainAddAccountRouter />}
+                  path={`${ADD_ACCOUNT_ROUTE}/*`}
+                />
                 <Route
                   element={<SettingsRouter />}
                   path={`${SETTINGS_ROUTE}/*`}

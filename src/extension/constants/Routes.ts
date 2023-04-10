@@ -1,4 +1,4 @@
-export const ACCOUNT_SETUP_ROUTE: string = '/account-setup';
+export const ADD_ACCOUNT_ROUTE: string = '/add-account';
 export const ACCOUNTS_ROUTE: string = '/accounts';
 export const ADVANCED_ROUTE: string = '/advanced';
 export const APPEARANCE_ROUTE: string = '/appearance';

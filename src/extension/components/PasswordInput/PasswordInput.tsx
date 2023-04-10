@@ -13,21 +13,20 @@ import { IoEye, IoEyeOff } from 'react-icons/io5';
 // Components
 import IconButton from '@extension/components/IconButton';
 
-// Errors
-import { BaseExtensionError } from '@extension/errors';
-
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps {
-  error: BaseExtensionError | null;
+  disabled?: boolean;
+  error: string | null;
   hint: string | null;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   value: string;
 }
 
 const PasswordInput: FC<IProps> = ({
+  disabled,
   error,
   hint,
   onChange,
@@ -49,13 +48,14 @@ const PasswordInput: FC<IProps> = ({
         </Text>
         {error && (
           <Text color="red.300" fontSize="xs" textAlign="right">
-            {error.message}
+            {error}
           </Text>
         )}
       </HStack>
       <InputGroup size="md">
         <Input
           focusBorderColor={error ? 'red.300' : 'primary.500'}
+          isDisabled={disabled}
           isInvalid={!!error}
           onChange={onChange}
           placeholder={t<string>('placeholders.enterPassword')}

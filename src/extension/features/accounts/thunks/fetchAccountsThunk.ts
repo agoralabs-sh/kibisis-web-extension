@@ -11,7 +11,7 @@ import { StorageManager } from '@extension/services';
 // Types
 import { ILogger } from '@common/types';
 import { IAccount, IMainRootState, INetwork } from '@extension/types';
-import { IFetchAccountsOptions } from '../types';
+import { IFetchAccountsPayload } from '../types';
 
 // Utils
 import { selectDefaultNetwork } from '@extension/utils';
@@ -19,11 +19,11 @@ import { updateAccountInformation } from '../utils';
 
 const fetchAccountsThunk: AsyncThunk<
   IAccount[], // return
-  IFetchAccountsOptions | undefined, // args
+  IFetchAccountsPayload | undefined, // args
   Record<string, never>
 > = createAsyncThunk<
   IAccount[],
-  IFetchAccountsOptions | undefined,
+  IFetchAccountsPayload | undefined,
   { state: IMainRootState }
 >(AccountsThunkEnum.FetchAccounts, async (options, { getState }) => {
   const logger: ILogger = getState().application.logger;

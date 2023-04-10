@@ -1,70 +1,54 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { encodeAddress } from 'algosdk';
-import { NavigateFunction } from 'react-router-dom';
 import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
 
 // Constants
-import {
-  ACCOUNT_KEY_PREFIX,
-  CREATE_PASSWORD_ROUTE,
-} from '@extension/constants';
-
-// Enums
-import { RegisterThunkEnum } from '@extension/enums';
-
-// Errors
-import { BaseExtensionError, MalformedDataError } from '@extension/errors';
+import { ACCOUNT_KEY_PREFIX } from '@extension/constants';
 
 // Features
 import { setError } from '@extension/features/application';
-import { sendRegistrationCompletedThunk } from '@extension/features/messages';
+
+// Enums
+import { AccountsThunkEnum } from '@extension/enums';
 
 // Services
 import { PrivateKeyService, StorageManager } from '@extension/services';
 
 // Types
 import { ILogger } from '@common/types';
-import { IAccount, INetwork, IRegistrationRootState } from '@extension/types';
-import { ISaveCredentialsPayload } from '../types';
+import { IAccount, IMainRootState, INetwork } from '@extension/types';
+import { ISaveNewAccountPayload } from '../types';
 
 // Utils
-import { initializeDefaultAccount } from '@extension/utils';
+import {
+  initializeDefaultAccount,
+  selectDefaultNetwork,
+} from '@extension/utils';
 
-const saveCredentialsThunk: AsyncThunk<
-  void, // return
-  ISaveCredentialsPayload, // args
+const saveNewAccountThunk: AsyncThunk<
+  IAccount | null, // return
+  ISaveNewAccountPayload, // args
   Record<string, never>
 > = createAsyncThunk<
-  void,
-  ISaveCredentialsPayload,
-  { state: IRegistrationRootState }
+  IAccount | null,
+  ISaveNewAccountPayload,
+  { state: IMainRootState }
 >(
-  RegisterThunkEnum.SaveCredentials,
-  async ({ name, privateKey }, { dispatch, getState }) => {
+  AccountsThunkEnum.SaveNewAccount,
+  async ({ name, password, privateKey }, { dispatch, getState }) => {
     const logger: ILogger = getState().application.logger;
     const networks: INetwork[] = getState().networks.items;
-    const navigate: NavigateFunction | null = getState().application.navigate;
-    const password: string | null = getState().registration.password;
+    const selectedNetwork: INetwork =
+      getState().settings.network || selectDefaultNetwork(networks);
     let accounts: IAccount[];
     let address: string;
-    let inputError: BaseExtensionError;
     let privateKeyService: PrivateKeyService;
     let publicKey: Uint8Array;
     let storageManager: StorageManager;
 
-    if (!password) {
-      inputError = new MalformedDataError('no password found');
-
-      logger.error(`${saveCredentialsThunk.name}: ${inputError.message}`);
-
-      navigate && navigate(CREATE_PASSWORD_ROUTE);
-
-      throw inputError;
-    }
-
     try {
-      logger.debug(`${saveCredentialsThunk.name}: inferring public key`);
+      logger.debug(`${saveNewAccountThunk.name}: inferring public key`);
 
       publicKey = sign.keyPair.fromSecretKey(privateKey).publicKey;
       privateKeyService = new PrivateKeyService({
@@ -74,12 +58,10 @@ const saveCredentialsThunk: AsyncThunk<
       address = encodeAddress(publicKey);
 
       logger.debug(
-        `${saveCredentialsThunk.name}: saving private/public key pair for "${address}" to storage`
+        `${saveNewAccountThunk.name}: saving private/public key pair for "${address}" to storage`
       );
 
       // reset any previous credentials, set the password and the account
-      await privateKeyService.reset();
-      await privateKeyService.setPassword(password);
       await privateKeyService.setAccount(
         {
           privateKey,
@@ -91,7 +73,7 @@ const saveCredentialsThunk: AsyncThunk<
         password
       );
     } catch (error) {
-      logger.error(`${saveCredentialsThunk.name}: ${error.message}`);
+      logger.error(`${saveNewAccountThunk.name}: ${error.message}`);
 
       dispatch(setError(error));
 
@@ -99,7 +81,7 @@ const saveCredentialsThunk: AsyncThunk<
     }
 
     logger.debug(
-      `${saveCredentialsThunk.name}: successfully saved credentials`
+      `${saveNewAccountThunk.name}: successfully saved account "${address}"`
     );
 
     storageManager = new StorageManager();
@@ -128,12 +110,15 @@ const saveCredentialsThunk: AsyncThunk<
     );
 
     logger.debug(
-      `${saveCredentialsThunk.name}: saved accounts for "${address}" to storage`
+      `${saveNewAccountThunk.name}: saved accounts for "${address}" to storage`
     );
 
-    // send a message that registration has been completed
-    dispatch(sendRegistrationCompletedThunk());
+    return (
+      accounts.find(
+        (value) => value.genesisHash === selectedNetwork.genesisHash
+      ) || null
+    );
   }
 );
 
-export default saveCredentialsThunk;
+export default saveNewAccountThunk;

@@ -13,6 +13,7 @@ import AccountTypeItem from './AccountTypeItem';
 
 // Constants
 import {
+  ADD_ACCOUNT_ROUTE,
   CREATE_NEW_ACCOUNT_ROUTE,
   DEFAULT_GAP,
   IMPORT_EXISTING_ACCOUNT_ROUTE,
@@ -25,11 +26,11 @@ const AccountSetupPage: FC = () => {
     (type: 'create' | 'import' | 'rekey') => () => {
       switch (type) {
         case 'create':
-          navigate(CREATE_NEW_ACCOUNT_ROUTE);
+          navigate(`${ADD_ACCOUNT_ROUTE}${CREATE_NEW_ACCOUNT_ROUTE}`);
 
           break;
         case 'import':
-          navigate(IMPORT_EXISTING_ACCOUNT_ROUTE);
+          navigate(`${ADD_ACCOUNT_ROUTE}${IMPORT_EXISTING_ACCOUNT_ROUTE}`);
 
           break;
         case 'rekey':

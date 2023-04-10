@@ -1,7 +1,7 @@
 enum AccountsThunkEnum {
   FetchAccounts = 'accounts/fetchAccounts',
   RemoveAccount = 'accounts/removeAccount',
-  SetAccount = 'accounts/setAccount',
+  SaveNewAccount = 'accounts/saveNewAccount',
   StartPollingForAccountInformation = 'accounts/startPollingForAccountInformation',
   StopPollingForAccountInformation = 'accounts/stopPollingForAccountInformation',
   UpdateAccountInformation = 'accounts/updateAccountInformation',

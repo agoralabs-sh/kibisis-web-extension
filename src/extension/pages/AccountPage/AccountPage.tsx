@@ -46,7 +46,7 @@ import PageShell from '@extension/components/PageShell';
 import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // Constants
-import { ACCOUNTS_ROUTE } from '@extension/constants';
+import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Features
 import { setSettings } from '@extension/features/settings';
@@ -107,9 +107,7 @@ const AccountPage: FC = () => {
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
   const settings: ISettings = useSelectSettings();
-  const handleAddAccountClick = () => {
-    console.log('add account');
-  };
+  const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkClick = (network: INetwork) => () => {
     dispatch(
       setSettings({
@@ -226,10 +224,26 @@ const AccountPage: FC = () => {
           </HStack>
           <HStack alignItems="center" w="full">
             {/* Name/address */}
-            <Heading color={defaultTextColor} size="md">
-              {account.name || ellipseAddress(account.address)}
-            </Heading>
+            {account.name ? (
+              <Tooltip aria-label="Name of account" label={account.name}>
+                <Heading
+                  color={defaultTextColor}
+                  maxW={400}
+                  noOfLines={1}
+                  size="md"
+                  textAlign="left"
+                >
+                  {account.name}
+                </Heading>
+              </Tooltip>
+            ) : (
+              <Heading color={defaultTextColor} size="md" textAlign="left">
+                {ellipseAddress(account.address)}
+              </Heading>
+            )}
+
             <Spacer />
+
             {/* Balance */}
             <HStack alignItems="center" justifyContent="center" spacing={1}>
               <Tooltip

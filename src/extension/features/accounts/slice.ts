@@ -7,7 +7,7 @@ import { StoreNameEnum } from '@extension/enums';
 import {
   fetchAccountsThunk,
   removeAccountThunk,
-  setAccountThunk,
+  saveNewAccountThunk,
   startPollingForAccountInformationThunk,
   stopPollingForAccountInformationThunk,
   updateAccountInformationThunk,
@@ -52,18 +52,21 @@ const slice = createSlice({
     builder.addCase(removeAccountThunk.rejected, (state: IAccountsState) => {
       state.saving = false;
     });
-    /** Set account **/
+    /** Save new account **/
     builder.addCase(
-      setAccountThunk.fulfilled,
-      (state: IAccountsState, action: PayloadAction<IAccount>) => {
-        state.items = upsertAccount(state.items, action.payload);
+      saveNewAccountThunk.fulfilled,
+      (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
+        if (action.payload) {
+          state.items = upsertAccount(state.items, action.payload);
+        }
+
         state.saving = false;
       }
     );
-    builder.addCase(setAccountThunk.pending, (state: IAccountsState) => {
+    builder.addCase(saveNewAccountThunk.pending, (state: IAccountsState) => {
       state.saving = true;
     });
-    builder.addCase(setAccountThunk.rejected, (state: IAccountsState) => {
+    builder.addCase(saveNewAccountThunk.rejected, (state: IAccountsState) => {
       state.saving = false;
     });
     /** Start polling for account information **/

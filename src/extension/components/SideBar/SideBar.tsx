@@ -5,6 +5,7 @@ import {
   Skeleton,
   SkeletonCircle,
   Text,
+  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
@@ -34,6 +35,7 @@ import SideBarActionItem from './SideBarActionItem';
 
 // Constants
 import {
+  ADD_ACCOUNT_ROUTE,
   ACCOUNTS_ROUTE,
   SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
@@ -84,7 +86,7 @@ const SideBar: FC = () => {
   };
   const handleAddAccountClick = () => {
     onCloseSideBar();
-    console.log('go to add account page');
+    navigate(ADD_ACCOUNT_ROUTE);
   };
   const handleSettingsClick = () => {
     onCloseSideBar();

@@ -2,8 +2,8 @@
  * @property {boolean} updateAccountInformation - [optional] instruct the thunk to dispatch an action to also update
  * account information.
  */
-interface IFetchAccountsOptions {
+interface IFetchAccountsPayload {
   updateAccountInformation?: boolean;
 }
 
-export default IFetchAccountsOptions;
+export default IFetchAccountsPayload;

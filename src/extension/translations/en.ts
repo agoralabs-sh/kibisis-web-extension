@@ -46,6 +46,7 @@ const translation: IResourceLanguage = {
     importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
     minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
+    mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
     mustEnterPasswordToSign: 'You must enter your password to sign.',
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
@@ -74,6 +75,7 @@ const translation: IResourceLanguage = {
       copySeedPhraseRequired:
         'You must confirm you have copied the seed phrase',
       invalidMnemonic: 'Invalid seed phrase',
+      invalidPassword: 'Invalid password',
       passwordMinLength: 'Must be at least 8 characters',
       passwordTooWeak: 'This password is too weak',
       required: '{{name}} is required',
