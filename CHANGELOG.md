@@ -1,3 +1,10 @@
+# [1.1.0-beta.9](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.8...v1.1.0-beta.9) (2023-04-11)
+
+
+### Features
+
+* create a new account ([#10](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/10)) ([65a2294](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/65a22949326cda57df17beacd579ba2093d453da))
+
 # [1.1.0-beta.8](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.7...v1.1.0-beta.8) (2023-04-07)
 
 
