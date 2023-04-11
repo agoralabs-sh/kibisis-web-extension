@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import EnableModal from '@extension/components/EnableModal';
 
 // Features
-import { checkInitializedThunk } from '@extension/features/application';
 import { fetchAccountsThunk } from '@extension/features/accounts';
 import { setEnableRequest } from '@extension/features/messages';
 import { fetchSessionsThunk } from '@extension/features/sessions';
@@ -23,7 +22,6 @@ const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
 
   useEffect(() => {
-    dispatch(checkInitializedThunk());
     dispatch(fetchSettings());
     dispatch(fetchSessionsThunk());
   }, []);

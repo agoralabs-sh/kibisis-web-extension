@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import SignBytesModal from '@extension/components/SignBytesModal';
 
 // Features
-import { checkInitializedThunk } from '@extension/features/application';
 import { fetchAccountsThunk } from '@extension/features/accounts';
 import { setSignBytesRequest } from '@extension/features/messages';
 import { fetchSessionsThunk } from '@extension/features/sessions';
@@ -23,7 +22,6 @@ const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
 
   useEffect(() => {
-    dispatch(checkInitializedThunk());
     dispatch(fetchSettings());
     dispatch(fetchSessionsThunk());
   }, []);

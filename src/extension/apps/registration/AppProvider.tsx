@@ -8,7 +8,6 @@ import ErrorModal from '@extension/components/ErrorModal';
 
 // Features
 import {
-  checkInitializedThunk,
   setError,
   setNavigate,
   setToast,
@@ -30,7 +29,6 @@ const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   };
 
   useEffect(() => {
-    dispatch(checkInitializedThunk());
     dispatch(setNavigate(navigate));
     dispatch(setToast(toast));
     dispatch(fetchSettings());

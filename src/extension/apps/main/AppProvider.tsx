@@ -14,7 +14,6 @@ import {
   startPollingForAccountInformationThunk,
 } from '@extension/features/accounts';
 import {
-  checkInitializedThunk,
   setError,
   setNavigate,
   setToast,
@@ -50,7 +49,6 @@ const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   const handleSignDataModalClose = () => dispatch(setSignBytesRequest(null));
 
   useEffect(() => {
-    dispatch(checkInitializedThunk());
     dispatch(setNavigate(navigate));
     dispatch(setToast(toast));
     dispatch(fetchSettings());
