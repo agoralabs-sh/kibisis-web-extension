@@ -8,7 +8,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Account, mnemonicToSecretKey } from 'algosdk';
-import { Step, Steps, useSteps } from 'chakra-ui-steps';
+import { Step, useSteps } from 'chakra-ui-steps';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
@@ -20,6 +20,7 @@ import EnterMnemonicPhraseInput, {
 } from '@extension/components/EnterMnemonicPhraseInput';
 import PageHeader from '@extension/components/PageHeader';
 import PageShell from '@extension/components/PageShell';
+import Steps from '@extension/components/Steps';
 
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';

@@ -12,7 +12,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
-import { Step, Steps, useSteps } from 'chakra-ui-steps';
+import { Step, useSteps } from 'chakra-ui-steps';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,7 @@ import Button from '@extension/components/Button';
 import CopyButton from '@extension/components/CopyButton';
 import PageHeader from '@extension/components/PageHeader';
 import PageShell from '@extension/components/PageShell';
+import Steps from '@extension/components/Steps';
 
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
