@@ -2,6 +2,7 @@
  * @property {string} address - the address of this account
  * @property {string} atomicBalance - the atomic balance of this account as a string.
  * @property {string | null} authAddress - the address that this account has been rekeyed with.
+ * @property {number} createdAt - a timestamp (in seconds) when this account was created.
  * @property {string} genesisHash - the genesis has to which this account belongs to.
  * @property {string} id - a unique identifier (in UUID).
  * @property {string} minAtomicBalance - the minimum balance for this account.
@@ -12,6 +13,7 @@ interface IAccount {
   address: string;
   atomicBalance: string;
   authAddress: string | null;
+  createdAt: number;
   genesisHash: string;
   id: string;
   minAtomicBalance: string;

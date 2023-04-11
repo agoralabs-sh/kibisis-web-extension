@@ -17,7 +17,12 @@ import { PrivateKeyService, StorageManager } from '@extension/services';
 
 // Types
 import { ILogger } from '@common/types';
-import { IAccount, IMainRootState, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IMainRootState,
+  INetwork,
+  IPksAccountStorageItem,
+} from '@extension/types';
 import { ISaveNewAccountPayload } from '../types';
 
 // Utils
@@ -43,6 +48,7 @@ const saveNewAccountThunk: AsyncThunk<
       getState().settings.network || selectDefaultNetwork(networks);
     let accounts: IAccount[];
     let address: string;
+    let pksAccount: IPksAccountStorageItem | null;
     let privateKeyService: PrivateKeyService;
     let publicKey: Uint8Array;
     let storageManager: StorageManager;
@@ -61,8 +67,8 @@ const saveNewAccountThunk: AsyncThunk<
         `${saveNewAccountThunk.name}: saving private/public key pair for "${address}" to storage`
       );
 
-      // reset any previous credentials, set the password and the account
-      await privateKeyService.setAccount(
+      // add the new account
+      pksAccount = await privateKeyService.setAccount(
         {
           privateKey,
           publicKey,
@@ -92,6 +98,9 @@ const saveNewAccountThunk: AsyncThunk<
         initializeDefaultAccount({
           address,
           genesisHash: value.genesisHash,
+          ...(pksAccount && {
+            createdAt: pksAccount.createdAt,
+          }),
           ...(name && {
             name,
           }),

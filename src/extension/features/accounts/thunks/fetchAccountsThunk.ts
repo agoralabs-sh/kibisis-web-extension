@@ -48,7 +48,8 @@ const fetchAccountsThunk: AsyncThunk<
           : acc,
       []
     )
-    .filter((value) => value.genesisHash === selectedNetwork.genesisHash); // filter by the selected network
+    .filter((value) => value.genesisHash === selectedNetwork.genesisHash) // filter by the selected network
+    .sort((a, b) => a.createdAt - b.createdAt); // sort by created at date (oldest first)
 
   // update account information, if requested
   if (options?.updateAccountInformation && online) {

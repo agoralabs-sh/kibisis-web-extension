@@ -328,18 +328,20 @@ export default class PrivateKeyService {
    * Sets an account into local storage, encrypted, using the password.
    * @param {ISetAccountOptions} options - options required to set the account.
    * @param {string} password - the password used to initialize the private key storage.
+   * @returns {IPksAccountStorageItem | null} the initialized PKS account item.
    * @throws {InvalidPasswordError} If the password is invalid.
    * @throws {EncryptionError} If there was a problem with the encryption.
    */
   public async setAccount(
     { name, privateKey, publicKey }: ISetAccountOptions,
     password: string
-  ): Promise<void> {
+  ): Promise<IPksAccountStorageItem | null> {
     const isPasswordValid: boolean = await this.verifyPassword(password);
     let account: IPksAccountStorageItem | null;
     let accountItemKey: string;
     let encodedPublicKey: string;
     let encryptedPrivateKey: Uint8Array;
+    let now: Date;
     let passwordTag: IPksPasswordTagStorageItem | null;
 
     if (!isPasswordValid) {
@@ -381,7 +383,7 @@ export default class PrivateKeyService {
           `${PrivateKeyService.name}#setAccount(): failed to get password tag`
         );
 
-      return;
+      return null;
     }
 
     this.logger &&
@@ -389,22 +391,31 @@ export default class PrivateKeyService {
         `${PrivateKeyService.name}#setAccount(): storing private key for public key "${publicKey}"`
       );
 
-    return await this.storageManager.setItems({
-      [accountItemKey]: {
-        ...(account
-          ? {
-              id: account.id,
-              name: name || account.name,
-            }
-          : {
-              id: uuid(),
-              name: name || null,
-            }),
-        encryptedPrivateKey: encodeHex(encryptedPrivateKey),
-        passwordTagId: passwordTag.id,
-        publicKey: encodedPublicKey,
-      },
+    now = new Date();
+
+    account = {
+      ...(account
+        ? {
+            createdAt: account.createdAt,
+            id: account.id,
+            name: name || account.name,
+          }
+        : {
+            createdAt: now.getTime(),
+            id: uuid(),
+            name: name || null,
+          }),
+      encryptedPrivateKey: encodeHex(encryptedPrivateKey),
+      passwordTagId: passwordTag.id,
+      publicKey: encodedPublicKey,
+      updatedAt: now.getTime(),
+    };
+
+    await this.storageManager.setItems({
+      [accountItemKey]: account,
     });
+
+    return account;
   }
 
   /**

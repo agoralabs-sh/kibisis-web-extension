@@ -6,6 +6,7 @@ import { IAccount } from '@extension/types';
 interface IOptions {
   address: string;
   authAddress?: string;
+  createdAt?: number;
   genesisHash: string;
   id?: string;
   name?: string;
@@ -19,6 +20,7 @@ interface IOptions {
 export default function initializeDefaultAccount({
   address,
   authAddress,
+  createdAt,
   genesisHash,
   id,
   name,
@@ -27,6 +29,7 @@ export default function initializeDefaultAccount({
     address,
     atomicBalance: '0',
     authAddress: authAddress || null,
+    createdAt: createdAt || new Date().getTime(),
     genesisHash,
     id: id || uuid(),
     minAtomicBalance: '0',
