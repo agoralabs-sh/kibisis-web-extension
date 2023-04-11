@@ -22,7 +22,12 @@ import {
   IoSettingsOutline,
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import {
+  Location,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { randomBytes } from 'tweetnacl';
 
 // Components
@@ -62,12 +67,16 @@ import { ellipseAddress } from '@extension/utils';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
+  const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
   const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const borderColor: string = useBorderColor();
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
+  const [activeAccountAddress, setActiveAccountAddress] = useState<
+    string | null
+  >(null);
   const [width, setWidth] = useState<number>(SIDEBAR_MIN_WIDTH);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHeaderShowing, setIsHeaderShowing] = useState<boolean>(false);
@@ -131,6 +140,9 @@ const SideBar: FC = () => {
 
     return accounts.map((value) => (
       <SideBarAccountItem
+        active={
+          activeAccountAddress ? value.address === activeAccountAddress : false
+        }
         account={value}
         key={nanoid()}
         onClick={handleAccountClick}
@@ -147,6 +159,15 @@ const SideBar: FC = () => {
 
     setWidth(SIDEBAR_MIN_WIDTH);
   }, [isOpen]);
+  useEffect(() => {
+    if (location.pathname.includes(ACCOUNTS_ROUTE)) {
+      setActiveAccountAddress(location.pathname.split('/').pop() || null);
+
+      return;
+    }
+
+    setActiveAccountAddress(null);
+  }, [location]);
 
   return (
     <VStack

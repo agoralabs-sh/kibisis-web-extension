@@ -1,19 +1,21 @@
 import {
   Avatar,
   Button,
+  ButtonProps,
   Center,
   HStack,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
 // Constants
 import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
 
 // Hooks
+import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -26,13 +28,34 @@ import { ellipseAddress } from '@extension/utils';
 
 interface IProps {
   account: IAccount;
+  active: boolean;
   onClick: (address: string) => void;
 }
 
-const SideBarAccountItem: FC<IProps> = ({ account, onClick }: IProps) => {
+const SideBarAccountItem: FC<IProps> = ({
+  account,
+  active,
+  onClick,
+}: IProps) => {
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
+  const activeBackground: string = useColorModeValue(
+    'gray.200',
+    'whiteAlpha.200'
+  );
+  const activeProps: Partial<ButtonProps> = active
+    ? {
+        _hover: {
+          bg: activeBackground,
+        },
+        bg: activeBackground,
+      }
+    : {
+        _hover: {
+          bg: buttonHoverBackgroundColor,
+        },
+      };
   const handleOnClick = () => onClick(account.address);
 
   return (
@@ -41,9 +64,7 @@ const SideBarAccountItem: FC<IProps> = ({ account, onClick }: IProps) => {
       label={account.name || account.address}
     >
       <Button
-        _hover={{
-          bg: buttonHoverBackgroundColor,
-        }}
+        {...activeProps}
         borderRadius={0}
         fontSize="md"
         h={SIDEBAR_ITEM_HEIGHT}
