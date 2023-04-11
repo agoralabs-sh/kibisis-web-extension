@@ -5,7 +5,6 @@ import {
   Skeleton,
   SkeletonCircle,
   Text,
-  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';

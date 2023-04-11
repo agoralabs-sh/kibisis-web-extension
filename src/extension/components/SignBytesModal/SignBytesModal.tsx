@@ -69,6 +69,7 @@ import {
 
 // Utils
 import { decodeJwt, ellipseAddress } from '@extension/utils';
+import { ErrorCodeEnum } from '@extension/enums';
 
 interface IProps {
   onClose: () => void;
@@ -87,6 +88,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const fetching: boolean = useSelectFetchingAccounts();
   const [decodedJwt, setDecodedJwt] = useState<IDecodedJwt | null>(null);
   const [password, setPassword] = useState<string>('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [selectedSigner, setSelectedSigner] = useState<IAccount | null>(null);
   const handleAccountSelect = (account: IAccount) => setSelectedSigner(account);
   const handleCancelClick = () => {
@@ -106,9 +108,11 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handleClose = () => {
     setPassword('');
+    setPasswordError(null);
     onClose();
   };
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPasswordError(null);
     setPassword(event.target.value);
   };
   const handleSignClick = async () => {
@@ -474,6 +478,9 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
       handleClose();
     }
   }, [encodedSignedBytes]);
+  useEffect(() => {
+    setPasswordError(error ? t<string>('errors.inputs.invalidPassword') : null);
+  }, [error]);
 
   return (
     <Modal
@@ -525,7 +532,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
         <ModalFooter p={DEFAULT_GAP}>
           <VStack alignItems="flex-start" spacing={4} w="full">
             <PasswordInput
-              error={error}
+              error={passwordError}
               hint={t<string>('captions.mustEnterPasswordToSign')}
               onChange={handlePasswordChange}
               value={password}

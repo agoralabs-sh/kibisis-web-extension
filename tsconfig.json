@@ -28,7 +28,6 @@
       "@extension/constants": ["src/extension/constants"],
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
-      "@extension/events": ["src/extension/events"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
       "@extension/features/application": ["src/extension/features/application"],
       "@extension/features/messages": ["src/extension/features/messages"],

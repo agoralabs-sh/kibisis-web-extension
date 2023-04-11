@@ -5,7 +5,7 @@ import {
   ExtensionRegistrationCompletedEvent,
   ExtensionSignBytesRequestEvent,
   ExtensionSignBytesResponseEvent,
-} from '../events';
+} from '@common/events';
 
 type IExtensionEvents =
   | ExtensionEnableRequestEvent

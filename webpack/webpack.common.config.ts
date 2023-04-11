@@ -107,7 +107,6 @@ const config: Configuration = {
       ['@extension/constants']: resolve(EXTENSION_PATH, 'constants'),
       ['@extension/enums']: resolve(EXTENSION_PATH, 'enums'),
       ['@extension/errors']: resolve(EXTENSION_PATH, 'errors'),
-      ['@extension/events']: resolve(EXTENSION_PATH, 'events'),
       ['@extension/features/accounts']: resolve(
         EXTENSION_PATH,
         'features',

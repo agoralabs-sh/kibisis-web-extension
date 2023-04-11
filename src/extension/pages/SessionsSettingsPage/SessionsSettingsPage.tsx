@@ -117,7 +117,7 @@ const SessionsSettingsPage: FC = () => {
 
     return (
       <VStack spacing={2} w="full">
-        {sessions.map((session, index) => (
+        {sessions.map((session) => (
           <SettingsSessionItem
             key={nanoid()}
             onManageSession={handleManageSession}

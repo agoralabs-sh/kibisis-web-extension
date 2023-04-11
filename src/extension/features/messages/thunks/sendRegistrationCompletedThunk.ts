@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // Events
-import { ExtensionRegistrationCompletedEvent } from '@extension/events';
+import { ExtensionRegistrationCompletedEvent } from '@common/events';
 
 // Types
 import { ILogger } from '@common/types';
