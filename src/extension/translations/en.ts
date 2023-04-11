@@ -54,6 +54,9 @@ const translation: IResourceLanguage = {
     offline: 'It looks like you are offline, some features may not work',
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
+    removeAccount: 'Are you sure you want to remove account "{{address}}"?',
+    removeAccountWarning:
+      'To add this account back you will need the seed phrase',
     removeAllSessions: 'Are you sure you want to remove all sessions?',
     removeAllAccountsWarning:
       'Removing all accounts will also remove this session',
@@ -100,6 +103,7 @@ const translation: IResourceLanguage = {
     newAccountComplete: 'Almost There...',
     noAccountsFound: 'No accounts found!',
     noSessionsFound: 'No sessions found!',
+    removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     shareAddress: 'Share Address',
   },
@@ -130,6 +134,7 @@ const translation: IResourceLanguage = {
     message: 'Message',
     moreInformation: 'More Information',
     password: 'Password',
+    removeAccount: 'Remove account',
     removeSession: 'Remove session',
     seedPhrase: 'Seed Phrase',
     settings: 'Settings',

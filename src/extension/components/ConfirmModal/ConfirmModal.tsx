@@ -64,7 +64,7 @@ const ConfirmModal: FC<IProps> = ({
         backgroundColor="var(--chakra-colors-chakra-body-bg)"
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
-        minH="65dvh"
+        minH="0dvh"
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} size="md" textAlign="center">
