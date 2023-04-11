@@ -1,13 +1,14 @@
 import browser from 'webextension-polyfill';
 
 // Services
-import { ExternalEventService } from './services/extension';
+import { ExternalEventService } from '@extension/services';
 
 // Types
-import { ILogger } from './types';
+import { ILogger } from '@common/types';
 
 // Utils
-import { createLogger, injectScript } from './utils';
+import { createLogger } from '@common/utils';
+import { injectScript } from '@extension/utils';
 
 (() => {
   const logger: ILogger = createLogger(
@@ -17,8 +18,8 @@ import { createLogger, injectScript } from './utils';
     logger,
   });
 
-  // inject the web resources to the web page to initialise the window.algorand object
-  injectScript(browser.runtime.getURL('agora-wallet.js'));
+  // inject the web resources in to the web page to initialize the window.algorand object
+  injectScript(browser.runtime.getURL('wallet-initializer.js'));
 
   // listen to incoming external messages (from the web page)
   window.addEventListener(

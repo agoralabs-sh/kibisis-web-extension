@@ -17,10 +17,10 @@ import { verifyBytes } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
 // Components
-import Button from '../src/components/Button';
+import Button from '@extension/components/Button';
 
 // Types
-import { IWindow } from '../src/types';
+import { IWindow } from '@external/types';
 
 interface IProps {
   signer: string | null;

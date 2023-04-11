@@ -1,0 +1,11 @@
+export const ADD_ACCOUNT_ROUTE: string = '/add-account';
+export const ACCOUNTS_ROUTE: string = '/accounts';
+export const ADVANCED_ROUTE: string = '/advanced';
+export const APPEARANCE_ROUTE: string = '/appearance';
+export const CREATE_NEW_ACCOUNT_ROUTE: string = '/create-new-account';
+export const CREATE_PASSWORD_ROUTE: string = '/create-password';
+export const GET_STARTED_ROUTE: string = '/get-started';
+export const IMPORT_EXISTING_ACCOUNT_ROUTE: string = '/import-existing-account';
+export const SECURITY_ROUTE: string = '/security';
+export const SESSIONS_ROUTE: string = '/sessions';
+export const SETTINGS_ROUTE: string = '/settings';

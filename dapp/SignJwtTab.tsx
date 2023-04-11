@@ -14,20 +14,20 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64Url } from '@stablelib/base64';
+import { encode as encodeHex } from '@stablelib/hex';
 import { verifyBytes } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from 'react-icons/io5';
 import { v4 as uuid } from 'uuid';
 
 // Components
-import Button from '../src/components/Button';
+import Button from '@extension/components/Button';
 
 // Types
-import { IWindow } from '../src/types';
+import { IWindow } from '@external/types';
 
 // Utils
 import { isValidJwt } from './utils';
-import { encode as encodeHex } from '@stablelib/hex';
 
 interface IProps {
   signer: string | null;
