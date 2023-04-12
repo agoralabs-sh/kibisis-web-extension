@@ -1,3 +1,10 @@
+# [1.1.0-beta.10](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.9...v1.1.0-beta.10) (2023-04-12)
+
+
+### Features
+
+* remove account ([#11](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/11)) ([929cf1c](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/929cf1c1b51ef309158b03b0a0af429ad829d5ad))
+
 # [1.1.0-beta.9](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.8...v1.1.0-beta.9) (2023-04-11)
 
 
