@@ -1,13 +1,12 @@
 import { combineReducers, Store } from '@reduxjs/toolkit';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { Provider, useDispatch } from 'react-redux';
+import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 // Components
-import Fonts from '@extension/components/Fonts';
 import ThemeProvider from '@extension/components/ThemeProvider';
-import AppProvider from './AppProvider';
+import Root from './Root';
 
 // Constants
 import {
@@ -18,7 +17,10 @@ import {
 
 // Features
 import { reducer as accountsReducer } from '@extension/features/accounts';
-import { reducer as applicationReducer } from '@extension/features/application';
+import {
+  reducer as applicationReducer,
+  setSideBar,
+} from '@extension/features/application';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
@@ -30,10 +32,60 @@ import MainAddAccountRouter from '@extension/pages/MainAddAccountRouter';
 import SettingsRouter from '@extension/pages/SettingsRouter';
 
 // Types
-import { IAppProps, IMainRootState } from '@extension/types';
+import { IAppProps, IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 // Utils
 import { makeStore } from '@extension/utils';
+
+const createRouter = (dispatch: IAppThunkDispatch) =>
+  createHashRouter([
+    {
+      children: [
+        {
+          element: <Navigate replace={true} to={ACCOUNTS_ROUTE} />,
+          path: '/',
+        },
+        {
+          element: <AccountPage />,
+          loader: () => {
+            dispatch(setSideBar(true));
+
+            return null;
+          },
+          path: ACCOUNTS_ROUTE,
+        },
+        {
+          element: <AccountPage />,
+          loader: () => {
+            dispatch(setSideBar(true));
+
+            return null;
+          },
+          path: `${ACCOUNTS_ROUTE}/:address`,
+        },
+        {
+          element: <MainAddAccountRouter />,
+          loader: () => {
+            dispatch(setSideBar(false));
+
+            return null;
+          },
+          path: `${ADD_ACCOUNT_ROUTE}/*`,
+        },
+        {
+          element: <SettingsRouter />,
+          loader: () => {
+            dispatch(setSideBar(true));
+
+            return null;
+          },
+          path: `${SETTINGS_ROUTE}/*`,
+        },
+      ],
+      element: <Root />,
+      path: '/',
+    },
+  ]);
 
 const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IMainRootState> = makeStore<IMainRootState>(
@@ -51,30 +103,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     <Provider store={store}>
       <I18nextProvider i18n={i18next}>
         <ThemeProvider initialColorMode={initialColorMode}>
-          <Fonts />
-          <HashRouter>
-            <AppProvider>
-              <Routes>
-                <Route
-                  element={<Navigate replace={true} to={ACCOUNTS_ROUTE} />}
-                  path="/"
-                />
-                <Route
-                  element={<AccountPage />}
-                  path={`${ACCOUNTS_ROUTE}/:address`}
-                />
-                <Route element={<AccountPage />} path={ACCOUNTS_ROUTE} />
-                <Route
-                  element={<MainAddAccountRouter />}
-                  path={`${ADD_ACCOUNT_ROUTE}/*`}
-                />
-                <Route
-                  element={<SettingsRouter />}
-                  path={`${SETTINGS_ROUTE}/*`}
-                />
-              </Routes>
-            </AppProvider>
-          </HashRouter>
+          <RouterProvider router={createRouter(store.dispatch)} />
         </ThemeProvider>
       </I18nextProvider>
     </Provider>

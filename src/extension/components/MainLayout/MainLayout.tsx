@@ -1,4 +1,4 @@
-import { HStack, VStack } from '@chakra-ui/react';
+import { Center, HStack, VStack } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 
 // Components
@@ -7,27 +7,38 @@ import SideBar from '@extension/components/SideBar';
 // Constants
 import { SIDEBAR_BORDER_WIDTH, SIDEBAR_MIN_WIDTH } from '@extension/constants';
 
+// Selectors
+import { useSelectSideBar } from '@extension/selectors';
+
 interface IProps {
   children: ReactNode;
 }
 
 const MainLayout: FC<IProps> = ({ children }: IProps) => {
+  const isSideBarShowing: boolean = useSelectSideBar();
+
   return (
-    <HStack alignItems="flex-start" minH="100vh" w="full">
-      <SideBar />
-      <VStack
-        flexGrow={1}
-        minH="100vh"
-        pl={`${SIDEBAR_MIN_WIDTH + SIDEBAR_BORDER_WIDTH}px`}
-        spacing={0}
-        style={{
-          marginInlineStart: '0px',
-        }}
-        w="full"
-      >
-        {children}
-      </VStack>
-    </HStack>
+    <Center as="main" backgroundColor="var(--chakra-colors-chakra-body-bg)">
+      <HStack alignItems="flex-start" minH="100vh" w="full">
+        {isSideBarShowing && <SideBar />}
+        <VStack
+          flexGrow={1}
+          minH="100vh"
+          pl={
+            isSideBarShowing
+              ? `${SIDEBAR_MIN_WIDTH + SIDEBAR_BORDER_WIDTH}px`
+              : 0
+          }
+          spacing={0}
+          style={{
+            marginInlineStart: '0px',
+          }}
+          w="full"
+        >
+          {children}
+        </VStack>
+      </HStack>
+    </Center>
   );
 };
 

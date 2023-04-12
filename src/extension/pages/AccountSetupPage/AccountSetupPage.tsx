@@ -40,7 +40,7 @@ const AccountSetupPage: FC = () => {
     };
 
   return (
-    <PageShell>
+    <>
       <PageHeader
         title={t<string>('titles.page', { context: 'accountSetup' })}
       />
@@ -73,7 +73,7 @@ const AccountSetupPage: FC = () => {
           tooltipText="Coming soon!"
         />
       </VStack>
-    </PageShell>
+    </>
   );
 };
 

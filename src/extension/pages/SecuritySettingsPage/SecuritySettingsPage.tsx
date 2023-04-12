@@ -1,14 +1,14 @@
-import { Stack, useDisclosure, VStack } from '@chakra-ui/react';
+import { Stack, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // Components
 import Button from '@extension/components/Button';
-import ConfirmModal from '@extension/components/ConfirmModal';
 import PageHeader from '@extension/components/PageHeader';
 
 // Features
+import { setConfirm } from '@extension/features/application';
 import { sendResetThunk } from '@extension/features/messages';
 
 // Types
@@ -17,25 +17,18 @@ import { IAppThunkDispatch } from '@extension/types';
 const SecuritySettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const handleConfirmClearAllData = () => {
-    onClose();
-
-    // dispatch an event to the background
-    dispatch(sendResetThunk());
-  };
-  const handleClearAllDataClick = () => onOpen();
+  const handleClearAllDataClick = () =>
+    dispatch(
+      setConfirm({
+        description: t<string>('captions.clearAllData'),
+        onConfirm: () => dispatch(sendResetThunk()), // dispatch an event to the background
+        title: t<string>('headings.clearAllData'),
+        warningText: t<string>('captions.clearAllDataWarning'),
+      })
+    );
 
   return (
     <>
-      <ConfirmModal
-        description={t<string>('captions.clearAllData')}
-        isOpen={isOpen}
-        onCancel={onClose}
-        onConfirm={handleConfirmClearAllData}
-        title={t<string>('headings.clearAllData')}
-        warningText={t<string>('captions.clearAllDataWarning')}
-      />
       <PageHeader title={t<string>('titles.page', { context: 'security' })} />
       <VStack w="full">
         {/* Clear data */}

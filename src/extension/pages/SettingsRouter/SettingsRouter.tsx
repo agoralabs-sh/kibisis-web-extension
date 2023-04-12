@@ -9,10 +9,6 @@ import {
   SESSIONS_ROUTE,
 } from '@extension/constants';
 
-// Components
-import MainLayout from '@extension/components/MainLayout';
-import PageShell from '@extension/components/PageShell';
-
 // Pages
 import AdvancedSettingsPage from '../AdvancedSettingsPage';
 import AppearanceSettingsPage from '../AppearanceSettingsPage';
@@ -21,17 +17,13 @@ import SecuritySettingsPage from '../SecuritySettingsPage';
 import SessionsSettingsPage from '../SessionsSettingsPage';
 
 const SettingsRouter: FC = () => (
-  <PageShell>
-    <MainLayout>
-      <Routes>
-        <Route element={<MainSettingsPage />} path="/" />
-        <Route element={<SecuritySettingsPage />} path={SECURITY_ROUTE} />
-        <Route element={<AppearanceSettingsPage />} path={APPEARANCE_ROUTE} />
-        <Route element={<SessionsSettingsPage />} path={SESSIONS_ROUTE} />
-        <Route element={<AdvancedSettingsPage />} path={ADVANCED_ROUTE} />
-      </Routes>
-    </MainLayout>
-  </PageShell>
+  <Routes>
+    <Route element={<MainSettingsPage />} path="/" />
+    <Route element={<SecuritySettingsPage />} path={SECURITY_ROUTE} />
+    <Route element={<AppearanceSettingsPage />} path={APPEARANCE_ROUTE} />
+    <Route element={<SessionsSettingsPage />} path={SESSIONS_ROUTE} />
+    <Route element={<AdvancedSettingsPage />} path={ADVANCED_ROUTE} />
+  </Routes>
 );
 
 export default SettingsRouter;

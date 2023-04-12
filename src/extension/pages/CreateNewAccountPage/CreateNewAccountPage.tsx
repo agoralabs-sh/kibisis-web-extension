@@ -91,14 +91,14 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
   };
 
   return (
-    <PageShell>
+    <>
       <PageHeader
         title={t<string>('titles.page', { context: 'createNewAccount' })}
       />
       <VStack
         flexGrow={1}
         justifyContent="center"
-        mb={DEFAULT_GAP}
+        pb={DEFAULT_GAP}
         px={DEFAULT_GAP}
         spacing={2}
         w="full"
@@ -245,7 +245,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
           )}
         </HStack>
       </VStack>
-    </PageShell>
+    </>
   );
 };
 

@@ -17,7 +17,7 @@ import {
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
 import { nanoid } from 'nanoid';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
@@ -42,8 +42,6 @@ import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import IconButton from '@extension/components/IconButton';
-import MainLayout from '@extension/components/MainLayout';
-import PageShell from '@extension/components/PageShell';
 import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // Constants
@@ -51,6 +49,7 @@ import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Features
 import { removeAccountThunk } from '@extension/features/accounts';
+import { setConfirm } from '@extension/features/application';
 import { setSettings } from '@extension/features/settings';
 
 // Hooks
@@ -88,7 +87,6 @@ import {
   ellipseAddress,
   formatCurrencyUnit,
 } from '@extension/utils';
-import ConfirmModal from '@extension/components/ConfirmModal';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -101,11 +99,6 @@ const AccountPage: FC = () => {
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
-  const {
-    isOpen: isRemoveAccountConfirmModalOpen,
-    onClose: onRemoveAccountConfirmModalClose,
-    onOpen: onRemoveAccountConfirmModalOpen,
-  } = useDisclosure();
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
@@ -117,15 +110,7 @@ const AccountPage: FC = () => {
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
   const settings: ISettings = useSelectSettings();
-  const [addressToRemove, setAddressToRemove] = useState<string | null>(null);
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
-  const handleConfirmRemoveAccount = () => {
-    if (addressToRemove) {
-      dispatch(removeAccountThunk(addressToRemove));
-    }
-
-    onRemoveAccountConfirmModalClose();
-  };
   const handleNetworkClick = (network: INetwork) => () => {
     dispatch(
       setSettings({
@@ -135,8 +120,19 @@ const AccountPage: FC = () => {
     );
   };
   const handleRemoveAccountClick = (address: string) => () => {
-    setAddressToRemove(address);
-    onRemoveAccountConfirmModalOpen();
+    dispatch(
+      setConfirm({
+        description: t<string>('captions.removeAccount', {
+          address: ellipseAddress(address || '', {
+            end: 10,
+            start: 10,
+          }),
+        }),
+        onConfirm: () => dispatch(removeAccountThunk(address)),
+        title: t<string>('headings.removeAccount'),
+        warningText: t<string>('captions.removeAccountWarning'),
+      })
+    );
   };
   const renderContent = () => {
     let balanceStandardUnit: BigNumber;
@@ -389,27 +385,9 @@ const AccountPage: FC = () => {
       return;
     }
   }, [account]);
-  useEffect(() => {
-    if (!isRemoveAccountConfirmModalOpen) {
-      setAddressToRemove(null);
-    }
-  }, [isRemoveAccountConfirmModalOpen]);
 
   return (
     <>
-      <ConfirmModal
-        description={t<string>('captions.removeAccount', {
-          address: ellipseAddress(addressToRemove || '', {
-            end: 10,
-            start: 10,
-          }),
-        })}
-        isOpen={isRemoveAccountConfirmModalOpen}
-        onCancel={onRemoveAccountConfirmModalClose}
-        onConfirm={handleConfirmRemoveAccount}
-        title={t<string>('headings.removeAccount')}
-        warningText={t<string>('captions.removeAccountWarning')}
-      />
       {account && (
         <ShareAddressModal
           address={account.address}
@@ -417,9 +395,7 @@ const AccountPage: FC = () => {
           onClose={onShareAddressModalClose}
         />
       )}
-      <PageShell>
-        <MainLayout>{renderContent()}</MainLayout>
-      </PageShell>
+      {renderContent()}
     </>
   );
 };
