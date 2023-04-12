@@ -1,6 +1,7 @@
 import { Heading, Spacer, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import {
+  IoCogOutline,
   IoColorPaletteOutline,
   IoConstructOutline,
   IoLinkOutline,
@@ -16,6 +17,7 @@ import {
   ADVANCED_ROUTE,
   APPEARANCE_ROUTE,
   DEFAULT_GAP,
+  GENERAL_ROUTE,
   SECURITY_ROUTE,
   SESSIONS_ROUTE,
   SETTINGS_ROUTE,
@@ -24,7 +26,7 @@ import {
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-const MainSettingsPage: FC = () => {
+const SettingsIndexPage: FC = () => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
 
@@ -40,6 +42,11 @@ const MainSettingsPage: FC = () => {
       >
         {t<string>('titles.page', { context: 'settings' })}
       </Heading>
+      <SettingsLinkItem
+        icon={IoCogOutline}
+        label={t<string>('titles.page', { context: 'general' })}
+        to={`${SETTINGS_ROUTE}${GENERAL_ROUTE}`}
+      />
       <SettingsLinkItem
         icon={IoShieldCheckmarkOutline}
         label={t<string>('titles.page', { context: 'security' })}
@@ -74,4 +81,4 @@ const MainSettingsPage: FC = () => {
   );
 };
 
-export default MainSettingsPage;
+export default SettingsIndexPage;
