@@ -8,7 +8,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
 // Constants

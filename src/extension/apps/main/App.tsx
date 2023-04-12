@@ -1,7 +1,7 @@
 import { combineReducers, Store } from '@reduxjs/toolkit';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 // Components

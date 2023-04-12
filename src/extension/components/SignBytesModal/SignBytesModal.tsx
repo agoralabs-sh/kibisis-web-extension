@@ -69,7 +69,6 @@ import {
 
 // Utils
 import { decodeJwt, ellipseAddress } from '@extension/utils';
-import { ErrorCodeEnum } from '@extension/enums';
 
 interface IProps {
   onClose: () => void;
