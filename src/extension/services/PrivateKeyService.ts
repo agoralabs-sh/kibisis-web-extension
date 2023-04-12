@@ -497,7 +497,7 @@ export default class PrivateKeyService {
     accounts = await this.getAccounts();
     newAccounts = await Promise.all(
       // with a new password, we need to re-encrypt all the private keys
-      accounts.map(async (value) => {
+      accounts.map<Promise<IPksAccountStorageItem>>(async (value) => {
         const decryptedPrivateKey: Uint8Array = await PrivateKeyService.decrypt(
           decodeHex(value.encryptedPrivateKey), // private keys are encoded in hexadecimal
           currentPassword,
@@ -539,7 +539,7 @@ export default class PrivateKeyService {
           [this.createAccountItemKey(value.publicKey)]: value,
         }),
         {}
-      ), // save the accounts to storage using an account and the public key as a prefix
+      ), // save the accounts to storage using the public key as a prefix
     });
   }
 

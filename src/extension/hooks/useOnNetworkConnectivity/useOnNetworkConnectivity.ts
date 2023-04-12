@@ -44,7 +44,7 @@ export default function useOnNetworkConnectivity(): void {
   };
 
   useEffect(() => {
-    determineNetworkStatus();
+    (async () => await determineNetworkStatus())();
 
     setIntervalId(
       window.setInterval(async () => {

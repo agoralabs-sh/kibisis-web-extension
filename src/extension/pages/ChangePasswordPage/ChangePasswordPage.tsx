@@ -1,33 +1,57 @@
-import { Spacer, Text, VStack } from '@chakra-ui/react';
+import { Text, VStack, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Components
 import Button from '@extension/components/Button';
-import CreatePasswordInput from '@extension/components/CreatePasswordInput';
+import ConfirmPasswordModal from '@extension/components/ConfirmPasswordModal';
+import CreatePasswordInput, {
+  validate,
+} from '@extension/components/CreatePasswordInput';
 import PageHeader from '@extension/components/PageHeader';
 
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useChangePassword from '@extension/hooks/useChangePassword';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
-  const defaultTextColor: string = useDefaultTextColor();
-  const [password, setPassword] = useState<string | null>(null);
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const { changePassword, saving } = useChangePassword();
+  const subTextColor: string = useSubTextColor();
+  const [newPassword, setNewPassword] = useState<string | null>(null);
   const [score, setScore] = useState<number>(-1);
   const handlePasswordChange = (newPassword: string, newScore: number) => {
-    setPassword(newPassword);
+    setNewPassword(newPassword);
     setScore(newScore);
   };
   const handleChangeClick = () => {
-    console.log('choose change');
+    if (!validate(newPassword || '', score, t)) {
+      onOpen();
+    }
+  };
+  const handleOnConfirmPasswordModalConfirm = async (
+    currentPassword: string
+  ) => {
+    onClose();
+
+    if (newPassword) {
+      await changePassword(newPassword, currentPassword);
+      setNewPassword(null);
+      setScore(-1);
+    }
   };
 
   return (
     <>
+      <ConfirmPasswordModal
+        isOpen={isOpen}
+        onCancel={onClose}
+        onConfirm={handleOnConfirmPasswordModalConfirm}
+      />
       <PageHeader
         title={t<string>('titles.page', { context: 'changePassword' })}
       />
@@ -38,18 +62,24 @@ const ChangePasswordPage: FC = () => {
         spacing={8}
         w="full"
       >
-        <VStack flexGrow={1} spacing={8} w="full">
-          <Text color={defaultTextColor}>
-            {t<string>('captions.changePassword')}
+        <VStack flexGrow={1} spacing={4} w="full">
+          <Text color={subTextColor} size="md" textAlign="left">
+            {t<string>('captions.changePassword1')}
+          </Text>
+          <Text color={subTextColor} size="md" textAlign="left">
+            {t<string>('captions.changePassword2')}
           </Text>
           <CreatePasswordInput
+            disabled={saving}
+            label={t<string>('labels.newPassword')}
             onChange={handlePasswordChange}
             score={score}
-            value={password || ''}
+            value={newPassword || ''}
           />
         </VStack>
         <Button
           colorScheme="primary"
+          isLoading={saving}
           onClick={handleChangeClick}
           size="lg"
           variant="solid"
