@@ -25,7 +25,12 @@ import { PrivateKeyService, StorageManager } from '@extension/services';
 
 // Types
 import { ILogger } from '@common/types';
-import { IAccount, INetwork, IRegistrationRootState } from '@extension/types';
+import {
+  IAccount,
+  INetwork,
+  IPksAccountStorageItem,
+  IRegistrationRootState,
+} from '@extension/types';
 import { ISaveCredentialsPayload } from '../types';
 
 // Utils
@@ -49,6 +54,7 @@ const saveCredentialsThunk: AsyncThunk<
     let accounts: IAccount[];
     let address: string;
     let inputError: BaseExtensionError;
+    let pksAccount: IPksAccountStorageItem | null;
     let privateKeyService: PrivateKeyService;
     let publicKey: Uint8Array;
     let storageManager: StorageManager;
@@ -80,7 +86,8 @@ const saveCredentialsThunk: AsyncThunk<
       // reset any previous credentials, set the password and the account
       await privateKeyService.reset();
       await privateKeyService.setPassword(password);
-      await privateKeyService.setAccount(
+
+      pksAccount = await privateKeyService.setAccount(
         {
           privateKey,
           publicKey,
@@ -110,6 +117,9 @@ const saveCredentialsThunk: AsyncThunk<
         initializeDefaultAccount({
           address,
           genesisHash: value.genesisHash,
+          ...(pksAccount && {
+            createdAt: pksAccount.createdAt,
+          }),
           ...(name && {
             name,
           }),

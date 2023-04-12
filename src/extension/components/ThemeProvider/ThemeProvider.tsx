@@ -1,6 +1,9 @@
 import { ChakraProvider, ColorMode } from '@chakra-ui/react';
 import React, { FC, PropsWithChildren, useEffect, useState } from 'react';
 
+// Components
+import Fonts from '@extension/components/Fonts';
+
 // Selectors
 import { useSelectSettings } from '@extension/selectors';
 
@@ -40,6 +43,7 @@ const ThemeProvider: FC<IProps> = ({ children, initialColorMode }) => {
 
   return (
     <ChakraProvider colorModeManager={colorModeManager} theme={theme}>
+      <Fonts />
       {children}
     </ChakraProvider>
   );

@@ -6,7 +6,6 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 // Components
 import AgoraIcon from '@extension/components/AgoraIcon';
 import Button from '@extension/components/Button';
-import PageShell from '@extension/components/PageShell';
 
 // Constants
 import { CREATE_PASSWORD_ROUTE, DEFAULT_GAP } from '@extension/constants';
@@ -23,7 +22,7 @@ const GetStartedPage: FC = () => {
   const handleGetStartedClick = () => navigate(CREATE_PASSWORD_ROUTE);
 
   return (
-    <PageShell withPadding={true}>
+    <VStack flexGrow={1} pb={DEFAULT_GAP} px={DEFAULT_GAP} spacing={2} w="full">
       <VStack flexGrow={1} justifyContent="center" spacing={1} w="full">
         <AgoraIcon color="primary.500" h={12} w={12} />
         <Heading color={defaultTextColor}>{__APP_TITLE__}</Heading>
@@ -33,14 +32,13 @@ const GetStartedPage: FC = () => {
       </VStack>
       <Button
         colorScheme="primary"
-        mb={DEFAULT_GAP}
         onClick={handleGetStartedClick}
         size="lg"
         w="full"
       >
         {t<string>('buttons.getStarted')}
       </Button>
-    </PageShell>
+    </VStack>
   );
 };
 

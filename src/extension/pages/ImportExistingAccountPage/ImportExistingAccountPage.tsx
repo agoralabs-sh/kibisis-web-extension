@@ -19,7 +19,6 @@ import EnterMnemonicPhraseInput, {
   validate,
 } from '@extension/components/EnterMnemonicPhraseInput';
 import PageHeader from '@extension/components/PageHeader';
-import PageShell from '@extension/components/PageShell';
 import Steps from '@extension/components/Steps';
 
 // Constants
@@ -110,14 +109,14 @@ const ImportExistingAccountPage: FC<IProps> = ({
   }, [account]);
 
   return (
-    <PageShell>
+    <>
       <PageHeader
         title={t<string>('titles.page', { context: 'importExistingAccount' })}
       />
       <VStack
         flexGrow={1}
         justifyContent="center"
-        mb={DEFAULT_GAP}
+        pb={DEFAULT_GAP}
         px={DEFAULT_GAP}
         spacing={2}
         w="full"
@@ -217,7 +216,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
           )}
         </HStack>
       </VStack>
-    </PageShell>
+    </>
   );
 };
 

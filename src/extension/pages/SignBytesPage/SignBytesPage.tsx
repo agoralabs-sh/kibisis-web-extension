@@ -5,10 +5,9 @@ import {
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
-import PageShell from '@extension/components/PageShell';
+import LoadingPage from '@extension/components/LoadingPage';
 
 // Features
 import { setSignBytesRequest } from '@extension/features/messages';
@@ -18,9 +17,6 @@ import {
   useSelectSelectedNetwork,
   useSelectSessions,
 } from '@extension/selectors';
-
-// Theme
-import { theme } from '@extension/theme';
 
 // Types
 import { IAppThunkDispatch, INetwork, ISession } from '@extension/types';
@@ -62,11 +58,7 @@ const SignBytesPage: FC = () => {
     }
   }, [selectedNetwork, sessions]);
 
-  return (
-    <PageShell>
-      <InfinitySpin color={theme.colors.primary['500']} width="200" />
-    </PageShell>
-  );
+  return <LoadingPage />;
 };
 
 export default SignBytesPage;

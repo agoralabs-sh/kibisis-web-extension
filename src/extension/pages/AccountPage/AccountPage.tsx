@@ -25,6 +25,7 @@ import {
   IoCloudOfflineOutline,
   IoInformationCircleOutline,
   IoQrCodeOutline,
+  IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import {
@@ -41,14 +42,14 @@ import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import IconButton from '@extension/components/IconButton';
-import MainLayout from '@extension/components/MainLayout';
-import PageShell from '@extension/components/PageShell';
 import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // Constants
 import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Features
+import { removeAccountThunk } from '@extension/features/accounts';
+import { setConfirm } from '@extension/features/application';
 import { setSettings } from '@extension/features/settings';
 
 // Hooks
@@ -60,6 +61,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 // Selectors
 import {
   useSelectAccount,
+  useSelectAccounts,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
   useSelectIsOnline,
@@ -102,6 +104,7 @@ const AccountPage: FC = () => {
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const account: IAccount | null = useSelectAccount(address);
+  const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
   const online: boolean = useSelectIsOnline();
@@ -113,6 +116,21 @@ const AccountPage: FC = () => {
       setSettings({
         ...settings,
         network,
+      })
+    );
+  };
+  const handleRemoveAccountClick = (address: string) => () => {
+    dispatch(
+      setConfirm({
+        description: t<string>('captions.removeAccount', {
+          address: ellipseAddress(address || '', {
+            end: 10,
+            start: 10,
+          }),
+        }),
+        onConfirm: () => dispatch(removeAccountThunk(address)),
+        title: t<string>('headings.removeAccount'),
+        warningText: t<string>('captions.removeAccountWarning'),
       })
     );
   };
@@ -310,6 +328,15 @@ const AccountPage: FC = () => {
                 variant="ghost"
               />
             </Tooltip>
+            <Tooltip label={t<string>('labels.removeAccount')}>
+              <IconButton
+                aria-label="Remove account"
+                icon={IoTrashOutline}
+                onClick={handleRemoveAccountClick(account.address)}
+                size="sm"
+                variant="ghost"
+              />
+            </Tooltip>
           </HStack>
         </VStack>
       );
@@ -336,10 +363,26 @@ const AccountPage: FC = () => {
   };
 
   useEffect(() => {
-    if (account && !location.pathname.includes(account.address)) {
+    // if there is no account, go to the first account, or the accounts index if no accounts exist
+    if (!account) {
+      navigate(
+        `${ACCOUNTS_ROUTE}${accounts[0] ? `/${accounts[0].address}` : ''}`,
+        {
+          replace: true,
+        }
+      );
+
+      return;
+    }
+
+    // if there is an account, but the location doesn't match, change the location
+    if (!location.pathname.includes(account.address)) {
       navigate(`${ACCOUNTS_ROUTE}/${account.address}`, {
+        preventScrollReset: true,
         replace: true,
       });
+
+      return;
     }
   }, [account]);
 
@@ -352,9 +395,7 @@ const AccountPage: FC = () => {
           onClose={onShareAddressModalClose}
         />
       )}
-      <PageShell>
-        <MainLayout>{renderContent()}</MainLayout>
-      </PageShell>
+      {renderContent()}
     </>
   );
 };

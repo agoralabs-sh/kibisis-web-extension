@@ -1,8 +1,9 @@
 enum SessionsThunkEnum {
   ClearSessions = 'sessions/clearSessions',
   FetchSessions = 'sessions/fetchSessions',
-  SetSession = 'sessions/setSession',
+  RemoveAuthorizedAddress = 'sessions/removeAuthorizedAddress',
   RemoveSession = 'sessions/removeSession',
+  SetSession = 'sessions/setSession',
 }
 
 export default SessionsThunkEnum;

@@ -4,9 +4,8 @@ import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 
 // Components
-import Fonts from '@extension/components/Fonts';
 import ThemeProvider from '@extension/components/ThemeProvider';
-import AppProvider from './AppProvider';
+import Root from './Root';
 
 // Features
 import { reducer as accountsReducer } from '@extension/features/accounts';
@@ -41,10 +40,9 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     <Provider store={store}>
       <I18nextProvider i18n={i18next}>
         <ThemeProvider initialColorMode={initialColorMode}>
-          <Fonts />
-          <AppProvider>
+          <Root>
             <EnablePage />
-          </AppProvider>
+          </Root>
         </ThemeProvider>
       </I18nextProvider>
     </Provider>

@@ -1,11 +1,13 @@
 import { createStandaloneToast } from '@chakra-ui/react';
-import React, { FC, PropsWithChildren, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
 // Components
+import ConfirmModal from '@extension/components/ConfirmModal';
 import EnableModal from '@extension/components/EnableModal';
 import ErrorModal from '@extension/components/ErrorModal';
+import MainLayout from '@extension/components/MainLayout';
 import SignBytesModal from '@extension/components/SignBytesModal';
 
 // Features
@@ -14,6 +16,7 @@ import {
   startPollingForAccountInformationThunk,
 } from '@extension/features/accounts';
 import {
+  setConfirm,
   setError,
   setNavigate,
   setToast,
@@ -38,12 +41,13 @@ import { theme } from '@extension/theme';
 // Types
 import { IAppThunkDispatch, INetwork } from '@extension/types';
 
-const AppProvider: FC<PropsWithChildren> = ({ children }) => {
+const Root: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
 
+  const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));
   const handleSignDataModalClose = () => dispatch(setSignBytesRequest(null));
@@ -71,12 +75,15 @@ const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <>
       <ErrorModal onClose={handleErrorModalClose} />
+      <ConfirmModal onClose={handleConfirmClose} />
       <EnableModal onClose={handleEnableModalClose} />
       <SignBytesModal onClose={handleSignDataModalClose} />
       <ToastContainer />
-      {children}
+      <MainLayout>
+        <Outlet />
+      </MainLayout>
     </>
   );
 };
 
-export default AppProvider;
+export default Root;

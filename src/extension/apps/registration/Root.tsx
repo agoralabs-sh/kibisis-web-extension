@@ -1,7 +1,7 @@
-import { createStandaloneToast } from '@chakra-ui/react';
-import React, { FC, PropsWithChildren, useEffect } from 'react';
+import { Center, createStandaloneToast, Flex } from '@chakra-ui/react';
+import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
 // Components
 import ErrorModal from '@extension/components/ErrorModal';
@@ -20,7 +20,7 @@ import { theme } from '@extension/theme';
 // Types
 import { IAppThunkDispatch } from '@extension/types';
 
-const AppProvider: FC<PropsWithChildren> = ({ children }) => {
+const Root: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { toast, ToastContainer } = createStandaloneToast({ theme });
@@ -38,9 +38,19 @@ const AppProvider: FC<PropsWithChildren> = ({ children }) => {
     <>
       <ErrorModal onClose={handleErrorModalClose} />
       <ToastContainer />
-      {children}
+      <Center as="main" backgroundColor="var(--chakra-colors-chakra-body-bg)">
+        <Flex
+          alignItems="center"
+          direction="column"
+          justifyContent="center"
+          minH="100vh"
+          w="full"
+        >
+          <Outlet />
+        </Flex>
+      </Center>
     </>
   );
 };
 
-export default AppProvider;
+export default Root;

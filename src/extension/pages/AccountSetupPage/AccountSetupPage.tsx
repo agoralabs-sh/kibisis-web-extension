@@ -8,7 +8,6 @@ import CreateNewAccountIcon from '@extension/components/CreateNewAccountIcon';
 import ImportAccountIcon from '@extension/components/ImportAccountIcon';
 import ImportRekeyAccountIcon from '@extension/components/ImportRekeyAccountIcon';
 import PageHeader from '@extension/components/PageHeader';
-import PageShell from '@extension/components/PageShell';
 import AccountTypeItem from './AccountTypeItem';
 
 // Constants
@@ -40,7 +39,7 @@ const AccountSetupPage: FC = () => {
     };
 
   return (
-    <PageShell>
+    <>
       <PageHeader
         title={t<string>('titles.page', { context: 'accountSetup' })}
       />
@@ -73,7 +72,7 @@ const AccountSetupPage: FC = () => {
           tooltipText="Coming soon!"
         />
       </VStack>
-    </PageShell>
+    </>
   );
 };
 

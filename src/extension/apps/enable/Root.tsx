@@ -16,7 +16,7 @@ import { useSelectSelectedNetwork } from '@extension/selectors';
 // Types
 import { IAppThunkDispatch, INetwork } from '@extension/types';
 
-const AppProvider: FC<PropsWithChildren> = ({ children }) => {
+const Root: FC<PropsWithChildren> = ({ children }) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
@@ -40,4 +40,4 @@ const AppProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export default AppProvider;
+export default Root;

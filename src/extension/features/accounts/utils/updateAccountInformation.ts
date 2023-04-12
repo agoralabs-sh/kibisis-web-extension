@@ -102,6 +102,7 @@ export default async function updateAccountInformation(
             String(accountInformation.amount as bigint)
           ).toString(),
           authAddress: accountInformation['auth-addr'] || null,
+          createdAt: account.createdAt,
           genesisHash: account.genesisHash,
           id: account.id,
           minAtomicBalance: new BigNumber(

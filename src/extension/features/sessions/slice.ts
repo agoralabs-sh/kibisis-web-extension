@@ -7,16 +7,17 @@ import { StoreNameEnum } from '@extension/enums';
 import {
   clearSessionsThunk,
   fetchSessionsThunk,
+  removeAuthorizedAddressThunk,
   removeSessionThunk,
   setSessionThunk,
 } from './thunks';
 
 // Types
 import { ISession } from '@extension/types';
-import { ISessionsState } from './types';
+import { IRemoveAuthorizedAddressResult, ISessionsState } from './types';
 
 // Utils
-import { getInitialState, upsertSession } from './utils';
+import { getInitialState, upsertSessions } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
@@ -45,6 +46,33 @@ const slice = createSlice({
     builder.addCase(fetchSessionsThunk.rejected, (state: ISessionsState) => {
       state.fetching = false;
     });
+    /** Remove authorized address **/
+    builder.addCase(
+      removeAuthorizedAddressThunk.fulfilled,
+      (
+        state: ISessionsState,
+        action: PayloadAction<IRemoveAuthorizedAddressResult>
+      ) => {
+        state.items = upsertSessions(state.items, action.payload.update) // update the sessions
+          .filter(
+            (session) =>
+              !action.payload.remove.some((value) => value === session.id)
+          ); // filter out the removed sessions
+        state.saving = false;
+      }
+    );
+    builder.addCase(
+      removeAuthorizedAddressThunk.pending,
+      (state: ISessionsState) => {
+        state.saving = true;
+      }
+    );
+    builder.addCase(
+      removeAuthorizedAddressThunk.rejected,
+      (state: ISessionsState) => {
+        state.saving = false;
+      }
+    );
     /** Remove session **/
     builder.addCase(
       removeSessionThunk.fulfilled,
@@ -65,7 +93,7 @@ const slice = createSlice({
     builder.addCase(
       setSessionThunk.fulfilled,
       (state: ISessionsState, action: PayloadAction<ISession>) => {
-        state.items = upsertSession(state.items, action.payload);
+        state.items = upsertSessions(state.items, [action.payload]);
         state.saving = false;
       }
     );

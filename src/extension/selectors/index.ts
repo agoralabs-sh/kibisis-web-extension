@@ -1,6 +1,7 @@
 export { default as useSelectAccount } from './useSelectAccount';
 export { default as useSelectAccounts } from './useSelectAccounts';
 export { default as useSelectColorMode } from './useSelectColorMode';
+export { default as useSelectConfirm } from './useSelectConfirm';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';
 export { default as useSelectError } from './useSelectError';
 export { default as useSelectFetchingAccounts } from './useSelectFetchingAccounts';
@@ -17,4 +18,5 @@ export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';
 export { default as useSelectSessions } from './useSelectSessions';
 export { default as useSelectSettings } from './useSelectSettings';
+export { default as useSelectSideBar } from './useSelectSideBar';
 export { default as useSelectSignBytesRequest } from './useSelectSignBytesRequest';

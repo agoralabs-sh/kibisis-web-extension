@@ -22,7 +22,6 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import Button from '@extension/components/Button';
 import CopyButton from '@extension/components/CopyButton';
 import PageHeader from '@extension/components/PageHeader';
-import PageShell from '@extension/components/PageShell';
 import Steps from '@extension/components/Steps';
 
 // Constants
@@ -91,14 +90,14 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
   };
 
   return (
-    <PageShell>
+    <>
       <PageHeader
         title={t<string>('titles.page', { context: 'createNewAccount' })}
       />
       <VStack
         flexGrow={1}
         justifyContent="center"
-        mb={DEFAULT_GAP}
+        pb={DEFAULT_GAP}
         px={DEFAULT_GAP}
         spacing={2}
         w="full"
@@ -245,7 +244,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
           )}
         </HStack>
       </VStack>
-    </PageShell>
+    </>
   );
 };
 

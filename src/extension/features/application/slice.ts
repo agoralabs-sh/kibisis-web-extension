@@ -9,7 +9,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // Types
-import { IApplicationState } from './types';
+import { IApplicationState, IConfirm } from './types';
 
 // Utils
 import { getInitialState } from './utils';
@@ -18,6 +18,12 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Application,
   reducers: {
+    setConfirm: (
+      state: Draft<IApplicationState>,
+      action: PayloadAction<IConfirm | null>
+    ) => {
+      state.confirm = action.payload;
+    },
     setError: (
       state: Draft<IApplicationState>,
       action: PayloadAction<BaseExtensionError | null>
@@ -36,6 +42,12 @@ const slice = createSlice({
     ) => {
       state.online = action.payload;
     },
+    setSideBar: (
+      state: Draft<IApplicationState>,
+      action: PayloadAction<boolean>
+    ) => {
+      state.sidebar = action.payload;
+    },
     setToast: (
       state: Draft<IApplicationState>,
       action: PayloadAction<CreateToastFnReturn>
@@ -46,4 +58,11 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setError, setNavigate, setOnline, setToast } = slice.actions;
+export const {
+  setConfirm,
+  setError,
+  setNavigate,
+  setOnline,
+  setSideBar,
+  setToast,
+} = slice.actions;

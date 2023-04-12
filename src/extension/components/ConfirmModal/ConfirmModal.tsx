@@ -20,41 +20,48 @@ import Warning from '@extension/components/Warning';
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// Features
+import { IConfirm } from '@extension/features/application';
+
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+
+// Selectors
+import { useSelectConfirm } from '@extension/selectors';
 
 // Theme
 import { theme } from '@extension/theme';
 
 interface IProps {
-  description: string;
-  isOpen: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-  title: string;
-  warningText?: string;
+  onClose: () => void;
 }
 
-const ConfirmModal: FC<IProps> = ({
-  description,
-  isOpen,
-  onConfirm,
-  onCancel,
-  title,
-  warningText,
-}: IProps) => {
+const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
+  const confirm: IConfirm | null = useSelectConfirm();
   const defaultTextColor: string = useDefaultTextColor();
   const initialRef: RefObject<HTMLButtonElement> | undefined = createRef();
-  const handleCancelClick = () => onCancel();
-  const handleConfirmClick = () => onConfirm();
+  const handleCancelClick = () => {
+    if (confirm?.onCancel) {
+      confirm.onCancel();
+    }
+
+    onClose();
+  };
+  const handleConfirmClick = () => {
+    if (confirm?.onConfirm) {
+      confirm.onConfirm();
+    }
+
+    onClose();
+  };
 
   return (
     <Modal
       initialFocusRef={initialRef}
-      isOpen={isOpen}
+      isOpen={!!confirm}
       motionPreset="slideInBottom"
-      onClose={onCancel}
+      onClose={onClose}
       size="full"
       scrollBehavior="inside"
     >
@@ -64,19 +71,21 @@ const ConfirmModal: FC<IProps> = ({
         backgroundColor="var(--chakra-colors-chakra-body-bg)"
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
-        minH="65dvh"
+        minH="0dvh"
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} size="md" textAlign="center">
-            {title}
+            {confirm?.title || 'Confirm'}
           </Heading>
         </ModalHeader>
         <ModalBody>
           <VStack spacing={4} w="full">
             <Text color={defaultTextColor} fontSize="md" textAlign="left">
-              {description}
+              {confirm?.description || 'Are you sure?'}
             </Text>
-            {warningText && <Warning message={warningText} size="sm" />}
+            {confirm?.warningText && (
+              <Warning message={confirm.warningText} size="sm" />
+            )}
           </VStack>
         </ModalBody>
         <ModalFooter p={DEFAULT_GAP}>

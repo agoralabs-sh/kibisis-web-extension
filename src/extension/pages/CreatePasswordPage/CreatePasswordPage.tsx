@@ -10,7 +10,6 @@ import CreatePasswordInput, {
   validate,
 } from '@extension/components/CreatePasswordInput';
 import PageHeader from '@extension/components/PageHeader';
-import PageShell from '@extension/components/PageShell';
 
 // Constants
 import { ADD_ACCOUNT_ROUTE, DEFAULT_GAP } from '@extension/constants';
@@ -53,11 +52,17 @@ const CreatePasswordPage: FC = () => {
   };
 
   return (
-    <PageShell>
+    <>
       <PageHeader
         title={t<string>('titles.page', { context: 'createPassword' })}
       />
-      <VStack flexGrow={1} pb={DEFAULT_GAP} px={DEFAULT_GAP} spacing={8}>
+      <VStack
+        flexGrow={1}
+        pb={DEFAULT_GAP}
+        px={DEFAULT_GAP}
+        spacing={2}
+        w="full"
+      >
         <VStack flexGrow={1} spacing={8} w="full">
           <VStack spacing={3} w="full">
             <Text color={defaultTextColor}>
@@ -83,7 +88,7 @@ const CreatePasswordPage: FC = () => {
           {t<string>('buttons.next')}
         </Button>
       </VStack>
-    </PageShell>
+    </>
   );
 };
 
