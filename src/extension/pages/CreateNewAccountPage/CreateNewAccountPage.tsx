@@ -22,7 +22,6 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import Button from '@extension/components/Button';
 import CopyButton from '@extension/components/CopyButton';
 import PageHeader from '@extension/components/PageHeader';
-import PageShell from '@extension/components/PageShell';
 import Steps from '@extension/components/Steps';
 
 // Constants

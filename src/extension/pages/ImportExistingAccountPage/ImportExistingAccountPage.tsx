@@ -19,7 +19,6 @@ import EnterMnemonicPhraseInput, {
   validate,
 } from '@extension/components/EnterMnemonicPhraseInput';
 import PageHeader from '@extension/components/PageHeader';
-import PageShell from '@extension/components/PageShell';
 import Steps from '@extension/components/Steps';
 
 // Constants

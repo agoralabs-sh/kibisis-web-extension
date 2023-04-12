@@ -2,12 +2,11 @@ import { combineReducers, Store } from '@reduxjs/toolkit';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 // Components
-import Fonts from '@extension/components/Fonts';
 import ThemeProvider from '@extension/components/ThemeProvider';
-import AppProvider from './AppProvider';
+import Root from './Root';
 
 // Constants
 import {
@@ -33,6 +32,32 @@ import { IAppProps, IRegistrationRootState } from '@extension/types';
 // Utils
 import { makeStore } from '@extension/utils';
 
+const createRouter = () =>
+  createHashRouter([
+    {
+      children: [
+        {
+          element: <Navigate replace={true} to={GET_STARTED_ROUTE} />,
+          path: '/',
+        },
+        {
+          element: <GetStartedPage />,
+          path: GET_STARTED_ROUTE,
+        },
+        {
+          element: <CreatePasswordPage />,
+          path: CREATE_PASSWORD_ROUTE,
+        },
+        {
+          element: <RegistrationAddAccountRouter />,
+          path: `${ADD_ACCOUNT_ROUTE}/*`,
+        },
+      ],
+      element: <Root />,
+      path: '/',
+    },
+  ]);
+
 const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IRegistrationRootState> =
     makeStore<IRegistrationRootState>(
@@ -48,26 +73,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     <Provider store={store}>
       <I18nextProvider i18n={i18next}>
         <ThemeProvider initialColorMode={initialColorMode}>
-          <Fonts />
-          <HashRouter>
-            <AppProvider>
-              <Routes>
-                <Route
-                  element={<Navigate replace={true} to={GET_STARTED_ROUTE} />}
-                  path="/"
-                />
-                <Route element={<GetStartedPage />} path={GET_STARTED_ROUTE} />
-                <Route
-                  element={<CreatePasswordPage />}
-                  path={CREATE_PASSWORD_ROUTE}
-                />
-                <Route
-                  element={<RegistrationAddAccountRouter />}
-                  path={`${ADD_ACCOUNT_ROUTE}/*`}
-                />
-              </Routes>
-            </AppProvider>
-          </HashRouter>
+          <RouterProvider router={createRouter()} />
         </ThemeProvider>
       </I18nextProvider>
     </Provider>
