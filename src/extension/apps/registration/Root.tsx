@@ -23,7 +23,20 @@ import { IAppThunkDispatch } from '@extension/types';
 const Root: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
-  const { toast, ToastContainer } = createStandaloneToast({ theme });
+  const { toast, ToastContainer } = createStandaloneToast({
+    defaultOptions: {
+      containerStyle: {
+        margin: '0',
+        maxWidth: '100%',
+        minWidth: '100%',
+        padding: '0.5rem',
+        width: '100%',
+      },
+      duration: 6000,
+      position: 'top',
+    },
+    theme,
+  });
   const handleErrorModalClose = () => {
     dispatch(setError(null));
   };

@@ -1,6 +1,12 @@
-import { Text, VStack, useDisclosure } from '@chakra-ui/react';
-import React, { FC, useState } from 'react';
+import {
+  Text,
+  VStack,
+  useDisclosure,
+  CreateToastFnReturn,
+} from '@chakra-ui/react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // Components
 import Button from '@extension/components/Button';
@@ -11,16 +17,25 @@ import CreatePasswordInput, {
 import PageHeader from '@extension/components/PageHeader';
 
 // Constants
-import { DEFAULT_GAP } from '@extension/constants';
+import {
+  DEFAULT_GAP,
+  SECURITY_ROUTE,
+  SETTINGS_ROUTE,
+} from '@extension/constants';
 
 // Hooks
 import useChangePassword from '@extension/hooks/useChangePassword';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// Selectors
+import { useSelectToast } from '@extension/selectors';
+
 const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
+  const navigate: NavigateFunction = useNavigate();
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const { changePassword, saving } = useChangePassword();
+  const toast: CreateToastFnReturn | null = useSelectToast();
+  const { changePassword, error, passwordTag, saving } = useChangePassword();
   const subTextColor: string = useSubTextColor();
   const [newPassword, setNewPassword] = useState<string | null>(null);
   const [score, setScore] = useState<number>(-1);
@@ -38,12 +53,35 @@ const ChangePasswordPage: FC = () => {
   ) => {
     onClose();
 
+    // save the new password
     if (newPassword) {
       await changePassword(newPassword, currentPassword);
-      setNewPassword(null);
-      setScore(-1);
     }
   };
+
+  // if there is an error from the hook, show a toast
+  useEffect(() => {
+    if (error && toast) {
+      toast({
+        description: error.message,
+        duration: null,
+        isClosable: true,
+        status: 'error',
+        title: `${error.code}: ${error.name}`,
+      });
+    }
+  }, [error]);
+  // if we have the updated password tag navigate back
+  useEffect(() => {
+    if (passwordTag) {
+      setNewPassword(null);
+      setScore(-1);
+
+      navigate(`${SETTINGS_ROUTE}${SECURITY_ROUTE}`, {
+        replace: true,
+      });
+    }
+  }, [passwordTag]);
 
   return (
     <>
