@@ -1,1 +1,1 @@
-export { default } from './PageShell';
+export { default } from './LoadingPage';

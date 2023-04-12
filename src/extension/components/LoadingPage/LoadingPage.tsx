@@ -1,28 +1,22 @@
-import { Center, Flex, FlexProps } from '@chakra-ui/react';
-import React, { FC, ReactNode } from 'react';
+import { Center, Flex } from '@chakra-ui/react';
+import React, { FC } from 'react';
+import { InfinitySpin } from 'react-loader-spinner';
 
-// Constants
-import { DEFAULT_GAP } from '@extension/constants';
+// Theme
+import { theme } from '@extension/theme';
 
-interface IProps extends FlexProps {
-  children: ReactNode;
-  withPadding?: boolean;
-}
-
-const PageShell: FC<IProps> = ({ children, withPadding = false }: IProps) => (
+const LoadingPage: FC = () => (
   <Center as="main" backgroundColor="var(--chakra-colors-chakra-body-bg)">
     <Flex
       alignItems="center"
       direction="column"
       justifyContent="center"
       minH="100vh"
-      pt={withPadding ? DEFAULT_GAP : 0}
-      px={withPadding ? DEFAULT_GAP : 0}
       w="full"
     >
-      {children}
+      <InfinitySpin color={theme.colors.primary['500']} width="200" />
     </Flex>
   </Center>
 );
 
-export default PageShell;
+export default LoadingPage;

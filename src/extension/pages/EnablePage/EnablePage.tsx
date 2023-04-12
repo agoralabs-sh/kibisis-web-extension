@@ -1,10 +1,9 @@
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { InfinitySpin } from 'react-loader-spinner';
 
 // Components
-import PageShell from '@extension/components/PageShell';
+import LoadingPage from '@extension/components/LoadingPage';
 
 // Features
 import { setEnableRequest } from '@extension/features/messages';
@@ -14,9 +13,6 @@ import {
   useSelectNetworks,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
-
-// Theme
-import { theme } from '@extension/theme';
 
 // Types
 import { IAppThunkDispatch, INetwork } from '@extension/types';
@@ -66,11 +62,7 @@ const EnablePage: FC = () => {
     }
   }, [selectedNetwork]);
 
-  return (
-    <PageShell>
-      <InfinitySpin color={theme.colors.primary['500']} width="200" />
-    </PageShell>
-  );
+  return <LoadingPage />;
 };
 
 export default EnablePage;
