@@ -1,1 +1,1 @@
-export const APP_TITLE: string = 'Agora Wallet';
+export const APP_TITLE: string = 'Kibisis';

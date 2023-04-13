@@ -1,7 +1,7 @@
 import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 
 // Services
-import { AgoraWalletManager } from '@external/services';
+import { KibisisWalletManager } from '@external/services';
 
 // Types
 import { ILogger } from '@common/types';
@@ -14,8 +14,8 @@ import { createLogger } from '@common/utils';
   const logger: ILogger = createLogger(
     __ENV__ === 'development' ? 'debug' : 'error'
   );
-  const script: string = 'agora-wallet';
-  let walletManager: AgoraWalletManager;
+  const script: string = 'kibisis';
+  let walletManager: KibisisWalletManager;
 
   // check for the algorand provider, if it doesn't exist, overwrite it
   if (
@@ -27,7 +27,7 @@ import { createLogger } from '@common/utils';
     (window as IWindow).algorand = new AlgorandProvider();
   }
 
-  walletManager = new AgoraWalletManager({
+  walletManager = new KibisisWalletManager({
     extensionId: __EXTENSION_ID__,
     logger,
   });

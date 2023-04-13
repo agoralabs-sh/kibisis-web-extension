@@ -1,1 +1,1 @@
-export { default as AgoraWalletManager } from './AgoraWalletManager';
+export { default as KibisisWalletManager } from './KibisisWalletManager';

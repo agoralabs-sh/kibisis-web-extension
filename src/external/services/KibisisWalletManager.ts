@@ -50,7 +50,7 @@ interface INewOptions extends IBaseOptions {
   extensionId: string;
 }
 
-export default class AgoraWalletManager extends BaseWalletManager {
+export default class KibisisWalletManager extends BaseWalletManager {
   private readonly extensionId: string;
   private readonly logger: ILogger | null;
 
@@ -79,7 +79,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
 
       this.logger &&
         this.logger.debug(
-          `${AgoraWalletManager.name}#handleEvent(): handling event "${message.event}"`
+          `${KibisisWalletManager.name}#handleEvent(): handling event "${message.event}"`
         );
 
       eventListener = (event: MessageEvent<IExternalResponseEvents>) => {
@@ -93,7 +93,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
 
         this.logger &&
           this.logger.debug(
-            `${AgoraWalletManager.name}#handleEvent(): handling response event "${event.data.event}"`
+            `${KibisisWalletManager.name}#handleEvent(): handling response event "${event.data.event}"`
           );
 
         // clear the timer, we can handle it from here
@@ -134,7 +134,7 @@ export default class AgoraWalletManager extends BaseWalletManager {
       timer = window.setTimeout(() => {
         this.logger &&
           this.logger.debug(
-            `${AgoraWalletManager.name}#handleEvent(): event "${message.event}" timed out`
+            `${KibisisWalletManager.name}#handleEvent(): event "${message.event}" timed out`
           );
 
         window.removeEventListener('message', eventListener);
