@@ -31,7 +31,7 @@ const theme: Dict = extendTheme({
       200: '#EED3FF',
       300: '#E9C8FF',
       400: '#E5BDFF',
-      500: '#E0B0FF',
+      500: '#E0B0FF', // mauve
       600: '#C875FF',
       700: '#AF37FF',
       800: '#9500F8',
@@ -43,7 +43,7 @@ const theme: Dict = extendTheme({
       200: '#EC39FC',
       300: '#E707FB',
       400: '#BC03CD',
-      500: '#8D029B',
+      500: '#8D029B', // mauveine
       600: '#7B0285',
       700: '#66026F',
       800: '#520159',
