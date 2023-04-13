@@ -19,6 +19,7 @@ import { setPassword } from '@extension/features/registration';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Types
@@ -36,6 +37,7 @@ const CreatePasswordPage: FC = () => {
     (state) => state.registration.score
   );
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
@@ -78,13 +80,7 @@ const CreatePasswordPage: FC = () => {
             value={password || ''}
           />
         </VStack>
-        <Button
-          colorScheme="primary"
-          onClick={handleNextClick}
-          size="lg"
-          variant="solid"
-          w="full"
-        >
+        <Button onClick={handleNextClick} size="lg" variant="solid" w="full">
           {t<string>('buttons.next')}
         </Button>
       </VStack>

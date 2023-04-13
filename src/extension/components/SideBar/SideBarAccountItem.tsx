@@ -4,6 +4,7 @@ import {
   ButtonProps,
   Center,
   HStack,
+  Icon,
   Text,
   Tooltip,
   VStack,
@@ -15,9 +16,11 @@ import { IoWalletOutline } from 'react-icons/io5';
 import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
 
 // Hooks
-import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
+import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Types
@@ -39,6 +42,8 @@ const SideBarAccountItem: FC<IProps> = ({
 }: IProps) => {
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
+  const primaryColor: string = usePrimaryColor();
   const subTextColor: string = useSubTextColor();
   const activeBackground: string = useColorModeValue(
     'gray.200',
@@ -76,7 +81,13 @@ const SideBarAccountItem: FC<IProps> = ({
       >
         <HStack m={0} p={0} spacing={0} w="full">
           <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
-            <Avatar bg="primary.500" icon={<IoWalletOutline />} size="sm" />
+            <Avatar
+              bg={primaryColor}
+              icon={
+                <Icon as={IoWalletOutline} color={primaryButtonTextColor} />
+              }
+              size="sm"
+            />
           </Center>
           {account.name ? (
             <VStack

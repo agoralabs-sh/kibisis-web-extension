@@ -2,39 +2,39 @@ import { Global } from '@emotion/react';
 import React, { FC } from 'react';
 
 // Fonts
-import OutfitBoldSvg from '@extension/fonts/Outfit/Outfit-Bold.svg';
-import OutfitBoldTtf from '@extension/fonts/Outfit/Outfit-Bold.ttf';
-import OutfitBoldWoff from '@extension/fonts/Outfit/Outfit-Bold.woff';
-import OutfitBoldWoff2 from '@extension/fonts/Outfit/Outfit-Bold.woff2';
-import OutfitRegularSvg from '@extension/fonts/Outfit/Outfit-Regular.svg';
-import OutfitRegularTtf from '@extension/fonts/Outfit/Outfit-Regular.ttf';
-import OutfitRegularWoff from '@extension/fonts/Outfit/Outfit-Regular.woff';
-import OutfitRegularWoff2 from '@extension/fonts/Outfit/Outfit-Regular.woff2';
+import AnonymousProBoldSvg from '@extension/fonts/AnonymousPro/AnonymousPro-Bold.svg';
+import AnonymousProBoldTtf from '@extension/fonts/AnonymousPro/AnonymousPro-Bold.ttf';
+import AnonymousProBoldWoff from '@extension/fonts/AnonymousPro/AnonymousPro-Bold.woff';
+import AnonymousProBoldWoff2 from '@extension/fonts/AnonymousPro/AnonymousPro-Bold.woff2';
+import AnonymousProRegularSvg from '@extension/fonts/AnonymousPro/AnonymousPro-Regular.svg';
+import AnonymousProRegularTtf from '@extension/fonts/AnonymousPro/AnonymousPro-Regular.ttf';
+import AnonymousProRegularWoff from '@extension/fonts/AnonymousPro/AnonymousPro-Regular.woff';
+import AnonymousProRegularWoff2 from '@extension/fonts/AnonymousPro/AnonymousPro-Regular.woff2';
 
 const Fonts: FC = () => (
   <Global
     styles={`
       /* latin */
       @font-face {
-        font-family: 'Outfit - Bold';
+        font-family: 'AnonymousPro - Bold';
         font-style: normal;
         font-weight: 700;
         font-display: swap;
-        src: url(${OutfitBoldTtf}) format('truetype'),
-         url(${OutfitBoldWoff2}) format('woff2'),
-         url(${OutfitBoldWoff}) format('woff'),
-         url(${OutfitBoldSvg}#Outfit-Bold') format('svg');
+        src: url(${AnonymousProBoldTtf}) format('truetype'),
+         url(${AnonymousProBoldWoff2}) format('woff2'),
+         url(${AnonymousProBoldWoff}) format('woff'),
+         url(${AnonymousProBoldSvg}#AnonymousPro-Bold') format('svg');
       }
       /* latin */
       @font-face {
-        font-family: 'Outfit';
+        font-family: 'AnonymousPro';
         font-style: normal;
         font-weight: 400;
         font-display: swap;
-        src: url(${OutfitRegularTtf}) format('truetype'),
-         url(${OutfitRegularWoff2}) format('woff2'),
-         url(${OutfitRegularWoff}) format('woff'),
-         url(${OutfitRegularSvg}#Outfit-Regular') format('svg');
+        src: url(${AnonymousProRegularTtf}) format('truetype'),
+         url(${AnonymousProRegularWoff2}) format('woff2'),
+         url(${AnonymousProRegularWoff}) format('woff'),
+         url(${AnonymousProRegularSvg}#AnonymousPro-Regular') format('svg');
       }
       `}
   />

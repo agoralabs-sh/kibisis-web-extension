@@ -6,6 +6,7 @@ import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps {
@@ -22,12 +23,13 @@ const SettingsSwitchItem: FC<IProps> = ({
   onChange,
 }: IProps) => {
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
 
   return (
     <HStack
       alignItems="center"
-      h={SETTINGS_ITEM_HEIGHT}
+      minH={SETTINGS_ITEM_HEIGHT}
       justifyContent="space-between"
       px={DEFAULT_GAP - 2}
       spacing={2}
@@ -44,7 +46,7 @@ const SettingsSwitchItem: FC<IProps> = ({
         )}
       </VStack>
       <Switch
-        colorScheme="primary"
+        colorScheme={primaryColorScheme}
         isChecked={checked}
         onChange={onChange}
         size="lg"

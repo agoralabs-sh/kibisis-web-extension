@@ -45,6 +45,7 @@ const GeneralSettingsPage: FC = () => {
           w="full"
         >
           <Button
+            color="white"
             colorScheme="red"
             maxW={400}
             onClick={handleClearAllDataClick}

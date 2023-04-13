@@ -29,6 +29,8 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Types
@@ -43,6 +45,8 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = usePrimaryColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
@@ -104,7 +108,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
       >
         <Steps
           activeStep={activeStep}
-          colorScheme="primary"
+          colorScheme={primaryColorScheme}
           flexGrow={0}
           orientation="vertical"
           variant="circles"
@@ -145,7 +149,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
                 </Grid>
               </VStack>
               <CopyButton
-                colorScheme="primary"
+                colorScheme={primaryColorScheme}
                 size="md"
                 value={secretKeyToMnemonic(account.sk)}
                 variant="solid"
@@ -167,7 +171,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
                 </Text>
                 <InputGroup size="md">
                   <Input
-                    focusBorderColor="primary.500"
+                    focusBorderColor={primaryColor}
                     isDisabled={saving}
                     onChange={handleOnNameChange}
                     placeholder={t<string>('placeholders.nameAccount')}
@@ -190,7 +194,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
               {t<string>('captions.newAccountComplete')}
             </Text>
             <Checkbox
-              colorScheme={error ? 'red' : 'primary'}
+              colorScheme={error ? 'red' : primaryColorScheme}
               isChecked={copySeedPhraseConfirm}
               isDisabled={saving}
               onChange={handleCopySeedPhraseConfirmChange}
@@ -211,7 +215,6 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
 
         <HStack spacing={4} w="full">
           <Button
-            colorScheme="primary"
             onClick={handlePreviousClick}
             isDisabled={saving}
             size="lg"
@@ -222,7 +225,6 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
           </Button>
           {hasCompletedAllSteps ? (
             <Button
-              colorScheme="primary"
               onClick={handleSaveClick}
               isLoading={saving}
               size="lg"
@@ -233,7 +235,6 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
             </Button>
           ) : (
             <Button
-              colorScheme="primary"
               onClick={handleNextClick}
               size="lg"
               variant="solid"

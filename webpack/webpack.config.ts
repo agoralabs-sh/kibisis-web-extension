@@ -152,7 +152,7 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
         filename: 'index.html',
         inject: 'body',
         template: resolve(DAPP_SRC_PATH, 'index.hbs'),
-        title: 'Agora Wallet DApp Example',
+        title: `${APP_TITLE} DApp Example`,
       }),
     ],
     resolve: commonConfig.resolve,

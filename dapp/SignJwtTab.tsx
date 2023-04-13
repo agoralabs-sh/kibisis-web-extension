@@ -4,6 +4,7 @@ import {
   ISignBytesResult,
 } from '@agoralabs-sh/algorand-provider';
 import {
+  Button,
   Code,
   CreateToastFnReturn,
   HStack,
@@ -20,8 +21,8 @@ import React, { ChangeEvent, FC, useState } from 'react';
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from 'react-icons/io5';
 import { v4 as uuid } from 'uuid';
 
-// Components
-import Button from '@extension/components/Button';
+// Theme
+import { theme } from '@extension/theme';
 
 // Types
 import { IWindow } from '@external/types';
@@ -253,7 +254,8 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
         {/* CTAs */}
         <VStack justifyContent="center" spacing={3} w="full">
           <Button
-            colorScheme="primary"
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleUseJwtPreset}
             size="lg"
@@ -261,7 +263,8 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Use JWT Preset
           </Button>
           <Button
-            colorScheme="primary"
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleSignJwtClick(true)}
             size="lg"
@@ -269,7 +272,8 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Sign JWT
           </Button>
           <Button
-            colorScheme="primary"
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleSignJwtClick(false)}
             size="lg"
@@ -277,7 +281,8 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Sign JWT Without Signer
           </Button>
           <Button
-            colorScheme="primary"
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
             isDisabled={!signedData}
             minW={250}
             onClick={handleVerifySignedJWT}
@@ -286,7 +291,8 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Verify Signed JWT
           </Button>
           <Button
-            colorScheme="primary"
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleClearClick}
             size="lg"

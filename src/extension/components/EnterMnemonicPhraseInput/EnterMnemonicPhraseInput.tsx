@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps {
@@ -37,6 +38,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = usePrimaryColor();
   const subTextColor: string = useSubTextColor();
   const [currentFocusIndex, setCurrentFocusIndex] = useState<number>(0);
   const handleOnChange =
@@ -87,7 +89,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
               <Input
                 autoFocus={currentFocusIndex === index}
                 disabled={disabled}
-                focusBorderColor={error ? 'red.300' : 'primary.500'}
+                focusBorderColor={error ? 'red.300' : primaryColor}
                 isInvalid={!!error}
                 onChange={handleOnChange(index)}
                 onFocus={handleOnFocus(index)}

@@ -15,6 +15,7 @@ import IconButton from '@extension/components/IconButton';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps {
@@ -34,6 +35,7 @@ const PasswordInput: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = usePrimaryColor();
   const subTextColor: string = useSubTextColor();
   const [show, setShow] = useState<boolean>(false);
   const handleShowHideClick = () => {
@@ -54,7 +56,7 @@ const PasswordInput: FC<IProps> = ({
       </HStack>
       <InputGroup size="md">
         <Input
-          focusBorderColor={error ? 'red.300' : 'primary.500'}
+          focusBorderColor={error ? 'red.300' : primaryColor}
           isDisabled={disabled}
           isInvalid={!!error}
           onChange={onChange}

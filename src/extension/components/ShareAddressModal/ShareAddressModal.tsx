@@ -27,7 +27,9 @@ import PillSwitch from '@extension/components/PillSwitch';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
+import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // Selectors
@@ -55,6 +57,11 @@ const ShareAddressModal: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = useColorModeValue(
+    theme.colors.primaryLight['500'],
+    theme.colors.primaryDark['500']
+  );
+  const primaryColorScheme: string = usePrimaryColorScheme();
   const textBackgroundColor: string = useTextBackgroundColor();
   const settings: ISettings = useSelectSettings();
   const [pillIndex, setPillIndex] = useState<number>(0);
@@ -129,7 +136,7 @@ const ShareAddressModal: FC<IProps> = ({
                 justifyContent="center"
                 w={qrCodeSize}
               >
-                <InfinitySpin color={theme.colors.primary['500']} width="200" />
+                <InfinitySpin color={primaryColor} width="200" />
               </Flex>
             )}
             <HStack
@@ -165,13 +172,7 @@ const ShareAddressModal: FC<IProps> = ({
           </VStack>
         </ModalBody>
         <ModalFooter p={DEFAULT_GAP}>
-          <Button
-            colorScheme="primary"
-            onClick={onClose}
-            size="lg"
-            variant="solid"
-            w="full"
-          >
+          <Button onClick={onClose} size="lg" variant="solid" w="full">
             {t<string>('buttons.ok')}
           </Button>
         </ModalFooter>

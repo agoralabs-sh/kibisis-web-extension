@@ -31,9 +31,9 @@ import {
 import { randomBytes } from 'tweetnacl';
 
 // Components
-import AgoraIcon from '@extension/components/AgoraIcon';
 import Divider from '@extension/components/Divider';
 import IconButton from '@extension/components/IconButton';
+import KibisisIcon from '@extension/components/KibisisIcon';
 import SideBarAccountItem from './SideBarAccountItem';
 import SideBarActionItem from './SideBarActionItem';
 
@@ -52,6 +52,7 @@ import {
 import useBorderColor from '@extension/hooks/useBorderColor';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // Selectors
 import {
@@ -74,6 +75,7 @@ const SideBar: FC = () => {
   const borderColor: string = useBorderColor();
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = usePrimaryColor();
   const [activeAccountAddress, setActiveAccountAddress] = useState<
     string | null
   >(null);
@@ -189,7 +191,7 @@ const SideBar: FC = () => {
       <HStack justifyContent="flex-end" w="full">
         {isHeaderShowing && (
           <HStack flexGrow={1} px={2} spacing={1} w="full">
-            <AgoraIcon color="primary.500" h={5} w={5} />
+            <KibisisIcon color={primaryColor} h={5} w={5} />
             <Text color={defaultTextColor} fontSize="sm">
               {__APP_TITLE__}
             </Text>

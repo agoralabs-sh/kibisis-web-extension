@@ -1,1 +1,1 @@
-export const WALLET_ID: string = 'agora-wallet';
+export const WALLET_ID: string = 'kibisis';
