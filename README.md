@@ -1,19 +1,19 @@
 <p align="center">
-  <a href="https://www.nettlelabs.com">
-    <img alt="Agora Labs & Firefox logos" src="assets/logo.png" style="padding-top: 15px" height="64" />
+  <a href="https://kibis.is">
+    <img alt="Kibisis & Browser logos" src="assets/logo.png" style="padding-top: 15px" height="64" />
   </a>
 </p>
 
 <h1 align="center">
-  Agora Wallet For Firefox
+  Kibisis Web Extension
 </h1>
 
 <p align="center">
-  <a href="https://github.com/agoralabs-sh/agora-wallet-firefox/actions/workflows/lint_build_test.yml" target="_blank">
-    <img src="https://github.com/agoralabs-sh/agora-wallet-firefox/actions/workflows/lint_build_test.yml/badge.svg" alt="Build, lint and test" />
+  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/actions/workflows/lint_build_test.yml" target="_blank">
+    <img src="https://github.com/agoralabs-sh/kibisis-web-extension/actions/workflows/lint_build_test.yml/badge.svg" alt="Build, lint and test" />
   </a>
-  <a href="https://img.shields.io/amo/v/agorawallet@agoralabs.sh" target="_blank">
-    <img src="https://img.shields.io/amo/v/agorawallet@agoralabs.sh" alt="Mozilla add-on" />
+  <a href="https://img.shields.io/amo/v/kibisis@kibis.is" target="_blank">
+    <img src="https://img.shields.io/amo/v/kibisis@kibis.is" alt="Mozilla add-on" />
   </a>
 </p>
 
