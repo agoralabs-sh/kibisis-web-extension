@@ -429,7 +429,7 @@ export default class PrivateKeyService {
   public async setPassword(
     newPassword: string,
     currentPassword?: string
-  ): Promise<void> {
+  ): Promise<IPksPasswordTagStorageItem> {
     const encryptedTag: Uint8Array = await PrivateKeyService.encrypt(
       encodeUtf8(this.passwordTag),
       newPassword,
@@ -463,9 +463,11 @@ export default class PrivateKeyService {
           `${PrivateKeyService.name}#setPassword(): saving new password tag to storage`
         );
 
-      return await this.storageManager.setItems({
+      await this.storageManager.setItems({
         [PKS_PASSWORD_TAG_KEY]: passwordTagItem,
       });
+
+      return passwordTagItem;
     }
 
     // if we have a password tag stored and no password, throw an error
@@ -497,7 +499,7 @@ export default class PrivateKeyService {
     accounts = await this.getAccounts();
     newAccounts = await Promise.all(
       // with a new password, we need to re-encrypt all the private keys
-      accounts.map(async (value) => {
+      accounts.map<Promise<IPksAccountStorageItem>>(async (value) => {
         const decryptedPrivateKey: Uint8Array = await PrivateKeyService.decrypt(
           decodeHex(value.encryptedPrivateKey), // private keys are encoded in hexadecimal
           currentPassword,
@@ -531,7 +533,7 @@ export default class PrivateKeyService {
       );
 
     // add the new password tag and the re-encrypted keys
-    return await this.storageManager.setItems({
+    await this.storageManager.setItems({
       [PKS_PASSWORD_TAG_KEY]: passwordTagItem, // add the new password tag
       ...newAccounts.reduce(
         (acc, value) => ({
@@ -539,8 +541,10 @@ export default class PrivateKeyService {
           [this.createAccountItemKey(value.publicKey)]: value,
         }),
         {}
-      ), // save the accounts to storage using an account and the public key as a prefix
+      ), // save the accounts to storage using the public key as a prefix
     });
+
+    return passwordTagItem;
   }
 
   /**

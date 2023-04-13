@@ -49,7 +49,7 @@ const App: FC = () => {
   const toast: CreateToastFnReturn = useToast();
   const [enabledAccounts, setEnabledAccounts] = useState<IWalletAccount[]>([]);
   const [genesisId, setGenesisId] = useState<string | null>(null);
-  const [genesisHash, setGenesisHash] = useState<string | null>(null);
+  const [_, setGenesisHash] = useState<string | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const handleAddressSelect = (event: ChangeEvent<HTMLSelectElement>) =>
     setSelectedAddress(event.target.value);

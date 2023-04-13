@@ -1,20 +1,15 @@
-import { Text, VStack } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // Components
 import PageHeader from '@extension/components/PageHeader';
+import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
-
-// Constants
-import { DEFAULT_GAP } from '@extension/constants';
 
 // Features
 import { setSettings } from '@extension/features/settings';
-
-// Hooks
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
 import { useSelectSettings } from '@extension/selectors';
@@ -29,7 +24,6 @@ import {
 const AdvancedSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const subTextColor: string = useSubTextColor();
   const settings: ISettings = useSelectSettings();
   const handleOnSwitchChange =
     (key: keyof IAdvancedSettings) =>
@@ -50,15 +44,7 @@ const AdvancedSettingsPage: FC = () => {
       <PageHeader title={t<string>('titles.page', { context: 'advanced' })} />
       <VStack w="full">
         {/* Developer */}
-        <Text
-          color={subTextColor}
-          fontSize="sm"
-          px={DEFAULT_GAP - 2}
-          textAlign="left"
-          w="full"
-        >
-          {t<string>('headings.developer')}
-        </Text>
+        <SettingsSubHeading text={t<string>('headings.developer')} />
         <SettingsSwitchItem
           checked={settings.advanced.allowTestNet}
           description={t<string>('captions.allowTestNet')}
@@ -66,15 +52,7 @@ const AdvancedSettingsPage: FC = () => {
           onChange={handleOnSwitchChange('allowTestNet')}
         />
         {/* Beta */}
-        <Text
-          color={subTextColor}
-          fontSize="sm"
-          px={DEFAULT_GAP - 2}
-          textAlign="left"
-          w="full"
-        >
-          {t<string>('headings.beta')}
-        </Text>
+        <SettingsSubHeading text={t<string>('headings.beta')} />
         <SettingsSwitchItem
           checked={settings.advanced.allowBetaNet}
           description={t<string>('captions.allowBetaNet')}

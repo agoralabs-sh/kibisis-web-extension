@@ -6,6 +6,7 @@ const translation: IResourceLanguage = {
     addAccount: 'Add Account',
     allow: 'Allow',
     cancel: 'Cancel',
+    changePassword: 'Change Password',
     clearAllData: 'Clear All Data',
     confirm: 'Confirm',
     copySeedPhrase: 'Copy Seed Phrase',
@@ -28,6 +29,10 @@ const translation: IResourceLanguage = {
     allowTestNet: 'Let TestNet networks appear in the networks list.',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
+    changePassword1:
+      'Enter your new password. You will be prompted to enter your current password.',
+    changePassword2:
+      'You will be prompted to enter your current password when you press "Change Password".',
     changeTheme: 'Choose between dark and light mode.',
     clearAllData: 'Are you sure you want to clear all your data?',
     clearAllDataWarning:
@@ -90,9 +95,11 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    authentication: 'Authentication',
     beta: 'Beta',
     clearAllData: 'Clear All Data',
     createNewAccount: 'Create A New Account',
+    dangerZone: 'Danger Zone',
     developer: 'Developer',
     enterYourSeedPhrase: 'Enter your seed phrase',
     generateSeedPhrase: 'Generate seed phrase',
@@ -133,6 +140,7 @@ const translation: IResourceLanguage = {
     manageAccounts: 'Manage Accounts',
     message: 'Message',
     moreInformation: 'More Information',
+    newPassword: 'New Password',
     password: 'Password',
     removeAccount: 'Remove account',
     removeSession: 'Remove session',
@@ -153,8 +161,10 @@ const translation: IResourceLanguage = {
     page_accountSetup: 'Choose How To Add An Account',
     page_advanced: 'Advanced',
     page_appearance: 'Appearance',
+    page_changePassword: 'Change Password',
     page_createNewAccount: 'Create A New Account',
     page_createPassword: 'Secure Your Device',
+    page_general: 'General',
     page_importExistingAccount: 'Import An Existing Account',
     page_importRekeyedAccount: 'Import A Rekeyed Account',
     page_security: 'Security',

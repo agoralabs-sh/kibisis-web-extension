@@ -31,12 +31,14 @@ import { theme } from '@extension/theme';
 import { ILogger } from '@common/types';
 
 interface IProps {
+  hint?: string;
   isOpen: boolean;
   onCancel: () => void;
   onConfirm: (password: string) => void;
 }
 
 const ConfirmPasswordModal: FC<IProps> = ({
+  hint,
   isOpen,
   onCancel,
   onConfirm,
@@ -113,7 +115,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
             <PasswordInput
               disabled={verifying}
               error={error}
-              hint={t<string>('captions.mustEnterPasswordToConfirm')}
+              hint={hint || t<string>('captions.mustEnterPasswordToConfirm')}
               onChange={handlePasswordChange}
               value={password || ''}
             />

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 // Components
 import Button from '@extension/components/Button';
 import PageHeader from '@extension/components/PageHeader';
+import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
 // Features
 import { setConfirm } from '@extension/features/application';
@@ -14,7 +15,7 @@ import { sendResetThunk } from '@extension/features/messages';
 // Types
 import { IAppThunkDispatch } from '@extension/types';
 
-const SecuritySettingsPage: FC = () => {
+const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const handleClearAllDataClick = () =>
@@ -29,9 +30,13 @@ const SecuritySettingsPage: FC = () => {
 
   return (
     <>
-      <PageHeader title={t<string>('titles.page', { context: 'security' })} />
+      <PageHeader title={t<string>('titles.page', { context: 'general' })} />
       <VStack w="full">
-        {/* Clear data */}
+        {/* Danger zone */}
+        <SettingsSubHeading
+          color="red.500"
+          text={t<string>('headings.dangerZone')}
+        />
         <Stack
           alignItems="center"
           justifyContent="center"
@@ -52,4 +57,4 @@ const SecuritySettingsPage: FC = () => {
   );
 };
 
-export default SecuritySettingsPage;
+export default GeneralSettingsPage;

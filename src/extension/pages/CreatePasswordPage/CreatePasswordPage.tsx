@@ -42,11 +42,11 @@ const CreatePasswordPage: FC = () => {
       navigate(ADD_ACCOUNT_ROUTE);
     }
   };
-  const handlePasswordChange = (password: string, score: number) => {
+  const handlePasswordChange = (newPassword: string, newScore: number) => {
     dispatch(
       setPassword({
-        password,
-        score,
+        password: newPassword,
+        score: newScore,
       })
     );
   };

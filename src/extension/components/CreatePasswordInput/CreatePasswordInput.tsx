@@ -23,12 +23,16 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { validate } from './utils';
 
 interface IProps {
+  disabled?: boolean;
+  label?: string;
   onChange: (value: string, score: number) => void;
   score: number;
   value: string;
 }
 
 const CreatePasswordInput: FC<IProps> = ({
+  disabled,
+  label,
   onChange,
   score,
   value,
@@ -58,7 +62,7 @@ const CreatePasswordInput: FC<IProps> = ({
     <VStack>
       <HStack alignItems="flex-end" justifyContent="space-between" w="full">
         <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
-          {t<string>('labels.password')}
+          {label || t<string>('labels.password')}
         </Text>
         <Text color="red.300" fontSize="xs" textAlign="right">
           {error}
@@ -66,6 +70,7 @@ const CreatePasswordInput: FC<IProps> = ({
       </HStack>
       <InputGroup size="md">
         <Input
+          disabled={disabled}
           focusBorderColor={error ? 'red.300' : 'primary.500'}
           isInvalid={!!error}
           onChange={handleOnChange}
@@ -76,6 +81,7 @@ const CreatePasswordInput: FC<IProps> = ({
         <InputRightElement>
           <IconButton
             aria-label="Eye open and closed"
+            disabled={disabled}
             icon={show ? IoEye : IoEyeOff}
             onClick={handleShowHideClick}
             size="sm"
