@@ -26,6 +26,8 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Types
@@ -43,6 +45,8 @@ const ImportExistingAccountPage: FC<IProps> = ({
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = usePrimaryColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
@@ -123,7 +127,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
       >
         <Steps
           activeStep={activeStep}
-          colorScheme="primary"
+          colorScheme={primaryColorScheme}
           flexGrow={0}
           orientation="vertical"
           variant="circles"
@@ -154,7 +158,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
                 </Text>
                 <InputGroup size="md">
                   <Input
-                    focusBorderColor="primary.500"
+                    focusBorderColor={primaryColor}
                     isDisabled={saving}
                     onChange={handleOnNameChange}
                     placeholder={t<string>('placeholders.nameAccount')}
@@ -183,7 +187,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
 
         <HStack spacing={4} w="full">
           <Button
-            colorScheme="primary"
+            colorScheme={primaryColorScheme}
             onClick={handlePreviousClick}
             isDisabled={saving}
             size="lg"
@@ -194,7 +198,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
           </Button>
           {hasCompletedAllSteps ? (
             <Button
-              colorScheme="primary"
+              colorScheme={primaryColorScheme}
               onClick={handleImportClick}
               isLoading={saving}
               size="lg"
@@ -205,7 +209,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
             </Button>
           ) : (
             <Button
-              colorScheme="primary"
+              colorScheme={primaryColorScheme}
               onClick={handleNextClick}
               size="lg"
               variant="solid"

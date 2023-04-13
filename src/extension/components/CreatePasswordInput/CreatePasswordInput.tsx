@@ -17,6 +17,7 @@ import StrengthMeter from '@extension/components/StrengthMeter';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Utils
@@ -39,6 +40,7 @@ const CreatePasswordInput: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = usePrimaryColor();
   const subTextColor: string = useSubTextColor();
   const [show, setShow] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(
@@ -71,7 +73,7 @@ const CreatePasswordInput: FC<IProps> = ({
       <InputGroup size="md">
         <Input
           disabled={disabled}
-          focusBorderColor={error ? 'red.300' : 'primary.500'}
+          focusBorderColor={error ? 'red.300' : primaryColor}
           isInvalid={!!error}
           onChange={handleOnChange}
           placeholder={t<string>('placeholders.enterPassword')}
