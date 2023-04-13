@@ -2,39 +2,39 @@ import { Global } from '@emotion/react';
 import React, { FC } from 'react';
 
 // Fonts
-import InterBoldSvg from '@extension/fonts/Inter/Inter-Bold.svg';
-import InterBoldTtf from '@extension/fonts/Inter/Inter-Bold.ttf';
-import InterBoldWoff from '@extension/fonts/Inter/Inter-Bold.woff';
-import InterBoldWoff2 from '@extension/fonts/Inter/Inter-Bold.woff2';
-import InterRegularSvg from '@extension/fonts/Inter/Inter-Regular.svg';
-import InterRegularTtf from '@extension/fonts/Inter/Inter-Regular.ttf';
-import InterRegularWoff from '@extension/fonts/Inter/Inter-Regular.woff';
-import InterRegularWoff2 from '@extension/fonts/Inter/Inter-Regular.woff2';
+import SourceCodeProBoldSvg from '@extension/fonts/SourceCodePro/SourceCodePro-Bold.svg';
+import SourceCodeProBoldTtf from '@extension/fonts/SourceCodePro/SourceCodePro-Bold.ttf';
+import SourceCodeProBoldWoff from '@extension/fonts/SourceCodePro/SourceCodePro-Bold.woff';
+import SourceCodeProBoldWoff2 from '@extension/fonts/SourceCodePro/SourceCodePro-Bold.woff2';
+import SourceCodeProRegularSvg from '@extension/fonts/SourceCodePro/SourceCodePro-Regular.svg';
+import SourceCodeProRegularTtf from '@extension/fonts/SourceCodePro/SourceCodePro-Regular.ttf';
+import SourceCodeProRegularWoff from '@extension/fonts/SourceCodePro/SourceCodePro-Regular.woff';
+import SourceCodeProRegularWoff2 from '@extension/fonts/SourceCodePro/SourceCodePro-Regular.woff2';
 
 const Fonts: FC = () => (
   <Global
     styles={`
       /* latin */
       @font-face {
-        font-family: 'Inter - Bold';
+        font-family: 'SourceCodePro - Bold';
         font-style: normal;
         font-weight: 700;
         font-display: swap;
-        src: url(${InterBoldTtf}) format('truetype'),
-         url(${InterBoldWoff2}) format('woff2'),
-         url(${InterBoldWoff}) format('woff'),
-         url(${InterBoldSvg}#Inter-Bold') format('svg');
+        src: url(${SourceCodeProBoldTtf}) format('truetype'),
+         url(${SourceCodeProBoldWoff2}) format('woff2'),
+         url(${SourceCodeProBoldWoff}) format('woff'),
+         url(${SourceCodeProBoldSvg}#SourceCodePro-Bold') format('svg');
       }
       /* latin */
       @font-face {
-        font-family: 'Inter';
+        font-family: 'SourceCodePro';
         font-style: normal;
         font-weight: 400;
         font-display: swap;
-        src: url(${InterRegularTtf}) format('truetype'),
-         url(${InterRegularWoff2}) format('woff2'),
-         url(${InterRegularWoff}) format('woff'),
-         url(${InterRegularSvg}#Inter-Regular') format('svg');
+        src: url(${SourceCodeProRegularTtf}) format('truetype'),
+         url(${SourceCodeProRegularWoff2}) format('woff2'),
+         url(${SourceCodeProRegularWoff}) format('woff'),
+         url(${SourceCodeProRegularSvg}#SourceCodePro-Regular') format('svg');
       }
       `}
   />

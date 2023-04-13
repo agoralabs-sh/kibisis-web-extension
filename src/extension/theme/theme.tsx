@@ -79,8 +79,8 @@ const theme: Dict = extendTheme({
     Tag,
   },
   fonts: {
-    heading: 'Inter - Bold',
-    body: 'Inter',
+    heading: 'SourceCodePro - Bold',
+    body: 'SourceCodePro',
   },
 });
 
