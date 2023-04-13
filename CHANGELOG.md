@@ -1,3 +1,10 @@
+# [1.1.0-beta.12](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.11...v1.1.0-beta.12) (2023-04-13)
+
+
+### Features
+
+* rebrand to kibisis ([#13](https://github.com/agoralabs-sh/kibisis-web-extension/issues/13)) ([2be22ba](https://github.com/agoralabs-sh/kibisis-web-extension/commit/2be22baa6d99966399670ef3991a6443473997fc))
+
 # [1.1.0-beta.11](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.10...v1.1.0-beta.11) (2023-04-13)
 
 
