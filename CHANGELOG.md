@@ -1,3 +1,10 @@
+# [1.1.0-beta.11](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.10...v1.1.0-beta.11) (2023-04-13)
+
+
+### Features
+
+* change password ([#12](https://github.com/agoralabs-sh/agora-wallet-browser-extension/issues/12)) ([4d9cc2d](https://github.com/agoralabs-sh/agora-wallet-browser-extension/commit/4d9cc2dca803918fc7e1745312cd017a4d8a7cf8))
+
 # [1.1.0-beta.10](https://github.com/agoralabs-sh/agora-wallet-browser-extension/compare/v1.1.0-beta.9...v1.1.0-beta.10) (2023-04-12)
 
 
