@@ -29,7 +29,7 @@ const SettingsSwitchItem: FC<IProps> = ({
   return (
     <HStack
       alignItems="center"
-      h={SETTINGS_ITEM_HEIGHT}
+      minH={SETTINGS_ITEM_HEIGHT}
       justifyContent="space-between"
       px={DEFAULT_GAP - 2}
       spacing={2}

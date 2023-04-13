@@ -2,39 +2,39 @@ import { Global } from '@emotion/react';
 import React, { FC } from 'react';
 
 // Fonts
-import SourceCodeProBoldSvg from '@extension/fonts/SourceCodePro/SourceCodePro-Bold.svg';
-import SourceCodeProBoldTtf from '@extension/fonts/SourceCodePro/SourceCodePro-Bold.ttf';
-import SourceCodeProBoldWoff from '@extension/fonts/SourceCodePro/SourceCodePro-Bold.woff';
-import SourceCodeProBoldWoff2 from '@extension/fonts/SourceCodePro/SourceCodePro-Bold.woff2';
-import SourceCodeProRegularSvg from '@extension/fonts/SourceCodePro/SourceCodePro-Regular.svg';
-import SourceCodeProRegularTtf from '@extension/fonts/SourceCodePro/SourceCodePro-Regular.ttf';
-import SourceCodeProRegularWoff from '@extension/fonts/SourceCodePro/SourceCodePro-Regular.woff';
-import SourceCodeProRegularWoff2 from '@extension/fonts/SourceCodePro/SourceCodePro-Regular.woff2';
+import AnonymousProBoldSvg from '@extension/fonts/AnonymousPro/AnonymousPro-Bold.svg';
+import AnonymousProBoldTtf from '@extension/fonts/AnonymousPro/AnonymousPro-Bold.ttf';
+import AnonymousProBoldWoff from '@extension/fonts/AnonymousPro/AnonymousPro-Bold.woff';
+import AnonymousProBoldWoff2 from '@extension/fonts/AnonymousPro/AnonymousPro-Bold.woff2';
+import AnonymousProRegularSvg from '@extension/fonts/AnonymousPro/AnonymousPro-Regular.svg';
+import AnonymousProRegularTtf from '@extension/fonts/AnonymousPro/AnonymousPro-Regular.ttf';
+import AnonymousProRegularWoff from '@extension/fonts/AnonymousPro/AnonymousPro-Regular.woff';
+import AnonymousProRegularWoff2 from '@extension/fonts/AnonymousPro/AnonymousPro-Regular.woff2';
 
 const Fonts: FC = () => (
   <Global
     styles={`
       /* latin */
       @font-face {
-        font-family: 'SourceCodePro - Bold';
+        font-family: 'AnonymousPro - Bold';
         font-style: normal;
         font-weight: 700;
         font-display: swap;
-        src: url(${SourceCodeProBoldTtf}) format('truetype'),
-         url(${SourceCodeProBoldWoff2}) format('woff2'),
-         url(${SourceCodeProBoldWoff}) format('woff'),
-         url(${SourceCodeProBoldSvg}#SourceCodePro-Bold') format('svg');
+        src: url(${AnonymousProBoldTtf}) format('truetype'),
+         url(${AnonymousProBoldWoff2}) format('woff2'),
+         url(${AnonymousProBoldWoff}) format('woff'),
+         url(${AnonymousProBoldSvg}#AnonymousPro-Bold') format('svg');
       }
       /* latin */
       @font-face {
-        font-family: 'SourceCodePro';
+        font-family: 'AnonymousPro';
         font-style: normal;
         font-weight: 400;
         font-display: swap;
-        src: url(${SourceCodeProRegularTtf}) format('truetype'),
-         url(${SourceCodeProRegularWoff2}) format('woff2'),
-         url(${SourceCodeProRegularWoff}) format('woff'),
-         url(${SourceCodeProRegularSvg}#SourceCodePro-Regular') format('svg');
+        src: url(${AnonymousProRegularTtf}) format('truetype'),
+         url(${AnonymousProRegularWoff2}) format('woff2'),
+         url(${AnonymousProRegularWoff}) format('woff'),
+         url(${AnonymousProRegularSvg}#AnonymousPro-Regular') format('svg');
       }
       `}
   />

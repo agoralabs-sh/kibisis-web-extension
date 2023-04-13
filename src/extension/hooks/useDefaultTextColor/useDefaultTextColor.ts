@@ -2,5 +2,5 @@
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
 export default function useDefaultTextColor(): string {
-  return useColorModeValue('gray.500', 'whiteAlpha.800');
+  return useColorModeValue('gray.600', 'whiteAlpha.900');
 }
