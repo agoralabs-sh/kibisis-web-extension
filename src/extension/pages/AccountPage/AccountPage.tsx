@@ -1,12 +1,7 @@
 import {
-  Button as ChakraButton,
   Heading,
   HStack,
   Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Skeleton,
   Spacer,
   Text,
@@ -16,14 +11,11 @@ import {
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
-import { nanoid } from 'nanoid';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
-  IoChevronDown,
   IoCloudOfflineOutline,
-  IoInformationCircleOutline,
   IoQrCodeOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
@@ -37,12 +29,16 @@ import {
 } from 'react-router-dom';
 
 // Components
-import AlgorandIcon from '@extension/components/AlgorandIcon';
 import Button from '@extension/components/Button';
-import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import IconButton from '@extension/components/IconButton';
 import ShareAddressModal from '@extension/components/ShareAddressModal';
+import NetworkSelect, {
+  NetworkSelectSkeleton,
+} from '@extension/components/NetworkSelect';
+import NativeBalance, {
+  NativeBalanceSkeleton,
+} from '@extension/components/NativeBalance';
 
 // Constants
 import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
@@ -53,11 +49,9 @@ import { setConfirm } from '@extension/features/application';
 import { setSettings } from '@extension/features/settings';
 
 // Hooks
-import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // Selectors
 import {
@@ -70,9 +64,6 @@ import {
   useSelectSettings,
 } from '@extension/selectors';
 
-// Theme
-import { theme } from '@extension/theme';
-
 // Types
 import {
   IAccount,
@@ -82,12 +73,7 @@ import {
 } from '@extension/types';
 
 // Utils
-import {
-  createIconFromDataUri,
-  convertToStandardUnit,
-  ellipseAddress,
-  formatCurrencyUnit,
-} from '@extension/utils';
+import { ellipseAddress } from '@extension/utils';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -100,11 +86,9 @@ const AccountPage: FC = () => {
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
   const account: IAccount | null = useSelectAccount(address);
   const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
@@ -113,7 +97,7 @@ const AccountPage: FC = () => {
   const networks: INetwork[] = useSelectNetworks();
   const settings: ISettings = useSelectSettings();
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
-  const handleNetworkClick = (network: INetwork) => () => {
+  const handleNetworkSelect = (network: INetwork) => {
     dispatch(
       setSettings({
         ...settings,
@@ -137,45 +121,13 @@ const AccountPage: FC = () => {
     );
   };
   const renderContent = () => {
-    let balanceStandardUnit: BigNumber;
-    let minumumStandardUnit: BigNumber;
-
     if (fetchingAccounts || fetchingSettings) {
       return (
         <VStack alignItems="flex-start" pt={4} px={4} w="full">
           {/* Header */}
-          <HStack justifyContent="flex-end" w="full">
-            <Skeleton>
-              <ChakraButton rightIcon={<IoChevronDown />} variant="ghost">
-                <ChainBadge network={networks[0]} />
-              </ChakraButton>
-            </Skeleton>
-          </HStack>
+          <NetworkSelectSkeleton network={networks[0]} />
           {/* Balance */}
-          <HStack alignItems="center" w="full">
-            <Skeleton flexGrow="1">
-              <Heading color={defaultTextColor} size="md">
-                {ellipseAddress(faker.random.alphaNumeric(52).toUpperCase())}
-              </Heading>
-            </Skeleton>
-            <Skeleton>
-              <HStack
-                backgroundColor="gray.200"
-                borderRadius={25}
-                px={2}
-                py={1}
-                spacing={1}
-              >
-                <Text color="gray.500" fontSize="sm">{`${t<string>(
-                  'labels.balance'
-                )}:`}</Text>
-                <Text color="gray.500" fontSize="sm">
-                  0
-                </Text>
-                <AlgorandIcon color="black" h={3} w={3} />
-              </HStack>
-            </Skeleton>
-          </HStack>
+          <NativeBalanceSkeleton />
           {/* Address */}
           <Skeleton flexGrow="1">
             <Text color="gray.500" fontSize="xs">
@@ -187,15 +139,6 @@ const AccountPage: FC = () => {
     }
 
     if (account && settings.network) {
-      balanceStandardUnit = convertToStandardUnit(
-        new BigNumber(account.atomicBalance),
-        settings.network.nativeCurrency.decimals
-      );
-      minumumStandardUnit = convertToStandardUnit(
-        new BigNumber(account.minAtomicBalance),
-        settings.network.nativeCurrency.decimals
-      );
-
       return (
         <VStack alignItems="flex-start" pt={4} px={4} w="full">
           {/* Header */}
@@ -215,32 +158,15 @@ const AccountPage: FC = () => {
                 </span>
               </Tooltip>
             )}
+
             <Spacer flexGrow={1} />
-            <Menu>
-              <MenuButton
-                _hover={{ bg: buttonHoverBackgroundColor }}
-                borderRadius="md"
-                px={4}
-                py={2}
-                transition="all 0.2s"
-              >
-                <HStack justifyContent="space-between" w="full">
-                  <ChainBadge network={settings.network} />
-                  <Icon as={IoChevronDown} />
-                </HStack>
-              </MenuButton>
-              <MenuList>
-                {networks.map((value) => (
-                  <MenuItem
-                    key={nanoid()}
-                    minH="48px"
-                    onClick={handleNetworkClick(value)}
-                  >
-                    <ChainBadge network={value} />
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Menu>
+
+            {/*Network selection*/}
+            <NetworkSelect
+              network={settings.network}
+              networks={networks}
+              onSelect={handleNetworkSelect}
+            />
           </HStack>
           <HStack alignItems="center" w="full">
             {/* Name/address */}
@@ -265,48 +191,11 @@ const AccountPage: FC = () => {
             <Spacer />
 
             {/* Balance */}
-            <HStack alignItems="center" justifyContent="center" spacing={1}>
-              <Tooltip
-                aria-label="Minimum balance information"
-                label={t<string>('captions.minimumBalance', {
-                  amount: formatCurrencyUnit(minumumStandardUnit),
-                })}
-              >
-                <span
-                  style={{
-                    height: '1em',
-                    lineHeight: '1em',
-                  }}
-                >
-                  <Icon
-                    as={IoInformationCircleOutline}
-                    color={defaultTextColor}
-                  />
-                </span>
-              </Tooltip>
-              <HStack
-                backgroundColor={textBackgroundColor}
-                borderRadius={theme.radii['3xl']}
-                px={2}
-                py={1}
-                spacing={1}
-              >
-                <Text color={defaultTextColor} fontSize="sm">{`${t<string>(
-                  'labels.balance'
-                )}:`}</Text>
-                <Text color={defaultTextColor} fontSize="sm">
-                  {formatCurrencyUnit(balanceStandardUnit)}
-                </Text>
-                {createIconFromDataUri(
-                  settings.network.nativeCurrency.iconUri,
-                  {
-                    color: 'black.500',
-                    h: 3,
-                    w: 3,
-                  }
-                )}
-              </HStack>
-            </HStack>
+            <NativeBalance
+              atomicBalance={new BigNumber(account.atomicBalance)}
+              minAtomicBalance={new BigNumber(account.minAtomicBalance)}
+              nativeCurrency={settings.network.nativeCurrency}
+            />
           </HStack>
           {/* Address and interactions */}
           <HStack alignItems="center" spacing={1} w="full">
