@@ -147,7 +147,7 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
         </HStack>
         <VStack justifyContent="center" spacing={3} w="full">
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleSignDataClick(true)}
             size="lg"
@@ -155,7 +155,7 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Sign Data
           </Button>
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleSignDataClick(false)}
             size="lg"
@@ -163,7 +163,7 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Sign Data Without Signer
           </Button>
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             isDisabled={!signedData}
             minW={250}
             onClick={handleVerifySignedData}
@@ -172,7 +172,7 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Verify Signed Data
           </Button>
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleClearClick}
             size="lg"

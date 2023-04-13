@@ -116,7 +116,7 @@ const App: FC = () => {
         >
           <VStack justifyContent="center" spacing={8} w="full">
             <Heading color="gray.500" textAlign="center">
-              Agora Wallet DApp Example
+              {document.title}
             </Heading>
             {/* Enabled accounts table */}
             <TableContainer
@@ -147,7 +147,7 @@ const App: FC = () => {
             {/* Enable CTAs */}
             <HStack justifyContent="center" spacing={2} w="full">
               <Button
-                colorScheme="primary"
+                colorScheme="primaryLight"
                 minW={250}
                 onClick={handleEnableClick(
                   'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=' // algorand testnet
@@ -157,7 +157,7 @@ const App: FC = () => {
                 Enable Algorand TestNet
               </Button>
               <Button
-                colorScheme="primary"
+                colorScheme="primaryLight"
                 minW={250}
                 onClick={handleEnableClick(
                   'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2/zGwEEcg3C8Gg=' // voi testnet
@@ -182,7 +182,7 @@ const App: FC = () => {
                 ))}
               </Select>
             </HStack>
-            <Tabs w="full">
+            <Tabs colorScheme="primaryLight" w="full">
               <TabList>
                 <Tab>Sign Data</Tab>
                 <Tab>Sign JWT</Tab>

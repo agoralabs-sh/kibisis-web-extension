@@ -2,39 +2,39 @@ import { Global } from '@emotion/react';
 import React, { FC } from 'react';
 
 // Fonts
-import OutfitBoldSvg from '@extension/fonts/Outfit/Outfit-Bold.svg';
-import OutfitBoldTtf from '@extension/fonts/Outfit/Outfit-Bold.ttf';
-import OutfitBoldWoff from '@extension/fonts/Outfit/Outfit-Bold.woff';
-import OutfitBoldWoff2 from '@extension/fonts/Outfit/Outfit-Bold.woff2';
-import OutfitRegularSvg from '@extension/fonts/Outfit/Outfit-Regular.svg';
-import OutfitRegularTtf from '@extension/fonts/Outfit/Outfit-Regular.ttf';
-import OutfitRegularWoff from '@extension/fonts/Outfit/Outfit-Regular.woff';
-import OutfitRegularWoff2 from '@extension/fonts/Outfit/Outfit-Regular.woff2';
+import InterBoldSvg from '@extension/fonts/Inter/Inter-Bold.svg';
+import InterBoldTtf from '@extension/fonts/Inter/Inter-Bold.ttf';
+import InterBoldWoff from '@extension/fonts/Inter/Inter-Bold.woff';
+import InterBoldWoff2 from '@extension/fonts/Inter/Inter-Bold.woff2';
+import InterRegularSvg from '@extension/fonts/Inter/Inter-Regular.svg';
+import InterRegularTtf from '@extension/fonts/Inter/Inter-Regular.ttf';
+import InterRegularWoff from '@extension/fonts/Inter/Inter-Regular.woff';
+import InterRegularWoff2 from '@extension/fonts/Inter/Inter-Regular.woff2';
 
 const Fonts: FC = () => (
   <Global
     styles={`
       /* latin */
       @font-face {
-        font-family: 'Outfit - Bold';
+        font-family: 'Inter - Bold';
         font-style: normal;
         font-weight: 700;
         font-display: swap;
-        src: url(${OutfitBoldTtf}) format('truetype'),
-         url(${OutfitBoldWoff2}) format('woff2'),
-         url(${OutfitBoldWoff}) format('woff'),
-         url(${OutfitBoldSvg}#Outfit-Bold') format('svg');
+        src: url(${InterBoldTtf}) format('truetype'),
+         url(${InterBoldWoff2}) format('woff2'),
+         url(${InterBoldWoff}) format('woff'),
+         url(${InterBoldSvg}#Inter-Bold') format('svg');
       }
       /* latin */
       @font-face {
-        font-family: 'Outfit';
+        font-family: 'Inter';
         font-style: normal;
         font-weight: 400;
         font-display: swap;
-        src: url(${OutfitRegularTtf}) format('truetype'),
-         url(${OutfitRegularWoff2}) format('woff2'),
-         url(${OutfitRegularWoff}) format('woff'),
-         url(${OutfitRegularSvg}#Outfit-Regular') format('svg');
+        src: url(${InterRegularTtf}) format('truetype'),
+         url(${InterRegularWoff2}) format('woff2'),
+         url(${InterRegularWoff}) format('woff'),
+         url(${InterRegularSvg}#Inter-Regular') format('svg');
       }
       `}
   />

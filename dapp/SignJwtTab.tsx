@@ -253,7 +253,7 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
         {/* CTAs */}
         <VStack justifyContent="center" spacing={3} w="full">
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleUseJwtPreset}
             size="lg"
@@ -261,7 +261,7 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Use JWT Preset
           </Button>
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleSignJwtClick(true)}
             size="lg"
@@ -269,7 +269,7 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Sign JWT
           </Button>
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleSignJwtClick(false)}
             size="lg"
@@ -277,7 +277,7 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Sign JWT Without Signer
           </Button>
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             isDisabled={!signedData}
             minW={250}
             onClick={handleVerifySignedJWT}
@@ -286,7 +286,7 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
             Verify Signed JWT
           </Button>
           <Button
-            colorScheme="primary"
+            colorScheme="primaryLight"
             minW={250}
             onClick={handleClearClick}
             size="lg"
