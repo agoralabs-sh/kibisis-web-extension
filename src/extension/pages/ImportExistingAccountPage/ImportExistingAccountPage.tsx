@@ -187,7 +187,6 @@ const ImportExistingAccountPage: FC<IProps> = ({
 
         <HStack spacing={4} w="full">
           <Button
-            colorScheme={primaryColorScheme}
             onClick={handlePreviousClick}
             isDisabled={saving}
             size="lg"
@@ -198,7 +197,6 @@ const ImportExistingAccountPage: FC<IProps> = ({
           </Button>
           {hasCompletedAllSteps ? (
             <Button
-              colorScheme={primaryColorScheme}
               onClick={handleImportClick}
               isLoading={saving}
               size="lg"
@@ -209,7 +207,6 @@ const ImportExistingAccountPage: FC<IProps> = ({
             </Button>
           ) : (
             <Button
-              colorScheme={primaryColorScheme}
               onClick={handleNextClick}
               size="lg"
               variant="solid"

@@ -123,17 +123,10 @@ const ConfirmPasswordModal: FC<IProps> = ({
         </ModalBody>
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
-            <Button
-              colorScheme="primary"
-              onClick={handleClose}
-              size="lg"
-              variant="outline"
-              w="full"
-            >
+            <Button onClick={handleClose} size="lg" variant="outline" w="full">
               {t<string>('buttons.cancel')}
             </Button>
             <Button
-              colorScheme="primary"
               isLoading={verifying}
               onClick={handleConfirmClick}
               size="lg"

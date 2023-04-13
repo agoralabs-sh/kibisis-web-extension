@@ -37,6 +37,7 @@ import {
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
@@ -75,6 +76,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
   const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const [network, setNetwork] = useState<INetwork | null>(null);
@@ -177,7 +179,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
             </Text>
           )}
           <Checkbox
-            colorScheme="primary"
+            colorScheme={primaryColorScheme}
             isChecked={
               !!authorizedAddresses.find((value) => value === account.address)
             }
@@ -303,7 +305,6 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
             <Button
-              colorScheme="primary"
               onClick={handleCancelClick}
               size="lg"
               variant="outline"
@@ -312,7 +313,6 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
               {t<string>('buttons.cancel')}
             </Button>
             <Button
-              colorScheme="primary"
               isLoading={saving}
               onClick={handleSaveClick}
               size="lg"

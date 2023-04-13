@@ -91,7 +91,6 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
             <Button
-              colorScheme="primary"
               onClick={handleCancelClick}
               ref={initialRef}
               size="lg"
@@ -101,7 +100,6 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
               {t<string>('buttons.cancel')}
             </Button>
             <Button
-              colorScheme="primary"
               onClick={handleConfirmClick}
               size="lg"
               variant="solid"

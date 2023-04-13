@@ -538,7 +538,6 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
             />
             <HStack spacing={4} w="full">
               <Button
-                colorScheme="primary"
                 onClick={handleCancelClick}
                 size="lg"
                 variant="outline"
@@ -547,7 +546,6 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
                 {t<string>('buttons.cancel')}
               </Button>
               <Button
-                colorScheme="primary"
                 onClick={handleSignClick}
                 size="lg"
                 variant="solid"

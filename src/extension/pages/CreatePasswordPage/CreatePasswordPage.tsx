@@ -80,13 +80,7 @@ const CreatePasswordPage: FC = () => {
             value={password || ''}
           />
         </VStack>
-        <Button
-          colorScheme={primaryColorScheme}
-          onClick={handleNextClick}
-          size="lg"
-          variant="solid"
-          w="full"
-        >
+        <Button onClick={handleNextClick} size="lg" variant="solid" w="full">
           {t<string>('buttons.next')}
         </Button>
       </VStack>

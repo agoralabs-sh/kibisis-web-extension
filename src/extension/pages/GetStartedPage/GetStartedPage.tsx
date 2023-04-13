@@ -13,7 +13,6 @@ import { CREATE_PASSWORD_ROUTE, DEFAULT_GAP } from '@extension/constants';
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 const GetStartedPage: FC = () => {
@@ -21,7 +20,6 @@ const GetStartedPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = usePrimaryColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   const handleGetStartedClick = () => navigate(CREATE_PASSWORD_ROUTE);
 
@@ -34,12 +32,7 @@ const GetStartedPage: FC = () => {
           <Text color={subTextColor} fontSize="sm">{`v${__VERSION__}`}</Text>
         )}
       </VStack>
-      <Button
-        colorScheme={primaryColorScheme}
-        onClick={handleGetStartedClick}
-        size="lg"
-        w="full"
-      >
+      <Button onClick={handleGetStartedClick} size="lg" w="full">
         {t<string>('buttons.getStarted')}
       </Button>
     </VStack>

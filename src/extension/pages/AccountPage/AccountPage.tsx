@@ -55,6 +55,7 @@ import { setSettings } from '@extension/features/settings';
 // Hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
@@ -101,6 +102,7 @@ const AccountPage: FC = () => {
   } = useDisclosure();
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const account: IAccount | null = useSelectAccount(address);
@@ -350,7 +352,7 @@ const AccountPage: FC = () => {
             {t<string>('headings.noAccountsFound')}
           </Heading>
           <Button
-            colorScheme="primary"
+            colorScheme={primaryColorScheme}
             onClick={handleAddAccountClick}
             rightIcon={<IoAdd />}
           >

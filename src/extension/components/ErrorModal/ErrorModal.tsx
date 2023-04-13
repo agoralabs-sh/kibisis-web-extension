@@ -22,8 +22,15 @@ import { SUPPORT_MAIL_TO_LINK } from '@extension/constants';
 // Errors
 import { BaseExtensionError } from '@extension/errors';
 
+// Hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
+
 // Selectors
 import { useSelectError } from '@extension/selectors';
+
+// Theme
+import { theme } from '@extension/theme';
 
 interface IProps {
   onClose: () => void;
@@ -32,6 +39,8 @@ interface IProps {
 const ErrorModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const error: BaseExtensionError | null = useSelectError();
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const requiresRefresh: () => boolean = (): boolean => {
     switch (error?.code) {
       default:
@@ -54,8 +63,8 @@ const ErrorModal: FC<IProps> = ({ onClose }: IProps) => {
       size="full"
     >
       <ModalContent
-        backgroundColor="primary.900"
-        borderTopRadius={25}
+        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
       >
         <Center flex={1}>
@@ -71,13 +80,13 @@ const ErrorModal: FC<IProps> = ({ onClose }: IProps) => {
           >
             <VStack flexGrow={1} justifyContent="center" spacing={5}>
               <Icon as={IoWarning} color="red.500" h={16} w={16} />
-              <Heading color="white" textAlign="center">
+              <Heading color={defaultTextColor} textAlign="center">
                 {t<string>('errors.titles.code', { context: error?.code })}
               </Heading>
-              <Text color="white" fontSize="sm" textAlign="center">
+              <Text color={defaultTextColor} fontSize="sm" textAlign="center">
                 {t<string>('errors.descriptions.code')}
               </Text>
-              <Text color="white" fontSize="sm" textAlign="center">
+              <Text color={subTextColor} fontSize="sm" textAlign="center">
                 <Trans i18nKey="captions.support">
                   Please{' '}
                   <Link
@@ -92,6 +101,7 @@ const ErrorModal: FC<IProps> = ({ onClose }: IProps) => {
               </Text>
             </VStack>
             <Button
+              color="white"
               colorScheme="red"
               mb={8}
               onClick={handleTryAgainClick}

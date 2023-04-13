@@ -5,6 +5,7 @@ import {
   IWalletAccount,
 } from '@agoralabs-sh/algorand-provider';
 import {
+  Button,
   Center,
   ChakraProvider,
   CreateToastFnReturn,
@@ -32,7 +33,6 @@ import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // Components
-import Button from '@extension/components/Button';
 import Fonts from '@extension/components/Fonts';
 
 // Tabs
@@ -147,6 +147,7 @@ const App: FC = () => {
             {/* Enable CTAs */}
             <HStack justifyContent="center" spacing={2} w="full">
               <Button
+                borderRadius={theme.radii['3xl']}
                 colorScheme="primaryLight"
                 minW={250}
                 onClick={handleEnableClick(
@@ -157,6 +158,7 @@ const App: FC = () => {
                 Enable Algorand TestNet
               </Button>
               <Button
+                borderRadius={theme.radii['3xl']}
                 colorScheme="primaryLight"
                 minW={250}
                 onClick={handleEnableClick(

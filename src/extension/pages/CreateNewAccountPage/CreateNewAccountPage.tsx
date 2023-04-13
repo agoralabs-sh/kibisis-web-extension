@@ -215,7 +215,6 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
 
         <HStack spacing={4} w="full">
           <Button
-            colorScheme={primaryColorScheme}
             onClick={handlePreviousClick}
             isDisabled={saving}
             size="lg"
@@ -226,7 +225,6 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
           </Button>
           {hasCompletedAllSteps ? (
             <Button
-              colorScheme={primaryColorScheme}
               onClick={handleSaveClick}
               isLoading={saving}
               size="lg"
@@ -237,7 +235,6 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
             </Button>
           ) : (
             <Button
-              colorScheme={primaryColorScheme}
               onClick={handleNextClick}
               size="lg"
               variant="solid"

@@ -39,6 +39,7 @@ import { setSessionThunk } from '@extension/features/sessions';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
@@ -74,6 +75,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const accounts: IAccount[] = useSelectAccounts();
@@ -207,7 +209,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
             </Text>
           )}
           <Checkbox
-            colorScheme="primary"
+            colorScheme={primaryColorScheme}
             isChecked={
               !!enableRequest?.authorizedAddresses?.find(
                 (value) => value === account.address
@@ -218,6 +220,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
         </HStack>
       ));
     }
+
     return (
       <Heading color={defaultTextColor} size="md" textAlign="center" w="full">
         {t<string>('headings.noAccountsFound')}
@@ -279,7 +282,6 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
             <Button
-              colorScheme="primary"
               onClick={handleCancelClick}
               size="lg"
               variant="outline"
@@ -288,7 +290,6 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
               {t<string>('buttons.cancel')}
             </Button>
             <Button
-              colorScheme="primary"
               isLoading={saving}
               onClick={handleConnectClick}
               size="lg"

@@ -116,7 +116,6 @@ const ChangePasswordPage: FC = () => {
           />
         </VStack>
         <Button
-          colorScheme="primary"
           isLoading={saving}
           onClick={handleChangeClick}
           size="lg"

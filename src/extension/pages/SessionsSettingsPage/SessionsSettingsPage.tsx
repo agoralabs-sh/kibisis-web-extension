@@ -139,6 +139,7 @@ const SessionsSettingsPage: FC = () => {
       <PageHeader title={t<string>('titles.page', { context: 'sessions' })} />
       <Stack alignItems="center" justifyContent="center" px={4} py={4} w="full">
         <Button
+          color="white"
           colorScheme="red"
           isDisabled={sessions.length <= 0}
           maxW={400}
