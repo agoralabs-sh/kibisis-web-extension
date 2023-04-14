@@ -4,7 +4,7 @@ import { BigNumber } from 'bignumber.js';
 // Constants
 import {
   ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT,
-  ACCOUNT_INFORMATION_REQUEST_DELAY,
+  NODE_REQUEST_DELAY,
   ACCOUNT_KEY_PREFIX,
 } from '@extension/constants';
 
@@ -21,6 +21,7 @@ import {
 } from '@extension/types';
 
 // Utils
+import { randomNode } from '@extension/utils';
 import fetchAccountInformationWithDelay from './fetchAccountInformationWithDelay';
 
 interface IOptions {
@@ -38,7 +39,6 @@ export default async function updateAccountInformation(
   accounts: IAccount[],
   { logger, networks }: IOptions
 ): Promise<IAccount[]> {
-  const functionName: string = 'updateAccountInformation';
   const storageManager: StorageManager = new StorageManager();
   const updatedAccounts: IAccount[] = await Promise.all(
     accounts.map(async (account, index) => {
@@ -53,7 +53,7 @@ export default async function updateAccountInformation(
 
       if (!network) {
         logger.debug(
-          `${functionName}(): unrecognized network "${account.genesisHash}" for "${account.id}", skipping`
+          `${updateAccountInformation.name}(): unrecognized network "${account.genesisHash}" for "${account.id}", skipping`
         );
 
         return account;
@@ -65,7 +65,7 @@ export default async function updateAccountInformation(
         account.updatedAt + ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT > timestamp
       ) {
         logger.debug(
-          `${functionName}: last updated "${new Date(
+          `${updateAccountInformation.name}: last updated "${new Date(
             account.updatedAt
           ).toString()}", skipping`
         );
@@ -73,23 +73,25 @@ export default async function updateAccountInformation(
         return account;
       }
 
-      node = network.nodes[Math.floor(Math.random() * network.nodes.length)]; // pick a random node
+      node = randomNode(network);
       client = new Algodv2('', node.url, node.port);
 
       logger.debug(
-        `${functionName}: fetching account information for "${account.address}" from "${node.name}" on "${network.genesisId}"`
+        `${updateAccountInformation.name}: fetching account information for "${account.address}" from "${node.name}" on "${network.genesisId}"`
       );
 
       try {
         accountInformation = await fetchAccountInformationWithDelay({
           address: account.address,
           client,
-          delay: index * ACCOUNT_INFORMATION_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
         });
         updatedAt = new Date();
 
         logger.debug(
-          `${functionName}: successfully updated account information for "${
+          `${
+            updateAccountInformation.name
+          }: successfully updated account information for "${
             account.address
           }" from "${node.name}" on "${
             network.genesisId
@@ -101,6 +103,11 @@ export default async function updateAccountInformation(
           atomicBalance: new BigNumber(
             String(accountInformation.amount as bigint)
           ).toString(),
+          assets: accountInformation.assets.map((value) => ({
+            amount: new BigNumber(String(value.amount as bigint)).toString(),
+            id: new BigNumber(String(value['asset-id'] as bigint)).toString(),
+            isFrozen: value['is-frozen'],
+          })),
           authAddress: accountInformation['auth-addr'] || null,
           createdAt: account.createdAt,
           genesisHash: account.genesisHash,
@@ -113,7 +120,7 @@ export default async function updateAccountInformation(
         };
       } catch (error) {
         logger.error(
-          `${functionName}: failed to get account information for "${account.address}" from "${node.name}" on ${network.genesisId}: ${error.message}`
+          `${updateAccountInformation.name}: failed to get account information for "${account.address}" from "${node.name}" on ${network.genesisId}: ${error.message}`
         );
 
         return account;

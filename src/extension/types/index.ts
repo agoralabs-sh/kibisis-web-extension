@@ -3,9 +3,14 @@ export type { default as IAddAccountCompleteFunction } from './IAddAccountComple
 export type { default as IAddAccountCompleteResult } from './IAddAccountCompleteResult';
 export type { default as IAdvancedSettings } from './IAdvancedSettings';
 export type { default as IAlgorandAccountInformation } from './IAlgorandAccountInformation';
+export type { default as IAlgorandAsset } from './IAlgorandAsset';
+export type { default as IAlgorandAssetHolding } from './IAlgorandAssetHolding';
+export type { default as IAlgorandAssetParams } from './IAlgorandAssetParams';
 export type { default as IAppearanceSettings } from './IAppearanceSettings';
 export type { default as IAppProps } from './IAppProps';
 export type { default as IAppThunkDispatch } from './IAppThunkDispatch';
+export type { default as IAsset } from './IAsset';
+export type { default as IAssetHolding } from './IAssetHolding';
 export type { default as IBaseRootState } from './IBaseRootState';
 export type { default as IDecodedJwt } from './IDecodedJwt';
 export type { default as IDecodedJwtHeader } from './IDecodedJwtHeader';

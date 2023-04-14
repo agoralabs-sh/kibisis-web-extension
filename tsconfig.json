@@ -30,6 +30,7 @@
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
       "@extension/features/application": ["src/extension/features/application"],
+      "@extension/features/assets": ["src/extension/features/assets"],
       "@extension/features/messages": ["src/extension/features/messages"],
       "@extension/features/networks": ["src/extension/features/networks"],
       "@extension/features/registration": [

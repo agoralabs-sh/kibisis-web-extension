@@ -117,6 +117,11 @@ const config: Configuration = {
         'features',
         'application'
       ),
+      ['@extension/features/assets']: resolve(
+        EXTENSION_PATH,
+        'features',
+        'assets'
+      ),
       ['@extension/features/messages']: resolve(
         EXTENSION_PATH,
         'features',

@@ -1,5 +1,6 @@
 export { default as useSelectAccount } from './useSelectAccount';
 export { default as useSelectAccounts } from './useSelectAccounts';
+export { default as useSelectAssets } from './useSelectAssets';
 export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConfirm } from './useSelectConfirm';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';
