@@ -8,6 +8,11 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
+  TabList,
+  Tab,
+  TabPanels,
+  Tabs,
+  StackProps,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
@@ -29,6 +34,9 @@ import {
 } from 'react-router-dom';
 
 // Components
+import AccountActivityTab from '@extension/components/AccountActivityTab';
+import AccountAssetsTab from '@extension/components/AccountAssetsTab';
+import AccountNftsTab from '@extension/components/AccountNftsTab';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import IconButton from '@extension/components/IconButton';
@@ -121,26 +129,39 @@ const AccountPage: FC = () => {
     );
   };
   const renderContent = () => {
+    const containerProps: StackProps = {
+      alignItems: 'flex-start',
+      flexGrow: 1,
+      pt: 4,
+      px: 4,
+      w: 'full',
+    };
+
     if (fetchingAccounts || fetchingSettings) {
       return (
-        <VStack alignItems="flex-start" pt={4} px={4} w="full">
+        <VStack {...containerProps}>
           {/* Header */}
           <NetworkSelectSkeleton network={networks[0]} />
-          {/* Balance */}
-          <NativeBalanceSkeleton />
-          {/* Address */}
-          <Skeleton flexGrow="1">
-            <Text color="gray.500" fontSize="xs">
-              {ellipseAddress(faker.random.alphaNumeric(52).toUpperCase())}
-            </Text>
-          </Skeleton>
+          <HStack alignItems="center" w="full">
+            {/* Address */}
+            <Skeleton>
+              <Text color="gray.500" fontSize="xs">
+                {ellipseAddress(faker.random.alphaNumeric(58).toUpperCase())}
+              </Text>
+            </Skeleton>
+
+            <Spacer />
+
+            {/* Balance */}
+            <NativeBalanceSkeleton />
+          </HStack>
         </VStack>
       );
     }
 
     if (account && settings.network) {
       return (
-        <VStack alignItems="flex-start" pt={4} px={4} w="full">
+        <VStack {...containerProps}>
           {/* Header */}
           <HStack w="full">
             {!online && (
@@ -197,6 +218,7 @@ const AccountPage: FC = () => {
               nativeCurrency={settings.network.nativeCurrency}
             />
           </HStack>
+
           {/* Address and interactions */}
           <HStack alignItems="center" spacing={1} w="full">
             <Tooltip label={account.address}>
@@ -229,12 +251,34 @@ const AccountPage: FC = () => {
               />
             </Tooltip>
           </HStack>
+
+          {/* Assets/NFTs/Activity tabs */}
+          <Tabs
+            colorScheme={primaryColorScheme}
+            flexGrow={1}
+            sx={{ display: 'flex', flexDirection: 'column' }}
+            w="full"
+          >
+            <TabList>
+              <Tab>{t<string>('labels.assets')}</Tab>
+              <Tab>{t<string>('labels.nfts')}</Tab>
+              <Tab>{t<string>('labels.activity')}</Tab>
+            </TabList>
+            <TabPanels
+              flexGrow={1}
+              sx={{ display: 'flex', flexDirection: 'column' }}
+            >
+              <AccountAssetsTab />
+              <AccountNftsTab />
+              <AccountActivityTab />
+            </TabPanels>
+          </Tabs>
         </VStack>
       );
     }
 
     return (
-      <>
+      <VStack {...containerProps}>
         <Spacer />
         <VStack spacing={5} w="full">
           <Heading color={defaultTextColor} size="md">
@@ -249,7 +293,7 @@ const AccountPage: FC = () => {
           </Button>
         </VStack>
         <Spacer />
-      </>
+      </VStack>
     );
   };
 
