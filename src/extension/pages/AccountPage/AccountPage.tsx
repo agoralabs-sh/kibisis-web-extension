@@ -268,7 +268,7 @@ const AccountPage: FC = () => {
               flexGrow={1}
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
-              <AccountAssetsTab />
+              <AccountAssetsTab account={account} />
               <AccountNftsTab />
               <AccountActivityTab />
             </TabPanels>

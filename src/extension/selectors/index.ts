@@ -1,11 +1,13 @@
 export { default as useSelectAccount } from './useSelectAccount';
 export { default as useSelectAccounts } from './useSelectAccounts';
 export { default as useSelectAssets } from './useSelectAssets';
+export { default as useSelectAssetsByGenesisHash } from './useSelectAssetsByGenesisHash';
 export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConfirm } from './useSelectConfirm';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';
 export { default as useSelectError } from './useSelectError';
 export { default as useSelectFetchingAccounts } from './useSelectFetchingAccounts';
+export { default as useSelectFetchingAssets } from './useSelectFetchingAssets';
 export { default as useSelectFetchingSessions } from './useSelectFetchingSessions';
 export { default as useSelectFetchingSettings } from './useSelectFetchingSettings';
 export { default as useSelectIsOnline } from './useSelectIsOnline';
@@ -22,3 +24,4 @@ export { default as useSelectSettings } from './useSelectSettings';
 export { default as useSelectSideBar } from './useSelectSideBar';
 export { default as useSelectSignBytesRequest } from './useSelectSignBytesRequest';
 export { default as useSelectToast } from './useSelectToast';
+export { default as useSelectUpdatingAssets } from './useSelectUpdatingAssets';
