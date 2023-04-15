@@ -22,7 +22,7 @@ const PageHeader: FC<IProps> = ({ title }: IProps) => {
   const handleBackClick = () => navigate(-1);
 
   return (
-    <HStack pb={DEFAULT_GAP - 2} spacing={0} w="full">
+    <HStack pb={DEFAULT_GAP - 2} spacing={4} w="full">
       <IconButton
         aria-label="Go back"
         icon={IoArrowBackOutline}

@@ -13,7 +13,7 @@ import { faker } from '@faker-js/faker';
 import { nanoid } from 'nanoid';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoLinkOutline } from 'react-icons/io5';
+import { IoAdd, IoLinkOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // Components
@@ -41,6 +41,7 @@ import {
 
 // Types
 import { IAppThunkDispatch, ISession } from '@extension/types';
+import EmptyState from '@extension/components/EmptyState';
 
 const SessionsSettingsPage: FC = () => {
   const { t } = useTranslation();
@@ -96,37 +97,31 @@ const SessionsSettingsPage: FC = () => {
       );
     }
 
-    if (sessions.length <= 0) {
+    if (sessions.length > 0) {
       return (
-        <>
-          <Spacer />
-          <VStack
-            alignItems="center"
-            justifyContent="center"
-            spacing={2}
-            w="full"
-          >
-            <Icon as={IoLinkOutline} color={defaultTextColor} h={12} w={12} />
-            <Heading color={defaultTextColor} size="md" textAlign="center">
-              {t<string>('headings.noSessionsFound')}
-            </Heading>
-          </VStack>
-          <Spacer />
-        </>
+        <VStack spacing={2} w="full">
+          {sessions.map((session) => (
+            <SettingsSessionItem
+              key={nanoid()}
+              onManageSession={handleManageSession}
+              onRemoveSession={handleRemoveSession}
+              session={session}
+            />
+          ))}
+        </VStack>
       );
     }
 
     return (
-      <VStack spacing={2} w="full">
-        {sessions.map((session) => (
-          <SettingsSessionItem
-            key={nanoid()}
-            onManageSession={handleManageSession}
-            onRemoveSession={handleRemoveSession}
-            session={session}
-          />
-        ))}
-      </VStack>
+      <>
+        {/* Empty state */}
+        <Spacer />
+        <EmptyState
+          description={t<string>('captions.noSessionsFound')}
+          text={t<string>('headings.noSessionsFound')}
+        />
+        <Spacer />
+      </>
     );
   };
 

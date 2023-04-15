@@ -4,6 +4,7 @@ import { IResourceLanguage } from '@extension/types';
 const translation: IResourceLanguage = {
   buttons: {
     addAccount: 'Add Account',
+    addAsset: 'Add Asset',
     allow: 'Allow',
     cancel: 'Cancel',
     changePassword: 'Change Password',
@@ -56,6 +57,11 @@ const translation: IResourceLanguage = {
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
+    noAccountsFound:
+      'You can create a new account or import an existing account.',
+    noAssetsFound:
+      'You have not opt-ed into any assets. Try adding an assets now.',
+    noSessionsFound: 'Enabled dApps will appear here.',
     offline: 'It looks like you are offline, some features may not work',
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
@@ -109,9 +115,9 @@ const translation: IResourceLanguage = {
     importRekeyedAccount: 'Import A Rekeyed Account',
     nameYourAccount: 'Name your account',
     newAccountComplete: 'Almost There...',
-    noAccountsFound: 'No accounts found!',
-    noAssetsFound: 'No assets found!',
-    noSessionsFound: 'No sessions found!',
+    noAccountsFound: 'No accounts found',
+    noAssetsFound: 'No assets found',
+    noSessionsFound: 'No sessions found',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     shareAddress: 'Share Address',
