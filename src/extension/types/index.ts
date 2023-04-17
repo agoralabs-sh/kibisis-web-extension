@@ -29,3 +29,5 @@ export type { default as ISettings } from './ISettings';
 export type { default as ISetAccountOptions } from './ISetAccountOptions';
 export type { default as ISignBytesRequest } from './ISignBytesRequest';
 export type { default as IStorageItemTypes } from './IStorageItemTypes';
+export type { default as ITinyManAssetResponse } from './ITinyManAssetResponse';
+export type { default as IVestigeFiAssetResponse } from './IVestigeFiAssetResponse';

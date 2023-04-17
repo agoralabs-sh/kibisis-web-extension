@@ -6,6 +6,7 @@
  * @property {boolean} deleted - whether this asset is deleted or not.
  * @property {string | null} freezeAddress - the address of the account that can freeze this asset.
  * @property {string} id - the ID of this asset.
+ * @property {string | null} iconUrl - the URL of the asset icon.
  * @property {string | null} managerAddress - the address of the account that can manage the keys of this asset and to
  * destroy it.
  * @property {string | null} metadataHash - a hash of the metadata for this asset. Usually base64 encoded.
@@ -19,6 +20,7 @@
  * @property {string | null} url  - the URL where more information about the asset can be retrieved.
  * @property {string | null} urlBase64  - the base64 encoded URL where more information about the asset can be
  * retrieved.
+ * @property {boolean} verified - whether this asset is verified according to vestige.fi
  */
 interface IAsset {
   clawbackAddress: string | null;
@@ -27,6 +29,7 @@ interface IAsset {
   defaultFrozen: boolean;
   deleted: boolean;
   freezeAddress: string | null;
+  iconUrl: string | null;
   id: string;
   managerAddress: string | null;
   metadataHash: string | null;
@@ -38,6 +41,7 @@ interface IAsset {
   unitNameBase64: string | null;
   url: string | null;
   urlBase64: string | null;
+  verified: boolean;
 }
 
 export default IAsset;

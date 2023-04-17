@@ -17,8 +17,10 @@ const translation: IResourceLanguage = {
     next: 'Next',
     ok: 'OK',
     previous: 'Previous',
+    receive: 'Receive',
     removeAllSessions: 'Remove All Sessions',
     save: 'Save',
+    send: 'Send',
     sign: 'Sign',
   },
   captions: {
@@ -28,6 +30,7 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
     allowTestNet: 'Let TestNet networks appear in the networks list.',
+    assetIdCopied: 'Asset ID copied!',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
     changePassword1:

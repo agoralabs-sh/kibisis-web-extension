@@ -46,7 +46,7 @@ const EmptyState: FC<IProps> = ({
           colorScheme: button.colorScheme,
         }),
         ...(button.icon && {
-          rightIcon: <button.icon />,
+          leftIcon: <button.icon />,
         }),
       };
 

@@ -1,4 +1,4 @@
-import { Box, Heading, HStack } from '@chakra-ui/react';
+import { Box, Heading, HStack, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
@@ -11,14 +11,17 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps {
+  subTitle?: string;
   title: string;
 }
 
-const PageHeader: FC<IProps> = ({ title }: IProps) => {
+const PageHeader: FC<IProps> = ({ subTitle, title }: IProps) => {
   const navigate: NavigateFunction = useNavigate();
   const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
   const handleBackClick = () => navigate(-1);
 
   return (
@@ -29,14 +32,21 @@ const PageHeader: FC<IProps> = ({ title }: IProps) => {
         onClick={handleBackClick}
         variant="ghost"
       />
-      <Heading
-        color={defaultTextColor}
+      <VStack
+        alignItems="center"
         flexGrow={1}
-        size="md"
-        textAlign="center"
+        justifyContent="center"
+        spacing={1}
       >
-        {title}
-      </Heading>
+        <Heading color={defaultTextColor} size="md" textAlign="center">
+          {title}
+        </Heading>
+        {subTitle && (
+          <Text color={subTextColor} fontSize="xs" textAlign="center">
+            {subTitle}
+          </Text>
+        )}
+      </VStack>
       <Box w="40px" /> {/* zombie element to off center the title */}
     </HStack>
   );

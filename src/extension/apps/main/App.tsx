@@ -28,8 +28,8 @@ import { reducer as sessionsReducer } from '@extension/features/sessions';
 import { reducer as settingsReducer } from '@extension/features/settings';
 
 // Pages
-import AccountPage from '@extension/pages/AccountPage';
-import MainAddAccountRouter from '@extension/pages/MainAddAccountRouter';
+import AccountRouter from '@extension/pages/AccountRouter';
+import AddAccountRouter from '@extension/pages/MainAddAccountRouter';
 import SettingsRouter from '@extension/pages/SettingsRouter';
 
 // Types
@@ -47,25 +47,16 @@ const createRouter = (dispatch: IAppThunkDispatch) =>
           path: '/',
         },
         {
-          element: <AccountPage />,
+          element: <AccountRouter />,
           loader: () => {
             dispatch(setSideBar(true));
 
             return null;
           },
-          path: ACCOUNTS_ROUTE,
+          path: `${ACCOUNTS_ROUTE}/*`,
         },
         {
-          element: <AccountPage />,
-          loader: () => {
-            dispatch(setSideBar(true));
-
-            return null;
-          },
-          path: `${ACCOUNTS_ROUTE}/:address`,
-        },
-        {
-          element: <MainAddAccountRouter />,
+          element: <AddAccountRouter />,
           loader: () => {
             dispatch(setSideBar(false));
 

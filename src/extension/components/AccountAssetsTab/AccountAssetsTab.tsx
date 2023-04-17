@@ -1,9 +1,7 @@
 import {
-  Avatar,
   Button,
   HStack,
   Icon,
-  IconProps,
   Skeleton,
   SkeletonCircle,
   Spacer,
@@ -18,12 +16,15 @@ import { nanoid } from 'nanoid';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAdd, IoChevronForward } from 'react-icons/io5';
+import { Link } from 'react-router-dom';
 
 // Components
-import AlgorandAssetIcon from '@extension/components/AlgorandAssetIcon';
+import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import EmptyState from '@extension/components/EmptyState';
-import VoiAssetIcon from '@extension/components/VoiAssetIcon';
+
+// Constants
+import { ACCOUNTS_ROUTE, ASSETS_ROUTE } from '@extension/constants';
 
 // Hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -61,22 +62,20 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const primaryColor: string = usePrimaryColor();
   const subTextColor: string = useSubTextColor();
   const handleAddAssetClick = () => console.log('add an asset!');
   const renderContent = () => {
     if (fetching || updating) {
       return Array.from({ length: 3 }, () => (
         <Button
-          _hover={{
-            bg: buttonHoverBackgroundColor,
-          }}
           borderRadius={0}
           fontSize="md"
           h={16}
           justifyContent="start"
           key={nanoid()}
-          p={0}
+          pl={3}
+          pr={1}
+          py={0}
           variant="ghost"
           w="full"
         >
@@ -101,29 +100,10 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
       return account.assets.reduce<ReactNode[]>((acc, assetHolding) => {
         const asset: IAsset | null =
           assets.find((value) => value.id === assetHolding.id) || null;
-        const iconProps: IconProps = {
-          color: primaryButtonTextColor,
-          h: 6,
-          w: 6,
-        };
         let standardUnitAmount: BigNumber;
-        let icon: ReactNode = <AssetIcon {...iconProps} />;
 
         if (!asset) {
           return acc;
-        }
-
-        switch (network?.chakraTheme) {
-          case 'algorand':
-            icon = <AlgorandAssetIcon {...iconProps} />;
-
-            break;
-          case 'voi':
-            icon = <VoiAssetIcon {...iconProps} />;
-
-            break;
-          default:
-            break;
         }
 
         standardUnitAmount = convertToStandardUnit(
@@ -142,6 +122,7 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
               _hover={{
                 bg: buttonHoverBackgroundColor,
               }}
+              as={Link}
               borderRadius={0}
               fontSize="md"
               h={16}
@@ -157,12 +138,24 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
                   w={6}
                 />
               }
+              to={`${ACCOUNTS_ROUTE}/${account.address}${ASSETS_ROUTE}/${asset.id}`}
               variant="ghost"
               w="full"
             >
               <HStack alignItems="center" m={0} p={0} spacing={2} w="full">
                 {/* Icon */}
-                <Avatar bg={primaryColor} icon={icon} size="sm" />
+                <AssetAvatar
+                  asset={asset}
+                  fallbackIcon={
+                    <AssetIcon
+                      color={primaryButtonTextColor}
+                      networkTheme={network?.chakraTheme}
+                      h={6}
+                      w={6}
+                    />
+                  }
+                  size="sm"
+                />
                 {/* Name/unit */}
                 {asset.unitName ? (
                   <VStack

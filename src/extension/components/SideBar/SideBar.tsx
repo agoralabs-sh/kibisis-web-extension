@@ -163,9 +163,19 @@ const SideBar: FC = () => {
   }, [isOpen]);
   useEffect(() => {
     if (location.pathname.includes(ACCOUNTS_ROUTE)) {
-      setActiveAccountAddress(location.pathname.split('/').pop() || null);
+      const pathnames: string[] = location.pathname
+        .split('/')
+        .filter((value) => value.length > 0);
+      const addressIndex: number = pathnames.findIndex(
+        (value) => value === 'accounts'
+      );
 
-      return;
+      // if we have an address, get the address path, ie. /address/XXXX/...
+      if (addressIndex >= 0) {
+        setActiveAccountAddress(pathnames[addressIndex + 1] || null);
+
+        return;
+      }
     }
 
     setActiveAccountAddress(null);

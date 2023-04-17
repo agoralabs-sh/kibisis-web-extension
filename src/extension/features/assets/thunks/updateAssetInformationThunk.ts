@@ -1,6 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Algodv2 } from 'algosdk';
 
+// Constants
 import { ASSETS_KEY_PREFIX, NODE_REQUEST_DELAY } from '@extension/constants';
 
 // Enums
@@ -17,6 +18,7 @@ import {
   IMainRootState,
   INetwork,
   INode,
+  ITinyManAssetResponse,
 } from '@extension/types';
 import {
   IUpdateAssetInformationPayload,
@@ -26,6 +28,8 @@ import {
 // Utils
 import {
   convertGenesisHashToHex,
+  fetchAssetList,
+  fetchAssetVerification,
   mapAssetFromAlgorandAsset,
   randomNode,
 } from '@extension/utils';
@@ -49,13 +53,16 @@ const updateAssetInformationThunk: AsyncThunk<
       ) || null;
     const assets: IAsset[] = [];
     let assetInformation: IAlgorandAsset;
+    let assetList: Record<string, ITinyManAssetResponse> | null = null;
     let assetsStorageKey: string;
     let client: Algodv2;
     let currentAssets: IAsset[];
+    let delay: number;
     let encodedGenesisHash: string;
     let id: string;
     let node: INode;
     let storageManager: StorageManager;
+    let verified: boolean;
 
     if (!network) {
       logger.debug(
@@ -65,24 +72,55 @@ const updateAssetInformationThunk: AsyncThunk<
       return null;
     }
 
+    // TODO: asset list only exists for algorand mainnet, move this url to config?
+    if (
+      network.genesisHash === 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8='
+    ) {
+      assetList = await fetchAssetList({
+        logger,
+      });
+    }
+
     // get the information for each asset and add it to the array
     for (let i: number = 0; i < ids.length; i++) {
       id = ids[i];
       node = randomNode(network);
       client = new Algodv2('', node.url, node.port);
+      delay = i * NODE_REQUEST_DELAY; // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+      verified = false;
 
       try {
         assetInformation = await fetchAssetInformationWithDelay({
           client,
-          delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          delay,
           id,
         });
 
         logger.debug(
-          `${updateAssetInformationThunk.name}: successfully updated asset information for "${id}" from "${node.name}" on "${network.genesisId}"`
+          `${updateAssetInformationThunk.name}: getting verified status for "${id}" from "${node.name}" on "${network.genesisId}"`
         );
 
-        assets.push(mapAssetFromAlgorandAsset(assetInformation));
+        // TODO: asset list only exists for algorand mainnet, move this url to config?
+        if (
+          network.genesisHash === 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8='
+        ) {
+          verified = await fetchAssetVerification(id, {
+            delay,
+            logger,
+          });
+        }
+
+        assets.push(
+          mapAssetFromAlgorandAsset(
+            assetInformation,
+            assetList ? assetList[id]?.logo.svg || null : null,
+            verified
+          )
+        );
+
+        logger.debug(
+          `${updateAssetInformationThunk.name}: successfully updated asset information for "${id}" from "${node.name}" on "${network.genesisId}"`
+        );
       } catch (error) {
         logger.error(
           `${updateAssetInformationThunk.name}: failed to get asset information for asset "${id}" from "${node.name}" on ${network.genesisId}: ${error.message}`
