@@ -9,6 +9,7 @@ import { EventNameEnum } from '@common/enums';
 import {
   ExtensionEnableRequestEvent,
   ExtensionSignBytesRequestEvent,
+  ExtensionSignTxnsRequestEvent,
 } from '@common/events';
 
 // Selectors
@@ -24,13 +25,18 @@ import {
   IExtensionEnableRequestPayload,
   IExtensionEvents,
   IExtensionSignBytesRequestPayload,
+  IExtensionSignTxnsRequestPayload,
   ILogger,
 } from '@common/types';
 import { IAppThunkDispatch, INetwork, ISession } from '@extension/types';
 import { IIncomingRequest } from './types';
 
 // Utils
-import { handleEnableRequest, handleSignBytesRequest } from './utils';
+import {
+  handleEnableRequest,
+  handleSignBytesRequest,
+  handleSignTxnsRequest,
+} from './utils';
 
 export default function useOnMessage(): void {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -42,12 +48,14 @@ export default function useOnMessage(): void {
     useState<IIncomingRequest<IExtensionEnableRequestPayload> | null>(null);
   const [incomingSignBytesRequest, setIncomingSignBytesRequest] =
     useState<IIncomingRequest<IExtensionSignBytesRequestPayload> | null>(null);
+  const [incomingSignTxnsRequest, setIncomingSignTxnsRequest] =
+    useState<IIncomingRequest<IExtensionSignTxnsRequestPayload> | null>(null);
   const handleOnExtensionMessage = (
     message: IExtensionEvents,
     sender: Runtime.MessageSender
   ) => {
     logger.debug(
-      `${useOnMessage.name}#handleOnExtensionMessage(): extension message "${message.event}" received from the content script`
+      `${useOnMessage.name}#${handleOnExtensionMessage.name}(): extension message "${message.event}" received from the content script`
     );
 
     switch (message.event) {
@@ -76,6 +84,16 @@ export default function useOnMessage(): void {
             iconUrl: (message as ExtensionEnableRequestEvent).payload.iconUrl,
             signer: (message as ExtensionSignBytesRequestEvent).payload.signer,
             tabId: sender.tab.id,
+          });
+        }
+
+        break;
+      case EventNameEnum.ExtensionSignTxnsRequest:
+        if (sender.tab?.id) {
+          setIncomingSignTxnsRequest({
+            host: (message as ExtensionSignTxnsRequestEvent).payload.host,
+            tabId: sender.tab.id,
+            txns: (message as ExtensionSignTxnsRequestEvent).payload.txns,
           });
         }
 
@@ -111,4 +129,12 @@ export default function useOnMessage(): void {
       setIncomingSignBytesRequest(null);
     }
   }, [incomingSignBytesRequest]);
+  useEffect(() => {
+    if (incomingSignTxnsRequest) {
+      handleSignTxnsRequest(dispatch, incomingSignTxnsRequest, {
+        sessions,
+      });
+      setIncomingSignTxnsRequest(null);
+    }
+  }, [incomingSignTxnsRequest]);
 }

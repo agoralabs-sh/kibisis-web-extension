@@ -112,7 +112,7 @@ export default class ExternalEventService {
   ): void {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#${this.handleExtensionEnableResponse.name}(): extension message "${message.event}" received`
+        `${ExternalEventService.name}#handleExtensionEnableResponse(): extension message "${message.event}" received`
       );
 
     // send the response to the web page
@@ -126,7 +126,7 @@ export default class ExternalEventService {
   ): void {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#${this.handleExtensionSignBytesResponse.name}(): extension message "${message.event}" received`
+        `${ExternalEventService.name}#handleExtensionSignBytesResponse(): extension message "${message.event}" received`
       );
 
     // send the response to the web page
@@ -140,7 +140,7 @@ export default class ExternalEventService {
   ): void {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#${this.handleExtensionSignTxnsResponse.name}(): extension message "${message.event}" received`
+        `${ExternalEventService.name}#handleExtensionSignTxnsResponse(): extension message "${message.event}" received`
       );
 
     // send the response to the web page
@@ -154,7 +154,7 @@ export default class ExternalEventService {
   ): Promise<void> {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#${this.handleExternalEnableRequest.name}(): external message "${message.event}" received`
+        `${ExternalEventService.name}#handleExternalEnableRequest(): external message "${message.event}" received`
       );
 
     // send the message to the extension (popup)
@@ -180,7 +180,7 @@ export default class ExternalEventService {
   ): Promise<void> {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#${this.handleExternalSignBytesRequest.name}(): external message "${message.event}" received`
+        `${ExternalEventService.name}#handleExternalSignBytesRequest(): external message "${message.event}" received`
       );
 
     // send the message to the extension (popup)
@@ -202,7 +202,7 @@ export default class ExternalEventService {
   ): Promise<void> {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#${this.handleExternalSignTxnsRequest.name}(): external message "${message.event}" received`
+        `${ExternalEventService.name}#handleExternalSignTxnsRequest(): external message "${message.event}" received`
       );
 
     // send the message to the extension (popup)

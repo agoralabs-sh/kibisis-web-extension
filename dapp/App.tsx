@@ -38,6 +38,7 @@ import Fonts from '@extension/components/Fonts';
 // Tabs
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
+import SignTxnTab from './SignTxnTab';
 
 // Theme
 import { theme } from '@extension/theme';
@@ -186,10 +187,12 @@ const App: FC = () => {
             </HStack>
             <Tabs colorScheme="primaryLight" w="full">
               <TabList>
+                <Tab>Sign Txn</Tab>
                 <Tab>Sign Data</Tab>
                 <Tab>Sign JWT</Tab>
               </TabList>
               <TabPanels>
+                <SignTxnTab signer={selectedAddress} toast={toast} />
                 <SignDataTab signer={selectedAddress} toast={toast} />
                 <SignJwtTab signer={selectedAddress} toast={toast} />
               </TabPanels>
