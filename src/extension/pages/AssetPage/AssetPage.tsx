@@ -50,12 +50,8 @@ import {
 } from '@extension/types';
 
 // Utils
-import {
-  convertGenesisHashToHex,
-  convertToStandardUnit,
-  ellipseAddress,
-  formatCurrencyUnit,
-} from '@extension/utils';
+import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
+import { convertGenesisHashToHex, ellipseAddress } from '@extension/utils';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();

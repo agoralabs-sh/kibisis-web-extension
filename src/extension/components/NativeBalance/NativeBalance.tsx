@@ -9,11 +9,8 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // Utils
-import {
-  convertToStandardUnit,
-  createIconFromDataUri,
-  formatCurrencyUnit,
-} from '@extension/utils';
+import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
+import { createIconFromDataUri } from '@extension/utils';
 
 // Theme
 import { theme } from '@extension/theme';

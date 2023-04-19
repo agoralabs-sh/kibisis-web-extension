@@ -45,7 +45,7 @@ import {
 import { IAccount, IAsset, INetwork } from '@extension/types';
 
 // Utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@extension/utils';
+import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 
 interface IProps {
   account: IAccount;
