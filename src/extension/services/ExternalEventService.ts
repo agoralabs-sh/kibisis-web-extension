@@ -9,10 +9,14 @@ import {
   ExtensionEnableResponseEvent,
   ExtensionSignBytesRequestEvent,
   ExtensionSignBytesResponseEvent,
+  ExtensionSignTxnsRequestEvent,
+  ExtensionSignTxnsResponseEvent,
   ExternalEnableRequestEvent,
   ExternalEnableResponseEvent,
   ExternalSignBytesRequestEvent,
   ExternalSignBytesResponseEvent,
+  ExternalSignTxnsRequestEvent,
+  ExternalSignTxnsResponseEvent,
 } from '@common/events';
 
 // Types
@@ -108,7 +112,7 @@ export default class ExternalEventService {
   ): void {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#handleExtensionEnableResponse(): extension message "${message.event}" received`
+        `${ExternalEventService.name}#${this.handleExtensionEnableResponse.name}(): extension message "${message.event}" received`
       );
 
     // send the response to the web page
@@ -122,7 +126,7 @@ export default class ExternalEventService {
   ): void {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#handleExtensionSignBytesResponse(): extension message "${message.event}" received`
+        `${ExternalEventService.name}#${this.handleExtensionSignBytesResponse.name}(): extension message "${message.event}" received`
       );
 
     // send the response to the web page
@@ -131,12 +135,26 @@ export default class ExternalEventService {
     );
   }
 
+  private handleExtensionSignTxnsResponse(
+    message: ExtensionSignTxnsResponseEvent
+  ): void {
+    this.logger &&
+      this.logger.debug(
+        `${ExternalEventService.name}#${this.handleExtensionSignTxnsResponse.name}(): extension message "${message.event}" received`
+      );
+
+    // send the response to the web page
+    return window.postMessage(
+      new ExternalSignTxnsResponseEvent(message.payload, message.error)
+    );
+  }
+
   private async handleExternalEnableRequest(
     message: ExternalEnableRequestEvent
   ): Promise<void> {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#onExternalEnableRequest(): external message "${message.event}" received`
+        `${ExternalEventService.name}#${this.handleExternalEnableRequest.name}(): external message "${message.event}" received`
       );
 
     // send the message to the extension (popup)
@@ -162,7 +180,7 @@ export default class ExternalEventService {
   ): Promise<void> {
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#handleExternalSignBytesRequest(): external message "${message.event}" received`
+        `${ExternalEventService.name}#${this.handleExternalSignBytesRequest.name}(): external message "${message.event}" received`
       );
 
     // send the message to the extension (popup)
@@ -175,6 +193,23 @@ export default class ExternalEventService {
             ?.getAttribute('content') || document.title,
         host: `${window.location.protocol}//${window.location.host}`,
         iconUrl: this.extractFaviconUrl(),
+      })
+    );
+  }
+
+  private async handleExternalSignTxnsRequest(
+    message: ExternalSignTxnsRequestEvent
+  ): Promise<void> {
+    this.logger &&
+      this.logger.debug(
+        `${ExternalEventService.name}#${this.handleExternalSignTxnsRequest.name}(): external message "${message.event}" received`
+      );
+
+    // send the message to the extension (popup)
+    return await browser.runtime.sendMessage(
+      new ExtensionSignTxnsRequestEvent({
+        ...message.payload,
+        host: `${window.location.protocol}//${window.location.host}`,
       })
     );
   }
@@ -192,6 +227,10 @@ export default class ExternalEventService {
       case EventNameEnum.ExtensionSignBytesResponse:
         return this.handleExtensionSignBytesResponse(
           message as ExtensionSignBytesResponseEvent
+        );
+      case EventNameEnum.ExtensionSignTxnsResponse:
+        return this.handleExtensionSignTxnsResponse(
+          message as ExtensionSignTxnsResponseEvent
         );
       default:
         break;
@@ -213,6 +252,10 @@ export default class ExternalEventService {
       case EventNameEnum.ExternalSignBytesRequest:
         return await this.handleExternalSignBytesRequest(
           message.data as ExternalSignBytesRequestEvent
+        );
+      case EventNameEnum.ExternalSignTxnsRequest:
+        return await this.handleExternalSignTxnsRequest(
+          message.data as ExternalSignTxnsRequestEvent
         );
       default:
         break;

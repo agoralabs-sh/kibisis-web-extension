@@ -5,6 +5,7 @@ export type { default as IBaseSignBytesResponsePayload } from './IBaseSignBytesR
 export type { default as IExtensionEnableRequestPayload } from './IExtensionEnableRequestPayload';
 export type { default as IExtensionEvents } from './IExtensionEvents';
 export type { default as IExtensionSignBytesRequestPayload } from './IExtensionSignBytesRequestPayload';
+export type { default as IExtensionSignTxnsRequestPayload } from './IExtensionSignTxnsRequestPayload';
 export type { default as IExternalRequestEvents } from './IExternalRequestEvents';
 export type { default as IExternalResponseEvents } from './IExternalResponseEvents';
 export type { default as ILogger } from './ILogger';
