@@ -22,6 +22,10 @@ import {
   setToast,
 } from '@extension/features/application';
 import {
+  fetchAssetsThunk,
+  updateAssetInformationThunk,
+} from '@extension/features/assets';
+import {
   setEnableRequest,
   setSignBytesRequest,
 } from '@extension/features/messages';
@@ -33,17 +37,32 @@ import useOnMessage from '@extension/hooks/useOnMessage';
 import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
 
 // Selectors
-import { useSelectSelectedNetwork } from '@extension/selectors';
+import {
+  useSelectAccounts,
+  useSelectAssets,
+  useSelectSelectedNetwork,
+} from '@extension/selectors';
 
 // Theme
 import { theme } from '@extension/theme';
 
 // Types
-import { IAppThunkDispatch, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IAppThunkDispatch,
+  IAsset,
+  IAssetHolding,
+  INetwork,
+} from '@extension/types';
+
+// Utils
+import { convertGenesisHashToHex } from '@extension/utils';
 
 const Root: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
+  const accounts: IAccount[] = useSelectAccounts();
+  const assets: Record<string, IAsset[]> | null = useSelectAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const { toast, ToastContainer } = createStandaloneToast({
     defaultOptions: {
@@ -70,10 +89,11 @@ const Root: FC = () => {
     dispatch(setToast(toast));
     dispatch(fetchSettings());
     dispatch(fetchSessionsThunk());
+    dispatch(fetchAssetsThunk());
   }, []);
   // fetch accounts when the selected network has been found
   useEffect(() => {
-    if (selectedNetwork) {
+    if (assets && selectedNetwork) {
       dispatch(
         fetchAccountsThunk({
           updateAccountInformation: true,
@@ -81,7 +101,29 @@ const Root: FC = () => {
       );
       dispatch(startPollingForAccountInformationThunk());
     }
-  }, [selectedNetwork]);
+  }, [assets, selectedNetwork]);
+  useEffect(() => {
+    if (accounts.length > 0 && assets) {
+      accounts.forEach((account) => {
+        const newAssets: IAssetHolding[] = account.assets.filter(
+          (assetHolding) =>
+            !assets[convertGenesisHashToHex(account.genesisHash)].some(
+              (value) => value.id === assetHolding.id
+            )
+        );
+
+        // if we have any new assets, update the information
+        if (newAssets.length > 0) {
+          dispatch(
+            updateAssetInformationThunk({
+              genesisHash: account.genesisHash,
+              ids: newAssets.map((value) => value.id),
+            })
+          );
+        }
+      });
+    }
+  }, [accounts]);
   useOnNetworkConnectivity(); // listen to network connectivity
   useOnMessage(); // handle incoming messages
 

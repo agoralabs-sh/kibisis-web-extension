@@ -28,6 +28,7 @@ export default function initializeDefaultAccount({
   return {
     address,
     atomicBalance: '0',
+    assets: [],
     authAddress: authAddress || null,
     createdAt: createdAt || new Date().getTime(),
     genesisHash,

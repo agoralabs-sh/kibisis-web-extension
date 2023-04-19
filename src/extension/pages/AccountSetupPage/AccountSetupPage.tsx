@@ -43,14 +43,7 @@ const AccountSetupPage: FC = () => {
       <PageHeader
         title={t<string>('titles.page', { context: 'accountSetup' })}
       />
-      <VStack
-        flexGrow={1}
-        justifyContent="center"
-        mb={DEFAULT_GAP}
-        px={DEFAULT_GAP}
-        spacing={2}
-        w="full"
-      >
+      <VStack flexGrow={1} p={DEFAULT_GAP} spacing={2} w="full">
         <AccountTypeItem
           description={t<string>('captions.createNewAccount')}
           icon={CreateNewAccountIcon}

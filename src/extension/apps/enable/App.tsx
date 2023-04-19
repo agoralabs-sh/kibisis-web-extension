@@ -10,6 +10,7 @@ import Root from './Root';
 // Features
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as applicationReducer } from '@extension/features/application';
+import { reducer as assetsReducer } from '@extension/features/assets';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
@@ -29,6 +30,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     combineReducers({
       accounts: accountsReducer,
       application: applicationReducer,
+      assets: assetsReducer,
       messages: messagesReducer,
       networks: networksReducer,
       sessions: sessionsReducer,

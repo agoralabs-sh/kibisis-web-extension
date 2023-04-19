@@ -2,6 +2,7 @@ export const ADD_ACCOUNT_ROUTE: string = '/add-account';
 export const ACCOUNTS_ROUTE: string = '/accounts';
 export const ADVANCED_ROUTE: string = '/advanced';
 export const APPEARANCE_ROUTE: string = '/appearance';
+export const ASSETS_ROUTE: string = '/assets';
 export const CREATE_NEW_ACCOUNT_ROUTE: string = '/create-new-account';
 export const CREATE_PASSWORD_ROUTE: string = '/create-password';
 export const CHANGE_PASSWORD_ROUTE: string = '/change-password';

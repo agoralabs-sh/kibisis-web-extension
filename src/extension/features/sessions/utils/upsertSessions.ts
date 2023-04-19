@@ -6,7 +6,7 @@ import { ISession } from '@extension/types';
  * function uses the id as the index.
  * @param {ISession[]} sessions - a list of sessions.
  * @param {ISession[]} upsertSessions - the sessions to add or update.
- * @returns {IAccount[]} a new sessions list with the sessions updated or added.
+ * @returns {ISession[]} a new sessions list with the sessions updated or added.
  */
 export default function upsertSessions(
   sessions: ISession[],

@@ -8,6 +8,11 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
+  TabList,
+  Tab,
+  TabPanels,
+  Tabs,
+  StackProps,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
@@ -29,8 +34,12 @@ import {
 } from 'react-router-dom';
 
 // Components
+import AccountActivityTab from '@extension/components/AccountActivityTab';
+import AccountAssetsTab from '@extension/components/AccountAssetsTab';
+import AccountNftsTab from '@extension/components/AccountNftsTab';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import ShareAddressModal from '@extension/components/ShareAddressModal';
 import NetworkSelect, {
@@ -121,133 +130,169 @@ const AccountPage: FC = () => {
     );
   };
   const renderContent = () => {
+    const headerContainerProps: StackProps = {
+      alignItems: 'flex-start',
+      p: 4,
+      w: 'full',
+    };
+
     if (fetchingAccounts || fetchingSettings) {
       return (
-        <VStack alignItems="flex-start" pt={4} px={4} w="full">
-          {/* Header */}
+        <VStack {...headerContainerProps}>
           <NetworkSelectSkeleton network={networks[0]} />
-          {/* Balance */}
-          <NativeBalanceSkeleton />
-          {/* Address */}
-          <Skeleton flexGrow="1">
-            <Text color="gray.500" fontSize="xs">
-              {ellipseAddress(faker.random.alphaNumeric(52).toUpperCase())}
-            </Text>
-          </Skeleton>
+          <HStack alignItems="center" w="full">
+            {/* Address */}
+            <Skeleton>
+              <Text color="gray.500" fontSize="xs">
+                {ellipseAddress(faker.random.alphaNumeric(58).toUpperCase())}
+              </Text>
+            </Skeleton>
+
+            <Spacer />
+
+            {/* Balance */}
+            <NativeBalanceSkeleton />
+          </HStack>
         </VStack>
       );
     }
 
     if (account && settings.network) {
       return (
-        <VStack alignItems="flex-start" pt={4} px={4} w="full">
+        <>
           {/* Header */}
-          <HStack w="full">
-            {!online && (
-              <Tooltip
-                aria-label="Offline icon"
-                label={t<string>('captions.offline')}
-              >
-                <span
-                  style={{
-                    height: '1em',
-                    lineHeight: '1em',
-                  }}
+          <VStack {...headerContainerProps}>
+            <HStack w="full">
+              {!online && (
+                <Tooltip
+                  aria-label="Offline icon"
+                  label={t<string>('captions.offline')}
                 >
-                  <Icon as={IoCloudOfflineOutline} color="red.500" />
-                </span>
-              </Tooltip>
-            )}
+                  <span
+                    style={{
+                      height: '1em',
+                      lineHeight: '1em',
+                    }}
+                  >
+                    <Icon as={IoCloudOfflineOutline} color="red.500" />
+                  </span>
+                </Tooltip>
+              )}
 
-            <Spacer flexGrow={1} />
+              <Spacer flexGrow={1} />
 
-            {/*Network selection*/}
-            <NetworkSelect
-              network={settings.network}
-              networks={networks}
-              onSelect={handleNetworkSelect}
-            />
-          </HStack>
-          <HStack alignItems="center" w="full">
-            {/* Name/address */}
-            {account.name ? (
-              <Tooltip aria-label="Name of account" label={account.name}>
-                <Heading
-                  color={defaultTextColor}
-                  maxW={400}
-                  noOfLines={1}
-                  size="md"
-                  textAlign="left"
-                >
-                  {account.name}
+              {/*Network selection*/}
+              <NetworkSelect
+                network={settings.network}
+                networks={networks}
+                onSelect={handleNetworkSelect}
+              />
+            </HStack>
+            <HStack alignItems="center" w="full">
+              {/* Name/address */}
+              {account.name ? (
+                <Tooltip aria-label="Name of account" label={account.name}>
+                  <Heading
+                    color={defaultTextColor}
+                    maxW={400}
+                    noOfLines={1}
+                    size="md"
+                    textAlign="left"
+                  >
+                    {account.name}
+                  </Heading>
+                </Tooltip>
+              ) : (
+                <Heading color={defaultTextColor} size="md" textAlign="left">
+                  {ellipseAddress(account.address)}
                 </Heading>
+              )}
+
+              <Spacer />
+
+              {/* Balance */}
+              <NativeBalance
+                atomicBalance={new BigNumber(account.atomicBalance)}
+                minAtomicBalance={new BigNumber(account.minAtomicBalance)}
+                nativeCurrency={settings.network.nativeCurrency}
+              />
+            </HStack>
+
+            {/* Address and interactions */}
+            <HStack alignItems="center" spacing={1} w="full">
+              <Tooltip label={account.address}>
+                <Text color={subTextColor} fontSize="xs">
+                  {ellipseAddress(account.address, { end: 10, start: 10 })}
+                </Text>
               </Tooltip>
-            ) : (
-              <Heading color={defaultTextColor} size="md" textAlign="left">
-                {ellipseAddress(account.address)}
-              </Heading>
-            )}
-
-            <Spacer />
-
-            {/* Balance */}
-            <NativeBalance
-              atomicBalance={new BigNumber(account.atomicBalance)}
-              minAtomicBalance={new BigNumber(account.minAtomicBalance)}
-              nativeCurrency={settings.network.nativeCurrency}
-            />
-          </HStack>
-          {/* Address and interactions */}
-          <HStack alignItems="center" spacing={1} w="full">
-            <Tooltip label={account.address}>
-              <Text color={subTextColor} fontSize="xs">
-                {ellipseAddress(account.address, { end: 10, start: 10 })}
-              </Text>
-            </Tooltip>
-            <Spacer />
-            <CopyIconButton
-              ariaLabel="Copy address"
-              copiedTooltipLabel={t<string>('captions.addressCopied')}
-              value={account.address}
-            />
-            <Tooltip label={t<string>('labels.shareAddress')}>
-              <IconButton
-                aria-label="Show QR code"
-                icon={IoQrCodeOutline}
-                onClick={onShareAddressModalOpen}
-                size="sm"
-                variant="ghost"
+              <Spacer />
+              <CopyIconButton
+                ariaLabel="Copy address"
+                copiedTooltipLabel={t<string>('captions.addressCopied')}
+                value={account.address}
               />
-            </Tooltip>
-            <Tooltip label={t<string>('labels.removeAccount')}>
-              <IconButton
-                aria-label="Remove account"
-                icon={IoTrashOutline}
-                onClick={handleRemoveAccountClick(account.address)}
-                size="sm"
-                variant="ghost"
-              />
-            </Tooltip>
-          </HStack>
-        </VStack>
+              <Tooltip label={t<string>('labels.shareAddress')}>
+                <IconButton
+                  aria-label="Show QR code"
+                  icon={IoQrCodeOutline}
+                  onClick={onShareAddressModalOpen}
+                  size="sm"
+                  variant="ghost"
+                />
+              </Tooltip>
+              <Tooltip label={t<string>('labels.removeAccount')}>
+                <IconButton
+                  aria-label="Remove account"
+                  icon={IoTrashOutline}
+                  onClick={handleRemoveAccountClick(account.address)}
+                  size="sm"
+                  variant="ghost"
+                />
+              </Tooltip>
+            </HStack>
+          </VStack>
+
+          {/* Assets/NFTs/Activity tabs */}
+          <Tabs
+            colorScheme={primaryColorScheme}
+            flexGrow={1}
+            m={0}
+            overflowY="scroll"
+            sx={{ display: 'flex', flexDirection: 'column' }}
+            w="full"
+          >
+            <TabList>
+              <Tab>{t<string>('labels.assets')}</Tab>
+              <Tab>{t<string>('labels.nfts')}</Tab>
+              <Tab>{t<string>('labels.activity')}</Tab>
+            </TabList>
+            <TabPanels
+              flexGrow={1}
+              maxH="100dvh"
+              sx={{ display: 'flex', flexDirection: 'column' }}
+            >
+              <AccountAssetsTab account={account} />
+              <AccountNftsTab />
+              <AccountActivityTab />
+            </TabPanels>
+          </Tabs>
+        </>
       );
     }
 
     return (
       <>
+        {/* Empty state */}
         <Spacer />
-        <VStack spacing={5} w="full">
-          <Heading color={defaultTextColor} size="md">
-            {t<string>('headings.noAccountsFound')}
-          </Heading>
-          <Button
-            colorScheme={primaryColorScheme}
-            onClick={handleAddAccountClick}
-            rightIcon={<IoAdd />}
-          >
-            {t<string>('buttons.addAccount')}
-          </Button>
-        </VStack>
+        <EmptyState
+          button={{
+            icon: IoAdd,
+            label: t<string>('buttons.addAccount'),
+            onClick: handleAddAccountClick,
+          }}
+          description={t<string>('captions.noAccountsFound')}
+          text={t<string>('headings.noAccountsFound')}
+        />
         <Spacer />
       </>
     );
@@ -286,7 +331,9 @@ const AccountPage: FC = () => {
           onClose={onShareAddressModalClose}
         />
       )}
-      {renderContent()}
+      <VStack alignItems="flex-start" flexGrow={1} w="full">
+        {renderContent()}
+      </VStack>
     </>
   );
 };
