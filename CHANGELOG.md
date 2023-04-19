@@ -1,3 +1,10 @@
+# [1.1.0-beta.13](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.12...v1.1.0-beta.13) (2023-04-19)
+
+
+### Features
+
+* fetch assets for accounts ([#14](https://github.com/agoralabs-sh/kibisis-web-extension/issues/14)) ([aaa0cf2](https://github.com/agoralabs-sh/kibisis-web-extension/commit/aaa0cf27d4d89303eb9afbf27413d39b3c95644d))
+
 # [1.1.0-beta.12](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.11...v1.1.0-beta.12) (2023-04-13)
 
 
