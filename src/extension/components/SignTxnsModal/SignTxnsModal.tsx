@@ -127,6 +127,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       return (
         <PaymentTransactionContent
           nativeCurrency={signTxnsRequest.network.nativeCurrency}
+          network={signTxnsRequest.network}
           transaction={decodedTransactions[0]}
         />
       );
@@ -136,6 +137,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     if (decodedTransactions[0].type === 'axfer') {
       return (
         <AssetTransferTransactionContent
+          nativeCurrency={signTxnsRequest.network.nativeCurrency}
           network={signTxnsRequest.network}
           transaction={decodedTransactions[0]}
         />
@@ -147,68 +149,78 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const renderHeader = () => {
     if (!signTxnsRequest) {
       return (
-        <VStack alignItems="center" spacing={5} w="full">
-          <SkeletonCircle size="12" />
-          <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
+        <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
+          <HStack
+            alignItems="center"
+            justifyContent="center"
+            spacing={4}
+            w="full"
+          >
+            <SkeletonCircle size="10" />
             <Skeleton>
               <Heading size="md" textAlign="center">
                 {faker.commerce.productName()}
               </Heading>
             </Skeleton>
-            <Skeleton>
-              <Text fontSize="xs" textAlign="center">
-                {faker.internet.domainName()}
-              </Text>
-            </Skeleton>
-            <Skeleton>
-              <Text fontSize="xs" textAlign="center">
-                {faker.random.words(8)}
-              </Text>
-            </Skeleton>
-            <Skeleton>
-              <Tag size="sm">
-                <TagLabel>{faker.internet.domainName()}</TagLabel>
-              </Tag>
-            </Skeleton>
-          </VStack>
+          </HStack>
+          <Skeleton>
+            <Text fontSize="xs" textAlign="center">
+              {faker.internet.domainName()}
+            </Text>
+          </Skeleton>
+          <Skeleton>
+            <Text fontSize="xs" textAlign="center">
+              {faker.random.words(8)}
+            </Text>
+          </Skeleton>
+          <Skeleton>
+            <Tag size="sm">
+              <TagLabel>{faker.internet.domainName()}</TagLabel>
+            </Tag>
+          </Skeleton>
         </VStack>
       );
     }
 
     return (
-      <VStack alignItems="center" spacing={5} w="full">
-        {/* App icon */}
-        <Avatar
-          name={signTxnsRequest.appName}
-          src={signTxnsRequest.iconUrl || undefined}
-        />
-        <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
-          {/* App name */}
+      <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
+        {/* App icon & name */}
+        <HStack
+          alignItems="center"
+          justifyContent="center"
+          spacing={4}
+          w="full"
+        >
+          <Avatar
+            name={signTxnsRequest.appName}
+            size="sm"
+            src={signTxnsRequest.iconUrl || undefined}
+          />
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {signTxnsRequest.appName}
           </Heading>
-          {/* Host */}
-          <Box
-            backgroundColor={textBackgroundColor}
-            borderRadius={theme.radii['3xl']}
-            px={2}
-            py={1}
-          >
-            <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-              {signTxnsRequest.host}
-            </Text>
-          </Box>
-          {/* Caption */}
-          <Text color={subTextColor} fontSize="md" textAlign="center">
-            {t<string>(
-              signTxnsRequest.transactions.length > 1
-                ? 'captions.signTransactionsRequest'
-                : 'captions.signTransactionRequest'
-            )}
+        </HStack>
+        {/* Host */}
+        <Box
+          backgroundColor={textBackgroundColor}
+          borderRadius={theme.radii['3xl']}
+          px={2}
+          py={1}
+        >
+          <Text color={defaultTextColor} fontSize="xs" textAlign="center">
+            {signTxnsRequest.host}
           </Text>
-          {/* Network */}
-          <ChainBadge network={signTxnsRequest.network} />
-        </VStack>
+        </Box>
+        {/* Caption */}
+        <Text color={subTextColor} fontSize="md" textAlign="center">
+          {t<string>(
+            signTxnsRequest.transactions.length > 1
+              ? 'captions.signTransactionsRequest'
+              : 'captions.signTransactionRequest'
+          )}
+        </Text>
+        {/* Network */}
+        <ChainBadge network={signTxnsRequest.network} />
       </VStack>
     );
   };
