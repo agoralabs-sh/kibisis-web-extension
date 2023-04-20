@@ -532,7 +532,11 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
           <VStack alignItems="flex-start" spacing={4} w="full">
             <PasswordInput
               error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToSign')}
+              hint={t<string>(
+                decodedJwt
+                  ? 'captions.mustEnterPasswordToSignSecurityToken'
+                  : 'captions.mustEnterPasswordToSign'
+              )}
               onChange={handlePasswordChange}
               value={password}
             />

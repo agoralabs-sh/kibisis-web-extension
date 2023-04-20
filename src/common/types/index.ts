@@ -1,4 +1,5 @@
 export type { default as IBaseEnableRequestPayload } from './IBaseEnableRequestPayload';
+export type { default as IBaseExtensionRequestPayload } from './IBaseExtensionRequestPayload';
 export type { default as IBaseOptions } from './IBaseOptions';
 export type { default as IBaseSignBytesRequestPayload } from './IBaseSignBytesRequestPayload';
 export type { default as IBaseSignBytesResponsePayload } from './IBaseSignBytesResponsePayload';

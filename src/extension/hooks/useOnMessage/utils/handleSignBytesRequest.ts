@@ -8,14 +8,14 @@ import {
 } from '@extension/features/messages';
 
 // Types
-import { IExtensionSignBytesRequestPayload } from '@common/types';
+import { IBaseOptions, IExtensionSignBytesRequestPayload } from '@common/types';
 import { IAppThunkDispatch, ISession } from '@extension/types';
 import { IIncomingRequest } from '../types';
 
 // Utils
 import { getAuthorizedAddressesForHost } from '@extension/utils';
 
-interface IOptions {
+interface IOptions extends IBaseOptions {
   sessions: ISession[];
 }
 
@@ -29,7 +29,7 @@ export default function handleSignBytesRequest(
     signer,
     tabId,
   }: IIncomingRequest<IExtensionSignBytesRequestPayload>,
-  { sessions }: IOptions
+  { logger, sessions }: IOptions
 ): void {
   const filteredSessions: ISession[] = sessions.filter(
     (value) => value.host === host
@@ -41,6 +41,11 @@ export default function handleSignBytesRequest(
 
   // if the app has not been enabled
   if (filteredSessions.length <= 0) {
+    logger &&
+      logger.debug(
+        `${handleSignBytesRequest.name}(): no sessions found for sign bytes request`
+      );
+
     dispatch(
       sendSignBytesResponse({
         encodedSignature: null,
@@ -57,6 +62,11 @@ export default function handleSignBytesRequest(
 
   // if the requested signer has not been authorized
   if (signer && !authorizedAddresses.find((value) => value === signer)) {
+    logger &&
+      logger.debug(
+        `${handleSignBytesRequest.name}(): signer "${signer}" is not authorized`
+      );
+
     dispatch(
       sendSignBytesResponse({
         encodedSignature: null,
@@ -68,7 +78,7 @@ export default function handleSignBytesRequest(
     return;
   }
 
-  // show the sign data modal
+  // show the sign bytes modal
   dispatch(
     setSignBytesRequest({
       appName,

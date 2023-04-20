@@ -1,0 +1,70 @@
+import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import browser from 'webextension-polyfill';
+
+// Enums
+import { EventNameEnum } from '@common/enums';
+import { MessagesThunkEnum } from '@extension/enums';
+
+// Errors
+import { BaseSerializableError } from '@common/errors';
+
+// Events
+import { ExtensionSignTxnsResponseEvent } from '@common/events';
+
+// Types
+import { ILogger } from '@common/types';
+import { IMainRootState } from '@extension/types';
+
+interface IPayload {
+  error: BaseSerializableError | null;
+  signedTransactions: (string | null)[] | null;
+  tabId: number;
+}
+
+const sendTxnsBytesResponse: AsyncThunk<
+  void, // return
+  IPayload, // args
+  Record<string, never>
+> = createAsyncThunk<void, IPayload, { state: IMainRootState }>(
+  MessagesThunkEnum.SendSignTxnsResponse,
+  async ({ error, signedTransactions: stxns, tabId }, { getState }) => {
+    const logger: ILogger = getState().application.logger;
+    let message: ExtensionSignTxnsResponseEvent;
+
+    logger.debug(
+      `${sendTxnsBytesResponse.name}(): sending "${EventNameEnum.ExtensionSignTxnsResponse}" message to content script`
+    );
+
+    // send the error response to the background script & the content script
+    if (error) {
+      message = new ExtensionSignTxnsResponseEvent(null, error);
+
+      await Promise.all([
+        browser.runtime.sendMessage(message),
+        browser.tabs.sendMessage(tabId, message),
+      ]);
+
+      return;
+    }
+
+    if (stxns) {
+      message = new ExtensionSignTxnsResponseEvent(
+        {
+          stxns,
+        },
+        null
+      );
+
+      await Promise.all([
+        // send the response to the background
+        browser.runtime.sendMessage(message),
+        // send the response to the content script
+        browser.tabs.sendMessage(tabId, message),
+      ]);
+
+      return;
+    }
+  }
+);
+
+export default sendTxnsBytesResponse;

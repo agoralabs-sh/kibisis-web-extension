@@ -57,6 +57,10 @@ const translation: IResourceLanguage = {
     minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
     mustEnterPasswordToSign: 'You must enter your password to sign.',
+    mustEnterPasswordToSignSecurityToken:
+      'You must enter your password to sign this security token.',
+    mustEnterPasswordToSignTransactions:
+      'You must enter your password to sign transactions(s).',
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
@@ -80,6 +84,10 @@ const translation: IResourceLanguage = {
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
+    signTransactionRequest:
+      'An application is requesting to sign a transaction.',
+    signTransactionsRequest:
+      'An application is requesting to sign multiple transactions.',
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
   },

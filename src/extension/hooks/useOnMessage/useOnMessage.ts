@@ -78,6 +78,8 @@ export default function useOnMessage(): void {
         if (sender.tab?.id) {
           setIncomingSignBytesRequest({
             appName: (message as ExtensionEnableRequestEvent).payload.appName,
+            description: (message as ExtensionEnableRequestEvent).payload
+              .description,
             encodedData: (message as ExtensionSignBytesRequestEvent).payload
               .encodedData,
             host: (message as ExtensionSignBytesRequestEvent).payload.host,
@@ -91,7 +93,11 @@ export default function useOnMessage(): void {
       case EventNameEnum.ExtensionSignTxnsRequest:
         if (sender.tab?.id) {
           setIncomingSignTxnsRequest({
-            host: (message as ExtensionSignTxnsRequestEvent).payload.host,
+            appName: (message as ExtensionEnableRequestEvent).payload.appName,
+            description: (message as ExtensionEnableRequestEvent).payload
+              .description,
+            host: (message as ExtensionSignBytesRequestEvent).payload.host,
+            iconUrl: (message as ExtensionEnableRequestEvent).payload.iconUrl,
             tabId: sender.tab.id,
             txns: (message as ExtensionSignTxnsRequestEvent).payload.txns,
           });
@@ -114,6 +120,7 @@ export default function useOnMessage(): void {
   useEffect(() => {
     if (incomingEnableRequest) {
       handleEnableRequest(dispatch, incomingEnableRequest, {
+        logger,
         networks,
         selectedNetwork,
         sessions,
@@ -124,6 +131,7 @@ export default function useOnMessage(): void {
   useEffect(() => {
     if (incomingSignBytesRequest) {
       handleSignBytesRequest(dispatch, incomingSignBytesRequest, {
+        logger,
         sessions,
       });
       setIncomingSignBytesRequest(null);
@@ -132,6 +140,8 @@ export default function useOnMessage(): void {
   useEffect(() => {
     if (incomingSignTxnsRequest) {
       handleSignTxnsRequest(dispatch, incomingSignTxnsRequest, {
+        logger,
+        networks,
         sessions,
       });
       setIncomingSignTxnsRequest(null);

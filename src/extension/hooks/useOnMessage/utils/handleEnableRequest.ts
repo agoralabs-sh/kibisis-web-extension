@@ -9,14 +9,14 @@ import {
 import { setSessionThunk } from '@extension/features/sessions';
 
 // Types
-import { IExtensionEnableRequestPayload } from '@common/types';
+import { IBaseOptions, IExtensionEnableRequestPayload } from '@common/types';
 import { IAppThunkDispatch, INetwork, ISession } from '@extension/types';
 import { IIncomingRequest } from '../types';
 
 // Utils
 import { selectDefaultNetwork } from '@extension/utils';
 
-interface IOptions {
+interface IOptions extends IBaseOptions {
   networks: INetwork[];
   selectedNetwork: INetwork | null;
   sessions: ISession[];
@@ -25,7 +25,7 @@ interface IOptions {
 export default function handleEnableRequest(
   dispatch: IAppThunkDispatch,
   request: IIncomingRequest<IExtensionEnableRequestPayload>,
-  { networks, selectedNetwork, sessions }: IOptions
+  { logger, networks, selectedNetwork, sessions }: IOptions
 ): void {
   let filteredSessions: ISession[] = sessions;
   let network: INetwork | null =
@@ -40,6 +40,11 @@ export default function handleEnableRequest(
 
     // if there is no network for the genesis hash, it isn't supported
     if (!network) {
+      logger &&
+        logger.debug(
+          `${handleEnableRequest.name}(): genesis hash "${request.genesisHash}" is not supported`
+        );
+
       dispatch(
         sendEnableResponse({
           error: new SerializableNetworkNotSupportedError(request.genesisHash),

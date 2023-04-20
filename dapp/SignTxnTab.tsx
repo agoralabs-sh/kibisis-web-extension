@@ -33,7 +33,7 @@ import { IWindow } from '@external/types';
 import { IAssetInformation } from './types';
 
 // Utils
-import { convertToStandardUnit } from '@common/utils';
+import { convertToAtomicUnit, convertToStandardUnit } from '@common/utils';
 import { createAssetTransaction, getAssetInformation } from './utils';
 
 interface IProps {
@@ -81,7 +81,10 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
         txns: [
           {
             txn: await createAssetTransaction({
-              amount: new BigNumber(amount),
+              amount: convertToAtomicUnit(
+                new BigNumber(amount),
+                selectedAsset.decimals
+              ),
               assetId: selectedAsset.id,
               from: signer,
               note: note.length > 0 ? note : null,

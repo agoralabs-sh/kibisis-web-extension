@@ -21,6 +21,7 @@ import {
 
 // Types
 import {
+  IBaseExtensionRequestPayload,
   IBaseOptions,
   IExtensionEvents,
   IExternalRequestEvents,
@@ -38,6 +39,30 @@ export default class ExternalEventService {
   /**
    * Private functions
    */
+
+  /**
+   * Convenience function that constructs the base extension request properties.
+   * * appName - uses the content of the "application-name" meta tag, if this doesn't exist, it falls back to the document title.
+   * * description - uses the content of the "description" meta tag, if it exists.
+   * * host - uses host of the web page.
+   * * iconUrl - uses the favicon of the web page.
+   * @returns {IBaseExtensionRequestPayload} the base extension payload properties.
+   * @private
+   */
+  private createBaseExtensionRequestPayload(): IBaseExtensionRequestPayload {
+    return {
+      appName:
+        document
+          .querySelector('meta[name="application-name"]')
+          ?.getAttribute('content') || document.title,
+      description:
+        document
+          .querySelector('meta[name="description"]')
+          ?.getAttribute('content') || null,
+      host: `${window.location.protocol}//${window.location.host}`,
+      iconUrl: this.extractFaviconUrl(),
+    };
+  }
 
   /**
    * Utility function to extract the favicon URL.
@@ -160,17 +185,8 @@ export default class ExternalEventService {
     // send the message to the extension (popup)
     return await browser.runtime.sendMessage(
       new ExtensionEnableRequestEvent({
+        ...this.createBaseExtensionRequestPayload(),
         ...message.payload,
-        appName:
-          document
-            .querySelector('meta[name="application-name"]')
-            ?.getAttribute('content') || document.title,
-        description:
-          document
-            .querySelector('meta[name="description"]')
-            ?.getAttribute('content') || null,
-        host: `${window.location.protocol}//${window.location.host}`,
-        iconUrl: this.extractFaviconUrl(),
       })
     );
   }
@@ -186,13 +202,8 @@ export default class ExternalEventService {
     // send the message to the extension (popup)
     return await browser.runtime.sendMessage(
       new ExtensionSignBytesRequestEvent({
+        ...this.createBaseExtensionRequestPayload(),
         ...message.payload,
-        appName:
-          document
-            .querySelector('meta[name="application-name"]')
-            ?.getAttribute('content') || document.title,
-        host: `${window.location.protocol}//${window.location.host}`,
-        iconUrl: this.extractFaviconUrl(),
       })
     );
   }
@@ -208,8 +219,8 @@ export default class ExternalEventService {
     // send the message to the extension (popup)
     return await browser.runtime.sendMessage(
       new ExtensionSignTxnsRequestEvent({
+        ...this.createBaseExtensionRequestPayload(),
         ...message.payload,
-        host: `${window.location.protocol}//${window.location.host}`,
       })
     );
   }

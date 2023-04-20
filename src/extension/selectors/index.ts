@@ -23,5 +23,6 @@ export { default as useSelectSessions } from './useSelectSessions';
 export { default as useSelectSettings } from './useSelectSettings';
 export { default as useSelectSideBar } from './useSelectSideBar';
 export { default as useSelectSignBytesRequest } from './useSelectSignBytesRequest';
+export { default as useSelectSignTxnsRequest } from './useSelectSignTxnsRequest';
 export { default as useSelectToast } from './useSelectToast';
 export { default as useSelectUpdatingAssets } from './useSelectUpdatingAssets';

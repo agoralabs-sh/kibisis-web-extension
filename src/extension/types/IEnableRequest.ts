@@ -1,12 +1,10 @@
-interface IEnableRequest {
-  appName: string;
-  authorizedAddresses: string[];
+// Types
+import IBaseRequest from './IBaseRequest';
+
+interface IEnableRequest extends IBaseRequest {
   description: string | null;
   genesisHash: string;
   genesisId: string;
-  host: string;
-  iconUrl: string | null;
-  tabId: number;
 }
 
 export default IEnableRequest;
