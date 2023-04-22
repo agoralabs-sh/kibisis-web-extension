@@ -56,11 +56,13 @@ const translation: IResourceLanguage = {
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
     minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
-    mustEnterPasswordToSign: 'You must enter your password to sign.',
+    mustEnterPasswordToSign: 'Enter your password to sign.',
     mustEnterPasswordToSignSecurityToken:
-      'You must enter your password to sign this security token.',
+      'Enter your password to sign this security token.',
+    mustEnterPasswordToSignTransaction:
+      'Enter your password to sign this transaction.',
     mustEnterPasswordToSignTransactions:
-      'You must enter your password to sign transactions(s).',
+      'Enter your password to sign these transactions.',
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
@@ -145,6 +147,7 @@ const translation: IResourceLanguage = {
     allowBetaNet: 'Allow BetaNet networks?',
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
     allowTestNet: 'Allow TestNet networks?',
+    amount: 'Amount',
     assets: 'Assets',
     audience: 'Audience',
     authorizedAccounts: 'Authorized accounts',
@@ -158,6 +161,7 @@ const translation: IResourceLanguage = {
     expirationDate: 'Expiration date',
     fee: 'Fee',
     from: 'From',
+    groupId: 'Group ID',
     id: 'ID',
     information: 'Information',
     issueDate: 'Issue date',

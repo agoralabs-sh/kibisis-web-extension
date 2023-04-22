@@ -18,7 +18,6 @@ import {
 import { faker } from '@faker-js/faker';
 import { decode as decodeBase64 } from '@stablelib/base64';
 import { decodeUnsignedTransaction, Transaction } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -28,6 +27,7 @@ import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import PasswordInput from '@extension/components/PasswordInput';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
+import MultipleTransactionsContent from './MultipleTransactionsContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 
 // Constants
@@ -47,7 +47,6 @@ import { setError } from '@extension/features/application';
 import { sendSignTxnsResponse } from '@extension/features/messages';
 
 // Hooks
-import useBorderColor from '@extension/hooks/useBorderColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSignTxns from '@extension/hooks/useSignTxns';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -69,7 +68,6 @@ interface IProps {
 const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const borderColor: string = useBorderColor();
   const defaultTextColor: string = useDefaultTextColor();
   const { encodedSignedTransactions, error, signTransactions } = useSignTxns();
   const subTextColor: string = useSubTextColor();
@@ -130,28 +128,13 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     );
 
     // atomic transfers
-    if (decodedTransactions.length) {
+    if (decodedTransactions.length > 1) {
       return (
-        <VStack spacing={4} w="full">
-          {decodedTransactions.map((transaction) => (
-            <Box
-              borderColor={borderColor}
-              borderRadius="md"
-              borderStyle="solid"
-              borderWidth={1}
-              key={nanoid()}
-              px={4}
-              py={2}
-              w="full"
-            >
-              <Text color={defaultTextColor} fontSize="md" textAlign="left">
-                {t<string>('headings.transaction', {
-                  context: transaction.type,
-                })}
-              </Text>
-            </Box>
-          ))}
-        </VStack>
+        <MultipleTransactionsContent
+          nativeCurrency={signTxnsRequest.network.nativeCurrency}
+          network={signTxnsRequest.network}
+          transactions={decodedTransactions}
+        />
       );
     }
 
@@ -322,7 +305,15 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           <VStack alignItems="flex-start" spacing={4} w="full">
             <PasswordInput
               error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToSignTransactions')}
+              hint={
+                signTxnsRequest
+                  ? t<string>(
+                      signTxnsRequest.transactions.length > 1
+                        ? 'captions.mustEnterPasswordToSignTransactions'
+                        : 'captions.mustEnterPasswordToSignTransaction'
+                    )
+                  : null
+              }
               onChange={handlePasswordChange}
               value={password}
             />

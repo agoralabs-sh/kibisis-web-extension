@@ -38,12 +38,11 @@ const updateAssetInformationThunk: AsyncThunk<
         (value) => value.genesisHash === genesisHash
       ) || null;
     const assets: IAsset[] = [];
-    let assetInformation: IAsset;
+    let assetInformation: IAsset | null;
     let assetsStorageKey: string;
     let currentAssets: IAsset[];
     let encodedGenesisHash: string;
     let id: string;
-    let node: INode;
     let storageManager: StorageManager;
 
     if (!network) {
