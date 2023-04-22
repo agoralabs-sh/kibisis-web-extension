@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Badge,
   Box,
   Heading,
   HStack,
@@ -14,18 +13,18 @@ import {
   Tag,
   TagLabel,
   Text,
-  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import { decode as decodeBase64 } from '@stablelib/base64';
-import React, { ChangeEvent, FC, useState } from 'react';
+import { decodeUnsignedTransaction, Transaction } from 'algosdk';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoWarningOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // Components
 import Button from '@extension/components/Button';
+import ChainBadge from '@extension/components/ChainBadge';
 import PasswordInput from '@extension/components/PasswordInput';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
@@ -33,14 +32,22 @@ import PaymentTransactionContent from './PaymentTransactionContent';
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// Enums
+import { ErrorCodeEnum } from '@extension/enums';
+
 // Errors
-import { SerializableOperationCanceledError } from '@common/errors';
+import {
+  SerializableOperationCanceledError,
+  SerializableUnknownError,
+} from '@common/errors';
 
 // Features
+import { setError } from '@extension/features/application';
 import { sendSignTxnsResponse } from '@extension/features/messages';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useSignTxns from '@extension/hooks/useSignTxns';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
@@ -53,11 +60,6 @@ import { theme } from '@extension/theme';
 // Types
 import { IAppThunkDispatch, ISignTxnsRequest } from '@extension/types';
 
-// Utils
-import BigNumber from 'bignumber.js';
-import ChainBadge from '@extension/components/ChainBadge';
-import { decodeUnsignedTransaction, Transaction } from 'algosdk';
-
 interface IProps {
   onClose: () => void;
 }
@@ -66,6 +68,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const defaultTextColor: string = useDefaultTextColor();
+  const { encodedSignedTransactions, error, signTransactions } = useSignTxns();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const signTxnsRequest: ISignTxnsRequest | null = useSelectSignTxnsRequest();
@@ -99,11 +102,21 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     if (!signTxnsRequest) {
       return;
     }
+
+    if (password.length <= 0) {
+      return setPasswordError(
+        t<string>('errors.inputs.required', { name: 'Password' })
+      );
+    }
+
+    await signTransactions({
+      authorizedAddresses: signTxnsRequest.authorizedAddresses,
+      password,
+      transactions: signTxnsRequest.transactions,
+    });
   };
   const renderContent = () => {
     let decodedTransactions: Transaction[];
-    let standardUnitAmount: BigNumber = new BigNumber('0');
-    let unit: string = 'N/A';
 
     if (!signTxnsRequest) {
       return <VStack spacing={4} w="full"></VStack>;
@@ -225,22 +238,48 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
 
-  // useEffect(() => {
-  //   if (encodedSignedBytes && signBytesRequest) {
-  //     dispatch(
-  //       sendSignBytesResponse({
-  //         encodedSignature: encodedSignedBytes,
-  //         error: null,
-  //         tabId: signBytesRequest.tabId,
-  //       })
-  //     );
-  //
-  //     handleClose();
-  //   }
-  // }, [encodedSignedBytes]);
-  // useEffect(() => {
-  //   setPasswordError(error ? t<string>('errors.inputs.invalidPassword') : null);
-  // }, [error]);
+  useEffect(() => {
+    // if the resultant signed transactions has been filled, we can send it back to the dapp
+    if (
+      signTxnsRequest &&
+      encodedSignedTransactions.length === signTxnsRequest.transactions.length
+    ) {
+      dispatch(
+        sendSignTxnsResponse({
+          error: null,
+          signedTransactions: encodedSignedTransactions,
+          tabId: signTxnsRequest.tabId,
+        })
+      );
+
+      handleClose();
+    }
+  }, [encodedSignedTransactions]);
+  useEffect(() => {
+    if (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.InvalidPasswordError:
+          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+          break;
+        default:
+          dispatch(setError(error));
+          handleClose();
+
+          if (signTxnsRequest) {
+            dispatch(
+              sendSignTxnsResponse({
+                error: new SerializableUnknownError(error.message),
+                signedTransactions: null,
+                tabId: signTxnsRequest.tabId,
+              })
+            );
+          }
+
+          break;
+      }
+    }
+  }, [error]);
 
   return (
     <Modal

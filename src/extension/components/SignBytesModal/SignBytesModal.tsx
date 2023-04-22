@@ -37,10 +37,17 @@ import PasswordInput from '@extension/components/PasswordInput';
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// Enums
+import { ErrorCodeEnum } from '@extension/enums';
+
 // Errors
-import { SerializableOperationCanceledError } from '@common/errors';
+import {
+  SerializableOperationCanceledError,
+  SerializableUnknownError,
+} from '@common/errors';
 
 // Features
+import { setError } from '@extension/features/application';
 import { sendSignBytesResponse } from '@extension/features/messages';
 
 // Hooks
@@ -478,7 +485,29 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     }
   }, [encodedSignedBytes]);
   useEffect(() => {
-    setPasswordError(error ? t<string>('errors.inputs.invalidPassword') : null);
+    if (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.InvalidPasswordError:
+          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+          break;
+        default:
+          dispatch(setError(error));
+          handleClose();
+
+          if (signBytesRequest) {
+            dispatch(
+              sendSignBytesResponse({
+                encodedSignature: null,
+                error: new SerializableUnknownError(error.message),
+                tabId: signBytesRequest.tabId,
+              })
+            );
+          }
+
+          break;
+      }
+    }
   }, [error]);
 
   return (

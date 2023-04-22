@@ -5,6 +5,7 @@ import {
 } from '@agoralabs-sh/algorand-provider';
 import {
   Button,
+  Code,
   CreateToastFnReturn,
   HStack,
   Input,
@@ -21,6 +22,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { encode as encodeHex } from '@stablelib/hex';
 import BigNumber from 'bignumber.js';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
@@ -35,6 +37,12 @@ import { IAssetInformation } from './types';
 // Utils
 import { convertToAtomicUnit, convertToStandardUnit } from '@common/utils';
 import { createAssetTransaction, getAssetInformation } from './utils';
+import {
+  decodeSignedTransaction,
+  SignedTransaction,
+  Transaction,
+} from 'algosdk';
+import { decode as decodeBase64 } from '@stablelib/base64';
 
 interface IProps {
   signer: string | null;
@@ -43,13 +51,15 @@ interface IProps {
 
 const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
   const [assets, setAssets] = useState<IAssetInformation[]>([]);
-  const [amount, setAmount] = useState<string>('0');
+  const [amount, setAmount] = useState<BigNumber>(new BigNumber('0'));
+  const [signedTransaction, setSignedTransaction] =
+    useState<SignedTransaction | null>(null);
   const [note, setNote] = useState<string>('');
   const [selectedAsset, setSelectedAsset] = useState<IAssetInformation | null>(
     null
   );
   const handleAmountChange = (valueAsString: string) =>
-    setAmount(valueAsString);
+    setAmount(new BigNumber(valueAsString));
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
   const handleSelectAssetChange = (assetId: string) =>
@@ -81,10 +91,7 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
         txns: [
           {
             txn: await createAssetTransaction({
-              amount: convertToAtomicUnit(
-                new BigNumber(amount),
-                selectedAsset.decimals
-              ),
+              amount: convertToAtomicUnit(amount, selectedAsset.decimals),
               assetId: selectedAsset.id,
               from: signer,
               note: note.length > 0 ? note : null,
@@ -95,12 +102,18 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
       });
 
       toast({
-        // description: `Successfully signed payment transaction for wallet "${result.id}".`,
+        description: `Successfully signed transaction for wallet "${result.id}".`,
         duration: 3000,
         isClosable: true,
         status: 'success',
-        title: 'Payment Transaction Signed!',
+        title: 'Transaction Signed!',
       });
+
+      if (result.stxns[0]) {
+        setSignedTransaction(
+          decodeSignedTransaction(decodeBase64(result.stxns[0]))
+        );
+      }
     } catch (error) {
       toast({
         description: (error as BaseError).message,
@@ -112,17 +125,15 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
     }
   };
   const handleUpdateAsset = (newSelectedAsset: IAssetInformation | null) => {
-    const maximumAmount: number = newSelectedAsset
-      ? parseFloat(
-          convertToStandardUnit(
-            newSelectedAsset.amount,
-            newSelectedAsset.decimals
-          ).toString()
+    const maximumAmount: BigNumber = newSelectedAsset
+      ? convertToStandardUnit(
+          newSelectedAsset.amount,
+          newSelectedAsset.decimals
         )
-      : 0;
+      : new BigNumber('0');
 
     setSelectedAsset(newSelectedAsset);
-    setAmount(amount > maximumAmount ? maximumAmount : amount);
+    setAmount(amount.gt(maximumAmount) ? maximumAmount : amount);
   };
 
   useEffect(() => {
@@ -171,7 +182,7 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
             }
             precision={selectedAsset ? selectedAsset.decimals : 0}
             onChange={handleAmountChange}
-            value={amount}
+            value={amount.toString()}
           >
             <NumberInputField />
             <NumberInputStepper>
@@ -228,6 +239,24 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
             </Text>
           </VStack>
         )}
+
+        {/*Signed transaction data*/}
+        <VStack spacing={3} w="full">
+          <HStack spacing={2} w="full">
+            <Text>Signed transaction:</Text>
+            <Code fontSize="sm" wordBreak="break-word">
+              {signedTransaction?.txn.toString() || '-'}
+            </Code>
+          </HStack>
+          <HStack spacing={2} w="full">
+            <Text>Encoded signed transaction signature (hex):</Text>
+            <Code fontSize="sm" wordBreak="break-word">
+              {signedTransaction?.sig
+                ? encodeHex(signedTransaction.sig).toUpperCase()
+                : '-'}
+            </Code>
+          </HStack>
+        </VStack>
 
         {/*Sign transaction button*/}
         <VStack justifyContent="center" spacing={3} w="full">

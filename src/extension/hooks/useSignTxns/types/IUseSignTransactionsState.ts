@@ -2,13 +2,13 @@
 import { BaseExtensionError } from '@extension/errors';
 
 // Types
-import ISignBytesOptions from './ISignBytesOptions';
+import ISignTransactionsOptions from 'src/extension/hooks/useSignTxns/types/ISignTransactionsOptions';
 
 interface IUseSignTransactionsState {
-  encodedSignedBytes: string | null;
+  encodedSignedTransactions: (string | null)[];
   error: BaseExtensionError | null;
   resetError: () => void;
-  signBytes: (options: ISignBytesOptions) => Promise<void>;
+  signTransactions: (options: ISignTransactionsOptions) => Promise<void>;
 }
 
 export default IUseSignTransactionsState;
