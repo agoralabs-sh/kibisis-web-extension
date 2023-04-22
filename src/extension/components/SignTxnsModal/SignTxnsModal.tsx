@@ -18,6 +18,7 @@ import {
 import { faker } from '@faker-js/faker';
 import { decode as decodeBase64 } from '@stablelib/base64';
 import { decodeUnsignedTransaction, Transaction } from 'algosdk';
+import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -46,6 +47,7 @@ import { setError } from '@extension/features/application';
 import { sendSignTxnsResponse } from '@extension/features/messages';
 
 // Hooks
+import useBorderColor from '@extension/hooks/useBorderColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSignTxns from '@extension/hooks/useSignTxns';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -67,6 +69,7 @@ interface IProps {
 const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const borderColor: string = useBorderColor();
   const defaultTextColor: string = useDefaultTextColor();
   const { encodedSignedTransactions, error, signTransactions } = useSignTxns();
   const subTextColor: string = useSubTextColor();
@@ -127,10 +130,27 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     );
 
     // atomic transfers
-    if (signTxnsRequest.transactions.length > 1) {
+    if (decodedTransactions.length) {
       return (
         <VStack spacing={4} w="full">
-          <div>{`multiple`}</div>
+          {decodedTransactions.map((transaction) => (
+            <Box
+              borderColor={borderColor}
+              borderRadius="md"
+              borderStyle="solid"
+              borderWidth={1}
+              key={nanoid()}
+              px={4}
+              py={2}
+              w="full"
+            >
+              <Text color={defaultTextColor} fontSize="md" textAlign="left">
+                {t<string>('headings.transaction', {
+                  context: transaction.type,
+                })}
+              </Text>
+            </Box>
+          ))}
         </VStack>
       );
     }

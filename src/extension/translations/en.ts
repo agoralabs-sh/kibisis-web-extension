@@ -132,6 +132,9 @@ const translation: IResourceLanguage = {
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     shareAddress: 'Share Address',
+    transaction: 'Transaction',
+    transaction_axfer: 'Asset Transfer Transaction',
+    transaction_pay: 'Payment Transaction',
   },
   labels: {
     activity: 'Activity',

@@ -39,6 +39,7 @@ import Fonts from '@extension/components/Fonts';
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
 import SignTxnTab from './SignTxnTab';
+import SignTxnsTab from './SignTxnsTab';
 
 // Theme
 import { theme } from '@extension/theme';
@@ -188,11 +189,13 @@ const App: FC = () => {
             <Tabs colorScheme="primaryLight" w="full">
               <TabList>
                 <Tab>Sign Txn</Tab>
+                <Tab>Sign Txns</Tab>
                 <Tab>Sign Data</Tab>
                 <Tab>Sign JWT</Tab>
               </TabList>
               <TabPanels>
                 <SignTxnTab signer={selectedAddress} toast={toast} />
+                <SignTxnsTab signer={selectedAddress} toast={toast} />
                 <SignDataTab signer={selectedAddress} toast={toast} />
                 <SignJwtTab signer={selectedAddress} toast={toast} />
               </TabPanels>

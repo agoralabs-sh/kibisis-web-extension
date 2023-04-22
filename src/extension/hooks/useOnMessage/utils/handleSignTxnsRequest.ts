@@ -2,11 +2,7 @@ import {
   decode as decodeBase64,
   encode as encodeBase64,
 } from '@stablelib/base64';
-import {
-  computeGroupID,
-  decodeUnsignedTransaction,
-  Transaction,
-} from 'algosdk';
+import { decodeUnsignedTransaction, Transaction } from 'algosdk';
 
 // Errors
 import {
@@ -26,6 +22,10 @@ import {
 import { IBaseOptions, IExtensionSignTxnsRequestPayload } from '@common/types';
 import { IAppThunkDispatch, INetwork, ISession } from '@extension/types';
 import { IIncomingRequest } from '../types';
+
+// Utils
+import { computeGroupId } from '@common/utils';
+import { verifyTransactionGroupId } from '@extension/utils';
 
 interface IOptions extends IBaseOptions {
   networks: INetwork[];
@@ -50,7 +50,6 @@ export default function handleSignTxnsRequest(
   let filteredSessions: ISession[];
   let genesisHashes: string[];
   let genesisHash: string;
-  let invalidTransactionIndex: number;
   let network: INetwork | null;
 
   // attempt to decode the transactions
@@ -74,43 +73,29 @@ export default function handleSignTxnsRequest(
     return;
   }
 
-  // validate the group id if we have multiple transactions
-  if (decodedUnsignedTransactions.length > 1) {
+  // validate the transaction group ids
+  if (!verifyTransactionGroupId(decodedUnsignedTransactions)) {
     encodedComputedGroupId = encodeBase64(
-      computeGroupID(decodedUnsignedTransactions)
+      computeGroupId(decodedUnsignedTransactions)
     );
-    invalidTransactionIndex = decodedUnsignedTransactions
-      .map((value) =>
-        value.group
-          ? encodeBase64(value.group) === encodedComputedGroupId
-          : false
-      )
-      .findIndex((value) => !value);
+    errorMessage = `the computed group id "${encodedComputedGroupId}" does not match the assigned transaction group ids [${decodedUnsignedTransactions.map(
+      (value) => `"${value.group ? encodeBase64(value.group) : 'undefined'}"`
+    )}]`;
 
-    if (invalidTransactionIndex >= 0) {
-      errorMessage = `the computed group id "${encodedComputedGroupId}" does not match the assigned id "${encodeBase64(
-        decodedUnsignedTransactions[invalidTransactionIndex].group ||
-          new Uint8Array()
-      )}" for transaction "${decodedUnsignedTransactions[
-        invalidTransactionIndex
-      ].txID()}"`;
+    logger && logger.debug(`${handleSignTxnsRequest.name}(): ${errorMessage}`);
 
-      logger &&
-        logger.debug(`${handleSignTxnsRequest.name}(): ${errorMessage}`);
+    dispatch(
+      sendSignTxnsResponse({
+        error: new SerializableInvalidGroupIdError(
+          encodedComputedGroupId,
+          errorMessage
+        ),
+        signedTransactions: null,
+        tabId,
+      })
+    );
 
-      dispatch(
-        sendSignTxnsResponse({
-          error: new SerializableInvalidGroupIdError(
-            encodedComputedGroupId,
-            errorMessage
-          ),
-          signedTransactions: null,
-          tabId,
-        })
-      );
-
-      return;
-    }
+    return;
   }
 
   genesisHashes = decodedUnsignedTransactions.reduce<string[]>(

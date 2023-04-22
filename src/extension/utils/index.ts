@@ -18,3 +18,4 @@ export { default as mapAssetFromAlgorandAsset } from './mapAssetFromAlgorandAsse
 export { default as mapSessionFromEnableRequest } from './mapSessionFromEnableRequest';
 export { default as randomNode } from './randomNode';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';
+export { default as verifyTransactionGroupId } from './verifyTransactionGroupId';

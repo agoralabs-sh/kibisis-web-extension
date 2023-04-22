@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 
 interface IAssetInformation {
-  amount: BigNumber;
+  balance: BigNumber;
   decimals: number;
   id: string;
   name: string | null;

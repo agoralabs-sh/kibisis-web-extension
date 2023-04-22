@@ -31,7 +31,7 @@ export default async function getAssetInformation(
                 .do()) as IAlgorandAsset;
 
               resolve({
-                amount: new BigNumber(String(value.amount)),
+                balance: new BigNumber(String(value.amount)),
                 decimals: Number(assetInformation.params.decimals),
                 id: String(assetInformation.index),
                 name: assetInformation.params.name || null,
@@ -47,7 +47,7 @@ export default async function getAssetInformation(
 
   return [
     {
-      amount: new BigNumber(String(accountInformation.amount)),
+      balance: new BigNumber(String(accountInformation.amount)),
       decimals: 6,
       id: '0',
       name: 'Algorand',

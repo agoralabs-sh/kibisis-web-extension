@@ -22,7 +22,17 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
+import {
+  decodeSignedTransaction,
+  encodeUnsignedTransaction,
+  SignedTransaction,
+  Transaction,
+} from 'algosdk';
 import BigNumber from 'bignumber.js';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
@@ -37,12 +47,6 @@ import { IAssetInformation } from './types';
 // Utils
 import { convertToAtomicUnit, convertToStandardUnit } from '@common/utils';
 import { createAssetTransaction, getAssetInformation } from './utils';
-import {
-  decodeSignedTransaction,
-  SignedTransaction,
-  Transaction,
-} from 'algosdk';
-import { decode as decodeBase64 } from '@stablelib/base64';
 
 interface IProps {
   signer: string | null;
@@ -64,8 +68,9 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
     setNote(event.target.value);
   const handleSelectAssetChange = (assetId: string) =>
     handleUpdateAsset(assets.find((value) => value.id === assetId) || null);
-  const handleSignPaymentTransactionClick = async () => {
+  const handleSignSingleTransactionClick = async () => {
     let result: IBaseResult & ISignTxnsResult;
+    let unsignedTransaction: Transaction;
 
     if (!selectedAsset || !signer) {
       console.error('no account information found');
@@ -87,16 +92,17 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
     }
 
     try {
+      unsignedTransaction = await createAssetTransaction({
+        amount: convertToAtomicUnit(amount, selectedAsset.decimals),
+        assetId: selectedAsset.id,
+        from: signer,
+        note: note.length > 0 ? note : null,
+        to: null,
+      });
       result = await (window as IWindow).algorand.signTxns({
         txns: [
           {
-            txn: await createAssetTransaction({
-              amount: convertToAtomicUnit(amount, selectedAsset.decimals),
-              assetId: selectedAsset.id,
-              from: signer,
-              note: note.length > 0 ? note : null,
-              to: null,
-            }),
+            txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
           },
         ],
       });
@@ -127,7 +133,7 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
   const handleUpdateAsset = (newSelectedAsset: IAssetInformation | null) => {
     const maximumAmount: BigNumber = newSelectedAsset
       ? convertToStandardUnit(
-          newSelectedAsset.amount,
+          newSelectedAsset.balance,
           newSelectedAsset.decimals
         )
       : new BigNumber('0');
@@ -174,7 +180,7 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
               selectedAsset
                 ? parseFloat(
                     convertToStandardUnit(
-                      selectedAsset.amount,
+                      selectedAsset.balance,
                       selectedAsset.decimals
                     ).toString()
                   )
@@ -218,7 +224,7 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
                   <Spacer />
                   <Text size="md">
                     {convertToStandardUnit(
-                      asset.amount,
+                      asset.balance,
                       asset.decimals
                     ).toString()}
                   </Text>
@@ -249,7 +255,7 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
             </Code>
           </HStack>
           <HStack spacing={2} w="full">
-            <Text>Encoded signed transaction signature (hex):</Text>
+            <Text>Signed transaction signature (hex):</Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.sig
                 ? encodeHex(signedTransaction.sig).toUpperCase()
@@ -264,10 +270,10 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
             borderRadius={theme.radii['3xl']}
             colorScheme="primaryLight"
             minW={250}
-            onClick={handleSignPaymentTransactionClick}
+            onClick={handleSignSingleTransactionClick}
             size="lg"
           >
-            Send Transaction
+            Send Single Transaction
           </Button>
         </VStack>
       </VStack>

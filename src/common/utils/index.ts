@@ -1,3 +1,4 @@
+export { default as computeGroupId } from './computeGroupId';
 export { default as convertToAtomicUnit } from './convertToAtomicUnit';
 export { default as convertToStandardUnit } from './convertToStandardUnit';
 export { default as createLogger } from './createLogger';

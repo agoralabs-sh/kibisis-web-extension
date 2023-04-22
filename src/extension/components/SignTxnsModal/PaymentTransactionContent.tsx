@@ -22,13 +22,12 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import { fetchAccountInformationWithDelay } from '@extension/features/accounts';
 
 // Selectors
-import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
+import { useSelectAccounts } from '@extension/selectors';
 
 // Theme
 import { theme } from '@extension/theme';
 
 // Types
-import { ILogger } from '@common/types';
 import {
   IAccount,
   IAlgorandAccountInformation,
@@ -72,7 +71,7 @@ const PaymentTransactionContent: FC<IProps> = ({
       (value) => value.address === encodeAddress(transaction.to.publicKey)
     ) || null;
   const standardUnitAmount: BigNumber = convertToStandardUnit(
-    new BigNumber(String(transaction.amount)),
+    new BigNumber(String(transaction.amount) || '0'),
     nativeCurrency.decimals
   );
 

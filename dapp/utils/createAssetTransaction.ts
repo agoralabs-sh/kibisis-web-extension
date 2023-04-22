@@ -1,7 +1,5 @@
-import { encode as encodeBase64 } from '@stablelib/base64';
 import {
   Algodv2,
-  encodeUnsignedTransaction,
   makeAssetTransferTxnWithSuggestedParams,
   makePaymentTxnWithSuggestedParams,
   SuggestedParams,
@@ -23,7 +21,7 @@ export default async function createAssetTransaction({
   from,
   note,
   to,
-}: IOptions): Promise<string> {
+}: IOptions): Promise<Transaction> {
   const client: Algodv2 = new Algodv2(
     '',
     'https://testnet-api.algonode.cloud',
@@ -37,7 +35,7 @@ export default async function createAssetTransaction({
 
   // for algorand transactions, we need to use payment transactions
   if (assetId === '0') {
-    transaction = makePaymentTxnWithSuggestedParams(
+    return makePaymentTxnWithSuggestedParams(
       from,
       to || from,
       amount.toNumber(),
@@ -45,12 +43,10 @@ export default async function createAssetTransaction({
       note ? encoder.encode(note) : undefined,
       suggestedParams
     );
-
-    return encodeBase64(encodeUnsignedTransaction(transaction));
   }
 
   // for all other assets, use asset transfer transactions
-  transaction = makeAssetTransferTxnWithSuggestedParams(
+  return makeAssetTransferTxnWithSuggestedParams(
     from,
     to || from,
     undefined,
@@ -60,6 +56,4 @@ export default async function createAssetTransaction({
     parseInt(assetId),
     suggestedParams
   );
-
-  return encodeBase64(encodeUnsignedTransaction(transaction));
 }
