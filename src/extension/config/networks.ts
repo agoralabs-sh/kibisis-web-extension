@@ -26,6 +26,11 @@ const networks: INetwork[] = [
         port: '',
         url: 'https://mainnet-api.algonode.cloud',
       },
+      {
+        name: 'PureStake',
+        port: '',
+        url: 'https://algosigner.api.purestake.io/mainnet/algod',
+      },
     ],
     type: NetworkTypeEnum.Stable,
   },
@@ -75,6 +80,11 @@ const networks: INetwork[] = [
         name: 'AlgoNode',
         port: '',
         url: 'https://testnet-api.algonode.cloud',
+      },
+      {
+        name: 'PureStake',
+        port: '',
+        url: 'https://algosigner.api.purestake.io/testnet/algod',
       },
     ],
     type: NetworkTypeEnum.Test,
