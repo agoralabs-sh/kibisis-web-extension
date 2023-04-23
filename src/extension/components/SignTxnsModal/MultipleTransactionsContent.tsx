@@ -51,12 +51,11 @@ import {
 } from '@extension/types';
 
 // Utils
-import { computeGroupId } from '@common/utils';
+import { computeGroupId, randomNode } from '@common/utils';
 import {
   createIconFromDataUri,
   initializeDefaultAccount,
   mapAlgorandAccountInformationToAccount,
-  randomNode,
 } from '@extension/utils';
 
 interface IProps {

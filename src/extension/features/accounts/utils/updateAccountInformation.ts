@@ -20,10 +20,8 @@ import {
 } from '@extension/types';
 
 // Utils
-import {
-  mapAlgorandAccountInformationToAccount,
-  randomNode,
-} from '@extension/utils';
+import { randomNode } from '@common/utils';
+import { mapAlgorandAccountInformationToAccount } from '@extension/utils';
 import fetchAccountInformationWithDelay from './fetchAccountInformationWithDelay';
 
 interface IOptions {

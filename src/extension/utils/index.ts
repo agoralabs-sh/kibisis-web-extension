@@ -17,6 +17,5 @@ export { default as makeStore } from './makeStore';
 export { default as mapAssetFromAlgorandAsset } from './mapAssetFromAlgorandAsset';
 export { default as mapAlgorandAccountInformationToAccount } from './mapAlgorandAccountInformationToAccount';
 export { default as mapSessionFromEnableRequest } from './mapSessionFromEnableRequest';
-export { default as randomNode } from './randomNode';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';
 export { default as verifyTransactionGroupId } from './verifyTransactionGroupId';

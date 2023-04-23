@@ -11,11 +11,11 @@ import {
 } from '@extension/types';
 
 // Utils
+import { randomNode } from '@common/utils';
 import {
   fetchAssetList,
   fetchAssetVerification,
   mapAssetFromAlgorandAsset,
-  randomNode,
 } from '@extension/utils';
 import fetchAssetInformationWithDelay from './fetchAssetInformationWithDelay';
 

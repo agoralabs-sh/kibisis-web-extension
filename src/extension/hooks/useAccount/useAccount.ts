@@ -26,10 +26,10 @@ import {
 import { IUseAccountOptions, IUseAccountState } from './types';
 
 // Utils
+import { randomNode } from '@common/utils';
 import {
   initializeDefaultAccount,
   mapAlgorandAccountInformationToAccount,
-  randomNode,
 } from '@extension/utils';
 
 export default function useAccount({
