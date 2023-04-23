@@ -1,4 +1,5 @@
 import {
+  AlgorandProvider,
   BaseError,
   IBaseResult,
   ISignBytesResult,
@@ -22,13 +23,14 @@ import { theme } from '@extension/theme';
 
 // Types
 import { IWindow } from '@external/types';
+import { IAccountInformation } from './types';
 
 interface IProps {
-  signer: string | null;
+  account: IAccountInformation | null;
   toast: CreateToastFnReturn;
 }
 
-const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
+const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
   const [dataToSign, setDataToSign] = useState<string | null>(null);
   const [signedData, setSignedData] = useState<Uint8Array | null>(null);
   const encoder: TextEncoder = new TextEncoder();
@@ -37,15 +39,16 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     setSignedData(null);
   };
   const handleSignDataClick = (withSigner: boolean) => async () => {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
     let result: IBaseResult & ISignBytesResult;
 
-    if (!dataToSign || (withSigner && !signer)) {
+    if (!dataToSign || (withSigner && !account)) {
       console.error('no data or address');
 
       return;
     }
 
-    if (!(window as IWindow).algorand) {
+    if (!algorand) {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet.',
@@ -59,10 +62,10 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     }
 
     try {
-      result = await (window as IWindow).algorand.signBytes({
+      result = await algorand.signBytes({
         data: encoder.encode(dataToSign),
         ...(withSigner && {
-          signer: signer || undefined,
+          signer: account?.address || undefined,
         }),
       });
 
@@ -91,7 +94,7 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     let encoder: TextEncoder;
     let verifiedResult: boolean;
 
-    if (!dataToSign || !signedData || !signer) {
+    if (!dataToSign || !signedData || !account) {
       toast({
         duration: 3000,
         isClosable: true,
@@ -106,7 +109,7 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     verifiedResult = verifyBytes(
       encoder.encode(dataToSign),
       signedData,
-      signer
+      account.address
     ); // verify using the algosdk
 
     if (!verifiedResult) {

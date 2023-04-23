@@ -1,4 +1,5 @@
 import {
+  AlgorandProvider,
   BaseError,
   IBaseResult,
   ISignTxnsResult,
@@ -35,26 +36,27 @@ import {
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import { nanoid } from 'nanoid';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useState } from 'react';
 
 // Theme
 import { theme } from '@extension/theme';
 
 // Types
+import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
-import { IAssetInformation } from './types';
+import { IAccountInformation, IAssetInformation } from './types';
 
 // Utils
 import { convertToAtomicUnit, convertToStandardUnit } from '@common/utils';
-import { createAssetTransaction, getAssetInformation } from './utils';
+import { createAssetTransaction } from './utils';
 
 interface IProps {
-  signer: string | null;
+  account: IAccountInformation | null;
+  network: INetwork | null;
   toast: CreateToastFnReturn;
 }
 
-const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
-  const [assets, setAssets] = useState<IAssetInformation[]>([]);
+const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   const [amount, setAmount] = useState<BigNumber>(new BigNumber('0'));
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
@@ -66,19 +68,27 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
     setAmount(new BigNumber(valueAsString));
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
-  const handleSelectAssetChange = (assetId: string) =>
-    handleUpdateAsset(assets.find((value) => value.id === assetId) || null);
+  const handleSelectAssetChange = (assetId: string) => {
+    if (!account) {
+      return;
+    }
+
+    handleUpdateAsset(
+      account.assets.find((value) => value.id === assetId) || null
+    );
+  };
   const handleSignSingleTransactionClick = async () => {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
     let result: IBaseResult & ISignTxnsResult;
     let unsignedTransaction: Transaction;
 
-    if (!selectedAsset || !signer) {
+    if (!selectedAsset || !account || !network) {
       console.error('no account information found');
 
       return;
     }
 
-    if (!(window as IWindow).algorand) {
+    if (!algorand) {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet.',
@@ -95,11 +105,12 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
       unsignedTransaction = await createAssetTransaction({
         amount: convertToAtomicUnit(amount, selectedAsset.decimals),
         assetId: selectedAsset.id,
-        from: signer,
+        from: account.address,
+        network,
         note: note.length > 0 ? note : null,
         to: null,
       });
-      result = await (window as IWindow).algorand.signTxns({
+      result = await algorand.signTxns({
         txns: [
           {
             txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
@@ -141,29 +152,6 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
     setSelectedAsset(newSelectedAsset);
     setAmount(amount.gt(maximumAmount) ? maximumAmount : amount);
   };
-
-  useEffect(() => {
-    let newAssets: IAssetInformation[];
-
-    if (signer) {
-      (async () => {
-        try {
-          newAssets = await getAssetInformation(signer);
-
-          setAssets(newAssets);
-          handleUpdateAsset(newAssets[0] || null);
-        } catch (error) {
-          toast({
-            description: error.message,
-            duration: 3000,
-            isClosable: true,
-            status: 'error',
-            title: 'Failed to get asset information',
-          });
-        }
-      })();
-    }
-  }, [signer]);
 
   return (
     <TabPanel w="full">
@@ -210,14 +198,14 @@ const SignTxnTab: FC<IProps> = ({ signer, toast }: IProps) => {
         <Text size="md" textAlign="left" w="full">
           Assets:
         </Text>
-        {assets.length > 0 ? (
+        {account && account.assets.length > 0 ? (
           <RadioGroup
             defaultValue="0"
             onChange={handleSelectAssetChange}
             w="full"
           >
             <Stack spacing={4} w="full">
-              {assets.map((asset) => (
+              {account.assets.map((asset) => (
                 <HStack key={nanoid()} spacing={2} w="full">
                   <Radio size="lg" value={asset.id} />
                   <Text size="md">{asset.name || asset.id}</Text>

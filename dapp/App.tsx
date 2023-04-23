@@ -1,8 +1,8 @@
 import {
+  AlgorandProvider,
   BaseError,
   IBaseResult,
   IEnableResult,
-  IWalletAccount,
 } from '@agoralabs-sh/algorand-provider';
 import {
   Button,
@@ -35,6 +35,9 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 // Components
 import Fonts from '@extension/components/Fonts';
 
+// Config
+import { networks } from '@extension/config';
+
 // Tabs
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
@@ -46,17 +49,35 @@ import { theme } from '@extension/theme';
 
 // Types
 import { IWindow } from '@external/types';
+import { INetwork } from '@extension/types';
+import { IAccountInformation, IAssetInformation } from './types';
+
+// Utils
+import { getAssetInformation } from './utils';
 
 const App: FC = () => {
   const toast: CreateToastFnReturn = useToast();
-  const [enabledAccounts, setEnabledAccounts] = useState<IWalletAccount[]>([]);
-  const [genesisId, setGenesisId] = useState<string | null>(null);
-  const [_, setGenesisHash] = useState<string | null>(null);
-  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const handleAddressSelect = (event: ChangeEvent<HTMLSelectElement>) =>
-    setSelectedAddress(event.target.value);
+  const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
+    []
+  );
+  const [selectedAccount, setSelectedAccount] =
+    useState<IAccountInformation | null>(null);
+  const [selectedNetwork, setSelectedNetwork] = useState<INetwork | null>(null);
+  const handleAddressSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    const account: IAccountInformation | null =
+      enabledAccounts.find((value) => value.address === event.target.value) ||
+      null;
+
+    if (account) {
+      setSelectedAccount(account);
+    }
+  };
   const handleEnableClick = (genesisHash: string) => async () => {
-    if (!(window as IWindow).algorand) {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
+    let accounts: IAccountInformation[];
+    let network: INetwork | null;
+
+    if (!algorand) {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet',
@@ -70,9 +91,37 @@ const App: FC = () => {
     }
 
     try {
-      const result: IBaseResult & IEnableResult = await (
-        window as IWindow
-      ).algorand.enable({ genesisHash });
+      const result: IBaseResult & IEnableResult = await algorand.enable({
+        genesisHash,
+      });
+
+      network =
+        networks.find((value) => value.genesisHash === result.genesisHash) ||
+        null;
+
+      if (!network) {
+        throw new Error(`unknown network "${result.genesisId}"`);
+      }
+
+      accounts = await Promise.all(
+        result.accounts.map<Promise<IAccountInformation>>(
+          async ({ address, name }) => {
+            const assets: IAssetInformation[] = await getAssetInformation(
+              address,
+              network as INetwork
+            );
+
+            return {
+              address,
+              assets,
+              name: name || null,
+            };
+          }
+        )
+      );
+
+      setEnabledAccounts(accounts);
+      setSelectedNetwork(network);
 
       toast({
         description: `Successfully connected to "${result.id}".`,
@@ -81,10 +130,6 @@ const App: FC = () => {
         status: 'success',
         title: 'Connected!',
       });
-
-      setEnabledAccounts(result.accounts);
-      setGenesisHash(result.genesisHash);
-      setGenesisId(result.genesisId);
     } catch (error) {
       toast({
         description: (error as BaseError).message,
@@ -97,8 +142,8 @@ const App: FC = () => {
   };
 
   useEffect(() => {
-    if (!selectedAddress) {
-      setSelectedAddress(enabledAccounts[0]?.address || null);
+    if (enabledAccounts) {
+      setSelectedAccount(enabledAccounts[0] || null);
     }
   }, [enabledAccounts]);
 
@@ -129,7 +174,9 @@ const App: FC = () => {
               w="full"
             >
               <Table variant="simple">
-                <TableCaption>Network: {genesisId || 'N/A'}</TableCaption>
+                <TableCaption>
+                  Network: {selectedNetwork?.genesisId || 'N/A'}
+                </TableCaption>
                 <Thead>
                   <Tr>
                     <Th>Address</Th>
@@ -177,7 +224,7 @@ const App: FC = () => {
               <Select
                 onChange={handleAddressSelect}
                 placeholder="Select an address"
-                value={selectedAddress || undefined}
+                value={selectedAccount?.address || undefined}
               >
                 {enabledAccounts.map((value) => (
                   <option key={nanoid()} value={value.address}>
@@ -194,10 +241,18 @@ const App: FC = () => {
                 <Tab>Sign JWT</Tab>
               </TabList>
               <TabPanels>
-                <SignTxnTab signer={selectedAddress} toast={toast} />
-                <SignTxnsTab signer={selectedAddress} toast={toast} />
-                <SignDataTab signer={selectedAddress} toast={toast} />
-                <SignJwtTab signer={selectedAddress} toast={toast} />
+                <SignTxnTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <SignTxnsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <SignDataTab account={selectedAccount} toast={toast} />
+                <SignJwtTab account={selectedAccount} toast={toast} />
               </TabPanels>
             </Tabs>
           </VStack>

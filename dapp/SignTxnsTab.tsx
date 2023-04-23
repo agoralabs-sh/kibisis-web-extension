@@ -1,4 +1,5 @@
 import {
+  AlgorandProvider,
   BaseError,
   IBaseResult,
   ISignTxnsResult,
@@ -50,8 +51,9 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { theme } from '@extension/theme';
 
 // Types
+import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
-import { IAssetInformation } from './types';
+import { IAccountInformation, IAssetInformation } from './types';
 
 // Utils
 import {
@@ -59,35 +61,39 @@ import {
   convertToStandardUnit,
   formatCurrencyUnit,
 } from '@common/utils';
-import { createAssetTransaction, getAssetInformation } from './utils';
+import { createAssetTransaction } from './utils';
 
-interface IAssetValue extends IAssetInformation {
+interface IAssetValue {
   amount: BigNumber;
+  id: string;
   isChecked: boolean;
 }
 interface IProps {
-  signer: string | null;
+  account: IAccountInformation | null;
+  network: INetwork | null;
   toast: CreateToastFnReturn;
 }
 
-const SignTxnsTab: FC<IProps> = ({ signer, toast }: IProps) => {
-  const [assets, setAssets] = useState<IAssetValue[]>([]);
+const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
+  const [assetValues, setAssetValues] = useState<IAssetValue[]>([]);
   const [groupId, setGroupId] = useState<string>('N/A');
   const [signedTransactions, setSignedTransactions] = useState<
     (SignedTransaction | null)[]
   >([]);
   const handleAmountChange = (assetId: string) => (valueAsString: string) => {
-    setAssets(
-      assets.map((value) => {
+    setAssetValues(
+      assetValues.map((value) => {
+        const asset: IAssetInformation | null =
+          account?.assets.find((value) => value.id === assetId) || null;
         let amount: BigNumber;
         let maximumAmount: BigNumber;
 
-        if (value.id !== assetId) {
+        if (!asset || value.id !== assetId) {
           return value;
         }
 
         amount = new BigNumber(valueAsString);
-        maximumAmount = convertToStandardUnit(value.balance, value.decimals);
+        maximumAmount = convertToStandardUnit(asset.balance, asset.decimals);
 
         return {
           ...value,
@@ -98,8 +104,8 @@ const SignTxnsTab: FC<IProps> = ({ signer, toast }: IProps) => {
   };
   const handleAssetCheckChange =
     (assetId: string) => (event: ChangeEvent<HTMLInputElement>) => {
-      setAssets(
-        assets.map((value) =>
+      setAssetValues(
+        assetValues.map((value) =>
           value.id === assetId
             ? {
                 ...value,
@@ -110,17 +116,20 @@ const SignTxnsTab: FC<IProps> = ({ signer, toast }: IProps) => {
       );
     };
   const handleSignAtomicTransactionsClick = async () => {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
+    let asset: IAssetInformation | null;
+    let assetValue: IAssetValue;
     let computedGroupId: string;
     let result: IBaseResult & ISignTxnsResult;
     let unsignedTransactions: Transaction[];
 
-    if (!signer) {
+    if (!account || !network) {
       console.error('no account information found');
 
       return;
     }
 
-    if (!(window as IWindow).algorand) {
+    if (!algorand) {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet.',
@@ -134,22 +143,32 @@ const SignTxnsTab: FC<IProps> = ({ signer, toast }: IProps) => {
     }
 
     try {
-      unsignedTransactions = await Promise.all(
-        assets
-          .filter((value) => value.isChecked)
-          .map(async (value) =>
-            createAssetTransaction({
-              amount: convertToAtomicUnit(value.amount, value.decimals),
-              assetId: value.id,
-              from: signer,
-              note: null,
-              to: null,
-            })
-          )
-      );
+      unsignedTransactions = [];
+
+      for (let i: number = 0; i < assetValues.length; i++) {
+        assetValue = assetValues[i];
+        asset =
+          account.assets.find((value) => value.id === assetValue.id) || null;
+
+        if (!asset || !assetValue.isChecked) {
+          continue;
+        }
+
+        unsignedTransactions.push(
+          await createAssetTransaction({
+            amount: convertToAtomicUnit(assetValue.amount, asset.decimals),
+            assetId: asset.id,
+            from: account.address,
+            network,
+            note: null,
+            to: null,
+          })
+        );
+      }
+
       computedGroupId = encodeBase64(computeGroupID(unsignedTransactions));
       unsignedTransactions = assignGroupID(unsignedTransactions);
-      result = await (window as IWindow).algorand.signTxns({
+      result = await algorand.signTxns({
         txns: unsignedTransactions.map((value) => ({
           txn: encodeBase64(encodeUnsignedTransaction(value)),
         })),
@@ -184,32 +203,16 @@ const SignTxnsTab: FC<IProps> = ({ signer, toast }: IProps) => {
   };
 
   useEffect(() => {
-    let newAssets: IAssetInformation[];
-
-    if (signer) {
-      (async () => {
-        try {
-          newAssets = await getAssetInformation(signer);
-
-          setAssets(
-            newAssets.map((value) => ({
-              ...value,
-              amount: new BigNumber('0'),
-              isChecked: false,
-            }))
-          );
-        } catch (error) {
-          toast({
-            description: error.message,
-            duration: 3000,
-            isClosable: true,
-            status: 'error',
-            title: 'Failed to get asset information',
-          });
-        }
-      })();
+    if (account) {
+      setAssetValues(
+        account.assets.map((value) => ({
+          amount: new BigNumber('0'),
+          id: value.id,
+          isChecked: false,
+        }))
+      );
     }
-  }, [signer]);
+  }, [account]);
 
   return (
     <TabPanel w="full">
@@ -250,10 +253,10 @@ const SignTxnsTab: FC<IProps> = ({ signer, toast }: IProps) => {
         </TableContainer>
 
         {/*Assets*/}
-        {assets.length > 0 ? (
+        {account && account.assets.length > 0 ? (
           <CheckboxGroup>
             <Stack spacing={4} w="full">
-              {assets.map((asset) => (
+              {account.assets.map((asset) => (
                 <HStack key={nanoid()} spacing={2} w="full">
                   {/*Asset ID/name*/}
                   <HStack>
@@ -289,7 +292,10 @@ const SignTxnsTab: FC<IProps> = ({ signer, toast }: IProps) => {
                   {/*Amount*/}
                   <NumberInput
                     flexGrow={1}
-                    isDisabled={!asset.isChecked}
+                    isDisabled={
+                      !assetValues.find((value) => value.id === asset.id)
+                        ?.isChecked
+                    }
                     min={0}
                     max={
                       asset
@@ -304,7 +310,11 @@ const SignTxnsTab: FC<IProps> = ({ signer, toast }: IProps) => {
                     maxW={200}
                     precision={asset ? asset.decimals : 0}
                     onChange={handleAmountChange(asset.id)}
-                    value={asset.amount.toString()}
+                    value={
+                      assetValues
+                        .find((value) => value.id === asset.id)
+                        ?.amount.toString() || 0
+                    }
                   >
                     <NumberInputField />
                     <NumberInputStepper>

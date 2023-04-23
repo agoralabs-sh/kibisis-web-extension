@@ -2,17 +2,23 @@ import { Algodv2, IntDecoding } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
 // Types
-import { IAlgorandAccountInformation, IAlgorandAsset } from '@extension/types';
+import {
+  IAlgorandAccountInformation,
+  IAlgorandAsset,
+  INetwork,
+  INode,
+} from '@extension/types';
 import { IAssetInformation } from '../types';
 
+// Utils
+import randomNotPureStakeNode from './randomNotPureStakeNode';
+
 export default async function getAssetInformation(
-  address: string
+  address: string,
+  network: INetwork
 ): Promise<IAssetInformation[]> {
-  const client: Algodv2 = new Algodv2(
-    '',
-    'https://testnet-api.algonode.cloud',
-    ''
-  );
+  const node: INode = randomNotPureStakeNode(network);
+  const client: Algodv2 = new Algodv2('', node.url, node.port);
   const accountInformation: IAlgorandAccountInformation = (await client
     .accountInformation(address)
     .setIntDecoding(IntDecoding.BIGINT)
