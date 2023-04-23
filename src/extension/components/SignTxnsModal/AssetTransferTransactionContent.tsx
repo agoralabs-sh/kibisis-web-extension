@@ -15,8 +15,11 @@ import { useDispatch } from 'react-redux';
 // Components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
+import CopyIconButton from '@extension/components/CopyIconButton';
+import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from '@extension/components/SignTxnsModal/SignTxnsAssetItem';
+import SignTxnsLoadingItem from './SignTxnsLoadingItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
 // Features
@@ -32,6 +35,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import {
   useSelectAssetsByGenesisHash,
   useSelectLogger,
+  useSelectPreferredBlockExplorer,
   useSelectUpdatingAssets,
 } from '@extension/selectors';
 
@@ -40,6 +44,7 @@ import { ILogger } from '@common/types';
 import {
   IAppThunkDispatch,
   IAsset,
+  IExplorer,
   INativeCurrency,
   INetwork,
 } from '@extension/types';
@@ -59,6 +64,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   network,
   transaction,
 }: IProps) => {
+  const assetId: string = String(transaction.assetIndex);
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -72,19 +78,23 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   const subTextColor: string = useSubTextColor();
   const logger: ILogger = useSelectLogger();
   const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
+  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const updating: boolean = useSelectUpdatingAssets();
   const [asset, setAsset] = useState<IAsset | null>(
-    assets.find((value) => value.id === String(transaction.assetIndex)) || null
+    assets.find((value) => value.id === assetId) || null
   );
   const [standardUnitAmount, setStandardAmount] = useState<BigNumber>(
     new BigNumber('0')
   );
+  const explorer: IExplorer | null =
+    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
+    network.explorers[0] ||
+    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   let assetIcon: ReactNode;
 
   // check if we have the asset information already, if not, dispatch the store to update
   useEffect(() => {
     const amount: BigNumber = new BigNumber(String(transaction.amount));
-    const assetId: string = String(transaction.assetIndex);
     const transactionAsset: IAsset | null =
       assets.find((value) => value.id === assetId) || null;
 
@@ -109,8 +119,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   // once the store has been updated with the asset information, update the asset and the amount
   useEffect(() => {
     const updatedAsset: IAsset | null =
-      assets.find((value) => value.id === String(transaction.assetIndex)) ||
-      null;
+      assets.find((value) => value.id === assetId) || null;
 
     if (updatedAsset) {
       setAsset(updatedAsset);
@@ -126,11 +135,34 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   if (updating || !asset || !fromAccount) {
     return (
       <VStack spacing={4} w="full">
-        <Skeleton>
-          <Heading size="lg" textAlign="center">
-            {formatCurrencyUnit(standardUnitAmount)}
-          </Heading>
-        </Skeleton>
+        <HStack
+          alignItems="center"
+          justifyContent="center"
+          spacing={2}
+          w="full"
+        >
+          <Skeleton>
+            <Heading size="lg" textAlign="center">
+              {formatCurrencyUnit(standardUnitAmount)}
+            </Heading>
+          </Skeleton>
+          <Skeleton>
+            <AssetIcon
+              color={primaryButtonTextColor}
+              networkTheme={network.chakraTheme}
+              h={3}
+              w={3}
+            />
+          </Skeleton>
+          <Skeleton>
+            <Text color={defaultTextColor} fontSize="sm" textAlign="center">
+              {assetId}
+            </Text>
+          </Skeleton>
+        </HStack>
+        <SignTxnsLoadingItem />
+        <SignTxnsLoadingItem />
+        <SignTxnsLoadingItem />
       </VStack>
     );
   }
@@ -217,6 +249,26 @@ const AssetTransferTransactionContent: FC<IProps> = ({
         label={`${t<string>('labels.fee')}:`}
         unit={nativeCurrency.code}
       />
+
+      {/* Asset ID */}
+      {asset.unitName && (
+        <HStack spacing={1} w="full">
+          <SignTxnsTextItem
+            flexGrow={1}
+            label={`${t<string>('labels.id')}:`}
+            value={asset.id}
+          />
+          <CopyIconButton ariaLabel={`Copy ${asset.id}`} value={asset.id} />
+          {explorer && (
+            <OpenTabIconButton
+              tooltipLabel={t<string>('captions.openOn', {
+                name: explorer.canonicalName,
+              })}
+              url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+            />
+          )}
+        </HStack>
+      )}
 
       {/* Note */}
       {transaction.note && transaction.note.length > 0 && (
