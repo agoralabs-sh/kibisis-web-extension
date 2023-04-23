@@ -40,6 +40,7 @@ import AccountNftsTab from '@extension/components/AccountNftsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
+import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import ShareAddressModal from '@extension/components/ShareAddressModal';
 import NetworkSelect, {
   NetworkSelectSkeleton,
@@ -69,6 +70,7 @@ import {
   useSelectFetchingSettings,
   useSelectIsOnline,
   useSelectNetworks,
+  useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
@@ -77,6 +79,7 @@ import {
 import {
   IAccount,
   IAppThunkDispatch,
+  IExplorer,
   INetwork,
   ISettings,
 } from '@extension/types';
@@ -104,6 +107,7 @@ const AccountPage: FC = () => {
   const fetchingSettings: boolean = useSelectFetchingSettings();
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
+  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const settings: ISettings = useSelectSettings();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
@@ -222,7 +226,7 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/* Address and interactions */}
+            {/*Address and interactions*/}
             <HStack alignItems="center" spacing={1} w="full">
               <Tooltip label={account.address}>
                 <Text color={subTextColor} fontSize="xs">
@@ -230,11 +234,24 @@ const AccountPage: FC = () => {
                 </Text>
               </Tooltip>
               <Spacer />
+              {/*Copy address*/}
               <CopyIconButton
                 ariaLabel="Copy address"
                 copiedTooltipLabel={t<string>('captions.addressCopied')}
                 value={account.address}
               />
+
+              {/*Open address on explorer*/}
+              {explorer && (
+                <OpenTabIconButton
+                  tooltipLabel={t<string>('captions.openOn', {
+                    name: explorer.canonicalName,
+                  })}
+                  url={`${explorer.baseUrl}${explorer.accountPath}/${account.address}`}
+                />
+              )}
+
+              {/*Share address*/}
               <Tooltip label={t<string>('labels.shareAddress')}>
                 <IconButton
                   aria-label="Show QR code"
@@ -244,6 +261,8 @@ const AccountPage: FC = () => {
                   variant="ghost"
                 />
               </Tooltip>
+
+              {/*Remove account*/}
               <Tooltip label={t<string>('labels.removeAccount')}>
                 <IconButton
                   aria-label="Remove account"

@@ -3,14 +3,7 @@ import BigNumber from 'bignumber.js';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowDownOutline, IoArrowUpOutline } from 'react-icons/io5';
-import { useDispatch } from 'react-redux';
-import {
-  Location,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // Components
 import AssetAvatar from '@extension/components/AssetAvatar';
@@ -18,6 +11,7 @@ import AssetIcon from '@extension/components/AssetIcon';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import LoadingPage from '@extension/components/LoadingPage';
+import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
 
 // Constants
@@ -34,6 +28,7 @@ import {
   useSelectAccount,
   useSelectAssets,
   useSelectFetchingAssets,
+  useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -43,9 +38,9 @@ import { theme } from '@extension/theme';
 // Types
 import {
   IAccount,
-  IAppThunkDispatch,
   IAsset,
   IAssetHolding,
+  IExplorer,
   INetwork,
 } from '@extension/types';
 
@@ -55,8 +50,6 @@ import { convertGenesisHashToHex, ellipseAddress } from '@extension/utils';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
   const { address, assetId } = useParams();
   const defaultTextColor: string = useDefaultTextColor();
@@ -66,6 +59,7 @@ const AssetPage: FC = () => {
   const account: IAccount | null = useSelectAccount(address);
   const assets: Record<string, IAsset[]> | null = useSelectAssets();
   const fetchingAssets: boolean = useSelectFetchingAssets();
+  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const network: INetwork | null = useSelectSelectedNetwork();
   const [asset, setAsset] = useState<IAsset | null>(null);
   const [assetHolding, setAssetHolding] = useState<IAssetHolding | null>(null);
@@ -202,11 +196,23 @@ const AssetPage: FC = () => {
                   {asset.id}
                 </Text>
               </Box>
+
+              {/*Copy asset*/}
               <CopyIconButton
                 ariaLabel="Copy asset ID"
                 copiedTooltipLabel={t<string>('captions.assetIdCopied')}
                 value={account.id}
               />
+
+              {/*Open asset on explorer*/}
+              {explorer && (
+                <OpenTabIconButton
+                  tooltipLabel={t<string>('captions.openOn', {
+                    name: explorer.canonicalName,
+                  })}
+                  url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+                />
+              )}
             </HStack>
           </HStack>
           {/* Amount */}
