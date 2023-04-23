@@ -6,9 +6,9 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { Algodv2, encodeAddress, Transaction } from 'algosdk';
+import { encodeAddress, Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -20,13 +20,10 @@ import SignTxnsAssetItem from '@extension/components/SignTxnsModal/SignTxnsAsset
 import SignTxnsTextItem from './SignTxnsTextItem';
 
 // Features
-import { fetchAccountInformationWithDelay } from '@extension/features/accounts';
-import {
-  fetchAssetInformationById,
-  updateAssetInformationThunk,
-} from '@extension/features/assets';
+import { updateAssetInformationThunk } from '@extension/features/assets';
 
 // Hooks
+import useAccount from '@extension/hooks/useAccount';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -41,18 +38,15 @@ import {
 // Types
 import { ILogger } from '@common/types';
 import {
-  IAlgorandAccountInformation,
-  IAlgorandAssetHolding,
   IAppThunkDispatch,
   IAsset,
   INativeCurrency,
   INetwork,
-  INode,
 } from '@extension/types';
 
 // Utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
-import { createIconFromDataUri, randomNode } from '@extension/utils';
+import { createIconFromDataUri } from '@extension/utils';
 
 interface IProps {
   nativeCurrency: INativeCurrency;
@@ -65,8 +59,14 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   network,
   transaction,
 }: IProps) => {
+  const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const { account: fromAccount, fetching: fetchingAccountInformation } =
+    useAccount({
+      address: fromAddress,
+      network,
+    });
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
@@ -76,10 +76,10 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   const [asset, setAsset] = useState<IAsset | null>(
     assets.find((value) => value.id === String(transaction.assetIndex)) || null
   );
-  const [fromBalance, setFromBalance] = useState<BigNumber>(new BigNumber('0'));
   const [standardUnitAmount, setStandardAmount] = useState<BigNumber>(
     new BigNumber('0')
   );
+  let assetIcon: ReactNode;
 
   // check if we have the asset information already, if not, dispatch the store to update
   useEffect(() => {
@@ -106,27 +106,6 @@ const AssetTransferTransactionContent: FC<IProps> = ({
     setAsset(transactionAsset);
     setStandardAmount(convertToStandardUnit(amount, transactionAsset.decimals));
   }, []);
-  // fetch the latest account balance for the particular asset
-  useEffect(() => {
-    (async () => {
-      const node: INode = randomNode(network);
-      const accountInformation: IAlgorandAccountInformation =
-        await fetchAccountInformationWithDelay({
-          address: encodeAddress(transaction.from.publicKey),
-          delay: 0,
-          client: new Algodv2('', node.url, node.port),
-        });
-      const assetHolding: IAlgorandAssetHolding | null =
-        accountInformation.assets.find(
-          (value) =>
-            String(value['asset-id']) === String(transaction.assetIndex)
-        ) || null;
-
-      if (assetHolding) {
-        setFromBalance(new BigNumber(String(assetHolding.amount)));
-      }
-    })();
-  }, []);
   // once the store has been updated with the asset information, update the asset and the amount
   useEffect(() => {
     const updatedAsset: IAsset | null =
@@ -144,7 +123,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
     }
   }, [assets]);
 
-  if (updating || !asset) {
+  if (updating || !asset || !fromAccount) {
     return (
       <VStack spacing={4} w="full">
         <Skeleton>
@@ -155,6 +134,21 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       </VStack>
     );
   }
+
+  assetIcon = (
+    <AssetAvatar
+      asset={asset}
+      fallbackIcon={
+        <AssetIcon
+          color={primaryButtonTextColor}
+          networkTheme={network.chakraTheme}
+          h={3}
+          w={3}
+        />
+      }
+      size="2xs"
+    />
+  );
 
   return (
     <VStack spacing={4} w="full">
@@ -174,18 +168,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           <Heading color={defaultTextColor} size="lg" textAlign="center">
             {formatCurrencyUnit(standardUnitAmount)}
           </Heading>
-          <AssetAvatar
-            asset={asset}
-            fallbackIcon={
-              <AssetIcon
-                color={primaryButtonTextColor}
-                networkTheme={network.chakraTheme}
-                h={3}
-                w={3}
-              />
-            }
-            size="2xs"
-          />
+          {assetIcon}
           <Text color={defaultTextColor} fontSize="sm" textAlign="center">
             {asset.unitName || asset.id}
           </Text>
@@ -194,7 +177,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
       {/* From */}
       <SignTxnsAddressItem
-        address={encodeAddress(transaction.from.publicKey)}
+        address={fromAddress}
         ariaLabel="From address"
         label={`${t<string>('labels.from')}:`}
       />
@@ -208,23 +191,16 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
       {/* Balance */}
       <SignTxnsAssetItem
-        atomicUnitsAmount={fromBalance}
+        atomicUnitsAmount={
+          new BigNumber(
+            fromAccount.assets.find((value) => value.id === asset.id)?.amount ||
+              '0'
+          )
+        }
         decimals={asset.decimals}
         displayUnit={true}
-        icon={
-          <AssetAvatar
-            asset={asset}
-            fallbackIcon={
-              <AssetIcon
-                color={primaryButtonTextColor}
-                networkTheme={network.chakraTheme}
-                h={3}
-                w={3}
-              />
-            }
-            size="2xs"
-          />
-        }
+        icon={assetIcon}
+        isLoading={fetchingAccountInformation}
         label={`${t<string>('labels.balance')}:`}
         unit={asset.unitName || undefined}
       />
@@ -243,7 +219,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       />
 
       {/* Note */}
-      {transaction.note && (
+      {transaction.note && transaction.note.length > 0 && (
         <SignTxnsTextItem
           label={`${t<string>('labels.note')}:`}
           value={new TextDecoder().decode(transaction.note)}

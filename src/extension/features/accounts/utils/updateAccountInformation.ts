@@ -1,5 +1,4 @@
 import { Algodv2 } from 'algosdk';
-import { BigNumber } from 'bignumber.js';
 
 // Constants
 import {
@@ -21,7 +20,10 @@ import {
 } from '@extension/types';
 
 // Utils
-import { randomNode } from '@extension/utils';
+import {
+  mapAlgorandAccountInformationToAccount,
+  randomNode,
+} from '@extension/utils';
 import fetchAccountInformationWithDelay from './fetchAccountInformationWithDelay';
 
 interface IOptions {
@@ -98,26 +100,11 @@ export default async function updateAccountInformation(
           }" at "${updatedAt.toString()}"`
         );
 
-        return {
-          address: account.address,
-          atomicBalance: new BigNumber(
-            String(accountInformation.amount as bigint)
-          ).toString(),
-          assets: accountInformation.assets.map((value) => ({
-            amount: new BigNumber(String(value.amount as bigint)).toString(),
-            id: new BigNumber(String(value['asset-id'] as bigint)).toString(),
-            isFrozen: value['is-frozen'],
-          })),
-          authAddress: accountInformation['auth-addr'] || null,
-          createdAt: account.createdAt,
-          genesisHash: account.genesisHash,
-          id: account.id,
-          minAtomicBalance: new BigNumber(
-            String(accountInformation['min-balance'] as bigint)
-          ).toString(),
-          name: account.name,
-          updatedAt: updatedAt.getTime(),
-        };
+        return mapAlgorandAccountInformationToAccount(
+          accountInformation,
+          account,
+          updatedAt.getTime()
+        );
       } catch (error) {
         logger.error(
           `${updateAccountInformation.name}: failed to get account information for "${account.address}" from "${node.name}" on ${network.genesisId}: ${error.message}`

@@ -1,4 +1,4 @@
-import { HStack, Text, Tooltip } from '@chakra-ui/react';
+import { HStack, Skeleton, Text, Tooltip } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode } from 'react';
 
@@ -14,6 +14,7 @@ interface IProps {
   decimals: number;
   displayUnit?: boolean;
   icon: ReactNode;
+  isLoading?: boolean;
   label: string;
   unit?: string;
 }
@@ -23,6 +24,7 @@ const SignTxnsAssetItem: FC<IProps> = ({
   decimals,
   displayUnit = false,
   icon,
+  isLoading = false,
   label,
   unit,
 }: IProps) => {
@@ -34,27 +36,38 @@ const SignTxnsAssetItem: FC<IProps> = ({
       <Text color={defaultTextColor} fontSize="xs">
         {label}
       </Text>
-      <Tooltip
-        aria-label="Asset amount with unrestricted decimals"
-        label={`${convertToStandardUnit(
-          atomicUnitsAmount,
-          decimals
-        ).toString()}${unit ? ` ${unit}` : ''}`}
-      >
-        <HStack spacing={1}>
-          <Text color={subTextColor} fontSize="xs">
-            {formatCurrencyUnit(
-              convertToStandardUnit(atomicUnitsAmount, decimals)
-            )}
-          </Text>
-          {icon}
-          {displayUnit && unit && (
+      {isLoading ? (
+        <Skeleton>
+          <HStack spacing={1}>
             <Text color={subTextColor} fontSize="xs">
-              {unit}
+              0.001
             </Text>
-          )}
-        </HStack>
-      </Tooltip>
+            {icon}
+          </HStack>
+        </Skeleton>
+      ) : (
+        <Tooltip
+          aria-label="Asset amount with unrestricted decimals"
+          label={`${convertToStandardUnit(
+            atomicUnitsAmount,
+            decimals
+          ).toString()}${unit ? ` ${unit}` : ''}`}
+        >
+          <HStack spacing={1}>
+            <Text color={subTextColor} fontSize="xs">
+              {formatCurrencyUnit(
+                convertToStandardUnit(atomicUnitsAmount, decimals)
+              )}
+            </Text>
+            {icon}
+            {displayUnit && unit && (
+              <Text color={subTextColor} fontSize="xs">
+                {unit}
+              </Text>
+            )}
+          </HStack>
+        </Tooltip>
+      )}
     </HStack>
   );
 };
