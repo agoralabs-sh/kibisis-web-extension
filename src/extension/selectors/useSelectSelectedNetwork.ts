@@ -8,7 +8,13 @@ import { IMainRootState, INetwork } from '@extension/types';
  * @returns {INetwork | null} the current selected network.
  */
 export default function useSelectSelectedNetwork(): INetwork | null {
-  return useSelector<IMainRootState, INetwork | null>(
-    (state) => state.settings.network
-  );
+  return useSelector<IMainRootState, INetwork | null>((state) => {
+    return (
+      state.networks.items.find(
+        (value) =>
+          value.genesisHash ===
+          state.settings.general.selectedNetworkGenesisHash
+      ) || null
+    );
+  });
 }

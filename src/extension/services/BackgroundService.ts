@@ -14,7 +14,7 @@ import {
   DEFAULT_POPUP_HEIGHT,
   DEFAULT_POPUP_WIDTH,
   SESSION_KEY_PREFIX,
-  SETTINGS_NETWORK_KEY,
+  SETTINGS_GENERAL_KEY,
 } from '@extension/constants';
 
 // Enums
@@ -42,6 +42,7 @@ import StorageManager from './StorageManager';
 import { IBaseOptions, IExtensionEvents, ILogger } from '@common/types';
 import {
   IAccount,
+  IGeneralSettings,
   INetwork,
   ISession,
   IStorageItemTypes,
@@ -85,6 +86,7 @@ export default class BackgroundService {
   ): Promise<void> {
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
     let accounts: IAccount[];
+    let generalSettings: IGeneralSettings | null;
     let network: INetwork | null;
     let session: ISession | null;
     let sessions: ISession[];
@@ -118,9 +120,13 @@ export default class BackgroundService {
           : acc,
       []
     );
+    generalSettings =
+      (storageItems[SETTINGS_GENERAL_KEY] as IGeneralSettings) || null;
     network =
-      (storageItems[SETTINGS_NETWORK_KEY] as INetwork | undefined) ||
-      (selectDefaultNetwork(networks) as INetwork); // get the network from the settings or get the default one (mainnet)
+      networks.find(
+        (value) =>
+          value.genesisHash === generalSettings?.selectedNetworkGenesisHash
+      ) || selectDefaultNetwork(networks); // get the network from the settings or get the default one (mainnet)
 
     if (payload.genesisHash) {
       network =

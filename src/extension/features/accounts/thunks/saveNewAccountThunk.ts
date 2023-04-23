@@ -45,7 +45,11 @@ const saveNewAccountThunk: AsyncThunk<
     const logger: ILogger = getState().application.logger;
     const networks: INetwork[] = getState().networks.items;
     const selectedNetwork: INetwork =
-      getState().settings.network || selectDefaultNetwork(networks);
+      networks.find(
+        (value) =>
+          value.genesisHash ===
+          getState().settings.general.selectedNetworkGenesisHash
+      ) || selectDefaultNetwork(networks);
     let accounts: IAccount[];
     let address: string;
     let pksAccount: IPksAccountStorageItem | null;

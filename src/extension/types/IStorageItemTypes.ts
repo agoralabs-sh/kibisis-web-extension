@@ -3,7 +3,7 @@ import IAccount from './IAccount';
 import IAdvancedSettings from './IAdvancedSettings';
 import IAppearanceSettings from './IAppearanceSettings';
 import IAsset from './IAsset';
-import INetwork from './INetwork';
+import IGeneralSettings from './IGeneralSettings';
 import IPksAccountStorageItem from './IPksAccountStorageItem';
 import IPksPasswordTagStorageItem from './IPksPasswordTagStorageItem';
 import ISession from './ISession';
@@ -13,7 +13,7 @@ type IStorageItemTypes =
   | IAdvancedSettings
   | IAppearanceSettings
   | IAsset[]
-  | INetwork
+  | IGeneralSettings
   | IPksAccountStorageItem
   | IPksPasswordTagStorageItem
   | ISession;

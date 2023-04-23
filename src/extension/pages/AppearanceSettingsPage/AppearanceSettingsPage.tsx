@@ -35,7 +35,7 @@ const AppearanceSettingsPage: FC = () => {
   return (
     <>
       <PageHeader title={t<string>('titles.page', { context: 'appearance' })} />
-      <VStack w="full">
+      <VStack spacing={4} w="full">
         <SettingsSelectItem
           description={t<string>('captions.changeTheme')}
           label={t<string>('labels.theme')}

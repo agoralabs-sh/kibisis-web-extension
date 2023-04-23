@@ -19,5 +19,8 @@ export default function mapSettingsToState(
     ...state.appearance,
     ...settings.appearance,
   };
-  state.network = settings.network;
+  state.general = {
+    ...state.general,
+    ...settings.general,
+  };
 }

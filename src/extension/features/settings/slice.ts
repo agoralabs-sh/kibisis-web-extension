@@ -51,7 +51,6 @@ const slice = createSlice({
   reducers: {
     reset: (state: Draft<ISettingsState>) => {
       state.fetching = false;
-      state.network = null;
       state.saving = false;
     },
   },

@@ -30,7 +30,11 @@ const fetchAccountsThunk: AsyncThunk<
   const networks: INetwork[] = getState().networks.items;
   const online: boolean = getState().application.online;
   const selectedNetwork: INetwork =
-    getState().settings.network || selectDefaultNetwork(networks);
+    networks.find(
+      (value) =>
+        value.genesisHash ===
+        getState().settings.general.selectedNetworkGenesisHash
+    ) || selectDefaultNetwork(networks);
   const storageManager: StorageManager = new StorageManager();
   const storageItems: Record<string, unknown> =
     await storageManager.getAllItems();

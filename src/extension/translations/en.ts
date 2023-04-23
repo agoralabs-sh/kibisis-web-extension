@@ -72,8 +72,10 @@ const translation: IResourceLanguage = {
       'You have not opt-ed into any assets. Try adding an assets now.',
     noSessionsFound: 'Enabled dApps will appear here.',
     offline: 'It looks like you are offline, some features may not work',
+    openOn: 'Open on {{name}}',
     passwordScoreInfo:
       'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
+    preferredBlockExplorer: 'Used when opening chain information in new tabs.',
     removeAccount: 'Are you sure you want to remove account "{{address}}"?',
     removeAccountWarning:
       'To add this account back you will need the seed phrase',
@@ -127,6 +129,7 @@ const translation: IResourceLanguage = {
     importExistingAccountComplete: 'Almost There...',
     importRekeyedAccount: 'Import A Rekeyed Account',
     nameYourAccount: 'Name your account',
+    network: 'Network',
     newAccountComplete: 'Almost There...',
     noAccountsFound: 'No accounts found',
     noAssetsFound: 'No assets found',
@@ -174,6 +177,7 @@ const translation: IResourceLanguage = {
     moreInformation: 'More Information',
     newPassword: 'New Password',
     password: 'Password',
+    preferredBlockExplorer: 'Preferred Block Explorer',
     removeAccount: 'Remove account',
     removeSession: 'Remove session',
     seedPhrase: 'Seed Phrase',

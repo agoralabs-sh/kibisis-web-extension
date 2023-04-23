@@ -55,7 +55,7 @@ const SettingsSelectItem: FC<IProps> = ({
           </Text>
         )}
       </VStack>
-      <Box>
+      <Box minW="40%">
         <Select onChange={onChange} value={value}>
           {options.map((option) => (
             <option key={nanoid()} value={option.value}>

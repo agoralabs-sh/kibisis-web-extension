@@ -37,7 +37,6 @@ import {
 import AccountActivityTab from '@extension/components/AccountActivityTab';
 import AccountAssetsTab from '@extension/components/AccountAssetsTab';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
-import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
@@ -70,6 +69,7 @@ import {
   useSelectFetchingSettings,
   useSelectIsOnline,
   useSelectNetworks,
+  useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -105,12 +105,16 @@ const AccountPage: FC = () => {
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
   const settings: ISettings = useSelectSettings();
+  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkSelect = (network: INetwork) => {
     dispatch(
       setSettings({
         ...settings,
-        network,
+        general: {
+          ...settings.general,
+          selectedNetworkGenesisHash: network.genesisHash,
+        },
       })
     );
   };
@@ -157,7 +161,7 @@ const AccountPage: FC = () => {
       );
     }
 
-    if (account && settings.network) {
+    if (account && selectedNetwork) {
       return (
         <>
           {/* Header */}
@@ -183,7 +187,7 @@ const AccountPage: FC = () => {
 
               {/*Network selection*/}
               <NetworkSelect
-                network={settings.network}
+                network={selectedNetwork}
                 networks={networks}
                 onSelect={handleNetworkSelect}
               />
@@ -214,7 +218,7 @@ const AccountPage: FC = () => {
               <NativeBalance
                 atomicBalance={new BigNumber(account.atomicBalance)}
                 minAtomicBalance={new BigNumber(account.minAtomicBalance)}
-                nativeCurrency={settings.network.nativeCurrency}
+                nativeCurrency={selectedNetwork.nativeCurrency}
               />
             </HStack>
 

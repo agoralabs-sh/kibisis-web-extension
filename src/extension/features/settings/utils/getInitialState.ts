@@ -12,7 +12,10 @@ export default function getInitialState(): ISettingsState {
       theme: 'light',
     },
     fetching: false,
-    network: null,
+    general: {
+      preferredBlockExplorerId: null,
+      selectedNetworkGenesisHash: null,
+    },
     saving: false,
   };
 }

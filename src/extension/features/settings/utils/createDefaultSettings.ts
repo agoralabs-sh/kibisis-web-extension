@@ -10,6 +10,8 @@ import { selectDefaultNetwork } from '@extension/utils';
  * @returns {ISettings} the default settings.
  */
 export default function createDefaultSettings(networks: INetwork[]): ISettings {
+  const defaultNetwork: INetwork = selectDefaultNetwork(networks);
+
   return {
     advanced: {
       allowBetaNet: false,
@@ -19,6 +21,9 @@ export default function createDefaultSettings(networks: INetwork[]): ISettings {
     appearance: {
       theme: 'light',
     },
-    network: selectDefaultNetwork(networks),
+    general: {
+      preferredBlockExplorerId: defaultNetwork.explorers[0]?.id || null,
+      selectedNetworkGenesisHash: defaultNetwork.genesisHash,
+    },
   };
 }
