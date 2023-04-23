@@ -252,7 +252,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
       {/* Asset ID */}
       {asset.unitName && (
-        <HStack spacing={1} w="full">
+        <HStack spacing={0} w="full">
           <SignTxnsTextItem
             flexGrow={1}
             label={`${t<string>('labels.id')}:`}

@@ -1,4 +1,4 @@
-import { Box, Text, VStack } from '@chakra-ui/react';
+import { Box, HStack, Text, VStack } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { Algodv2, encodeAddress, Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
@@ -10,7 +10,9 @@ import { useDispatch } from 'react-redux';
 // Components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
+import CopyIconButton from '@extension/components/CopyIconButton';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
+import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
@@ -32,6 +34,7 @@ import { updateAssetInformationThunk } from '@extension/features/assets';
 import {
   useSelectAccounts,
   useSelectAssetsByGenesisHash,
+  useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // Types
@@ -41,6 +44,7 @@ import {
   IAppThunkDispatch,
   IAsset,
   IAssetHolding,
+  IExplorer,
   INativeCurrency,
   INetwork,
   INode,
@@ -74,6 +78,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
   const subTextColor: string = useSubTextColor();
   const accounts: IAccount[] = useSelectAccounts();
   const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
+  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const [fetchingAccountInformation, setFetchingAccountInformation] =
     useState<boolean>(false);
   const [fromAccounts, setFromAccounts] = useState<IAccount[]>([]);
@@ -81,6 +86,10 @@ const MultipleTransactionsContent: FC<IProps> = ({
     Array.from({ length: transactions.length }, () => false)
   );
   const computedGroupId: string = encodeBase64(computeGroupId(transactions));
+  const explorer: IExplorer | null =
+    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
+    network.explorers[0] ||
+    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const handleToggleAccordion = (accordionIndex: number) => (open: boolean) => {
     setOpenAccordions(
       openAccordions.map((value, index) =>
@@ -170,6 +179,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
                       new BigNumber(assetHolding ? assetHolding.amount : '0')
                     }
                     decimals={asset.decimals}
+                    displayUnit={true}
                     icon={assetIcon}
                     isLoading={fetchingAccountInformation}
                     label={`${t<string>('labels.balance')}:`}
@@ -184,6 +194,29 @@ const MultipleTransactionsContent: FC<IProps> = ({
                     label={`${t<string>('labels.fee')}:`}
                     unit={nativeCurrency.code}
                   />
+
+                  {/* Asset ID */}
+                  {asset.unitName && (
+                    <HStack spacing={0} w="full">
+                      <SignTxnsTextItem
+                        flexGrow={1}
+                        label={`${t<string>('labels.id')}:`}
+                        value={asset.id}
+                      />
+                      <CopyIconButton
+                        ariaLabel={`Copy ${asset.id}`}
+                        value={asset.id}
+                      />
+                      {explorer && (
+                        <OpenTabIconButton
+                          tooltipLabel={t<string>('captions.openOn', {
+                            name: explorer.canonicalName,
+                          })}
+                          url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+                        />
+                      )}
+                    </HStack>
+                  )}
 
                   {/* Note */}
                   {transaction.note && transaction.note.length > 0 && (
