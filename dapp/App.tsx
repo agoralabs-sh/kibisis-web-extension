@@ -39,6 +39,7 @@ import Fonts from '@extension/components/Fonts';
 import { networks } from '@extension/config';
 
 // Tabs
+import SignAppTxnTab from './SignAppTxnTab';
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
 import SignTxnTab from './SignTxnTab';
@@ -222,9 +223,10 @@ const App: FC = () => {
             </HStack>
             <Tabs colorScheme="primaryLight" w="full">
               <TabList>
-                <Tab>Sign Txn</Tab>
-                <Tab>Sign Txns</Tab>
-                <Tab>Sign Data</Tab>
+                <Tab>Asset/Payment Txn</Tab>
+                <Tab>Atomic Txns</Tab>
+                <Tab>App Txn</Tab>
+                <Tab>Sign Bytes</Tab>
                 <Tab>Sign JWT</Tab>
               </TabList>
               <TabPanels>
@@ -234,6 +236,11 @@ const App: FC = () => {
                   toast={toast}
                 />
                 <SignTxnsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <SignAppTxnTab
                   account={selectedAccount}
                   network={selectedNetwork}
                   toast={toast}
