@@ -1,4 +1,4 @@
-import { Box, Text, VStack } from '@chakra-ui/react';
+import { Box, VStack } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
 import { nanoid } from 'nanoid';
@@ -12,7 +12,6 @@ import SignTxnsTextItem from './SignTxnsTextItem';
 
 // Hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // Selectors
 import { useSelectAssetsByGenesisHash } from '@extension/selectors';
@@ -22,6 +21,7 @@ import { IAccount, IAsset, INativeCurrency, INetwork } from '@extension/types';
 
 // Utils
 import { computeGroupId } from '@common/utils';
+import ApplicationTransactionContent from '@extension/components/SignTxnsModal/ApplicationTransactionContent';
 
 interface IProps {
   fromAccounts: IAccount[];
@@ -40,7 +40,6 @@ const MultipleTransactionsContent: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   const borderColor: string = useBorderColor();
-  const defaultTextColor: string = useDefaultTextColor();
   const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
   const [openAccordions, setOpenAccordions] = useState<boolean[]>(
     Array.from({ length: transactions.length }, () => false)
@@ -58,6 +57,18 @@ const MultipleTransactionsContent: FC<IProps> = ({
     transactionIndex: number
   ) => {
     switch (transaction.type) {
+      case 'appl':
+        return (
+          <ApplicationTransactionContent
+            condensed={{
+              expanded: openAccordions[transactionIndex],
+              onChange: handleToggleAccordion(transactionIndex),
+            }}
+            nativeCurrency={network.nativeCurrency}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case 'axfer':
         return (
           <AssetTransferTransactionContent
