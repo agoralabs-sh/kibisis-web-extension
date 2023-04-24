@@ -1,6 +1,5 @@
 import {
   Algodv2,
-  makeAssetTransferTxnWithSuggestedParams,
   makePaymentTxnWithSuggestedParams,
   SuggestedParams,
   Transaction,
@@ -15,16 +14,14 @@ import randomNotPureStakeNode from './randomNotPureStakeNode';
 
 interface IOptions {
   amount: BigNumber;
-  assetId: string;
   from: string;
   network: INetwork;
   note: string | null;
   to: string | null;
 }
 
-export default async function createAssetTransaction({
+export default async function createPaymentTransaction({
   amount,
-  assetId,
   from,
   network,
   note,
@@ -37,27 +34,12 @@ export default async function createAssetTransaction({
     .do();
   const encoder: TextEncoder = new TextEncoder();
 
-  // for algorand transactions, we need to use payment transactions
-  if (assetId === '0') {
-    return makePaymentTxnWithSuggestedParams(
-      from,
-      to || from,
-      amount.toNumber(),
-      undefined,
-      note ? encoder.encode(note) : undefined,
-      suggestedParams
-    );
-  }
-
-  // for all other assets, use asset transfer transactions
-  return makeAssetTransferTxnWithSuggestedParams(
+  return makePaymentTxnWithSuggestedParams(
     from,
     to || from,
-    undefined,
-    undefined,
     amount.toNumber(),
+    undefined,
     note ? encoder.encode(note) : undefined,
-    parseInt(assetId),
     suggestedParams
   );
 }

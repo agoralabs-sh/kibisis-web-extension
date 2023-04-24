@@ -42,7 +42,7 @@ const PaymentTransactionContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const standardUnitAmount: BigNumber = convertToStandardUnit(
-    new BigNumber(String(transaction.amount) || '0'),
+    new BigNumber(transaction.amount ? String(transaction.amount) : '0'),
     nativeCurrency.decimals
   );
   const icon: ReactNode = createIconFromDataUri(nativeCurrency.iconUri, {

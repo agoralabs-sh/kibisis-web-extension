@@ -26,6 +26,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import PasswordInput from '@extension/components/PasswordInput';
+import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import MultipleTransactionsContent from './MultipleTransactionsContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
@@ -153,6 +154,19 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     if (decodedTransactions[0].type === 'axfer') {
       return (
         <AssetTransferTransactionContent
+          nativeCurrency={signTxnsRequest.network.nativeCurrency}
+          network={signTxnsRequest.network}
+          transaction={decodedTransactions[0]}
+        />
+      );
+    }
+
+    // single app call
+    if (decodedTransactions[0].type === 'appl') {
+      console.log('decodedTransactions[0]: ', decodedTransactions[0]);
+
+      return (
+        <ApplicationTransactionContent
           nativeCurrency={signTxnsRequest.network.nativeCurrency}
           network={signTxnsRequest.network}
           transaction={decodedTransactions[0]}

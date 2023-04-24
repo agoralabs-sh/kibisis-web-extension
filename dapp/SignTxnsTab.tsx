@@ -61,11 +61,13 @@ import {
   convertToStandardUnit,
   formatCurrencyUnit,
 } from '@common/utils';
-import { createAssetTransaction } from './utils';
+import {
+  createAssetTransferTransaction,
+  createPaymentTransaction,
+} from './utils';
 
-interface IAssetValue {
+interface IAssetValue extends IAssetInformation {
   amount: BigNumber;
-  id: string;
   isChecked: boolean;
 }
 interface IProps {
@@ -83,17 +85,15 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   const handleAmountChange = (assetId: string) => (valueAsString: string) => {
     setAssetValues(
       assetValues.map((value) => {
-        const asset: IAssetInformation | null =
-          account?.assets.find((value) => value.id === assetId) || null;
         let amount: BigNumber;
         let maximumAmount: BigNumber;
 
-        if (!asset || value.id !== assetId) {
+        if (value.id !== assetId) {
           return value;
         }
 
         amount = new BigNumber(valueAsString);
-        maximumAmount = convertToStandardUnit(asset.balance, asset.decimals);
+        maximumAmount = convertToStandardUnit(value.balance, value.decimals);
 
         return {
           ...value,
@@ -117,14 +117,17 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
     };
   const handleSignAtomicTransactionsClick = async () => {
     const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
-    let asset: IAssetInformation | null;
     let assetValue: IAssetValue;
     let computedGroupId: string;
     let result: IBaseResult & ISignTxnsResult;
     let unsignedTransactions: Transaction[];
 
     if (!account || !network) {
-      console.error('no account information found');
+      toast({
+        description: 'You must first enable the dApp with the wallet.',
+        status: 'error',
+        title: 'No Account Not Found!',
+      });
 
       return;
     }
@@ -133,8 +136,6 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet.',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'window.algorand Not Found!',
       });
@@ -147,17 +148,33 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
 
       for (let i: number = 0; i < assetValues.length; i++) {
         assetValue = assetValues[i];
-        asset =
-          account.assets.find((value) => value.id === assetValue.id) || null;
 
-        if (!asset || !assetValue.isChecked) {
+        if (!assetValue.isChecked) {
+          continue;
+        }
+
+        // if we have algorand, use a payment transaction
+        if (assetValue.id === '0') {
+          unsignedTransactions.push(
+            await createPaymentTransaction({
+              amount: convertToAtomicUnit(
+                assetValue.amount,
+                assetValue.decimals
+              ),
+              from: account.address,
+              network,
+              note: null,
+              to: null,
+            })
+          );
+
           continue;
         }
 
         unsignedTransactions.push(
-          await createAssetTransaction({
-            amount: convertToAtomicUnit(assetValue.amount, asset.decimals),
-            assetId: asset.id,
+          await createAssetTransferTransaction({
+            amount: convertToAtomicUnit(assetValue.amount, assetValue.decimals),
+            assetId: assetValue.id,
             from: account.address,
             network,
             note: null,
@@ -176,8 +193,6 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
 
       toast({
         description: `Successfully signed atomic transactions for wallet "${result.id}".`,
-        duration: 3000,
-        isClosable: true,
         status: 'success',
         title: 'Atomic Transactions Signed!',
       });
@@ -191,8 +206,6 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
     } catch (error) {
       toast({
         description: (error as BaseError).message,
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
       });
@@ -203,16 +216,26 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   };
 
   useEffect(() => {
-    if (account) {
-      setAssetValues(
-        account.assets.map((value) => ({
+    if (account && network) {
+      setAssetValues([
+        // just add algorand as an asset for simplicity
+        {
           amount: new BigNumber('0'),
-          id: value.id,
+          balance: account.balance,
+          decimals: network.nativeCurrency.decimals,
+          id: '0',
           isChecked: false,
-        }))
-      );
+          name: network.canonicalName,
+          symbol: network.nativeCurrency.code,
+        },
+        ...account.assets.map((value) => ({
+          ...value,
+          amount: new BigNumber('0'),
+          isChecked: false,
+        })),
+      ]);
     }
-  }, [account]);
+  }, [account, network]);
 
   return (
     <TabPanel w="full">
@@ -253,21 +276,21 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
         </TableContainer>
 
         {/*Assets*/}
-        {account && account.assets.length > 0 ? (
+        {assetValues.length > 0 ? (
           <CheckboxGroup>
             <Stack spacing={4} w="full">
-              {account.assets.map((asset) => (
+              {assetValues.map((value) => (
                 <HStack key={nanoid()} spacing={2} w="full">
                   {/*Asset ID/name*/}
                   <HStack>
                     <Checkbox
-                      onChange={handleAssetCheckChange(asset.id)}
+                      onChange={handleAssetCheckChange(value.id)}
                       size="lg"
-                      value={asset.id}
+                      value={value.id}
                     />
-                    <Tooltip label={asset.name || asset.id}>
+                    <Tooltip label={value.name || value.id}>
                       <Text noOfLines={1} size="md" w={200}>
-                        {asset.name || asset.id}
+                        {value.name || value.id}
                       </Text>
                     </Tooltip>
                   </HStack>
@@ -275,46 +298,39 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
                   {/*Balance*/}
                   <Tooltip
                     label={`${convertToStandardUnit(
-                      asset.balance,
-                      asset.decimals
-                    ).toString()}${asset.symbol ? ` ${asset.symbol}` : ''}`}
+                      value.balance,
+                      value.decimals
+                    ).toString()}${value.symbol ? ` ${value.symbol}` : ''}`}
                   >
                     <HStack flexGrow={1}>
                       <Text size="sm">
                         {formatCurrencyUnit(
-                          convertToStandardUnit(asset.balance, asset.decimals)
+                          convertToStandardUnit(value.balance, value.decimals)
                         )}
                       </Text>
-                      {asset.symbol && <Text size="sm">{asset.symbol}</Text>}
+                      {value.symbol && <Text size="sm">{value.symbol}</Text>}
                     </HStack>
                   </Tooltip>
 
                   {/*Amount*/}
                   <NumberInput
                     flexGrow={1}
-                    isDisabled={
-                      !assetValues.find((value) => value.id === asset.id)
-                        ?.isChecked
-                    }
+                    isDisabled={!value.isChecked}
                     min={0}
                     max={
-                      asset
+                      value
                         ? parseFloat(
                             convertToStandardUnit(
-                              asset.balance,
-                              asset.decimals
+                              value.balance,
+                              value.decimals
                             ).toString()
                           )
                         : 0
                     }
                     maxW={200}
-                    precision={asset ? asset.decimals : 0}
-                    onChange={handleAmountChange(asset.id)}
-                    value={
-                      assetValues
-                        .find((value) => value.id === asset.id)
-                        ?.amount.toString() || 0
-                    }
+                    precision={value.decimals}
+                    onChange={handleAmountChange(value.id)}
+                    value={value.amount.toString()}
                   >
                     <NumberInputField />
                     <NumberInputStepper>

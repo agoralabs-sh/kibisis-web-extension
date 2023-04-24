@@ -1,3 +1,4 @@
+import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
 import { Algodv2, IntDecoding } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
@@ -8,19 +9,19 @@ import {
   INetwork,
   INode,
 } from '@extension/types';
-import { IAssetInformation } from '../types';
+import { IAccountInformation, IAssetInformation } from '../types';
 
 // Utils
 import randomNotPureStakeNode from './randomNotPureStakeNode';
 
-export default async function getAssetInformation(
-  address: string,
+export default async function getAccountInformation(
+  account: IWalletAccount,
   network: INetwork
-): Promise<IAssetInformation[]> {
+): Promise<IAccountInformation> {
   const node: INode = randomNotPureStakeNode(network);
   const client: Algodv2 = new Algodv2('', node.url, node.port);
   const accountInformation: IAlgorandAccountInformation = (await client
-    .accountInformation(address)
+    .accountInformation(account.address)
     .setIntDecoding(IntDecoding.BIGINT)
     .do()) as IAlgorandAccountInformation;
   const assets: IAssetInformation[] = await Promise.all(
@@ -51,14 +52,10 @@ export default async function getAssetInformation(
     )
   );
 
-  return [
-    {
-      balance: new BigNumber(String(accountInformation.amount)),
-      decimals: 6,
-      id: '0',
-      name: 'Algorand',
-      symbol: 'ALGO',
-    },
-    ...assets,
-  ];
+  return {
+    address: account.address,
+    name: account.name || null,
+    assets,
+    balance: new BigNumber(String(accountInformation.amount)),
+  };
 }

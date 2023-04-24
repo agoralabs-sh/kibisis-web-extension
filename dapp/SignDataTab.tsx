@@ -42,8 +42,22 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
     const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
     let result: IBaseResult & ISignBytesResult;
 
-    if (!dataToSign || (withSigner && !account)) {
-      console.error('no data or address');
+    if (!account) {
+      toast({
+        description: 'You must first enable the dApp with the wallet.',
+        status: 'error',
+        title: 'No Account Not Found!',
+      });
+
+      return;
+    }
+
+    if (!dataToSign) {
+      toast({
+        description: 'You must first enter some input to sign.',
+        status: 'error',
+        title: 'No Data To Sign!',
+      });
 
       return;
     }
@@ -52,8 +66,6 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet.',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'window.algorand Not Found!',
       });
@@ -71,8 +83,6 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
 
       toast({
         description: `Successfully signed data for wallet "${result.id}".`,
-        duration: 3000,
-        isClosable: true,
         status: 'success',
         title: 'Data Signed!',
       });
@@ -81,8 +91,6 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
     } catch (error) {
       toast({
         description: (error as BaseError).message,
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
       });
@@ -96,8 +104,6 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
 
     if (!dataToSign || !signedData || !account) {
       toast({
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'No Data To Verify!',
       });
@@ -115,8 +121,6 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
     if (!verifiedResult) {
       toast({
         description: 'The signed data failed verification',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'Signed Data is Invalid!',
       });
@@ -126,8 +130,6 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
 
     toast({
       description: 'The signed data has been verified.',
-      duration: 3000,
-      isClosable: true,
       status: 'success',
       title: 'Signed Data is Valid!',
     });

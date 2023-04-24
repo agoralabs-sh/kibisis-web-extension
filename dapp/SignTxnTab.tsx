@@ -8,6 +8,8 @@ import {
   Button,
   Code,
   CreateToastFnReturn,
+  Grid,
+  GridItem,
   HStack,
   Input,
   NumberDecrementStepper,
@@ -31,12 +33,13 @@ import { encode as encodeHex } from '@stablelib/hex';
 import {
   decodeSignedTransaction,
   encodeUnsignedTransaction,
+  OnApplicationComplete,
   SignedTransaction,
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import { nanoid } from 'nanoid';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // Theme
 import { theme } from '@extension/theme';
@@ -48,7 +51,12 @@ import { IAccountInformation, IAssetInformation } from './types';
 
 // Utils
 import { convertToAtomicUnit, convertToStandardUnit } from '@common/utils';
-import { createAssetTransaction } from './utils';
+import {
+  createAppCallTransaction,
+  createAssetTransferTransaction,
+  createPaymentTransaction,
+} from './utils';
+import { atob } from 'buffer';
 
 interface IProps {
   account: IAccountInformation | null;
@@ -64,8 +72,11 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   const [selectedAsset, setSelectedAsset] = useState<IAssetInformation | null>(
     null
   );
-  const handleAmountChange = (valueAsString: string) =>
+  const handleAmountChange = (valueAsString: string) => {
+    console.log('handleAmountChange: ', valueAsString);
+
     setAmount(new BigNumber(valueAsString));
+  };
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
   const handleSelectAssetChange = (assetId: string) => {
@@ -77,70 +88,136 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
       account.assets.find((value) => value.id === assetId) || null
     );
   };
-  const handleSignSingleTransactionClick = async () => {
-    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
-    let result: IBaseResult & ISignTxnsResult;
-    let unsignedTransaction: Transaction;
+  const handleSignTransactionClick =
+    (type: string | OnApplicationComplete) => async () => {
+      const algorand: AlgorandProvider | undefined = (window as IWindow)
+        .algorand;
+      let result: IBaseResult & ISignTxnsResult;
+      let unsignedTransaction: Transaction | null = null;
 
-    if (!selectedAsset || !account || !network) {
-      console.error('no account information found');
+      if (!account || !network) {
+        toast({
+          description: 'You must first enable the dApp with the wallet.',
+          status: 'error',
+          title: 'No Account Not Found!',
+        });
 
-      return;
-    }
-
-    if (!algorand) {
-      toast({
-        description:
-          'Algorand Provider has been intialized; there is no supported wallet.',
-        duration: 3000,
-        isClosable: true,
-        status: 'error',
-        title: 'window.algorand Not Found!',
-      });
-
-      return;
-    }
-
-    try {
-      unsignedTransaction = await createAssetTransaction({
-        amount: convertToAtomicUnit(amount, selectedAsset.decimals),
-        assetId: selectedAsset.id,
-        from: account.address,
-        network,
-        note: note.length > 0 ? note : null,
-        to: null,
-      });
-      result = await algorand.signTxns({
-        txns: [
-          {
-            txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
-          },
-        ],
-      });
-
-      toast({
-        description: `Successfully signed transaction for wallet "${result.id}".`,
-        duration: 3000,
-        isClosable: true,
-        status: 'success',
-        title: 'Transaction Signed!',
-      });
-
-      if (result.stxns[0]) {
-        setSignedTransaction(
-          decodeSignedTransaction(decodeBase64(result.stxns[0]))
-        );
+        return;
       }
-    } catch (error) {
-      toast({
-        description: (error as BaseError).message,
-        duration: 3000,
-        isClosable: true,
-        status: 'error',
-        title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
-      });
-    }
-  };
+
+      if (!algorand) {
+        toast({
+          description:
+            'Algorand Provider has been intialized; there is no supported wallet.',
+          status: 'error',
+          title: 'window.algorand Not Found!',
+        });
+
+        return;
+      }
+
+      try {
+        switch (type) {
+          case OnApplicationComplete.ClearStateOC:
+          case OnApplicationComplete.CloseOutOC:
+          case OnApplicationComplete.DeleteApplicationOC:
+          case OnApplicationComplete.OptInOC:
+          case OnApplicationComplete.NoOpOC:
+          case OnApplicationComplete.UpdateApplicationOC:
+            unsignedTransaction = await createAppCallTransaction({
+              from: account.address,
+              network,
+              note: note.length > 0 ? note : null,
+              type,
+            });
+
+            console.log('unsignedTransaction: ', unsignedTransaction);
+
+            break;
+          case 'app-create':
+            unsignedTransaction = await createAppCallTransaction({
+              from: account.address,
+              network,
+              note: note.length > 0 ? note : null,
+              type: null,
+            });
+
+            break;
+          case 'asset-transfer':
+            if (!selectedAsset) {
+              toast({
+                description: 'Select an asset from the list.',
+                status: 'error',
+                title: 'No Asset Selected!',
+              });
+
+              return;
+            }
+
+            unsignedTransaction = await createAssetTransferTransaction({
+              amount: convertToAtomicUnit(amount, selectedAsset.decimals),
+              assetId: selectedAsset.id,
+              from: account.address,
+              network,
+              note: note.length > 0 ? note : null,
+              to: null,
+            });
+
+            break;
+
+          case 'payment':
+            unsignedTransaction = await createPaymentTransaction({
+              amount: convertToAtomicUnit(
+                amount,
+                network.nativeCurrency.decimals
+              ),
+              from: account.address,
+              network,
+              note: note.length > 0 ? note : null,
+              to: null,
+            });
+
+            break;
+          default:
+            break;
+        }
+
+        if (!unsignedTransaction) {
+          toast({
+            status: 'error',
+            title: 'Unknown Transaction Type',
+          });
+
+          return;
+        }
+
+        result = await algorand.signTxns({
+          txns: [
+            {
+              txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
+            },
+          ],
+        });
+
+        toast({
+          description: `Successfully signed transaction for wallet "${result.id}".`,
+          status: 'success',
+          title: 'Transaction Signed!',
+        });
+
+        if (result.stxns[0]) {
+          setSignedTransaction(
+            decodeSignedTransaction(decodeBase64(result.stxns[0]))
+          );
+        }
+      } catch (error) {
+        toast({
+          description: (error as BaseError).message,
+          status: 'error',
+          title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
+        });
+      }
+    };
   const handleUpdateAsset = (newSelectedAsset: IAssetInformation | null) => {
     const maximumAmount: BigNumber = newSelectedAsset
       ? convertToStandardUnit(
@@ -153,9 +230,31 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
     setAmount(amount.gt(maximumAmount) ? maximumAmount : amount);
   };
 
+  useEffect(() => {
+    if (account && !selectedAsset) {
+      setSelectedAsset(account.assets[0] || null);
+    }
+  }, [account]);
+
   return (
     <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
+        {/*Balance*/}
+        <HStack spacing={2} w="full">
+          <Text size="md" textAlign="left">
+            Balance:
+          </Text>
+          <Spacer />
+          <Text size="md" textAlign="left">
+            {account && network
+              ? `${convertToStandardUnit(
+                  account.balance,
+                  network.nativeCurrency.decimals
+                )} ${network.nativeCurrency.code}`
+              : 'N/A'}
+          </Text>
+        </HStack>
+
         {/*Amount*/}
         <HStack w="full">
           <Text size="md" textAlign="left">
@@ -200,8 +299,8 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
         </Text>
         {account && account.assets.length > 0 ? (
           <RadioGroup
-            defaultValue="0"
             onChange={handleSelectAssetChange}
+            value={selectedAsset?.id}
             w="full"
           >
             <Stack spacing={4} w="full">
@@ -253,17 +352,52 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
         </VStack>
 
         {/*Sign transaction button*/}
-        <VStack justifyContent="center" spacing={3} w="full">
-          <Button
-            borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
-            minW={250}
-            onClick={handleSignSingleTransactionClick}
-            size="lg"
-          >
-            Send Single Transaction
-          </Button>
-        </VStack>
+        <Grid gap={2} templateColumns="repeat(2, 1fr)" w="full">
+          {[
+            { type: 'payment', label: 'Send Payment Transaction' },
+            {
+              type: 'asset-transfer',
+              label: 'Send Asset Transfer Transaction',
+            },
+            { type: 'app-create', label: 'Send Create App Transaction' },
+            {
+              type: OnApplicationComplete.OptInOC,
+              label: 'Send App Opt-In Transaction',
+            },
+            {
+              type: OnApplicationComplete.NoOpOC,
+              label: 'Send App NoOp Transaction',
+            },
+            {
+              type: OnApplicationComplete.ClearStateOC,
+              label: 'Send App Clear State Transaction',
+            },
+            {
+              type: OnApplicationComplete.CloseOutOC,
+              label: 'Send App Close Out Transaction',
+            },
+            {
+              type: OnApplicationComplete.DeleteApplicationOC,
+              label: 'Send Delete App Transaction',
+            },
+            {
+              type: OnApplicationComplete.UpdateApplicationOC,
+              label: 'Send Update App Transaction',
+            },
+          ].map(({ label, type }) => (
+            <GridItem key={nanoid()}>
+              <Button
+                borderRadius={theme.radii['3xl']}
+                colorScheme="primaryLight"
+                onClick={handleSignTransactionClick(type)}
+                size="lg"
+                w={365}
+              >
+                {label}
+              </Button>
+            </GridItem>
+          ))}
+        </Grid>
       </VStack>
     </TabPanel>
   );

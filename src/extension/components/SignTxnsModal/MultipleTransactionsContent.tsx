@@ -142,7 +142,11 @@ const MultipleTransactionsContent: FC<IProps> = ({
             <VStack spacing={2} w="full">
               {/*Amount*/}
               <SignTxnsAssetItem
-                atomicUnitsAmount={new BigNumber(String(transaction.amount))}
+                atomicUnitsAmount={
+                  new BigNumber(
+                    transaction.amount ? String(transaction.amount) : '0'
+                  )
+                }
                 decimals={asset.decimals}
                 displayUnit={true}
                 icon={assetIcon}
@@ -236,7 +240,11 @@ const MultipleTransactionsContent: FC<IProps> = ({
           <VStack spacing={2} w="full">
             {/*Amount*/}
             <SignTxnsAssetItem
-              atomicUnitsAmount={new BigNumber(String(transaction.amount))}
+              atomicUnitsAmount={
+                new BigNumber(
+                  transaction.amount ? String(transaction.amount) : '0'
+                )
+              }
               decimals={nativeCurrency.decimals}
               icon={nativeCurrencyIcon}
               label={`${t<string>('labels.amount')}:`}

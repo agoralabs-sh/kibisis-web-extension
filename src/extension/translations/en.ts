@@ -30,6 +30,14 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
     allowTestNet: 'Let TestNet networks appear in the networks list.',
+    appOnComplete: 'This transaction will create a new application.',
+    appOnComplete_0: 'This transaction will run the application.',
+    appOnComplete_1: `This transaction will opt the sender's account into the application by allocating some local state.`,
+    appOnComplete_2: `This transaction will run the application and clear any application data associated with the sender's account.`,
+    appOnComplete_3: `This transaction will clear any application data associated with the sender's account.`,
+    appOnComplete_4:
+      'This transaction will update the application, replacing the approval and clear programs. The application ID will not be changed.',
+    appOnComplete_5: 'This transaction will delete the application.',
     assetIdCopied: 'Asset ID copied!',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
@@ -138,6 +146,10 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Remove All Sessions',
     shareAddress: 'Share Address',
     transaction: 'Transaction',
+    transaction_appCreate: 'Application Creation',
+    transaction_appDelete: 'Application Deletion',
+    transaction_appUpdate: 'Application Update',
+    transaction_appl: 'Application Interaction',
     transaction_axfer: 'Asset Transfer Transaction',
     transaction_pay: 'Payment Transaction',
   },
@@ -186,6 +198,7 @@ const translation: IResourceLanguage = {
     signingMethod: 'Signing Method',
     theme: 'Theme',
     to: 'To',
+    type: 'Type',
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
   },
@@ -207,6 +220,15 @@ const translation: IResourceLanguage = {
     page_security: 'Security',
     page_sessions: 'Sessions',
     page_settings: 'Settings',
+  },
+  values: {
+    appOnComplete: 'Create Application',
+    appOnComplete_0: 'Application Operation',
+    appOnComplete_1: 'Application Opt-in',
+    appOnComplete_2: 'Close Out',
+    appOnComplete_3: 'Clear State',
+    appOnComplete_4: 'Update Application',
+    appOnComplete_5: 'Delete Application',
   },
 };
 

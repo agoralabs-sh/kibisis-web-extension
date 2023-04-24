@@ -10,6 +10,7 @@ interface IResourceLanguage {
   labels: Record<string, string>;
   placeholders: Record<string, string>;
   titles: Record<string, string>;
+  values: Record<string, string>;
 }
 
 export default IResourceLanguage;

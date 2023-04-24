@@ -53,10 +53,14 @@ import { INetwork } from '@extension/types';
 import { IAccountInformation, IAssetInformation } from './types';
 
 // Utils
-import { getAssetInformation } from './utils';
+import { getAccountInformation } from './utils';
 
 const App: FC = () => {
-  const toast: CreateToastFnReturn = useToast();
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
   const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
     []
   );
@@ -81,8 +85,6 @@ const App: FC = () => {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'window.algorand not found!',
       });
@@ -104,19 +106,8 @@ const App: FC = () => {
       }
 
       accounts = await Promise.all(
-        result.accounts.map<Promise<IAccountInformation>>(
-          async ({ address, name }) => {
-            const assets: IAssetInformation[] = await getAssetInformation(
-              address,
-              network as INetwork
-            );
-
-            return {
-              address,
-              assets,
-              name: name || null,
-            };
-          }
+        result.accounts.map<Promise<IAccountInformation>>((account) =>
+          getAccountInformation(account, network as INetwork)
         )
       );
 
@@ -125,16 +116,12 @@ const App: FC = () => {
 
       toast({
         description: `Successfully connected to "${result.id}".`,
-        duration: 3000,
-        isClosable: true,
         status: 'success',
         title: 'Connected!',
       });
     } catch (error) {
       toast({
         description: (error as BaseError).message,
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
       });
@@ -157,8 +144,8 @@ const App: FC = () => {
           justifyContent="center"
           minH="100vh"
           maxW={800}
-          pt={8}
           px={8}
+          py={8}
           w="full"
         >
           <VStack justifyContent="center" spacing={8} w="full">

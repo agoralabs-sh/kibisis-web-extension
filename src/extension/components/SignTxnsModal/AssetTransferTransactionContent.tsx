@@ -94,7 +94,9 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
   // check if we have the asset information already, if not, dispatch the store to update
   useEffect(() => {
-    const amount: BigNumber = new BigNumber(String(transaction.amount));
+    const amount: BigNumber = new BigNumber(
+      transaction.amount ? String(transaction.amount) : '0'
+    ); // the algosdk decodes "0" amounts to undefined
     const transactionAsset: IAsset | null =
       assets.find((value) => value.id === assetId) || null;
 
@@ -125,7 +127,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       setAsset(updatedAsset);
       setStandardAmount(
         convertToStandardUnit(
-          new BigNumber(String(transaction.amount)),
+          new BigNumber(transaction.amount ? String(transaction.amount) : '0'),
           updatedAsset.decimals
         )
       );
