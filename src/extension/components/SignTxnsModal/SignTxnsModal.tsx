@@ -26,10 +26,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import PasswordInput from '@extension/components/PasswordInput';
-import ApplicationTransactionContent from './ApplicationTransactionContent';
-import AssetTransferTransactionContent from './AssetTransferTransactionContent';
-import MultipleTransactionsContent from './MultipleTransactionsContent';
-import PaymentTransactionContent from './PaymentTransactionContent';
+import SignTxnsModalContent from './SignTxnsModalContent';
 
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -128,53 +125,12 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       decodeUnsignedTransaction(decodeBase64(value.txn))
     );
 
-    // atomic transfers
-    if (decodedTransactions.length > 1) {
-      return (
-        <MultipleTransactionsContent
-          nativeCurrency={signTxnsRequest.network.nativeCurrency}
-          network={signTxnsRequest.network}
-          transactions={decodedTransactions}
-        />
-      );
-    }
-
-    // single payment transaction
-    if (decodedTransactions[0].type === 'pay') {
-      return (
-        <PaymentTransactionContent
-          nativeCurrency={signTxnsRequest.network.nativeCurrency}
-          network={signTxnsRequest.network}
-          transaction={decodedTransactions[0]}
-        />
-      );
-    }
-
-    // single asset transfer
-    if (decodedTransactions[0].type === 'axfer') {
-      return (
-        <AssetTransferTransactionContent
-          nativeCurrency={signTxnsRequest.network.nativeCurrency}
-          network={signTxnsRequest.network}
-          transaction={decodedTransactions[0]}
-        />
-      );
-    }
-
-    // single app call
-    if (decodedTransactions[0].type === 'appl') {
-      console.log('decodedTransactions[0]: ', decodedTransactions[0]);
-
-      return (
-        <ApplicationTransactionContent
-          nativeCurrency={signTxnsRequest.network.nativeCurrency}
-          network={signTxnsRequest.network}
-          transaction={decodedTransactions[0]}
-        />
-      );
-    }
-
-    return null;
+    return (
+      <SignTxnsModalContent
+        network={signTxnsRequest.network}
+        transactions={decodedTransactions}
+      />
+    );
   };
   const renderHeader = () => {
     if (!signTxnsRequest) {

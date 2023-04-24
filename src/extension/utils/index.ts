@@ -1,5 +1,4 @@
 export { default as bootstrapApp } from './bootstrapApp';
-export { default as computeApplicationOnComplete } from './computeApplicationOnComplete';
 export { default as convertGenesisHashToHex } from './convertGenesisHashToHex';
 export { default as createIconFromDataUri } from './createIconFromDataUri';
 export { default as decodeJwt } from './decodeJwt';
@@ -18,5 +17,6 @@ export { default as makeStore } from './makeStore';
 export { default as mapAssetFromAlgorandAsset } from './mapAssetFromAlgorandAsset';
 export { default as mapAlgorandAccountInformationToAccount } from './mapAlgorandAccountInformationToAccount';
 export { default as mapSessionFromEnableRequest } from './mapSessionFromEnableRequest';
+export { default as parseTransactionType } from './parseTransactionType';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';
 export { default as verifyTransactionGroupId } from './verifyTransactionGroupId';

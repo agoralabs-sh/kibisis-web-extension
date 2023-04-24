@@ -10,158 +10,154 @@ import { encodeAddress, Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
 
 // Components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
-import SignTxnsAssetItem from '@extension/components/SignTxnsModal/SignTxnsAssetItem';
+import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsLoadingItem from './SignTxnsLoadingItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
-// Features
-import { updateAssetInformationThunk } from '@extension/features/assets';
-
 // Hooks
-import useAccount from '@extension/hooks/useAccount';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
-import {
-  useSelectAssetsByGenesisHash,
-  useSelectLogger,
-  useSelectPreferredBlockExplorer,
-  useSelectUpdatingAssets,
-} from '@extension/selectors';
+import { useSelectPreferredBlockExplorer } from '@extension/selectors';
 
 // Types
-import { ILogger } from '@common/types';
 import {
-  IAppThunkDispatch,
+  IAccount,
   IAsset,
   IExplorer,
   INativeCurrency,
   INetwork,
 } from '@extension/types';
+import { ICondensedProps } from './types';
 
 // Utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
-import { createIconFromDataUri } from '@extension/utils';
+import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {
+  asset: IAsset | null;
+  condensed?: ICondensedProps;
+  fromAccount: IAccount | null;
+  loading?: boolean;
   nativeCurrency: INativeCurrency;
   network: INetwork;
   transaction: Transaction;
 }
 
 const AssetTransferTransactionContent: FC<IProps> = ({
+  asset,
+  condensed,
+  fromAccount,
+  loading = false,
   nativeCurrency,
   network,
   transaction,
 }: IProps) => {
-  const assetId: string = String(transaction.assetIndex);
-  const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const { account: fromAccount, fetching: fetchingAccountInformation } =
-    useAccount({
-      address: fromAddress,
-      network,
-    });
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
-  const logger: ILogger = useSelectLogger();
-  const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
-  const updating: boolean = useSelectUpdatingAssets();
-  const [asset, setAsset] = useState<IAsset | null>(
-    assets.find((value) => value.id === assetId) || null
-  );
   const [standardUnitAmount, setStandardAmount] = useState<BigNumber>(
     new BigNumber('0')
+  );
+  const atomicUintAmount: BigNumber = new BigNumber(
+    transaction.amount ? String(transaction.amount) : '0'
   );
   const explorer: IExplorer | null =
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
+  const renderExtraInformation = (icon: ReactNode) => {
+    if (!asset) {
+      return null;
+    }
+
+    return (
+      <>
+        {/* Balance */}
+        <SignTxnsAssetItem
+          atomicUnitsAmount={atomicUintAmount}
+          decimals={asset.decimals}
+          displayUnit={true}
+          icon={icon}
+          isLoading={loading}
+          label={`${t<string>('labels.balance')}:`}
+          unit={asset.unitName || undefined}
+        />
+
+        {/* Fee */}
+        <SignTxnsAssetItem
+          atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+          decimals={nativeCurrency.decimals}
+          icon={createIconFromDataUri(nativeCurrency.iconUri, {
+            color: subTextColor,
+            h: 3,
+            w: 3,
+          })}
+          label={`${t<string>('labels.fee')}:`}
+          unit={nativeCurrency.code}
+        />
+
+        {/* Asset ID */}
+        {asset.unitName && (
+          <HStack spacing={0} w="full">
+            <SignTxnsTextItem
+              flexGrow={1}
+              label={`${t<string>('labels.id')}:`}
+              value={asset.id}
+            />
+            <CopyIconButton ariaLabel={`Copy ${asset.id}`} value={asset.id} />
+            {explorer && (
+              <OpenTabIconButton
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: explorer.canonicalName,
+                })}
+                url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+              />
+            )}
+          </HStack>
+        )}
+
+        {/* Note */}
+        {transaction.note && transaction.note.length > 0 && (
+          <SignTxnsTextItem
+            label={`${t<string>('labels.note')}:`}
+            value={new TextDecoder().decode(transaction.note)}
+          />
+        )}
+      </>
+    );
+  };
   let assetIcon: ReactNode;
 
-  // check if we have the asset information already, if not, dispatch the store to update
-  useEffect(() => {
-    const amount: BigNumber = new BigNumber(
-      transaction.amount ? String(transaction.amount) : '0'
-    ); // the algosdk decodes "0" amounts to undefined
-    const transactionAsset: IAsset | null =
-      assets.find((value) => value.id === assetId) || null;
-
-    if (!transactionAsset) {
-      logger.debug(
-        `${AssetTransferTransactionContent.name}#${useEffect.name}(): asset "${assetId}" not known updating information`
-      );
-
-      dispatch(
-        updateAssetInformationThunk({
-          ids: [assetId],
-          genesisHash: network.genesisHash,
-        })
-      );
-
-      return;
-    }
-
-    setAsset(transactionAsset);
-    setStandardAmount(convertToStandardUnit(amount, transactionAsset.decimals));
-  }, []);
   // once the store has been updated with the asset information, update the asset and the amount
   useEffect(() => {
-    const updatedAsset: IAsset | null =
-      assets.find((value) => value.id === assetId) || null;
-
-    if (updatedAsset) {
-      setAsset(updatedAsset);
+    if (asset) {
       setStandardAmount(
-        convertToStandardUnit(
-          new BigNumber(transaction.amount ? String(transaction.amount) : '0'),
-          updatedAsset.decimals
-        )
+        convertToStandardUnit(atomicUintAmount, asset.decimals)
       );
     }
-  }, [assets]);
+  }, [asset]);
 
-  if (updating || !asset || !fromAccount) {
+  if (loading || !asset || !fromAccount) {
     return (
-      <VStack spacing={4} w="full">
-        <HStack
-          alignItems="center"
-          justifyContent="center"
-          spacing={2}
-          w="full"
-        >
-          <Skeleton>
-            <Heading size="lg" textAlign="center">
-              {formatCurrencyUnit(standardUnitAmount)}
-            </Heading>
-          </Skeleton>
-          <Skeleton>
-            <AssetIcon
-              color={primaryButtonTextColor}
-              networkTheme={network.chakraTheme}
-              h={3}
-              w={3}
-            />
-          </Skeleton>
-          <Skeleton>
-            <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-              {assetId}
-            </Text>
-          </Skeleton>
-        </HStack>
+      <VStack
+        alignItems="flex-start"
+        justifyContent="flex-start"
+        spacing={2}
+        w="full"
+      >
         <SignTxnsLoadingItem />
         <SignTxnsLoadingItem />
         <SignTxnsLoadingItem />
@@ -185,33 +181,76 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   );
 
   return (
-    <VStack spacing={4} w="full">
-      {/* Amount */}
-      <Tooltip
-        aria-label="Asset amount with unrestricted decimals"
-        label={`${standardUnitAmount.toString()}${
-          asset.unitName ? ` ${asset.unitName}` : ''
-        }`}
-      >
-        <HStack
-          alignItems="center"
-          justifyContent="center"
-          spacing={2}
-          w="full"
-        >
-          <Heading color={defaultTextColor} size="lg" textAlign="center">
-            {formatCurrencyUnit(standardUnitAmount)}
-          </Heading>
-          {assetIcon}
-          <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-            {asset.unitName || asset.id}
+    <VStack
+      alignItems="flex-start"
+      justifyContent="flex-start"
+      spacing={condensed ? 2 : 4}
+      w="full"
+    >
+      {condensed ? (
+        <>
+          {/*Heading*/}
+          <Text
+            color={defaultTextColor}
+            fontSize="md"
+            textAlign="left"
+            w="full"
+          >
+            {t<string>('headings.transaction', {
+              context: parseTransactionType(transaction),
+            })}
           </Text>
-        </HStack>
-      </Tooltip>
+
+          {/*Amount*/}
+          <SignTxnsAssetItem
+            atomicUnitsAmount={atomicUintAmount}
+            decimals={asset.decimals}
+            displayUnit={true}
+            icon={assetIcon}
+            label={`${t<string>('labels.amount')}:`}
+            unit={asset.unitName || undefined}
+          />
+        </>
+      ) : (
+        <>
+          {/*Amount*/}
+          <Tooltip
+            aria-label="Asset amount with unrestricted decimals"
+            label={`${standardUnitAmount.toString()} ${asset.unitName || ''}`}
+          >
+            <HStack
+              alignItems="center"
+              justifyContent="center"
+              spacing={2}
+              w="full"
+            >
+              <Heading color={defaultTextColor} size="lg" textAlign="center">
+                {formatCurrencyUnit(standardUnitAmount)}
+              </Heading>
+              {assetIcon}
+              <Text color={defaultTextColor} fontSize="sm" textAlign="center">
+                {asset.unitName || asset.id}
+              </Text>
+            </HStack>
+          </Tooltip>
+
+          {/*Heading*/}
+          <Text
+            color={defaultTextColor}
+            fontSize="md"
+            textAlign="left"
+            w="full"
+          >
+            {t<string>('headings.transaction', {
+              context: parseTransactionType(transaction),
+            })}
+          </Text>
+        </>
+      )}
 
       {/* From */}
       <SignTxnsAddressItem
-        address={fromAddress}
+        address={encodeAddress(transaction.to.publicKey)}
         ariaLabel="From address"
         label={`${t<string>('labels.from')}:`}
       />
@@ -223,61 +262,19 @@ const AssetTransferTransactionContent: FC<IProps> = ({
         label={`${t<string>('labels.to')}:`}
       />
 
-      {/* Balance */}
-      <SignTxnsAssetItem
-        atomicUnitsAmount={
-          new BigNumber(
-            fromAccount.assets.find((value) => value.id === asset.id)?.amount ||
-              '0'
-          )
-        }
-        decimals={asset.decimals}
-        displayUnit={true}
-        icon={assetIcon}
-        isLoading={fetchingAccountInformation}
-        label={`${t<string>('labels.balance')}:`}
-        unit={asset.unitName || undefined}
-      />
-
-      {/* Fee */}
-      <SignTxnsAssetItem
-        atomicUnitsAmount={new BigNumber(String(transaction.fee))}
-        decimals={nativeCurrency.decimals}
-        icon={createIconFromDataUri(nativeCurrency.iconUri, {
-          color: subTextColor,
-          h: 3,
-          w: 3,
-        })}
-        label={`${t<string>('labels.fee')}:`}
-        unit={nativeCurrency.code}
-      />
-
-      {/* Asset ID */}
-      {asset.unitName && (
-        <HStack spacing={0} w="full">
-          <SignTxnsTextItem
-            flexGrow={1}
-            label={`${t<string>('labels.id')}:`}
-            value={asset.id}
-          />
-          <CopyIconButton ariaLabel={`Copy ${asset.id}`} value={asset.id} />
-          {explorer && (
-            <OpenTabIconButton
-              tooltipLabel={t<string>('captions.openOn', {
-                name: explorer.canonicalName,
-              })}
-              url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
-            />
-          )}
-        </HStack>
-      )}
-
-      {/* Note */}
-      {transaction.note && transaction.note.length > 0 && (
-        <SignTxnsTextItem
-          label={`${t<string>('labels.note')}:`}
-          value={new TextDecoder().decode(transaction.note)}
-        />
+      {condensed ? (
+        <MoreInformationAccordion
+          color={defaultTextColor}
+          fontSize="xs"
+          isOpen={condensed.expanded}
+          onChange={condensed.onChange}
+        >
+          <VStack spacing={2} w="full">
+            {renderExtraInformation(assetIcon)}
+          </VStack>
+        </MoreInformationAccordion>
+      ) : (
+        renderExtraInformation(assetIcon)
       )}
     </VStack>
   );

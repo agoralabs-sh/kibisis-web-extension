@@ -1,3 +1,6 @@
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
+
 // Types
 import { IResourceLanguage } from '@extension/types';
 
@@ -30,14 +33,16 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
     allowTestNet: 'Let TestNet networks appear in the networks list.',
-    appOnComplete: 'This transaction will create a new application.',
-    appOnComplete_0: 'This transaction will run the application.',
-    appOnComplete_1: `This transaction will opt the sender's account into the application by allocating some local state.`,
-    appOnComplete_2: `This transaction will run the application and clear any application data associated with the sender's account.`,
-    appOnComplete_3: `This transaction will clear any application data associated with the sender's account.`,
-    appOnComplete_4:
+    appOnComplete: 'This transaction will run the application.',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationClearState}`]: `This transaction will clear any application data associated with the sender's account.`,
+    [`appOnComplete_${TransactionTypeEnum.ApplicationCloseOut}`]: `This transaction will run the application and clear any application data associated with the sender's account.`,
+    [`appOnComplete_${TransactionTypeEnum.ApplicationCreate}`]:
+      'This transaction will create a new application.',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationDelete}`]:
+      'This transaction will delete the application.',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationOptIn}`]: `This transaction will opt the sender's account into the application by allocating some local state.`,
+    [`appOnComplete_${TransactionTypeEnum.ApplicationUpdate}`]:
       'This transaction will update the application, replacing the approval and clear programs. The application ID will not be changed.',
-    appOnComplete_5: 'This transaction will delete the application.',
     assetIdCopied: 'Asset ID copied!',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
@@ -145,13 +150,24 @@ const translation: IResourceLanguage = {
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     shareAddress: 'Share Address',
-    transaction: 'Transaction',
-    transaction_appCreate: 'Application Creation',
-    transaction_appDelete: 'Application Deletion',
-    transaction_appUpdate: 'Application Update',
-    transaction_appl: 'Application Interaction',
-    transaction_axfer: 'Asset Transfer Transaction',
-    transaction_pay: 'Payment Transaction',
+    transaction: 'Unknown Transaction',
+    [`transaction_${TransactionTypeEnum.ApplicationClearState}`]:
+      'Application Interaction',
+    [`transaction_${TransactionTypeEnum.ApplicationCloseOut}`]:
+      'Application Interaction',
+    [`transaction_${TransactionTypeEnum.ApplicationCreate}`]:
+      'Application Creation',
+    [`transaction_${TransactionTypeEnum.ApplicationDelete}`]:
+      'Application Deletion',
+    [`transaction_${TransactionTypeEnum.ApplicationNoOp}`]:
+      'Application Interaction',
+    [`transaction_${TransactionTypeEnum.ApplicationOptIn}`]:
+      'Application Interaction',
+    [`transaction_${TransactionTypeEnum.ApplicationUpdate}`]:
+      'Application Update',
+    [`transaction_${TransactionTypeEnum.AssetTransfer}`]:
+      'Asset Transfer Transaction',
+    [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment Transaction',
   },
   labels: {
     activity: 'Activity',
@@ -222,13 +238,18 @@ const translation: IResourceLanguage = {
     page_settings: 'Settings',
   },
   values: {
-    appOnComplete: 'Create Application',
-    appOnComplete_0: 'Application Operation',
-    appOnComplete_1: 'Application Opt-in',
-    appOnComplete_2: 'Close Out',
-    appOnComplete_3: 'Clear State',
-    appOnComplete_4: 'Update Application',
-    appOnComplete_5: 'Delete Application',
+    appOnComplete: 'Application Operation',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationClearState}`]:
+      'Clear State',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationCloseOut}`]: 'Close Out',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationCreate}`]:
+      'Create Application',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationDelete}`]:
+      'Delete Application',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationOptIn}`]:
+      'Application Opt-in',
+    [`appOnComplete_${TransactionTypeEnum.ApplicationUpdate}`]:
+      'Update Application',
   },
 };
 

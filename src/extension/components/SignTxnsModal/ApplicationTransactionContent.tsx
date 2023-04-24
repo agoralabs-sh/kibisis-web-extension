@@ -1,18 +1,22 @@
-import { Heading, HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
-import { encodeAddress, OnApplicationComplete, Transaction } from 'algosdk';
+import { HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
+import { encodeAddress, Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoInformationCircleOutline } from 'react-icons/io5';
 
 // Components
 import CopyIconButton from '@extension/components/CopyIconButton';
+import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
+
 // Hooks
-import useAccount from '@extension/hooks/useAccount';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -21,33 +25,25 @@ import { useSelectPreferredBlockExplorer } from '@extension/selectors';
 
 // Types
 import { IExplorer, INativeCurrency, INetwork } from '@extension/types';
+import { ICondensedProps } from './types';
 
 // Utils
-import {
-  computeApplicationOnComplete,
-  createIconFromDataUri,
-} from '@extension/utils';
-import { formatCurrencyUnit } from '@common/utils';
-import { IoInformationCircleOutline } from 'react-icons/io5';
+import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {
+  condensed?: ICondensedProps;
   nativeCurrency: INativeCurrency;
   network: INetwork;
   transaction: Transaction;
 }
 
 const ApplicationTransactionContent: FC<IProps> = ({
+  condensed,
   nativeCurrency,
   network,
   transaction,
 }: IProps) => {
-  const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const { t } = useTranslation();
-  const { account: fromAccount, fetching: fetchingAccountInformation } =
-    useAccount({
-      address: fromAddress,
-      network,
-    });
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
@@ -60,30 +56,72 @@ const ApplicationTransactionContent: FC<IProps> = ({
     h: 3,
     w: 3,
   });
-  const appOnComplete: OnApplicationComplete | null =
-    computeApplicationOnComplete(transaction);
-  const getHeadingContext = () => {
-    switch (appOnComplete) {
-      case OnApplicationComplete.ClearStateOC:
-      case OnApplicationComplete.CloseOutOC:
-      case OnApplicationComplete.NoOpOC:
-      case OnApplicationComplete.OptInOC:
-        return transaction.type;
-      case OnApplicationComplete.DeleteApplicationOC:
-        return 'appDelete';
-      case OnApplicationComplete.UpdateApplicationOC:
-        return 'appUpdate';
-      default:
-        return 'appCreate';
-    }
-  };
+  const transactionType: TransactionTypeEnum =
+    parseTransactionType(transaction);
+  const renderExtraInformation = () => (
+    <>
+      {/* Fee */}
+      <SignTxnsAssetItem
+        atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+        decimals={nativeCurrency.decimals}
+        icon={icon}
+        label={`${t<string>('labels.fee')}:`}
+        unit={nativeCurrency.code}
+      />
+
+      {/* Type */}
+      <HStack
+        alignItems="center"
+        justifyContent="flex-end"
+        spacing={1}
+        w="full"
+      >
+        <SignTxnsTextItem
+          label={`${t<string>('labels.type')}:`}
+          value={t<string>('values.appOnComplete', {
+            context: transactionType,
+          })}
+        />
+        <Tooltip
+          aria-label="Application description"
+          label={t<string>('captions.appOnComplete', {
+            context: transactionType,
+          })}
+        >
+          <span
+            style={{
+              height: '1em',
+              lineHeight: '1em',
+            }}
+          >
+            <Icon as={IoInformationCircleOutline} color={defaultTextColor} />
+          </span>
+        </Tooltip>
+      </HStack>
+
+      {/*Note*/}
+      {transaction.note && transaction.note.length > 0 && (
+        <SignTxnsTextItem
+          label={`${t<string>('labels.note')}:`}
+          value={new TextDecoder().decode(transaction.note)}
+        />
+      )}
+    </>
+  );
 
   return (
-    <VStack spacing={4} w="full">
-      {/*Transaction heading*/}
-      <Heading color={defaultTextColor} size="md" textAlign="center" w="full">
-        {t<string>('headings.transaction', { context: getHeadingContext() })}
-      </Heading>
+    <VStack
+      alignItems="flex-start"
+      justifyContent="flex-start"
+      spacing={condensed ? 2 : 4}
+      w="full"
+    >
+      {/*Heading*/}
+      <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
+        {t<string>('headings.transaction', {
+          context: parseTransactionType(transaction),
+        })}
+      </Text>
 
       {/*App ID*/}
       {transaction.appIndex && (
@@ -115,49 +153,19 @@ const ApplicationTransactionContent: FC<IProps> = ({
         label={`${t<string>('labels.from')}:`}
       />
 
-      {/* Fee */}
-      <SignTxnsAssetItem
-        atomicUnitsAmount={new BigNumber(String(transaction.fee))}
-        decimals={nativeCurrency.decimals}
-        icon={icon}
-        label={`${t<string>('labels.fee')}:`}
-        unit={nativeCurrency.code}
-      />
-
-      {/* Type */}
-      <HStack
-        alignItems="center"
-        justifyContent="flex-end"
-        spacing={1}
-        w="full"
-      >
-        <SignTxnsTextItem
-          label={`${t<string>('labels.type')}:`}
-          value={t<string>('values.appOnComplete', { context: appOnComplete })}
-        />
-        <Tooltip
-          aria-label="Application description"
-          label={t<string>('captions.appOnComplete', {
-            context: appOnComplete,
-          })}
+      {condensed ? (
+        <MoreInformationAccordion
+          color={defaultTextColor}
+          fontSize="xs"
+          isOpen={condensed.expanded}
+          onChange={condensed.onChange}
         >
-          <span
-            style={{
-              height: '1em',
-              lineHeight: '1em',
-            }}
-          >
-            <Icon as={IoInformationCircleOutline} color={defaultTextColor} />
-          </span>
-        </Tooltip>
-      </HStack>
-
-      {/*Note*/}
-      {transaction.note && transaction.note.length > 0 && (
-        <SignTxnsTextItem
-          label={`${t<string>('labels.note')}:`}
-          value={new TextDecoder().decode(transaction.note)}
-        />
+          <VStack spacing={2} w="full">
+            {renderExtraInformation()}
+          </VStack>
+        </MoreInformationAccordion>
+      ) : (
+        renderExtraInformation()
       )}
     </VStack>
   );

@@ -26,4 +26,5 @@ export { default as useSelectSideBar } from './useSelectSideBar';
 export { default as useSelectSignBytesRequest } from './useSelectSignBytesRequest';
 export { default as useSelectSignTxnsRequest } from './useSelectSignTxnsRequest';
 export { default as useSelectToast } from './useSelectToast';
+export { default as useSelectUpdatingAccounts } from './useSelectUpdatingAccounts';
 export { default as useSelectUpdatingAssets } from './useSelectUpdatingAssets';
