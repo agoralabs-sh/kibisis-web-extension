@@ -62,6 +62,7 @@ const translation: IResourceLanguage = {
     createPassword1: `First, let's create a new password to secure this device.`,
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
+    deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     freezeManagerAddressDoesNotMatch:
@@ -87,7 +88,7 @@ const translation: IResourceLanguage = {
     noAccountsFound:
       'You can create a new account or import an existing account.',
     noAssetsFound:
-      'You have not opt-ed into any assets. Try adding an assets now.',
+      'You have not opt-ed into any assets. Try adding an asset now.',
     noSessionsFound: 'Enabled dApps will appear here.',
     offline: 'It looks like you are offline, some features may not work',
     openOn: 'Open on {{name}}',
@@ -156,33 +157,33 @@ const translation: IResourceLanguage = {
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     shareAddress: 'Share Address',
-    transaction: 'Unknown Transaction',
+    transaction: 'Unknown Transaction 💀',
     [`transaction_${TransactionTypeEnum.ApplicationClearState}`]:
-      'Application Interaction',
+      'Application Interaction ⚙️',
     [`transaction_${TransactionTypeEnum.ApplicationCloseOut}`]:
-      'Application Interaction',
+      'Application Interaction ⚙️',
     [`transaction_${TransactionTypeEnum.ApplicationCreate}`]:
-      'Application Creation',
+      'Application Creation ✨',
     [`transaction_${TransactionTypeEnum.ApplicationDelete}`]:
-      'Application Deletion',
+      'Application Deletion 💥',
     [`transaction_${TransactionTypeEnum.ApplicationNoOp}`]:
-      'Application Interaction',
+      'Application Interaction ⚙️',
     [`transaction_${TransactionTypeEnum.ApplicationOptIn}`]:
-      'Application Opt-In',
+      'Application Opt-In 🎟️',
     [`transaction_${TransactionTypeEnum.ApplicationUpdate}`]:
-      'Application Update',
+      'Application Update 🛠️',
     [`transaction_${TransactionTypeEnum.AssetConfig}`]:
-      'Asset Re-configuration 🏗️',
+      'Asset Re-configuration 🛠️',
     [`transaction_${TransactionTypeEnum.AssetCreate}`]: 'Asset Creation ✨',
     [`transaction_${TransactionTypeEnum.AssetDestroy}`]: 'Asset Destruction 💥',
     [`transaction_${TransactionTypeEnum.AssetFreeze}`]: 'Asset Freeze 🧊',
-    [`transaction_${TransactionTypeEnum.AssetOptIn}`]: 'Asset Op-In',
+    [`transaction_${TransactionTypeEnum.AssetOptIn}`]: 'Asset Op-In 🎟️',
     [`transaction_${TransactionTypeEnum.AssetTransfer}`]: 'Asset Transfer 🪙',
-    [`transaction_${TransactionTypeEnum.AssetUnfreeze}`]: 'Asset Unfreeze',
+    [`transaction_${TransactionTypeEnum.AssetUnfreeze}`]: 'Asset Unfreeze 🚀',
     [`transaction_${TransactionTypeEnum.KeyRegistrationOffline}`]:
-      'Key Registration: Offline',
+      'Key Registration: Offline 🔑',
     [`transaction_${TransactionTypeEnum.KeyRegistrationOnline}`]:
-      'Key Registration: Online',
+      'Key Registration: Online 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
   },
   labels: {
@@ -278,7 +279,7 @@ const translation: IResourceLanguage = {
     [`appOnComplete_${TransactionTypeEnum.ApplicationDelete}`]:
       'Delete Application',
     [`appOnComplete_${TransactionTypeEnum.ApplicationOptIn}`]:
-      'Application Opt-in',
+      'Application Opt-In',
     [`appOnComplete_${TransactionTypeEnum.ApplicationUpdate}`]:
       'Update Application',
   },

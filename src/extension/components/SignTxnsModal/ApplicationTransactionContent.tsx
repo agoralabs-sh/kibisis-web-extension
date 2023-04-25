@@ -9,6 +9,7 @@ import { IoInformationCircleOutline } from 'react-icons/io5';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
+import Warning from '@extension/components/Warning';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
@@ -119,6 +120,10 @@ const ApplicationTransactionContent: FC<IProps> = ({
           context: parseTransactionType(transaction),
         })}
       </Text>
+
+      {transactionType === TransactionTypeEnum.ApplicationDelete && (
+        <Warning message={t<string>('captions.deleteApplication')} size="xs" />
+      )}
 
       {/*App ID*/}
       {transaction.appIndex && (
