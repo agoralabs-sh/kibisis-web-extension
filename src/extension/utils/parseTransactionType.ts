@@ -26,7 +26,6 @@ export default function parseTransactionType(
 ): TransactionTypeEnum {
   const encodedTransaction: EncodedTransaction =
     transaction.get_obj_for_encoding();
-  console.log('encodedTransaction: ', encodedTransaction);
 
   // asset config
   if (transaction.type === 'acfg') {
@@ -97,7 +96,7 @@ export default function parseTransactionType(
     if (sender) {
       if (
         !sender.assets.find(
-          (value) => value.id === String(encodedTransaction.apid)
+          (value) => value.id === String(encodedTransaction.xaid)
         ) && // if the sender does not hold the asset
         (!transaction.amount || transaction.amount <= 0) && // if there is no amount, or the amount is zero (any amount will be a transfer, albeit a failed transfer)
         encodeAddress(transaction.from.publicKey) === sender.address &&

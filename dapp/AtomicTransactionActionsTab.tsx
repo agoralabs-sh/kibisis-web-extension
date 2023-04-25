@@ -10,6 +10,7 @@ import {
   CheckboxGroup,
   Code,
   CreateToastFnReturn,
+  Divider,
   HStack,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -40,6 +41,7 @@ import {
   computeGroupID,
   decodeSignedTransaction,
   encodeUnsignedTransaction,
+  OnApplicationComplete,
   SignedTransaction,
   Transaction,
 } from 'algosdk';
@@ -62,6 +64,7 @@ import {
   formatCurrencyUnit,
 } from '@common/utils';
 import {
+  createAppCallTransaction,
   createAssetTransferTransaction,
   createPaymentTransaction,
 } from './utils';
@@ -83,6 +86,8 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
 }: IProps) => {
   const [assetValues, setAssetValues] = useState<IAssetValue[]>([]);
   const [groupId, setGroupId] = useState<string>('N/A');
+  const [includeApplicationCall, setIncludeApplicationCall] =
+    useState<boolean>(false);
   const [signedTransactions, setSignedTransactions] = useState<
     (SignedTransaction | null)[]
   >([]);
@@ -106,19 +111,20 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
       })
     );
   };
-  const handleAssetCheckChange =
-    (assetId: string) => (event: ChangeEvent<HTMLInputElement>) => {
-      setAssetValues(
-        assetValues.map((value) =>
-          value.id === assetId
-            ? {
-                ...value,
-                isChecked: event.target.checked,
-              }
-            : value
-        )
-      );
-    };
+  const handleAssetCheckChange = (assetId: string) => () => {
+    setAssetValues(
+      assetValues.map((value) =>
+        value.id === assetId
+          ? {
+              ...value,
+              isChecked: !value.isChecked,
+            }
+          : value
+      )
+    );
+  };
+  const handleIncludeApplicationCallCheckChange = () =>
+    setIncludeApplicationCall(!includeApplicationCall);
   const handleSignAtomicTransactionsClick = async () => {
     const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
     let assetValue: IAssetValue;
@@ -187,6 +193,17 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
         );
       }
 
+      if (includeApplicationCall) {
+        unsignedTransactions.push(
+          await createAppCallTransaction({
+            from: account.address,
+            network,
+            note: null,
+            type: OnApplicationComplete.NoOpOC,
+          })
+        );
+      }
+
       computedGroupId = encodeBase64(computeGroupID(unsignedTransactions));
       unsignedTransactions = assignGroupID(unsignedTransactions);
       result = await algorand.signTxns({
@@ -238,6 +255,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
           isChecked: false,
         })),
       ]);
+      setIncludeApplicationCall(true);
     }
   }, [account, network]);
 
@@ -279,15 +297,16 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
           </Table>
         </TableContainer>
 
-        {/*Assets*/}
-        {assetValues.length > 0 ? (
-          <CheckboxGroup>
-            <Stack spacing={4} w="full">
-              {assetValues.map((value) => (
+        <CheckboxGroup>
+          <Stack spacing={4} w="full">
+            {/*assets*/}
+            {assetValues.length > 0 ? (
+              assetValues.map((value) => (
                 <HStack key={nanoid()} spacing={2} w="full">
-                  {/*Asset ID/name*/}
+                  {/*asset iD/name*/}
                   <HStack>
                     <Checkbox
+                      isChecked={value.isChecked}
                       onChange={handleAssetCheckChange(value.id)}
                       size="lg"
                       value={value.id}
@@ -299,7 +318,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
                     </Tooltip>
                   </HStack>
 
-                  {/*Balance*/}
+                  {/*balance*/}
                   <Tooltip
                     label={`${convertToStandardUnit(
                       value.balance,
@@ -316,7 +335,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
                     </HStack>
                   </Tooltip>
 
-                  {/*Amount*/}
+                  {/*amount*/}
                   <NumberInput
                     flexGrow={1}
                     isDisabled={!value.isChecked}
@@ -343,23 +362,36 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
                     </NumberInputStepper>
                   </NumberInput>
                 </HStack>
-              ))}
-            </Stack>
-          </CheckboxGroup>
-        ) : (
-          <VStack
-            alignItems="center"
-            justifyContent="center"
-            minH={150}
-            w="full"
-          >
-            <Text size="sm" textAlign="center">
-              No assets found!
-            </Text>
-          </VStack>
-        )}
+              ))
+            ) : (
+              <VStack
+                alignItems="center"
+                justifyContent="center"
+                minH={150}
+                w="full"
+              >
+                <Text size="sm" textAlign="center">
+                  No assets found!
+                </Text>
+              </VStack>
+            )}
 
-        {/*Send atomic transactions button*/}
+            <Divider />
+
+            {/*application calls*/}
+            <HStack>
+              <Checkbox
+                isChecked={includeApplicationCall}
+                isDisabled={!account}
+                onChange={handleIncludeApplicationCallCheckChange}
+                size="lg"
+              />
+              <Text size="md">Include application call?</Text>
+            </HStack>
+          </Stack>
+        </CheckboxGroup>
+
+        {/*send atomic transactions button*/}
         <VStack justifyContent="center" spacing={3} w="full">
           <Button
             borderRadius={theme.radii['3xl']}
