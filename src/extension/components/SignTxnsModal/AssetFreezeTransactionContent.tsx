@@ -1,0 +1,315 @@
+import { HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
+import { encodeAddress, Transaction } from 'algosdk';
+import BigNumber from 'bignumber.js';
+import React, { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { IoWarningOutline } from 'react-icons/io5';
+
+// Components
+import AssetAvatar from '@extension/components/AssetAvatar';
+import AssetIcon from '@extension/components/AssetIcon';
+import CopyIconButton from '@extension/components/CopyIconButton';
+import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
+import OpenTabIconButton from '@extension/components/OpenTabIconButton';
+import SignTxnsAddressItem from './SignTxnsAddressItem';
+import SignTxnsAssetItem from './SignTxnsAssetItem';
+import SignTxnsLoadingItem from './SignTxnsLoadingItem';
+import SignTxnsTextItem from './SignTxnsTextItem';
+
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
+
+// Features
+import { updateAccountInformation } from '@extension/features/accounts';
+
+// Hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
+
+// Selectors
+import {
+  useSelectAccounts,
+  useSelectLogger,
+  useSelectPreferredBlockExplorer,
+} from '@extension/selectors';
+
+// Types
+import { ILogger } from '@common/types';
+import {
+  IAccount,
+  IAsset,
+  IAssetHolding,
+  IExplorer,
+  INetwork,
+} from '@extension/types';
+import { ICondensedProps } from './types';
+
+// Utils
+import {
+  createIconFromDataUri,
+  initializeDefaultAccount,
+  parseTransactionType,
+} from '@extension/utils';
+
+interface IProps {
+  asset: IAsset | null;
+  condensed?: ICondensedProps;
+  fromAccount: IAccount | null;
+  loading?: boolean;
+  network: INetwork;
+  transaction: Transaction;
+}
+
+const AssetFreezeTransactionContent: FC<IProps> = ({
+  asset,
+  condensed,
+  fromAccount,
+  loading = false,
+  network,
+  transaction,
+}: IProps) => {
+  const { t } = useTranslation();
+  const defaultTextColor: string = useDefaultTextColor();
+  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
+  const subTextColor: string = useSubTextColor();
+  const accounts: IAccount[] = useSelectAccounts();
+  const logger: ILogger = useSelectLogger();
+  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const [
+    fetchingFreezeAccountInformation,
+    setFetchingFreezeAccountInformation,
+  ] = useState<boolean>(false);
+  const [freezeAccount, setFreezeAccount] = useState<IAccount | null>(null);
+  const [atomicUnitFreezeAccountBalance, setAtomicUnitFreezeAccountBalance] =
+    useState<BigNumber>(new BigNumber('0'));
+  const freezeAddress: string | null = transaction.assetFreeze
+    ? encodeAddress(transaction.assetFreeze.publicKey)
+    : null;
+  const fromAddress: string = encodeAddress(transaction.from.publicKey);
+  const explorer: IExplorer | null =
+    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
+    network.explorers[0] ||
+    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
+  const transactionType: TransactionTypeEnum = parseTransactionType(
+    transaction,
+    fromAccount || undefined
+  );
+  const renderExtraInformation = () => {
+    if (!asset) {
+      return null;
+    }
+
+    return (
+      <>
+        {/* Freeze account balance */}
+        <SignTxnsAssetItem
+          atomicUnitsAmount={atomicUnitFreezeAccountBalance}
+          decimals={asset.decimals}
+          displayUnit={true}
+          icon={
+            <AssetAvatar
+              asset={asset}
+              fallbackIcon={
+                <AssetIcon
+                  color={primaryButtonTextColor}
+                  networkTheme={network.chakraTheme}
+                  h={3}
+                  w={3}
+                />
+              }
+              size="2xs"
+            />
+          }
+          isLoading={loading || fetchingFreezeAccountInformation}
+          label={`${t<string>('labels.freezeAccountBalance')}:`}
+          unit={asset.unitName || undefined}
+        />
+
+        {/* Fee */}
+        <SignTxnsAssetItem
+          atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+          decimals={network.nativeCurrency.decimals}
+          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+            color: subTextColor,
+            h: 3,
+            w: 3,
+          })}
+          label={`${t<string>('labels.fee')}:`}
+          unit={network.nativeCurrency.code}
+        />
+
+        {/* Note */}
+        {transaction.note && transaction.note.length > 0 && (
+          <SignTxnsTextItem
+            label={`${t<string>('labels.note')}:`}
+            value={new TextDecoder().decode(transaction.note)}
+          />
+        )}
+      </>
+    );
+  };
+
+  // fetch the account information for the freeze account
+  useEffect(() => {
+    (async () => {
+      let account: IAccount | null;
+
+      if (!freezeAddress) {
+        return;
+      }
+
+      account =
+        accounts.find((value) => value.address === freezeAddress) || null;
+
+      // if we have this account, just use ut
+      if (account) {
+        setFreezeAccount(account);
+
+        return;
+      }
+
+      setFetchingFreezeAccountInformation(true);
+
+      account = initializeDefaultAccount({
+        address: freezeAddress,
+        genesisHash: network.genesisHash,
+      });
+
+      account = await updateAccountInformation(account, {
+        logger,
+        network,
+      });
+
+      setFreezeAccount(account);
+      setFetchingFreezeAccountInformation(false);
+    })();
+  }, []);
+  // once we have the freeze account information, check the asset balance
+  useEffect(() => {
+    let assetHolding: IAssetHolding | null;
+
+    if (asset && freezeAccount) {
+      assetHolding =
+        freezeAccount.assets.find((value) => value.id === asset.id) || null;
+
+      if (assetHolding) {
+        setAtomicUnitFreezeAccountBalance(new BigNumber(assetHolding.amount));
+      }
+    }
+  }, [asset, freezeAccount]);
+
+  if (loading || !asset || !fromAccount) {
+    return (
+      <VStack
+        alignItems="flex-start"
+        justifyContent="flex-start"
+        spacing={2}
+        w="full"
+      >
+        <SignTxnsLoadingItem />
+        <SignTxnsLoadingItem />
+        <SignTxnsLoadingItem />
+      </VStack>
+    );
+  }
+
+  return (
+    <VStack
+      alignItems="flex-start"
+      justifyContent="flex-start"
+      spacing={condensed ? 2 : 4}
+      w="full"
+    >
+      {/*Heading*/}
+      <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
+        {t<string>('headings.transaction', {
+          context: transactionType,
+        })}
+      </Text>
+
+      {/* Asset ID */}
+      <HStack spacing={0} w="full">
+        <SignTxnsTextItem
+          flexGrow={1}
+          label={`${t<string>('labels.id')}:`}
+          value={asset.id}
+        />
+        <CopyIconButton ariaLabel={`Copy ${asset.id}`} value={asset.id} />
+        {explorer && (
+          <OpenTabIconButton
+            tooltipLabel={t<string>('captions.openOn', {
+              name: explorer.canonicalName,
+            })}
+            url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+          />
+        )}
+      </HStack>
+
+      {/*Authorizer*/}
+      {fromAddress === encodeAddress(transaction.assetFreeze.publicKey) ? (
+        <SignTxnsAddressItem
+          address={fromAddress}
+          ariaLabel="Authorizer address (from)"
+          label={`${t<string>('labels.authorizer')}:`}
+        />
+      ) : (
+        <HStack
+          alignItems="center"
+          justifyContent="flex-end"
+          spacing={1}
+          w="full"
+        >
+          <SignTxnsAddressItem
+            address={fromAddress}
+            ariaLabel="Authorizer address (from)"
+            label={`${t<string>('labels.authorizer')}:`}
+          />
+          <Tooltip
+            aria-label="Authorizer address does not match the freeze address"
+            label={t<string>('captions.freezeAddressDoesNotMatch')}
+          >
+            <span
+              style={{
+                height: '1em',
+                lineHeight: '1em',
+              }}
+            >
+              <Icon as={IoWarningOutline} color="yellow.500" />
+            </span>
+          </Tooltip>
+        </HStack>
+      )}
+
+      {/* Freeze/unfreeze account */}
+      {freezeAddress && (
+        <SignTxnsAddressItem
+          address={freezeAddress}
+          ariaLabel="Asset freeze address"
+          label={`${t<string>(
+            transactionType === TransactionTypeEnum.AssetFreeze
+              ? 'labels.freezeAccount'
+              : 'labels.unfreezeAccount'
+          )}:`}
+        />
+      )}
+
+      {condensed ? (
+        <MoreInformationAccordion
+          color={defaultTextColor}
+          fontSize="xs"
+          isOpen={condensed.expanded}
+          onChange={condensed.onChange}
+        >
+          <VStack spacing={2} w="full">
+            {renderExtraInformation()}
+          </VStack>
+        </MoreInformationAccordion>
+      ) : (
+        renderExtraInformation()
+      )}
+    </VStack>
+  );
+};
+
+export default AssetFreezeTransactionContent;

@@ -6,6 +6,8 @@ import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Components
+import ApplicationTransactionContent from '@extension/components/SignTxnsModal/ApplicationTransactionContent';
+import AssetFreezeTransactionContent from '@extension/components/SignTxnsModal/AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 import SignTxnsTextItem from './SignTxnsTextItem';
@@ -17,16 +19,14 @@ import useBorderColor from '@extension/hooks/useBorderColor';
 import { useSelectAssetsByGenesisHash } from '@extension/selectors';
 
 // Types
-import { IAccount, IAsset, INativeCurrency, INetwork } from '@extension/types';
+import { IAccount, IAsset, INetwork } from '@extension/types';
 
 // Utils
 import { computeGroupId } from '@common/utils';
-import ApplicationTransactionContent from '@extension/components/SignTxnsModal/ApplicationTransactionContent';
 
 interface IProps {
   fromAccounts: IAccount[];
   loading?: boolean;
-  nativeCurrency: INativeCurrency;
   network: INetwork;
   transactions: Transaction[];
 }
@@ -34,7 +34,6 @@ interface IProps {
 const MultipleTransactionsContent: FC<IProps> = ({
   fromAccounts,
   loading = false,
-  nativeCurrency,
   network,
   transactions,
 }: IProps) => {
@@ -56,7 +55,24 @@ const MultipleTransactionsContent: FC<IProps> = ({
     transaction: Transaction,
     transactionIndex: number
   ) => {
+    const asset: IAsset | null =
+      assets.find((value) => value.id === String(transaction.assetIndex)) ||
+      null;
+
     switch (transaction.type) {
+      case 'afrz':
+        return (
+          <AssetFreezeTransactionContent
+            asset={asset}
+            condensed={{
+              expanded: openAccordions[transactionIndex],
+              onChange: handleToggleAccordion(transactionIndex),
+            }}
+            fromAccount={fromAccounts[transactionIndex] || null}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case 'appl':
         return (
           <ApplicationTransactionContent
@@ -64,7 +80,6 @@ const MultipleTransactionsContent: FC<IProps> = ({
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            nativeCurrency={network.nativeCurrency}
             network={network}
             transaction={transaction}
           />
@@ -72,18 +87,13 @@ const MultipleTransactionsContent: FC<IProps> = ({
       case 'axfer':
         return (
           <AssetTransferTransactionContent
-            asset={
-              assets.find(
-                (value) => value.id === String(transaction.assetIndex)
-              ) || null
-            }
+            asset={asset}
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
             fromAccount={fromAccounts[transactionIndex] || null}
             loading={loading}
-            nativeCurrency={network.nativeCurrency}
             network={network}
             transaction={transaction}
           />
@@ -97,7 +107,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
               onChange: handleToggleAccordion(transactionIndex),
             }}
             loading={loading}
-            nativeCurrency={nativeCurrency}
+            nativeCurrency={network.nativeCurrency}
             transaction={transaction}
           />
         );

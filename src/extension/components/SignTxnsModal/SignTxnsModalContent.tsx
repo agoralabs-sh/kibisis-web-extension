@@ -34,6 +34,7 @@ import {
 
 // Utils
 import { initializeDefaultAccount } from '@extension/utils';
+import AssetFreezeTransactionContent from '@extension/components/SignTxnsModal/AssetFreezeTransactionContent';
 
 interface IProps {
   network: INetwork;
@@ -53,6 +54,8 @@ const SignTxnsModalContent: FC<IProps> = ({
   const [fetchingAccountInformation, setFetchingAccountInformation] =
     useState<boolean>(false);
   const [fromAccounts, setFromAccounts] = useState<IAccount[]>([]);
+  let singleTransactionAsset: IAsset | null;
+  let singleTransaction: Transaction | null;
 
   // fetch unknown asset information
   useEffect(() => {
@@ -118,54 +121,61 @@ const SignTxnsModalContent: FC<IProps> = ({
         loading={
           fetchingAccountInformation || updatingAccounts || updatingAssets
         }
-        nativeCurrency={network.nativeCurrency}
         network={network}
         transactions={transactions}
       />
     );
   }
 
-  // single payment transaction
-  if (transactions[0].type === 'pay') {
-    return (
-      <PaymentTransactionContent
-        fromAccount={fromAccounts[0] || null}
-        loading={fetchingAccountInformation || updatingAccounts}
-        nativeCurrency={network.nativeCurrency}
-        transaction={transactions[0]}
-      />
-    );
-  }
+  singleTransaction = transactions[0];
 
-  // single asset transfer
-  if (transactions[0].type === 'axfer') {
-    return (
-      <AssetTransferTransactionContent
-        asset={
-          assets.find(
-            (value) => value.id === String(transactions[0].assetIndex)
-          ) || null
-        }
-        fromAccount={fromAccounts[0] || null}
-        loading={
-          fetchingAccountInformation || updatingAccounts || updatingAssets
-        }
-        nativeCurrency={network.nativeCurrency}
-        network={network}
-        transaction={transactions[0]}
-      />
-    );
-  }
+  if (singleTransaction) {
+    singleTransactionAsset =
+      assets.find(
+        (value) => value.id === String(singleTransaction?.assetIndex)
+      ) || null;
 
-  // single app call
-  if (transactions[0].type === 'appl') {
-    return (
-      <ApplicationTransactionContent
-        nativeCurrency={network.nativeCurrency}
-        network={network}
-        transaction={transactions[0]}
-      />
-    );
+    switch (singleTransaction.type) {
+      case 'afrz':
+        return (
+          <AssetFreezeTransactionContent
+            asset={singleTransactionAsset}
+            fromAccount={fromAccounts[0] || null}
+            network={network}
+            transaction={singleTransaction}
+          />
+        );
+      case 'appl':
+        return (
+          <ApplicationTransactionContent
+            network={network}
+            transaction={singleTransaction}
+          />
+        );
+      case 'axfer':
+        return (
+          <AssetTransferTransactionContent
+            asset={singleTransactionAsset}
+            fromAccount={fromAccounts[0] || null}
+            loading={
+              fetchingAccountInformation || updatingAccounts || updatingAssets
+            }
+            network={network}
+            transaction={singleTransaction}
+          />
+        );
+      case 'pay':
+        return (
+          <PaymentTransactionContent
+            fromAccount={fromAccounts[0] || null}
+            loading={fetchingAccountInformation || updatingAccounts}
+            nativeCurrency={network.nativeCurrency}
+            transaction={singleTransaction}
+          />
+        );
+      default:
+        break;
+    }
   }
 
   return null;

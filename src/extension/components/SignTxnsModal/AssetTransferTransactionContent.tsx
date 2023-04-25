@@ -31,13 +31,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectPreferredBlockExplorer } from '@extension/selectors';
 
 // Types
-import {
-  IAccount,
-  IAsset,
-  IExplorer,
-  INativeCurrency,
-  INetwork,
-} from '@extension/types';
+import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
 // Utils
@@ -49,7 +43,6 @@ interface IProps {
   condensed?: ICondensedProps;
   fromAccount: IAccount | null;
   loading?: boolean;
-  nativeCurrency: INativeCurrency;
   network: INetwork;
   transaction: Transaction;
 }
@@ -59,7 +52,6 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   condensed,
   fromAccount,
   loading = false,
-  nativeCurrency,
   network,
   transaction,
 }: IProps) => {
@@ -99,35 +91,33 @@ const AssetTransferTransactionContent: FC<IProps> = ({
         {/* Fee */}
         <SignTxnsAssetItem
           atomicUnitsAmount={new BigNumber(String(transaction.fee))}
-          decimals={nativeCurrency.decimals}
-          icon={createIconFromDataUri(nativeCurrency.iconUri, {
+          decimals={network.nativeCurrency.decimals}
+          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
             color: subTextColor,
             h: 3,
             w: 3,
           })}
           label={`${t<string>('labels.fee')}:`}
-          unit={nativeCurrency.code}
+          unit={network.nativeCurrency.code}
         />
 
         {/* Asset ID */}
-        {asset.unitName && (
-          <HStack spacing={0} w="full">
-            <SignTxnsTextItem
-              flexGrow={1}
-              label={`${t<string>('labels.id')}:`}
-              value={asset.id}
+        <HStack spacing={0} w="full">
+          <SignTxnsTextItem
+            flexGrow={1}
+            label={`${t<string>('labels.id')}:`}
+            value={asset.id}
+          />
+          <CopyIconButton ariaLabel={`Copy ${asset.id}`} value={asset.id} />
+          {explorer && (
+            <OpenTabIconButton
+              tooltipLabel={t<string>('captions.openOn', {
+                name: explorer.canonicalName,
+              })}
+              url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
             />
-            <CopyIconButton ariaLabel={`Copy ${asset.id}`} value={asset.id} />
-            {explorer && (
-              <OpenTabIconButton
-                tooltipLabel={t<string>('captions.openOn', {
-                  name: explorer.canonicalName,
-                })}
-                url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
-              />
-            )}
-          </HStack>
-        )}
+          )}
+        </HStack>
 
         {/* Note */}
         {transaction.note && transaction.note.length > 0 && (
@@ -197,7 +187,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             w="full"
           >
             {t<string>('headings.transaction', {
-              context: parseTransactionType(transaction),
+              context: parseTransactionType(transaction, fromAccount),
             })}
           </Text>
 
@@ -250,7 +240,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
       {/* From */}
       <SignTxnsAddressItem
-        address={encodeAddress(transaction.to.publicKey)}
+        address={encodeAddress(transaction.from.publicKey)}
         ariaLabel="From address"
         label={`${t<string>('labels.from')}:`}
       />

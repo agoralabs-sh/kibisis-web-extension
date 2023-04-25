@@ -24,7 +24,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectPreferredBlockExplorer } from '@extension/selectors';
 
 // Types
-import { IExplorer, INativeCurrency, INetwork } from '@extension/types';
+import { IExplorer, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
 // Utils
@@ -32,14 +32,12 @@ import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {
   condensed?: ICondensedProps;
-  nativeCurrency: INativeCurrency;
   network: INetwork;
   transaction: Transaction;
 }
 
 const ApplicationTransactionContent: FC<IProps> = ({
   condensed,
-  nativeCurrency,
   network,
   transaction,
 }: IProps) => {
@@ -51,11 +49,14 @@ const ApplicationTransactionContent: FC<IProps> = ({
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  const icon: ReactNode = createIconFromDataUri(nativeCurrency.iconUri, {
-    color: subTextColor,
-    h: 3,
-    w: 3,
-  });
+  const icon: ReactNode = createIconFromDataUri(
+    network.nativeCurrency.iconUri,
+    {
+      color: subTextColor,
+      h: 3,
+      w: 3,
+    }
+  );
   const transactionType: TransactionTypeEnum =
     parseTransactionType(transaction);
   const renderExtraInformation = () => (
@@ -63,10 +64,10 @@ const ApplicationTransactionContent: FC<IProps> = ({
       {/* Fee */}
       <SignTxnsAssetItem
         atomicUnitsAmount={new BigNumber(String(transaction.fee))}
-        decimals={nativeCurrency.decimals}
+        decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
-        unit={nativeCurrency.code}
+        unit={network.nativeCurrency.code}
       />
 
       {/* Type */}
