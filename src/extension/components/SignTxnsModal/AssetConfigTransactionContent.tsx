@@ -1,7 +1,7 @@
 import { HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
 import { encodeAddress, Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoWarningOutline } from 'react-icons/io5';
 
@@ -13,40 +13,25 @@ import MoreInformationAccordion from '@extension/components/MoreInformationAccor
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
+import SignTxnsChangeAddressItem from './SignTxnsChangeAddressItem';
 import SignTxnsLoadingItem from './SignTxnsLoadingItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
 // Enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Features
-import { updateAccountInformation } from '@extension/features/accounts';
-
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
-import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
-
 // Types
-import { ILogger } from '@common/types';
-import {
-  IAccount,
-  IAsset,
-  IAssetHolding,
-  IExplorer,
-  INetwork,
-} from '@extension/types';
+import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
 // Utils
-import {
-  createIconFromDataUri,
-  initializeDefaultAccount,
-  parseTransactionType,
-} from '@extension/utils';
+import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
+import Warning from '@extension/components/Warning';
 
 interface IProps {
   asset: IAsset | null;
@@ -58,7 +43,7 @@ interface IProps {
   transaction: Transaction;
 }
 
-const AssetFreezeTransactionContent: FC<IProps> = ({
+const AssetConfigTransactionContent: FC<IProps> = ({
   asset,
   condensed,
   explorer,
@@ -71,58 +56,18 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
-  const accounts: IAccount[] = useSelectAccounts();
-  const logger: ILogger = useSelectLogger();
-  const [
-    fetchingFreezeAccountInformation,
-    setFetchingFreezeAccountInformation,
-  ] = useState<boolean>(false);
-  const [freezeAccount, setFreezeAccount] = useState<IAccount | null>(null);
-  const [atomicUnitFreezeAccountBalance, setAtomicUnitFreezeAccountBalance] =
-    useState<BigNumber>(new BigNumber('0'));
-  const freezeAddress: string | null = transaction.freezeAccount
-    ? encodeAddress(transaction.freezeAccount.publicKey)
-    : null;
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction,
     fromAccount || undefined
   );
-  const renderExtraInformation = () => {
+  const renderExtraInformation = (icon: ReactNode) => {
     if (!asset) {
       return null;
     }
 
     return (
       <>
-        {/*freeze account balance*/}
-        <SignTxnsAssetItem
-          atomicUnitsAmount={atomicUnitFreezeAccountBalance}
-          decimals={asset.decimals}
-          displayUnit={true}
-          icon={
-            <AssetAvatar
-              asset={asset}
-              fallbackIcon={
-                <AssetIcon
-                  color={primaryButtonTextColor}
-                  networkTheme={network.chakraTheme}
-                  h={3}
-                  w={3}
-                />
-              }
-              size="2xs"
-            />
-          }
-          isLoading={loading || fetchingFreezeAccountInformation}
-          label={`${t<string>(
-            transactionType === TransactionTypeEnum.AssetFreeze
-              ? 'labels.freezeAccountBalance'
-              : 'labels.frozenAccountBalance'
-          )}:`}
-          unit={asset.unitName || undefined}
-        />
-
         {/*fee*/}
         <SignTxnsAssetItem
           atomicUnitsAmount={new BigNumber(String(transaction.fee))}
@@ -136,9 +81,73 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
           unit={network.nativeCurrency.code}
         />
 
+        {transactionType === TransactionTypeEnum.AssetConfig && (
+          <>
+            {/*clawback address*/}
+            {transaction.assetClawback && asset.clawbackAddress && (
+              <SignTxnsChangeAddressItem
+                ariaLabel="The current and new clawback addresses"
+                currentAddress={asset.clawbackAddress}
+                explorer={explorer}
+                label={`${t<string>('labels.clawbackAccount')}:`}
+                newAddress={encodeAddress(transaction.assetClawback.publicKey)}
+              />
+            )}
+
+            {/*freeze address*/}
+            {transaction.assetFreeze && asset.freezeAddress && (
+              <SignTxnsChangeAddressItem
+                ariaLabel="The current and new freeze addresses"
+                currentAddress={asset.freezeAddress}
+                explorer={explorer}
+                label={`${t<string>('labels.freezeAccount')}:`}
+                newAddress={encodeAddress(transaction.assetFreeze.publicKey)}
+              />
+            )}
+
+            {/*manager address*/}
+            {transaction.assetManager && asset.managerAddress && (
+              <SignTxnsChangeAddressItem
+                ariaLabel="The current and new manager addresses"
+                currentAddress={asset.managerAddress}
+                explorer={explorer}
+                label={`${t<string>('labels.managerAccount')}:`}
+                newAddress={encodeAddress(transaction.assetManager.publicKey)}
+              />
+            )}
+
+            {/*reserve address*/}
+            {transaction.assetReserve && asset.reserveAddress && (
+              <SignTxnsChangeAddressItem
+                ariaLabel="The current and new reserve addresses"
+                currentAddress={asset.reserveAddress}
+                explorer={explorer}
+                label={`${t<string>('labels.reserveAccount')}:`}
+                newAddress={encodeAddress(transaction.assetReserve.publicKey)}
+              />
+            )}
+          </>
+        )}
+
+        {transactionType === TransactionTypeEnum.AssetDestroy && (
+          <>
+            {/*total supply*/}
+            <SignTxnsAssetItem
+              atomicUnitsAmount={new BigNumber(asset.total)}
+              decimals={asset.decimals}
+              displayUnit={true}
+              icon={icon}
+              isLoading={loading}
+              label={`${t<string>('labels.totalSupply')}:`}
+              unit={asset.unitName || undefined}
+            />
+          </>
+        )}
+
         {/*note*/}
         {transaction.note && transaction.note.length > 0 && (
           <SignTxnsTextItem
+            isCode={true}
             label={`${t<string>('labels.note')}:`}
             value={new TextDecoder().decode(transaction.note)}
           />
@@ -146,57 +155,9 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       </>
     );
   };
+  let assetIcon: ReactNode;
 
-  // fetch the account information for the freeze account
-  useEffect(() => {
-    (async () => {
-      let account: IAccount | null;
-
-      if (!freezeAddress) {
-        return;
-      }
-
-      account =
-        accounts.find((value) => value.address === freezeAddress) || null;
-
-      // if we have this account, just use ut
-      if (account) {
-        setFreezeAccount(account);
-
-        return;
-      }
-
-      setFetchingFreezeAccountInformation(true);
-
-      account = initializeDefaultAccount({
-        address: freezeAddress,
-        genesisHash: network.genesisHash,
-      });
-
-      account = await updateAccountInformation(account, {
-        logger,
-        network,
-      });
-
-      setFreezeAccount(account);
-      setFetchingFreezeAccountInformation(false);
-    })();
-  }, []);
-  // once we have the freeze account information, check the asset balance
-  useEffect(() => {
-    let assetHolding: IAssetHolding | null;
-
-    if (asset && freezeAccount) {
-      assetHolding =
-        freezeAccount.assets.find((value) => value.id === asset.id) || null;
-
-      if (assetHolding) {
-        setAtomicUnitFreezeAccountBalance(new BigNumber(assetHolding.amount));
-      }
-    }
-  }, [asset, freezeAccount]);
-
-  if (loading || !asset || !fromAccount) {
+  if (loading || !fromAccount || !asset) {
     return (
       <VStack
         alignItems="flex-start"
@@ -211,6 +172,21 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
     );
   }
 
+  assetIcon = (
+    <AssetAvatar
+      asset={asset}
+      fallbackIcon={
+        <AssetIcon
+          color={primaryButtonTextColor}
+          networkTheme={network.chakraTheme}
+          h={3}
+          w={3}
+        />
+      }
+      size="2xs"
+    />
+  );
+
   return (
     <VStack
       alignItems="flex-start"
@@ -218,14 +194,26 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       spacing={condensed ? 2 : 4}
       w="full"
     >
-      {/*Heading*/}
+      {/*heading*/}
       <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
         {t<string>('headings.transaction', {
           context: transactionType,
         })}
       </Text>
 
-      {/* Asset ID */}
+      {transactionType === TransactionTypeEnum.AssetDestroy && (
+        <Warning message={t<string>('captions.destroyAsset')} size="xs" />
+      )}
+
+      {/*asset name*/}
+      {asset.name && (
+        <SignTxnsTextItem
+          label={`${t<string>('labels.name')}:`}
+          value={asset.name}
+        />
+      )}
+
+      {/*asset id*/}
       <HStack spacing={0} w="full">
         <SignTxnsTextItem
           flexGrow={1}
@@ -249,8 +237,8 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
         )}
       </HStack>
 
-      {/*freeze manager*/}
-      {fromAddress !== asset.freezeAddress ? (
+      {/*manager*/}
+      {fromAddress !== asset.managerAddress ? (
         <HStack
           alignItems="center"
           justifyContent="flex-end"
@@ -259,13 +247,13 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
         >
           <SignTxnsAddressItem
             address={fromAddress}
-            ariaLabel="Freeze manager address (from)"
-            label={`${t<string>('labels.freezeManagerAccount')}:`}
+            ariaLabel="Manager address (from)"
+            label={`${t<string>('labels.managerAccount')}:`}
             network={network}
           />
           <Tooltip
-            aria-label="Freeze manager address does not match the asset's freeze manager address"
-            label={t<string>('captions.freezeManagerAddressDoesNotMatch')}
+            aria-label="Manager address does not match the asset's manager address"
+            label={t<string>('captions.managerAddressDoesNotMatch')}
           >
             <span
               style={{
@@ -280,22 +268,8 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       ) : (
         <SignTxnsAddressItem
           address={fromAddress}
-          ariaLabel="Freeze manager address (from)"
-          label={`${t<string>('labels.freezeManagerAccount')}:`}
-          network={network}
-        />
-      )}
-
-      {/*freeze/unfreeze account*/}
-      {freezeAddress && (
-        <SignTxnsAddressItem
-          address={freezeAddress}
-          ariaLabel="Asset freeze address"
-          label={`${t<string>(
-            transactionType === TransactionTypeEnum.AssetFreeze
-              ? 'labels.accountToFreeze'
-              : 'labels.accountToUnfreeze'
-          )}:`}
+          ariaLabel="Manager address (from)"
+          label={`${t<string>('labels.managerAccount')}:`}
           network={network}
         />
       )}
@@ -308,14 +282,14 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
           onChange={condensed.onChange}
         >
           <VStack spacing={2} w="full">
-            {renderExtraInformation()}
+            {renderExtraInformation(assetIcon)}
           </VStack>
         </MoreInformationAccordion>
       ) : (
-        renderExtraInformation()
+        renderExtraInformation(assetIcon)
       )}
     </VStack>
   );
 };
 
-export default AssetFreezeTransactionContent;
+export default AssetConfigTransactionContent;

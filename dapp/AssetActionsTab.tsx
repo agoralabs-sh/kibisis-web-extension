@@ -33,13 +33,15 @@ import { encode as encodeHex } from '@stablelib/hex';
 import {
   decodeSignedTransaction,
   encodeUnsignedTransaction,
-  OnApplicationComplete,
   SignedTransaction,
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
 
 // Theme
 import { theme } from '@extension/theme';
@@ -52,8 +54,11 @@ import { IAccountInformation, IAssetInformation } from './types';
 // Utils
 import { convertToAtomicUnit, convertToStandardUnit } from '@common/utils';
 import {
+  createAssetConfigTransaction,
+  createAssetCreateTransaction,
+  createAssetDestroyTransaction,
+  createAssetFreezeTransaction,
   createAssetTransferTransaction,
-  createPaymentTransaction,
 } from './utils';
 
 interface IProps {
@@ -62,7 +67,7 @@ interface IProps {
   toast: CreateToastFnReturn;
 }
 
-const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
+const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   const [amount, setAmount] = useState<BigNumber>(new BigNumber('0'));
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
@@ -84,7 +89,7 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
     );
   };
   const handleSignTransactionClick =
-    (type: string | OnApplicationComplete) => async () => {
+    (type: TransactionTypeEnum) => async () => {
       const algorand: AlgorandProvider | undefined = (window as IWindow)
         .algorand;
       let result: IBaseResult & ISignTxnsResult;
@@ -113,7 +118,74 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
 
       try {
         switch (type) {
-          case 'asset-transfer':
+          case TransactionTypeEnum.AssetConfig:
+            if (!selectedAsset) {
+              toast({
+                description: 'Select an asset from the list.',
+                status: 'error',
+                title: 'No Asset Selected!',
+              });
+
+              return;
+            }
+
+            unsignedTransaction = await createAssetConfigTransaction({
+              assetId: selectedAsset.id,
+              from: account.address,
+              network,
+              note: note.length > 0 ? note : null,
+            });
+
+            break;
+          case TransactionTypeEnum.AssetCreate:
+            unsignedTransaction = await createAssetCreateTransaction({
+              from: account.address,
+              network,
+              note: note.length > 0 ? note : null,
+            });
+
+            break;
+          case TransactionTypeEnum.AssetDestroy:
+            if (!selectedAsset) {
+              toast({
+                description: 'Select an asset from the list.',
+                status: 'error',
+                title: 'No Asset Selected!',
+              });
+
+              return;
+            }
+
+            unsignedTransaction = await createAssetDestroyTransaction({
+              assetId: selectedAsset.id,
+              from: account.address,
+              network,
+              note: note.length > 0 ? note : null,
+            });
+
+            break;
+          case TransactionTypeEnum.AssetFreeze:
+            if (!selectedAsset) {
+              toast({
+                description: 'Select an asset from the list.',
+                status: 'error',
+                title: 'No Asset Selected!',
+              });
+
+              return;
+            }
+
+            unsignedTransaction = await createAssetFreezeTransaction({
+              assetId: selectedAsset.id,
+              from: account.address,
+              freezeTarget: account.address,
+              isFreezing: true,
+              network,
+              note: note.length > 0 ? note : null,
+            });
+
+            break;
+          case TransactionTypeEnum.AssetTransfer:
             if (!selectedAsset) {
               toast({
                 description: 'Select an asset from the list.',
@@ -134,20 +206,28 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
             });
 
             break;
+          case TransactionTypeEnum.AssetUnfreeze:
+            if (!selectedAsset) {
+              toast({
+                description: 'Select an asset from the list.',
+                status: 'error',
+                title: 'No Asset Selected!',
+              });
 
-          case 'payment':
-            unsignedTransaction = await createPaymentTransaction({
-              amount: convertToAtomicUnit(
-                amount,
-                network.nativeCurrency.decimals
-              ),
+              return;
+            }
+
+            unsignedTransaction = await createAssetFreezeTransaction({
+              assetId: selectedAsset.id,
               from: account.address,
+              freezeTarget: account.address,
+              isFreezing: false,
               network,
               note: note.length > 0 ? note : null,
-              to: null,
             });
 
             break;
+
           default:
             break;
         }
@@ -209,22 +289,6 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   return (
     <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
-        {/*Balance*/}
-        <HStack spacing={2} w="full">
-          <Text size="md" textAlign="left">
-            Balance:
-          </Text>
-          <Spacer />
-          <Text size="md" textAlign="left">
-            {account && network
-              ? `${convertToStandardUnit(
-                  account.balance,
-                  network.nativeCurrency.decimals
-                )} ${network.nativeCurrency.code}`
-              : 'N/A'}
-          </Text>
-        </HStack>
-
         {/*Amount*/}
         <HStack w="full">
           <Text size="md" textAlign="left">
@@ -321,19 +385,45 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
           </HStack>
         </VStack>
 
-        {/*Sign transaction button*/}
+        {/*sign transaction button*/}
         <Grid gap={2} templateColumns="repeat(2, 1fr)" w="full">
           {[
-            { type: 'payment', label: 'Send Payment Transaction' },
             {
-              type: 'asset-transfer',
+              disabled: !selectedAsset,
+              type: TransactionTypeEnum.AssetTransfer,
               label: 'Send Asset Transfer Transaction',
             },
-          ].map(({ label, type }) => (
+            {
+              disabled: !selectedAsset,
+              type: TransactionTypeEnum.AssetConfig,
+              label: 'Send Asset Config Transaction',
+            },
+            {
+              disabled: false,
+              type: TransactionTypeEnum.AssetCreate,
+              label: 'Send Asset Create Transaction',
+            },
+            {
+              disabled: !selectedAsset,
+              type: TransactionTypeEnum.AssetDestroy,
+              label: 'Send Asset Destroy Transaction',
+            },
+            {
+              disabled: !selectedAsset,
+              type: TransactionTypeEnum.AssetFreeze,
+              label: 'Send Asset Freeze Transaction',
+            },
+            {
+              disabled: !selectedAsset,
+              type: TransactionTypeEnum.AssetUnfreeze,
+              label: 'Send Asset Unfreeze Transaction',
+            },
+          ].map(({ disabled, label, type }) => (
             <GridItem key={nanoid()}>
               <Button
                 borderRadius={theme.radii['3xl']}
                 colorScheme="primaryLight"
+                isDisabled={disabled}
                 onClick={handleSignTransactionClick(type)}
                 size="lg"
                 w={365}
@@ -348,4 +438,4 @@ const SignTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   );
 };
 
-export default SignTxnTab;
+export default AssetActionsTab;

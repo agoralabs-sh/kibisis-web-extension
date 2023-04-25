@@ -50,7 +50,11 @@ interface IProps {
   toast: CreateToastFnReturn;
 }
 
-const SignAppTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
+const ApplicationActionsTab: FC<IProps> = ({
+  account,
+  network,
+  toast,
+}: IProps) => {
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
   const [note, setNote] = useState<string>('');
@@ -242,4 +246,4 @@ const SignAppTxnTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   );
 };
 
-export default SignAppTxnTab;
+export default ApplicationActionsTab;

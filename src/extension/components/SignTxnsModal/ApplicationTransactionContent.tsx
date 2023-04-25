@@ -20,9 +20,6 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
-import { useSelectPreferredBlockExplorer } from '@extension/selectors';
-
 // Types
 import { IExplorer, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
@@ -32,23 +29,20 @@ import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {
   condensed?: ICondensedProps;
+  explorer: IExplorer;
   network: INetwork;
   transaction: Transaction;
 }
 
 const ApplicationTransactionContent: FC<IProps> = ({
   condensed,
+  explorer,
   network,
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
-  const explorer: IExplorer | null =
-    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
-    network.explorers[0] ||
-    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const icon: ReactNode = createIconFromDataUri(
     network.nativeCurrency.iconUri,
     {
@@ -78,6 +72,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
         w="full"
       >
         <SignTxnsTextItem
+          isCode={true}
           label={`${t<string>('labels.type')}:`}
           value={t<string>('values.appOnComplete', {
             context: transactionType,
@@ -103,6 +98,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
       {/*Note*/}
       {transaction.note && transaction.note.length > 0 && (
         <SignTxnsTextItem
+          isCode={true}
           label={`${t<string>('labels.note')}:`}
           value={new TextDecoder().decode(transaction.note)}
         />
@@ -129,15 +125,18 @@ const ApplicationTransactionContent: FC<IProps> = ({
         <HStack spacing={0} w="full">
           <SignTxnsTextItem
             flexGrow={1}
+            isCode={true}
             label={`${t<string>('labels.id')}:`}
             value={transaction.appIndex.toString()}
           />
           <CopyIconButton
             ariaLabel={`Copy ${transaction.appIndex}`}
+            size="xs"
             value={transaction.appIndex.toString()}
           />
           {explorer && (
             <OpenTabIconButton
+              size="xs"
               tooltipLabel={t<string>('captions.openOn', {
                 name: explorer.canonicalName,
               })}
@@ -152,6 +151,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
         address={encodeAddress(transaction.from.publicKey)}
         ariaLabel="From address"
         label={`${t<string>('labels.from')}:`}
+        network={network}
       />
 
       {condensed ? (

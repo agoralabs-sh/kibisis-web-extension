@@ -39,11 +39,12 @@ import Fonts from '@extension/components/Fonts';
 import { networks } from '@extension/config';
 
 // Tabs
-import SignAppTxnTab from './SignAppTxnTab';
+import ApplicationActionsTab from './ApplicationActionsTab';
+import AssetActionsTab from './AssetActionsTab';
+import AtomicTransactionActionsTab from './AtomicTransactionActionsTab';
+import PaymentActionsTab from './PaymentActionsTab';
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
-import SignTxnTab from './SignTxnTab';
-import SignTxnsTab from './SignTxnsTab';
 
 // Theme
 import { theme } from '@extension/theme';
@@ -223,24 +224,30 @@ const App: FC = () => {
             </HStack>
             <Tabs colorScheme="primaryLight" w="full">
               <TabList>
-                <Tab>Asset/Payment Txn</Tab>
+                <Tab>Payments</Tab>
+                <Tab>Assets</Tab>
                 <Tab>Atomic Txns</Tab>
-                <Tab>App Txn</Tab>
+                <Tab>Applications</Tab>
                 <Tab>Sign Bytes</Tab>
                 <Tab>Sign JWT</Tab>
               </TabList>
               <TabPanels>
-                <SignTxnTab
+                <PaymentActionsTab
                   account={selectedAccount}
                   network={selectedNetwork}
                   toast={toast}
                 />
-                <SignTxnsTab
+                <AssetActionsTab
                   account={selectedAccount}
                   network={selectedNetwork}
                   toast={toast}
                 />
-                <SignAppTxnTab
+                <AtomicTransactionActionsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <ApplicationActionsTab
                   account={selectedAccount}
                   network={selectedNetwork}
                   toast={toast}

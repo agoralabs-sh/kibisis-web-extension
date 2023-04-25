@@ -15,7 +15,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Types
-import { IAccount, INativeCurrency } from '@extension/types';
+import { IAccount, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
 // Utils
@@ -26,7 +26,7 @@ interface IProps {
   condensed?: ICondensedProps;
   fromAccount: IAccount | null;
   loading?: boolean;
-  nativeCurrency: INativeCurrency;
+  network: INetwork;
   transaction: Transaction;
 }
 
@@ -34,7 +34,7 @@ const PaymentTransactionContent: FC<IProps> = ({
   condensed,
   fromAccount,
   loading = false,
-  nativeCurrency,
+  network,
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
@@ -45,37 +45,41 @@ const PaymentTransactionContent: FC<IProps> = ({
   );
   const standardUnitAmount: BigNumber = convertToStandardUnit(
     atomicUintAmount,
-    nativeCurrency.decimals
+    network.nativeCurrency.decimals
   );
-  const icon: ReactNode = createIconFromDataUri(nativeCurrency.iconUri, {
-    color: subTextColor,
-    h: 3,
-    w: 3,
-  });
+  const icon: ReactNode = createIconFromDataUri(
+    network.nativeCurrency.iconUri,
+    {
+      color: subTextColor,
+      h: 3,
+      w: 3,
+    }
+  );
   const renderExtraInformation = () => (
     <>
       {/* Balance */}
       <SignTxnsAssetItem
         atomicUnitsAmount={new BigNumber(fromAccount?.atomicBalance || '0')}
-        decimals={nativeCurrency.decimals}
+        decimals={network.nativeCurrency.decimals}
         icon={icon}
         isLoading={loading}
         label={`${t<string>('labels.balance')}:`}
-        unit={nativeCurrency.code}
+        unit={network.nativeCurrency.code}
       />
 
       {/* Fee */}
       <SignTxnsAssetItem
         atomicUnitsAmount={new BigNumber(String(transaction.fee))}
-        decimals={nativeCurrency.decimals}
+        decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
-        unit={nativeCurrency.code}
+        unit={network.nativeCurrency.code}
       />
 
       {/* Note */}
       {transaction.note && transaction.note.length > 0 && (
         <SignTxnsTextItem
+          isCode={true}
           label={`${t<string>('labels.note')}:`}
           value={new TextDecoder().decode(transaction.note)}
         />
@@ -107,10 +111,10 @@ const PaymentTransactionContent: FC<IProps> = ({
           {/*Amount*/}
           <SignTxnsAssetItem
             atomicUnitsAmount={atomicUintAmount}
-            decimals={nativeCurrency.decimals}
+            decimals={network.nativeCurrency.decimals}
             icon={icon}
             label={`${t<string>('labels.amount')}:`}
-            unit={nativeCurrency.code}
+            unit={network.nativeCurrency.code}
           />
         </>
       ) : (
@@ -118,7 +122,9 @@ const PaymentTransactionContent: FC<IProps> = ({
           {/*Amount*/}
           <Tooltip
             aria-label="Amount with unrestricted decimals"
-            label={`${standardUnitAmount.toString()} ${nativeCurrency.code}`}
+            label={`${standardUnitAmount.toString()} ${
+              network.nativeCurrency.code
+            }`}
           >
             <HStack
               alignItems="center"
@@ -131,7 +137,7 @@ const PaymentTransactionContent: FC<IProps> = ({
               </Heading>
               {icon}
               <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-                {nativeCurrency.code}
+                {network.nativeCurrency.code}
               </Text>
             </HStack>
           </Tooltip>
@@ -155,6 +161,7 @@ const PaymentTransactionContent: FC<IProps> = ({
         address={encodeAddress(transaction.from.publicKey)}
         ariaLabel="From address"
         label={`${t<string>('labels.from')}:`}
+        network={network}
       />
 
       {/* To */}
@@ -162,6 +169,7 @@ const PaymentTransactionContent: FC<IProps> = ({
         address={encodeAddress(transaction.to.publicKey)}
         ariaLabel="To address"
         label={`${t<string>('labels.to')}:`}
+        network={network}
       />
 
       {condensed ? (

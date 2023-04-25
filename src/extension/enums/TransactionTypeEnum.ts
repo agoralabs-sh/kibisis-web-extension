@@ -12,7 +12,7 @@ enum TransactionTypeEnum {
   AssetDestroy = 'asset_destroy',
   AssetOptIn = 'asset_opt_in',
   AssetTransfer = 'asset_transfer',
-  AssetUnFreeze = 'asset_unfreeze',
+  AssetUnfreeze = 'asset_unfreeze',
   KeyRegistrationOffline = 'key_registration_offline',
   KeyRegistrationOnline = 'key_registration_online',
   Payment = 'payment',

@@ -1,11 +1,4 @@
-import {
-  Heading,
-  HStack,
-  Skeleton,
-  Text,
-  Tooltip,
-  VStack,
-} from '@chakra-ui/react';
+import { Heading, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
 import { encodeAddress, Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
@@ -27,9 +20,6 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
-import { useSelectPreferredBlockExplorer } from '@extension/selectors';
-
 // Types
 import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
@@ -41,6 +31,7 @@ import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 interface IProps {
   asset: IAsset | null;
   condensed?: ICondensedProps;
+  explorer: IExplorer;
   fromAccount: IAccount | null;
   loading?: boolean;
   network: INetwork;
@@ -50,6 +41,7 @@ interface IProps {
 const AssetTransferTransactionContent: FC<IProps> = ({
   asset,
   condensed,
+  explorer,
   fromAccount,
   loading = false,
   network,
@@ -59,17 +51,12 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const [standardUnitAmount, setStandardAmount] = useState<BigNumber>(
     new BigNumber('0')
   );
   const atomicUintAmount: BigNumber = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'
   );
-  const explorer: IExplorer | null =
-    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
-    network.explorers[0] ||
-    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const renderExtraInformation = (icon: ReactNode) => {
     if (!asset) {
       return null;
@@ -77,7 +64,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
     return (
       <>
-        {/* Balance */}
+        {/*balance*/}
         <SignTxnsAssetItem
           atomicUnitsAmount={atomicUintAmount}
           decimals={asset.decimals}
@@ -88,7 +75,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           unit={asset.unitName || undefined}
         />
 
-        {/* Fee */}
+        {/*fee*/}
         <SignTxnsAssetItem
           atomicUnitsAmount={new BigNumber(String(transaction.fee))}
           decimals={network.nativeCurrency.decimals}
@@ -101,16 +88,22 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           unit={network.nativeCurrency.code}
         />
 
-        {/* Asset ID */}
+        {/*asset id*/}
         <HStack spacing={0} w="full">
           <SignTxnsTextItem
             flexGrow={1}
+            isCode={true}
             label={`${t<string>('labels.id')}:`}
             value={asset.id}
           />
-          <CopyIconButton ariaLabel={`Copy ${asset.id}`} value={asset.id} />
+          <CopyIconButton
+            ariaLabel={`Copy ${asset.id}`}
+            size="xs"
+            value={asset.id}
+          />
           {explorer && (
             <OpenTabIconButton
+              size="xs"
               tooltipLabel={t<string>('captions.openOn', {
                 name: explorer.canonicalName,
               })}
@@ -119,9 +112,10 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           )}
         </HStack>
 
-        {/* Note */}
+        {/*note*/}
         {transaction.note && transaction.note.length > 0 && (
           <SignTxnsTextItem
+            isCode={true}
             label={`${t<string>('labels.note')}:`}
             value={new TextDecoder().decode(transaction.note)}
           />
@@ -179,7 +173,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
     >
       {condensed ? (
         <>
-          {/*Heading*/}
+          {/*heading*/}
           <Text
             color={defaultTextColor}
             fontSize="md"
@@ -191,7 +185,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             })}
           </Text>
 
-          {/*Amount*/}
+          {/*amount*/}
           <SignTxnsAssetItem
             atomicUnitsAmount={atomicUintAmount}
             decimals={asset.decimals}
@@ -203,7 +197,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
         </>
       ) : (
         <>
-          {/*Amount*/}
+          {/*amount*/}
           <Tooltip
             aria-label="Asset amount with unrestricted decimals"
             label={`${standardUnitAmount.toString()} ${asset.unitName || ''}`}
@@ -224,7 +218,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             </HStack>
           </Tooltip>
 
-          {/*Heading*/}
+          {/*heading*/}
           <Text
             color={defaultTextColor}
             fontSize="md"
@@ -238,18 +232,20 @@ const AssetTransferTransactionContent: FC<IProps> = ({
         </>
       )}
 
-      {/* From */}
+      {/*from*/}
       <SignTxnsAddressItem
         address={encodeAddress(transaction.from.publicKey)}
         ariaLabel="From address"
         label={`${t<string>('labels.from')}:`}
+        network={network}
       />
 
-      {/* To */}
+      {/*to*/}
       <SignTxnsAddressItem
         address={encodeAddress(transaction.to.publicKey)}
         ariaLabel="To address"
         label={`${t<string>('labels.to')}:`}
+        network={network}
       />
 
       {condensed ? (

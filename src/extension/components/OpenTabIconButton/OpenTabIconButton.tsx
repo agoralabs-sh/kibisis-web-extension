@@ -8,11 +8,16 @@ import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgr
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 interface IProps {
+  size?: string;
   tooltipLabel: string;
   url: string;
 }
 
-const OpenTabIconButton: FC<IProps> = ({ tooltipLabel, url }: IProps) => {
+const OpenTabIconButton: FC<IProps> = ({
+  size = 'sm',
+  tooltipLabel,
+  url,
+}: IProps) => {
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const handleOpenClick = () =>
@@ -32,7 +37,7 @@ const OpenTabIconButton: FC<IProps> = ({ tooltipLabel, url }: IProps) => {
         aria-label="Open url in a new tab"
         icon={<Icon as={IoOpenOutline} color={defaultTextColor} />}
         onClick={handleOpenClick}
-        size="sm"
+        size={size}
         variant="ghost"
       />
     </Tooltip>

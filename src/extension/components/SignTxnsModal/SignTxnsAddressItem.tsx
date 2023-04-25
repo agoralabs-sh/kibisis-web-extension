@@ -1,6 +1,13 @@
-import { HStack, Icon, Text, Tooltip } from '@chakra-ui/react';
+import { HStack, Icon, StackProps, Text, Tooltip } from '@chakra-ui/react';
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IoWalletOutline } from 'react-icons/io5';
+
+// Components
+import OpenTabIconButton from '@extension/components/OpenTabIconButton';
+
+// Constants
+import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -8,42 +15,61 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // Selectors
-import { useSelectAccounts } from '@extension/selectors';
+import {
+  useSelectAccounts,
+  useSelectPreferredBlockExplorer,
+} from '@extension/selectors';
 
 // Theme
 import { theme } from '@extension/theme';
 
 // Types
-import { IAccount } from '@extension/types';
+import { IAccount, IExplorer, INetwork } from '@extension/types';
 
 // Utils
 import { ellipseAddress } from '@extension/utils';
 
-interface IProps {
+interface IProps extends StackProps {
   address: string;
   ariaLabel?: string;
   label: string;
+  network: INetwork;
 }
 
 const SignTxnsAddressItem: FC<IProps> = ({
   address,
   ariaLabel,
   label,
+  network,
+  ...stackProps
 }: IProps) => {
-  const accounts: IAccount[] = useSelectAccounts();
+  const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
+  const accounts: IAccount[] = useSelectAccounts();
+  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IExplorer | null =
+    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
+    network.explorers[0] ||
+    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const account: IAccount | null =
     accounts.find((value) => value.address === address) || null;
 
   return (
-    <HStack justifyContent="space-between" spacing={2} w="full">
+    <HStack
+      alignItems="center"
+      justifyContent="space-between"
+      minH={MODAL_ITEM_HEIGHT}
+      spacing={2}
+      w="full"
+      {...stackProps}
+    >
       <Text color={defaultTextColor} fontSize="xs">
         {label}
       </Text>
-      <Tooltip aria-label={ariaLabel} label={address}>
-        {account ? (
+      {account ? (
+        <Tooltip aria-label={ariaLabel} label={address}>
           <HStack
             backgroundColor={textBackgroundColor}
             borderRadius={theme.radii['3xl']}
@@ -60,15 +86,28 @@ const SignTxnsAddressItem: FC<IProps> = ({
                 })}
             </Text>
           </HStack>
-        ) : (
-          <Text color={subTextColor} fontSize="xs">
-            {ellipseAddress(address, {
-              end: 10,
-              start: 10,
-            })}
-          </Text>
-        )}
-      </Tooltip>
+        </Tooltip>
+      ) : (
+        <HStack spacing={0}>
+          <Tooltip aria-label={ariaLabel} label={address}>
+            <Text color={subTextColor} fontSize="xs">
+              {ellipseAddress(address, {
+                end: 10,
+                start: 10,
+              })}
+            </Text>
+          </Tooltip>
+          {explorer && (
+            <OpenTabIconButton
+              size="xs"
+              tooltipLabel={t<string>('captions.openOn', {
+                name: explorer.canonicalName,
+              })}
+              url={`${explorer.baseUrl}${explorer.accountPath}/${address}`}
+            />
+          )}
+        </HStack>
+      )}
     </HStack>
   );
 };

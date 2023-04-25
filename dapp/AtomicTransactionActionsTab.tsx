@@ -76,7 +76,11 @@ interface IProps {
   toast: CreateToastFnReturn;
 }
 
-const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
+const AtomicTransactionActionsTab: FC<IProps> = ({
+  account,
+  network,
+  toast,
+}: IProps) => {
   const [assetValues, setAssetValues] = useState<IAssetValue[]>([]);
   const [groupId, setGroupId] = useState<string>('N/A');
   const [signedTransactions, setSignedTransactions] = useState<
@@ -372,4 +376,4 @@ const SignTxnsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   );
 };
 
-export default SignTxnsTab;
+export default AtomicTransactionActionsTab;

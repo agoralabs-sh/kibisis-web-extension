@@ -26,11 +26,12 @@ export default function parseTransactionType(
 ): TransactionTypeEnum {
   const encodedTransaction: EncodedTransaction =
     transaction.get_obj_for_encoding();
+  console.log('encodedTransaction: ', encodedTransaction);
 
   // asset config
   if (transaction.type === 'acfg') {
     // if there is an asset id, it is a destruction/modification
-    if (encodedTransaction.apid) {
+    if (encodedTransaction.caid) {
       // if there are no asset params, this is an asset destruction
       if (!encodedTransaction.apar) {
         return TransactionTypeEnum.AssetDestroy;
@@ -57,7 +58,7 @@ export default function parseTransactionType(
   if (transaction.type === 'afrz') {
     return encodedTransaction.afrz
       ? TransactionTypeEnum.AssetFreeze
-      : TransactionTypeEnum.AssetUnFreeze;
+      : TransactionTypeEnum.AssetUnfreeze;
   }
 
   // application calls

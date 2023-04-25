@@ -1,6 +1,9 @@
-import { HStack, Skeleton, Text, Tooltip } from '@chakra-ui/react';
+import { HStack, Skeleton, StackProps, Text, Tooltip } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode } from 'react';
+
+// Constants
+import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -9,7 +12,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // Utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 
-interface IProps {
+interface IProps extends StackProps {
   atomicUnitsAmount: BigNumber;
   decimals: number;
   displayUnit?: boolean;
@@ -27,12 +30,20 @@ const SignTxnsAssetItem: FC<IProps> = ({
   isLoading = false,
   label,
   unit,
+  ...stackProps
 }: IProps) => {
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
 
   return (
-    <HStack justifyContent="space-between" spacing={2} w="full">
+    <HStack
+      alignItems="center"
+      justifyContent="space-between"
+      minH={MODAL_ITEM_HEIGHT}
+      spacing={2}
+      w="full"
+      {...stackProps}
+    >
       <Text color={defaultTextColor} fontSize="xs">
         {label}
       </Text>

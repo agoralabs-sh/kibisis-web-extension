@@ -6,11 +6,16 @@ import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Components
-import ApplicationTransactionContent from '@extension/components/SignTxnsModal/ApplicationTransactionContent';
-import AssetFreezeTransactionContent from '@extension/components/SignTxnsModal/AssetFreezeTransactionContent';
+import ApplicationTransactionContent from './ApplicationTransactionContent';
+import AssetConfigTransactionContent from './AssetConfigTransactionContent';
+import AssetCreateTransactionContent from './AssetCreateTransactionContent';
+import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 import SignTxnsTextItem from './SignTxnsTextItem';
+
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
 
 // Hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
@@ -19,21 +24,26 @@ import useBorderColor from '@extension/hooks/useBorderColor';
 import { useSelectAssetsByGenesisHash } from '@extension/selectors';
 
 // Types
-import { IAccount, IAsset, INetwork } from '@extension/types';
+import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
 
 // Utils
 import { computeGroupId } from '@common/utils';
+import { parseTransactionType } from '@extension/utils';
 
 interface IProps {
+  explorer: IExplorer;
   fromAccounts: IAccount[];
-  loading?: boolean;
+  loadingAccountInformation?: boolean;
+  loadingAssetInformation?: boolean;
   network: INetwork;
   transactions: Transaction[];
 }
 
 const MultipleTransactionsContent: FC<IProps> = ({
+  explorer,
   fromAccounts,
-  loading = false,
+  loadingAccountInformation = false,
+  loadingAssetInformation = false,
   network,
   transactions,
 }: IProps) => {
@@ -58,8 +68,42 @@ const MultipleTransactionsContent: FC<IProps> = ({
     const asset: IAsset | null =
       assets.find((value) => value.id === String(transaction.assetIndex)) ||
       null;
+    const transactionType: TransactionTypeEnum = parseTransactionType(
+      transaction,
+      fromAccounts[transactionIndex]
+    );
 
     switch (transaction.type) {
+      case 'acfg':
+        if (transactionType === TransactionTypeEnum.AssetCreate) {
+          return (
+            <AssetCreateTransactionContent
+              condensed={{
+                expanded: openAccordions[transactionIndex],
+                onChange: handleToggleAccordion(transactionIndex),
+              }}
+              fromAccount={fromAccounts[transactionIndex] || null}
+              loading={loadingAccountInformation}
+              network={network}
+              transaction={transaction}
+            />
+          );
+        }
+
+        return (
+          <AssetConfigTransactionContent
+            asset={asset}
+            condensed={{
+              expanded: openAccordions[transactionIndex],
+              onChange: handleToggleAccordion(transactionIndex),
+            }}
+            explorer={explorer}
+            fromAccount={fromAccounts[transactionIndex] || null}
+            loading={loadingAccountInformation || loadingAssetInformation}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case 'afrz':
         return (
           <AssetFreezeTransactionContent
@@ -68,7 +112,9 @@ const MultipleTransactionsContent: FC<IProps> = ({
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
+            explorer={explorer}
             fromAccount={fromAccounts[transactionIndex] || null}
+            loading={loadingAccountInformation || loadingAssetInformation}
             network={network}
             transaction={transaction}
           />
@@ -80,6 +126,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
+            explorer={explorer}
             network={network}
             transaction={transaction}
           />
@@ -92,8 +139,9 @@ const MultipleTransactionsContent: FC<IProps> = ({
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
+            explorer={explorer}
             fromAccount={fromAccounts[transactionIndex] || null}
-            loading={loading}
+            loading={loadingAccountInformation || loadingAssetInformation}
             network={network}
             transaction={transaction}
           />
@@ -106,8 +154,8 @@ const MultipleTransactionsContent: FC<IProps> = ({
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            loading={loading}
-            nativeCurrency={network.nativeCurrency}
+            loading={loadingAccountInformation}
+            network={network}
             transaction={transaction}
           />
         );
