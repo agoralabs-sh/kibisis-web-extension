@@ -218,14 +218,14 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       spacing={condensed ? 2 : 4}
       w="full"
     >
-      {/*Heading*/}
+      {/*heading*/}
       <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
         {t<string>('headings.transaction', {
           context: transactionType,
         })}
       </Text>
 
-      {/* Asset ID */}
+      {/*asset id*/}
       <HStack spacing={0} w="full">
         <SignTxnsTextItem
           flexGrow={1}

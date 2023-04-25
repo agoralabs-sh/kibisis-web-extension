@@ -181,9 +181,9 @@ const translation: IResourceLanguage = {
     [`transaction_${TransactionTypeEnum.AssetTransfer}`]: 'Asset Transfer 🪙',
     [`transaction_${TransactionTypeEnum.AssetUnfreeze}`]: 'Asset Unfreeze 🚀',
     [`transaction_${TransactionTypeEnum.KeyRegistrationOffline}`]:
-      'Key Registration: Offline 🔑',
+      'Offline Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.KeyRegistrationOnline}`]:
-      'Key Registration: Online 🔑',
+      'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
   },
   labels: {
@@ -213,6 +213,7 @@ const translation: IResourceLanguage = {
     did: 'DID',
     expirationDate: 'Expiration Date',
     fee: 'Fee',
+    firstRound: 'First Round',
     freezeAccount: 'Freeze Account',
     freezeAccountBalance: 'Freeze Account Balance',
     freezeManagerAccount: 'Freeze Manager Account',
@@ -223,6 +224,7 @@ const translation: IResourceLanguage = {
     information: 'Information',
     issueDate: 'Issue Date',
     issuer: 'Issuer',
+    lastRound: 'Last Round',
     light: 'Light',
     nfts: 'NFTs',
     note: 'Note',
@@ -238,9 +240,11 @@ const translation: IResourceLanguage = {
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
     seedPhrase: 'Seed Phrase',
+    selectionKey: 'VRF Public Key',
     settings: 'Settings',
     shareAddress: 'Share Address',
     signingMethod: 'Signing Method',
+    stateProofKey: 'State Proof Public Key',
     theme: 'Theme',
     to: 'To',
     totalSupply: 'Total Supply',
@@ -249,6 +253,8 @@ const translation: IResourceLanguage = {
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
     url: 'URL',
+    voteKey: 'Participation Public Key',
+    voteKeyDilution: 'Key Dilution',
   },
   placeholders: {
     enterPassword: 'Enter password',

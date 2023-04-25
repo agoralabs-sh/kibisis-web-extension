@@ -7,6 +7,7 @@ import AssetConfigTransactionContent from './AssetConfigTransactionContent';
 import AssetCreateTransactionContent from './AssetCreateTransactionContent';
 import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
+import KeyRegistrationTransactionContent from './KeyRegistrationTransactionContent';
 import MultipleTransactionsContent from './MultipleTransactionsContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 
@@ -152,7 +153,6 @@ const SignTxnsModalContent: FC<IProps> = ({
       singleTransaction,
       fromAccounts[0]
     );
-    console.log('singleTransactionType: ', singleTransactionType);
 
     switch (singleTransaction.type) {
       case 'acfg':
@@ -203,6 +203,14 @@ const SignTxnsModalContent: FC<IProps> = ({
             explorer={explorer}
             fromAccount={fromAccounts[0] || null}
             loading={fetchingAccountInformation || updatingAssets}
+            network={network}
+            transaction={singleTransaction}
+          />
+        );
+      case 'keyreg':
+        return (
+          <KeyRegistrationTransactionContent
+            fromAccount={fromAccounts[0] || null}
             network={network}
             transaction={singleTransaction}
           />

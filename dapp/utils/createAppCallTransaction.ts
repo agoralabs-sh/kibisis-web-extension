@@ -16,6 +16,9 @@ import {
 // Constants
 import { TESTNET_APP_INDEX } from '../constants';
 
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
+
 // Types
 import { INetwork, INode } from '@extension/types';
 
@@ -26,7 +29,7 @@ interface IOptions {
   from: string;
   network: INetwork;
   note: string | null;
-  type: OnApplicationComplete | null;
+  type: TransactionTypeEnum;
 }
 
 export default async function createAppCallTransaction({
@@ -34,7 +37,7 @@ export default async function createAppCallTransaction({
   network,
   note,
   type,
-}: IOptions): Promise<Transaction> {
+}: IOptions): Promise<Transaction | null> {
   const appArgs: Uint8Array[] = [Uint8Array.from([0]), Uint8Array.from([0, 1])];
   const encodedApprovalProgram: string = 'BIEBMgkxABIxGYEED01D';
   const encodedClearProgram: string = 'BIEB';
@@ -46,7 +49,7 @@ export default async function createAppCallTransaction({
     .do();
 
   switch (type) {
-    case OnApplicationComplete.ClearStateOC:
+    case TransactionTypeEnum.ApplicationClearState:
       return makeApplicationClearStateTxn(
         from,
         suggestedParams,
@@ -57,7 +60,7 @@ export default async function createAppCallTransaction({
         undefined,
         note ? encoder.encode(note) : undefined
       );
-    case OnApplicationComplete.CloseOutOC:
+    case TransactionTypeEnum.ApplicationCloseOut:
       return makeApplicationCloseOutTxn(
         from,
         suggestedParams,
@@ -68,53 +71,7 @@ export default async function createAppCallTransaction({
         undefined,
         note ? encoder.encode(note) : undefined
       );
-    case OnApplicationComplete.DeleteApplicationOC:
-      return makeApplicationDeleteTxn(
-        from,
-        suggestedParams,
-        parseInt(TESTNET_APP_INDEX),
-        appArgs,
-        undefined,
-        undefined,
-        undefined,
-        note ? encoder.encode(note) : undefined
-      );
-    case OnApplicationComplete.NoOpOC:
-      return makeApplicationNoOpTxn(
-        from,
-        suggestedParams,
-        parseInt(TESTNET_APP_INDEX),
-        appArgs,
-        undefined,
-        undefined,
-        undefined,
-        note ? encoder.encode(note) : undefined
-      );
-    case OnApplicationComplete.OptInOC:
-      return makeApplicationOptInTxn(
-        from,
-        suggestedParams,
-        parseInt(TESTNET_APP_INDEX),
-        appArgs,
-        undefined,
-        undefined,
-        undefined,
-        note ? encoder.encode(note) : undefined
-      );
-    case OnApplicationComplete.UpdateApplicationOC:
-      return makeApplicationUpdateTxn(
-        from,
-        suggestedParams,
-        parseInt(TESTNET_APP_INDEX),
-        decodeBase64(encodedApprovalProgram),
-        decodeBase64(encodedClearProgram),
-        appArgs,
-        undefined,
-        undefined,
-        undefined,
-        note ? encoder.encode(note) : undefined
-      );
-    default:
+    case TransactionTypeEnum.ApplicationCreate:
       return makeApplicationCreateTxn(
         from,
         suggestedParams,
@@ -131,5 +88,53 @@ export default async function createAppCallTransaction({
         undefined,
         note ? encoder.encode(note) : undefined
       );
+    case TransactionTypeEnum.ApplicationDelete:
+      return makeApplicationDeleteTxn(
+        from,
+        suggestedParams,
+        parseInt(TESTNET_APP_INDEX),
+        appArgs,
+        undefined,
+        undefined,
+        undefined,
+        note ? encoder.encode(note) : undefined
+      );
+    case TransactionTypeEnum.ApplicationNoOp:
+      return makeApplicationNoOpTxn(
+        from,
+        suggestedParams,
+        parseInt(TESTNET_APP_INDEX),
+        appArgs,
+        undefined,
+        undefined,
+        undefined,
+        note ? encoder.encode(note) : undefined
+      );
+    case TransactionTypeEnum.ApplicationOptIn:
+      return makeApplicationOptInTxn(
+        from,
+        suggestedParams,
+        parseInt(TESTNET_APP_INDEX),
+        appArgs,
+        undefined,
+        undefined,
+        undefined,
+        note ? encoder.encode(note) : undefined
+      );
+    case TransactionTypeEnum.ApplicationUpdate:
+      return makeApplicationUpdateTxn(
+        from,
+        suggestedParams,
+        parseInt(TESTNET_APP_INDEX),
+        decodeBase64(encodedApprovalProgram),
+        decodeBase64(encodedClearProgram),
+        appArgs,
+        undefined,
+        undefined,
+        undefined,
+        note ? encoder.encode(note) : undefined
+      );
+    default:
+      return null;
   }
 }

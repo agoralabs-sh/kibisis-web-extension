@@ -41,13 +41,15 @@ import {
   computeGroupID,
   decodeSignedTransaction,
   encodeUnsignedTransaction,
-  OnApplicationComplete,
   SignedTransaction,
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import { nanoid } from 'nanoid';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
+
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
 
 // Theme
 import { theme } from '@extension/theme';
@@ -130,6 +132,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
     let assetValue: IAssetValue;
     let computedGroupId: string;
     let result: IBaseResult & ISignTxnsResult;
+    let unsignedAppTransaction: Transaction | null;
     let unsignedTransactions: Transaction[];
 
     if (!account || !network) {
@@ -193,15 +196,18 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
         );
       }
 
+      // include the app call if checked
       if (includeApplicationCall) {
-        unsignedTransactions.push(
-          await createAppCallTransaction({
-            from: account.address,
-            network,
-            note: null,
-            type: OnApplicationComplete.NoOpOC,
-          })
-        );
+        unsignedAppTransaction = await createAppCallTransaction({
+          from: account.address,
+          network,
+          note: null,
+          type: TransactionTypeEnum.ApplicationNoOp,
+        });
+
+        if (unsignedAppTransaction) {
+          unsignedTransactions.push(unsignedAppTransaction);
+        }
       }
 
       computedGroupId = encodeBase64(computeGroupID(unsignedTransactions));

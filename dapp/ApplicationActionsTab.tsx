@@ -25,12 +25,14 @@ import { encode as encodeHex } from '@stablelib/hex';
 import {
   decodeSignedTransaction,
   encodeUnsignedTransaction,
-  OnApplicationComplete,
   SignedTransaction,
   Transaction,
 } from 'algosdk';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useState } from 'react';
+
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
 
 // Theme
 import { theme } from '@extension/theme';
@@ -61,7 +63,7 @@ const ApplicationActionsTab: FC<IProps> = ({
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
   const handleSignTransactionClick =
-    (type: string | OnApplicationComplete) => async () => {
+    (type: TransactionTypeEnum) => async () => {
       const algorand: AlgorandProvider | undefined = (window as IWindow)
         .algorand;
       let result: IBaseResult & ISignTxnsResult;
@@ -89,33 +91,12 @@ const ApplicationActionsTab: FC<IProps> = ({
       }
 
       try {
-        switch (type) {
-          case OnApplicationComplete.ClearStateOC:
-          case OnApplicationComplete.CloseOutOC:
-          case OnApplicationComplete.DeleteApplicationOC:
-          case OnApplicationComplete.OptInOC:
-          case OnApplicationComplete.NoOpOC:
-          case OnApplicationComplete.UpdateApplicationOC:
-            unsignedTransaction = await createAppCallTransaction({
-              from: account.address,
-              network,
-              note: note.length > 0 ? note : null,
-              type,
-            });
-
-            break;
-          case 'app-create':
-            unsignedTransaction = await createAppCallTransaction({
-              from: account.address,
-              network,
-              note: note.length > 0 ? note : null,
-              type: null,
-            });
-
-            break;
-          default:
-            break;
-        }
+        unsignedTransaction = await createAppCallTransaction({
+          from: account.address,
+          network,
+          note: note.length > 0 ? note : null,
+          type,
+        });
 
         if (!unsignedTransaction) {
           toast({
@@ -157,7 +138,7 @@ const ApplicationActionsTab: FC<IProps> = ({
   return (
     <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
-        {/*Balance*/}
+        {/*balance*/}
         <HStack spacing={2} w="full">
           <Text size="md" textAlign="left">
             Balance:
@@ -173,7 +154,7 @@ const ApplicationActionsTab: FC<IProps> = ({
           </Text>
         </HStack>
 
-        {/*Note*/}
+        {/*note*/}
         <HStack w="full">
           <Text size="md" textAlign="left">
             Note:
@@ -181,7 +162,7 @@ const ApplicationActionsTab: FC<IProps> = ({
           <Input onChange={handleNoteChange} value={note} />
         </HStack>
 
-        {/*Signed transaction data*/}
+        {/*signed transaction data*/}
         <VStack spacing={3} w="full">
           <HStack spacing={2} w="full">
             <Text>Signed transaction:</Text>
@@ -199,32 +180,35 @@ const ApplicationActionsTab: FC<IProps> = ({
           </HStack>
         </VStack>
 
-        {/*Sign transaction button*/}
+        {/*sign transaction button*/}
         <Grid gap={2} templateColumns="repeat(2, 1fr)" w="full">
           {[
-            { type: 'app-create', label: 'Send Create App Transaction' },
             {
-              type: OnApplicationComplete.OptInOC,
+              type: TransactionTypeEnum.ApplicationCreate,
+              label: 'Send Create App Transaction',
+            },
+            {
+              type: TransactionTypeEnum.ApplicationOptIn,
               label: 'Send App Opt-In Transaction',
             },
             {
-              type: OnApplicationComplete.NoOpOC,
+              type: TransactionTypeEnum.ApplicationNoOp,
               label: 'Send App NoOp Transaction',
             },
             {
-              type: OnApplicationComplete.ClearStateOC,
+              type: TransactionTypeEnum.ApplicationClearState,
               label: 'Send App Clear State Transaction',
             },
             {
-              type: OnApplicationComplete.CloseOutOC,
+              type: TransactionTypeEnum.ApplicationCloseOut,
               label: 'Send App Close Out Transaction',
             },
             {
-              type: OnApplicationComplete.DeleteApplicationOC,
+              type: TransactionTypeEnum.ApplicationDelete,
               label: 'Send Delete App Transaction',
             },
             {
-              type: OnApplicationComplete.UpdateApplicationOC,
+              type: TransactionTypeEnum.ApplicationUpdate,
               label: 'Send Update App Transaction',
             },
           ].map(({ label, type }) => (

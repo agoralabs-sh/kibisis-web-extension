@@ -42,6 +42,7 @@ import { networks } from '@extension/config';
 import ApplicationActionsTab from './ApplicationActionsTab';
 import AssetActionsTab from './AssetActionsTab';
 import AtomicTransactionActionsTab from './AtomicTransactionActionsTab';
+import KeyRegistrationActionsTab from './KeyRegistrationActionsTab';
 import PaymentActionsTab from './PaymentActionsTab';
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
@@ -52,7 +53,7 @@ import { theme } from '@extension/theme';
 // Types
 import { IWindow } from '@external/types';
 import { INetwork } from '@extension/types';
-import { IAccountInformation, IAssetInformation } from './types';
+import { IAccountInformation } from './types';
 
 // Utils
 import { getAccountInformation } from './utils';
@@ -227,7 +228,8 @@ const App: FC = () => {
                 <Tab>Payments</Tab>
                 <Tab>Assets</Tab>
                 <Tab>Atomic Txns</Tab>
-                <Tab>Applications</Tab>
+                <Tab>Apps</Tab>
+                <Tab>Keys</Tab>
                 <Tab>Sign Bytes</Tab>
                 <Tab>Sign JWT</Tab>
               </TabList>
@@ -248,6 +250,11 @@ const App: FC = () => {
                   toast={toast}
                 />
                 <ApplicationActionsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <KeyRegistrationActionsTab
                   account={selectedAccount}
                   network={selectedNetwork}
                   toast={toast}

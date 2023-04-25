@@ -45,7 +45,6 @@ const AssetCreateTransactionContent: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(

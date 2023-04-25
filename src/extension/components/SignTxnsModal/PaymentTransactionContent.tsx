@@ -21,6 +21,7 @@ import { ICondensedProps } from './types';
 // Utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
+import { TransactionTypeEnum } from '@extension/enums';
 
 interface IProps {
   condensed?: ICondensedProps;
@@ -55,9 +56,13 @@ const PaymentTransactionContent: FC<IProps> = ({
       w: 3,
     }
   );
+  const transactionType: TransactionTypeEnum = parseTransactionType(
+    transaction,
+    fromAccount || undefined
+  );
   const renderExtraInformation = () => (
     <>
-      {/* Balance */}
+      {/*balance*/}
       <SignTxnsAssetItem
         atomicUnitsAmount={new BigNumber(fromAccount?.atomicBalance || '0')}
         decimals={network.nativeCurrency.decimals}
@@ -67,7 +72,7 @@ const PaymentTransactionContent: FC<IProps> = ({
         unit={network.nativeCurrency.code}
       />
 
-      {/* Fee */}
+      {/*fee*/}
       <SignTxnsAssetItem
         atomicUnitsAmount={new BigNumber(String(transaction.fee))}
         decimals={network.nativeCurrency.decimals}
@@ -76,7 +81,7 @@ const PaymentTransactionContent: FC<IProps> = ({
         unit={network.nativeCurrency.code}
       />
 
-      {/* Note */}
+      {/*note*/}
       {transaction.note && transaction.note.length > 0 && (
         <SignTxnsTextItem
           isCode={true}
@@ -96,7 +101,7 @@ const PaymentTransactionContent: FC<IProps> = ({
     >
       {condensed ? (
         <>
-          {/*Heading*/}
+          {/*heading*/}
           <Text
             color={defaultTextColor}
             fontSize="md"
@@ -104,11 +109,11 @@ const PaymentTransactionContent: FC<IProps> = ({
             w="full"
           >
             {t<string>('headings.transaction', {
-              context: parseTransactionType(transaction),
+              context: transactionType,
             })}
           </Text>
 
-          {/*Amount*/}
+          {/*amount*/}
           <SignTxnsAssetItem
             atomicUnitsAmount={atomicUintAmount}
             decimals={network.nativeCurrency.decimals}
@@ -119,7 +124,7 @@ const PaymentTransactionContent: FC<IProps> = ({
         </>
       ) : (
         <>
-          {/*Amount*/}
+          {/*amount*/}
           <Tooltip
             aria-label="Amount with unrestricted decimals"
             label={`${standardUnitAmount.toString()} ${
@@ -142,7 +147,7 @@ const PaymentTransactionContent: FC<IProps> = ({
             </HStack>
           </Tooltip>
 
-          {/*Heading*/}
+          {/*heading*/}
           <Text
             color={defaultTextColor}
             fontSize="md"
@@ -150,13 +155,13 @@ const PaymentTransactionContent: FC<IProps> = ({
             w="full"
           >
             {t<string>('headings.transaction', {
-              context: parseTransactionType(transaction),
+              context: transactionType,
             })}
           </Text>
         </>
       )}
 
-      {/* From */}
+      {/*from*/}
       <SignTxnsAddressItem
         address={encodeAddress(transaction.from.publicKey)}
         ariaLabel="From address"
@@ -164,7 +169,7 @@ const PaymentTransactionContent: FC<IProps> = ({
         network={network}
       />
 
-      {/* To */}
+      {/*to*/}
       <SignTxnsAddressItem
         address={encodeAddress(transaction.to.publicKey)}
         ariaLabel="To address"

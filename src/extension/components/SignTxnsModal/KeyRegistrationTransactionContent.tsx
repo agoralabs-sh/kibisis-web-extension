@@ -1,15 +1,12 @@
-import { HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
+import { Text, VStack } from '@chakra-ui/react';
+import { encode as encodeBase64 } from '@stablelib/base64';
 import { encodeAddress, Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoInformationCircleOutline } from 'react-icons/io5';
 
 // Components
-import CopyIconButton from '@extension/components/CopyIconButton';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
-import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import Warning from '@extension/components/Warning';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
@@ -22,7 +19,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Types
-import { IExplorer, INetwork } from '@extension/types';
+import { IAccount, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
 // Utils
@@ -30,14 +27,14 @@ import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {
   condensed?: ICondensedProps;
-  explorer: IExplorer;
+  fromAccount: IAccount | null;
   network: INetwork;
   transaction: Transaction;
 }
 
-const ApplicationTransactionContent: FC<IProps> = ({
+const KeyRegistrationTransactionContent: FC<IProps> = ({
   condensed,
-  explorer,
+  fromAccount,
   network,
   transaction,
 }: IProps) => {
@@ -52,11 +49,13 @@ const ApplicationTransactionContent: FC<IProps> = ({
       w: 3,
     }
   );
-  const transactionType: TransactionTypeEnum =
-    parseTransactionType(transaction);
+  const transactionType: TransactionTypeEnum = parseTransactionType(
+    transaction,
+    fromAccount || undefined
+  );
   const renderExtraInformation = () => (
     <>
-      {/* Fee */}
+      {/*fee*/}
       <SignTxnsAssetItem
         atomicUnitsAmount={new BigNumber(String(transaction.fee))}
         decimals={network.nativeCurrency.decimals}
@@ -65,38 +64,62 @@ const ApplicationTransactionContent: FC<IProps> = ({
         unit={network.nativeCurrency.code}
       />
 
-      {/* Type */}
-      <HStack
-        alignItems="center"
-        justifyContent="flex-end"
-        spacing={1}
-        w="full"
-      >
-        <SignTxnsTextItem
-          isCode={true}
-          label={`${t<string>('labels.type')}:`}
-          value={t<string>('values.appOnComplete', {
-            context: transactionType,
-          })}
-        />
-        <Tooltip
-          aria-label="Application description"
-          label={t<string>('captions.appOnComplete', {
-            context: transactionType,
-          })}
-        >
-          <span
-            style={{
-              height: '1em',
-              lineHeight: '1em',
-            }}
-          >
-            <Icon as={IoInformationCircleOutline} color={defaultTextColor} />
-          </span>
-        </Tooltip>
-      </HStack>
+      {transactionType === TransactionTypeEnum.KeyRegistrationOnline && (
+        <>
+          {/*vote key*/}
+          {transaction.voteKey && (
+            <SignTxnsTextItem
+              isCode={true}
+              label={`${t<string>('labels.voteKey')}:`}
+              value={encodeBase64(transaction.voteKey)}
+            />
+          )}
 
-      {/*Note*/}
+          {/*vote key dilution*/}
+          {transaction.voteKeyDilution && (
+            <SignTxnsTextItem
+              label={`${t<string>('labels.voteKeyDilution')}:`}
+              value={String(transaction.voteKeyDilution)}
+            />
+          )}
+
+          {/*selection key*/}
+          {transaction.selectionKey && (
+            <SignTxnsTextItem
+              isCode={true}
+              label={`${t<string>('labels.selectionKey')}:`}
+              value={encodeBase64(transaction.selectionKey)}
+            />
+          )}
+
+          {/*state proof key*/}
+          {transaction.stateProofKey && (
+            <SignTxnsTextItem
+              isCode={true}
+              label={`${t<string>('labels.stateProofKey')}:`}
+              value={encodeBase64(transaction.stateProofKey)}
+            />
+          )}
+
+          {/*first round*/}
+          {transaction.voteFirst && (
+            <SignTxnsTextItem
+              label={`${t<string>('labels.firstRound')}:`}
+              value={String(transaction.voteFirst)}
+            />
+          )}
+
+          {/*last round*/}
+          {transaction.voteLast && (
+            <SignTxnsTextItem
+              label={`${t<string>('labels.lastRound')}:`}
+              value={String(transaction.voteLast)}
+            />
+          )}
+        </>
+      )}
+
+      {/*note*/}
       {transaction.note && transaction.note.length > 0 && (
         <SignTxnsTextItem
           isCode={true}
@@ -114,44 +137,14 @@ const ApplicationTransactionContent: FC<IProps> = ({
       spacing={condensed ? 2 : 4}
       w="full"
     >
-      {/*Heading*/}
+      {/*heading*/}
       <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
         {t<string>('headings.transaction', {
           context: transactionType,
         })}
       </Text>
 
-      {transactionType === TransactionTypeEnum.ApplicationDelete && (
-        <Warning message={t<string>('captions.deleteApplication')} size="xs" />
-      )}
-
-      {/*App ID*/}
-      {transaction.appIndex && (
-        <HStack spacing={0} w="full">
-          <SignTxnsTextItem
-            flexGrow={1}
-            isCode={true}
-            label={`${t<string>('labels.id')}:`}
-            value={transaction.appIndex.toString()}
-          />
-          <CopyIconButton
-            ariaLabel={`Copy ${transaction.appIndex}`}
-            size="xs"
-            value={transaction.appIndex.toString()}
-          />
-          {explorer && (
-            <OpenTabIconButton
-              size="xs"
-              tooltipLabel={t<string>('captions.openOn', {
-                name: explorer.canonicalName,
-              })}
-              url={`${explorer.baseUrl}${explorer.applicationPath}/${transaction.appIndex}`}
-            />
-          )}
-        </HStack>
-      )}
-
-      {/* From */}
+      {/*from*/}
       <SignTxnsAddressItem
         address={encodeAddress(transaction.from.publicKey)}
         ariaLabel="From address"
@@ -177,4 +170,4 @@ const ApplicationTransactionContent: FC<IProps> = ({
   );
 };
 
-export default ApplicationTransactionContent;
+export default KeyRegistrationTransactionContent;

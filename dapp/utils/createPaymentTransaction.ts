@@ -32,14 +32,13 @@ export default async function createPaymentTransaction({
   const suggestedParams: SuggestedParams = await client
     .getTransactionParams()
     .do();
-  const encoder: TextEncoder = new TextEncoder();
 
   return makePaymentTxnWithSuggestedParams(
     from,
     to || from,
     amount.toNumber(),
     undefined,
-    note ? encoder.encode(note) : undefined,
+    note ? new TextEncoder().encode(note) : undefined,
     suggestedParams
   );
 }

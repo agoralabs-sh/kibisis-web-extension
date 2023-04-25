@@ -11,6 +11,7 @@ import AssetConfigTransactionContent from './AssetConfigTransactionContent';
 import AssetCreateTransactionContent from './AssetCreateTransactionContent';
 import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
+import KeyRegistrationTransactionContent from './KeyRegistrationTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
@@ -142,6 +143,18 @@ const MultipleTransactionsContent: FC<IProps> = ({
             explorer={explorer}
             fromAccount={fromAccounts[transactionIndex] || null}
             loading={loadingAccountInformation || loadingAssetInformation}
+            network={network}
+            transaction={transaction}
+          />
+        );
+      case 'keyreg':
+        return (
+          <KeyRegistrationTransactionContent
+            condensed={{
+              expanded: openAccordions[transactionIndex],
+              onChange: handleToggleAccordion(transactionIndex),
+            }}
+            fromAccount={fromAccounts[transactionIndex] || null}
             network={network}
             transaction={transaction}
           />
