@@ -35,7 +35,7 @@ import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
 
 // Hooks
-import useOnMessage from '@extension/hooks/useOnMessage';
+import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
 import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
 
 // Selectors
@@ -128,7 +128,7 @@ const Root: FC = () => {
     }
   }, [accounts]);
   useOnNetworkConnectivity(); // listen to network connectivity
-  useOnMessage(); // handle incoming messages
+  useOnMainAppMessage(); // handle incoming messages
 
   return (
     <>

@@ -1,7 +1,31 @@
+import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
+import { decodeUnsignedTransaction, Transaction } from 'algosdk';
 import browser from 'webextension-polyfill';
+
+// Config
+import { networks } from '@extension/config';
+
+// Constants
+import {
+  ACCOUNT_KEY_PREFIX,
+  SESSION_KEY_PREFIX,
+  SETTINGS_GENERAL_KEY,
+} from '@extension/constants';
 
 // Enums
 import { EventNameEnum } from '@common/enums';
+
+// Errors
+import {
+  SerializableInvalidGroupIdError,
+  SerializableInvalidInputError,
+  SerializableNetworkNotSupportedError,
+  SerializableUnauthorizedSignerError,
+} from '@common/errors';
 
 // Events
 import {
@@ -19,21 +43,42 @@ import {
   ExternalSignTxnsResponseEvent,
 } from '@common/events';
 
+// Services
+import { StorageManager } from '@extension/services';
+
 // Types
 import {
   IBaseExtensionRequestPayload,
   IBaseOptions,
-  IExtensionEvents,
+  IExtensionResponseEvents,
   IExternalRequestEvents,
   ILogger,
+  IExternalResponseEvents,
 } from '@common/types';
+import {
+  IAccount,
+  IGeneralSettings,
+  INetwork,
+  ISession,
+  IStorageItemTypes,
+} from '@extension/types';
+
+// Utils
+import { computeGroupId } from '@common/utils';
+import {
+  getAuthorizedAddressesForHost,
+  selectDefaultNetwork,
+  verifyTransactionGroupId,
+} from '@extension/utils';
 
 export default class ExternalEventService {
   // private variables
   private readonly logger: ILogger | null;
+  private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
     this.logger = logger || null;
+    this.storageManager = new StorageManager();
   }
 
   /**
@@ -132,116 +177,450 @@ export default class ExternalEventService {
     );
   }
 
-  private handleExtensionEnableResponse(
-    message: ExtensionEnableResponseEvent
-  ): void {
-    this.logger &&
-      this.logger.debug(
-        `${ExternalEventService.name}#handleExtensionEnableResponse(): extension message "${message.event}" received`
-      );
+  /**
+   * Convenience function that gets all the accounts for a genesis hash from storage.
+   * @returns {Promise<IAccount[]>} all the accounts for the genesis hash.
+   * @private
+   */
+  private async fetchAccountsByGenesisHash(
+    genesisHash: string
+  ): Promise<IAccount[]> {
+    const storageItems: Record<string, IStorageItemTypes | unknown> =
+      await this.storageManager.getAllItems();
 
-    // send the response to the web page
-    return window.postMessage(
-      new ExternalEnableResponseEvent(message.payload, message.error)
+    return Object.keys(storageItems)
+      .reduce<IAccount[]>(
+        (acc, key) =>
+          key.startsWith(ACCOUNT_KEY_PREFIX)
+            ? [...acc, storageItems[key] as IAccount]
+            : acc,
+        []
+      )
+      .filter((value) => value.genesisHash === genesisHash); // filter by session genesis hash
+  }
+
+  /**
+   * Convenience function that gets the selected network from storage.
+   * @returns {Promise<INetwork | null>} the network or null if no network has been stored.
+   * @private
+   */
+  private async fetchSelectedNetwork(): Promise<INetwork | null> {
+    const storageItems: Record<string, IStorageItemTypes | unknown> =
+      await this.storageManager.getAllItems();
+    const generalSettings: IGeneralSettings =
+      (storageItems[SETTINGS_GENERAL_KEY] as IGeneralSettings) || null;
+
+    return (
+      networks.find(
+        (value) =>
+          value.genesisHash === generalSettings?.selectedNetworkGenesisHash
+      ) || null
     );
   }
 
-  private handleExtensionSignBytesResponse(
-    message: ExtensionSignBytesResponseEvent
-  ): void {
-    this.logger &&
-      this.logger.debug(
-        `${ExternalEventService.name}#handleExtensionSignBytesResponse(): extension message "${message.event}" received`
-      );
-
-    // send the response to the web page
-    return window.postMessage(
-      new ExternalSignBytesResponseEvent(message.payload, message.error)
+  /**
+   * Convenience function that fetches all the sessions from storage and filters them based on a predicate, if it is
+   * supplied.
+   * @param {(value: ISession, index: number, array: ISession[]) => boolean} filterPredicate - [optional] a filter
+   * predicate that will return only sessions that fulfill the predicate.
+   * @returns {ISession[]} the filtered sessions, if a predicate was supplied, otherwise all sessions are returned.
+   * @private
+   */
+  private async fetchSessions(
+    filterPredicate?: (
+      value: ISession,
+      index: number,
+      array: ISession[]
+    ) => boolean
+  ): Promise<ISession[]> {
+    const storageItems: Record<string, IStorageItemTypes | unknown> =
+      await this.storageManager.getAllItems();
+    const sessions: ISession[] = Object.keys(storageItems).reduce<ISession[]>(
+      (acc, key) =>
+        key.startsWith(SESSION_KEY_PREFIX)
+          ? [...acc, storageItems[key] as ISession]
+          : acc,
+      []
     );
+
+    // if there is no filter predicate, return all sessions
+    if (!filterPredicate) {
+      return sessions;
+    }
+
+    return sessions.filter(filterPredicate);
   }
 
-  private handleExtensionSignTxnsResponse(
-    message: ExtensionSignTxnsResponseEvent
-  ): void {
+  private async handleExternalEnableRequest({
+    event,
+    payload,
+  }: ExternalEnableRequestEvent): Promise<void> {
+    const { genesisHash } = payload;
+    let accounts: IAccount[];
+    let baseExtensionPayload: IBaseExtensionRequestPayload;
+    let network: INetwork | null = await this.fetchSelectedNetwork(); // get the selected network from storage
+    let session: ISession | null;
+    let sessionFilterPredicate: ((value: ISession) => boolean) | undefined;
+    let sessions: ISession[];
+
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#handleExtensionSignTxnsResponse(): extension message "${message.event}" received`
+        `${ExternalEventService.name}#handleExternalEnableRequest(): external message "${event}" received`
       );
 
-    // send the response to the web page
-    return window.postMessage(
-      new ExternalSignTxnsResponseEvent(message.payload, message.error)
-    );
-  }
+    // get the network if a genesis hash is present
+    if (genesisHash) {
+      network =
+        networks.find((value) => value.genesisHash === genesisHash) || null;
 
-  private async handleExternalEnableRequest(
-    message: ExternalEnableRequestEvent
-  ): Promise<void> {
-    this.logger &&
-      this.logger.debug(
-        `${ExternalEventService.name}#handleExternalEnableRequest(): external message "${message.event}" received`
+      // if there is no network for the genesis hash, it isn't supported
+      if (!network) {
+        this.logger &&
+          this.logger.debug(
+            `${ExternalEventService.name}#handleExternalEnableRequest(): genesis hash "${genesisHash}" is not supported`
+          );
+
+        // send the response to the web page
+        return this.sendExternalResponse(
+          new ExternalEnableResponseEvent(
+            null,
+            new SerializableNetworkNotSupportedError(genesisHash)
+          )
+        );
+      }
+
+      // filter the sessions by the specified genesis hash
+      sessionFilterPredicate = (value) => value.genesisHash === genesisHash;
+    }
+
+    baseExtensionPayload = this.createBaseExtensionRequestPayload();
+    sessions = await this.fetchSessions(sessionFilterPredicate);
+    session =
+      sessions.find((value) => value.host === baseExtensionPayload.host) ||
+      null;
+
+    // if we have a session, update its use and return it
+    if (session) {
+      accounts = await this.fetchAccountsByGenesisHash(session.genesisHash);
+      session = {
+        ...session,
+        usedAt: new Date().getTime(),
+      };
+
+      this.logger &&
+        this.logger.debug(
+          `${ExternalEventService.name}#handleExternalEnableRequest(): found session "${session.id}" updating`
+        );
+
+      await this.storageManager.setItems({
+        [`${SESSION_KEY_PREFIX}${session.id}`]: session,
+      });
+
+      // send the response to the web page
+      return this.sendExternalResponse(
+        new ExternalEnableResponseEvent(
+          {
+            accounts: session.authorizedAddresses.map<IWalletAccount>(
+              (address) => {
+                const account: IAccount | null =
+                  accounts.find((value) => value.address === address) || null;
+
+                return {
+                  address,
+                  ...(account?.name && {
+                    name: account.name,
+                  }),
+                };
+              }
+            ),
+            genesisHash: session.genesisHash,
+            genesisId: session.genesisId,
+            sessionId: session.id,
+          },
+          null
+        )
       );
+    }
 
-    // send the message to the extension (popup)
+    // send the message to the main app (popup) or the background service
     return await browser.runtime.sendMessage(
       new ExtensionEnableRequestEvent({
-        ...this.createBaseExtensionRequestPayload(),
-        ...message.payload,
+        ...baseExtensionPayload,
+        network: network || selectDefaultNetwork(networks),
       })
     );
   }
 
-  private async handleExternalSignBytesRequest(
-    message: ExternalSignBytesRequestEvent
-  ): Promise<void> {
+  private async handleExternalSignBytesRequest({
+    event,
+    id,
+    payload,
+  }: ExternalSignBytesRequestEvent): Promise<void> {
+    const { signer } = payload;
+    let authorizedAddresses: string[];
+    let baseExtensionPayload: IBaseExtensionRequestPayload;
+    let filteredSessions: ISession[];
+
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#handleExternalSignBytesRequest(): external message "${message.event}" received`
+        `${ExternalEventService.name}#handleExternalSignBytesRequest(): external message "${event}" received`
       );
 
-    // send the message to the extension (popup)
+    baseExtensionPayload = this.createBaseExtensionRequestPayload();
+    filteredSessions = await this.fetchSessions(
+      (value) => value.host === baseExtensionPayload.host
+    );
+
+    // if the app has not been enabled
+    if (filteredSessions.length <= 0) {
+      this.logger &&
+        this.logger.debug(
+          `${ExternalEventService.name}#handleExternalSignBytesRequest(): no sessions found for sign bytes request`
+        );
+
+      // send the response to the web page
+      return this.sendExternalResponse(
+        new ExternalSignBytesResponseEvent(
+          null,
+          new SerializableUnauthorizedSignerError( // TODO: use a more relevant error
+            '',
+            'app has not been authorized'
+          )
+        )
+      );
+    }
+
+    authorizedAddresses = getAuthorizedAddressesForHost(
+      baseExtensionPayload.host,
+      filteredSessions
+    );
+
+    // if the requested signer has not been authorized
+    if (signer && !authorizedAddresses.find((value) => value === signer)) {
+      this.logger &&
+        this.logger.debug(
+          `${ExternalEventService.name}#handleExternalSignBytesRequest(): signer "${signer}" is not authorized`
+        );
+
+      // send the response to the web page
+      return this.sendExternalResponse(
+        new ExternalSignBytesResponseEvent(
+          null,
+          new SerializableUnauthorizedSignerError(signer)
+        )
+      );
+    }
+
+    // send the message to the main app (popup) or the background service
     return await browser.runtime.sendMessage(
       new ExtensionSignBytesRequestEvent({
-        ...this.createBaseExtensionRequestPayload(),
-        ...message.payload,
+        ...baseExtensionPayload,
+        ...payload,
+        authorizedAddresses,
       })
     );
   }
 
-  private async handleExternalSignTxnsRequest(
-    message: ExternalSignTxnsRequestEvent
-  ): Promise<void> {
+  private async handleExternalSignTxnsRequest({
+    event,
+    payload,
+  }: ExternalSignTxnsRequestEvent): Promise<void> {
+    let authorizedAddresses: string[];
+    let baseExtensionPayload: IBaseExtensionRequestPayload;
+    let decodedUnsignedTransactions: Transaction[];
+    let encodedComputedGroupId: string;
+    let errorMessage: string;
+    let filteredSessions: ISession[];
+    let genesisHashes: string[];
+    let genesisHash: string;
+    let network: INetwork | null;
+
     this.logger &&
       this.logger.debug(
-        `${ExternalEventService.name}#handleExternalSignTxnsRequest(): external message "${message.event}" received`
+        `${ExternalEventService.name}#handleExternalSignTxnsRequest(): external message "${event}" received`
       );
 
-    // send the message to the extension (popup)
+    // attempt to decode the transactions
+    try {
+      decodedUnsignedTransactions = payload.txns.map((value) =>
+        decodeUnsignedTransaction(decodeBase64(value.txn))
+      );
+    } catch (error) {
+      errorMessage = `failed to decode transactions: ${error.message}`;
+
+      this.logger &&
+        this.logger.debug(
+          `${ExternalEventService.name}#handleExternalSignTxnsRequest(): ${errorMessage}`
+        );
+
+      // send the response to the web page
+      return this.sendExternalResponse(
+        new ExternalSignTxnsResponseEvent(
+          null,
+          new SerializableInvalidInputError(errorMessage)
+        )
+      );
+    }
+
+    // validate the transaction group ids
+    if (!verifyTransactionGroupId(decodedUnsignedTransactions)) {
+      encodedComputedGroupId = encodeBase64(
+        computeGroupId(decodedUnsignedTransactions)
+      );
+      errorMessage = `the computed group id "${encodedComputedGroupId}" does not match the assigned transaction group ids [${decodedUnsignedTransactions.map(
+        (value) => `"${value.group ? encodeBase64(value.group) : 'undefined'}"`
+      )}]`;
+
+      this.logger &&
+        this.logger.debug(
+          `${ExternalEventService.name}#handleExternalSignTxnsRequest(): ${errorMessage}`
+        );
+
+      // send the response to the web page
+      return this.sendExternalResponse(
+        new ExternalSignTxnsResponseEvent(
+          null,
+          new SerializableInvalidGroupIdError(
+            encodedComputedGroupId,
+            errorMessage
+          )
+        )
+      );
+    }
+
+    genesisHashes = decodedUnsignedTransactions.reduce<string[]>(
+      (acc, transaction) => {
+        const genesisHash: string = encodeBase64(transaction.genesisHash);
+
+        return acc.some((value) => value === genesisHash)
+          ? acc
+          : [...acc, genesisHash];
+      },
+      []
+    );
+
+    // there should only be one genesis hash
+    if (genesisHashes.length > 1) {
+      errorMessage = `the transaction group is not atomic, they are bound for multiple networks: [${genesisHashes.join(
+        ','
+      )}]`;
+
+      this.logger &&
+        this.logger.debug(
+          `${ExternalEventService.name}#handleExternalSignTxnsRequest(): ${errorMessage}`
+        );
+
+      // send the response to the web page
+      return this.sendExternalResponse(
+        new ExternalSignTxnsResponseEvent(
+          null,
+          new SerializableInvalidInputError(errorMessage)
+        )
+      );
+    }
+
+    genesisHash = genesisHashes[0];
+    network =
+      networks.find((value) => value.genesisHash === genesisHash) || null;
+
+    if (!network) {
+      this.logger &&
+        this.logger.debug(
+          `${ExternalEventService.name}#handleExternalSignTxnsRequest(): genesis hash "${genesisHash}" is not supported`
+        );
+
+      // send the response to the web page
+      return this.sendExternalResponse(
+        new ExternalSignTxnsResponseEvent(
+          null,
+          new SerializableNetworkNotSupportedError(genesisHash)
+        )
+      );
+    }
+
+    baseExtensionPayload = this.createBaseExtensionRequestPayload();
+    filteredSessions = await this.fetchSessions(
+      (value) =>
+        value.host === baseExtensionPayload.host &&
+        value.genesisHash === genesisHashes[0]
+    );
+
+    // if the app has not been enabled
+    if (filteredSessions.length <= 0) {
+      this.logger &&
+        this.logger.debug(
+          `${ExternalEventService.name}#handleExternalSignTxnsRequest(): no sessions found for sign txns request`
+        );
+
+      // send the response to the web page
+      return this.sendExternalResponse(
+        new ExternalSignTxnsResponseEvent(
+          null,
+          new SerializableUnauthorizedSignerError( // TODO: use a more relevant error
+            '',
+            'app has not been authorized'
+          )
+        )
+      );
+    }
+
+    authorizedAddresses = filteredSessions.reduce<string[]>(
+      (acc, session) => [
+        ...acc,
+        ...session.authorizedAddresses.filter(
+          (address) => !acc.some((value) => address === value)
+        ), // get only unique addresses
+      ],
+      []
+    );
+
+    // send the message to the main app (popup) or the background service
     return await browser.runtime.sendMessage(
       new ExtensionSignTxnsRequestEvent({
-        ...this.createBaseExtensionRequestPayload(),
-        ...message.payload,
+        ...baseExtensionPayload,
+        authorizedAddresses,
+        network,
+        txns: payload.txns,
       })
     );
+  }
+
+  private sendExternalResponse(message: IExternalResponseEvents): void {
+    this.logger &&
+      this.logger.debug(
+        `${ExternalEventService.name}#sendExternalResponse(): sending "${message.event}" to the web page`
+      );
+
+    // send the response to the web page
+    return window.postMessage(message);
   }
 
   /**
    * Public functions
    */
 
-  public onExtensionMessage(message: IExtensionEvents): void {
+  public onExtensionMessage(message: IExtensionResponseEvents): void {
     switch (message.event) {
       case EventNameEnum.ExtensionEnableResponse:
-        return this.handleExtensionEnableResponse(
-          message as ExtensionEnableResponseEvent
+        return this.sendExternalResponse(
+          new ExternalEnableResponseEvent(
+            (message as ExtensionEnableResponseEvent).payload,
+            message.error
+          )
         );
       case EventNameEnum.ExtensionSignBytesResponse:
-        return this.handleExtensionSignBytesResponse(
-          message as ExtensionSignBytesResponseEvent
+        return this.sendExternalResponse(
+          new ExternalSignBytesResponseEvent(
+            (message as ExtensionSignBytesResponseEvent).payload,
+            message.error
+          )
         );
       case EventNameEnum.ExtensionSignTxnsResponse:
-        return this.handleExtensionSignTxnsResponse(
-          message as ExtensionSignTxnsResponseEvent
+        return this.sendExternalResponse(
+          new ExternalSignTxnsResponseEvent(
+            (message as ExtensionSignTxnsResponseEvent).payload,
+            message.error
+          )
         );
       default:
         break;

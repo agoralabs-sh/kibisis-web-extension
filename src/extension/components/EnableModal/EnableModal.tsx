@@ -11,9 +11,12 @@ import {
   ModalHeader,
   Skeleton,
   SkeletonCircle,
+  Tag,
+  TagLabel,
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { faker } from '@faker-js/faker';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +51,6 @@ import {
   useSelectAccounts,
   useSelectEnableRequest,
   useSelectFetchingAccounts,
-  useSelectNetworks,
   useSelectSavingSessions,
 } from '@extension/selectors';
 
@@ -60,7 +62,6 @@ import {
   IAccount,
   IAppThunkDispatch,
   IEnableRequest,
-  INetwork,
   ISession,
 } from '@extension/types';
 
@@ -81,12 +82,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const accounts: IAccount[] = useSelectAccounts();
   const enableRequest: IEnableRequest | null = useSelectEnableRequest();
   const fetching: boolean = useSelectFetchingAccounts();
-  const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
-  const network: INetwork | null =
-    networks.find(
-      (value) => value.genesisHash === enableRequest?.genesisHash
-    ) || null;
   const handleCancelClick = () => {
     if (enableRequest) {
       dispatch(
@@ -94,6 +90,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
           error: new SerializableOperationCanceledError(
             `user dismissed connect modal`
           ),
+          requestEventId: enableRequest.requestEventId,
           session: null,
           tabId: enableRequest.tabId,
         })
@@ -116,6 +113,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     dispatch(
       sendEnableResponse({
         error: null,
+        requestEventId: enableRequest.requestEventId,
         session,
         tabId: enableRequest.tabId,
       })
@@ -227,6 +225,94 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       </Heading>
     );
   };
+  const renderHeader = () => {
+    if (!enableRequest) {
+      return (
+        <>
+          <HStack
+            alignItems="center"
+            justifyContent="center"
+            spacing={4}
+            w="full"
+          >
+            <SkeletonCircle size="10" />
+            <Skeleton>
+              <Heading size="md" textAlign="center">
+                {faker.commerce.productName()}
+              </Heading>
+            </Skeleton>
+          </HStack>
+          <Skeleton>
+            <Text fontSize="xs" textAlign="center">
+              {faker.internet.domainName()}
+            </Text>
+          </Skeleton>
+          <Skeleton>
+            <Text fontSize="xs" textAlign="center">
+              {faker.random.words(8)}
+            </Text>
+          </Skeleton>
+          <Skeleton>
+            <Tag size="sm">
+              <TagLabel>{faker.internet.domainName()}</TagLabel>
+            </Tag>
+          </Skeleton>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <HStack
+          alignItems="center"
+          justifyContent="center"
+          spacing={4}
+          w="full"
+        >
+          {/*app icon */}
+          <Avatar
+            name={enableRequest.appName}
+            size="sm"
+            src={enableRequest.iconUrl || undefined}
+          />
+
+          {/*app name*/}
+          <Heading color={defaultTextColor} size="md" textAlign="center">
+            {enableRequest.appName}
+          </Heading>
+        </HStack>
+
+        <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
+          {/*app description*/}
+          {enableRequest.description && (
+            <Text color={defaultTextColor} fontSize="sm" textAlign="center">
+              {enableRequest.description}
+            </Text>
+          )}
+
+          {/*app host*/}
+          <Box
+            backgroundColor={textBackgroundColor}
+            borderRadius={theme.radii['3xl']}
+            px={2}
+            py={1}
+          >
+            <Text color={defaultTextColor} fontSize="xs" textAlign="center">
+              {enableRequest.host}
+            </Text>
+          </Box>
+
+          {/*network*/}
+          <ChainBadge network={enableRequest.network} />
+
+          {/*caption*/}
+          <Text color={subTextColor} fontSize="md" textAlign="center">
+            {t<string>('captions.enableRequest')}
+          </Text>
+        </VStack>
+      </>
+    );
+  };
 
   return (
     <Modal
@@ -243,39 +329,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <VStack alignItems="center" spacing={5} w="full">
-            {/* App icon */}
-            <Avatar
-              name={enableRequest?.appName || 'unknown'}
-              src={enableRequest?.iconUrl || undefined}
-            />
-            <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
-              {/* App name */}
-              <Heading color={defaultTextColor} size="md" textAlign="center">
-                {enableRequest?.appName || 'Unknown'}
-              </Heading>
-              {/* App description */}
-              {enableRequest?.description && (
-                <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-                  {enableRequest.description}
-                </Text>
-              )}
-              {/* App host */}
-              <Box
-                backgroundColor={textBackgroundColor}
-                borderRadius={theme.radii['3xl']}
-                px={2}
-                py={1}
-              >
-                <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-                  {enableRequest?.host || 'unknown host'}
-                </Text>
-              </Box>
-              {/* Network */}
-              {network && <ChainBadge network={network} />}
-              <Text color={subTextColor} fontSize="md" textAlign="center">
-                {t<string>('captions.connectRequest')}
-              </Text>
-            </VStack>
+            {renderHeader()}
           </VStack>
         </ModalHeader>
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>

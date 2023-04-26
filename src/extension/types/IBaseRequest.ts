@@ -3,6 +3,7 @@ interface IBaseRequest {
   authorizedAddresses: string[];
   host: string;
   iconUrl: string | null;
+  requestEventId: string;
   tabId: number;
 }
 

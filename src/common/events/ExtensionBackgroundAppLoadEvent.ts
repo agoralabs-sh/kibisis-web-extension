@@ -2,17 +2,17 @@
 import { EventNameEnum } from '@common/enums';
 
 // Events
-import BaseEvent from './BaseEvent';
+import { BaseEvent } from '@common/events';
 
 interface IPayload {
-  genesisHash: string | null;
+  eventId: string;
 }
 
-export default class ExternalEnableRequestEvent extends BaseEvent {
+export default class ExtensionBackgroundAppLoadEvent extends BaseEvent {
   public readonly payload: IPayload;
 
   constructor(payload: IPayload) {
-    super(EventNameEnum.ExternalEnableRequest);
+    super(EventNameEnum.ExtensionBackgroundAppLoad);
 
     this.payload = payload;
   }

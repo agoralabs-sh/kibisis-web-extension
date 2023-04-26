@@ -1,8 +1,9 @@
 // Types
-import IBaseEnableRequestPayload from './IBaseEnableRequestPayload';
+import { INetwork } from '@extension/types';
 import IBaseExtensionRequestPayload from './IBaseExtensionRequestPayload';
 
-type IExtensionEnableRequestPayload = IBaseExtensionRequestPayload &
-  IBaseEnableRequestPayload;
+interface IExtensionEnableRequestPayload extends IBaseExtensionRequestPayload {
+  network: INetwork;
+}
 
 export default IExtensionEnableRequestPayload;

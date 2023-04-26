@@ -54,8 +54,6 @@ const translation: IResourceLanguage = {
     clearAllData: 'Are you sure you want to clear all your data?',
     clearAllDataWarning:
       'Once this has been completed, it cannot be reversed. All your settings and accounts will be removed',
-    connectRequest:
-      'An application is requesting to connect. Select which accounts you would like to enable:',
     copied: 'Copied!',
     createNewAccount:
       'Create a new account. You will be prompted to save a mnemonic seed phrase.',
@@ -64,6 +62,8 @@ const translation: IResourceLanguage = {
       'This password will be used to encrypt your private keys, so make it strong!',
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
+    enableRequest:
+      'An application is requesting to connect. Select which accounts you would like to enable:',
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     freezeManagerAddressDoesNotMatch:
       'This account does not have the authority to freeze/unfreeze this asset. This transaction will likely fail.',

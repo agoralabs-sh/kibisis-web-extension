@@ -5,20 +5,16 @@ import browser from 'webextension-polyfill';
 import { EventNameEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
-// Errors
-import { BaseSerializableError } from '@common/errors';
-
 // Events
 import { ExtensionSignTxnsResponseEvent } from '@common/events';
 
 // Types
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
+import { IBaseResponseThunkPayload } from '../types';
 
-interface IPayload {
-  error: BaseSerializableError | null;
+interface IPayload extends IBaseResponseThunkPayload {
   signedTransactions: (string | null)[] | null;
-  tabId: number;
 }
 
 const sendTxnsBytesResponse: AsyncThunk<
@@ -27,7 +23,10 @@ const sendTxnsBytesResponse: AsyncThunk<
   Record<string, never>
 > = createAsyncThunk<void, IPayload, { state: IMainRootState }>(
   MessagesThunkEnum.SendSignTxnsResponse,
-  async ({ error, signedTransactions: stxns, tabId }, { getState }) => {
+  async (
+    { error, requestEventId, signedTransactions: stxns, tabId },
+    { getState }
+  ) => {
     const logger: ILogger = getState().application.logger;
     let message: ExtensionSignTxnsResponseEvent;
 
@@ -37,7 +36,7 @@ const sendTxnsBytesResponse: AsyncThunk<
 
     // send the error response to the background script & the content script
     if (error) {
-      message = new ExtensionSignTxnsResponseEvent(null, error);
+      message = new ExtensionSignTxnsResponseEvent(requestEventId, null, error);
 
       await Promise.all([
         browser.runtime.sendMessage(message),
@@ -49,6 +48,7 @@ const sendTxnsBytesResponse: AsyncThunk<
 
     if (stxns) {
       message = new ExtensionSignTxnsResponseEvent(
+        requestEventId,
         {
           stxns,
         },

@@ -6,20 +6,16 @@ import browser from 'webextension-polyfill';
 import { EventNameEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
-// Errors
-import { BaseSerializableError } from '@common/errors';
-
 // Events
 import { ExtensionEnableResponseEvent } from '@common/events';
 
 // Types
 import { ILogger } from '@common/types';
 import { IAccount, IMainRootState, ISession } from '@extension/types';
+import { IBaseResponseThunkPayload } from '../types';
 
-interface IPayload {
-  error: BaseSerializableError | null;
+interface IPayload extends IBaseResponseThunkPayload {
   session: ISession | null;
-  tabId: number;
 }
 
 const sendEnableResponse: AsyncThunk<
@@ -28,7 +24,7 @@ const sendEnableResponse: AsyncThunk<
   Record<string, never>
 > = createAsyncThunk<void, IPayload, { state: IMainRootState }>(
   MessagesThunkEnum.SendEnableResponse,
-  async ({ error, session, tabId }, { getState }) => {
+  async ({ error, requestEventId, session, tabId }, { getState }) => {
     const accounts: IAccount[] = getState().accounts.items;
     const functionName: string = 'sendEnableResponse';
     const logger: ILogger = getState().application.logger;
@@ -40,7 +36,7 @@ const sendEnableResponse: AsyncThunk<
 
     // send the error response to the background script & the content script
     if (error) {
-      message = new ExtensionEnableResponseEvent(null, error);
+      message = new ExtensionEnableResponseEvent(requestEventId, null, error);
 
       await Promise.all([
         browser.runtime.sendMessage(message),
@@ -52,6 +48,7 @@ const sendEnableResponse: AsyncThunk<
 
     if (session) {
       message = new ExtensionEnableResponseEvent(
+        requestEventId,
         {
           accounts: session.authorizedAddresses.map<IWalletAccount>(
             (address) => {

@@ -1,10 +1,10 @@
 // Types
 import IBaseRequest from './IBaseRequest';
+import INetwork from './INetwork';
 
 interface IEnableRequest extends IBaseRequest {
   description: string | null;
-  genesisHash: string;
-  genesisId: string;
+  network: INetwork;
 }
 
 export default IEnableRequest;

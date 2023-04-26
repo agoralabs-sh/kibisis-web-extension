@@ -98,6 +98,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
           error: new SerializableOperationCanceledError(
             `user dismissed sign bytes modal`
           ),
+          requestEventId: signBytesRequest.requestEventId,
           tabId: signBytesRequest.tabId,
         })
       );
@@ -230,6 +231,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
         sendSignBytesResponse({
           encodedSignature: encodedSignedBytes,
           error: null,
+          requestEventId: signBytesRequest.requestEventId,
           tabId: signBytesRequest.tabId,
         })
       );
@@ -253,6 +255,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
               sendSignBytesResponse({
                 encodedSignature: null,
                 error: new SerializableUnknownError(error.message),
+                requestEventId: signBytesRequest.requestEventId,
                 tabId: signBytesRequest.tabId,
               })
             );

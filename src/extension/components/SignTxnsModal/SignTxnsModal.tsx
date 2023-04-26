@@ -80,6 +80,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           error: new SerializableOperationCanceledError(
             `user dismissed sign transaction modal`
           ),
+          requestEventId: signTxnsRequest.requestEventId,
           signedTransactions: null,
           tabId: signTxnsRequest.tabId,
         })
@@ -135,7 +136,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const renderHeader = () => {
     if (!signTxnsRequest) {
       return (
-        <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
+        <>
           <HStack
             alignItems="center"
             justifyContent="center"
@@ -164,29 +165,32 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
               <TagLabel>{faker.internet.domainName()}</TagLabel>
             </Tag>
           </Skeleton>
-        </VStack>
+        </>
       );
     }
 
     return (
-      <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
-        {/* App icon & name */}
+      <>
         <HStack
           alignItems="center"
           justifyContent="center"
           spacing={4}
           w="full"
         >
+          {/*app icon*/}
           <Avatar
             name={signTxnsRequest.appName}
             size="sm"
             src={signTxnsRequest.iconUrl || undefined}
           />
+
+          {/*app name*/}
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {signTxnsRequest.appName}
           </Heading>
         </HStack>
-        {/* Host */}
+
+        {/*host*/}
         <Box
           backgroundColor={textBackgroundColor}
           borderRadius={theme.radii['3xl']}
@@ -197,7 +201,11 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
             {signTxnsRequest.host}
           </Text>
         </Box>
-        {/* Caption */}
+
+        {/*network*/}
+        <ChainBadge network={signTxnsRequest.network} />
+
+        {/*caption*/}
         <Text color={subTextColor} fontSize="md" textAlign="center">
           {t<string>(
             signTxnsRequest.transactions.length > 1
@@ -205,9 +213,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
               : 'captions.signTransactionRequest'
           )}
         </Text>
-        {/* Network */}
-        <ChainBadge network={signTxnsRequest.network} />
-      </VStack>
+      </>
     );
   };
 
@@ -220,6 +226,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       dispatch(
         sendSignTxnsResponse({
           error: null,
+          requestEventId: signTxnsRequest.requestEventId,
           signedTransactions: encodedSignedTransactions,
           tabId: signTxnsRequest.tabId,
         })
@@ -243,6 +250,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
             dispatch(
               sendSignTxnsResponse({
                 error: new SerializableUnknownError(error.message),
+                requestEventId: signTxnsRequest.requestEventId,
                 signedTransactions: null,
                 tabId: signTxnsRequest.tabId,
               })
@@ -268,7 +276,9 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          {renderHeader()}
+          <VStack alignItems="center" spacing={5} w="full">
+            {renderHeader()}
+          </VStack>
         </ModalHeader>
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
         <ModalFooter p={DEFAULT_GAP}>

@@ -1,5 +1,6 @@
 export { default as BaseEvent } from './BaseEvent';
 export { default as BaseResponseEvent } from './BaseResponseEvent';
+export { default as ExtensionBackgroundAppLoadEvent } from './ExtensionBackgroundAppLoadEvent';
 export { default as ExtensionEnableRequestEvent } from './ExtensionEnableRequestEvent';
 export { default as ExtensionEnableResponseEvent } from './ExtensionEnableResponseEvent';
 export { default as ExtensionRegistrationCompletedEvent } from './ExtensionRegistrationCompletedEvent';
