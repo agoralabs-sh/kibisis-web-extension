@@ -1,3 +1,10 @@
+# [1.1.0-beta.14](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.13...v1.1.0-beta.14) (2023-04-26)
+
+
+### Features
+
+* sign transactions ([#15](https://github.com/agoralabs-sh/kibisis-web-extension/issues/15)) ([6d8e192](https://github.com/agoralabs-sh/kibisis-web-extension/commit/6d8e192fe81857092d781cd0efd3c282cd4b1106))
+
 # [1.1.0-beta.13](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.12...v1.1.0-beta.13) (2023-04-19)
 
 
