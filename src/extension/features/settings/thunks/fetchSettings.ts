@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   SETTINGS_ADVANCED_KEY,
   SETTINGS_APPEARANCE_KEY,
-  SETTINGS_NETWORK_KEY,
+  SETTINGS_GENERAL_KEY,
 } from '@extension/constants';
 
 // Enums
@@ -17,6 +17,7 @@ import { StorageManager } from '@extension/services';
 import {
   IAdvancedSettings,
   IAppearanceSettings,
+  IGeneralSettings,
   IMainRootState,
   INetwork,
   ISettings,
@@ -55,12 +56,12 @@ const fetchSettings: AsyncThunk<
               ...(storageItems[SETTINGS_APPEARANCE_KEY] as IAppearanceSettings),
             },
           };
-        case SETTINGS_NETWORK_KEY:
+        case SETTINGS_GENERAL_KEY:
           return {
             ...acc,
-            network: {
-              ...acc.network,
-              ...(storageItems[SETTINGS_NETWORK_KEY] as INetwork),
+            general: {
+              ...acc.general,
+              ...(storageItems[SETTINGS_GENERAL_KEY] as IGeneralSettings),
             },
           };
         default:

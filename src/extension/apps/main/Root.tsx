@@ -9,6 +9,7 @@ import EnableModal from '@extension/components/EnableModal';
 import ErrorModal from '@extension/components/ErrorModal';
 import MainLayout from '@extension/components/MainLayout';
 import SignBytesModal from '@extension/components/SignBytesModal';
+import SignTxnsModal from '@extension/components/SignTxnsModal';
 
 // Features
 import {
@@ -28,12 +29,13 @@ import {
 import {
   setEnableRequest,
   setSignBytesRequest,
+  setSignTxnsRequest,
 } from '@extension/features/messages';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
 
 // Hooks
-import useOnMessage from '@extension/hooks/useOnMessage';
+import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
 import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
 
 // Selectors
@@ -82,7 +84,8 @@ const Root: FC = () => {
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));
-  const handleSignDataModalClose = () => dispatch(setSignBytesRequest(null));
+  const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
+  const handleSignTxnsModalClose = () => dispatch(setSignTxnsRequest(null));
 
   useEffect(() => {
     dispatch(setNavigate(navigate));
@@ -125,14 +128,15 @@ const Root: FC = () => {
     }
   }, [accounts]);
   useOnNetworkConnectivity(); // listen to network connectivity
-  useOnMessage(); // handle incoming messages
+  useOnMainAppMessage(); // handle incoming messages
 
   return (
     <>
       <ErrorModal onClose={handleErrorModalClose} />
       <ConfirmModal onClose={handleConfirmClose} />
       <EnableModal onClose={handleEnableModalClose} />
-      <SignBytesModal onClose={handleSignDataModalClose} />
+      <SignTxnsModal onClose={handleSignTxnsModalClose} />
+      <SignBytesModal onClose={handleSignBytesModalClose} />
       <ToastContainer />
       <MainLayout>
         <Outlet />

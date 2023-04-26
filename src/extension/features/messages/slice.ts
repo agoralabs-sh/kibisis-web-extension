@@ -4,7 +4,11 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '@extension/enums';
 
 // Types
-import { IEnableRequest, ISignBytesRequest } from '@extension/types';
+import {
+  IEnableRequest,
+  ISignBytesRequest,
+  ISignTxnsRequest,
+} from '@extension/types';
 import { IMessagesState } from './types';
 
 // Utils
@@ -26,8 +30,15 @@ const slice = createSlice({
     ) => {
       state.signBytesRequest = action.payload;
     },
+    setSignTxnsRequest: (
+      state: Draft<IMessagesState>,
+      action: PayloadAction<ISignTxnsRequest | null>
+    ) => {
+      state.signTxnsRequest = action.payload;
+    },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setEnableRequest, setSignBytesRequest } = slice.actions;
+export const { setEnableRequest, setSignBytesRequest, setSignTxnsRequest } =
+  slice.actions;

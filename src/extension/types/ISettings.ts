@@ -1,17 +1,17 @@
 // Types
 import IAdvancedSettings from './IAdvancedSettings';
 import IAppearanceSettings from './IAppearanceSettings';
-import INetwork from './INetwork';
+import IGeneralSettings from './IGeneralSettings';
 
 /**
  * @property {IAdvancedSettings} advanced - various advanced settings.
  * @property {IAppearanceSettings} appearance - various appearance settings.
- * @property {INetwork | null} network - the current selected network.
+ * @property {IGeneralSettings} general - various general settings.
  */
 interface ISettings {
   advanced: IAdvancedSettings;
   appearance: IAppearanceSettings;
-  network: INetwork | null;
+  general: IGeneralSettings;
 }
 
 export default ISettings;

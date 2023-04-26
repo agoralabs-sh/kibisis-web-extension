@@ -1,4 +1,5 @@
 import {
+  AlgorandProvider,
   BaseError,
   IBaseResult,
   ISignBytesResult,
@@ -26,12 +27,13 @@ import { theme } from '@extension/theme';
 
 // Types
 import { IWindow } from '@external/types';
+import { IAccountInformation } from './types';
 
 // Utils
 import { isValidJwt } from './utils';
 
 interface IProps {
-  signer: string | null;
+  account: IAccountInformation | null;
   toast: CreateToastFnReturn;
 }
 
@@ -49,7 +51,7 @@ function createSignatureToSign(header: string, payload: string): Uint8Array {
   );
 }
 
-const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
+const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
   const [header, setHeader] = useState<string | null>(null);
   const [payload, setPayload] = useState<string | null>(null);
   const [signedData, setSignedData] = useState<Uint8Array | null>(null);
@@ -60,25 +62,42 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
     setSignedData(null);
   };
   const handleSignJwtClick = (withSigner: boolean) => async () => {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
     let result: IBaseResult & ISignBytesResult;
 
-    if (
-      !header ||
-      !payload ||
-      (withSigner && !signer) ||
-      !isValidJwt(header, payload)
-    ) {
-      console.error('no data/address or the jwt is invalid');
+    if (!account) {
+      toast({
+        description: 'You must first enable the dApp with the wallet.',
+        status: 'error',
+        title: 'No Account Not Found!',
+      });
 
       return;
     }
 
-    if (!(window as IWindow).algorand) {
+    if (!header || !payload) {
+      toast({
+        description: 'You must add header and payload.',
+        status: 'error',
+        title: 'No Data Provided!',
+      });
+
+      return;
+    }
+
+    if (!isValidJwt(header, payload)) {
+      toast({
+        status: 'error',
+        title: 'Invalid JWT!',
+      });
+
+      return;
+    }
+
+    if (!algorand) {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet.',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'window.algorand Not Found!',
       });
@@ -87,17 +106,15 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
     }
 
     try {
-      result = await (window as IWindow).algorand.signBytes({
+      result = await algorand.signBytes({
         data: createSignatureToSign(header, payload),
         ...(withSigner && {
-          signer: signer || undefined,
+          signer: account?.address || undefined,
         }),
       });
 
       toast({
         description: `Successfully signed JWT for wallet "${result.id}".`,
-        duration: 3000,
-        isClosable: true,
         status: 'success',
         title: 'JWT Signed!',
       });
@@ -106,8 +123,6 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
     } catch (error) {
       toast({
         description: (error as BaseError).message,
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
       });
@@ -122,10 +137,8 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
   const handleVerifySignedJWT = () => {
     let verifiedResult: boolean;
 
-    if (!header || !payload || !signedData || !signer) {
+    if (!header || !payload || !signedData || !account) {
       toast({
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'No Data To Verify!',
       });
@@ -136,14 +149,12 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
     verifiedResult = verifyBytes(
       createSignatureToSign(header, payload),
       signedData,
-      signer
+      account.address
     ); // verify using the algosdk
 
     if (!verifiedResult) {
       toast({
         description: 'The signed data failed verification',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'Signed Data is Invalid!',
       });
@@ -153,14 +164,22 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
 
     toast({
       description: 'The signed data has been verified.',
-      duration: 3000,
-      isClosable: true,
       status: 'success',
       title: 'Signed Data is Valid!',
     });
   };
   const handleUseJwtPreset = () => {
     const now: number = new Date().getTime(); // now in milliseconds
+
+    if (!account) {
+      toast({
+        description: 'You must first enable the dApp with the wallet.',
+        status: 'error',
+        title: 'No Account Not Found!',
+      });
+
+      return;
+    }
 
     setHeader(`{
   "alg": "EdDSA",
@@ -171,10 +190,10 @@ const SignJwtTab: FC<IProps> = ({ signer, toast }: IProps) => {
   "aud": "${window.location.protocol}//${window.location.host}",
   "exp": ${now + 300000},
   "iat": ${now},
-  "iss": "did:algo:${signer}",
+  "iss": "did:algo:${account.address}",
   "jti": "${uuid()}",
   "gty": "did",
-  "sub": "${signer}"
+  "sub": "${account.address}"
 }`);
   };
 

@@ -31,6 +31,7 @@ import {
   BaseEvent,
   ExternalEnableRequestEvent,
   ExternalSignBytesRequestEvent,
+  ExternalSignTxnsRequestEvent,
 } from '@common/events';
 
 // Types
@@ -44,7 +45,7 @@ import type {
 // Utils
 import { mapSerializableErrors } from '@common/utils';
 
-type IResults = IEnableResult | IBaseSignBytesResponsePayload;
+type IResults = IBaseSignBytesResponsePayload | IEnableResult | ISignTxnsResult;
 
 interface INewOptions extends IBaseOptions {
   extensionId: string;
@@ -185,6 +186,9 @@ export default class KibisisWalletManager extends BaseWalletManager {
   }
 
   public async signTxns(options: ISignTxnsOptions): Promise<ISignTxnsResult> {
-    throw new WalletOperationNotSupportedError(this.id, 'signTxns');
+    return (await this.handleEvent(
+      new ExternalSignTxnsRequestEvent(options),
+      EventNameEnum.ExternalSignTxnsResponse
+    )) as ISignTxnsResult;
   }
 }

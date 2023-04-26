@@ -1,13 +1,13 @@
-import { IBaseSignBytesRequestPayload } from './index';
+// Types
+import IBaseExtensionRequestPayload from './IBaseExtensionRequestPayload';
+import IBaseSignBytesRequestPayload from './IBaseSignBytesRequestPayload';
 
-/**
- * @property {string} host - used in the identity of the dapp.
- */
-interface IExtensionSignBytesRequestPayload
-  extends IBaseSignBytesRequestPayload {
-  appName: string;
-  host: string;
-  iconUrl: string | null;
+interface IPayload {
+  authorizedAddresses: string[];
 }
+
+type IExtensionSignBytesRequestPayload = IBaseExtensionRequestPayload &
+  IBaseSignBytesRequestPayload &
+  IPayload;
 
 export default IExtensionSignBytesRequestPayload;

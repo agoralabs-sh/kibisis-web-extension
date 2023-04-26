@@ -1,5 +1,4 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Algodv2 } from 'algosdk';
 
 // Constants
 import { ASSETS_KEY_PREFIX, NODE_REQUEST_DELAY } from '@extension/constants';
@@ -12,28 +11,15 @@ import { StorageManager } from '@extension/services';
 
 // Types
 import { ILogger } from '@common/types';
-import {
-  IAlgorandAsset,
-  IAsset,
-  IMainRootState,
-  INetwork,
-  INode,
-  ITinyManAssetResponse,
-} from '@extension/types';
+import { IAsset, IMainRootState, INetwork, INode } from '@extension/types';
 import {
   IUpdateAssetInformationPayload,
   IUpdateAssetInformationResult,
 } from '../types';
 
 // Utils
-import {
-  convertGenesisHashToHex,
-  fetchAssetList,
-  fetchAssetVerification,
-  mapAssetFromAlgorandAsset,
-  randomNode,
-} from '@extension/utils';
-import { fetchAssetInformationWithDelay, upsertAssets } from '../utils';
+import { convertGenesisHashToHex } from '@extension/utils';
+import { fetchAssetInformationById, upsertAssets } from '../utils';
 
 const updateAssetInformationThunk: AsyncThunk<
   IUpdateAssetInformationResult | null, // return
@@ -52,17 +38,12 @@ const updateAssetInformationThunk: AsyncThunk<
         (value) => value.genesisHash === genesisHash
       ) || null;
     const assets: IAsset[] = [];
-    let assetInformation: IAlgorandAsset;
-    let assetList: Record<string, ITinyManAssetResponse> | null = null;
+    let assetInformation: IAsset | null;
     let assetsStorageKey: string;
-    let client: Algodv2;
     let currentAssets: IAsset[];
-    let delay: number;
     let encodedGenesisHash: string;
     let id: string;
-    let node: INode;
     let storageManager: StorageManager;
-    let verified: boolean;
 
     if (!network) {
       logger.debug(
@@ -72,58 +53,29 @@ const updateAssetInformationThunk: AsyncThunk<
       return null;
     }
 
-    // TODO: asset list only exists for algorand mainnet, move this url to config?
-    if (
-      network.genesisHash === 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8='
-    ) {
-      assetList = await fetchAssetList({
-        logger,
-      });
-    }
-
     // get the information for each asset and add it to the array
     for (let i: number = 0; i < ids.length; i++) {
       id = ids[i];
-      node = randomNode(network);
-      client = new Algodv2('', node.url, node.port);
-      delay = i * NODE_REQUEST_DELAY; // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
-      verified = false;
 
       try {
-        assetInformation = await fetchAssetInformationWithDelay({
-          client,
-          delay,
-          id,
+        assetInformation = await fetchAssetInformationById(id, {
+          delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          logger,
+          network,
         });
 
-        logger.debug(
-          `${updateAssetInformationThunk.name}: getting verified status for "${id}" from "${node.name}" on "${network.genesisId}"`
-        );
-
-        // TODO: asset list only exists for algorand mainnet, move this url to config?
-        if (
-          network.genesisHash === 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8='
-        ) {
-          verified = await fetchAssetVerification(id, {
-            delay,
-            logger,
-          });
+        if (!assetInformation) {
+          continue;
         }
 
-        assets.push(
-          mapAssetFromAlgorandAsset(
-            assetInformation,
-            assetList ? assetList[id]?.logo.svg || null : null,
-            verified
-          )
+        logger.debug(
+          `${updateAssetInformationThunk.name}: successfully updated asset information for "${id}" on "${network.genesisId}"`
         );
 
-        logger.debug(
-          `${updateAssetInformationThunk.name}: successfully updated asset information for "${id}" from "${node.name}" on "${network.genesisId}"`
-        );
+        assets.push(assetInformation);
       } catch (error) {
         logger.error(
-          `${updateAssetInformationThunk.name}: failed to get asset information for asset "${id}" from "${node.name}" on ${network.genesisId}: ${error.message}`
+          `${updateAssetInformationThunk.name}: failed to get asset information for asset "${id}" on ${network.genesisId}: ${error.message}`
         );
       }
     }

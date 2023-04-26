@@ -1,8 +1,8 @@
 import {
+  AlgorandProvider,
   BaseError,
   IBaseResult,
   IEnableResult,
-  IWalletAccount,
 } from '@agoralabs-sh/algorand-provider';
 import {
   Button,
@@ -35,7 +35,15 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 // Components
 import Fonts from '@extension/components/Fonts';
 
+// Config
+import { networks } from '@extension/config';
+
 // Tabs
+import ApplicationActionsTab from './ApplicationActionsTab';
+import AssetActionsTab from './AssetActionsTab';
+import AtomicTransactionActionsTab from './AtomicTransactionActionsTab';
+import KeyRegistrationActionsTab from './KeyRegistrationActionsTab';
+import PaymentActionsTab from './PaymentActionsTab';
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
 
@@ -44,22 +52,42 @@ import { theme } from '@extension/theme';
 
 // Types
 import { IWindow } from '@external/types';
+import { INetwork } from '@extension/types';
+import { IAccountInformation } from './types';
+
+// Utils
+import { getAccountInformation } from './utils';
 
 const App: FC = () => {
-  const toast: CreateToastFnReturn = useToast();
-  const [enabledAccounts, setEnabledAccounts] = useState<IWalletAccount[]>([]);
-  const [genesisId, setGenesisId] = useState<string | null>(null);
-  const [_, setGenesisHash] = useState<string | null>(null);
-  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const handleAddressSelect = (event: ChangeEvent<HTMLSelectElement>) =>
-    setSelectedAddress(event.target.value);
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
+  const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
+    []
+  );
+  const [selectedAccount, setSelectedAccount] =
+    useState<IAccountInformation | null>(null);
+  const [selectedNetwork, setSelectedNetwork] = useState<INetwork | null>(null);
+  const handleAddressSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    const account: IAccountInformation | null =
+      enabledAccounts.find((value) => value.address === event.target.value) ||
+      null;
+
+    if (account) {
+      setSelectedAccount(account);
+    }
+  };
   const handleEnableClick = (genesisHash: string) => async () => {
-    if (!(window as IWindow).algorand) {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
+    let accounts: IAccountInformation[];
+    let network: INetwork | null;
+
+    if (!algorand) {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'window.algorand not found!',
       });
@@ -68,26 +96,35 @@ const App: FC = () => {
     }
 
     try {
-      const result: IBaseResult & IEnableResult = await (
-        window as IWindow
-      ).algorand.enable({ genesisHash });
+      const result: IBaseResult & IEnableResult = await algorand.enable({
+        genesisHash,
+      });
+
+      network =
+        networks.find((value) => value.genesisHash === result.genesisHash) ||
+        null;
+
+      if (!network) {
+        throw new Error(`unknown network "${result.genesisId}"`);
+      }
+
+      accounts = await Promise.all(
+        result.accounts.map<Promise<IAccountInformation>>((account) =>
+          getAccountInformation(account, network as INetwork)
+        )
+      );
+
+      setEnabledAccounts(accounts);
+      setSelectedNetwork(network);
 
       toast({
         description: `Successfully connected to "${result.id}".`,
-        duration: 3000,
-        isClosable: true,
         status: 'success',
         title: 'Connected!',
       });
-
-      setEnabledAccounts(result.accounts);
-      setGenesisHash(result.genesisHash);
-      setGenesisId(result.genesisId);
     } catch (error) {
       toast({
         description: (error as BaseError).message,
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
       });
@@ -95,8 +132,8 @@ const App: FC = () => {
   };
 
   useEffect(() => {
-    if (!selectedAddress) {
-      setSelectedAddress(enabledAccounts[0]?.address || null);
+    if (enabledAccounts) {
+      setSelectedAccount(enabledAccounts[0] || null);
     }
   }, [enabledAccounts]);
 
@@ -110,8 +147,8 @@ const App: FC = () => {
           justifyContent="center"
           minH="100vh"
           maxW={800}
-          pt={8}
           px={8}
+          py={8}
           w="full"
         >
           <VStack justifyContent="center" spacing={8} w="full">
@@ -127,7 +164,9 @@ const App: FC = () => {
               w="full"
             >
               <Table variant="simple">
-                <TableCaption>Network: {genesisId || 'N/A'}</TableCaption>
+                <TableCaption>
+                  Network: {selectedNetwork?.genesisId || 'N/A'}
+                </TableCaption>
                 <Thead>
                   <Tr>
                     <Th>Address</Th>
@@ -175,7 +214,7 @@ const App: FC = () => {
               <Select
                 onChange={handleAddressSelect}
                 placeholder="Select an address"
-                value={selectedAddress || undefined}
+                value={selectedAccount?.address || undefined}
               >
                 {enabledAccounts.map((value) => (
                   <option key={nanoid()} value={value.address}>
@@ -186,12 +225,42 @@ const App: FC = () => {
             </HStack>
             <Tabs colorScheme="primaryLight" w="full">
               <TabList>
-                <Tab>Sign Data</Tab>
+                <Tab>Payments</Tab>
+                <Tab>Assets</Tab>
+                <Tab>Atomic Txns</Tab>
+                <Tab>Apps</Tab>
+                <Tab>Keys</Tab>
+                <Tab>Sign Bytes</Tab>
                 <Tab>Sign JWT</Tab>
               </TabList>
               <TabPanels>
-                <SignDataTab signer={selectedAddress} toast={toast} />
-                <SignJwtTab signer={selectedAddress} toast={toast} />
+                <PaymentActionsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <AssetActionsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <AtomicTransactionActionsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <ApplicationActionsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <KeyRegistrationActionsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <SignDataTab account={selectedAccount} toast={toast} />
+                <SignJwtTab account={selectedAccount} toast={toast} />
               </TabPanels>
             </Tabs>
           </VStack>

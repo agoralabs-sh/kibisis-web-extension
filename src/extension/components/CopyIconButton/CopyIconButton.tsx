@@ -10,12 +10,14 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 interface IProps {
   ariaLabel: string;
   copiedTooltipLabel?: string;
+  size?: string;
   value: string;
 }
 
 const CopyIconButton: FC<IProps> = ({
   ariaLabel,
   copiedTooltipLabel,
+  size = 'sm',
   value,
 }: IProps) => {
   const { t } = useTranslation();
@@ -43,7 +45,7 @@ const CopyIconButton: FC<IProps> = ({
           )
         }
         onClick={handleCopyClick}
-        size="sm"
+        size={size}
         variant="ghost"
       />
     </Tooltip>

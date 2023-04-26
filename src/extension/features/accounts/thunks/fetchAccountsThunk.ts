@@ -1,6 +1,6 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { ACCOUNT_KEY_PREFIX } from '@extension/constants';
+import { ACCOUNT_KEY_PREFIX, NODE_REQUEST_DELAY } from '@extension/constants';
 
 // Enums
 import { AccountsThunkEnum } from '@extension/enums';
@@ -15,7 +15,7 @@ import { IFetchAccountsPayload } from '../types';
 
 // Utils
 import { selectDefaultNetwork } from '@extension/utils';
-import { updateAccountInformation } from '../utils';
+import { saveAccountsToStorage, updateAccountInformation } from '../utils';
 
 const fetchAccountsThunk: AsyncThunk<
   IAccount[], // return
@@ -30,14 +30,18 @@ const fetchAccountsThunk: AsyncThunk<
   const networks: INetwork[] = getState().networks.items;
   const online: boolean = getState().application.online;
   const selectedNetwork: INetwork =
-    getState().settings.network || selectDefaultNetwork(networks);
+    networks.find(
+      (value) =>
+        value.genesisHash ===
+        getState().settings.general.selectedNetworkGenesisHash
+    ) || selectDefaultNetwork(networks);
   const storageManager: StorageManager = new StorageManager();
   const storageItems: Record<string, unknown> =
     await storageManager.getAllItems();
   let accounts: IAccount[];
 
   logger.debug(
-    `${AccountsThunkEnum.FetchAccounts}: fetching accounts for "${selectedNetwork.genesisId}" from storage`
+    `${fetchAccountsThunk.name}: fetching accounts for "${selectedNetwork.genesisId}" from storage`
   );
 
   accounts = Object.keys(storageItems)
@@ -53,14 +57,32 @@ const fetchAccountsThunk: AsyncThunk<
 
   // update account information, if requested
   if (options?.updateAccountInformation && online) {
-    logger.debug(
-      `${AccountsThunkEnum.FetchAccounts}: updating account information`
+    logger.debug(`${fetchAccountsThunk.name}: updating account information`);
+
+    accounts = await Promise.all(
+      accounts.map(async (account, index) => {
+        const network: INetwork | null =
+          networks.find((value) => value.genesisHash === account.genesisHash) ||
+          null;
+
+        if (!network) {
+          logger &&
+            logger.debug(
+              `${fetchAccountsThunk.name}: unrecognized network "${account.genesisHash}" for "${account.id}", skipping`
+            );
+
+          return account;
+        }
+
+        return await updateAccountInformation(account, {
+          delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          logger,
+          network,
+        });
+      })
     );
 
-    return await updateAccountInformation(accounts, {
-      logger,
-      networks,
-    });
+    await saveAccountsToStorage(accounts);
   }
 
   return accounts;

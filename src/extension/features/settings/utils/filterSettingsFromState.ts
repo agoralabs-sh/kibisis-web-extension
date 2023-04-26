@@ -10,11 +10,11 @@ import { ISettingsState } from '../types';
 export default function filterSettingsFromState({
   advanced,
   appearance,
-  network,
+  general,
 }: ISettingsState): ISettings {
   return {
     advanced,
     appearance,
-    network,
+    general,
   };
 }

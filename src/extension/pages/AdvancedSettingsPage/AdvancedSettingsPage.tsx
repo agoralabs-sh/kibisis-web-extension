@@ -42,29 +42,34 @@ const AdvancedSettingsPage: FC = () => {
   return (
     <>
       <PageHeader title={t<string>('titles.page', { context: 'advanced' })} />
-      <VStack w="full">
+      <VStack spacing={4} w="full">
         {/* Developer */}
-        <SettingsSubHeading text={t<string>('headings.developer')} />
-        <SettingsSwitchItem
-          checked={settings.advanced.allowTestNet}
-          description={t<string>('captions.allowTestNet')}
-          label={t<string>('labels.allowTestNet')}
-          onChange={handleOnSwitchChange('allowTestNet')}
-        />
+        <VStack w="full">
+          <SettingsSubHeading text={t<string>('headings.developer')} />
+          <SettingsSwitchItem
+            checked={settings.advanced.allowTestNet}
+            description={t<string>('captions.allowTestNet')}
+            label={t<string>('labels.allowTestNet')}
+            onChange={handleOnSwitchChange('allowTestNet')}
+          />
+        </VStack>
+
         {/* Beta */}
-        <SettingsSubHeading text={t<string>('headings.beta')} />
-        <SettingsSwitchItem
-          checked={settings.advanced.allowBetaNet}
-          description={t<string>('captions.allowBetaNet')}
-          label={t<string>('labels.allowBetaNet')}
-          onChange={handleOnSwitchChange('allowBetaNet')}
-        />
-        <SettingsSwitchItem
-          checked={settings.advanced.allowDidTokenFormat}
-          description={t<string>('captions.allowDidTokenFormat')}
-          label={t<string>('labels.allowDidTokenFormat')}
-          onChange={handleOnSwitchChange('allowDidTokenFormat')}
-        />
+        <VStack w="full">
+          <SettingsSubHeading text={t<string>('headings.beta')} />
+          <SettingsSwitchItem
+            checked={settings.advanced.allowBetaNet}
+            description={t<string>('captions.allowBetaNet')}
+            label={t<string>('labels.allowBetaNet')}
+            onChange={handleOnSwitchChange('allowBetaNet')}
+          />
+          <SettingsSwitchItem
+            checked={settings.advanced.allowDidTokenFormat}
+            description={t<string>('captions.allowDidTokenFormat')}
+            label={t<string>('labels.allowDidTokenFormat')}
+            onChange={handleOnSwitchChange('allowDidTokenFormat')}
+          />
+        </VStack>
       </VStack>
     </>
   );

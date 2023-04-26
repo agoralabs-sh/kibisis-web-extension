@@ -1,21 +1,26 @@
-import { BaseError } from '@agoralabs-sh/algorand-provider';
-
 // Enums
 import { EventNameEnum } from '@common/enums';
 
+// Errors
+import { BaseSerializableError } from '@common/errors';
+
 // Events
-import BaseResponseEvent from './BaseResponseEvent';
+import BaseExtensionResponseEvent from './BaseExtensionResponseEvent';
 
 // Types
 import { IBaseSignBytesResponsePayload } from '@common/types';
 
 type IPayload = IBaseSignBytesResponsePayload;
 
-export default class ExtensionSignBytesResponseEvent extends BaseResponseEvent {
+export default class ExtensionSignBytesResponseEvent extends BaseExtensionResponseEvent {
   public readonly payload: IPayload | null;
 
-  constructor(payload: IPayload | null, error: BaseError | null) {
-    super(EventNameEnum.ExtensionSignBytesResponse, error);
+  constructor(
+    requestEventId: string,
+    payload: IPayload | null,
+    error: BaseSerializableError | null
+  ) {
+    super(EventNameEnum.ExtensionSignBytesResponse, requestEventId, error);
 
     this.payload = payload;
   }

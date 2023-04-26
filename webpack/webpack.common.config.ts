@@ -16,18 +16,17 @@ const config: Configuration = {
     ['background']: resolve(SRC_PATH, 'background.ts'),
     ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
     // extension apps
-    ['enable-app']: resolve(EXTENSION_PATH, 'apps', 'enable', 'index.ts'),
+    ['background-app']: resolve(
+      EXTENSION_PATH,
+      'apps',
+      'background',
+      'index.ts'
+    ),
     ['main-app']: resolve(EXTENSION_PATH, 'apps', 'main', 'index.ts'),
     ['registration-app']: resolve(
       EXTENSION_PATH,
       'apps',
       'registration',
-      'index.ts'
-    ),
-    ['sign-bytes-app']: resolve(
-      EXTENSION_PATH,
-      'apps',
-      'sign-bytes',
       'index.ts'
     ),
   },
@@ -65,29 +64,22 @@ const config: Configuration = {
     }),
     /* HTMLs */
     new HtmlWebpackPlugin({
-      chunks: ['enable-app'],
-      filename: 'enable.html',
+      chunks: ['background-app'],
+      filename: 'background-app.html',
       inject: 'head',
       template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,
     }),
     new HtmlWebpackPlugin({
       chunks: ['main-app'],
-      filename: 'main.html',
+      filename: 'main-app.html',
       inject: 'head',
       template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,
     }),
     new HtmlWebpackPlugin({
       chunks: ['registration-app'],
-      filename: 'registration.html',
-      inject: 'head',
-      template: resolve(SRC_PATH, 'index.hbs'),
-      title: APP_TITLE,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['sign-bytes-app'],
-      filename: 'sign_bytes.html',
+      filename: 'registration-app.html',
       inject: 'head',
       template: resolve(SRC_PATH, 'index.hbs'),
       title: APP_TITLE,

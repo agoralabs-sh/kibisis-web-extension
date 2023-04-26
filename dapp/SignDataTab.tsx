@@ -1,4 +1,5 @@
 import {
+  AlgorandProvider,
   BaseError,
   IBaseResult,
   ISignBytesResult,
@@ -22,13 +23,14 @@ import { theme } from '@extension/theme';
 
 // Types
 import { IWindow } from '@external/types';
+import { IAccountInformation } from './types';
 
 interface IProps {
-  signer: string | null;
+  account: IAccountInformation | null;
   toast: CreateToastFnReturn;
 }
 
-const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
+const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
   const [dataToSign, setDataToSign] = useState<string | null>(null);
   const [signedData, setSignedData] = useState<Uint8Array | null>(null);
   const encoder: TextEncoder = new TextEncoder();
@@ -37,20 +39,33 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     setSignedData(null);
   };
   const handleSignDataClick = (withSigner: boolean) => async () => {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
     let result: IBaseResult & ISignBytesResult;
 
-    if (!dataToSign || (withSigner && !signer)) {
-      console.error('no data or address');
+    if (!account) {
+      toast({
+        description: 'You must first enable the dApp with the wallet.',
+        status: 'error',
+        title: 'No Account Not Found!',
+      });
 
       return;
     }
 
-    if (!(window as IWindow).algorand) {
+    if (!dataToSign) {
+      toast({
+        description: 'You must first enter some input to sign.',
+        status: 'error',
+        title: 'No Data To Sign!',
+      });
+
+      return;
+    }
+
+    if (!algorand) {
       toast({
         description:
           'Algorand Provider has been intialized; there is no supported wallet.',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'window.algorand Not Found!',
       });
@@ -59,17 +74,15 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     }
 
     try {
-      result = await (window as IWindow).algorand.signBytes({
+      result = await algorand.signBytes({
         data: encoder.encode(dataToSign),
         ...(withSigner && {
-          signer: signer || undefined,
+          signer: account?.address || undefined,
         }),
       });
 
       toast({
         description: `Successfully signed data for wallet "${result.id}".`,
-        duration: 3000,
-        isClosable: true,
         status: 'success',
         title: 'Data Signed!',
       });
@@ -78,8 +91,6 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     } catch (error) {
       toast({
         description: (error as BaseError).message,
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
       });
@@ -91,10 +102,8 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     let encoder: TextEncoder;
     let verifiedResult: boolean;
 
-    if (!dataToSign || !signedData || !signer) {
+    if (!dataToSign || !signedData || !account) {
       toast({
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'No Data To Verify!',
       });
@@ -106,14 +115,12 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
     verifiedResult = verifyBytes(
       encoder.encode(dataToSign),
       signedData,
-      signer
+      account.address
     ); // verify using the algosdk
 
     if (!verifiedResult) {
       toast({
         description: 'The signed data failed verification',
-        duration: 3000,
-        isClosable: true,
         status: 'error',
         title: 'Signed Data is Invalid!',
       });
@@ -123,8 +130,6 @@ const SignDataTab: FC<IProps> = ({ signer, toast }: IProps) => {
 
     toast({
       description: 'The signed data has been verified.',
-      duration: 3000,
-      isClosable: true,
       status: 'success',
       title: 'Signed Data is Valid!',
     });

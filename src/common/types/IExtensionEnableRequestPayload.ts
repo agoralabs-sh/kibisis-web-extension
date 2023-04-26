@@ -1,10 +1,9 @@
-import { IBaseEnableRequestPayload } from './index';
+// Types
+import { INetwork } from '@extension/types';
+import IBaseExtensionRequestPayload from './IBaseExtensionRequestPayload';
 
-interface IExtensionEnableRequestPayload extends IBaseEnableRequestPayload {
-  appName: string;
-  description: string | null;
-  host: string;
-  iconUrl: string | null;
+interface IExtensionEnableRequestPayload extends IBaseExtensionRequestPayload {
+  network: INetwork;
 }
 
 export default IExtensionEnableRequestPayload;

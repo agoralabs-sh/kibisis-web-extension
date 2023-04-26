@@ -1,11 +1,9 @@
-interface ISignBytesRequest {
-  appName: string;
-  authorizedAddresses: string[];
+// Types
+import IBaseRequest from './IBaseRequest';
+
+interface ISignBytesRequest extends IBaseRequest {
   encodedData: string;
-  host: string;
-  iconUrl: string | null;
   signer: string | null;
-  tabId: number;
 }
 
 export default ISignBytesRequest;

@@ -1,69 +1,46 @@
-import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
-import {
-  decode as decodeBase64,
-  encodeURLSafe as encodeBase64Url,
-} from '@stablelib/base64';
 import browser, { Runtime, Windows } from 'webextension-polyfill';
-
-// Config
-import { networks } from '@extension/config';
 
 // Constants
 import {
-  ACCOUNT_KEY_PREFIX,
   DEFAULT_POPUP_HEIGHT,
   DEFAULT_POPUP_WIDTH,
-  SESSION_KEY_PREFIX,
-  SETTINGS_NETWORK_KEY,
 } from '@extension/constants';
 
 // Enums
 import { EventNameEnum } from '@common/enums';
 
-// Errors
-import {
-  SerializableNetworkNotSupportedError,
-  SerializableUnauthorizedSignerError,
-} from '@common/errors';
-
 // Events
-import {
-  ExtensionEnableRequestEvent,
-  ExtensionEnableResponseEvent,
-  ExtensionSignBytesRequestEvent,
-  ExtensionSignBytesResponseEvent,
-} from '@common/events';
+import { BaseEvent, ExtensionBackgroundAppLoadEvent } from '@common/events';
 
 // Services
 import PrivateKeyService from './PrivateKeyService';
 import StorageManager from './StorageManager';
 
 // Types
-import { IBaseOptions, IExtensionEvents, ILogger } from '@common/types';
 import {
-  IAccount,
-  INetwork,
-  ISession,
-  IStorageItemTypes,
-} from '@extension/types';
+  IBaseOptions,
+  IAllExtensionEvents,
+  IExtensionRequestEvents,
+  IExtensionResponseEvents,
+  ILogger,
+} from '@common/types';
+import { IStorageItemTypes } from '@extension/types';
 
-// Utils
-import {
-  getAuthorizedAddressesForHost,
-  selectDefaultNetwork,
-} from '@extension/utils';
+interface IBackgroundEvent {
+  message: BaseEvent;
+  windowId: number;
+}
 
 export default class BackgroundService {
-  private enableWindow: Windows.Window | null;
+  private backgroundEvents: IBackgroundEvent[];
   private readonly logger: ILogger | null;
   private mainWindow: Windows.Window | null;
   private readonly privateKeyService: PrivateKeyService;
   private registrationWindow: Windows.Window | null;
-  private signBytesWindow: Windows.Window | null;
   private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
-    this.enableWindow = null;
+    this.backgroundEvents = [];
     this.logger = logger || null;
     this.mainWindow = null;
     this.privateKeyService = new PrivateKeyService({
@@ -71,7 +48,6 @@ export default class BackgroundService {
       passwordTag: browser.runtime.id,
     });
     this.registrationWindow = null;
-    this.signBytesWindow = null;
     this.storageManager = new StorageManager();
   }
 
@@ -79,270 +55,92 @@ export default class BackgroundService {
    * Private functions
    */
 
-  private async handleEnableRequest(
-    { payload }: ExtensionEnableRequestEvent,
+  /**
+   * Convenience function that simply checks if the background event, with the supplied event ID, exists in the event queue.
+   * @param {string} eventId - the event ID of the event to check.
+   * @returns {boolean} true if the event is in the event queue, false otherwise.
+   * @private
+   */
+  private doesEventExist(eventId: string): boolean {
+    return (
+      this.backgroundEvents.findIndex(
+        (value) => value.message.id === eventId
+      ) >= 0
+    );
+  }
+
+  private async handleBackgroundAppLoad({
+    payload,
+  }: ExtensionBackgroundAppLoadEvent): Promise<void> {
+    const backgroundEvent: IBackgroundEvent | null =
+      this.backgroundEvents.find(
+        (value) => value.message.id === payload.eventId
+      ) || null;
+
+    // if we recognize the event send the message so the background pop-up can pick it up
+    if (backgroundEvent) {
+      return await browser.runtime.sendMessage(backgroundEvent.message);
+    }
+  }
+
+  private async handleExtensionRequest(
+    message: IExtensionRequestEvents,
     sender: Runtime.MessageSender
   ): Promise<void> {
+    const { id, event } = message;
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
-    let accounts: IAccount[];
-    let network: INetwork | null;
-    let session: ISession | null;
-    let sessions: ISession[];
-    let storageItems: Record<string, IStorageItemTypes | unknown>;
+    let backgroundWindow: Windows.Window;
     let searchParams: URLSearchParams;
 
-    // if the app is not initialized, ignore
-    if (!isInitialized) {
-      return;
-    }
-
-    if (!sender.tab?.id) {
-      return;
-    }
-
-    // if the main window is open, let it handle the request
-    if (this.mainWindow) {
-      return;
-    }
-
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundService.name}#handleEnableRequest(): extension message "${EventNameEnum.ExtensionEnableRequest}" received from the content script`
-      );
-
-    storageItems = await this.storageManager.getAllItems();
-    sessions = Object.keys(storageItems).reduce<ISession[]>(
-      (acc, key) =>
-        key.startsWith(SESSION_KEY_PREFIX)
-          ? [...acc, storageItems[key] as ISession]
-          : acc,
-      []
-    );
-    network =
-      (storageItems[SETTINGS_NETWORK_KEY] as INetwork | undefined) ||
-      (selectDefaultNetwork(networks) as INetwork); // get the network from the settings or get the default one (mainnet)
-
-    if (payload.genesisHash) {
-      network =
-        networks.find(
-          (value: INetwork) => value.genesisHash === payload.genesisHash
-        ) || null;
-
-      // if there is no network for the genesis hash, it isn't supported
-      if (!network) {
-        this.logger &&
-          this.logger.debug(
-            `${BackgroundService.name}#handleEnableRequest(): genesis hash "${payload.genesisHash}" not supported`
-          );
-
-        return await browser.tabs.sendMessage(
-          sender.tab.id,
-          new ExtensionEnableResponseEvent(
-            null,
-            new SerializableNetworkNotSupportedError(payload.genesisHash)
-          )
-        );
-      }
-
-      // filter sessions by requested genesis hash
-      sessions = sessions.filter(
-        (value) => value.genesisHash === payload.genesisHash
-      );
-    }
-
-    // get a previous session, if it exists
-    session = sessions.find((value) => value.host === payload.host) || null;
-
-    if (session) {
-      accounts = Object.keys(storageItems)
-        .reduce<IAccount[]>(
-          (acc, key) =>
-            key.startsWith(ACCOUNT_KEY_PREFIX)
-              ? [...acc, storageItems[key] as IAccount]
-              : acc,
-          []
-        )
-        .filter((value) => value.genesisHash === session?.genesisHash); // filter by session genesis hash
-      session = {
-        ...session,
-        usedAt: new Date().getTime(),
-      };
-
-      // save the updated session
-      await this.storageManager.setItems({
-        [`${SESSION_KEY_PREFIX}${session.id}`]: session,
-      });
-
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundService.name}#handleEnableRequest(): found previous session "${session.id}" for "${session.host}"`
-        );
-
-      return await browser.tabs.sendMessage(
-        sender.tab.id,
-        new ExtensionEnableResponseEvent(
-          {
-            accounts: session.authorizedAddresses.map<IWalletAccount>(
-              (address) => {
-                const account: IAccount | null =
-                  accounts.find((value) => value.address === address) || null;
-
-                return {
-                  address,
-                  ...(account?.name && {
-                    name: account.name,
-                  }),
-                };
-              }
-            ),
-            genesisHash: session.genesisHash,
-            genesisId: session.genesisId,
-            sessionId: session.id,
-          },
-          null
-        )
-      );
-    }
-
-    if (!this.enableWindow) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundService.name}#handleEnableRequest(): no previous session found for "${payload.host}", launching enable app`
-        );
-
-      searchParams = new URLSearchParams({
-        appName: encodeURIComponent(payload.appName),
-        genesisHash: encodeURIComponent(network.genesisHash),
-        host: encodeURIComponent(payload.host),
-        tabId: encodeURIComponent(sender.tab.id.toString()),
-        ...(payload.description && {
-          description: encodeURIComponent(payload.description),
-        }),
-        ...(payload.iconUrl && {
-          iconUrl: encodeURIComponent(payload.iconUrl),
-        }),
-      });
-
-      this.enableWindow = await browser.windows.create({
-        height: DEFAULT_POPUP_HEIGHT,
-        type: 'popup',
-        url: `enable.html?${searchParams.toString()}`,
-        width: DEFAULT_POPUP_WIDTH,
-      });
-
-      return;
-    }
-  }
-
-  private async handleEnableResponse(): Promise<void> {
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundService.name}#handleEnableResponse(): extension message "${EventNameEnum.ExtensionEnableResponse}" received from the popup`
-      );
-
-    // if this was a response from the connect app, remove the window
-    if (this.enableWindow && this.enableWindow.id) {
-      await browser.windows.remove(this.enableWindow.id);
-    }
-  }
-
-  private async handleEnableSignBytesRequest(
-    { payload }: ExtensionSignBytesRequestEvent,
-    sender: Runtime.MessageSender
-  ): Promise<void> {
-    const isInitialized: boolean = await this.privateKeyService.isInitialized();
-    let authorizedAddresses: string[];
-    let filteredSessions: ISession[];
-    let rawDecodedData: Uint8Array;
-    let storageItems: Record<string, IStorageItemTypes | unknown>;
-    let url: string;
-
-    // if the app is not initialized, ignore
-    if (!isInitialized) {
-      return;
-    }
-
-    if (!sender.tab?.id) {
-      return;
-    }
-
-    // if the main window is open, let it handle the request
-    if (this.mainWindow) {
-      return;
-    }
-
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundService.name}#handleEnableSignBytesRequest(): extension message "${EventNameEnum.ExtensionSignBytesRequest}" received from the content script`
-      );
-
-    storageItems = await this.storageManager.getAllItems();
-    filteredSessions = Object.keys(storageItems)
-      .reduce<ISession[]>(
-        (acc, key) =>
-          key.startsWith(SESSION_KEY_PREFIX)
-            ? [...acc, storageItems[key] as ISession]
-            : acc,
-        []
-      )
-      .filter((value) => value.host === payload.host);
-
-    // if the host has not been enabled in the wallet
-    if (filteredSessions.length <= 0) {
-      return await browser.tabs.sendMessage(
-        sender.tab.id,
-        new ExtensionSignBytesResponseEvent(
-          null,
-          new SerializableUnauthorizedSignerError( // TODO: use a more relevant error
-            '',
-            'app has not been authorized'
-          )
-        )
-      );
-    }
-
-    authorizedAddresses = getAuthorizedAddressesForHost(
-      payload.host,
-      filteredSessions
-    );
-
-    // if the requested signer has not been authorized
     if (
-      payload.signer &&
-      !authorizedAddresses.find((value) => value === payload.signer)
+      !isInitialized || // not initialized, ignore it
+      !sender.tab?.id || // no origin tab, no way to send a response, ignore
+      this.mainWindow // if the main window is open, let it handle the request
     ) {
-      return await browser.tabs.sendMessage(
-        sender.tab.id,
-        new ExtensionSignBytesResponseEvent(
-          null,
-          new SerializableUnauthorizedSignerError(payload.signer)
-        )
-      );
+      return;
     }
 
-    if (!this.signBytesWindow) {
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundService.name}#handleEnableRequest(): extension message "${event}" received from the content script`
+      );
+
+    searchParams = new URLSearchParams({
+      eventId: encodeURIComponent(id),
+      eventType: encodeURIComponent(event),
+      originTabId: encodeURIComponent(sender.tab.id),
+    });
+    backgroundWindow = await browser.windows.create({
+      height: DEFAULT_POPUP_HEIGHT,
+      type: 'popup',
+      url: `background-app.html?${searchParams.toString()}`,
+      width: DEFAULT_POPUP_WIDTH,
+    });
+
+    if (backgroundWindow.id) {
+      this.backgroundEvents.push({
+        message,
+        windowId: backgroundWindow.id,
+      });
+    }
+  }
+
+  private async handleExtensionResponse({
+    requestEventId,
+  }: IExtensionResponseEvents): Promise<void> {
+    const backgroundEvent: IBackgroundEvent | null =
+      this.backgroundEvents.find(
+        (value) => value.message.id === requestEventId
+      ) || null;
+
+    if (backgroundEvent) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundService.name}#handleEnableSignBytesRequest(): launching sign bytes app`
+          `${BackgroundService.name}#handleExtensionResponse(): removing background event window for event "${backgroundEvent.message.id}"`
         );
 
-      rawDecodedData = decodeBase64(payload.encodedData); // we need to make the base64 URL safe as we will be passing it as a search param
-      url = `sign_bytes.html?appName=${
-        payload.appName
-      }&encodedData=${encodeBase64Url(rawDecodedData)}&host=${
-        payload.host
-      }&tabId=${sender.tab.id}${
-        payload.iconUrl ? `&iconUrl=${payload.iconUrl}` : ''
-      }${payload.signer ? `&signer=${payload.signer}` : ''}`;
-
-      this.signBytesWindow = await browser.windows.create({
-        height: DEFAULT_POPUP_HEIGHT,
-        type: 'popup',
-        url,
-        width: DEFAULT_POPUP_WIDTH,
-      });
-
-      return;
+      // remove the window
+      await browser.windows.remove(backgroundEvent.windowId);
     }
   }
 
@@ -381,14 +179,15 @@ export default class BackgroundService {
         `${BackgroundService.name}#handleReset(): extension message "${EventNameEnum.ExtensionReset}" received from the popup`
       );
 
-    // if any of the main app windows exists, remove them
+    // remove the main window if it exists
+    if (this.mainWindow && this.mainWindow.id) {
+      await browser.windows.remove(this.mainWindow.id);
+    }
+
+    // remove any background windows
     await Promise.all(
-      [this.mainWindow, this.enableWindow, this.signBytesWindow].map(
-        async (value) => {
-          if (value?.id) {
-            return await browser.windows.remove(value.id);
-          }
-        }
+      this.backgroundEvents.map(
+        async (value) => await browser.windows.remove(value.windowId)
       )
     );
 
@@ -396,45 +195,51 @@ export default class BackgroundService {
     await this.storageManager.remove(Object.keys(storageItems));
   }
 
-  private async handleSignBytesResponse(): Promise<void> {
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundService.name}#handleSignBytesResponse(): extension message "${EventNameEnum.ExtensionSignBytesResponse}" received from the popup`
-      );
-
-    // if this was a response from the sign bytes app, remove the window
-    if (this.signBytesWindow && this.signBytesWindow.id) {
-      await browser.windows.remove(this.signBytesWindow.id);
-    }
-  }
-
   /**
    * Public functions
    */
 
   public async onExtensionMessage(
-    message: IExtensionEvents,
+    message: IAllExtensionEvents,
     sender: Runtime.MessageSender
   ): Promise<void> {
+    // if the event already exists, ignore it
+    if (this.doesEventExist(message.id)) {
+      this.logger &&
+        this.logger.debug(
+          `${BackgroundService.name}#onExtensionMessage(): extension message "${message.id}" already exists, ignoring`
+        );
+
+      return;
+    }
+
     switch (message.event) {
+      // requests from the content script
+      case EventNameEnum.ExtensionSignTxnsRequest:
+      case EventNameEnum.ExtensionSignBytesRequest:
       case EventNameEnum.ExtensionEnableRequest:
-        return await this.handleEnableRequest(
-          message as ExtensionEnableRequestEvent,
+        return await this.handleExtensionRequest(
+          message as IExtensionRequestEvents,
           sender
         );
+
+      // responses from the background pop-up
       case EventNameEnum.ExtensionEnableResponse:
-        return await this.handleEnableResponse();
+      case EventNameEnum.ExtensionSignBytesResponse:
+      case EventNameEnum.ExtensionSignTxnsResponse:
+        return await this.handleExtensionResponse(
+          message as IExtensionResponseEvents
+        );
+
+      // misc events
+      case EventNameEnum.ExtensionBackgroundAppLoad:
+        return await this.handleBackgroundAppLoad(
+          message as ExtensionBackgroundAppLoadEvent
+        );
       case EventNameEnum.ExtensionRegistrationCompleted:
         return await this.handleRegistrationCompleted();
       case EventNameEnum.ExtensionReset:
         return await this.handleReset();
-      case EventNameEnum.ExtensionSignBytesRequest:
-        return await this.handleEnableSignBytesRequest(
-          message as ExtensionSignBytesRequestEvent,
-          sender
-        );
-      case EventNameEnum.ExtensionSignBytesResponse:
-        return await this.handleSignBytesResponse();
       default:
         break;
     }
@@ -452,36 +257,46 @@ export default class BackgroundService {
       this.registrationWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
-        url: 'registration.html',
+        url: 'registration-app.html',
         width: DEFAULT_POPUP_WIDTH,
       });
 
       return;
     }
 
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundService.name}#onExtensionClick(): previous account detected, opening main app`
-      );
+    // if there is no main window up, we can open the app
+    if (!this.mainWindow) {
+      this.logger &&
+        this.logger.debug(
+          `${BackgroundService.name}#onExtensionClick(): previous account detected, opening main app`
+        );
 
-    this.mainWindow = await browser.windows.create({
-      height: DEFAULT_POPUP_HEIGHT,
-      type: 'popup',
-      url: 'main.html',
-      width: DEFAULT_POPUP_WIDTH,
-    });
+      this.mainWindow = await browser.windows.create({
+        height: DEFAULT_POPUP_HEIGHT,
+        type: 'popup',
+        url: 'main-app.html',
+        width: DEFAULT_POPUP_WIDTH,
+      });
 
-    return;
+      return;
+    }
   }
 
   public onWindowRemove(windowId: number): void {
-    if (this.enableWindow && this.enableWindow.id === windowId) {
+    const backgroundEvent: IBackgroundEvent | null =
+      this.backgroundEvents.find((value) => value.windowId === windowId) ||
+      null;
+
+    if (backgroundEvent) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundService.name}#onWindowRemove(): removed connect app window`
+          `${BackgroundService.name}#onWindowRemove(): removing background event window for event "${backgroundEvent.message.id}"`
         );
 
-      this.enableWindow = null;
+      // clean up - remove the background event window and the event
+      this.backgroundEvents = this.backgroundEvents.filter(
+        (value) => value.message.id !== backgroundEvent.message.id
+      );
     }
 
     if (this.mainWindow && this.mainWindow.id === windowId) {
@@ -500,15 +315,6 @@ export default class BackgroundService {
         );
 
       this.registrationWindow = null;
-    }
-
-    if (this.signBytesWindow && this.signBytesWindow.id === windowId) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundService.name}#onWindowRemove(): removed sign bytes app window`
-        );
-
-      this.signBytesWindow = null;
     }
   }
 }

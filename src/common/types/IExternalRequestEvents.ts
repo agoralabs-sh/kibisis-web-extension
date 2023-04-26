@@ -2,10 +2,12 @@
 import {
   ExternalEnableRequestEvent,
   ExternalSignBytesRequestEvent,
+  ExternalSignTxnsRequestEvent,
 } from '../events';
 
 type IExternalRequestEvents =
   | ExternalEnableRequestEvent
-  | ExternalSignBytesRequestEvent;
+  | ExternalSignBytesRequestEvent
+  | ExternalSignTxnsRequestEvent;
 
 export default IExternalRequestEvents;
