@@ -90,7 +90,7 @@ export default function useSignTransactions(): IUseSignTransactionsState {
             return null;
           }
 
-          privateKey = await privateKeyService.getPrivateKey(
+          privateKey = await privateKeyService.getDecryptedPrivateKey(
             unsignedTransaction.from.publicKey,
             password
           );

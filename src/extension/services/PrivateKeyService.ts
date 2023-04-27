@@ -1,13 +1,13 @@
 import { decode as decodeHex, encode as encodeHex } from '@stablelib/hex';
 import { decode as decodeUtf8, encode as encodeUtf8 } from '@stablelib/utf8';
 import scrypt from 'scrypt-async';
-import { hash, randomBytes, secretbox } from 'tweetnacl';
+import { hash, randomBytes, secretbox, sign, SignKeyPair } from 'tweetnacl';
 import { v4 as uuid } from 'uuid';
 
 // Constants
 import {
-  PKS_ACCOUNT_KEY_PREFIX,
-  PKS_PASSWORD_TAG_KEY,
+  PASSWORD_TAG_ITEM_KEY,
+  PRIVATE_KEY_ITEM_KEY_PREFIX,
 } from '@extension/constants';
 
 // Errors
@@ -15,6 +15,7 @@ import {
   DecryptionError,
   EncryptionError,
   InvalidPasswordError,
+  MalformedDataError,
 } from '@extension/errors';
 
 // Services
@@ -22,11 +23,7 @@ import StorageManager from './StorageManager';
 
 // Types
 import { IBaseOptions, ILogger } from '@common/types';
-import {
-  IPksAccountStorageItem,
-  IPksPasswordTagStorageItem,
-  ISetAccountOptions,
-} from '@extension/types';
+import { IPasswordTag, IPrivateKey } from '@extension/types';
 
 interface INewOptions extends IBaseOptions {
   storageManager?: StorageManager;
@@ -188,35 +185,17 @@ export default class PrivateKeyService {
    */
 
   /**
-   * Convenience function that simply creates the account item key from a public key.
+   * Convenience function that simply creates the private key item key from a public key.
    * @param {Uint8Array} encodedPublicKey - the public key of the account encoded in hexadecimal.
-   * @returns {string} the account item key.
+   * @returns {string} the private key item key.
    */
-  public createAccountItemKey(encodedPublicKey: string): string {
-    return `${PKS_ACCOUNT_KEY_PREFIX}${encodedPublicKey}`;
+  public createPrivateKeyKey(encodedPublicKey: string): string {
+    return `${PRIVATE_KEY_ITEM_KEY_PREFIX}${encodedPublicKey}`;
   }
 
   /**
    * Public functions
    */
-
-  /**
-   * Gets all the accounts from storage.
-   * @returns {Promise<IPksAccountStorageItem[]>} all the accounts in local storage.
-   * @private
-   */
-  public async getAccounts(): Promise<IPksAccountStorageItem[]> {
-    const items: Record<string, unknown> =
-      await this.storageManager.getAllItems();
-
-    return Object.keys(items).reduce<IPksAccountStorageItem[]>(
-      (acc, key) =>
-        key.startsWith(PKS_ACCOUNT_KEY_PREFIX)
-          ? [...acc, items[key] as IPksAccountStorageItem]
-          : acc,
-      []
-    );
-  }
 
   /**
    * Gets the decrypted private key from local storage for a given public key.
@@ -226,32 +205,32 @@ export default class PrivateKeyService {
    * @throws {InvalidPasswordError} If the password is invalid.
    * @throws {DecryptionError} If there was a problem with the decryption.
    */
-  public async getPrivateKey(
+  public async getDecryptedPrivateKey(
     publicKey: Uint8Array,
     password: string
   ): Promise<Uint8Array | null> {
     const isPasswordValid: boolean = await this.verifyPassword(password);
-    let account: IPksAccountStorageItem | null;
+    let account: IPrivateKey | null;
     let encodedPublicKey: string;
 
     if (!isPasswordValid) {
       this.logger &&
         this.logger.debug(
-          `${PrivateKeyService.name}#getPrivateKey(): password is invalid`
+          `${PrivateKeyService.name}#getDecryptedPrivateKey(): password is invalid`
         );
 
       throw new InvalidPasswordError();
     }
 
     encodedPublicKey = encodeHex(publicKey);
-    account = await this.storageManager.getItem<IPksAccountStorageItem>(
-      this.createAccountItemKey(encodedPublicKey)
+    account = await this.storageManager.getItem<IPrivateKey>(
+      this.createPrivateKeyKey(encodedPublicKey)
     );
 
     if (!account) {
       this.logger &&
         this.logger.debug(
-          `${PrivateKeyService.name}#getPrivateKey(): no account stored for public key "${encodedPublicKey}"`
+          `${PrivateKeyService.name}#getDecryptedPrivateKey(): no account stored for public key "${encodedPublicKey}"`
         );
 
       return null;
@@ -259,7 +238,7 @@ export default class PrivateKeyService {
 
     this.logger &&
       this.logger.debug(
-        `${PrivateKeyService.name}#getPrivateKey(): decrypting private key for public key "${encodedPublicKey}"`
+        `${PrivateKeyService.name}#getDecryptedPrivateKey(): decrypting private key for public key "${encodedPublicKey}"`
       );
 
     return await PrivateKeyService.decrypt(
@@ -274,13 +253,31 @@ export default class PrivateKeyService {
   }
 
   /**
+   * Gets all the private keys from storage.
+   * @returns {Promise<IPrivateKey[]>} all the private keys in local storage.
+   * @private
+   */
+  public async getPrivateKeys(): Promise<IPrivateKey[]> {
+    const items: Record<string, unknown> =
+      await this.storageManager.getAllItems();
+
+    return Object.keys(items).reduce<IPrivateKey[]>(
+      (acc, key) =>
+        key.startsWith(PRIVATE_KEY_ITEM_KEY_PREFIX)
+          ? [...acc, items[key] as IPrivateKey]
+          : acc,
+      []
+    );
+  }
+
+  /**
    * Gets a list of all the public keys.
    * @returns {Uint8Array[]} a list of all the public keys. This returns an empty list if the private key storage has not
    * been initialized.
    */
   public async getPublicKeys(): Promise<Uint8Array[]> {
     const isInitialized: boolean = await this.isInitialized();
-    let accounts: IPksAccountStorageItem[];
+    let accounts: IPrivateKey[];
 
     if (!isInitialized) {
       this.logger &&
@@ -291,7 +288,7 @@ export default class PrivateKeyService {
       return [];
     }
 
-    accounts = await this.getAccounts();
+    accounts = await this.getPrivateKeys();
 
     return accounts.map((value) => decodeHex(value.publicKey));
   }
@@ -303,7 +300,7 @@ export default class PrivateKeyService {
    */
   public async isInitialized(): Promise<boolean> {
     const encryptedPasswordTag: string | null =
-      await this.storageManager.getItem(PKS_PASSWORD_TAG_KEY);
+      await this.storageManager.getItem(PASSWORD_TAG_ITEM_KEY);
 
     return !!encryptedPasswordTag;
   }
@@ -315,107 +312,13 @@ export default class PrivateKeyService {
     const items: Record<string, unknown> =
       await this.storageManager.getAllItems();
     const filteredKeyNames: string[] = Object.keys(items).filter((value) =>
-      value.startsWith(PKS_ACCOUNT_KEY_PREFIX)
+      value.startsWith(PRIVATE_KEY_ITEM_KEY_PREFIX)
     );
 
     return await this.storageManager.remove([
       ...filteredKeyNames,
-      PKS_PASSWORD_TAG_KEY, // remove the password tag
+      PASSWORD_TAG_ITEM_KEY, // remove the password tag
     ]);
-  }
-
-  /**
-   * Sets an account into local storage, encrypted, using the password.
-   * @param {ISetAccountOptions} options - options required to set the account.
-   * @param {string} password - the password used to initialize the private key storage.
-   * @returns {IPksAccountStorageItem | null} the initialized PKS account item.
-   * @throws {InvalidPasswordError} If the password is invalid.
-   * @throws {EncryptionError} If there was a problem with the encryption.
-   */
-  public async setAccount(
-    { name, privateKey, publicKey }: ISetAccountOptions,
-    password: string
-  ): Promise<IPksAccountStorageItem | null> {
-    const isPasswordValid: boolean = await this.verifyPassword(password);
-    let account: IPksAccountStorageItem | null;
-    let accountItemKey: string;
-    let encodedPublicKey: string;
-    let encryptedPrivateKey: Uint8Array;
-    let now: Date;
-    let passwordTag: IPksPasswordTagStorageItem | null;
-
-    if (!isPasswordValid) {
-      this.logger &&
-        this.logger.debug(
-          `${PrivateKeyService.name}#setAccount(): password is invalid`
-        );
-
-      throw new InvalidPasswordError();
-    }
-
-    encodedPublicKey = encodeHex(publicKey);
-
-    this.logger &&
-      this.logger.debug(
-        `${PrivateKeyService.name}#setAccount(): encrypting private key for public key "${encodedPublicKey}"`
-      );
-
-    encryptedPrivateKey = await PrivateKeyService.encrypt(
-      privateKey,
-      password,
-      {
-        ...(this.logger && {
-          logger: this.logger,
-        }),
-      }
-    );
-    accountItemKey = this.createAccountItemKey(encodedPublicKey);
-    account = await this.storageManager.getItem<IPksAccountStorageItem>(
-      accountItemKey
-    );
-    passwordTag = await this.storageManager.getItem<IPksPasswordTagStorageItem>(
-      PKS_PASSWORD_TAG_KEY
-    );
-
-    if (!passwordTag) {
-      this.logger &&
-        this.logger.debug(
-          `${PrivateKeyService.name}#setAccount(): failed to get password tag`
-        );
-
-      return null;
-    }
-
-    this.logger &&
-      this.logger.debug(
-        `${PrivateKeyService.name}#setAccount(): storing private key for public key "${publicKey}"`
-      );
-
-    now = new Date();
-
-    account = {
-      ...(account
-        ? {
-            createdAt: account.createdAt,
-            id: account.id,
-            name: name || account.name,
-          }
-        : {
-            createdAt: now.getTime(),
-            id: uuid(),
-            name: name || null,
-          }),
-      encryptedPrivateKey: encodeHex(encryptedPrivateKey),
-      passwordTagId: passwordTag.id,
-      publicKey: encodedPublicKey,
-      updatedAt: now.getTime(),
-    };
-
-    await this.storageManager.setItems({
-      [accountItemKey]: account,
-    });
-
-    return account;
   }
 
   /**
@@ -429,7 +332,7 @@ export default class PrivateKeyService {
   public async setPassword(
     newPassword: string,
     currentPassword?: string
-  ): Promise<IPksPasswordTagStorageItem> {
+  ): Promise<IPasswordTag> {
     const encryptedTag: Uint8Array = await PrivateKeyService.encrypt(
       encodeUtf8(this.passwordTag),
       newPassword,
@@ -440,14 +343,13 @@ export default class PrivateKeyService {
       }
     ); // encrypt the password tag (the extension id) with the new password
     const isInitialized: boolean = await this.isInitialized();
-    const passwordTagItem: IPksPasswordTagStorageItem = {
+    const passwordTagItem: IPasswordTag = {
       id: uuid(),
       encryptedTag: encodeHex(encryptedTag), // encode it into hexadecimal
       version: this.version,
     };
-    let accounts: IPksAccountStorageItem[];
+    let privateKeys: IPrivateKey[];
     let isPasswordValid: boolean;
-    let newAccounts: IPksAccountStorageItem[];
 
     // if no password exists, we can just set the new one
     if (!isInitialized) {
@@ -464,7 +366,7 @@ export default class PrivateKeyService {
         );
 
       await this.storageManager.setItems({
-        [PKS_PASSWORD_TAG_KEY]: passwordTagItem,
+        [PASSWORD_TAG_ITEM_KEY]: passwordTagItem,
       });
 
       return passwordTagItem;
@@ -496,10 +398,10 @@ export default class PrivateKeyService {
         `${PrivateKeyService.name}#setPassword(): re-encrypting private keys`
       );
 
-    accounts = await this.getAccounts();
-    newAccounts = await Promise.all(
+    privateKeys = await this.getPrivateKeys();
+    privateKeys = await Promise.all(
       // with a new password, we need to re-encrypt all the private keys
-      accounts.map<Promise<IPksAccountStorageItem>>(async (value) => {
+      privateKeys.map<Promise<IPrivateKey>>(async (value) => {
         const decryptedPrivateKey: Uint8Array = await PrivateKeyService.decrypt(
           decodeHex(value.encryptedPrivateKey), // private keys are encoded in hexadecimal
           currentPassword,
@@ -534,17 +436,125 @@ export default class PrivateKeyService {
 
     // add the new password tag and the re-encrypted keys
     await this.storageManager.setItems({
-      [PKS_PASSWORD_TAG_KEY]: passwordTagItem, // add the new password tag
-      ...newAccounts.reduce(
+      [PASSWORD_TAG_ITEM_KEY]: passwordTagItem, // add the new password tag
+      ...privateKeys.reduce(
         (acc, value) => ({
           ...acc,
-          [this.createAccountItemKey(value.publicKey)]: value,
+          [this.createPrivateKeyKey(value.publicKey)]: value,
         }),
         {}
       ), // save the accounts to storage using the public key as a prefix
     });
 
     return passwordTagItem;
+  }
+
+  /**
+   * Sets a private key into local storage, encrypted, using the password. If the private key is not known in storage,
+   * it will be created, otherwise it will be updated.
+   * @param {Uint8Array} privateKey - the private key to encrypt.
+   * @param {string} password - the password used to initialize the private key storage.
+   * @returns {IPrivateKey | null} the initialized private key item.
+   * @throws {InvalidPasswordError} If the password is invalid.
+   * @throws {MalformedDataError} If there the private key is the incorrect format (should have been created using
+   * {@link http://ed25519.cr.yp.to/ ed25519}).
+   * @throws {EncryptionError} If there was a problem with the encryption or the private key is invalid.
+   */
+  public async setPrivateKey(
+    privateKey: Uint8Array,
+    password: string
+  ): Promise<IPrivateKey | null> {
+    const isPasswordValid: boolean = await this.verifyPassword(password);
+    let encodedPublicKey: string;
+    let encryptedPrivateKey: Uint8Array;
+    let keyPair: SignKeyPair;
+    let now: Date;
+    let passwordTag: IPasswordTag | null;
+    let privateKeyItem: IPrivateKey | null;
+    let privateKeyItemKey: string;
+
+    if (!isPasswordValid) {
+      this.logger &&
+        this.logger.debug(
+          `${PrivateKeyService.name}#setAccount(): password is invalid`
+        );
+
+      throw new InvalidPasswordError();
+    }
+
+    try {
+      keyPair = sign.keyPair.fromSecretKey(privateKey);
+    } catch (error) {
+      this.logger &&
+        this.logger.error(
+          `${PrivateKeyService.name}#encrypt(): ${error.message}`
+        );
+
+      throw new MalformedDataError(error.message);
+    }
+
+    encodedPublicKey = encodeHex(keyPair.publicKey);
+
+    this.logger &&
+      this.logger.debug(
+        `${PrivateKeyService.name}#setAccount(): encrypting private key for public key "${encodedPublicKey}"`
+      );
+
+    encryptedPrivateKey = await PrivateKeyService.encrypt(
+      privateKey,
+      password,
+      {
+        ...(this.logger && {
+          logger: this.logger,
+        }),
+      }
+    );
+    privateKeyItemKey = this.createPrivateKeyKey(encodedPublicKey);
+    privateKeyItem = await this.storageManager.getItem<IPrivateKey>(
+      privateKeyItemKey
+    );
+    passwordTag = await this.storageManager.getItem<IPasswordTag>(
+      PASSWORD_TAG_ITEM_KEY
+    );
+
+    if (!passwordTag) {
+      this.logger &&
+        this.logger.debug(
+          `${PrivateKeyService.name}#setAccount(): failed to get password tag`
+        );
+
+      return null;
+    }
+
+    this.logger &&
+      this.logger.debug(
+        `${PrivateKeyService.name}#setAccount(): storing private key for public key "${encodedPublicKey}"`
+      );
+
+    now = new Date();
+
+    privateKeyItem = {
+      // if the private key item exists, we want to update it
+      ...(privateKeyItem
+        ? {
+            createdAt: privateKeyItem.createdAt,
+            id: privateKeyItem.id,
+          }
+        : {
+            createdAt: now.getTime(),
+            id: uuid(),
+          }),
+      encryptedPrivateKey: encodeHex(encryptedPrivateKey),
+      passwordTagId: passwordTag.id,
+      publicKey: encodedPublicKey,
+      updatedAt: now.getTime(),
+    };
+
+    await this.storageManager.setItems({
+      [privateKeyItemKey]: privateKeyItem,
+    });
+
+    return privateKeyItem;
   }
 
   /**
@@ -555,10 +565,8 @@ export default class PrivateKeyService {
    * @returns {boolean} true if the password is valid, false otherwise.
    */
   public async verifyPassword(password: string): Promise<boolean> {
-    const passwordTag: IPksPasswordTagStorageItem | null =
-      await this.storageManager.getItem<IPksPasswordTagStorageItem>(
-        PKS_PASSWORD_TAG_KEY
-      );
+    const passwordTag: IPasswordTag | null =
+      await this.storageManager.getItem<IPasswordTag>(PASSWORD_TAG_ITEM_KEY);
     let decryptedPasswordTag: Uint8Array;
 
     // if we have the decrypted password tag, decrypt it and check it matches the extension id

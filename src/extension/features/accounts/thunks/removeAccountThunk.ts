@@ -5,7 +5,7 @@ import { Address, decodeAddress } from 'algosdk';
 // Constants
 import {
   ACCOUNT_KEY_PREFIX,
-  PKS_ACCOUNT_KEY_PREFIX,
+  PRIVATE_KEY_ITEM_KEY_PREFIX,
 } from '@extension/constants';
 
 // Enums
@@ -48,7 +48,7 @@ const removeAccountThunk: AsyncThunk<
     );
 
     await storageManager.remove([
-      `${PKS_ACCOUNT_KEY_PREFIX}${encodeHex(decodedAddress.publicKey)}`, // remove the private keys
+      `${PRIVATE_KEY_ITEM_KEY_PREFIX}${encodeHex(decodedAddress.publicKey)}`, // remove the private keys
       ...accounts.map((value) => `${ACCOUNT_KEY_PREFIX}${value.id}`), // remove all the account information
     ]);
 

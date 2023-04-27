@@ -2,7 +2,7 @@
 import { BaseExtensionError } from '@extension/errors';
 
 // Types
-import { IPksPasswordTagStorageItem } from '@extension/types';
+import { IPasswordTag } from '@extension/types';
 
 interface IUseChangePasswordState {
   changePassword: (
@@ -10,7 +10,7 @@ interface IUseChangePasswordState {
     currentPassword: string
   ) => Promise<void>;
   error: BaseExtensionError | null;
-  passwordTag: IPksPasswordTagStorageItem | null;
+  passwordTag: IPasswordTag | null;
   saving: boolean;
 }
 

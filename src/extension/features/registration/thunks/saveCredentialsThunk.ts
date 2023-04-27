@@ -28,7 +28,7 @@ import { ILogger } from '@common/types';
 import {
   IAccount,
   INetwork,
-  IPksAccountStorageItem,
+  IPrivateKey,
   IRegistrationRootState,
 } from '@extension/types';
 import { ISaveCredentialsPayload } from '../types';
@@ -54,7 +54,7 @@ const saveCredentialsThunk: AsyncThunk<
     let accounts: IAccount[];
     let address: string;
     let inputError: BaseExtensionError;
-    let pksAccount: IPksAccountStorageItem | null;
+    let pksAccount: IPrivateKey | null;
     let privateKeyService: PrivateKeyService;
     let publicKey: Uint8Array;
     let storageManager: StorageManager;
@@ -87,16 +87,7 @@ const saveCredentialsThunk: AsyncThunk<
       await privateKeyService.reset();
       await privateKeyService.setPassword(password);
 
-      pksAccount = await privateKeyService.setAccount(
-        {
-          privateKey,
-          publicKey,
-          ...(name && {
-            name,
-          }),
-        },
-        password
-      );
+      pksAccount = await privateKeyService.setPrivateKey(privateKey, password);
     } catch (error) {
       logger.error(`${saveCredentialsThunk.name}: ${error.message}`);
 
