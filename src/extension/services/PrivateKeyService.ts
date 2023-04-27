@@ -476,7 +476,7 @@ export default class PrivateKeyService {
     if (!isPasswordValid) {
       this.logger &&
         this.logger.debug(
-          `${PrivateKeyService.name}#setAccount(): password is invalid`
+          `${PrivateKeyService.name}#setPrivateKey(): password is invalid`
         );
 
       throw new InvalidPasswordError();
@@ -487,7 +487,7 @@ export default class PrivateKeyService {
     } catch (error) {
       this.logger &&
         this.logger.error(
-          `${PrivateKeyService.name}#encrypt(): ${error.message}`
+          `${PrivateKeyService.name}#setPrivateKey(): ${error.message}`
         );
 
       throw new MalformedDataError(error.message);
@@ -497,7 +497,7 @@ export default class PrivateKeyService {
 
     this.logger &&
       this.logger.debug(
-        `${PrivateKeyService.name}#setAccount(): encrypting private key for public key "${encodedPublicKey}"`
+        `${PrivateKeyService.name}#setPrivateKey(): encrypting private key for public key "${encodedPublicKey}"`
       );
 
     encryptedPrivateKey = await PrivateKeyService.encrypt(
@@ -520,7 +520,7 @@ export default class PrivateKeyService {
     if (!passwordTag) {
       this.logger &&
         this.logger.debug(
-          `${PrivateKeyService.name}#setAccount(): failed to get password tag`
+          `${PrivateKeyService.name}#setPrivateKey(): failed to get password tag`
         );
 
       return null;
@@ -528,7 +528,7 @@ export default class PrivateKeyService {
 
     this.logger &&
       this.logger.debug(
-        `${PrivateKeyService.name}#setAccount(): storing private key for public key "${encodedPublicKey}"`
+        `${PrivateKeyService.name}#setPrivateKey(): storing private key for public key "${encodedPublicKey}"`
       );
 
     now = new Date();

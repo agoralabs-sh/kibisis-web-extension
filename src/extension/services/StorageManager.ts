@@ -25,6 +25,20 @@ export default class StorageManager {
     return (item[key] as T) || null;
   }
 
+  /**
+   * Removes all storage items.
+   */
+  public async removeAll(): Promise<void> {
+    const storageItems: Record<string, IStorageItemTypes | unknown> =
+      await this.getAllItems();
+
+    return await browser.storage.local.remove(Object.keys(storageItems));
+  }
+
+  /**
+   * Removes an item or a set of items from storage.
+   * @param {string | string[]} keys - a key or multiple keys
+   */
   public async remove(keys: string | string[]): Promise<void> {
     return await browser.storage.local.remove(keys);
   }
