@@ -16,6 +16,7 @@ import { IoWalletOutline } from 'react-icons/io5';
 import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
 
 // Hooks
+import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -23,8 +24,11 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Types
-import { IAccount } from '@extension/types';
+import { IAccount, IAccountInformation } from '@extension/types';
 
 // Utils
 import { ellipseAddress } from '@extension/utils';
@@ -40,6 +44,10 @@ const SideBarAccountItem: FC<IProps> = ({
   active,
   onClick,
 }: IProps) => {
+  // hooks
+  const accountInformation: IAccountInformation | null = useAccountInformation(
+    account.id
+  );
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
@@ -48,6 +56,9 @@ const SideBarAccountItem: FC<IProps> = ({
   const activeBackground: string = useColorModeValue(
     'gray.200',
     'whiteAlpha.200'
+  );
+  const address: string = AccountService.convertPublicKeyToAlgorandAddress(
+    account.publicKey
   );
   const activeProps: Partial<ButtonProps> = active
     ? {
@@ -61,12 +72,12 @@ const SideBarAccountItem: FC<IProps> = ({
           bg: buttonHoverBackgroundColor,
         },
       };
-  const handleOnClick = () => onClick(account.address);
+  const handleOnClick = () => onClick(address);
 
   return (
     <Tooltip
       aria-label="Name or address of the account"
-      label={account.name || account.address}
+      label={accountInformation?.name || address}
     >
       <Button
         {...activeProps}
@@ -89,7 +100,7 @@ const SideBarAccountItem: FC<IProps> = ({
               size="sm"
             />
           </Center>
-          {account.name ? (
+          {accountInformation?.name ? (
             <VStack
               alignItems="flex-start"
               flexGrow={1}
@@ -102,10 +113,10 @@ const SideBarAccountItem: FC<IProps> = ({
                 maxW={195}
                 noOfLines={1}
               >
-                {account.name}
+                {accountInformation.name}
               </Text>
               <Text color={subTextColor} fontSize="xs">
-                {ellipseAddress(account.address, {
+                {ellipseAddress(address, {
                   end: 10,
                   start: 10,
                 })}
@@ -113,7 +124,7 @@ const SideBarAccountItem: FC<IProps> = ({
             </VStack>
           ) : (
             <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
-              {ellipseAddress(account.address, {
+              {ellipseAddress(address, {
                 end: 10,
                 start: 10,
               })}

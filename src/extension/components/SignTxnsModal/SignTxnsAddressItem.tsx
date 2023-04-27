@@ -20,11 +20,19 @@ import {
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Theme
 import { theme } from '@extension/theme';
 
 // Types
-import { IAccount, IExplorer, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IAccountInformation,
+  IExplorer,
+  INetwork,
+} from '@extension/types';
 
 // Utils
 import { ellipseAddress } from '@extension/utils';
@@ -44,17 +52,26 @@ const SignTxnsAddressItem: FC<IProps> = ({
   ...stackProps
 }: IProps) => {
   const { t } = useTranslation();
+  // selectors
+  const accounts: IAccount[] = useSelectAccounts();
+  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
-  const accounts: IAccount[] = useSelectAccounts();
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const explorer: IExplorer | null =
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const account: IAccount | null =
-    accounts.find((value) => value.address === address) || null;
+    accounts.find(
+      (value) =>
+        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
+        address
+    ) || null;
+  const accountInformation: IAccountInformation | null = account
+    ? AccountService.extractAccountInformationForNetwork(account, network)
+    : null;
 
   return (
     <HStack
@@ -79,11 +96,16 @@ const SignTxnsAddressItem: FC<IProps> = ({
           >
             <Icon as={IoWalletOutline} color={subTextColor} h={2} w={2} />
             <Text color={subTextColor} fontSize="xs">
-              {account.name ||
-                ellipseAddress(account.address, {
-                  end: 10,
-                  start: 10,
-                })}
+              {accountInformation?.name ||
+                ellipseAddress(
+                  AccountService.convertPublicKeyToAlgorandAddress(
+                    account.publicKey
+                  ),
+                  {
+                    end: 10,
+                    start: 10,
+                  }
+                )}
             </Text>
           </HStack>
         </Tooltip>

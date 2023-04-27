@@ -51,7 +51,10 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
   );
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction,
-    fromAccount || undefined
+    {
+      network,
+      sender: fromAccount,
+    }
   );
   const renderExtraInformation = () => (
     <>

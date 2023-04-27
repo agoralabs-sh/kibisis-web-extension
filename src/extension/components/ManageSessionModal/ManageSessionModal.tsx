@@ -11,12 +11,13 @@ import {
   ModalHeader,
   Skeleton,
   SkeletonCircle,
+  Spacer,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import { nanoid } from 'nanoid';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { randomBytes } from 'tweetnacl';
@@ -24,6 +25,7 @@ import { randomBytes } from 'tweetnacl';
 // Components
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
+import EmptyState from '@extension/components/EmptyState';
 import Warning from '@extension/components/Warning';
 
 // Constants
@@ -49,12 +51,16 @@ import {
   useSelectSavingSessions,
 } from '@extension/selectors';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Theme
 import { theme } from '@extension/theme';
 
 // Types
 import {
   IAccount,
+  IAccountInformation,
   IAppThunkDispatch,
   INetwork,
   ISession,
@@ -71,14 +77,17 @@ interface IProps {
 const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const fetching: boolean = useSelectFetchingAccounts();
   const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
+  // state
   const [network, setNetwork] = useState<INetwork | null>(null);
   const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
   const handleCancelClick = () => onClose();
@@ -122,7 +131,9 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
       );
     };
   const renderContent = () => {
-    if (fetching) {
+    let accountNodes: ReactNode[];
+
+    if (!network || fetching) {
       return Array.from({ length: 3 }, () => (
         <HStack key={nanoid()} py={4} spacing={4} w="full">
           <SkeletonCircle size="12" />
@@ -138,11 +149,24 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
       ));
     }
 
-    if (accounts.length > 0) {
-      return accounts.map((account) => (
+    accountNodes = accounts.reduce<ReactNode[]>((acc, account) => {
+      const accountInformation: IAccountInformation | null =
+        AccountService.extractAccountInformationForNetwork(account, network);
+      let address: string;
+
+      if (!accountInformation) {
+        return acc;
+      }
+
+      address = AccountService.convertPublicKeyToAlgorandAddress(
+        account.publicKey
+      );
+
+      return [
+        ...acc,
         <HStack key={nanoid()} py={4} spacing={4} w="full">
-          <Avatar name={account.name || account.address} />
-          {account.name ? (
+          <Avatar name={accountInformation.name || address} />
+          {accountInformation.name ? (
             <VStack
               alignItems="flex-start"
               flexGrow={1}
@@ -156,10 +180,10 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
                 noOfLines={1}
                 textAlign="left"
               >
-                {account.name}
+                {accountInformation.name}
               </Text>
               <Text color={subTextColor} fontSize="sm" textAlign="left">
-                {ellipseAddress(account.address, {
+                {ellipseAddress(address, {
                   end: 10,
                   start: 10,
                 })}
@@ -172,7 +196,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
               fontSize="md"
               textAlign="left"
             >
-              {ellipseAddress(account.address, {
+              {ellipseAddress(address, {
                 end: 10,
                 start: 10,
               })}
@@ -180,19 +204,22 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
           )}
           <Checkbox
             colorScheme={primaryColorScheme}
-            isChecked={
-              !!authorizedAddresses.find((value) => value === account.address)
-            }
-            onChange={handleOnAccountCheckChange(account.address)}
+            isChecked={!!authorizedAddresses.find((value) => value === address)}
+            onChange={handleOnAccountCheckChange(address)}
           />
-        </HStack>
-      ));
-    }
+        </HStack>,
+      ];
+    }, []);
 
-    return (
-      <Heading color={defaultTextColor} size="md" textAlign="center" w="full">
-        {t<string>('headings.noAccountsFound')}
-      </Heading>
+    return accountNodes.length > 0 ? (
+      accountNodes
+    ) : (
+      <>
+        {/*empty state*/}
+        <Spacer />
+        <EmptyState text={t<string>('headings.noAccountsFound')} />
+        <Spacer />
+      </>
     );
   };
   const renderHeader = () => {

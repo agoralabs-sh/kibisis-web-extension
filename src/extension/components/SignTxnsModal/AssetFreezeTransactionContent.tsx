@@ -89,7 +89,10 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction,
-    fromAccount || undefined
+    {
+      network,
+      sender: fromAccount,
+    }
   );
   const renderExtraInformation = () => {
     if (!asset) {

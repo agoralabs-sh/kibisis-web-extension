@@ -58,13 +58,13 @@ import { setConfirm } from '@extension/features/application';
 import { setSettings } from '@extension/features/settings';
 
 // Hooks
-import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
 import {
+  useSelectAccount,
   useSelectAccountByPublicKey,
   useSelectAccounts,
   useSelectFetchingAccounts,
@@ -104,11 +104,7 @@ const AccountPage: FC = () => {
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
   // selectors
-  const account: IAccount | null = address
-    ? useSelectAccountByPublicKey(
-        AccountService.convertAlgorandAddressToPublicKey(address)
-      )
-    : null;
+  const account: IAccount | null = useSelectAccount(address);
   const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
@@ -118,12 +114,16 @@ const AccountPage: FC = () => {
   const settings: ISettings = useSelectSettings();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // hooks
-  const accountInformation: IAccountInformation | null = account
-    ? useAccountInformation(account.id)
-    : null;
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
+  const accountInformation: IAccountInformation | null =
+    account && selectedNetwork
+      ? AccountService.extractAccountInformationForNetwork(
+          account,
+          selectedNetwork
+        )
+      : null;
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkSelect = (network: INetwork) => {
     dispatch(
@@ -358,6 +358,8 @@ const AccountPage: FC = () => {
 
     // if there is no account, go to the first account, or the accounts index if no accounts exist
     if (!account) {
+      console.log('accounts:', accounts);
+      console.log('accounts[0]:', accounts[0]);
       navigate(
         `${ACCOUNTS_ROUTE}${
           accounts[0]

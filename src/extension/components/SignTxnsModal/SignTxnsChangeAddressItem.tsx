@@ -15,13 +15,24 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // Selectors
-import { useSelectAccounts } from '@extension/selectors';
+import {
+  useSelectAccounts,
+  useSelectPreferredBlockExplorer,
+} from '@extension/selectors';
+
+// Services
+import { AccountService } from '@extension/services';
 
 // Theme
 import { theme } from '@extension/theme';
 
 // Types
-import { IAccount, IExplorer } from '@extension/types';
+import {
+  IAccount,
+  IAccountInformation,
+  IExplorer,
+  INetwork,
+} from '@extension/types';
 
 // Utils
 import { ellipseAddress } from '@extension/utils';
@@ -29,70 +40,96 @@ import { ellipseAddress } from '@extension/utils';
 interface IProps extends StackProps {
   ariaLabel?: string;
   currentAddress: string;
-  explorer: IExplorer;
   label: string;
+  network: INetwork;
   newAddress: string;
 }
 
 const SignTxnsChangeAddressItem: FC<IProps> = ({
   ariaLabel,
   currentAddress,
-  explorer,
   label,
+  network,
   newAddress,
   ...stackProps
 }: IProps) => {
   const { t } = useTranslation();
+  // selectors
   const accounts: IAccount[] = useSelectAccounts();
+  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   const currentAccount: IAccount | null =
-    accounts.find((value) => value.address === currentAddress) || null;
+    accounts.find(
+      (value) =>
+        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
+        currentAddress
+    ) || null;
   const newAccount: IAccount | null =
-    accounts.find((value) => value.address === newAddress) || null;
-  const renderAccount = (address: string, account: IAccount | null) => (
-    <Tooltip aria-label={ariaLabel} label={address}>
-      {account ? (
-        <HStack
-          backgroundColor={textBackgroundColor}
-          borderRadius={theme.radii['3xl']}
-          px={2}
-          py={1}
-          spacing={1}
-        >
-          <Icon as={IoWalletOutline} color={subTextColor} h={2} w={2} />
-          <Text color={subTextColor} fontSize="xs">
-            {account.name ||
-              ellipseAddress(account.address, {
-                end: 4,
-                start: 4,
-              })}
-          </Text>
-        </HStack>
-      ) : (
-        <HStack spacing={0}>
-          <Tooltip aria-label={ariaLabel} label={address}>
+    accounts.find(
+      (value) =>
+        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
+        newAddress
+    ) || null;
+  const explorer: IExplorer | null =
+    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
+    network.explorers[0] ||
+    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
+  const renderAccount = (address: string, account: IAccount | null) => {
+    const accountInformation: IAccountInformation | null = account
+      ? AccountService.extractAccountInformationForNetwork(account, network)
+      : null;
+
+    return (
+      <Tooltip aria-label={ariaLabel} label={address}>
+        {account ? (
+          <HStack
+            backgroundColor={textBackgroundColor}
+            borderRadius={theme.radii['3xl']}
+            px={2}
+            py={1}
+            spacing={1}
+          >
+            <Icon as={IoWalletOutline} color={subTextColor} h={2} w={2} />
             <Text color={subTextColor} fontSize="xs">
-              {ellipseAddress(address, {
-                end: 4,
-                start: 4,
-              })}
+              {accountInformation?.name ||
+                ellipseAddress(
+                  AccountService.convertPublicKeyToAlgorandAddress(
+                    account.publicKey
+                  ),
+                  {
+                    end: 4,
+                    start: 4,
+                  }
+                )}
             </Text>
-          </Tooltip>
-          {explorer && (
-            <OpenTabIconButton
-              size="xs"
-              tooltipLabel={t<string>('captions.openOn', {
-                name: explorer.canonicalName,
-              })}
-              url={`${explorer.baseUrl}${explorer.accountPath}/${address}`}
-            />
-          )}
-        </HStack>
-      )}
-    </Tooltip>
-  );
+          </HStack>
+        ) : (
+          <HStack spacing={0}>
+            <Tooltip aria-label={ariaLabel} label={address}>
+              <Text color={subTextColor} fontSize="xs">
+                {ellipseAddress(address, {
+                  end: 4,
+                  start: 4,
+                })}
+              </Text>
+            </Tooltip>
+            {explorer && (
+              <OpenTabIconButton
+                size="xs"
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: explorer.canonicalName,
+                })}
+                url={`${explorer.baseUrl}${explorer.accountPath}/${address}`}
+              />
+            )}
+          </HStack>
+        )}
+      </Tooltip>
+    );
+  };
 
   return (
     <HStack

@@ -19,6 +19,9 @@ import { IoWarningOutline } from 'react-icons/io5';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Theme
 import { theme } from '@extension/theme';
 
@@ -59,7 +62,11 @@ const SignBytesJwtContent: FC<IProps> = ({
               {decodedJwt.payload.subject}
             </Text>
           </Box>
-          {decodedJwt.payload.subject !== signer?.address && (
+          {(!signer ||
+            decodedJwt.payload.subject !==
+              AccountService.convertPublicKeyToAlgorandAddress(
+                signer.publicKey
+              )) && (
             <Tooltip
               aria-label="Address does not match the signer"
               label={t<string>('captions.addressDoesNotMatch')}

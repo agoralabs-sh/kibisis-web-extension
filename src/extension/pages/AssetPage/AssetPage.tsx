@@ -1,6 +1,5 @@
 import { Box, Heading, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
-import BigNumber from 'bignumber.js';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowDownOutline, IoArrowUpOutline } from 'react-icons/io5';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
@@ -18,16 +17,15 @@ import PageHeader from '@extension/components/PageHeader';
 import { ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Hooks
-import useAccountInformation from '@extension/hooks/useAccountInformation';
-import useAssets from '@extension/hooks/useAssets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
+import useAssetPage from './hooks/useAssetPage';
 
 // Selectors
 import {
-  useSelectAccountByPublicKey,
+  useSelectAccounts,
   useSelectFetchingAssets,
   useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
@@ -40,17 +38,10 @@ import { AccountService } from '@extension/services';
 import { theme } from '@extension/theme';
 
 // Types
-import {
-  IAccount,
-  IAccountInformation,
-  IAsset,
-  IAssetHolding,
-  IExplorer,
-  INetwork,
-} from '@extension/types';
+import { IAccount, IExplorer, INetwork } from '@extension/types';
 
 // Utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
+import { formatCurrencyUnit } from '@common/utils';
 import { ellipseAddress } from '@extension/utils';
 
 const AssetPage: FC = () => {
@@ -58,29 +49,28 @@ const AssetPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { address, assetId } = useParams();
   // selectors
-  const account: IAccount | null = address
-    ? useSelectAccountByPublicKey(
-        AccountService.convertAlgorandAddressToPublicKey(address)
-      )
-    : null;
   const fetchingAssets: boolean = useSelectFetchingAssets();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
-  const network: INetwork | null = useSelectSelectedNetwork();
+  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // hooks
-  const accountInformation: IAccountInformation | null = account
-    ? useAccountInformation(account.id)
-    : null;
-  const assets: IAsset[] = useAssets();
+  const {
+    account,
+    accountInformation,
+    asset,
+    assetHolding,
+    standardUnitAmount,
+  } = useAssetPage({
+    address: address || null,
+    assetId: assetId || null,
+    onError: () =>
+      navigate(ACCOUNTS_ROUTE, {
+        replace: true,
+      }),
+  });
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
-  // state
-  const [asset, setAsset] = useState<IAsset | null>(null);
-  const [assetHolding, setAssetHolding] = useState<IAssetHolding | null>(null);
-  const [standardUnitAmount, setStandardUnitAmount] = useState<BigNumber>(
-    new BigNumber('0')
-  );
   const handleReceiveClick = () => {
     console.log('open receive modal');
   };
@@ -99,48 +89,6 @@ const AssetPage: FC = () => {
       return reset();
     }
   }, []);
-  // update the asset holding when we have the account information
-  useEffect(() => {
-    let assetHolding: IAssetHolding | null;
-
-    if (accountInformation) {
-      assetHolding =
-        accountInformation.assetHoldings.find(
-          (value) => value.id === assetId
-        ) || null;
-
-      // if there is no asset holding for this account, return to accounts page
-      if (!assetHolding) {
-        return reset();
-      }
-
-      setAssetHolding(assetHolding);
-      setStandardUnitAmount(new BigNumber(assetHolding.amount));
-    }
-  }, [accountInformation]);
-  // update the selected asset
-  useEffect(() => {
-    const selectedAsset: IAsset | null =
-      assets.find((value) => value.id === assetId) || null;
-
-    // if no asset exists, return to accounts page
-    if (!selectedAsset) {
-      return reset();
-    }
-
-    setAsset(selectedAsset);
-  }, [assets]);
-  // update the standard amount when the asset and the asset holding have been updated
-  useEffect(() => {
-    if (asset && assetHolding) {
-      setStandardUnitAmount(
-        convertToStandardUnit(
-          new BigNumber(assetHolding.amount),
-          asset.decimals
-        )
-      );
-    }
-  }, [asset, assetHolding]);
 
   if (
     !account ||
@@ -188,7 +136,7 @@ const AssetPage: FC = () => {
             fallbackIcon={
               <AssetIcon
                 color={primaryButtonTextColor}
-                networkTheme={network?.chakraTheme}
+                networkTheme={selectedNetwork?.chakraTheme}
                 h={6}
                 w={6}
               />

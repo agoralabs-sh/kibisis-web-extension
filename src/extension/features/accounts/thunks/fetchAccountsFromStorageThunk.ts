@@ -41,7 +41,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   let accounts: IAccount[];
 
   logger.debug(
-    `${fetchAccountsFromStorageThunk.name}: querying accounts from storage`
+    `${AccountsThunkEnum.FetchAccountsFromStorage}: fetching accounts from storage`
   );
 
   accounts = await accountService.getAllAccounts();
@@ -50,7 +50,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   // update account information, if requested
   if (options?.updateAccountInformation && online && selectedNetwork) {
     logger.debug(
-      `${fetchAccountsFromStorageThunk.name}: updating account information for "${selectedNetwork.genesisId}"`
+      `${AccountsThunkEnum.FetchAccountsFromStorage}: updating account information for "${selectedNetwork.genesisId}"`
     );
 
     accounts = await Promise.all(

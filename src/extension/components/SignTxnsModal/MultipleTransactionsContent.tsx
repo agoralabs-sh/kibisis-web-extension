@@ -71,7 +71,10 @@ const MultipleTransactionsContent: FC<IProps> = ({
       null;
     const transactionType: TransactionTypeEnum = parseTransactionType(
       transaction,
-      fromAccounts[transactionIndex]
+      {
+        network,
+        sender: fromAccounts[transactionIndex] || null,
+      }
     );
 
     switch (transaction.type) {

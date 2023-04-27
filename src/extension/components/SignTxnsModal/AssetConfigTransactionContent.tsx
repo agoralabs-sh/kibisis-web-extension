@@ -53,13 +53,17 @@ const AssetConfigTransactionContent: FC<IProps> = ({
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction,
-    fromAccount || undefined
+    {
+      network,
+      sender: fromAccount,
+    }
   );
   const renderExtraInformation = (icon: ReactNode) => {
     if (!asset) {
@@ -88,8 +92,8 @@ const AssetConfigTransactionContent: FC<IProps> = ({
               <SignTxnsChangeAddressItem
                 ariaLabel="The current and new clawback addresses"
                 currentAddress={asset.clawbackAddress}
-                explorer={explorer}
                 label={`${t<string>('labels.clawbackAccount')}:`}
+                network={network}
                 newAddress={encodeAddress(transaction.assetClawback.publicKey)}
               />
             )}
@@ -99,8 +103,8 @@ const AssetConfigTransactionContent: FC<IProps> = ({
               <SignTxnsChangeAddressItem
                 ariaLabel="The current and new freeze addresses"
                 currentAddress={asset.freezeAddress}
-                explorer={explorer}
                 label={`${t<string>('labels.freezeAccount')}:`}
+                network={network}
                 newAddress={encodeAddress(transaction.assetFreeze.publicKey)}
               />
             )}
@@ -110,8 +114,8 @@ const AssetConfigTransactionContent: FC<IProps> = ({
               <SignTxnsChangeAddressItem
                 ariaLabel="The current and new manager addresses"
                 currentAddress={asset.managerAddress}
-                explorer={explorer}
                 label={`${t<string>('labels.managerAccount')}:`}
+                network={network}
                 newAddress={encodeAddress(transaction.assetManager.publicKey)}
               />
             )}
@@ -121,8 +125,8 @@ const AssetConfigTransactionContent: FC<IProps> = ({
               <SignTxnsChangeAddressItem
                 ariaLabel="The current and new reserve addresses"
                 currentAddress={asset.reserveAddress}
-                explorer={explorer}
                 label={`${t<string>('labels.reserveAccount')}:`}
+                network={network}
                 newAddress={encodeAddress(transaction.assetReserve.publicKey)}
               />
             )}

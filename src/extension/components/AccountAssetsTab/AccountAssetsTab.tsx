@@ -74,6 +74,8 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
   const subTextColor: string = useSubTextColor();
   const handleAddAssetClick = () => console.log('add an asset!');
   const renderContent = () => {
+    let assetNodes: ReactNode[] = [];
+
     if (fetching || updating) {
       return Array.from({ length: 3 }, () => (
         <Button
@@ -106,7 +108,7 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
     }
 
     if (accountInformation && accountInformation.assetHoldings.length > 0) {
-      return accountInformation.assetHoldings.reduce<ReactNode[]>(
+      assetNodes = accountInformation.assetHoldings.reduce<ReactNode[]>(
         (acc, assetHolding) => {
           const asset: IAsset | null =
             assets.find((value) => value.id === assetHolding.id) || null;
@@ -208,7 +210,9 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
       );
     }
 
-    return (
+    return assetNodes.length > 0 ? (
+      assetNodes
+    ) : (
       <>
         {/*empty state*/}
         <Spacer />

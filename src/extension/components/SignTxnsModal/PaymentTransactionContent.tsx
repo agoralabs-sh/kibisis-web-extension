@@ -10,18 +10,21 @@ import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
+
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Types
-import { IAccount, INetwork } from '@extension/types';
+import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
 // Utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
-import { TransactionTypeEnum } from '@extension/enums';
+import { AccountService } from '@extension/services';
 
 interface IProps {
   condensed?: ICondensedProps;
@@ -39,8 +42,12 @@ const PaymentTransactionContent: FC<IProps> = ({
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
+  const accountInformation: IAccountInformation | null = fromAccount
+    ? AccountService.extractAccountInformationForNetwork(fromAccount, network)
+    : null;
   const atomicUintAmount: BigNumber = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'
   );
@@ -58,13 +65,18 @@ const PaymentTransactionContent: FC<IProps> = ({
   );
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction,
-    fromAccount || undefined
+    {
+      network,
+      sender: fromAccount,
+    }
   );
   const renderExtraInformation = () => (
     <>
       {/*balance*/}
       <SignTxnsAssetItem
-        atomicUnitsAmount={new BigNumber(fromAccount?.atomicBalance || '0')}
+        atomicUnitsAmount={
+          new BigNumber(accountInformation?.atomicBalance || '0')
+        }
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         isLoading={loading}

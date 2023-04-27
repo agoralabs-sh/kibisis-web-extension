@@ -114,7 +114,7 @@ const Root: FC = () => {
           selectedNetwork.genesisHash
         ).toUpperCase();
         const accountInformation: IAccountInformation | null =
-          account.networkInfo[selectedNetwork.genesisHash] || null;
+          account.networkInfo[encodedGenesisHash] || null;
         let newAssets: IAssetHolding[];
 
         if (accountInformation) {

@@ -60,6 +60,9 @@ import {
   useSelectFetchingAccounts,
 } from '@extension/selectors';
 
+// Service
+import { AccountService } from '@extension/services';
+
 // Types
 import { IAccount } from '@extension/types';
 
@@ -143,7 +146,11 @@ const SideBar: FC = () => {
     return accounts.map((value) => (
       <SideBarAccountItem
         active={
-          activeAccountAddress ? value.address === activeAccountAddress : false
+          activeAccountAddress
+            ? AccountService.convertPublicKeyToAlgorandAddress(
+                value.publicKey
+              ) === activeAccountAddress
+            : false
         }
         account={value}
         key={nanoid()}
