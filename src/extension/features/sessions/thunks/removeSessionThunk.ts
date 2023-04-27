@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Constants
-import { SESSION_KEY_PREFIX } from '@extension/constants';
+import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // Enums
 import { SessionsThunkEnum } from '@extension/enums';
@@ -27,7 +27,7 @@ const removeSessionThunk: AsyncThunk<
       `${removeSessionThunk.name}: removing session "${id}" from storage`
     );
 
-    await storageManager.remove(`${SESSION_KEY_PREFIX}${id}`);
+    await storageManager.remove(`${SESSION_ITEM_KEY_PREFIX}${id}`);
 
     return id;
   }

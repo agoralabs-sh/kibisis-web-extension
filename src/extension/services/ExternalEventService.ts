@@ -1,4 +1,3 @@
-import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
 import {
   decode as decodeBase64,
   encode as encodeBase64,
@@ -10,11 +9,7 @@ import browser from 'webextension-polyfill';
 import { networks } from '@extension/config';
 
 // Constants
-import {
-  ACCOUNT_KEY_PREFIX,
-  SESSION_KEY_PREFIX,
-  SETTINGS_GENERAL_KEY,
-} from '@extension/constants';
+import { SETTINGS_GENERAL_KEY } from '@extension/constants';
 
 // Enums
 import { EventNameEnum } from '@common/enums';
@@ -44,7 +39,9 @@ import {
 } from '@common/events';
 
 // Services
-import { StorageManager } from '@extension/services';
+import AccountService from './AccountService';
+import SessionService from './SessionService';
+import StorageManager from './StorageManager';
 
 // Types
 import {
@@ -57,6 +54,7 @@ import {
 } from '@common/types';
 import {
   IAccount,
+  IAccountInformation,
   IGeneralSettings,
   INetwork,
   ISession,
@@ -67,17 +65,26 @@ import {
 import { computeGroupId } from '@common/utils';
 import {
   getAuthorizedAddressesForHost,
+  mapAddressToWalletAccount,
   selectDefaultNetwork,
   verifyTransactionGroupId,
 } from '@extension/utils';
 
 export default class ExternalEventService {
   // private variables
+  private readonly accountService: AccountService;
   private readonly logger: ILogger | null;
+  private readonly sessionService: SessionService;
   private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
     this.logger = logger || null;
+    this.accountService = new AccountService({
+      logger,
+    });
+    this.sessionService = new SessionService({
+      logger,
+    });
     this.storageManager = new StorageManager();
   }
 
@@ -178,28 +185,6 @@ export default class ExternalEventService {
   }
 
   /**
-   * Convenience function that gets all the accounts for a genesis hash from storage.
-   * @returns {Promise<IAccount[]>} all the accounts for the genesis hash.
-   * @private
-   */
-  private async fetchAccountsByGenesisHash(
-    genesisHash: string
-  ): Promise<IAccount[]> {
-    const storageItems: Record<string, IStorageItemTypes | unknown> =
-      await this.storageManager.getAllItems();
-
-    return Object.keys(storageItems)
-      .reduce<IAccount[]>(
-        (acc, key) =>
-          key.startsWith(ACCOUNT_KEY_PREFIX)
-            ? [...acc, storageItems[key] as IAccount]
-            : acc,
-        []
-      )
-      .filter((value) => value.genesisHash === genesisHash); // filter by session genesis hash
-  }
-
-  /**
    * Convenience function that gets the selected network from storage.
    * @returns {Promise<INetwork | null>} the network or null if no network has been stored.
    * @private
@@ -233,15 +218,7 @@ export default class ExternalEventService {
       array: ISession[]
     ) => boolean
   ): Promise<ISession[]> {
-    const storageItems: Record<string, IStorageItemTypes | unknown> =
-      await this.storageManager.getAllItems();
-    const sessions: ISession[] = Object.keys(storageItems).reduce<ISession[]>(
-      (acc, key) =>
-        key.startsWith(SESSION_KEY_PREFIX)
-          ? [...acc, storageItems[key] as ISession]
-          : acc,
-      []
-    );
+    const sessions: ISession[] = await this.sessionService.getAll();
 
     // if there is no filter predicate, return all sessions
     if (!filterPredicate) {
@@ -261,6 +238,7 @@ export default class ExternalEventService {
     let network: INetwork | null = await this.fetchSelectedNetwork(); // get the selected network from storage
     let session: ISession | null;
     let sessionFilterPredicate: ((value: ISession) => boolean) | undefined;
+    let sessionNetwork: INetwork | null;
     let sessions: ISession[];
 
     this.logger &&
@@ -301,45 +279,52 @@ export default class ExternalEventService {
 
     // if we have a session, update its use and return it
     if (session) {
-      accounts = await this.fetchAccountsByGenesisHash(session.genesisHash);
-      session = {
-        ...session,
-        usedAt: new Date().getTime(),
-      };
+      sessionNetwork =
+        networks.find((value) => value.genesisHash === session?.genesisHash) ||
+        null;
 
-      this.logger &&
-        this.logger.debug(
-          `${ExternalEventService.name}#handleExternalEnableRequest(): found session "${session.id}" updating`
+      // if the session network is supported, return update and return the session
+      if (sessionNetwork) {
+        accounts = await this.accountService.getAllAccounts();
+        session = {
+          ...session,
+          usedAt: new Date().getTime(),
+        };
+
+        this.logger &&
+          this.logger.debug(
+            `${ExternalEventService.name}#handleExternalEnableRequest(): found session "${session.id}" updating`
+          );
+
+        session = await this.sessionService.save(session);
+
+        // send the response to the web page
+        return this.sendExternalResponse(
+          new ExternalEnableResponseEvent(
+            {
+              accounts: session.authorizedAddresses.map((address) =>
+                mapAddressToWalletAccount(address, {
+                  account:
+                    accounts.find(
+                      (value) =>
+                        AccountService.convertPublicKeyToAlgorandAddress(
+                          value.publicKey
+                        ) === address
+                    ) || null,
+                  network: sessionNetwork,
+                })
+              ),
+              genesisHash: session.genesisHash,
+              genesisId: session.genesisId,
+              sessionId: session.id,
+            },
+            null
+          )
         );
+      }
 
-      await this.storageManager.setItems({
-        [`${SESSION_KEY_PREFIX}${session.id}`]: session,
-      });
-
-      // send the response to the web page
-      return this.sendExternalResponse(
-        new ExternalEnableResponseEvent(
-          {
-            accounts: session.authorizedAddresses.map<IWalletAccount>(
-              (address) => {
-                const account: IAccount | null =
-                  accounts.find((value) => value.address === address) || null;
-
-                return {
-                  address,
-                  ...(account?.name && {
-                    name: account.name,
-                  }),
-                };
-              }
-            ),
-            genesisHash: session.genesisHash,
-            genesisId: session.genesisId,
-            sessionId: session.id,
-          },
-          null
-        )
-      );
+      // if the network is unrecognized, remove the session, it is no longer valid
+      await this.sessionService.removeById(session.id);
     }
 
     // send the message to the main app (popup) or the background service

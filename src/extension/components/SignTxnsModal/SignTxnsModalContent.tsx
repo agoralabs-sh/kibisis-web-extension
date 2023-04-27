@@ -87,7 +87,7 @@ const SignTxnsModalContent: FC<IProps> = ({
       dispatch(
         updateAssetInformationThunk({
           ids: unknownAssetIds,
-          genesisHash: network.genesisHash,
+          network,
         })
       );
     }

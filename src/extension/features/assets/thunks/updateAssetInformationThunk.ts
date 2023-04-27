@@ -11,15 +11,15 @@ import { StorageManager } from '@extension/services';
 
 // Types
 import { ILogger } from '@common/types';
-import { IAsset, IMainRootState, INetwork, INode } from '@extension/types';
+import { IAsset, IMainRootState } from '@extension/types';
 import {
   IUpdateAssetInformationPayload,
   IUpdateAssetInformationResult,
 } from '../types';
 
 // Utils
-import { convertGenesisHashToHex } from '@extension/utils';
-import { fetchAssetInformationById, upsertAssets } from '../utils';
+import { convertGenesisHashToHex, upsertItemsById } from '@extension/utils';
+import { fetchAssetInformationById } from '../utils';
 
 const updateAssetInformationThunk: AsyncThunk<
   IUpdateAssetInformationResult | null, // return
@@ -31,12 +31,8 @@ const updateAssetInformationThunk: AsyncThunk<
   { state: IMainRootState }
 >(
   AssetsThunkEnum.UpdateAssetInformation,
-  async ({ genesisHash, ids }, { getState }) => {
+  async ({ ids, network }, { getState }) => {
     const logger: ILogger = getState().application.logger;
-    const network: INetwork | null =
-      getState().networks.items.find(
-        (value) => value.genesisHash === genesisHash
-      ) || null;
     const assets: IAsset[] = [];
     let assetInformation: IAsset | null;
     let assetsStorageKey: string;
@@ -44,14 +40,6 @@ const updateAssetInformationThunk: AsyncThunk<
     let encodedGenesisHash: string;
     let id: string;
     let storageManager: StorageManager;
-
-    if (!network) {
-      logger.debug(
-        `${updateAssetInformationThunk.name}: network "${genesisHash}" not found, ignoring`
-      );
-
-      return null;
-    }
 
     // get the information for each asset and add it to the array
     for (let i: number = 0; i < ids.length; i++) {
@@ -92,7 +80,7 @@ const updateAssetInformationThunk: AsyncThunk<
 
     // update the storage with the new asset information
     await storageManager.setItems({
-      [assetsStorageKey]: upsertAssets(currentAssets, assets),
+      [assetsStorageKey]: upsertItemsById<IAsset>(currentAssets, assets),
     });
 
     return {

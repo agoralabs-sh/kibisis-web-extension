@@ -189,7 +189,7 @@ export default class PrivateKeyService {
    * @param {Uint8Array} encodedPublicKey - the public key of the account encoded in hexadecimal.
    * @returns {string} the private key item key.
    */
-  public createPrivateKeyKey(encodedPublicKey: string): string {
+  public createPrivateKeyItemKey(encodedPublicKey: string): string {
     return `${PRIVATE_KEY_ITEM_KEY_PREFIX}${encodedPublicKey}`;
   }
 
@@ -224,7 +224,7 @@ export default class PrivateKeyService {
 
     encodedPublicKey = encodeHex(publicKey);
     account = await this.storageManager.getItem<IPrivateKey>(
-      this.createPrivateKeyKey(encodedPublicKey)
+      this.createPrivateKeyItemKey(encodedPublicKey)
     );
 
     if (!account) {
@@ -253,9 +253,21 @@ export default class PrivateKeyService {
   }
 
   /**
+   * Gets a private key by its public key from storage.
+   * @param {string} encodedPublicKey - the hexadecimal encoded public key.
+   * @returns {Promise<IPrivateKey | null>} the private key or null.
+   */
+  public async getPrivateKeyByPublicKey(
+    encodedPublicKey: string
+  ): Promise<IPrivateKey | null> {
+    return await this.storageManager.getItem(
+      this.createPrivateKeyItemKey(encodedPublicKey)
+    );
+  }
+
+  /**
    * Gets all the private keys from storage.
    * @returns {Promise<IPrivateKey[]>} all the private keys in local storage.
-   * @private
    */
   public async getPrivateKeys(): Promise<IPrivateKey[]> {
     const items: Record<string, unknown> =
@@ -303,6 +315,14 @@ export default class PrivateKeyService {
       await this.storageManager.getItem(PASSWORD_TAG_ITEM_KEY);
 
     return !!encryptedPasswordTag;
+  }
+
+  public async removePrivateKeyByPublicKey(
+    encodedPublicKey: string
+  ): Promise<void> {
+    await this.storageManager.remove(
+      this.createPrivateKeyItemKey(encodedPublicKey)
+    );
   }
 
   /**
@@ -440,7 +460,7 @@ export default class PrivateKeyService {
       ...privateKeys.reduce(
         (acc, value) => ({
           ...acc,
-          [this.createPrivateKeyKey(value.publicKey)]: value,
+          [this.createPrivateKeyItemKey(value.publicKey)]: value,
         }),
         {}
       ), // save the accounts to storage using the public key as a prefix
@@ -509,7 +529,7 @@ export default class PrivateKeyService {
         }),
       }
     );
-    privateKeyItemKey = this.createPrivateKeyKey(encodedPublicKey);
+    privateKeyItemKey = this.createPrivateKeyItemKey(encodedPublicKey);
     privateKeyItem = await this.storageManager.getItem<IPrivateKey>(
       privateKeyItemKey
     );

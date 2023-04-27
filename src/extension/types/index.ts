@@ -1,4 +1,5 @@
 export type { default as IAccount } from './IAccount';
+export type { default as IAccountInformation } from './IAccountInformation';
 export type { default as IAddAccountCompleteFunction } from './IAddAccountCompleteFunction';
 export type { default as IAddAccountCompleteResult } from './IAddAccountCompleteResult';
 export type { default as IAdvancedSettings } from './IAdvancedSettings';
@@ -19,6 +20,7 @@ export type { default as IDecodedJwtPayload } from './IDecodedJwtPayload';
 export type { default as IEnableRequest } from './IEnableRequest';
 export type { default as IExplorer } from './IExplorer';
 export type { default as IGeneralSettings } from './IGeneralSettings';
+export type { default as IInitializeAccountOptions } from './IInitializeAccountOptions';
 export type { default as IMainRootState } from './IMainRootState';
 export type { default as INativeCurrency } from './INativeCurrency';
 export type { default as INetwork } from './INetwork';

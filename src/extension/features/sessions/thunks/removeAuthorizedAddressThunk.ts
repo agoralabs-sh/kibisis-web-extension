@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Constants
-import { SESSION_KEY_PREFIX } from '@extension/constants';
+import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // Enums
 import { SessionsThunkEnum } from '@extension/enums';
@@ -34,7 +34,7 @@ const removeAuthorizedAddressThunk: AsyncThunk<
       let authorizedAddresses: string[];
       let session: ISession;
 
-      if (value.includes(SESSION_KEY_PREFIX)) {
+      if (value.includes(SESSION_ITEM_KEY_PREFIX)) {
         session = storageItems[value] as ISession;
 
         if (
@@ -86,7 +86,7 @@ const removeAuthorizedAddressThunk: AsyncThunk<
     );
 
     await storageManager.remove(
-      result.remove.map((value) => `${SESSION_KEY_PREFIX}${value}`)
+      result.remove.map((value) => `${SESSION_ITEM_KEY_PREFIX}${value}`)
     );
   }
 
@@ -104,7 +104,7 @@ const removeAuthorizedAddressThunk: AsyncThunk<
       result.update.reduce<Record<string, ISession>>(
         (acc, value) => ({
           ...acc,
-          [`${SESSION_KEY_PREFIX}${value.id}`]: value,
+          [`${SESSION_ITEM_KEY_PREFIX}${value.id}`]: value,
         }),
         {}
       )

@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Constants
-import { SESSION_KEY_PREFIX } from '@extension/constants';
+import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // Enums
 import { SessionsThunkEnum } from '@extension/enums';
@@ -25,7 +25,7 @@ const fetchSessionsThunk: AsyncThunk<
 
     return Object.keys(storageItems).reduce<ISession[]>(
       (acc, key) =>
-        key.startsWith(SESSION_KEY_PREFIX)
+        key.startsWith(SESSION_ITEM_KEY_PREFIX)
           ? [...acc, storageItems[key] as ISession]
           : acc,
       []

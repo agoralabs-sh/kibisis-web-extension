@@ -1,10 +1,13 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { encodeAddress } from 'algosdk';
+import { encode as encodeHex } from '@stablelib/hex';
 import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
 
-// Constants
-import { ACCOUNT_KEY_PREFIX } from '@extension/constants';
+// Errors
+import {
+  MalformedDataError,
+  PrivateKeyAlreadyExistsError,
+} from '@extension/errors';
 
 // Features
 import { setError } from '@extension/features/application';
@@ -13,7 +16,7 @@ import { setError } from '@extension/features/application';
 import { AccountsThunkEnum } from '@extension/enums';
 
 // Services
-import { PrivateKeyService, StorageManager } from '@extension/services';
+import { AccountService, PrivateKeyService } from '@extension/services';
 
 // Types
 import { ILogger } from '@common/types';
@@ -25,18 +28,12 @@ import {
 } from '@extension/types';
 import { ISaveNewAccountPayload } from '../types';
 
-// Utils
-import {
-  initializeDefaultAccount,
-  selectDefaultNetwork,
-} from '@extension/utils';
-
 const saveNewAccountThunk: AsyncThunk<
-  IAccount | null, // return
+  IAccount, // return
   ISaveNewAccountPayload, // args
   Record<string, never>
 > = createAsyncThunk<
-  IAccount | null,
+  IAccount,
   ISaveNewAccountPayload,
   { state: IMainRootState }
 >(
@@ -44,35 +41,53 @@ const saveNewAccountThunk: AsyncThunk<
   async ({ name, password, privateKey }, { dispatch, getState }) => {
     const logger: ILogger = getState().application.logger;
     const networks: INetwork[] = getState().networks.items;
-    const selectedNetwork: INetwork =
-      networks.find(
-        (value) =>
-          value.genesisHash ===
-          getState().settings.general.selectedNetworkGenesisHash
-      ) || selectDefaultNetwork(networks);
-    let accounts: IAccount[];
-    let address: string;
-    let pksAccount: IPrivateKey | null;
+    let account: IAccount;
+    let accountService: AccountService;
+    let encodedPublicKey: string;
+    let errorMessage: string;
+    let privateKeyItem: IPrivateKey | null;
     let privateKeyService: PrivateKeyService;
-    let publicKey: Uint8Array;
-    let storageManager: StorageManager;
 
     try {
       logger.debug(`${saveNewAccountThunk.name}: inferring public key`);
 
-      publicKey = sign.keyPair.fromSecretKey(privateKey).publicKey;
+      encodedPublicKey = encodeHex(
+        sign.keyPair.fromSecretKey(privateKey).publicKey
+      ).toUpperCase();
       privateKeyService = new PrivateKeyService({
         logger,
         passwordTag: browser.runtime.id,
       });
-      address = encodeAddress(publicKey);
 
-      logger.debug(
-        `${saveNewAccountThunk.name}: saving private/public key pair for "${address}" to storage`
+      privateKeyItem = await privateKeyService.getPrivateKeyByPublicKey(
+        encodedPublicKey
       );
 
-      // add the new account
-      pksAccount = await privateKeyService.setPrivateKey(privateKey, password);
+      if (privateKeyItem) {
+        errorMessage = `private key for "${encodedPublicKey}" already exists`;
+
+        logger.debug(`${saveNewAccountThunk.name}: ${errorMessage}`);
+
+        throw new PrivateKeyAlreadyExistsError(errorMessage);
+      }
+
+      logger.debug(
+        `${saveNewAccountThunk.name}: saving private key "${encodedPublicKey}" to storage`
+      );
+
+      // add the new private key
+      privateKeyItem = await privateKeyService.setPrivateKey(
+        privateKey,
+        password
+      );
+
+      if (!privateKeyItem) {
+        errorMessage = `failed to save private key "${encodedPublicKey}" to storage`;
+
+        logger.debug(`${saveNewAccountThunk.name}: ${errorMessage}`);
+
+        throw new MalformedDataError(errorMessage);
+      }
     } catch (error) {
       logger.error(`${saveNewAccountThunk.name}: ${error.message}`);
 
@@ -82,46 +97,30 @@ const saveNewAccountThunk: AsyncThunk<
     }
 
     logger.debug(
-      `${saveNewAccountThunk.name}: successfully saved account "${address}"`
+      `${saveNewAccountThunk.name}: successfully saved private key "${encodedPublicKey}" to storage`
     );
 
-    storageManager = new StorageManager();
-    accounts = networks.map(
-      (
-        value // save a default account for each genesis hash
-      ) =>
-        initializeDefaultAccount({
-          address,
-          genesisHash: value.genesisHash,
-          ...(pksAccount && {
-            createdAt: pksAccount.createdAt,
-          }),
-          ...(name && {
-            name,
-          }),
-        })
-    );
+    account = AccountService.initializeDefaultAccount({
+      publicKey: encodedPublicKey,
+      ...(privateKeyItem && {
+        createdAt: privateKeyItem.createdAt,
+      }),
+      ...(name && {
+        name,
+      }),
+    });
+    accountService = new AccountService({
+      logger,
+    });
 
-    // save an account for each genesis hash to storage
-    await storageManager.setItems(
-      accounts.reduce(
-        (acc, value) => ({
-          ...acc,
-          [`${ACCOUNT_KEY_PREFIX}${value.id}`]: value,
-        }),
-        {}
-      )
-    );
+    // save the account to storage
+    await accountService.saveAccounts([account]);
 
     logger.debug(
-      `${saveNewAccountThunk.name}: saved accounts for "${address}" to storage`
+      `${saveNewAccountThunk.name}: saved account for "${encodedPublicKey}" to storage`
     );
 
-    return (
-      accounts.find(
-        (value) => value.genesisHash === selectedNetwork.genesisHash
-      ) || null
-    );
+    return account;
   }
 );
 

@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 import { IAccount, IMainRootState } from '@extension/types';
 
 /**
- * Selects all accounts for the selected network.
- * @returns {IAccount[]} all accounts for the selected network.
+ * Selects all accounts.
+ * @returns {IAccount[]} all accounts.
  */
 export default function useSelectAccounts(): IAccount[] {
   return useSelector<IMainRootState, IAccount[]>(

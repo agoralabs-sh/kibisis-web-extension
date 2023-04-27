@@ -1,4 +1,5 @@
-export { default as useSelectAccount } from './useSelectAccount';
+export { default as useSelectAccountById } from './useSelectAccountById';
+export { default as useSelectAccountByPublicKey } from './useSelectAccountByPublicKey';
 export { default as useSelectAccounts } from './useSelectAccounts';
 export { default as useSelectAssets } from './useSelectAssets';
 export { default as useSelectAssetsByGenesisHash } from './useSelectAssetsByGenesisHash';

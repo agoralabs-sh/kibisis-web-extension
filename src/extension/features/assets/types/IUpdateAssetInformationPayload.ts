@@ -1,10 +1,12 @@
+import { INetwork } from '@extension/types';
+
 /**
- * @property {string} genesisHash - the genesis hash of the network.
- * @property {string[]} ids - the ID of the assets to fetch informtaion for.
+ * @property {string[]} ids - the ID of the assets to fetch information for.
+ * @property {INetwork} network - the network to fetch assets from.
  */
 interface IUpdateAssetInformationPayload {
-  genesisHash: string;
   ids: string[];
+  network: INetwork;
 }
 
 export default IUpdateAssetInformationPayload;

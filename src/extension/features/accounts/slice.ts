@@ -5,8 +5,8 @@ import { StoreNameEnum } from '@extension/enums';
 
 // Thunks
 import {
-  fetchAccountsThunk,
-  removeAccountThunk,
+  fetchAccountsFromStorageThunk,
+  removeAccountByIdThunk,
   saveNewAccountThunk,
   startPollingForAccountInformationThunk,
   stopPollingForAccountInformationThunk,
@@ -18,46 +18,58 @@ import { IAccount } from '@extension/types';
 import { IAccountsState } from './types';
 
 // Utils
-import { getInitialState, upsertAccount } from './utils';
+import { upsertItemsById } from '@extension/utils';
+import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** Fetch accounts **/
+    /** Fetch accounts from storage **/
     builder.addCase(
-      fetchAccountsThunk.fulfilled,
+      fetchAccountsFromStorageThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<IAccount[]>) => {
         state.items = action.payload;
         state.fetching = false;
       }
     );
-    builder.addCase(fetchAccountsThunk.pending, (state: IAccountsState) => {
-      state.fetching = true;
-    });
-    builder.addCase(fetchAccountsThunk.rejected, (state: IAccountsState) => {
-      state.fetching = false;
-    });
-    /** Remove account **/
     builder.addCase(
-      removeAccountThunk.fulfilled,
+      fetchAccountsFromStorageThunk.pending,
+      (state: IAccountsState) => {
+        state.fetching = true;
+      }
+    );
+    builder.addCase(
+      fetchAccountsFromStorageThunk.rejected,
+      (state: IAccountsState) => {
+        state.fetching = false;
+      }
+    );
+    /** Remove account by id **/
+    builder.addCase(
+      removeAccountByIdThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<string>) => {
         state.items = state.items.filter(
-          (value) => value.address !== action.payload
+          (value) => value.id !== action.payload
         ); // filter the accounts excluding the removed account
         state.saving = false;
       }
     );
-    builder.addCase(removeAccountThunk.pending, (state: IAccountsState) => {
+    builder.addCase(removeAccountByIdThunk.pending, (state: IAccountsState) => {
       state.saving = true;
     });
-    builder.addCase(removeAccountThunk.rejected, (state: IAccountsState) => {
-      state.saving = false;
-    });
+    builder.addCase(
+      removeAccountByIdThunk.rejected,
+      (state: IAccountsState) => {
+        state.saving = false;
+      }
+    );
     /** Save new account **/
     builder.addCase(
       saveNewAccountThunk.fulfilled,
-      (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
+      (state: IAccountsState, action: PayloadAction<IAccount>) => {
         if (action.payload) {
-          state.items = upsertAccount(state.items, action.payload);
+          state.items = upsertItemsById<IAccount>(state.items, [
+            action.payload,
+          ]);
         }
 
         state.saving = false;

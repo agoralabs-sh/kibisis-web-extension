@@ -30,10 +30,14 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // Selectors
 import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Types
 import { ILogger } from '@common/types';
 import {
   IAccount,
+  IAccountInformation,
   IAsset,
   IAssetHolding,
   IExplorer,
@@ -42,11 +46,7 @@ import {
 import { ICondensedProps } from './types';
 
 // Utils
-import {
-  createIconFromDataUri,
-  initializeDefaultAccount,
-  parseTransactionType,
-} from '@extension/utils';
+import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {
   asset: IAsset | null;
@@ -68,11 +68,14 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
+  // selectors
+  const accounts: IAccount[] = useSelectAccounts();
+  const logger: ILogger = useSelectLogger();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
-  const accounts: IAccount[] = useSelectAccounts();
-  const logger: ILogger = useSelectLogger();
+  // state
   const [
     fetchingFreezeAccountInformation,
     setFetchingFreezeAccountInformation,
@@ -157,7 +160,12 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       }
 
       account =
-        accounts.find((value) => value.address === freezeAddress) || null;
+        accounts.find(
+          (value) =>
+            AccountService.convertPublicKeyToAlgorandAddress(
+              value.publicKey
+            ) === freezeAddress
+        ) || null;
 
       // if we have this account, just use ut
       if (account) {
@@ -168,9 +176,9 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
 
       setFetchingFreezeAccountInformation(true);
 
-      account = initializeDefaultAccount({
-        address: freezeAddress,
-        genesisHash: network.genesisHash,
+      account = AccountService.initializeDefaultAccount({
+        publicKey:
+          AccountService.convertAlgorandAddressToPublicKey(freezeAddress),
       });
 
       account = await updateAccountInformation(account, {
@@ -185,10 +193,18 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
   // once we have the freeze account information, check the asset balance
   useEffect(() => {
     let assetHolding: IAssetHolding | null;
+    let freezeAccountInformation: IAccountInformation | null;
 
     if (asset && freezeAccount) {
+      freezeAccountInformation =
+        AccountService.extractAccountInformationForNetwork(
+          freezeAccount,
+          network
+        );
       assetHolding =
-        freezeAccount.assets.find((value) => value.id === asset.id) || null;
+        freezeAccountInformation?.assetHoldings.find(
+          (value) => value.id === asset.id
+        ) || null;
 
       if (assetHolding) {
         setAtomicUnitFreezeAccountBalance(new BigNumber(assetHolding.amount));
@@ -196,7 +212,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
     }
   }, [asset, freezeAccount]);
 
-  if (loading || !asset || !fromAccount) {
+  if (!asset || !fromAccount || loading) {
     return (
       <VStack
         alignItems="flex-start"

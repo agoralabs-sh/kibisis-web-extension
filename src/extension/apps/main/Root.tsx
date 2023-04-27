@@ -13,7 +13,7 @@ import SignTxnsModal from '@extension/components/SignTxnsModal';
 
 // Features
 import {
-  fetchAccountsThunk,
+  fetchAccountsFromStorageThunk,
   startPollingForAccountInformationThunk,
 } from '@extension/features/accounts';
 import {
@@ -51,6 +51,7 @@ import { theme } from '@extension/theme';
 // Types
 import {
   IAccount,
+  IAccountInformation,
   IAppThunkDispatch,
   IAsset,
   IAssetHolding,
@@ -98,31 +99,42 @@ const Root: FC = () => {
   useEffect(() => {
     if (assets && selectedNetwork) {
       dispatch(
-        fetchAccountsThunk({
+        fetchAccountsFromStorageThunk({
           updateAccountInformation: true,
         })
       );
       dispatch(startPollingForAccountInformationThunk());
     }
   }, [assets, selectedNetwork]);
+  // whenever the accounts are updated, check if any new assets exist in the account
   useEffect(() => {
-    if (accounts.length > 0 && assets) {
+    if (accounts.length > 0 && assets && selectedNetwork) {
       accounts.forEach((account) => {
-        const newAssets: IAssetHolding[] = account.assets.filter(
-          (assetHolding) =>
-            !assets[convertGenesisHashToHex(account.genesisHash)].some(
-              (value) => value.id === assetHolding.id
-            )
-        );
+        const encodedGenesisHash: string = convertGenesisHashToHex(
+          selectedNetwork.genesisHash
+        ).toUpperCase();
+        const accountInformation: IAccountInformation | null =
+          account.networkInfo[selectedNetwork.genesisHash] || null;
+        let newAssets: IAssetHolding[];
 
-        // if we have any new assets, update the information
-        if (newAssets.length > 0) {
-          dispatch(
-            updateAssetInformationThunk({
-              genesisHash: account.genesisHash,
-              ids: newAssets.map((value) => value.id),
-            })
+        if (accountInformation) {
+          // filter out any new assets
+          newAssets = accountInformation.assetHoldings.filter(
+            (assetHolding) =>
+              !assets[encodedGenesisHash].some(
+                (value) => value.id === assetHolding.id
+              )
           );
+
+          // if we have any new assets, update the information
+          if (newAssets.length > 0) {
+            dispatch(
+              updateAssetInformationThunk({
+                ids: newAssets.map((value) => value.id),
+                network: selectedNetwork,
+              })
+            );
+          }
         }
       });
     }

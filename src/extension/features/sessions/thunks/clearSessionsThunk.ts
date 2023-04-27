@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Constants
-import { SESSION_KEY_PREFIX } from '@extension/constants';
+import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // Enums
 import { SessionsThunkEnum } from '@extension/enums';
@@ -25,7 +25,7 @@ const clearSessionsThunk: AsyncThunk<
     const storageItems: Record<string, IStorageItemTypes | unknown> =
       await storageManager.getAllItems();
     const sessionKeys: string[] = Object.keys(storageItems).filter((value) =>
-      value.includes(SESSION_KEY_PREFIX)
+      value.includes(SESSION_ITEM_KEY_PREFIX)
     );
 
     logger.debug(

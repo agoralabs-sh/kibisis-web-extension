@@ -11,7 +11,8 @@ import { IAsset } from '@extension/types';
 import { IAssetsState, IUpdateAssetInformationResult } from './types';
 
 // Utils
-import { getInitialState, upsertAssets } from './utils';
+import { upsertItemsById } from '@extension/utils';
+import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
@@ -42,7 +43,7 @@ const slice = createSlice({
         if (action.payload) {
           state.items = {
             ...state.items,
-            [action.payload.encodedGenesisHash]: upsertAssets(
+            [action.payload.encodedGenesisHash]: upsertItemsById<IAsset>(
               state.items ? state.items[action.payload.encodedGenesisHash] : [],
               action.payload.assets
             ),

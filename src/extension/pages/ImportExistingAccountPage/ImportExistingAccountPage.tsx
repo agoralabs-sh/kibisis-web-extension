@@ -69,7 +69,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
     }
 
     onComplete({
-      name,
+      name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
       privateKey: account.sk,
     });
   };

@@ -53,18 +53,19 @@ import NativeBalance, {
 import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Features
-import { removeAccountThunk } from '@extension/features/accounts';
+import { removeAccountByIdThunk } from '@extension/features/accounts';
 import { setConfirm } from '@extension/features/application';
 import { setSettings } from '@extension/features/settings';
 
 // Hooks
+import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
 import {
-  useSelectAccount,
+  useSelectAccountByPublicKey,
   useSelectAccounts,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
@@ -75,9 +76,13 @@ import {
   useSelectSettings,
 } from '@extension/selectors';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Types
 import {
   IAccount,
+  IAccountInformation,
   IAppThunkDispatch,
   IExplorer,
   INetwork,
@@ -98,10 +103,12 @@ const AccountPage: FC = () => {
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
-  const account: IAccount | null = useSelectAccount(address);
+  // selectors
+  const account: IAccount | null = address
+    ? useSelectAccountByPublicKey(
+        AccountService.convertAlgorandAddressToPublicKey(address)
+      )
+    : null;
   const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
@@ -110,6 +117,13 @@ const AccountPage: FC = () => {
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const settings: ISettings = useSelectSettings();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  // hooks
+  const accountInformation: IAccountInformation | null = account
+    ? useAccountInformation(account.id)
+    : null;
+  const defaultTextColor: string = useDefaultTextColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
+  const subTextColor: string = useSubTextColor();
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkSelect = (network: INetwork) => {
     dispatch(
@@ -122,20 +136,27 @@ const AccountPage: FC = () => {
       })
     );
   };
-  const handleRemoveAccountClick = (address: string) => () => {
-    dispatch(
-      setConfirm({
-        description: t<string>('captions.removeAccount', {
-          address: ellipseAddress(address || '', {
-            end: 10,
-            start: 10,
+  const handleRemoveAccountClick = () => {
+    if (account) {
+      dispatch(
+        setConfirm({
+          description: t<string>('captions.removeAccount', {
+            address: ellipseAddress(
+              AccountService.convertPublicKeyToAlgorandAddress(
+                account.publicKey
+              ),
+              {
+                end: 10,
+                start: 10,
+              }
+            ),
           }),
-        }),
-        onConfirm: () => dispatch(removeAccountThunk(address)),
-        title: t<string>('headings.removeAccount'),
-        warningText: t<string>('captions.removeAccountWarning'),
-      })
-    );
+          onConfirm: () => dispatch(removeAccountByIdThunk(account.id)),
+          title: t<string>('headings.removeAccount'),
+          warningText: t<string>('captions.removeAccountWarning'),
+        })
+      );
+    }
   };
   const renderContent = () => {
     const headerContainerProps: StackProps = {
@@ -143,13 +164,14 @@ const AccountPage: FC = () => {
       p: 4,
       w: 'full',
     };
+    let address: string;
 
     if (fetchingAccounts || fetchingSettings) {
       return (
         <VStack {...headerContainerProps}>
           <NetworkSelectSkeleton network={networks[0]} />
           <HStack alignItems="center" w="full">
-            {/* Address */}
+            {/*address*/}
             <Skeleton>
               <Text color="gray.500" fontSize="xs">
                 {ellipseAddress(faker.random.alphaNumeric(58).toUpperCase())}
@@ -158,18 +180,23 @@ const AccountPage: FC = () => {
 
             <Spacer />
 
-            {/* Balance */}
+            {/*balance*/}
             <NativeBalanceSkeleton />
           </HStack>
         </VStack>
       );
     }
 
-    if (account && selectedNetwork) {
+    if (account && accountInformation && selectedNetwork) {
+      address = AccountService.convertPublicKeyToAlgorandAddress(
+        account.publicKey
+      );
+
       return (
         <>
-          {/* Header */}
+          {/*header*/}
           <VStack {...headerContainerProps}>
+            {/*network connectivity*/}
             <HStack w="full">
               {!online && (
                 <Tooltip
@@ -189,7 +216,7 @@ const AccountPage: FC = () => {
 
               <Spacer flexGrow={1} />
 
-              {/*Network selection*/}
+              {/*network selection*/}
               <NetworkSelect
                 network={selectedNetwork}
                 networks={networks}
@@ -197,9 +224,12 @@ const AccountPage: FC = () => {
               />
             </HStack>
             <HStack alignItems="center" w="full">
-              {/* Name/address */}
-              {account.name ? (
-                <Tooltip aria-label="Name of account" label={account.name}>
+              {/*name/address*/}
+              {accountInformation.name ? (
+                <Tooltip
+                  aria-label="Name of account"
+                  label={accountInformation.name}
+                >
                   <Heading
                     color={defaultTextColor}
                     maxW={400}
@@ -207,51 +237,53 @@ const AccountPage: FC = () => {
                     size="md"
                     textAlign="left"
                   >
-                    {account.name}
+                    {accountInformation.name}
                   </Heading>
                 </Tooltip>
               ) : (
                 <Heading color={defaultTextColor} size="md" textAlign="left">
-                  {ellipseAddress(account.address)}
+                  {ellipseAddress(address)}
                 </Heading>
               )}
 
               <Spacer />
 
-              {/* Balance */}
+              {/*balance*/}
               <NativeBalance
-                atomicBalance={new BigNumber(account.atomicBalance)}
-                minAtomicBalance={new BigNumber(account.minAtomicBalance)}
+                atomicBalance={new BigNumber(accountInformation.atomicBalance)}
+                minAtomicBalance={
+                  new BigNumber(accountInformation.minAtomicBalance)
+                }
                 nativeCurrency={selectedNetwork.nativeCurrency}
               />
             </HStack>
 
-            {/*Address and interactions*/}
+            {/*address and interactions*/}
             <HStack alignItems="center" spacing={1} w="full">
-              <Tooltip label={account.address}>
+              <Tooltip label={address}>
                 <Text color={subTextColor} fontSize="xs">
-                  {ellipseAddress(account.address, { end: 10, start: 10 })}
+                  {ellipseAddress(address, { end: 10, start: 10 })}
                 </Text>
               </Tooltip>
               <Spacer />
-              {/*Copy address*/}
+              {/*copy address*/}
               <CopyIconButton
                 ariaLabel="Copy address"
                 copiedTooltipLabel={t<string>('captions.addressCopied')}
-                value={account.address}
+                value={address}
               />
 
-              {/*Open address on explorer*/}
+              {/*open address on explorer*/}
               {explorer && (
                 <OpenTabIconButton
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${account.address}`}
+                  url={`${explorer.baseUrl}${explorer.accountPath}/${address}`}
                 />
               )}
 
-              {/*Share address*/}
+              {/*share address*/}
               <Tooltip label={t<string>('labels.shareAddress')}>
                 <IconButton
                   aria-label="Show QR code"
@@ -262,12 +294,12 @@ const AccountPage: FC = () => {
                 />
               </Tooltip>
 
-              {/*Remove account*/}
+              {/*remove account*/}
               <Tooltip label={t<string>('labels.removeAccount')}>
                 <IconButton
                   aria-label="Remove account"
                   icon={IoTrashOutline}
-                  onClick={handleRemoveAccountClick(account.address)}
+                  onClick={handleRemoveAccountClick}
                   size="sm"
                   variant="ghost"
                 />
@@ -275,7 +307,7 @@ const AccountPage: FC = () => {
             </HStack>
           </VStack>
 
-          {/* Assets/NFTs/Activity tabs */}
+          {/*assets/nfts/activity tabs */}
           <Tabs
             colorScheme={primaryColorScheme}
             flexGrow={1}
@@ -305,7 +337,7 @@ const AccountPage: FC = () => {
 
     return (
       <>
-        {/* Empty state */}
+        {/*empty state*/}
         <Spacer />
         <EmptyState
           button={{
@@ -322,10 +354,18 @@ const AccountPage: FC = () => {
   };
 
   useEffect(() => {
+    let address: string;
+
     // if there is no account, go to the first account, or the accounts index if no accounts exist
     if (!account) {
       navigate(
-        `${ACCOUNTS_ROUTE}${accounts[0] ? `/${accounts[0].address}` : ''}`,
+        `${ACCOUNTS_ROUTE}${
+          accounts[0]
+            ? `/${AccountService.convertPublicKeyToAlgorandAddress(
+                accounts[0].publicKey
+              )}`
+            : ''
+        }`,
         {
           replace: true,
         }
@@ -334,9 +374,13 @@ const AccountPage: FC = () => {
       return;
     }
 
+    address = AccountService.convertPublicKeyToAlgorandAddress(
+      account.publicKey
+    );
+
     // if there is an account, but the location doesn't match, change the location
-    if (!location.pathname.includes(account.address)) {
-      navigate(`${ACCOUNTS_ROUTE}/${account.address}`, {
+    if (!location.pathname.includes(address)) {
+      navigate(`${ACCOUNTS_ROUTE}/${address}`, {
         preventScrollReset: true,
         replace: true,
       });
@@ -349,7 +393,9 @@ const AccountPage: FC = () => {
     <>
       {account && (
         <ShareAddressModal
-          address={account.address}
+          address={AccountService.convertPublicKeyToAlgorandAddress(
+            account.publicKey
+          )}
           isOpen={isShareAddressModalOpen}
           onClose={onShareAddressModalClose}
         />

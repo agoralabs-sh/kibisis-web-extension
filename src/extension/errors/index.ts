@@ -4,4 +4,5 @@ export { default as EncryptionError } from './EncryptionError';
 export { default as InvalidPasswordError } from './InvalidPasswordError';
 export { default as MalformedDataError } from './MalformedDataError';
 export { default as ParsingError } from './ParsingError';
+export { default as PrivateKeyAlreadyExistsError } from './PrivateKeyAlreadyExistsError';
 export { default as UnknownError } from './UnknownError';

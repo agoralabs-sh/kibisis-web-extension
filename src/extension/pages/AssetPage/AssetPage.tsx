@@ -18,6 +18,8 @@ import PageHeader from '@extension/components/PageHeader';
 import { ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Hooks
+import useAccountInformation from '@extension/hooks/useAccountInformation';
+import useAssets from '@extension/hooks/useAssets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -25,12 +27,14 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // Selectors
 import {
-  useSelectAccount,
-  useSelectAssets,
+  useSelectAccountByPublicKey,
   useSelectFetchingAssets,
   useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
+
+// Services
+import { AccountService } from '@extension/services';
 
 // Theme
 import { theme } from '@extension/theme';
@@ -38,6 +42,7 @@ import { theme } from '@extension/theme';
 // Types
 import {
   IAccount,
+  IAccountInformation,
   IAsset,
   IAssetHolding,
   IExplorer,
@@ -46,24 +51,36 @@ import {
 
 // Utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
-import { convertGenesisHashToHex, ellipseAddress } from '@extension/utils';
+import { ellipseAddress } from '@extension/utils';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const { address, assetId } = useParams();
+  // selectors
+  const account: IAccount | null = address
+    ? useSelectAccountByPublicKey(
+        AccountService.convertAlgorandAddressToPublicKey(address)
+      )
+    : null;
+  const fetchingAssets: boolean = useSelectFetchingAssets();
+  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const network: INetwork | null = useSelectSelectedNetwork();
+  // hooks
+  const accountInformation: IAccountInformation | null = account
+    ? useAccountInformation(account.id)
+    : null;
+  const assets: IAsset[] = useAssets();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
-  const account: IAccount | null = useSelectAccount(address);
-  const assets: Record<string, IAsset[]> | null = useSelectAssets();
-  const fetchingAssets: boolean = useSelectFetchingAssets();
-  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
-  const network: INetwork | null = useSelectSelectedNetwork();
+  // state
   const [asset, setAsset] = useState<IAsset | null>(null);
   const [assetHolding, setAssetHolding] = useState<IAssetHolding | null>(null);
-  let standardUnitAmount: BigNumber = new BigNumber('0');
+  const [standardUnitAmount, setStandardUnitAmount] = useState<BigNumber>(
+    new BigNumber('0')
+  );
   const handleReceiveClick = () => {
     console.log('open receive modal');
   };
@@ -74,58 +91,82 @@ const AssetPage: FC = () => {
     navigate(ACCOUNTS_ROUTE, {
       replace: true,
     });
+  let accountAddress: string;
 
+  // if we don't have the params, return to accounts page
   useEffect(() => {
-    // if no account can be found, go back to the accounts page
-    if (!account) {
+    if (!address || !assetId) {
       return reset();
     }
-
-    setAssetHolding(
-      account.assets.find((value) => value.id === assetId) || null
-    );
-  }, [account]);
+  }, []);
+  // update the asset holding when we have the account information
   useEffect(() => {
-    let networkAsset: IAsset | null;
+    let assetHolding: IAssetHolding | null;
 
-    // if we have both the network and asset list, extract the asset
-    if (network && assets) {
-      networkAsset =
-        assets[convertGenesisHashToHex(network.genesisHash)]?.find(
+    if (accountInformation) {
+      assetHolding =
+        accountInformation.assetHoldings.find(
           (value) => value.id === assetId
         ) || null;
 
-      // if no asset exists, go back to the network page
-      if (!networkAsset) {
+      // if there is no asset holding for this account, return to accounts page
+      if (!assetHolding) {
         return reset();
       }
 
-      setAsset(networkAsset);
+      setAssetHolding(assetHolding);
+      setStandardUnitAmount(new BigNumber(assetHolding.amount));
     }
-  }, [assets, network]);
+  }, [accountInformation]);
+  // update the selected asset
+  useEffect(() => {
+    const selectedAsset: IAsset | null =
+      assets.find((value) => value.id === assetId) || null;
 
-  if (!account || !asset || !assets || !network || fetchingAssets) {
+    // if no asset exists, return to accounts page
+    if (!selectedAsset) {
+      return reset();
+    }
+
+    setAsset(selectedAsset);
+  }, [assets]);
+  // update the standard amount when the asset and the asset holding have been updated
+  useEffect(() => {
+    if (asset && assetHolding) {
+      setStandardUnitAmount(
+        convertToStandardUnit(
+          new BigNumber(assetHolding.amount),
+          asset.decimals
+        )
+      );
+    }
+  }, [asset, assetHolding]);
+
+  if (
+    !account ||
+    !accountInformation ||
+    !asset ||
+    !assetHolding ||
+    fetchingAssets
+  ) {
     return <LoadingPage />;
   }
 
-  if (assetHolding) {
-    standardUnitAmount = convertToStandardUnit(
-      new BigNumber(assetHolding.amount),
-      asset.decimals
-    );
-  }
+  accountAddress = AccountService.convertPublicKeyToAlgorandAddress(
+    account.publicKey
+  );
 
   return (
     <>
       <PageHeader
         subTitle={
-          account.name
-            ? ellipseAddress(account.address, { end: 10, start: 10 })
+          accountInformation.name
+            ? ellipseAddress(accountAddress, { end: 10, start: 10 })
             : undefined
         }
         title={
-          account.name ||
-          ellipseAddress(account.address, { end: 10, start: 10 })
+          accountInformation.name ||
+          ellipseAddress(accountAddress, { end: 10, start: 10 })
         }
       />
       <VStack
@@ -141,6 +182,7 @@ const AssetPage: FC = () => {
           spacing={1}
           w="full"
         >
+          {/*asset icon*/}
           <AssetAvatar
             asset={asset}
             fallbackIcon={
@@ -153,7 +195,8 @@ const AssetPage: FC = () => {
             }
             size="md"
           />
-          {/* Asset name */}
+
+          {/*asset name*/}
           {asset.name && (
             <Tooltip aria-label="Asset name" label={asset.name}>
               <Text
@@ -167,13 +210,14 @@ const AssetPage: FC = () => {
               </Text>
             </Tooltip>
           )}
+
           <HStack
             alignItems="center"
             justifyContent="center"
             spacing={2}
             w="full"
           >
-            {/* Asset unit name */}
+            {/*asset unit name*/}
             {asset.unitName && (
               <>
                 <Text color={subTextColor} fontSize="sm" textAlign="center">
@@ -184,7 +228,8 @@ const AssetPage: FC = () => {
                 </Text>
               </>
             )}
-            {/* Asset ID */}
+
+            {/*asset id*/}
             <HStack alignItems="center" justifyContent="center" spacing={0}>
               <Box
                 backgroundColor={textBackgroundColor}
@@ -197,14 +242,14 @@ const AssetPage: FC = () => {
                 </Text>
               </Box>
 
-              {/*Copy asset*/}
+              {/*copy asset*/}
               <CopyIconButton
                 ariaLabel="Copy asset ID"
                 copiedTooltipLabel={t<string>('captions.assetIdCopied')}
                 value={account.id}
               />
 
-              {/*Open asset on explorer*/}
+              {/*open asset on explorer*/}
               {explorer && (
                 <OpenTabIconButton
                   tooltipLabel={t<string>('captions.openOn', {
@@ -215,7 +260,8 @@ const AssetPage: FC = () => {
               )}
             </HStack>
           </HStack>
-          {/* Amount */}
+
+          {/*amount*/}
           <Tooltip
             aria-label="Asset amount with unrestricted decimals"
             label={standardUnitAmount.toString()}
@@ -226,7 +272,7 @@ const AssetPage: FC = () => {
           </Tooltip>
         </VStack>
 
-        {/* Send/receive buttons */}
+        {/*send/receive buttons*/}
         <HStack
           alignItems="center"
           justifyContent="center"
