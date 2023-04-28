@@ -1,3 +1,10 @@
+# [1.1.0-beta.16](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.15...v1.1.0-beta.16) (2023-04-28)
+
+
+### Features
+
+* add indexers to networks ([#17](https://github.com/agoralabs-sh/kibisis-web-extension/issues/17)) ([e646309](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e64630951ced3480f6de8532d69173e53f190751))
+
 # [1.1.0-beta.15](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.14...v1.1.0-beta.15) (2023-04-28)
 
 
