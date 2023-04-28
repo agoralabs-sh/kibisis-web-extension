@@ -155,7 +155,7 @@ export default class BackgroundService {
       this.mainWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
-        url: 'main.html',
+        url: 'main-app.html',
         width: DEFAULT_POPUP_WIDTH,
         ...(this.registrationWindow && {
           left: this.registrationWindow.left,
@@ -171,9 +171,6 @@ export default class BackgroundService {
   }
 
   private async handleReset(): Promise<void> {
-    const storageItems: Record<string, IStorageItemTypes | unknown> =
-      await this.storageManager.getAllItems();
-
     this.logger &&
       this.logger.debug(
         `${BackgroundService.name}#handleReset(): extension message "${EventNameEnum.ExtensionReset}" received from the popup`
@@ -192,7 +189,7 @@ export default class BackgroundService {
     );
 
     // remove all keys from storage
-    await this.storageManager.remove(Object.keys(storageItems));
+    await this.storageManager.removeAll();
   }
 
   /**
@@ -253,6 +250,9 @@ export default class BackgroundService {
         this.logger.debug(
           `${BackgroundService.name}#onExtensionClick(): no account detected, registering new account`
         );
+
+      // remove everything from storage
+      await this.storageManager.removeAll();
 
       this.registrationWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,

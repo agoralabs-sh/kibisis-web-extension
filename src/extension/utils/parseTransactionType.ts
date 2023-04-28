@@ -1,5 +1,5 @@
+import { encode as encodeHex } from '@stablelib/hex';
 import {
-  encodeAddress,
   EncodedTransaction,
   OnApplicationComplete,
   Transaction,
@@ -8,24 +8,33 @@ import {
 // Enums
 import { TransactionTypeEnum } from '@extension/enums';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Types
-import { IAccount } from '@extension/types';
+import { IAccount, IAccountInformation, INetwork } from '@extension/types';
+
+interface IOptions {
+  network: INetwork | null;
+  sender: IAccount | null;
+}
 
 /**
  * Parses the transaction type. This function contains the logic to correctly determine the transaction type from the
  * variables in the supplied transaction.
  * @param {Transaction} transaction - the transaction to parse.
- * @param {IAccount} sender - [optional] the account of the sender of the transaction. This is to perform more in-depth
- * parsing, namely determine if an "axfer" is an opt-in.
+ * @param {IOptions} options - [optional] the account of the sender and the network for this transaction. This is to
+ * perform more in-depth parsing, namely determine if an "axfer" is an opt-in.
  * @returns {TransactionTypeEnum} the transaction type. If the transaction is invalid, or the transaction is not known,
  * the moniker "TransactionTypeEnum.Unknown" is returned.
  */
 export default function parseTransactionType(
   transaction: Transaction,
-  sender?: IAccount
+  { network, sender }: IOptions = { network: null, sender: null }
 ): TransactionTypeEnum {
   const encodedTransaction: EncodedTransaction =
     transaction.get_obj_for_encoding();
+  let accountInformation: IAccountInformation | null;
 
   // asset config
   if (transaction.type === 'acfg') {
@@ -93,14 +102,21 @@ export default function parseTransactionType(
   if (transaction.type === 'axfer') {
     // if we have a sender, we can determine if this "axfer" is an opt-in
     // https://developer.algorand.org/docs/get-details/transactions/#opt-in-to-an-asset
-    if (sender) {
+    if (network && sender) {
+      accountInformation = AccountService.extractAccountInformationForNetwork(
+        sender,
+        network
+      );
+
       if (
-        !sender.assets.find(
+        !accountInformation?.assetHoldings.find(
           (value) => value.id === String(encodedTransaction.xaid)
         ) && // if the sender does not hold the asset
         (!transaction.amount || transaction.amount <= 0) && // if there is no amount, or the amount is zero (any amount will be a transfer, albeit a failed transfer)
-        encodeAddress(transaction.from.publicKey) === sender.address &&
-        encodeAddress(transaction.to.publicKey) === sender.address // the sender and receiver address, are the same
+        encodeHex(transaction.from.publicKey).toUpperCase() ===
+          sender.publicKey.toUpperCase() &&
+        encodeHex(transaction.to.publicKey).toUpperCase() ===
+          sender.publicKey.toUpperCase() // the sender and receiver address, are the same
       ) {
         return TransactionTypeEnum.AssetOptIn;
       }

@@ -3,16 +3,18 @@ import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
 // Hooks
+import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Types
-import { IAccount } from '@extension/types';
+import { IAccount, IAccountInformation } from '@extension/types';
 
 // Utils
 import { ellipseAddress } from '@extension/utils';
+import { AccountService } from '@extension/services';
 
 interface IProps {
   account: IAccount;
@@ -25,10 +27,16 @@ const AccountItem: FC<IProps> = ({
   subTextColor,
   textColor,
 }: IProps) => {
+  const accountInformation: IAccountInformation | null = useAccountInformation(
+    account.id
+  );
   const defaultSubTextColor: string = useSubTextColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const primaryColor: string = usePrimaryColor();
+  const address: string = AccountService.convertPublicKeyToAlgorandAddress(
+    account.publicKey
+  );
 
   return (
     <HStack m={0} p={0} spacing={2} w="full">
@@ -39,7 +47,7 @@ const AccountItem: FC<IProps> = ({
           size="sm"
         />
       </Center>
-      {account.name ? (
+      {accountInformation?.name ? (
         <VStack
           alignItems="flex-start"
           flexGrow={1}
@@ -53,14 +61,14 @@ const AccountItem: FC<IProps> = ({
             noOfLines={1}
             textAlign="left"
           >
-            {account.name}
+            {accountInformation.name}
           </Text>
           <Text
             color={subTextColor || defaultSubTextColor}
             fontSize="xs"
             textAlign="left"
           >
-            {ellipseAddress(account.address, {
+            {ellipseAddress(address, {
               end: 10,
               start: 10,
             })}
@@ -73,7 +81,7 @@ const AccountItem: FC<IProps> = ({
           fontSize="sm"
           textAlign="left"
         >
-          {ellipseAddress(account.address, {
+          {ellipseAddress(address, {
             end: 10,
             start: 10,
           })}

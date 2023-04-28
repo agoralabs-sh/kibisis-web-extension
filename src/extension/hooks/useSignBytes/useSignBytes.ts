@@ -60,7 +60,7 @@ export default function useSignBytes(): IUseSignBytesState {
 
     try {
       decodedAddress = decodeAddress(signer);
-      privateKey = await privateKeyService.getPrivateKey(
+      privateKey = await privateKeyService.getDecryptedPrivateKey(
         decodedAddress.publicKey,
         password
       );

@@ -34,7 +34,7 @@ const AccountTypeItem: FC<IProps> = ({
           <Text
             color={defaultTextColor}
             fontSize="md"
-            maxW={250}
+            maxW={400}
             noOfLines={1}
             textAlign="left"
           >
@@ -43,7 +43,7 @@ const AccountTypeItem: FC<IProps> = ({
           <Text
             color={subTextColor}
             fontSize="sm"
-            maxW={250}
+            maxW={400}
             noOfLines={2}
             textAlign="left"
           >

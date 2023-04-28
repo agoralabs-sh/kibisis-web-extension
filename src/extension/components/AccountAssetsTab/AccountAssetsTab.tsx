@@ -27,22 +27,30 @@ import EmptyState from '@extension/components/EmptyState';
 import { ACCOUNTS_ROUTE, ASSETS_ROUTE } from '@extension/constants';
 
 // Hooks
+import useAccountInformation from '@extension/hooks/useAccountInformation';
+import useAssets from '@extension/hooks/useAssets';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
 import {
-  useSelectAssetsByGenesisHash,
   useSelectFetchingAssets,
-  useSelectNetworkByGenesisHash,
+  useSelectSelectedNetwork,
   useSelectUpdatingAssets,
 } from '@extension/selectors';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Types
-import { IAccount, IAsset, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IAccountInformation,
+  IAsset,
+  INetwork,
+} from '@extension/types';
 
 // Utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
@@ -53,18 +61,21 @@ interface IProps {
 
 const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
   const { t } = useTranslation();
-  const assets: IAsset[] = useSelectAssetsByGenesisHash(account.genesisHash);
   const fetching: boolean = useSelectFetchingAssets();
-  const network: INetwork | null = useSelectNetworkByGenesisHash(
-    account.genesisHash
-  );
+  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const updating: boolean = useSelectUpdatingAssets();
+  const accountInformation: IAccountInformation | null = useAccountInformation(
+    account.id
+  );
+  const assets: IAsset[] = useAssets();
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   const handleAddAssetClick = () => console.log('add an asset!');
   const renderContent = () => {
+    let assetNodes: ReactNode[] = [];
+
     if (fetching || updating) {
       return Array.from({ length: 3 }, () => (
         <Button
@@ -96,105 +107,114 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
       ));
     }
 
-    if (account.assets.length > 0) {
-      return account.assets.reduce<ReactNode[]>((acc, assetHolding) => {
-        const asset: IAsset | null =
-          assets.find((value) => value.id === assetHolding.id) || null;
-        let standardUnitAmount: BigNumber;
+    if (accountInformation && accountInformation.assetHoldings.length > 0) {
+      assetNodes = accountInformation.assetHoldings.reduce<ReactNode[]>(
+        (acc, assetHolding) => {
+          const asset: IAsset | null =
+            assets.find((value) => value.id === assetHolding.id) || null;
+          let standardUnitAmount: BigNumber;
 
-        if (!asset) {
-          return acc;
-        }
+          if (!asset) {
+            return acc;
+          }
 
-        standardUnitAmount = convertToStandardUnit(
-          new BigNumber(assetHolding.amount),
-          asset.decimals
-        );
+          standardUnitAmount = convertToStandardUnit(
+            new BigNumber(assetHolding.amount),
+            asset.decimals
+          );
 
-        return [
-          ...acc,
-          <Tooltip
-            aria-label="Asset"
-            key={nanoid()}
-            label={asset.name || asset.id}
-          >
-            <Button
-              _hover={{
-                bg: buttonHoverBackgroundColor,
-              }}
-              as={Link}
-              borderRadius={0}
-              fontSize="md"
-              h={16}
-              justifyContent="start"
-              pl={3}
-              pr={1}
-              py={0}
-              rightIcon={
-                <Icon
-                  as={IoChevronForward}
-                  color={defaultTextColor}
-                  h={6}
-                  w={6}
-                />
-              }
-              to={`${ACCOUNTS_ROUTE}/${account.address}${ASSETS_ROUTE}/${asset.id}`}
-              variant="ghost"
-              w="full"
+          return [
+            ...acc,
+            <Tooltip
+              aria-label="Asset"
+              key={nanoid()}
+              label={asset.name || asset.id}
             >
-              <HStack alignItems="center" m={0} p={0} spacing={2} w="full">
-                {/* Icon */}
-                <AssetAvatar
-                  asset={asset}
-                  fallbackIcon={
-                    <AssetIcon
-                      color={primaryButtonTextColor}
-                      networkTheme={network?.chakraTheme}
-                      h={6}
-                      w={6}
-                    />
-                  }
-                  size="sm"
-                />
-                {/* Name/unit */}
-                {asset.unitName ? (
-                  <VStack
-                    alignItems="flex-start"
-                    flexGrow={1}
-                    justifyContent="space-between"
-                    spacing={0}
-                  >
-                    <Text
-                      color={defaultTextColor}
-                      fontSize="sm"
-                      maxW={175}
-                      noOfLines={1}
+              <Button
+                _hover={{
+                  bg: buttonHoverBackgroundColor,
+                }}
+                as={Link}
+                borderRadius={0}
+                fontSize="md"
+                h={16}
+                justifyContent="start"
+                pl={3}
+                pr={1}
+                py={0}
+                rightIcon={
+                  <Icon
+                    as={IoChevronForward}
+                    color={defaultTextColor}
+                    h={6}
+                    w={6}
+                  />
+                }
+                to={`${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
+                  account.publicKey
+                )}${ASSETS_ROUTE}/${asset.id}`}
+                variant="ghost"
+                w="full"
+              >
+                <HStack alignItems="center" m={0} p={0} spacing={2} w="full">
+                  {/*icon*/}
+                  <AssetAvatar
+                    asset={asset}
+                    fallbackIcon={
+                      <AssetIcon
+                        color={primaryButtonTextColor}
+                        networkTheme={selectedNetwork?.chakraTheme}
+                        h={6}
+                        w={6}
+                      />
+                    }
+                    size="sm"
+                  />
+
+                  {/*name/unit*/}
+                  {asset.unitName ? (
+                    <VStack
+                      alignItems="flex-start"
+                      flexGrow={1}
+                      justifyContent="space-between"
+                      spacing={0}
                     >
+                      <Text
+                        color={defaultTextColor}
+                        fontSize="sm"
+                        maxW={175}
+                        noOfLines={1}
+                      >
+                        {asset.name || asset.id}
+                      </Text>
+                      <Text color={subTextColor} fontSize="xs">
+                        {asset.unitName}
+                      </Text>
+                    </VStack>
+                  ) : (
+                    <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
                       {asset.name || asset.id}
                     </Text>
-                    <Text color={subTextColor} fontSize="xs">
-                      {asset.unitName}
-                    </Text>
-                  </VStack>
-                ) : (
-                  <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
-                    {asset.name || asset.id}
+                  )}
+
+                  {/*amount*/}
+                  <Text color={defaultTextColor} fontSize="sm">
+                    {formatCurrencyUnit(standardUnitAmount)}
                   </Text>
-                )}
-                {/* Amount */}
-                <Text color={defaultTextColor} fontSize="sm">
-                  {formatCurrencyUnit(standardUnitAmount)}
-                </Text>
-              </HStack>
-            </Button>
-          </Tooltip>,
-        ];
-      }, []);
+                </HStack>
+              </Button>
+            </Tooltip>,
+          ];
+        },
+        []
+      );
     }
 
-    return (
+    return assetNodes.length > 0 ? (
+      assetNodes
+    ) : (
       <>
-        {/* Empty state */}
+        {/*empty state*/}
         <Spacer />
         <EmptyState
           button={{

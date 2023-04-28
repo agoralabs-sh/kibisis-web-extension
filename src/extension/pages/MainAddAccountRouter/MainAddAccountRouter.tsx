@@ -30,6 +30,9 @@ import {
   useSelectSavingAccounts,
 } from '@extension/selectors';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Types
 import { ILogger } from '@common/types';
 import {
@@ -80,7 +83,15 @@ const MainAddAccountRouter: FC = () => {
       });
 
       // if the account has been added, navigate to the account and clean up
-      if (address && accounts.find((value) => value.address === address)) {
+      if (
+        address &&
+        accounts.find(
+          (value) =>
+            AccountService.convertPublicKeyToAlgorandAddress(
+              value.publicKey
+            ) === address
+        )
+      ) {
         setAddAccountResult(null);
         dispatch(updateAccountInformationThunk());
         navigate(`${ACCOUNTS_ROUTE}/${address}`, {

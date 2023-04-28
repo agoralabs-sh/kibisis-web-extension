@@ -88,7 +88,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
     }
 
     onComplete({
-      name,
+      name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
       privateKey: account.sk,
     });
   };
@@ -113,7 +113,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
           orientation="vertical"
           variant="circles"
         >
-          {/* Save mnemonic */}
+          {/*save mnemonic*/}
           <Step label={stepsLabels[0]}>
             <VStack
               alignItems="flex-start"
@@ -159,7 +159,8 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
               </CopyButton>
             </VStack>
           </Step>
-          {/* Name account */}
+
+          {/*name account*/}
           <Step label={stepsLabels[1]}>
             <VStack alignItems="flex-start" p={1} spacing={2} w="full">
               <Text color={subTextColor} size="md" textAlign="left">
@@ -184,7 +185,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
           </Step>
         </Steps>
 
-        {/* Confirm completed */}
+        {/*confirm completed*/}
         {hasCompletedAllSteps && (
           <VStack alignItems="flex-start" spacing={2} w="full">
             <Heading color={defaultTextColor} fontSize="md" textAlign="left">

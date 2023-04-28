@@ -1,31 +1,30 @@
 import { BigNumber } from 'bignumber.js';
 
 // Types
-import { IAccount, IAlgorandAccountInformation } from '@extension/types';
+import {
+  IAccountInformation,
+  IAlgorandAccountInformation,
+} from '@extension/types';
 
-export default function mapAlgorandAccountInformationToAccount(
+export default function mapAlgorandAccountInformationToAccountInformation(
   algorandAccountInformation: IAlgorandAccountInformation,
-  account: IAccount,
+  accountInformation: IAccountInformation,
   updatedAt?: number
-): IAccount {
+): IAccountInformation {
   return {
-    address: account.address,
+    ...accountInformation,
     atomicBalance: new BigNumber(
       String(algorandAccountInformation.amount as bigint)
     ).toString(),
-    assets: algorandAccountInformation.assets.map((value) => ({
+    assetHoldings: algorandAccountInformation.assets.map((value) => ({
       amount: new BigNumber(String(value.amount as bigint)).toString(),
       id: new BigNumber(String(value['asset-id'] as bigint)).toString(),
       isFrozen: value['is-frozen'],
     })),
     authAddress: algorandAccountInformation['auth-addr'] || null,
-    createdAt: account.createdAt,
-    genesisHash: account.genesisHash,
-    id: account.id,
     minAtomicBalance: new BigNumber(
       String(algorandAccountInformation['min-balance'] as bigint)
     ).toString(),
-    name: account.name,
     updatedAt: updatedAt || new Date().getTime(),
   };
 }

@@ -1,3 +1,4 @@
+import { encode as encodeHex } from '@stablelib/hex';
 import { encodeAddress, Transaction } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -41,10 +42,8 @@ import {
 } from '@extension/types';
 
 // Utils
-import {
-  initializeDefaultAccount,
-  parseTransactionType,
-} from '@extension/utils';
+import { parseTransactionType } from '@extension/utils';
+import { AccountService } from '@extension/services';
 
 interface IProps {
   network: INetwork;
@@ -56,11 +55,13 @@ const SignTxnsModalContent: FC<IProps> = ({
   transactions,
 }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
   const logger: ILogger = useSelectLogger();
   const updatingAssets: boolean = useSelectUpdatingAssets();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  // state
   const [fetchingAccountInformation, setFetchingAccountInformation] =
     useState<boolean>(false);
   const [fromAccounts, setFromAccounts] = useState<IAccount[]>([]);
@@ -70,6 +71,7 @@ const SignTxnsModalContent: FC<IProps> = ({
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   let singleTransaction: Transaction | null;
   let singleTransactionAsset: IAsset | null;
+  let singleTransactionFromAccount: IAccount | null;
   let singleTransactionType: TransactionTypeEnum;
 
   // fetch unknown asset information
@@ -87,7 +89,7 @@ const SignTxnsModalContent: FC<IProps> = ({
       dispatch(
         updateAssetInformationThunk({
           ids: unknownAssetIds,
-          genesisHash: network.genesisHash,
+          network,
         })
       );
     }
@@ -101,18 +103,22 @@ const SignTxnsModalContent: FC<IProps> = ({
 
       updatedFromAccounts = await Promise.all(
         transactions.map(async (transaction, index) => {
-          let address: string = encodeAddress(transaction.from.publicKey);
+          const encodedPublicKey: string = encodeHex(
+            transaction.from.publicKey
+          );
           let account: IAccount | null =
-            accounts.find((value) => value.address === address) || null;
+            accounts.find(
+              (value) =>
+                value.publicKey.toUpperCase() === encodedPublicKey.toUpperCase()
+            ) || null;
 
           // if we have this account, just return it
           if (account) {
             return account;
           }
 
-          account = initializeDefaultAccount({
-            address,
-            genesisHash: network.genesisHash,
+          account = AccountService.initializeDefaultAccount({
+            publicKey: encodedPublicKey,
           });
 
           return await updateAccountInformation(account, {
@@ -149,17 +155,18 @@ const SignTxnsModalContent: FC<IProps> = ({
       assets.find(
         (value) => value.id === String(singleTransaction?.assetIndex)
       ) || null;
-    singleTransactionType = parseTransactionType(
-      singleTransaction,
-      fromAccounts[0]
-    );
+    singleTransactionFromAccount = fromAccounts[0] || null;
+    singleTransactionType = parseTransactionType(singleTransaction, {
+      network,
+      sender: singleTransactionFromAccount,
+    });
 
     switch (singleTransaction.type) {
       case 'acfg':
         if (singleTransactionType === TransactionTypeEnum.AssetCreate) {
           return (
             <AssetCreateTransactionContent
-              fromAccount={fromAccounts[0] || null}
+              fromAccount={singleTransactionFromAccount}
               loading={fetchingAccountInformation}
               network={network}
               transaction={singleTransaction}
@@ -171,7 +178,7 @@ const SignTxnsModalContent: FC<IProps> = ({
           <AssetConfigTransactionContent
             asset={singleTransactionAsset}
             explorer={explorer}
-            fromAccount={fromAccounts[0] || null}
+            fromAccount={singleTransactionFromAccount}
             loading={fetchingAccountInformation || updatingAssets}
             network={network}
             transaction={singleTransaction}
@@ -182,7 +189,7 @@ const SignTxnsModalContent: FC<IProps> = ({
           <AssetFreezeTransactionContent
             asset={singleTransactionAsset}
             explorer={explorer}
-            fromAccount={fromAccounts[0] || null}
+            fromAccount={singleTransactionFromAccount}
             loading={fetchingAccountInformation || updatingAssets}
             network={network}
             transaction={singleTransaction}
@@ -201,7 +208,7 @@ const SignTxnsModalContent: FC<IProps> = ({
           <AssetTransferTransactionContent
             asset={singleTransactionAsset}
             explorer={explorer}
-            fromAccount={fromAccounts[0] || null}
+            fromAccount={singleTransactionFromAccount}
             loading={fetchingAccountInformation || updatingAssets}
             network={network}
             transaction={singleTransaction}
@@ -210,7 +217,7 @@ const SignTxnsModalContent: FC<IProps> = ({
       case 'keyreg':
         return (
           <KeyRegistrationTransactionContent
-            fromAccount={fromAccounts[0] || null}
+            fromAccount={singleTransactionFromAccount}
             network={network}
             transaction={singleTransaction}
           />
@@ -218,7 +225,7 @@ const SignTxnsModalContent: FC<IProps> = ({
       case 'pay':
         return (
           <PaymentTransactionContent
-            fromAccount={fromAccounts[0] || null}
+            fromAccount={singleTransactionFromAccount}
             loading={fetchingAccountInformation}
             network={network}
             transaction={singleTransaction}

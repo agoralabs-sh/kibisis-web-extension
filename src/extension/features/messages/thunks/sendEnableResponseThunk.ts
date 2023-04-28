@@ -9,16 +9,22 @@ import { MessagesThunkEnum } from '@extension/enums';
 // Events
 import { ExtensionEnableResponseEvent } from '@common/events';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Types
 import { ILogger } from '@common/types';
-import { IAccount, IMainRootState, ISession } from '@extension/types';
+import { IAccount, IMainRootState, INetwork, ISession } from '@extension/types';
 import { IBaseResponseThunkPayload } from '../types';
+
+// Utils
+import { mapAddressToWalletAccount } from '@extension/utils';
 
 interface IPayload extends IBaseResponseThunkPayload {
   session: ISession | null;
 }
 
-const sendEnableResponse: AsyncThunk<
+const sendEnableResponseThunk: AsyncThunk<
   void, // return
   IPayload, // args
   Record<string, never>
@@ -26,12 +32,13 @@ const sendEnableResponse: AsyncThunk<
   MessagesThunkEnum.SendEnableResponse,
   async ({ error, requestEventId, session, tabId }, { getState }) => {
     const accounts: IAccount[] = getState().accounts.items;
-    const functionName: string = 'sendEnableResponse';
     const logger: ILogger = getState().application.logger;
+    const networks: INetwork[] = getState().networks.items;
     let message: ExtensionEnableResponseEvent;
+    let network: INetwork | null;
 
     logger.debug(
-      `${functionName}(): sending "${EventNameEnum.ExtensionEnableResponse}" message to content script`
+      `${sendEnableResponseThunk.name}(): sending "${EventNameEnum.ExtensionEnableResponse}" message to content script`
     );
 
     // send the error response to the background script & the content script
@@ -47,21 +54,23 @@ const sendEnableResponse: AsyncThunk<
     }
 
     if (session) {
+      network =
+        networks.find((value) => value.genesisHash === session?.genesisHash) ||
+        null;
       message = new ExtensionEnableResponseEvent(
         requestEventId,
         {
-          accounts: session.authorizedAddresses.map<IWalletAccount>(
-            (address) => {
-              const account: IAccount | null =
-                accounts.find((value) => value.address === address) || null;
-
-              return {
-                address,
-                ...(account?.name && {
-                  name: account.name,
-                }),
-              };
-            }
+          accounts: session.authorizedAddresses.map<IWalletAccount>((address) =>
+            mapAddressToWalletAccount(address, {
+              account:
+                accounts.find(
+                  (value) =>
+                    AccountService.convertPublicKeyToAlgorandAddress(
+                      value.publicKey
+                    ) === address
+                ) || null,
+              network,
+            })
           ),
           genesisHash: session.genesisHash,
           genesisId: session.genesisId,
@@ -82,4 +91,4 @@ const sendEnableResponse: AsyncThunk<
   }
 );
 
-export default sendEnableResponse;
+export default sendEnableResponseThunk;

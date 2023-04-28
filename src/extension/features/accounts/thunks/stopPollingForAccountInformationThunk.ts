@@ -19,7 +19,7 @@ const stopPollingForAccountInformationThunk: AsyncThunk<
 
     if (pollingId) {
       logger.debug(
-        `${AccountsThunkEnum.StopPollingForAccountInformation}: stopped polling for account information`
+        `${stopPollingForAccountInformationThunk.name}: stopped polling for account information`
       );
 
       window.clearInterval(pollingId);

@@ -12,20 +12,19 @@ import { PrivateKeyService } from '@extension/services';
 
 // Types
 import { ILogger } from '@common/types';
-import { IPksPasswordTagStorageItem } from '@extension/types';
+import { IPasswordTag } from '@extension/types';
 import { IUseChangePasswordState } from './types';
 
 export default function useChangePassword(): IUseChangePasswordState {
   const logger: ILogger = useSelectLogger();
   const [error, setError] = useState<BaseExtensionError | null>(null);
-  const [passwordTag, setPasswordTag] =
-    useState<IPksPasswordTagStorageItem | null>(null);
+  const [passwordTag, setPasswordTag] = useState<IPasswordTag | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
   const changePassword: (
     newPassword: string,
     currentPassword: string
   ) => Promise<void> = async (newPassword: string, currentPassword: string) => {
-    let newPasswordTag: IPksPasswordTagStorageItem;
+    let newPasswordTag: IPasswordTag;
     let privateKeyService: PrivateKeyService;
 
     try {

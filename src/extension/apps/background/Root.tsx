@@ -11,7 +11,7 @@ import SignBytesModal from '@extension/components/SignBytesModal';
 import { EventNameEnum } from '@common/enums';
 
 // Features
-import { fetchAccountsThunk } from '@extension/features/accounts';
+import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
 import {
   closeCurrentWindowThunk,
   sendBackgroundAppLoadThunk,
@@ -90,7 +90,7 @@ const Root: FC = () => {
   // fetch accounts when the selected network has been found
   useEffect(() => {
     if (selectedNetwork) {
-      dispatch(fetchAccountsThunk());
+      dispatch(fetchAccountsFromStorageThunk());
     }
   }, [selectedNetwork]);
   useOnBackgroundAppMessage(

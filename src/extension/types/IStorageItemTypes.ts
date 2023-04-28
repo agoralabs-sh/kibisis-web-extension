@@ -4,8 +4,8 @@ import IAdvancedSettings from './IAdvancedSettings';
 import IAppearanceSettings from './IAppearanceSettings';
 import IAsset from './IAsset';
 import IGeneralSettings from './IGeneralSettings';
-import IPksAccountStorageItem from './IPksAccountStorageItem';
-import IPksPasswordTagStorageItem from './IPksPasswordTagStorageItem';
+import IPasswordTag from './IPasswordTag';
+import IPrivateKey from './IPrivateKey';
 import ISession from './ISession';
 
 type IStorageItemTypes =
@@ -14,8 +14,8 @@ type IStorageItemTypes =
   | IAppearanceSettings
   | IAsset[]
   | IGeneralSettings
-  | IPksAccountStorageItem
-  | IPksPasswordTagStorageItem
+  | IPasswordTag
+  | IPrivateKey
   | ISession;
 
 export default IStorageItemTypes;

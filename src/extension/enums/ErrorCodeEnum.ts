@@ -8,6 +8,7 @@ enum ErrorCodeEnum {
   InvalidPasswordError = 2000,
   EncryptionError = 2001,
   DecryptionError = 2002,
+  PrivateKeyAlreadyExistsError = 2003,
 }
 
 export default ErrorCodeEnum;

@@ -56,6 +56,9 @@ import {
   useSelectSignBytesRequest,
 } from '@extension/selectors';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Theme
 import { theme } from '@extension/theme';
 
@@ -77,14 +80,17 @@ interface IProps {
 const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const defaultTextColor: string = useDefaultTextColor();
-  const { encodedSignedBytes, error, signBytes } = useSignBytes();
-  const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
+  // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const signBytesRequest: ISignBytesRequest | null =
     useSelectSignBytesRequest();
   const fetching: boolean = useSelectFetchingAccounts();
+  // hooks
+  const defaultTextColor: string = useDefaultTextColor();
+  const { encodedSignedBytes, error, signBytes } = useSignBytes();
+  const subTextColor: string = useSubTextColor();
+  const textBackgroundColor: string = useTextBackgroundColor();
+  // state
   const [decodedJwt, setDecodedJwt] = useState<IDecodedJwt | null>(null);
   const [password, setPassword] = useState<string>('');
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -123,7 +129,9 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     await signBytes({
       encodedData: signBytesRequest.encodedData,
       password,
-      signer: selectedSigner.address,
+      signer: AccountService.convertPublicKeyToAlgorandAddress(
+        selectedSigner.publicKey
+      ),
     });
   };
   const renderContent = () => {
@@ -157,7 +165,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
 
     return (
       <VStack spacing={4} w="full">
-        {/* Account select */}
+        {/*account select*/}
         <VStack spacing={2} w="full">
           {signBytesRequest.signer ? (
             <>
@@ -174,7 +182,11 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
               <AccountSelect
                 accounts={accounts.filter((account) =>
                   signBytesRequest.authorizedAddresses.some(
-                    (value) => value === account.address
+                    (value) =>
+                      value ===
+                      AccountService.convertPublicKeyToAlgorandAddress(
+                        account.publicKey
+                      )
                   )
                 )}
                 onSelect={handleAccountSelect}
@@ -213,8 +225,12 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     if (accounts.length >= 0 && !selectedSigner) {
       if (signBytesRequest?.signer) {
         account =
-          accounts.find((value) => value.address === signBytesRequest.signer) ||
-          null;
+          accounts.find(
+            (value) =>
+              AccountService.convertPublicKeyToAlgorandAddress(
+                value.publicKey
+              ) === signBytesRequest.signer
+          ) || null;
       }
 
       setSelectedSigner(account || accounts[0]);

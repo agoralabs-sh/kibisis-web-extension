@@ -44,12 +44,16 @@ const AssetCreateTransactionContent: FC<IProps> = ({
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction,
-    fromAccount || undefined
+    {
+      network,
+      sender: fromAccount,
+    }
   );
   const renderExtraInformation = () => {
     return (

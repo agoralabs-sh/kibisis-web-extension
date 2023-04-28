@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Constants
-import { SESSION_KEY_PREFIX } from '@extension/constants';
+import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // Enums
 import { SessionsThunkEnum } from '@extension/enums';
@@ -28,7 +28,7 @@ const setSessionThunk: AsyncThunk<
     );
 
     await storageManager.setItems({
-      [`${SESSION_KEY_PREFIX}${session.id}`]: session,
+      [`${SESSION_ITEM_KEY_PREFIX}${session.id}`]: session,
     });
 
     return session;

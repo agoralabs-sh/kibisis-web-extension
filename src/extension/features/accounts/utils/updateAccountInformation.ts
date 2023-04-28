@@ -3,10 +3,15 @@ import { Algodv2 } from 'algosdk';
 // Constants
 import { ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT } from '@extension/constants';
 
+// Services
+
+import { AccountService } from '@extension/services';
+
 // Types
 import { IBaseOptions } from '@common/types';
 import {
   IAccount,
+  IAccountInformation,
   IAlgorandAccountInformation,
   INetwork,
   INode,
@@ -14,8 +19,11 @@ import {
 
 // Utils
 import { randomNode } from '@common/utils';
-import { mapAlgorandAccountInformationToAccount } from '@extension/utils';
-import fetchAccountInformationWithDelay from './fetchAccountInformationWithDelay';
+import {
+  convertGenesisHashToHex,
+  mapAlgorandAccountInformationToAccount,
+} from '@extension/utils';
+import fetchAlgorandAccountInformationWithDelay from './fetchAlgorandAccountInformationWithDelay';
 
 interface IOptions extends IBaseOptions {
   delay?: number;
@@ -23,81 +31,86 @@ interface IOptions extends IBaseOptions {
 }
 
 /**
- * Updates the account information for the supplied account.
- * @param {IAccount} account - the account to update.
- * @param {IOptions} options - options needed to update the accounts.
- * @returns {Promise<IAccount>} the updated accounts.
+ * Fetches the account information for a given address.
+ * @param {IAccount} account - the account.
+ * @param {IOptions} options - options needed to update the account information.
+ * @returns {Promise<IAccountInformation>} the updated account information.
  */
 export default async function updateAccountInformation(
   account: IAccount,
   { delay = 0, logger, network }: IOptions
 ): Promise<IAccount> {
-  const timestamp: number = new Date().getTime();
-  let accountInformation: IAlgorandAccountInformation;
+  const encodedGenesisHash: string = convertGenesisHashToHex(
+    network.genesisHash
+  );
+  const accountInformation: IAccountInformation =
+    account.networkInfo[encodedGenesisHash] ||
+    AccountService.initializeDefaultAccountInformation();
+  let address: string;
+  let algorandAccountInformation: IAlgorandAccountInformation;
   let client: Algodv2;
   let node: INode;
   let updatedAt: Date;
 
-  if (!network) {
-    logger &&
-      logger.debug(
-        `${updateAccountInformation.name}(): unrecognized network "${account.genesisHash}" for "${account.id}", skipping`
-      );
-
-    return account;
-  }
-
   // if the account information is not out-of-date just return the account
   if (
-    account.updatedAt &&
-    account.updatedAt + ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT > timestamp
+    accountInformation.updatedAt &&
+    accountInformation.updatedAt + ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT >
+      new Date().getTime()
   ) {
     logger &&
       logger.debug(
         `${updateAccountInformation.name}: last updated "${new Date(
-          account.updatedAt
+          accountInformation.updatedAt
         ).toString()}", skipping`
       );
 
     return account;
   }
 
+  address = AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   node = randomNode(network);
   client = new Algodv2('', node.url, node.port);
 
   logger &&
     logger.debug(
-      `${updateAccountInformation.name}: fetching account information for "${account.address}" from "${node.name}" on "${network.genesisId}"`
+      `${updateAccountInformation.name}: fetching account information for "${address}" from "${node.name}" on "${network.genesisId}"`
     );
 
   try {
-    accountInformation = await fetchAccountInformationWithDelay({
-      address: account.address,
-      client,
-      delay,
-    });
+    algorandAccountInformation = await fetchAlgorandAccountInformationWithDelay(
+      {
+        address,
+        client,
+        delay,
+      }
+    );
     updatedAt = new Date();
 
     logger &&
       logger.debug(
         `${
           updateAccountInformation.name
-        }: successfully updated account information for "${
-          account.address
-        }" from "${node.name}" on "${
-          network.genesisId
-        }" at "${updatedAt.toString()}"`
+        }: successfully updated account information for "${address}" from "${
+          node.name
+        }" on "${network.genesisId}" at "${updatedAt.toString()}"`
       );
 
-    return mapAlgorandAccountInformationToAccount(
-      accountInformation,
-      account,
-      updatedAt.getTime()
-    );
+    return {
+      ...account,
+      networkInfo: {
+        ...account.networkInfo,
+        [encodedGenesisHash]: mapAlgorandAccountInformationToAccount(
+          algorandAccountInformation,
+          accountInformation,
+          updatedAt.getTime()
+        ),
+      },
+    };
   } catch (error) {
     logger &&
       logger.error(
-        `${updateAccountInformation.name}: failed to get account information for "${account.address}" from "${node.name}" on ${network.genesisId}: ${error.message}`
+        `${updateAccountInformation.name}: failed to get account information for "${address}" from "${node.name}" on ${network.genesisId}: ${error.message}`
       );
 
     return account;

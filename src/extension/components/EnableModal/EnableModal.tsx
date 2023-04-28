@@ -11,6 +11,7 @@ import {
   ModalHeader,
   Skeleton,
   SkeletonCircle,
+  Spacer,
   Tag,
   TagLabel,
   Text,
@@ -18,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import { nanoid } from 'nanoid';
-import React, { ChangeEvent, FC } from 'react';
+import React, { ChangeEvent, FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { randomBytes } from 'tweetnacl';
@@ -26,6 +27,7 @@ import { randomBytes } from 'tweetnacl';
 // Components
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
+import EmptyState from '@extension/components/EmptyState';
 
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -35,7 +37,7 @@ import { SerializableOperationCanceledError } from '@common/errors';
 
 // Features
 import {
-  sendEnableResponse,
+  sendEnableResponseThunk,
   setEnableRequest,
 } from '@extension/features/messages';
 import { setSessionThunk } from '@extension/features/sessions';
@@ -54,12 +56,16 @@ import {
   useSelectSavingSessions,
 } from '@extension/selectors';
 
+// Services
+import { AccountService } from '@extension/services';
+
 // Theme
 import { theme } from '@extension/theme';
 
 // Types
 import {
   IAccount,
+  IAccountInformation,
   IAppThunkDispatch,
   IEnableRequest,
   ISession,
@@ -75,18 +81,20 @@ interface IProps {
 const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
+  // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const enableRequest: IEnableRequest | null = useSelectEnableRequest();
   const fetching: boolean = useSelectFetchingAccounts();
   const saving: boolean = useSelectSavingSessions();
+  // hooks
+  const defaultTextColor: string = useDefaultTextColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
+  const subTextColor: string = useSubTextColor();
+  const textBackgroundColor: string = useTextBackgroundColor();
   const handleCancelClick = () => {
     if (enableRequest) {
       dispatch(
-        sendEnableResponse({
+        sendEnableResponseThunk({
           error: new SerializableOperationCanceledError(
             `user dismissed connect modal`
           ),
@@ -111,7 +119,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     // save the session, send an enable response and remove the connect request
     dispatch(setSessionThunk(session));
     dispatch(
-      sendEnableResponse({
+      sendEnableResponseThunk({
         error: null,
         requestEventId: enableRequest.requestEventId,
         session,
@@ -156,7 +164,9 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       );
     };
   const renderContent = () => {
-    if (fetching) {
+    let accountNodes: ReactNode[];
+
+    if (!enableRequest || fetching) {
       return Array.from({ length: 3 }, () => (
         <HStack key={nanoid()} py={4} spacing={4} w="full">
           <SkeletonCircle size="12" />
@@ -172,57 +182,81 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       ));
     }
 
-    if (accounts.length > 0) {
-      return accounts.map((account) => (
-        <HStack key={nanoid()} py={4} spacing={4} w="full">
-          <Avatar name={account.name || account.address} />
-          {account.name ? (
-            <VStack
-              alignItems="flex-start"
-              flexGrow={1}
-              justifyContent="space-evenly"
-              spacing={0}
-            >
-              <Text color={defaultTextColor} fontSize="md" textAlign="left">
-                {account.name}
-              </Text>
-              <Text color={subTextColor} fontSize="sm" textAlign="left">
-                {ellipseAddress(account.address, {
+    accountNodes = accounts.reduce<ReactNode[]>(
+      (acc, account, currentIndex) => {
+        const accountInformation: IAccountInformation | null =
+          AccountService.extractAccountInformationForNetwork(
+            account,
+            enableRequest.network
+          );
+        let address: string;
+
+        if (!accountInformation) {
+          return acc;
+        }
+
+        address = AccountService.convertPublicKeyToAlgorandAddress(
+          account.publicKey
+        );
+
+        return [
+          ...acc,
+          <HStack key={nanoid()} py={4} spacing={4} w="full">
+            <Avatar name={accountInformation.name || address} />
+            {accountInformation.name ? (
+              <VStack
+                alignItems="flex-start"
+                flexGrow={1}
+                justifyContent="space-evenly"
+                spacing={0}
+              >
+                <Text color={defaultTextColor} fontSize="md" textAlign="left">
+                  {accountInformation.name}
+                </Text>
+                <Text color={subTextColor} fontSize="sm" textAlign="left">
+                  {ellipseAddress(address, {
+                    end: 10,
+                    start: 10,
+                  })}
+                </Text>
+              </VStack>
+            ) : (
+              <Text
+                color={defaultTextColor}
+                flexGrow={1}
+                fontSize="md"
+                textAlign="left"
+              >
+                {ellipseAddress(address, {
                   end: 10,
                   start: 10,
                 })}
               </Text>
-            </VStack>
-          ) : (
-            <Text
-              color={defaultTextColor}
-              flexGrow={1}
-              fontSize="md"
-              textAlign="left"
-            >
-              {ellipseAddress(account.address, {
-                end: 10,
-                start: 10,
-              })}
-            </Text>
-          )}
-          <Checkbox
-            colorScheme={primaryColorScheme}
-            isChecked={
-              !!enableRequest?.authorizedAddresses?.find(
-                (value) => value === account.address
-              )
-            }
-            onChange={handleOnAccountCheckChange(account.address)}
-          />
-        </HStack>
-      ));
-    }
+            )}
+            <Checkbox
+              colorScheme={primaryColorScheme}
+              isChecked={
+                !!enableRequest?.authorizedAddresses?.find(
+                  (value) => value === address
+                )
+              }
+              onChange={handleOnAccountCheckChange(address)}
+            />
+          </HStack>,
+        ];
+      },
+      []
+    );
 
-    return (
-      <Heading color={defaultTextColor} size="md" textAlign="center" w="full">
-        {t<string>('headings.noAccountsFound')}
-      </Heading>
+    return accountNodes.length > 0 ? (
+      accountNodes
+    ) : (
+      <>
+        {/*empty state*/}
+        <Spacer />
+        <EmptyState text={t<string>('headings.noAccountsFound')} />
+        <Spacer />
+      </>
     );
   };
   const renderHeader = () => {
