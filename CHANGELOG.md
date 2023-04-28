@@ -1,3 +1,10 @@
+# [1.1.0-beta.15](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.14...v1.1.0-beta.15) (2023-04-28)
+
+
+### Features
+
+* refactor account data ([#16](https://github.com/agoralabs-sh/kibisis-web-extension/issues/16)) ([789a9fc](https://github.com/agoralabs-sh/kibisis-web-extension/commit/789a9fc60e3db89680519280ab0c4198658c8dd9))
+
 # [1.1.0-beta.14](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.13...v1.1.0-beta.14) (2023-04-26)
 
 

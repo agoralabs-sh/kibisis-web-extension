@@ -1,6 +1,6 @@
 {
   "name": "@agoralabs-sh/kibisis-web-extension",
-  "version": "1.1.0-beta.14",
+  "version": "1.1.0-beta.15",
   "description": "An Algorand wallet browser extension to sign data, send transactions and rekey with another account.",
   "main": "build/main.js",
   "repository": {
