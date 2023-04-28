@@ -7,10 +7,10 @@ import {
 } from 'algosdk';
 
 // Types
-import { INetwork, INode } from '@extension/types';
+import { INetwork } from '@extension/types';
 
 // Utils
-import randomNotPureStakeNode from './randomNotPureStakeNode';
+import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 interface IOptions {
   assetId: string;
@@ -25,8 +25,7 @@ export default async function createAssetConfigTransaction({
   network,
   note,
 }: IOptions): Promise<Transaction> {
-  const node: INode = randomNotPureStakeNode(network);
-  const client: Algodv2 = new Algodv2('', node.url, node.port);
+  const client: Algodv2 = getNotPureStakeAlgodClient(network);
   const suggestedParams: SuggestedParams = await client
     .getTransactionParams()
     .do();

@@ -4,7 +4,6 @@ import { Algodv2 } from 'algosdk';
 import { ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT } from '@extension/constants';
 
 // Services
-
 import { AccountService } from '@extension/services';
 
 // Types
@@ -14,11 +13,10 @@ import {
   IAccountInformation,
   IAlgorandAccountInformation,
   INetwork,
-  INode,
 } from '@extension/types';
 
 // Utils
-import { randomNode } from '@common/utils';
+import { getAlgodClient } from '@common/utils';
 import {
   convertGenesisHashToHex,
   mapAlgorandAccountInformationToAccount,
@@ -49,7 +47,6 @@ export default async function updateAccountInformation(
   let address: string;
   let algorandAccountInformation: IAlgorandAccountInformation;
   let client: Algodv2;
-  let node: INode;
   let updatedAt: Date;
 
   // if the account information is not out-of-date just return the account
@@ -69,12 +66,13 @@ export default async function updateAccountInformation(
   }
 
   address = AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
-  node = randomNode(network);
-  client = new Algodv2('', node.url, node.port);
+  client = getAlgodClient(network, {
+    logger,
+  });
 
   logger &&
     logger.debug(
-      `${updateAccountInformation.name}: fetching account information for "${address}" from "${node.name}" on "${network.genesisId}"`
+      `${updateAccountInformation.name}: fetching account information for "${address}" on "${network.genesisId}"`
     );
 
   try {
@@ -91,9 +89,9 @@ export default async function updateAccountInformation(
       logger.debug(
         `${
           updateAccountInformation.name
-        }: successfully updated account information for "${address}" from "${
-          node.name
-        }" on "${network.genesisId}" at "${updatedAt.toString()}"`
+        }: successfully updated account information for "${address}" on "${
+          network.genesisId
+        }" at "${updatedAt.toString()}"`
       );
 
     return {
@@ -110,7 +108,7 @@ export default async function updateAccountInformation(
   } catch (error) {
     logger &&
       logger.error(
-        `${updateAccountInformation.name}: failed to get account information for "${address}" from "${node.name}" on ${network.genesisId}: ${error.message}`
+        `${updateAccountInformation.name}: failed to get account information for "${address}" on ${network.genesisId}: ${error.message}`
       );
 
     return account;

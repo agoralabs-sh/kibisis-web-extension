@@ -13,7 +13,8 @@ interface INetwork {
   genesisHash: string;
   genesisId: string;
   nativeCurrency: INativeCurrency;
-  nodes: INode[];
+  indexers: INode[];
+  algods: INode[];
   type: NetworkTypeEnum;
 }
 
