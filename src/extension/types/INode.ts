@@ -1,5 +1,5 @@
 interface INode {
-  name: string;
+  canonicalName: string;
   port: string;
   url: string;
 }

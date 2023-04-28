@@ -20,10 +20,10 @@ import { TESTNET_APP_INDEX } from '../constants';
 import { TransactionTypeEnum } from '@extension/enums';
 
 // Types
-import { INetwork, INode } from '@extension/types';
+import { INetwork } from '@extension/types';
 
 // Utils
-import randomNotPureStakeNode from './randomNotPureStakeNode';
+import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 interface IOptions {
   from: string;
@@ -41,8 +41,7 @@ export default async function createAppCallTransaction({
   const appArgs: Uint8Array[] = [Uint8Array.from([0]), Uint8Array.from([0, 1])];
   const encodedApprovalProgram: string = 'BIEBMgkxABIxGYEED01D';
   const encodedClearProgram: string = 'BIEB';
-  const node: INode = randomNotPureStakeNode(network);
-  const client: Algodv2 = new Algodv2('', node.url, node.port);
+  const client: Algodv2 = getNotPureStakeAlgodClient(network);
   const encoder: TextEncoder = new TextEncoder();
   const suggestedParams: SuggestedParams = await client
     .getTransactionParams()

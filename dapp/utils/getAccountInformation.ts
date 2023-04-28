@@ -7,19 +7,17 @@ import {
   IAlgorandAccountInformation,
   IAlgorandAsset,
   INetwork,
-  INode,
 } from '@extension/types';
 import { IAccountInformation, IAssetInformation } from '../types';
 
 // Utils
-import randomNotPureStakeNode from './randomNotPureStakeNode';
+import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 export default async function getAccountInformation(
   account: IWalletAccount,
   network: INetwork
 ): Promise<IAccountInformation> {
-  const node: INode = randomNotPureStakeNode(network);
-  const client: Algodv2 = new Algodv2('', node.url, node.port);
+  const client: Algodv2 = getNotPureStakeAlgodClient(network);
   const accountInformation: IAlgorandAccountInformation = (await client
     .accountInformation(account.address)
     .setIntDecoding(IntDecoding.BIGINT)

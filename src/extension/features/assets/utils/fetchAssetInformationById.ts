@@ -6,12 +6,11 @@ import {
   IAlgorandAsset,
   IAsset,
   INetwork,
-  INode,
   ITinyManAssetResponse,
 } from '@extension/types';
 
 // Utils
-import { randomNode } from '@common/utils';
+import { getAlgodClient } from '@common/utils';
 import {
   fetchAssetList,
   fetchAssetVerification,
@@ -37,7 +36,6 @@ export default async function fetchAssetInformationById(
   let assetInformation: IAlgorandAsset;
   let assetList: Record<string, ITinyManAssetResponse> | null = null;
   let client: Algodv2;
-  let node: INode;
   let verified: boolean;
 
   // TODO: asset list only exists for algorand mainnet, move this url to config?
@@ -47,8 +45,9 @@ export default async function fetchAssetInformationById(
     });
   }
 
-  node = randomNode(network);
-  client = new Algodv2('', node.url, node.port);
+  client = getAlgodClient(network, {
+    logger,
+  });
   verified = false;
 
   try {
@@ -60,7 +59,7 @@ export default async function fetchAssetInformationById(
 
     logger &&
       logger.debug(
-        `${fetchAssetInformationById.name}: getting verified status for "${id}" from "${node.name}" on "${network.genesisId}"`
+        `${fetchAssetInformationById.name}: getting verified status for "${id}" on "${network.genesisId}"`
       );
 
     // TODO: asset list only exists for algorand mainnet, move this url to config?
@@ -81,7 +80,7 @@ export default async function fetchAssetInformationById(
   } catch (error) {
     logger &&
       logger.error(
-        `${fetchAssetInformationById.name}: failed to get asset information for asset "${id}" from "${node.name}" on ${network.genesisId}: ${error.message}`
+        `${fetchAssetInformationById.name}: failed to get asset information for asset "${id}" on ${network.genesisId}: ${error.message}`
       );
 
     return null;
