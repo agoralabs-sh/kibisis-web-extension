@@ -15,7 +15,8 @@ interface IProps {
   decimals: number;
   displayUnit?: boolean;
   fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
-  icon: ReactNode;
+  icon?: ReactNode;
+  prefix?: '+' | '-';
   unit?: string;
 }
 
@@ -26,6 +27,7 @@ const AssetDisplay: FC<IProps> = ({
   displayUnit = false,
   fontSize = 'sm',
   icon,
+  prefix,
   unit,
 }: IProps) => {
   // hooks
@@ -40,9 +42,9 @@ const AssetDisplay: FC<IProps> = ({
     >
       <HStack spacing={1}>
         <Text color={color || defaultTextColor} fontSize={fontSize}>
-          {formatCurrencyUnit(
+          {`${prefix || ''}${formatCurrencyUnit(
             convertToStandardUnit(atomicUnitAmount, decimals)
-          )}
+          )}`}
         </Text>
         {icon}
         {displayUnit && unit && (
