@@ -74,7 +74,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
       <>
         {/*fee*/}
         <SignTxnsAssetItem
-          atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+          atomicUnitAmount={new BigNumber(String(transaction.fee))}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
             color: subTextColor,
@@ -137,7 +137,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
           <>
             {/*total supply*/}
             <SignTxnsAssetItem
-              atomicUnitsAmount={new BigNumber(asset.total)}
+              atomicUnitAmount={new BigNumber(asset.total)}
               decimals={asset.decimals}
               displayUnit={true}
               icon={icon}

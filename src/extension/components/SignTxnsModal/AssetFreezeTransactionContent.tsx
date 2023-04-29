@@ -103,7 +103,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       <>
         {/*freeze account balance*/}
         <SignTxnsAssetItem
-          atomicUnitsAmount={atomicUnitFreezeAccountBalance}
+          atomicUnitAmount={atomicUnitFreezeAccountBalance}
           decimals={asset.decimals}
           displayUnit={true}
           icon={
@@ -131,7 +131,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
 
         {/*fee*/}
         <SignTxnsAssetItem
-          atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+          atomicUnitAmount={new BigNumber(String(transaction.fee))}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
             color: subTextColor,

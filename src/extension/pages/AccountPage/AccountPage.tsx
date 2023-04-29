@@ -328,7 +328,7 @@ const AccountPage: FC = () => {
             >
               <AccountAssetsTab account={account} />
               <AccountNftsTab />
-              <AccountActivityTab account={account} />
+              <AccountActivityTab account={account} network={selectedNetwork} />
             </TabPanels>
           </Tabs>
         </>
@@ -358,8 +358,6 @@ const AccountPage: FC = () => {
 
     // if there is no account, go to the first account, or the accounts index if no accounts exist
     if (!account) {
-      console.log('accounts:', accounts);
-      console.log('accounts[0]:', accounts[0]);
       navigate(
         `${ACCOUNTS_ROUTE}${
           accounts[0]

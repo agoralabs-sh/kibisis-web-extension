@@ -58,7 +58,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
     <>
       {/* Fee */}
       <SignTxnsAssetItem
-        atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+        atomicUnitAmount={new BigNumber(String(transaction.fee))}
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}

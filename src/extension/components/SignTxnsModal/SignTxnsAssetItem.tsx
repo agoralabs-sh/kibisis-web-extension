@@ -1,6 +1,9 @@
-import { HStack, Skeleton, StackProps, Text, Tooltip } from '@chakra-ui/react';
+import { HStack, Skeleton, StackProps, Text } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode } from 'react';
+
+// Components
+import AssetDisplay from '@extension/components/AssetDisplay';
 
 // Constants
 import { MODAL_ITEM_HEIGHT } from '@extension/constants';
@@ -9,11 +12,8 @@ import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
-
 interface IProps extends StackProps {
-  atomicUnitsAmount: BigNumber;
+  atomicUnitAmount: BigNumber;
   decimals: number;
   displayUnit?: boolean;
   icon: ReactNode;
@@ -23,7 +23,7 @@ interface IProps extends StackProps {
 }
 
 const SignTxnsAssetItem: FC<IProps> = ({
-  atomicUnitsAmount,
+  atomicUnitAmount,
   decimals,
   displayUnit = false,
   icon,
@@ -57,27 +57,15 @@ const SignTxnsAssetItem: FC<IProps> = ({
           </HStack>
         </Skeleton>
       ) : (
-        <Tooltip
-          aria-label="Asset amount with unrestricted decimals"
-          label={`${convertToStandardUnit(
-            atomicUnitsAmount,
-            decimals
-          ).toString()}${unit ? ` ${unit}` : ''}`}
-        >
-          <HStack spacing={1}>
-            <Text color={subTextColor} fontSize="xs">
-              {formatCurrencyUnit(
-                convertToStandardUnit(atomicUnitsAmount, decimals)
-              )}
-            </Text>
-            {icon}
-            {displayUnit && unit && (
-              <Text color={subTextColor} fontSize="xs">
-                {unit}
-              </Text>
-            )}
-          </HStack>
-        </Tooltip>
+        <AssetDisplay
+          atomicUnitAmount={atomicUnitAmount}
+          color={subTextColor}
+          decimals={decimals}
+          displayUnit={true}
+          fontSize="xs"
+          icon={icon}
+          unit={unit}
+        />
       )}
     </HStack>
   );
