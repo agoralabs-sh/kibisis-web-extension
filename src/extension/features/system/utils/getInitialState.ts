@@ -2,9 +2,9 @@
 import { createLogger } from '@common/utils';
 
 // Types
-import { IApplicationState } from '../types';
+import { ISystemState } from '../types';
 
-export default function getInitialState(): IApplicationState {
+export default function getInitialState(): ISystemState {
   return {
     confirm: null,
     error: null,

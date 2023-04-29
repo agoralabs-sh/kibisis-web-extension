@@ -21,7 +21,7 @@ import Warning from '@extension/components/Warning';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // Features
-import { IConfirm } from '@extension/features/application';
+import { IConfirm } from '@extension/features/system';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';

@@ -54,7 +54,7 @@ import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Features
 import { removeAccountByIdThunk } from '@extension/features/accounts';
-import { setConfirm } from '@extension/features/application';
+import { setConfirm } from '@extension/features/system';
 import { setSettings } from '@extension/features/settings';
 
 // Hooks

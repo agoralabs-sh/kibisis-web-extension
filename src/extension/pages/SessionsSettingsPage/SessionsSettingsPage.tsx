@@ -23,7 +23,7 @@ import PageHeader from '@extension/components/PageHeader';
 import SettingsSessionItem from '@extension/components/SettingsSessionItem';
 
 // Features
-import { setConfirm } from '@extension/features/application';
+import { setConfirm } from '@extension/features/system';
 import {
   clearSessionsThunk,
   removeSessionThunk,

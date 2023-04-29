@@ -7,11 +7,7 @@ import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 import ErrorModal from '@extension/components/ErrorModal';
 
 // Features
-import {
-  setError,
-  setNavigate,
-  setToast,
-} from '@extension/features/application';
+import { setError, setNavigate, setToast } from '@extension/features/system';
 import { fetchSettings } from '@extension/features/settings';
 
 // Theme

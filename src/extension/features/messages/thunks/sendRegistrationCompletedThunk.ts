@@ -18,7 +18,7 @@ const sendRegistrationCompletedThunk: AsyncThunk<
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
   MessagesThunkEnum.SendRegistrationCompleted,
   async (_, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const event: ExtensionRegistrationCompletedEvent =
       new ExtensionRegistrationCompletedEvent();
 

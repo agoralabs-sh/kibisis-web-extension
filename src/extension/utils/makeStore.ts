@@ -6,7 +6,7 @@ import {
   setError,
   setNavigate,
   setToast,
-} from '@extension/features/application';
+} from '@extension/features/system';
 
 // Types
 import { IBaseRootState } from '@extension/types';

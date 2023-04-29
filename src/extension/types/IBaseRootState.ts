@@ -1,8 +1,8 @@
 // Features
-import { IApplicationState } from '../features/application';
+import { ISystemState } from '@extension/features/system';
 
 interface IBaseRootState {
-  application: IApplicationState;
+  system: ISystemState;
 }
 
 export default IBaseRootState;

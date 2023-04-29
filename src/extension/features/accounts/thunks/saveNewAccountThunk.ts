@@ -10,7 +10,7 @@ import {
 } from '@extension/errors';
 
 // Features
-import { setError } from '@extension/features/application';
+import { setError } from '@extension/features/system';
 
 // Enums
 import { AccountsThunkEnum } from '@extension/enums';
@@ -39,7 +39,7 @@ const saveNewAccountThunk: AsyncThunk<
 >(
   AccountsThunkEnum.SaveNewAccount,
   async ({ name, password, privateKey }, { dispatch, getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const networks: INetwork[] = getState().networks.items;
     let account: IAccount;
     let accountService: AccountService;

@@ -9,7 +9,7 @@ import Root from './Root';
 
 // Features
 import { reducer as accountsReducer } from '@extension/features/accounts';
-import { reducer as applicationReducer } from '@extension/features/application';
+import { reducer as applicationReducer } from '@extension/features/system';
 import { reducer as assetsReducer } from '@extension/features/assets';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
@@ -26,7 +26,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IMainRootState> = makeStore<IMainRootState>(
     combineReducers({
       accounts: accountsReducer,
-      application: applicationReducer,
+      system: applicationReducer,
       assets: assetsReducer,
       messages: messagesReducer,
       networks: networksReducer,

@@ -27,7 +27,7 @@ const sendTxnsBytesResponse: AsyncThunk<
     { error, requestEventId, signedTransactions: stxns, tabId },
     { getState }
   ) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     let message: ExtensionSignTxnsResponseEvent;
 
     logger.debug(

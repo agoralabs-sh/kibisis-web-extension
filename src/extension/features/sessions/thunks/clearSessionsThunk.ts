@@ -20,7 +20,7 @@ const clearSessionsThunk: AsyncThunk<
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
   SessionsThunkEnum.ClearSessions,
   async (_, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const storageManager: StorageManager = new StorageManager();
     const storageItems: Record<string, IStorageItemTypes | unknown> =
       await storageManager.getAllItems();

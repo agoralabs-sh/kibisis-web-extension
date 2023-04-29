@@ -104,7 +104,7 @@ const config: Configuration = {
         'features',
         'accounts'
       ),
-      ['@extension/features/application']: resolve(
+      ['@extension/features/system']: resolve(
         EXTENSION_PATH,
         'features',
         'application'

@@ -16,7 +16,7 @@ import {
 } from '@extension/constants';
 
 // Features
-import { reducer as applicationReducer } from '@extension/features/application';
+import { reducer as applicationReducer } from '@extension/features/system';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as registrationReducer } from '@extension/features/registration';
@@ -62,7 +62,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IRegistrationRootState> =
     makeStore<IRegistrationRootState>(
       combineReducers({
-        application: applicationReducer,
+        system: applicationReducer,
         networks: networksReducer,
         settings: settingsReducer,
         registration: registrationReducer,

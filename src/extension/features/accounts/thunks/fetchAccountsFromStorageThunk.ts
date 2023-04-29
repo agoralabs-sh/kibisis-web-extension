@@ -26,9 +26,9 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   IFetchAccountsFromStoragePayload | undefined,
   { state: IMainRootState }
 >(AccountsThunkEnum.FetchAccountsFromStorage, async (options, { getState }) => {
-  const logger: ILogger = getState().application.logger;
+  const logger: ILogger = getState().system.logger;
   const networks: INetwork[] = getState().networks.items;
-  const online: boolean = getState().application.online;
+  const online: boolean = getState().system.online;
   const accountService: AccountService = new AccountService({
     logger,
   });

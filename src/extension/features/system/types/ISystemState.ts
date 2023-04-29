@@ -8,7 +8,7 @@ import { BaseExtensionError } from '@extension/errors';
 import { ILogger } from '@common/types';
 import IConfirm from './IConfirm';
 
-interface IApplicationState {
+interface ISystemState {
   confirm: IConfirm | null;
   error: BaseExtensionError | null;
   logger: ILogger;
@@ -18,4 +18,4 @@ interface IApplicationState {
   toast: CreateToastFnReturn | null;
 }
 
-export default IApplicationState;
+export default ISystemState;

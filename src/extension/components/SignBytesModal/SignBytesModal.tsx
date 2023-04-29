@@ -40,7 +40,7 @@ import {
 } from '@common/errors';
 
 // Features
-import { setError } from '@extension/features/application';
+import { setError } from '@extension/features/system';
 import { sendSignBytesResponse } from '@extension/features/messages';
 
 // Hooks

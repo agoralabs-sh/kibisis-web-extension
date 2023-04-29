@@ -6,6 +6,6 @@ import { IBaseRootState } from '@extension/types';
 
 export default function useSelectToast(): CreateToastFnReturn | null {
   return useSelector<IBaseRootState, CreateToastFnReturn | null>(
-    (state) => state.application.toast
+    (state) => state.system.toast
   );
 }

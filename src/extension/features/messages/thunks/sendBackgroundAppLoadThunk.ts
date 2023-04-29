@@ -18,7 +18,7 @@ const sendBackgroundAppLoadThunk: AsyncThunk<
 > = createAsyncThunk<void, string, { state: IMainRootState }>(
   MessagesThunkEnum.SendBackgroundAppLoad,
   async (eventId, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const event: ExtensionBackgroundAppLoadEvent =
       new ExtensionBackgroundAppLoadEvent({
         eventId,

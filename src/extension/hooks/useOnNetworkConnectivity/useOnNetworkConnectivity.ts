@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { NETWORK_CONNECTIVITY_CHECK_INTERVAL } from '@extension/constants';
 
 // Features
-import { setOnline } from '@extension/features/application';
+import { setOnline } from '@extension/features/system';
 
 // Types
 import { IAppThunkDispatch } from '@extension/types';
