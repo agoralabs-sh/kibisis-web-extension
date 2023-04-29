@@ -2,6 +2,7 @@ export { default as useSelectAccount } from './useSelectAccount';
 export { default as useSelectAccountById } from './useSelectAccountById';
 export { default as useSelectAccountByPublicKey } from './useSelectAccountByPublicKey';
 export { default as useSelectAccounts } from './useSelectAccounts';
+export { default as useSelectAccountTransactionByAccountId } from './useSelectAccountTransactionByAccountId';
 export { default as useSelectAssets } from './useSelectAssets';
 export { default as useSelectAssetsByGenesisHash } from './useSelectAssetsByGenesisHash';
 export { default as useSelectColorMode } from './useSelectColorMode';
@@ -12,6 +13,7 @@ export { default as useSelectFetchingAccounts } from './useSelectFetchingAccount
 export { default as useSelectFetchingAssets } from './useSelectFetchingAssets';
 export { default as useSelectFetchingSessions } from './useSelectFetchingSessions';
 export { default as useSelectFetchingSettings } from './useSelectFetchingSettings';
+export { default as useSelectFetchingTransactionsByAccountId } from './useSelectFetchingTransactionsByAccountId';
 export { default as useSelectIsOnline } from './useSelectIsOnline';
 export { default as useSelectLogger } from './useSelectLogger';
 export { default as useSelectNetworkByGenesisHash } from './useSelectNetworkByGenesisHash';

@@ -61,9 +61,11 @@ interface IProps {
 
 const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
   const { t } = useTranslation();
+  // selectors
   const fetching: boolean = useSelectFetchingAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const updating: boolean = useSelectUpdatingAssets();
+  // hooks
   const accountInformation: IAccountInformation | null = useAccountInformation(
     account.id
   );

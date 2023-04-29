@@ -7,6 +7,7 @@ enum StoreNameEnum {
   Sessions = 'sessions',
   Settings = 'settings',
   System = 'system',
+  Transactions = 'transactions',
 }
 
 export default StoreNameEnum;

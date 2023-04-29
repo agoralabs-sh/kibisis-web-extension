@@ -153,6 +153,7 @@ const translation: IResourceLanguage = {
     newAccountComplete: 'Almost There...',
     noAccountsFound: 'No accounts found',
     noAssetsFound: 'No assets found',
+    noTransactionsFound: 'No transactions found',
     noSessionsFound: 'No sessions found',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',

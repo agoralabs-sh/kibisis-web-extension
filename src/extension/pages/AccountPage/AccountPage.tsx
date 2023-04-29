@@ -328,7 +328,7 @@ const AccountPage: FC = () => {
             >
               <AccountAssetsTab account={account} />
               <AccountNftsTab />
-              <AccountActivityTab />
+              <AccountActivityTab account={account} />
             </TabPanels>
           </Tabs>
         </>

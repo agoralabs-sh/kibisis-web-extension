@@ -16,6 +16,7 @@ export { default as makeStore } from './makeStore';
 export { default as mapAssetFromAlgorandAsset } from './mapAssetFromAlgorandAsset';
 export { default as mapAddressToWalletAccount } from './mapAddressToWalletAccount';
 export { default as mapAlgorandAccountInformationToAccount } from './mapAlgorandAccountInformationToAccount';
+export { default as mapAlgorandTransactionToTransaction } from './mapAlgorandTransactionToTransaction';
 export { default as mapSessionFromEnableRequest } from './mapSessionFromEnableRequest';
 export { default as parseTransactionType } from './parseTransactionType';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';
