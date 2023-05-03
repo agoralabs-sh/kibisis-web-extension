@@ -1,18 +1,15 @@
 import { HStack, Skeleton, Spacer, Text, VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Components
 import AddressDisplay from '@extension/components/AddressDisplay';
-import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetDisplay from '@extension/components/AssetDisplay';
-import AssetIcon from '@extension/components/AssetIcon';
 
 // Hooks
 import useAsset from '@extension/hooks/useAsset';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Services
@@ -24,9 +21,6 @@ import {
   IAssetTransferTransaction,
   INetwork,
 } from '@extension/types';
-
-// Utils
-import { createIconFromDataUri } from '@extension/utils';
 
 interface IProps {
   account: IAccount;
@@ -43,7 +37,6 @@ const AssetTransferTransactionItemContent: FC<IProps> = ({
   // hooks
   const { asset, updating } = useAsset(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   const accountAddress: string =
     AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
@@ -102,19 +95,12 @@ const AssetTransferTransactionItemContent: FC<IProps> = ({
           />
         )}
 
-        {/*fee*/}
-        <AssetDisplay
-          atomicUnitAmount={new BigNumber(String(transaction.fee))}
-          color={subTextColor}
-          decimals={network.nativeCurrency.decimals}
-          fontSize="xs"
-          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
-            color: subTextColor,
-            h: 2,
-            w: 2,
-          })}
-          unit={network.nativeCurrency.code}
-        />
+        {/*completed date*/}
+        {transaction.completedAt && (
+          <Text color={subTextColor} fontSize="xs">
+            {new Date(transaction.completedAt).toLocaleString()}
+          </Text>
+        )}
       </VStack>
     </>
   );

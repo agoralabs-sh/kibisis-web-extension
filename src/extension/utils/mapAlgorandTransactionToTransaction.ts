@@ -14,6 +14,11 @@ export default function mapAlgorandTransactionToTransaction(
   algorandTransaction: IAlgorandTransaction
 ): ITransactions {
   const baseTransaction: IBaseTransaction = {
+    completedAt: algorandTransaction['round-time']
+      ? new BigNumber(String(algorandTransaction['round-time'] as bigint))
+          .multipliedBy(1000)
+          .toNumber()
+      : null,
     fee: new BigNumber(String(algorandTransaction.fee as bigint)).toString(),
     id: algorandTransaction.id || null,
     groupId: algorandTransaction.group || null,

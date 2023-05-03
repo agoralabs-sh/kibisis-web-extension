@@ -11,6 +11,7 @@ interface IBaseAlgorandTransaction {
   ['inner-txns']?: IAlgorandTransaction[];
   ['last-valid']: bigint;
   note?: string;
+  ['round-time']?: bigint;
   sender: string;
 }
 

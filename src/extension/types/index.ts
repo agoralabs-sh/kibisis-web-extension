@@ -30,7 +30,7 @@ export type { default as IMainRootState } from './IMainRootState';
 export type { default as INativeCurrency } from './INativeCurrency';
 export type { default as INetwork } from './INetwork';
 export type { default as INode } from './INode';
-export type { default as INoOpApplicationTransaction } from './INoOpApplicationTransaction';
+export type { default as IApplicationTransaction } from './IApplicationTransaction';
 export type { default as IPasswordTag } from './IPasswordTag';
 export type { default as IPaymentTransaction } from './IPaymentTransaction';
 export type { default as IPrivateKey } from './IPrivateKey';

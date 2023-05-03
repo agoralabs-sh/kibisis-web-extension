@@ -1,6 +1,6 @@
 import { Spacer, Text, VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Components
@@ -86,19 +86,12 @@ const PaymentTransactionItemContent: FC<IProps> = ({
           unit={network.nativeCurrency.code}
         />
 
-        {/*fee*/}
-        <AssetDisplay
-          atomicUnitAmount={new BigNumber(String(transaction.fee))}
-          color={subTextColor}
-          decimals={network.nativeCurrency.decimals}
-          fontSize="xs"
-          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
-            color: subTextColor,
-            h: 2,
-            w: 2,
-          })}
-          unit={network.nativeCurrency.code}
-        />
+        {/*completed date*/}
+        {transaction.completedAt && (
+          <Text color={subTextColor} fontSize="xs">
+            {new Date(transaction.completedAt).toLocaleString()}
+          </Text>
+        )}
       </VStack>
     </>
   );

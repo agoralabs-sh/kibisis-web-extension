@@ -6,10 +6,11 @@ import { Link } from 'react-router-dom';
 
 // Components
 import AddressDisplay from '@extension/components/AddressDisplay';
+import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
 import PaymentTransactionItemContent from './PaymentTransactionItemContent';
 
 // Constants
-import { ACCOUNTS_ROUTE } from '@extension/constants';
+import { ACCOUNTS_ROUTE, TRANSACTIONS_ROUTE } from '@extension/constants';
 
 // Enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -46,6 +47,14 @@ const TransactionItem: FC<IProps> = ({
   const subTextColor: string = useSubTextColor();
   const renderContent = () => {
     switch (transaction.type) {
+      case TransactionTypeEnum.ApplicationClearState:
+      case TransactionTypeEnum.ApplicationCloseOut:
+      case TransactionTypeEnum.ApplicationCreate:
+      case TransactionTypeEnum.ApplicationDelete:
+      case TransactionTypeEnum.ApplicationNoOp:
+      case TransactionTypeEnum.ApplicationOptIn:
+      case TransactionTypeEnum.ApplicationUpdate:
+        return <ApplicationTransactionItemContent transaction={transaction} />;
       case TransactionTypeEnum.AssetTransfer:
         return (
           <AssetTransferTransactionItemContent
@@ -101,7 +110,7 @@ const TransactionItem: FC<IProps> = ({
       }
       to={`${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
         account.publicKey
-      )}`}
+      )}${TRANSACTIONS_ROUTE}`}
       variant="ghost"
       w="full"
     >
