@@ -31,6 +31,7 @@ import {
   useLocation,
   useNavigate,
   useParams,
+  useSearchParams,
 } from 'react-router-dom';
 
 // Components
@@ -95,14 +96,17 @@ import { ellipseAddress } from '@extension/utils';
 const AccountPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const location: Location = useLocation();
-  const navigate: NavigateFunction = useNavigate();
-  const { address } = useParams();
   const {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
+  const location: Location = useLocation();
+  const navigate: NavigateFunction = useNavigate();
+  const { address } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams({
+    accountTabId: '0',
+  });
   // selectors
   const account: IAccount | null = useSelectAccount(address);
   const accounts: IAccount[] = useSelectAccounts();
@@ -117,6 +121,7 @@ const AccountPage: FC = () => {
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
+  // misc
   const accountInformation: IAccountInformation | null =
     account && selectedNetwork
       ? AccountService.extractAccountInformationForNetwork(
@@ -124,6 +129,9 @@ const AccountPage: FC = () => {
           selectedNetwork
         )
       : null;
+  const accountTabId: number = parseInt(
+    searchParams.get('accountTabId') || '0'
+  );
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkSelect = (network: INetwork) => {
     dispatch(
@@ -158,6 +166,10 @@ const AccountPage: FC = () => {
       );
     }
   };
+  const handleTabChange = (index: number) =>
+    setSearchParams({
+      accountTabId: index.toString(),
+    });
   const renderContent = () => {
     const headerContainerProps: StackProps = {
       alignItems: 'flex-start',
@@ -310,8 +322,10 @@ const AccountPage: FC = () => {
           {/*assets/nfts/activity tabs */}
           <Tabs
             colorScheme={primaryColorScheme}
+            defaultIndex={accountTabId}
             flexGrow={1}
             m={0}
+            onChange={handleTabChange}
             overflowY="scroll"
             sx={{ display: 'flex', flexDirection: 'column' }}
             w="full"

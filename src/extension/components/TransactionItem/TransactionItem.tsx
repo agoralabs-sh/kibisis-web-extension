@@ -110,7 +110,7 @@ const TransactionItem: FC<IProps> = ({
       }
       to={`${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
         account.publicKey
-      )}${TRANSACTIONS_ROUTE}`}
+      )}${TRANSACTIONS_ROUTE}/${transaction.id}`}
       variant="ghost"
       w="full"
     >

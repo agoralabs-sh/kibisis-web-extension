@@ -3,6 +3,7 @@ export { default as useSelectAccountById } from './useSelectAccountById';
 export { default as useSelectAccountByPublicKey } from './useSelectAccountByPublicKey';
 export { default as useSelectAccounts } from './useSelectAccounts';
 export { default as useSelectAccountTransactionByAccountId } from './useSelectAccountTransactionByAccountId';
+export { default as useSelectAccountTransactions } from './useSelectAccountTransactions';
 export { default as useSelectAssets } from './useSelectAssets';
 export { default as useSelectAssetsByGenesisHash } from './useSelectAssetsByGenesisHash';
 export { default as useSelectColorMode } from './useSelectColorMode';
