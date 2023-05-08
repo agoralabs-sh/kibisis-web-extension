@@ -319,14 +319,14 @@ const AccountPage: FC = () => {
             </HStack>
           </VStack>
 
+          <Spacer />
+
           {/*assets/nfts/activity tabs */}
           <Tabs
             colorScheme={primaryColorScheme}
             defaultIndex={accountTabId}
-            flexGrow={1}
             m={0}
             onChange={handleTabChange}
-            overflowY="scroll"
             sx={{ display: 'flex', flexDirection: 'column' }}
             w="full"
           >
@@ -337,7 +337,7 @@ const AccountPage: FC = () => {
             </TabList>
             <TabPanels
               flexGrow={1}
-              maxH="100dvh"
+              h="70dvh"
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
               <AccountAssetsTab account={account} />
@@ -414,7 +414,12 @@ const AccountPage: FC = () => {
           onClose={onShareAddressModalClose}
         />
       )}
-      <VStack alignItems="flex-start" flexGrow={1} w="full">
+      <VStack
+        alignItems="center"
+        justifyContent="flex-start"
+        flexGrow={1}
+        w="full"
+      >
         {renderContent()}
       </VStack>
     </>

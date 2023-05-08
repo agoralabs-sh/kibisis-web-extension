@@ -1,5 +1,6 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Indexer, IntDecoding } from 'algosdk';
+import LookupAccountTransactions from 'algosdk/dist/types/client/v2/indexer/lookupAccountTransactions';
 
 // Enums
 import { TransactionsThunkEnum } from '@extension/enums';
@@ -44,6 +45,7 @@ const updateAccountTransactionsThunk: AsyncThunk<
     let address: string;
     let client: Indexer;
     let next: string | null = null;
+    let requestBuilder: LookupAccountTransactions;
     let selectedNetwork: INetwork | null;
 
     if (!online) {
@@ -103,8 +105,13 @@ const updateAccountTransactionsThunk: AsyncThunk<
     );
 
     try {
-      algorandAccountTransaction = (await client
-        .lookupAccountTransactions(address)
+      requestBuilder = client.lookupAccountTransactions(address).limit(20);
+
+      if (next) {
+        requestBuilder.nextToken(next);
+      }
+
+      algorandAccountTransaction = (await requestBuilder
         .setIntDecoding(IntDecoding.BIGINT)
         .do()) as IAlgorandAccountTransaction;
     } catch (error) {
@@ -118,7 +125,7 @@ const updateAccountTransactionsThunk: AsyncThunk<
 
     return {
       accountId,
-      next: algorandAccountTransaction['next-token'],
+      next: algorandAccountTransaction['next-token'] || null,
       transactions: algorandAccountTransaction.transactions.map(
         mapAlgorandTransactionToTransaction
       ),

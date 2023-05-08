@@ -1,11 +1,5 @@
-import {
-  HStack,
-  Skeleton,
-  Spacer,
-  TabPanel,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, HStack, Skeleton, Spacer, Text, VStack } from '@chakra-ui/react';
+import { generateAccount } from 'algosdk';
 import { nanoid } from 'nanoid';
 import React, { FC, ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +7,7 @@ import { useDispatch } from 'react-redux';
 
 // Components
 import EmptyState from '@extension/components/EmptyState';
+import ScrollableTabPanel from '@extension/components/ScrollableTabPanel';
 import TransactionItem from '@extension/components/TransactionItem';
 
 // Enums
@@ -24,11 +19,17 @@ import {
   updateAccountTransactionsThunk,
 } from '@extension/features/transactions';
 
+// Hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+
 // Selectors
 import { useSelectAccountTransactionByAccountId } from '@extension/selectors';
 
 // Types
 import { IAccount, IAppThunkDispatch, INetwork } from '@extension/types';
+
+// Utils
+import { ellipseAddress } from '@extension/utils';
 
 interface IProps {
   account: IAccount;
@@ -41,6 +42,16 @@ const AccountActivityTab: FC<IProps> = ({ account, network }: IProps) => {
   // selectors
   const accountTransaction: IAccountTransaction | null =
     useSelectAccountTransactionByAccountId(account.id);
+  // hooks
+  const defaultTextColor: string = useDefaultTextColor();
+  // misc
+  const handleScrollEnd = () => {
+    if (accountTransaction) {
+      if (!accountTransaction.fetching && accountTransaction.next) {
+        dispatch(updateAccountTransactionsThunk(account.id));
+      }
+    }
+  };
   const renderContent = () => {
     let nodes: ReactNode[] = [];
 
@@ -59,15 +70,44 @@ const AccountActivityTab: FC<IProps> = ({ account, network }: IProps) => {
         nodes = [
           ...nodes,
           ...Array.from({ length: 3 }, () => (
-            <HStack key={nanoid()} m={0} p={0} spacing={2} w="full">
-              <Skeleton>
-                <Text color="gray.500" fontSize="sm" maxW={175} noOfLines={1}>
-                  {t<string>('headings.transaction', {
-                    context: TransactionTypeEnum,
-                  })}
-                </Text>
-              </Skeleton>
-            </HStack>
+            <Box key={nanoid()} px={3} py={2} w="full">
+              <VStack
+                alignItems="flex-start"
+                justifyContent="center"
+                spacing={2}
+                w="full"
+              >
+                <Skeleton>
+                  <Text color={defaultTextColor} fontSize="sm">
+                    {t<string>('headings.transaction', {
+                      context: TransactionTypeEnum.ApplicationNoOp,
+                    })}
+                  </Text>
+                </Skeleton>
+
+                <HStack
+                  alignItems="center"
+                  justifyContent="space-between"
+                  spacing={1}
+                  w="full"
+                >
+                  <Skeleton>
+                    <Text color={defaultTextColor} fontSize="xs">
+                      {ellipseAddress(generateAccount().addr, {
+                        end: 10,
+                        start: 10,
+                      })}
+                    </Text>
+                  </Skeleton>
+
+                  <Skeleton>
+                    <Text color={defaultTextColor} fontSize="xs">
+                      {new Date().toLocaleString()}
+                    </Text>
+                  </Skeleton>
+                </HStack>
+              </VStack>
+            </Box>
           )),
         ];
       }
@@ -89,21 +129,21 @@ const AccountActivityTab: FC<IProps> = ({ account, network }: IProps) => {
     if (!accountTransaction || accountTransaction.transactions.length <= 0) {
       dispatch(updateAccountTransactionsThunk(account.id));
     }
-  }, []);
+  }, [account]);
 
   return (
-    <TabPanel
+    <ScrollableTabPanel
       flexGrow={1}
       m={0}
+      onScrollEnd={handleScrollEnd}
       p={0}
-      overflowY="scroll"
       sx={{ display: 'flex', flexDirection: 'column' }}
       w="full"
     >
-      <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
+      <VStack flexGrow={1} m={0} pb={8} pt={0} px={0} spacing={0} w="full">
         {renderContent()}
       </VStack>
-    </TabPanel>
+    </ScrollableTabPanel>
   );
 };
 

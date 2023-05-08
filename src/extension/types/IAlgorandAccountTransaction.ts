@@ -3,7 +3,7 @@ import IAlgorandTransaction from './IAlgorandTransaction';
 
 interface IAlgorandAccountTransaction {
   ['current-round']: bigint;
-  ['next-token']: string;
+  ['next-token']?: string;
   transactions: IAlgorandTransaction[];
 }
 

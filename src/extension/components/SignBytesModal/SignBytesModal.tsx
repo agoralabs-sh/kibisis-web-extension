@@ -14,11 +14,11 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { generateAccount } from 'algosdk';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { randomBytes } from 'tweetnacl';
 
 // Components
 import AccountSelect from '@extension/components/AccountSelect';
@@ -142,7 +142,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
             <SkeletonCircle size="12" />
             <Skeleton flexGrow={1}>
               <Text color={defaultTextColor} fontSize="md" textAlign="center">
-                {ellipseAddress(randomBytes(52).toString(), {
+                {ellipseAddress(generateAccount().addr, {
                   end: 10,
                   start: 10,
                 })}
@@ -152,7 +152,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
           {Array.from({ length: 3 }, () => (
             <Skeleton key={nanoid()}>
               <Text color={defaultTextColor} fontSize="md" textAlign="center">
-                {ellipseAddress(randomBytes(52).toString(), {
+                {ellipseAddress(generateAccount().addr, {
                   end: 10,
                   start: 10,
                 })}
