@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 // Components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
+import DefaultTransactionItemContent from './DefaultTransactionItemContent';
 import PaymentTransactionItemContent from './PaymentTransactionItemContent';
 
 // Constants
@@ -74,20 +75,10 @@ const TransactionItem: FC<IProps> = ({
         );
       default:
         return (
-          <VStack alignItems="flex-start" justifyContent="center" spacing={1}>
-            {/*type*/}
-            <Text color={defaultTextColor} fontSize="sm">
-              {t<string>('headings.transaction', { context: transaction.type })}
-            </Text>
-
-            {/*from*/}
-            <AddressDisplay
-              address={transaction.sender}
-              color={subTextColor}
-              fontSize="xs"
-              network={network}
-            />
-          </VStack>
+          <DefaultTransactionItemContent
+            network={network}
+            transaction={transaction}
+          />
         );
     }
   };
