@@ -64,7 +64,7 @@ const PaymentTransactionContent: FC<IProps> = ({
     }
   );
   const transactionType: TransactionTypeEnum = parseTransactionType(
-    transaction,
+    transaction.get_obj_for_encoding(),
     {
       network,
       sender: fromAccount,

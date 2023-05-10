@@ -65,7 +65,7 @@ const AccountActivityTab: FC<IProps> = ({ account, network }: IProps) => {
         />
       ));
 
-      // if the account transaction is fetching some more transactions, append a few loading skeletons
+      // if the account transaction is fetching some more transactions, append a few loading skeletons`
       if (accountTransaction.fetching) {
         nodes = [
           ...nodes,

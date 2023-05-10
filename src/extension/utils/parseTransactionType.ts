@@ -1,9 +1,5 @@
 import { encode as encodeHex } from '@stablelib/hex';
-import {
-  EncodedTransaction,
-  OnApplicationComplete,
-  Transaction,
-} from 'algosdk';
+import { EncodedTransaction, OnApplicationComplete } from 'algosdk';
 
 // Enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -20,24 +16,23 @@ interface IOptions {
 }
 
 /**
- * Parses the transaction type. This function contains the logic to correctly determine the transaction type from the
- * variables in the supplied transaction.
- * @param {Transaction} transaction - the transaction to parse.
+ * Parses an encoded transaction to determine its true type. This function contains the logic to correctly determine the
+ * transaction type from the variables in the supplied transaction.
+ * @param {EncodedTransaction} encodedTransaction - an encoded transaction to parse.
  * @param {IOptions} options - [optional] the account of the sender and the network for this transaction. This is to
  * perform more in-depth parsing, namely determine if an "axfer" is an opt-in.
  * @returns {TransactionTypeEnum} the transaction type. If the transaction is invalid, or the transaction is not known,
  * the moniker "TransactionTypeEnum.Unknown" is returned.
  */
 export default function parseTransactionType(
-  transaction: Transaction,
+  encodedTransaction: EncodedTransaction,
   { network, sender }: IOptions = { network: null, sender: null }
 ): TransactionTypeEnum {
-  const encodedTransaction: EncodedTransaction =
-    transaction.get_obj_for_encoding();
   let accountInformation: IAccountInformation | null;
+  let senderAddress: string;
 
   // asset config
-  if (transaction.type === 'acfg') {
+  if (encodedTransaction.type === 'acfg') {
     // if there is an asset id, it is a destruction/modification
     if (encodedTransaction.caid) {
       // if there are no asset params, this is an asset destruction
@@ -63,18 +58,18 @@ export default function parseTransactionType(
   }
 
   // asset freeze
-  if (transaction.type === 'afrz') {
+  if (encodedTransaction.type === 'afrz') {
     return encodedTransaction.afrz
       ? TransactionTypeEnum.AssetFreeze
       : TransactionTypeEnum.AssetUnfreeze;
   }
 
   // application calls
-  if (transaction.type === 'appl') {
-    // if there is no app oncomplete, it could be either a noop or creation
-    if (!transaction.appOnComplete) {
+  if (encodedTransaction.type === 'appl') {
+    // if there is no app oncomplete (should be zero, but will be omitted due to weird algosdk parsing), it could be either a noop or creation
+    if (!encodedTransaction.apan) {
       // if there is an app index, it will be a no-op
-      if (transaction.appIndex) {
+      if (encodedTransaction.apid) {
         return TransactionTypeEnum.ApplicationNoOp;
       }
 
@@ -82,7 +77,7 @@ export default function parseTransactionType(
     }
 
     // otherwise, just use the application on complete
-    switch (transaction.appOnComplete) {
+    switch (encodedTransaction.apan) {
       case OnApplicationComplete.ClearStateOC:
         return TransactionTypeEnum.ApplicationClearState;
       case OnApplicationComplete.CloseOutOC:
@@ -99,7 +94,7 @@ export default function parseTransactionType(
   }
 
   // asset transfer
-  if (transaction.type === 'axfer') {
+  if (encodedTransaction.type === 'axfer') {
     // if we have a sender, we can determine if this "axfer" is an opt-in
     // https://developer.algorand.org/docs/get-details/transactions/#opt-in-to-an-asset
     if (network && sender) {
@@ -107,16 +102,22 @@ export default function parseTransactionType(
         sender,
         network
       );
+      senderAddress = AccountService.convertPublicKeyToAlgorandAddress(
+        sender.publicKey
+      );
 
+      // to test if this an opt-in:
       if (
+        // if the sender does not hold the asset, and
         !accountInformation?.assetHoldings.find(
           (value) => value.id === String(encodedTransaction.xaid)
-        ) && // if the sender does not hold the asset
-        (!transaction.amount || transaction.amount <= 0) && // if there is no amount, or the amount is zero (any amount will be a transfer, albeit a failed transfer)
-        encodeHex(transaction.from.publicKey).toUpperCase() ===
-          sender.publicKey.toUpperCase() &&
-        encodeHex(transaction.to.publicKey).toUpperCase() ===
-          sender.publicKey.toUpperCase() // the sender and receiver address, are the same
+        ) &&
+        // if there is no amount, or the amount is zero (any amount will be a transfer, albeit a failed transfer), and
+        (!encodedTransaction.aamt || encodedTransaction.aamt <= 0) &&
+        encodeHex(encodedTransaction.snd).toUpperCase() === senderAddress &&
+        // the sender and receiver address, are the same
+        encodedTransaction.arcv &&
+        encodeHex(encodedTransaction.arcv).toUpperCase() === senderAddress
       ) {
         return TransactionTypeEnum.AssetOptIn;
       }
@@ -126,7 +127,7 @@ export default function parseTransactionType(
   }
 
   // key registration
-  if (transaction.type === 'keyreg') {
+  if (encodedTransaction.type === 'keyreg') {
     return encodedTransaction.selkey &&
       encodedTransaction.votefst &&
       encodedTransaction.votekey &&
@@ -137,7 +138,7 @@ export default function parseTransactionType(
   }
 
   // payment
-  if (transaction.type === 'pay') {
+  if (encodedTransaction.type === 'pay') {
     return TransactionTypeEnum.Payment;
   }
 

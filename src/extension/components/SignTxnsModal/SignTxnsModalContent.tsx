@@ -156,10 +156,13 @@ const SignTxnsModalContent: FC<IProps> = ({
         (value) => value.id === String(singleTransaction?.assetIndex)
       ) || null;
     singleTransactionFromAccount = fromAccounts[0] || null;
-    singleTransactionType = parseTransactionType(singleTransaction, {
-      network,
-      sender: singleTransactionFromAccount,
-    });
+    singleTransactionType = parseTransactionType(
+      singleTransaction.get_obj_for_encoding(),
+      {
+        network,
+        sender: singleTransactionFromAccount,
+      }
+    );
 
     switch (singleTransaction.type) {
       case 'acfg':

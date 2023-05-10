@@ -52,8 +52,9 @@ const ApplicationTransactionContent: FC<IProps> = ({
       w: 3,
     }
   );
-  const transactionType: TransactionTypeEnum =
-    parseTransactionType(transaction);
+  const transactionType: TransactionTypeEnum = parseTransactionType(
+    transaction.get_obj_for_encoding()
+  );
   const renderExtraInformation = () => (
     <>
       {/* Fee */}

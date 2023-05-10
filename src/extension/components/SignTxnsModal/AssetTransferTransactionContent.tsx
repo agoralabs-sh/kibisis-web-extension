@@ -181,10 +181,13 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             w="full"
           >
             {t<string>('headings.transaction', {
-              context: parseTransactionType(transaction, {
-                network,
-                sender: fromAccount,
-              }),
+              context: parseTransactionType(
+                transaction.get_obj_for_encoding(),
+                {
+                  network,
+                  sender: fromAccount,
+                }
+              ),
             })}
           </Text>
 
@@ -229,10 +232,13 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             w="full"
           >
             {t<string>('headings.transaction', {
-              context: parseTransactionType(transaction, {
-                network,
-                sender: fromAccount,
-              }),
+              context: parseTransactionType(
+                transaction.get_obj_for_encoding(),
+                {
+                  network,
+                  sender: fromAccount,
+                }
+              ),
             })}
           </Text>
         </>

@@ -1,50 +1,27 @@
 // Types
-import IAlgorandAssetParams from './IAlgorandAssetParams';
+import IAlgorandApplicationTransaction from './IAlgorandApplicationTransaction';
+import IAlgorandAssetConfigTransaction from './IAlgorandAssetConfigTransaction';
+import IAlgorandAssetFreezeTransaction from './IAlgorandAssetFreezeTransaction';
+import IAlgorandAssetTransferTransaction from './IAlgorandAssetTransferTransaction';
+import IAlgorandKeyRegistrationTransaction from './IAlgorandKeyRegistrationTransaction';
+import IAlgorandPaymentTransaction from './IAlgorandPaymentTransaction';
 
 interface IBaseAlgorandTransaction {
   ['auth-addr']?: string;
   ['close-rewards']?: bigint;
   fee: bigint;
   ['first-valid']: bigint;
+  ['genesis-hash']?: string;
+  ['genesis-id']?: string;
   group?: string;
   id?: string;
   ['inner-txns']?: IAlgorandTransaction[];
   ['last-valid']: bigint;
+  lease?: string;
   note?: string;
+  ['rekey-to']?: string;
   ['round-time']?: bigint;
   sender: string;
-}
-
-interface IAlgorandApplicationTransaction {
-  ['application-id']: bigint;
-  ['on-completion']:
-    | 'clear'
-    | 'closeout'
-    | 'delete'
-    | 'noop'
-    | 'optin'
-    | 'update';
-}
-
-interface IAlgorandAssetConfigTransaction {
-  ['asset-id']: bigint;
-  params: IAlgorandAssetParams;
-}
-
-interface IAlgorandAssetTransferTransaction {
-  amount: bigint;
-  ['asset-id']: bigint;
-  ['close-amount']?: bigint;
-  ['close-to']?: string;
-  receiver: string;
-  sender?: string;
-}
-
-interface IAlgorandPaymentTransaction {
-  amount: bigint;
-  ['close-amount']?: bigint;
-  ['close-remainder-to']?: bigint;
-  receiver: string;
 }
 
 type IAlgorandTransactions =
@@ -53,12 +30,20 @@ type IAlgorandTransactions =
       ['tx-type']: 'acfg';
     }
   | {
+      ['asset-freeze-transaction']: IAlgorandAssetFreezeTransaction;
+      ['tx-type']: 'afrz';
+    }
+  | {
       ['application-transaction']: IAlgorandApplicationTransaction;
       ['tx-type']: 'appl';
     }
   | {
       ['asset-transfer-transaction']: IAlgorandAssetTransferTransaction;
       ['tx-type']: 'axfer';
+    }
+  | {
+      ['keyreg-transaction']: IAlgorandKeyRegistrationTransaction;
+      ['tx-type']: 'keyreg';
     }
   | {
       ['payment-transaction']: IAlgorandPaymentTransaction;

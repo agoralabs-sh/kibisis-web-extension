@@ -49,7 +49,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
   const subTextColor: string = useSubTextColor();
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(
-    transaction,
+    transaction.get_obj_for_encoding(),
     {
       network,
       sender: fromAccount,
