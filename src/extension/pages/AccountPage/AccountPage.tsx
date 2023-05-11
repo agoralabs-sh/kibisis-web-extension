@@ -325,6 +325,7 @@ const AccountPage: FC = () => {
           <Tabs
             colorScheme={primaryColorScheme}
             defaultIndex={accountTabId}
+            isLazy={true}
             m={0}
             onChange={handleTabChange}
             sx={{ display: 'flex', flexDirection: 'column' }}

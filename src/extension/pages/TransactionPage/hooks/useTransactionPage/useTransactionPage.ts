@@ -29,7 +29,7 @@ export default function useTransactionPage({
 }: IUseTransactionPageOptions): IUseTransactionPageState {
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const network: INetwork | null = useSelectSelectedNetwork();
   const accountTransactions: IAccountTransaction[] =
     useSelectAccountTransactions();
   // state
@@ -61,15 +61,13 @@ export default function useTransactionPage({
   }, [address, accounts]);
   // 2a. when the account has been found, and we have the selected network, get the account information
   useEffect(() => {
-    if (account && selectedNetwork) {
+    if (account && network) {
       setAccountInformation(
-        AccountService.extractAccountInformationForNetwork(
-          account,
-          selectedNetwork
-        ) || null
+        AccountService.extractAccountInformationForNetwork(account, network) ||
+          null
       );
     }
-  }, [account, selectedNetwork]);
+  }, [account, network]);
   // 2b. when the account has been found, get the transaction information
   useEffect(() => {
     let accountTransaction: IAccountTransaction | null;
@@ -94,6 +92,7 @@ export default function useTransactionPage({
   return {
     account,
     accountInformation,
+    network,
     transaction,
   };
 }

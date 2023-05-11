@@ -67,6 +67,7 @@ const translation: IResourceLanguage = {
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     freezeManagerAddressDoesNotMatch:
       'This account does not have the authority to freeze/unfreeze this asset. This transaction will likely fail.',
+    groupIdCopied: 'Group ID copied!',
     importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
     importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
     importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
@@ -114,6 +115,7 @@ const translation: IResourceLanguage = {
       'An application is requesting to sign multiple transactions.',
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
+    transactionIdCopied: 'Transaction ID copied!',
   },
   errors: {
     descriptions: {
@@ -209,6 +211,7 @@ const translation: IResourceLanguage = {
       'I confirm I have copied my seed phrase to a secure place.',
     creatorAccount: 'Creator Account',
     dark: 'Dark',
+    date: 'Date',
     decimals: 'Decimals',
     default: 'Default',
     did: 'DID',

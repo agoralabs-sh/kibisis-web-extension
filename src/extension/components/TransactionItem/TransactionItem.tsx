@@ -1,11 +1,10 @@
-import { Button, HStack, Icon, Text, VStack } from '@chakra-ui/react';
+import { Button, HStack, Icon } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
 // Components
-import AddressDisplay from '@extension/components/AddressDisplay';
 import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
 import DefaultTransactionItemContent from './DefaultTransactionItemContent';
 import PaymentTransactionItemContent from './PaymentTransactionItemContent';
@@ -19,7 +18,6 @@ import { TransactionTypeEnum } from '@extension/enums';
 // Hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Services
 import { AccountService } from '@extension/services';
@@ -45,7 +43,6 @@ const TransactionItem: FC<IProps> = ({
   // hooks
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
   const renderContent = () => {
     switch (transaction.type) {
       case TransactionTypeEnum.ApplicationClearState:

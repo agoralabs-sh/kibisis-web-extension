@@ -29,6 +29,7 @@ export default function mapAlgorandTransactionToTransaction(
       : null,
     fee: new BigNumber(String(algorandTransaction.fee as bigint)).toString(),
     id: algorandTransaction.id || null,
+    genesisHash: algorandTransaction['genesis-hash'] || null,
     groupId: algorandTransaction.group || null,
     note: algorandTransaction.note || null,
     sender: algorandTransaction.sender,

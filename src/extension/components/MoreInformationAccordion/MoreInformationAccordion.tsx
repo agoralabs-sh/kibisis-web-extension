@@ -19,6 +19,7 @@ interface IProps {
   children: ReactElement;
   fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
   isOpen: boolean;
+  minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
   onChange: (open: boolean) => void;
 }
 
@@ -27,6 +28,7 @@ const MoreInformationAccordion: FC<IProps> = ({
   color,
   fontSize,
   isOpen,
+  minButtonHeight,
   onChange,
 }: IProps) => {
   const { t } = useTranslation();
@@ -41,7 +43,7 @@ const MoreInformationAccordion: FC<IProps> = ({
       w="full"
     >
       <AccordionItem border="none" w="full">
-        <AccordionButton p={0}>
+        <AccordionButton minH={minButtonHeight} p={0}>
           <Text
             color={color || defaultTextColor}
             fontSize={fontSize}
