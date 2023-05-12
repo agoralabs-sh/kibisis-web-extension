@@ -62,7 +62,7 @@ const PaymentTransactionItemContent: FC<IProps> = ({
         {/*amount*/}
         <AssetDisplay
           atomicUnitAmount={amount}
-          color={
+          amountColor={
             amount.lte(0)
               ? defaultTextColor
               : transaction.receiver === accountAddress

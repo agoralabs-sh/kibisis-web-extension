@@ -10,10 +10,11 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 
 interface IProps {
+  amountColor?: ResponsiveValue<CSS.Property.Color>;
   atomicUnitAmount: BigNumber;
-  color?: ResponsiveValue<CSS.Property.Color>;
   decimals: number;
   displayUnit?: boolean;
+  displayUnitColor?: ResponsiveValue<CSS.Property.Color>;
   fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
   icon?: ReactNode;
   prefix?: '+' | '-';
@@ -21,10 +22,11 @@ interface IProps {
 }
 
 const AssetDisplay: FC<IProps> = ({
+  amountColor,
   atomicUnitAmount,
-  color,
   decimals,
   displayUnit = false,
+  displayUnitColor,
   fontSize = 'sm',
   icon,
   prefix,
@@ -41,14 +43,17 @@ const AssetDisplay: FC<IProps> = ({
       }`}
     >
       <HStack spacing={1}>
-        <Text color={color || defaultTextColor} fontSize={fontSize}>
+        <Text color={amountColor || defaultTextColor} fontSize={fontSize}>
           {`${prefix || ''}${formatCurrencyUnit(
             convertToStandardUnit(atomicUnitAmount, decimals)
           )}`}
         </Text>
         {icon}
         {displayUnit && unit && (
-          <Text color={color || defaultTextColor} fontSize={fontSize}>
+          <Text
+            color={displayUnitColor || defaultTextColor}
+            fontSize={fontSize}
+          >
             {unit}
           </Text>
         )}

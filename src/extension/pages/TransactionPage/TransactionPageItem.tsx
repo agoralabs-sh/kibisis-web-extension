@@ -11,7 +11,7 @@ interface IProps extends PropsWithChildren {
   label: string;
 }
 
-const TransactionItem: FC<IProps> = ({ children, label }: IProps) => {
+const TransactionPageItem: FC<IProps> = ({ children, label }: IProps) => {
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
 
@@ -34,4 +34,4 @@ const TransactionItem: FC<IProps> = ({ children, label }: IProps) => {
   );
 };
 
-export default TransactionItem;
+export default TransactionPageItem;

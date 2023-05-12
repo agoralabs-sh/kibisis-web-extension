@@ -59,7 +59,7 @@ const SignTxnsAssetItem: FC<IProps> = ({
       ) : (
         <AssetDisplay
           atomicUnitAmount={atomicUnitAmount}
-          color={subTextColor}
+          amountColor={subTextColor}
           decimals={decimals}
           displayUnit={true}
           fontSize="xs"

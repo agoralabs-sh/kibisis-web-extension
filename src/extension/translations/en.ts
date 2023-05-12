@@ -201,6 +201,7 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
     allowTestNet: 'Allow TestNet networks?',
     amount: 'Amount',
+    assetId: 'Asset ID',
     assets: 'Assets',
     audience: 'Audience',
     authorizedAccounts: 'Authorized Accounts',

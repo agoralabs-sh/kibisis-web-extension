@@ -13,6 +13,10 @@ import { useTranslation } from 'react-i18next';
 // Components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetDisplay from '@extension/components/AssetDisplay';
+import AssetAvatar from '@extension/components/AssetAvatar';
+import AssetIcon from '@extension/components/AssetIcon';
+import CopyIconButton from '@extension/components/CopyIconButton';
+import LoadingTransactionContent from '@extension/pages/TransactionPage/LoadingTransactionContent';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import TransactionPageItem from './TransactionPageItem';
@@ -21,7 +25,9 @@ import TransactionPageItem from './TransactionPageItem';
 import { ITEM_HEIGHT } from './constants';
 
 // Hooks
+import useAsset from '@extension/hooks/useAsset';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
@@ -36,22 +42,22 @@ import { AccountService } from '@extension/services';
 // Types
 import {
   IAccount,
+  IAsset,
+  IAssetTransferTransaction,
   IExplorer,
   INetwork,
-  IPaymentTransaction,
 } from '@extension/types';
 
 // Utils
 import { createIconFromDataUri, ellipseAddress } from '@extension/utils';
-import CopyIconButton from '@extension/components/CopyIconButton';
 
 interface IProps {
   account: IAccount;
   network: INetwork;
-  transaction: IPaymentTransaction;
+  transaction: IAssetTransferTransaction;
 }
 
-const PaymentTransactionContent: FC<IProps> = ({
+const AssetTransferTransactionContent: FC<IProps> = ({
   account,
   network,
   transaction,
@@ -62,7 +68,9 @@ const PaymentTransactionContent: FC<IProps> = ({
   const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
+  const { asset, updating } = useAsset(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
   const accountAddress: string =
@@ -88,12 +96,15 @@ const PaymentTransactionContent: FC<IProps> = ({
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
 
+  if (!asset || updating) {
+    return <LoadingTransactionContent />;
+  }
+
   return (
     <>
       {/*amount*/}
       <TransactionPageItem label={t<string>('labels.amount')}>
         <AssetDisplay
-          atomicUnitAmount={amount}
           amountColor={
             amount.lte(0)
               ? defaultTextColor
@@ -101,13 +112,25 @@ const PaymentTransactionContent: FC<IProps> = ({
               ? 'green.500'
               : 'red.500'
           }
-          decimals={network.nativeCurrency.decimals}
+          atomicUnitAmount={amount}
+          decimals={asset.decimals}
+          displayUnit={true}
+          displayUnitColor={subTextColor}
           fontSize="sm"
-          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
-            color: subTextColor,
-            h: 3,
-            w: 3,
-          })}
+          icon={
+            <AssetAvatar
+              asset={asset}
+              fallbackIcon={
+                <AssetIcon
+                  color={primaryButtonTextColor}
+                  networkTheme={network.chakraTheme}
+                  h={3}
+                  w={3}
+                />
+              }
+              size="2xs"
+            />
+          }
           prefix={
             amount.lte(0)
               ? undefined
@@ -115,7 +138,7 @@ const PaymentTransactionContent: FC<IProps> = ({
               ? '+'
               : '-'
           }
-          unit={network.nativeCurrency.code}
+          unit={asset.unitName || undefined}
         />
       </TransactionPageItem>
 
@@ -288,10 +311,34 @@ const PaymentTransactionContent: FC<IProps> = ({
               </HStack>
             </TransactionPageItem>
           )}
+
+          {/*asset id*/}
+          <TransactionPageItem label={t<string>('labels.assetId')}>
+            <HStack spacing={0}>
+              <Text color={subTextColor} fontSize="sm">
+                {asset.id}
+              </Text>
+              <CopyIconButton
+                ariaLabel="Copy asset ID"
+                copiedTooltipLabel={t<string>('captions.assetIdCopied')}
+                size="sm"
+                value={asset.id}
+              />
+              {explorer && (
+                <OpenTabIconButton
+                  size="sm"
+                  tooltipLabel={t<string>('captions.openOn', {
+                    name: explorer.canonicalName,
+                  })}
+                  url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+                />
+              )}
+            </HStack>
+          </TransactionPageItem>
         </VStack>
       </MoreInformationAccordion>
     </>
   );
 };
 
-export default PaymentTransactionContent;
+export default AssetTransferTransactionContent;

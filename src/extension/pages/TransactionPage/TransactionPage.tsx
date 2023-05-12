@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // Components
-import LoadingPage from '@extension/components/LoadingPage';
 import PageHeader from '@extension/components/PageHeader';
+import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import LoadingTransactionContent from './LoadingTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 
@@ -38,6 +38,14 @@ const TransactionPage: FC = () => {
     }
 
     switch (transaction.type) {
+      case TransactionTypeEnum.AssetTransfer:
+        return (
+          <AssetTransferTransactionContent
+            account={account}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case TransactionTypeEnum.Payment:
         return (
           <PaymentTransactionContent
@@ -62,8 +70,8 @@ const TransactionPage: FC = () => {
     }
   }, []);
 
-  if (!account || !accountInformation || !transaction) {
-    return <LoadingPage />;
+  if (!transaction) {
+    return <LoadingTransactionContent />;
   }
 
   return (
