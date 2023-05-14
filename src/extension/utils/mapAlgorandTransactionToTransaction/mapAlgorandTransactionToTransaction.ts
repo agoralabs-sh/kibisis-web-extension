@@ -1,3 +1,5 @@
+import { decode as decodeBase64 } from '@stablelib/base64';
+import { decode as decodeUtf8 } from '@stablelib/utf8';
 import { BigNumber } from 'bignumber.js';
 
 // Enums
@@ -31,7 +33,9 @@ export default function mapAlgorandTransactionToTransaction(
     id: algorandTransaction.id || null,
     genesisHash: algorandTransaction['genesis-hash'] || null,
     groupId: algorandTransaction.group || null,
-    note: algorandTransaction.note || null,
+    note: algorandTransaction.note
+      ? decodeUtf8(decodeBase64(algorandTransaction.note))
+      : null,
     sender: algorandTransaction.sender,
   };
 
@@ -49,7 +53,8 @@ export default function mapAlgorandTransactionToTransaction(
     case 'appl':
       return parseApplicationTransaction(
         algorandTransaction['application-transaction'],
-        baseTransaction
+        baseTransaction,
+        algorandTransaction['inner-txns']
       );
     case 'axfer':
       return parseAssetTransferTransaction(

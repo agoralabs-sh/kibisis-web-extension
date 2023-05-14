@@ -6,14 +6,19 @@ import { TransactionTypeEnum } from '@extension/enums';
 // Types
 import {
   IAlgorandApplicationTransaction,
+  IAlgorandTransaction,
   IApplicationTransaction,
   IApplicationTransactionTypes,
   IBaseTransaction,
 } from '@extension/types';
 
+// Utils
+import mapAlgorandTransactionToTransaction from './mapAlgorandTransactionToTransaction';
+
 export default function parseApplicationTransaction(
   algorandApplicationTransaction: IAlgorandApplicationTransaction,
-  baseTransaction: IBaseTransaction
+  baseTransaction: IBaseTransaction,
+  innerTransactions?: IAlgorandTransaction[]
 ): IApplicationTransaction {
   const applicationId: string | null =
     algorandApplicationTransaction['application-id'] > 0
@@ -32,6 +37,7 @@ export default function parseApplicationTransaction(
       break;
     case 'delete':
       type = TransactionTypeEnum.ApplicationDelete;
+      break;
     case 'optin':
       type = TransactionTypeEnum.ApplicationOptIn;
       break;
@@ -66,6 +72,8 @@ export default function parseApplicationTransaction(
       algorandApplicationTransaction['foreign-assets']?.map((value) =>
         new BigNumber(String(value as bigint)).toString()
       ) || null,
+    innerTransactions:
+      innerTransactions?.map(mapAlgorandTransactionToTransaction) || null,
     type,
   };
 }

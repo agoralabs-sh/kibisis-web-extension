@@ -1,6 +1,7 @@
 // Types
 import IApplicationTransactionTypes from './IApplicationTransactionTypes';
 import IBaseTransaction from './IBaseTransaction';
+import ITransactions from './ITransactions';
 
 /**
  * @property {string[] | null} accounts - (apat) a list of accounts in addition to the sender that may be accessed
@@ -19,6 +20,7 @@ import IBaseTransaction from './IBaseTransaction';
  * global states may be accessed by this application's approval-program and clear-state-program. The access is read-only.
  * @property {string[] | null} foreignAssets - (apas) a list of the assets whose parameters may be accessed by this application's
  * ApprovalProgram and ClearStateProgram. The access is read-only.
+ * @property {ITransactions[] | null} innerTransactions - inner transactions produced by application execution.
  */
 interface IApplicationTransaction<T = IApplicationTransactionTypes>
   extends IBaseTransaction {
@@ -30,6 +32,7 @@ interface IApplicationTransaction<T = IApplicationTransactionTypes>
   extraProgramPages: number | null;
   foreignApps: string[] | null;
   foreignAssets: string[] | null;
+  innerTransactions: ITransactions[] | null;
   type: T;
 }
 
