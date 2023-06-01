@@ -33,6 +33,7 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
     allowTestNet: 'Let TestNet networks appear in the networks list.',
+    applicationIdCopied: 'Application ID copied!',
     appOnComplete: 'This transaction will run the application.',
     [`appOnComplete_${TransactionTypeEnum.ApplicationClearState}`]: `This transaction will clear any application data associated with the sender's account.`,
     [`appOnComplete_${TransactionTypeEnum.ApplicationCloseOut}`]: `This transaction will run the application and clear any application data associated with the sender's account.`,
@@ -201,6 +202,7 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
     allowTestNet: 'Allow TestNet networks?',
     amount: 'Amount',
+    applicationId: 'Application ID',
     assetId: 'Asset ID',
     assets: 'Assets',
     audience: 'Audience',
@@ -227,6 +229,7 @@ const translation: IResourceLanguage = {
     groupId: 'Group ID',
     id: 'ID',
     information: 'Information',
+    innerTransactions: 'Inner Transactions',
     issueDate: 'Issue Date',
     issuer: 'Issuer',
     lastRound: 'Last Round',

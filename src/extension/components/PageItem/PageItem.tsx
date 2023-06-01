@@ -1,4 +1,11 @@
-import { Box, HStack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  HStack,
+  ResponsiveValue,
+  StackProps,
+  Text,
+} from '@chakra-ui/react';
+import * as CSS from 'csstype';
 import React, { FC, PropsWithChildren } from 'react';
 
 // Constants
@@ -7,11 +14,17 @@ import { ITEM_HEIGHT } from './constants';
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-interface IProps extends PropsWithChildren {
+interface IProps extends PropsWithChildren<StackProps> {
+  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
   label: string;
 }
 
-const TransactionPageItem: FC<IProps> = ({ children, label }: IProps) => {
+const PageItem: FC<IProps> = ({
+  children,
+  fontSize = 'sm',
+  label,
+  ...stackProps
+}: IProps) => {
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
 
@@ -22,10 +35,11 @@ const TransactionPageItem: FC<IProps> = ({ children, label }: IProps) => {
       minH={ITEM_HEIGHT}
       spacing={2}
       w="full"
+      {...stackProps}
     >
       {/*label*/}
-      <Text color={defaultTextColor} fontSize="sm">
-        {label}
+      <Text color={defaultTextColor} fontSize={fontSize}>
+        {`${label}:`}
       </Text>
 
       {/*value*/}
@@ -34,4 +48,4 @@ const TransactionPageItem: FC<IProps> = ({ children, label }: IProps) => {
   );
 };
 
-export default TransactionPageItem;
+export default PageItem;

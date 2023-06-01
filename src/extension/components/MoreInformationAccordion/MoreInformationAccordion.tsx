@@ -49,7 +49,9 @@ const MoreInformationAccordion: FC<IProps> = ({
             fontSize={fontSize}
             textAlign="left"
             w="full"
-          >{`${t<string>('labels.moreInformation')}:`}</Text>
+          >
+            {t<string>('labels.moreInformation')}
+          </Text>
           <AccordionIcon />
         </AccordionButton>
         <AccordionPanel pb={0} pt={2} px={0}>

@@ -1,16 +1,16 @@
-import { VStack } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // Components
 import PageHeader from '@extension/components/PageHeader';
+import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import LoadingTransactionContent from './LoadingTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 
 // Constants
-import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
+import { ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Hooks
 import useTransactionPage from './hooks/useTransactionPage';
@@ -38,6 +38,20 @@ const TransactionPage: FC = () => {
     }
 
     switch (transaction.type) {
+      case TransactionTypeEnum.ApplicationClearState:
+      case TransactionTypeEnum.ApplicationCloseOut:
+      case TransactionTypeEnum.ApplicationCreate:
+      case TransactionTypeEnum.ApplicationDelete:
+      case TransactionTypeEnum.ApplicationNoOp:
+      case TransactionTypeEnum.ApplicationOptIn:
+      case TransactionTypeEnum.ApplicationUpdate:
+        return (
+          <ApplicationTransactionContent
+            account={account}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case TransactionTypeEnum.AssetTransfer:
         return (
           <AssetTransferTransactionContent
@@ -79,15 +93,7 @@ const TransactionPage: FC = () => {
       <PageHeader
         title={t<string>('headings.transaction', { context: transaction.type })}
       />
-      <VStack
-        alignItems="flex-start"
-        justifyContent="flex-start"
-        px={DEFAULT_GAP}
-        spacing={4}
-        w="full"
-      >
-        {renderContent()}
-      </VStack>
+      {renderContent()}
     </>
   );
 };

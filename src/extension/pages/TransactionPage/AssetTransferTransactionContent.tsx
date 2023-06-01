@@ -19,10 +19,10 @@ import CopyIconButton from '@extension/components/CopyIconButton';
 import LoadingTransactionContent from '@extension/pages/TransactionPage/LoadingTransactionContent';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import TransactionPageItem from './TransactionPageItem';
+import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
 
 // Constants
-import { ITEM_HEIGHT } from './constants';
+import { DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
 import useAsset from '@extension/hooks/useAsset';
@@ -101,9 +101,15 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   }
 
   return (
-    <>
+    <VStack
+      alignItems="flex-start"
+      justifyContent="flex-start"
+      px={DEFAULT_GAP}
+      spacing={4}
+      w="full"
+    >
       {/*amount*/}
-      <TransactionPageItem label={t<string>('labels.amount')}>
+      <PageItem fontSize="sm" label={t<string>('labels.amount')}>
         <AssetDisplay
           amountColor={
             amount.lte(0)
@@ -140,10 +146,10 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           }
           unit={asset.unitName || undefined}
         />
-      </TransactionPageItem>
+      </PageItem>
 
       {/*from*/}
-      <TransactionPageItem label={t<string>('labels.from')}>
+      <PageItem fontSize="sm" label={t<string>('labels.from')}>
         <HStack spacing={0}>
           <AddressDisplay
             address={transaction.sender}
@@ -164,10 +170,10 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             />
           )}
         </HStack>
-      </TransactionPageItem>
+      </PageItem>
 
       {/*to*/}
-      <TransactionPageItem label={t<string>('labels.to')}>
+      <PageItem fontSize="sm" label={t<string>('labels.to')}>
         <HStack spacing={0}>
           <AddressDisplay
             address={transaction.receiver}
@@ -188,10 +194,10 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             />
           )}
         </HStack>
-      </TransactionPageItem>
+      </PageItem>
 
       {/*fee*/}
-      <TransactionPageItem label={t<string>('labels.fee')}>
+      <PageItem fontSize="sm" label={t<string>('labels.fee')}>
         <AssetDisplay
           atomicUnitAmount={new BigNumber(transaction.fee)}
           amountColor="red.500"
@@ -205,20 +211,20 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           prefix="-"
           unit={network.nativeCurrency.code}
         />
-      </TransactionPageItem>
+      </PageItem>
 
       {/*completed date*/}
       {transaction.completedAt && (
-        <TransactionPageItem label={t<string>('labels.date')}>
+        <PageItem fontSize="sm" label={t<string>('labels.date')}>
           <Text color={subTextColor} fontSize="sm">
             {new Date(transaction.completedAt).toLocaleString()}
           </Text>
-        </TransactionPageItem>
+        </PageItem>
       )}
 
       {/*note*/}
       {transaction.note && (
-        <TransactionPageItem label={t<string>('labels.note')}>
+        <PageItem fontSize="sm" label={t<string>('labels.note')}>
           <Code
             borderRadius="md"
             color={defaultTextColor}
@@ -227,7 +233,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           >
             {transaction.note}
           </Code>
-        </TransactionPageItem>
+        </PageItem>
       )}
 
       <MoreInformationAccordion
@@ -239,7 +245,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       >
         <VStack spacing={4} w="full">
           {/*id*/}
-          <TransactionPageItem label={t<string>('labels.id')}>
+          <PageItem fontSize="sm" label={t<string>('labels.id')}>
             {transaction.id ? (
               <HStack spacing={0}>
                 <Tooltip
@@ -274,11 +280,11 @@ const AssetTransferTransactionContent: FC<IProps> = ({
                 {'-'}
               </Text>
             )}
-          </TransactionPageItem>
+          </PageItem>
 
           {/*group id*/}
           {transaction.groupId && (
-            <TransactionPageItem label={t<string>('labels.groupId')}>
+            <PageItem fontSize="sm" label={t<string>('labels.groupId')}>
               <HStack spacing={0}>
                 <Tooltip
                   aria-label="The group ID of the transaction"
@@ -309,11 +315,11 @@ const AssetTransferTransactionContent: FC<IProps> = ({
                   />
                 )}
               </HStack>
-            </TransactionPageItem>
+            </PageItem>
           )}
 
           {/*asset id*/}
-          <TransactionPageItem label={t<string>('labels.assetId')}>
+          <PageItem fontSize="sm" label={t<string>('labels.assetId')}>
             <HStack spacing={0}>
               <Text color={subTextColor} fontSize="sm">
                 {asset.id}
@@ -334,10 +340,10 @@ const AssetTransferTransactionContent: FC<IProps> = ({
                 />
               )}
             </HStack>
-          </TransactionPageItem>
+          </PageItem>
         </VStack>
       </MoreInformationAccordion>
-    </>
+    </VStack>
   );
 };
 

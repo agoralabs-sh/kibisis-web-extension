@@ -13,12 +13,13 @@ import { useTranslation } from 'react-i18next';
 // Components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetDisplay from '@extension/components/AssetDisplay';
+import CopyIconButton from '@extension/components/CopyIconButton';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import TransactionPageItem from './TransactionPageItem';
+import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
 
 // Constants
-import { ITEM_HEIGHT } from './constants';
+import { DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -43,7 +44,6 @@ import {
 
 // Utils
 import { createIconFromDataUri, ellipseAddress } from '@extension/utils';
-import CopyIconButton from '@extension/components/CopyIconButton';
 
 interface IProps {
   account: IAccount;
@@ -89,9 +89,15 @@ const PaymentTransactionContent: FC<IProps> = ({
     value ? onOpen() : onClose();
 
   return (
-    <>
+    <VStack
+      alignItems="flex-start"
+      justifyContent="flex-start"
+      px={DEFAULT_GAP}
+      spacing={4}
+      w="full"
+    >
       {/*amount*/}
-      <TransactionPageItem label={t<string>('labels.amount')}>
+      <PageItem fontSize="sm" label={t<string>('labels.amount')}>
         <AssetDisplay
           atomicUnitAmount={amount}
           amountColor={
@@ -117,10 +123,10 @@ const PaymentTransactionContent: FC<IProps> = ({
           }
           unit={network.nativeCurrency.code}
         />
-      </TransactionPageItem>
+      </PageItem>
 
       {/*from*/}
-      <TransactionPageItem label={t<string>('labels.from')}>
+      <PageItem fontSize="sm" label={t<string>('labels.from')}>
         <HStack spacing={0}>
           <AddressDisplay
             address={transaction.sender}
@@ -141,10 +147,10 @@ const PaymentTransactionContent: FC<IProps> = ({
             />
           )}
         </HStack>
-      </TransactionPageItem>
+      </PageItem>
 
       {/*to*/}
-      <TransactionPageItem label={t<string>('labels.to')}>
+      <PageItem fontSize="sm" label={t<string>('labels.to')}>
         <HStack spacing={0}>
           <AddressDisplay
             address={transaction.receiver}
@@ -165,10 +171,10 @@ const PaymentTransactionContent: FC<IProps> = ({
             />
           )}
         </HStack>
-      </TransactionPageItem>
+      </PageItem>
 
       {/*fee*/}
-      <TransactionPageItem label={t<string>('labels.fee')}>
+      <PageItem fontSize="sm" label={t<string>('labels.fee')}>
         <AssetDisplay
           atomicUnitAmount={new BigNumber(transaction.fee)}
           amountColor="red.500"
@@ -182,20 +188,20 @@ const PaymentTransactionContent: FC<IProps> = ({
           prefix="-"
           unit={network.nativeCurrency.code}
         />
-      </TransactionPageItem>
+      </PageItem>
 
       {/*completed date*/}
       {transaction.completedAt && (
-        <TransactionPageItem label={t<string>('labels.date')}>
+        <PageItem fontSize="sm" label={t<string>('labels.date')}>
           <Text color={subTextColor} fontSize="sm">
             {new Date(transaction.completedAt).toLocaleString()}
           </Text>
-        </TransactionPageItem>
+        </PageItem>
       )}
 
       {/*note*/}
       {transaction.note && (
-        <TransactionPageItem label={t<string>('labels.note')}>
+        <PageItem fontSize="sm" label={t<string>('labels.note')}>
           <Code
             borderRadius="md"
             color={defaultTextColor}
@@ -204,7 +210,7 @@ const PaymentTransactionContent: FC<IProps> = ({
           >
             {transaction.note}
           </Code>
-        </TransactionPageItem>
+        </PageItem>
       )}
 
       <MoreInformationAccordion
@@ -216,7 +222,7 @@ const PaymentTransactionContent: FC<IProps> = ({
       >
         <VStack spacing={4} w="full">
           {/*id*/}
-          <TransactionPageItem label={t<string>('labels.id')}>
+          <PageItem fontSize="sm" label={t<string>('labels.id')}>
             {transaction.id ? (
               <HStack spacing={0}>
                 <Tooltip
@@ -251,11 +257,11 @@ const PaymentTransactionContent: FC<IProps> = ({
                 {'-'}
               </Text>
             )}
-          </TransactionPageItem>
+          </PageItem>
 
           {/*group id*/}
           {transaction.groupId && (
-            <TransactionPageItem label={t<string>('labels.groupId')}>
+            <PageItem fontSize="sm" label={t<string>('labels.groupId')}>
               <HStack spacing={0}>
                 <Tooltip
                   aria-label="The group ID of the transaction"
@@ -286,11 +292,11 @@ const PaymentTransactionContent: FC<IProps> = ({
                   />
                 )}
               </HStack>
-            </TransactionPageItem>
+            </PageItem>
           )}
         </VStack>
       </MoreInformationAccordion>
-    </>
+    </VStack>
   );
 };
 
