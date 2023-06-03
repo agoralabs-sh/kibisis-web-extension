@@ -10,17 +10,18 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import BigNumber from 'bignumber.js';
 import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Components
 import AddressDisplay from '@extension/components/AddressDisplay';
-import AssetDisplay from '@extension/components/AssetDisplay';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem from '@extension/components/PageItem';
+
+// Enums
+import { TransactionTypeEnum } from '@extension/enums';
 
 // Hooks
 import useAsset from '@extension/hooks/useAsset';
@@ -39,22 +40,21 @@ import { AccountService } from '@extension/services';
 // Types
 import {
   IAccount,
-  IAssetTransferTransaction,
+  IAssetFreezeTransaction,
+  IAssetUnfreezeTransaction,
   IExplorer,
   INetwork,
 } from '@extension/types';
 
 interface IProps {
-  account: IAccount;
   color?: ResponsiveValue<CSS.Property.Color>;
   fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
   minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
   network: INetwork;
-  transaction: IAssetTransferTransaction;
+  transaction: IAssetFreezeTransaction | IAssetUnfreezeTransaction;
 }
 
-const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
-  account,
+const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
   color,
   fontSize,
   minButtonHeight,
@@ -70,72 +70,24 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
-  const amount: BigNumber = new BigNumber(String(transaction.amount));
   const explorer: IExplorer | null =
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  const isReceiverKnown: boolean =
+  const isFrozenKnown: boolean =
     accounts.findIndex(
       (value) =>
         AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.receiver
-    ) > -1;
-  const isSenderKnown: boolean =
-    accounts.findIndex(
-      (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.sender
+        transaction.frozenAddress
     ) > -1;
 
   return (
     <AccordionItem border="none" px={3} py={2} w="full">
       <AccordionButton minH={minButtonHeight} p={0}>
-        <HStack
-          alignItems="center"
-          justifyContent="space-between"
-          spacing={2}
-          w="full"
-        >
-          {/*type*/}
-          <Text color={color || defaultTextColor} fontSize={fontSize}>
-            {t<string>('headings.transaction', { context: transaction.type })}
-          </Text>
-
-          {/*amount*/}
-          {!asset || updating ? (
-            <Skeleton>
-              <Text color={defaultTextColor} fontSize={fontSize}>
-                0.001
-              </Text>
-            </Skeleton>
-          ) : (
-            <AssetDisplay
-              amountColor={
-                amount.lte(0)
-                  ? color || defaultTextColor
-                  : transaction.receiver === accountAddress
-                  ? 'green.500'
-                  : 'red.500'
-              }
-              atomicUnitAmount={amount}
-              decimals={asset.decimals}
-              displayUnit={true}
-              displayUnitColor={color || defaultTextColor}
-              fontSize={fontSize}
-              prefix={
-                amount.lte(0)
-                  ? undefined
-                  : transaction.receiver === accountAddress
-                  ? '+'
-                  : '-'
-              }
-              unit={asset.unitName || undefined}
-            />
-          )}
-        </HStack>
+        {/*type*/}
+        <Text color={color || defaultTextColor} fontSize={fontSize}>
+          {t<string>('headings.transaction', { context: transaction.type })}
+        </Text>
         <AccordionIcon />
       </AccordionButton>
       <AccordionPanel pb={0} pt={2} px={0}>
@@ -172,49 +124,32 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
             )}
           </PageItem>
 
-          {/*from*/}
-          <PageItem fontSize="xs" label={t<string>('labels.from')}>
+          {/*frozen address*/}
+          <PageItem
+            fontSize="xs"
+            label={t<string>(
+              transaction.type === TransactionTypeEnum.AssetFreeze
+                ? 'labels.accountToFreeze'
+                : 'labels.accountToUnfreeze'
+            )}
+          >
             <HStack spacing={0}>
               <AddressDisplay
-                address={transaction.sender}
-                ariaLabel="From address"
+                address={transaction.frozenAddress}
+                ariaLabel="Address to freeze/unfreeze"
                 color={subTextColor}
                 fontSize="xs"
                 network={network}
               />
 
               {/*open in explorer button*/}
-              {!isSenderKnown && explorer && (
+              {!isFrozenKnown && explorer && (
                 <OpenTabIconButton
                   size="xs"
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
-                />
-              )}
-            </HStack>
-          </PageItem>
-
-          {/*to*/}
-          <PageItem fontSize="xs" label={t<string>('labels.to')}>
-            <HStack spacing={0}>
-              <AddressDisplay
-                address={transaction.receiver}
-                ariaLabel="From address"
-                color={subTextColor}
-                fontSize="xs"
-                network={network}
-              />
-
-              {/*open in explorer button*/}
-              {!isReceiverKnown && explorer && (
-                <OpenTabIconButton
-                  size="xs"
-                  tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
-                  })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.receiver}`}
+                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.frozenAddress}`}
                 />
               )}
             </HStack>
@@ -239,4 +174,4 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
   );
 };
 
-export default AssetTransferInnerTransactionAccordionItem;
+export default AssetFreezeInnerTransactionAccordionItem;

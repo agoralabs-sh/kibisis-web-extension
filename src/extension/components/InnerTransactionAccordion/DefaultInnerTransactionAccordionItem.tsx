@@ -3,6 +3,7 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
+  Code,
   HStack,
   ResponsiveValue,
   Text,
@@ -34,7 +35,6 @@ import { AccountService } from '@extension/services';
 import { IAccount, IExplorer, INetwork, ITransactions } from '@extension/types';
 
 interface IProps {
-  account: IAccount;
   color?: ResponsiveValue<CSS.Property.Color>;
   fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
   minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
@@ -43,7 +43,6 @@ interface IProps {
 }
 
 const DefaultInnerTransactionAccordionItem: FC<IProps> = ({
-  account,
   color,
   fontSize,
   minButtonHeight,
@@ -62,18 +61,12 @@ const DefaultInnerTransactionAccordionItem: FC<IProps> = ({
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  // const isReceiverKnown: boolean =
-  //   accounts.findIndex(
-  //     (value) =>
-  //       AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-  //       transaction.receiver
-  //   ) > -1;
-  // const isSenderKnown: boolean =
-  //   accounts.findIndex(
-  //     (value) =>
-  //       AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-  //       transaction.sender
-  //   ) > -1;
+  const isSenderKnown: boolean =
+    accounts.findIndex(
+      (value) =>
+        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
+        transaction.sender
+    ) > -1;
 
   return (
     <AccordionItem border="none" px={3} py={2} w="full">
@@ -85,55 +78,45 @@ const DefaultInnerTransactionAccordionItem: FC<IProps> = ({
         <AccordionIcon />
       </AccordionButton>
       <AccordionPanel pb={0} pt={2} px={0}>
-        {/*<VStack spacing={2} w="full">*/}
-        {/*  /!*from*!/*/}
-        {/*  <PageItem fontSize="xs" label={t<string>('labels.from')}>*/}
-        {/*    <HStack spacing={0}>*/}
-        {/*      <AddressDisplay*/}
-        {/*        address={transaction.sender}*/}
-        {/*        ariaLabel="From address"*/}
-        {/*        color={subTextColor}*/}
-        {/*        fontSize="xs"*/}
-        {/*        network={network}*/}
-        {/*      />*/}
+        <VStack spacing={2} w="full">
+          {/*from*/}
+          <PageItem fontSize="xs" label={t<string>('labels.from')}>
+            <HStack spacing={0}>
+              <AddressDisplay
+                address={transaction.sender}
+                ariaLabel="From address"
+                color={subTextColor}
+                fontSize="xs"
+                network={network}
+              />
 
-        {/*      /!*open in explorer button*!/*/}
-        {/*      {!isSenderKnown && explorer && (*/}
-        {/*        <OpenTabIconButton*/}
-        {/*          size="xs"*/}
-        {/*          tooltipLabel={t<string>('captions.openOn', {*/}
-        {/*            name: explorer.canonicalName,*/}
-        {/*          })}*/}
-        {/*          url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}*/}
-        {/*        />*/}
-        {/*      )}*/}
-        {/*    </HStack>*/}
-        {/*  </PageItem>*/}
+              {/*open in explorer button*/}
+              {!isSenderKnown && explorer && (
+                <OpenTabIconButton
+                  size="xs"
+                  tooltipLabel={t<string>('captions.openOn', {
+                    name: explorer.canonicalName,
+                  })}
+                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
+                />
+              )}
+            </HStack>
+          </PageItem>
 
-        {/*  /!*to*!/*/}
-        {/*  <PageItem fontSize="xs" label={t<string>('labels.to')}>*/}
-        {/*    <HStack spacing={0}>*/}
-        {/*      <AddressDisplay*/}
-        {/*        address={transaction.receiver}*/}
-        {/*        ariaLabel="From address"*/}
-        {/*        color={subTextColor}*/}
-        {/*        fontSize="xs"*/}
-        {/*        network={network}*/}
-        {/*      />*/}
-
-        {/*      /!*open in explorer button*!/*/}
-        {/*      {!isReceiverKnown && explorer && (*/}
-        {/*        <OpenTabIconButton*/}
-        {/*          size="xs"*/}
-        {/*          tooltipLabel={t<string>('captions.openOn', {*/}
-        {/*            name: explorer.canonicalName,*/}
-        {/*          })}*/}
-        {/*          url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.receiver}`}*/}
-        {/*        />*/}
-        {/*      )}*/}
-        {/*    </HStack>*/}
-        {/*  </PageItem>*/}
-        {/*</VStack>*/}
+          {/*note*/}
+          {transaction.note && (
+            <PageItem fontSize="xs" label={t<string>('labels.note')}>
+              <Code
+                borderRadius="md"
+                color={defaultTextColor}
+                fontSize="xs"
+                wordBreak="break-word"
+              >
+                {transaction.note}
+              </Code>
+            </PageItem>
+          )}
+        </VStack>
       </AccordionPanel>
     </AccordionItem>
   );

@@ -5,6 +5,7 @@ import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 // Components
 import PageHeader from '@extension/components/PageHeader';
 import ApplicationTransactionContent from './ApplicationTransactionContent';
+import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import LoadingTransactionContent from './LoadingTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
@@ -48,6 +49,14 @@ const TransactionPage: FC = () => {
         return (
           <ApplicationTransactionContent
             account={account}
+            network={network}
+            transaction={transaction}
+          />
+        );
+      case TransactionTypeEnum.AssetFreeze:
+      case TransactionTypeEnum.AssetUnfreeze:
+        return (
+          <AssetFreezeTransactionContent
             network={network}
             transaction={transaction}
           />

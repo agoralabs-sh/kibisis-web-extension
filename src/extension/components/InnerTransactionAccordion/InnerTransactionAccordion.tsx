@@ -3,6 +3,7 @@ import * as CSS from 'csstype';
 import React, { FC } from 'react';
 
 // Components
+import AssetFreezeInnerTransactionAccordionItem from './AssetFreezeInnerTransactionAccordionItem';
 import AssetTransferInnerTransactionAccordionItem from './AssetTransferInnerTransactionAccordionItem';
 import DefaultInnerTransactionAccordionItem from './DefaultInnerTransactionAccordionItem';
 import PaymentInnerTransactionAccordionItem from './PaymentInnerTransactionAccordionItem';
@@ -38,6 +39,17 @@ const InnerTransactionAccordion: FC<IProps> = ({
   const handleOnChange = (value: number) => onChange(value > -1);
   const renderAccordionItem = () => {
     switch (transaction.type) {
+      case TransactionTypeEnum.AssetFreeze:
+      case TransactionTypeEnum.AssetUnfreeze:
+        return (
+          <AssetFreezeInnerTransactionAccordionItem
+            color={color}
+            fontSize={fontSize}
+            minButtonHeight={minButtonHeight}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case TransactionTypeEnum.AssetTransfer:
         return (
           <AssetTransferInnerTransactionAccordionItem
@@ -63,7 +75,6 @@ const InnerTransactionAccordion: FC<IProps> = ({
       default:
         return (
           <DefaultInnerTransactionAccordionItem
-            account={account}
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}
