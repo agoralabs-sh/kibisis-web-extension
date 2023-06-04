@@ -10,6 +10,7 @@ export { default as fetchWithDelay } from './fetchWithDelay';
 export { default as getAddressFromPrivateKey } from './getAddressFromPrivateKey';
 export { default as getAuthorizedAddressesForHost } from './getAuthorizedAddressesForHost';
 export { default as injectScript } from './injectScript';
+export { default as isAccountKnown } from './isAccountKnown';
 export { default as isHexString } from './isHexString';
 export { default as isMnemonicValid } from './isMnemonicValid';
 export { default as makeStore } from './makeStore';

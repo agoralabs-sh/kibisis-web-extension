@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next';
 // Components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetDisplay from '@extension/components/AssetDisplay';
+import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
-import LoadingTransactionContent from '@extension/pages/TransactionPage/LoadingTransactionContent';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
@@ -22,12 +22,9 @@ import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Enums
-import { TransactionTypeEnum } from '@extension/enums';
-
 // Hooks
-import useAsset from '@extension/hooks/useAsset';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
@@ -39,8 +36,7 @@ import {
 // Types
 import {
   IAccount,
-  IAssetFreezeTransaction,
-  IAssetUnfreezeTransaction,
+  IAssetCreateTransaction,
   IExplorer,
   INetwork,
 } from '@extension/types';
@@ -54,10 +50,10 @@ import {
 
 interface IProps {
   network: INetwork;
-  transaction: IAssetFreezeTransaction | IAssetUnfreezeTransaction;
+  transaction: IAssetCreateTransaction;
 }
 
-const AssetTransferTransactionContent: FC<IProps> = ({
+const AssetCreateTransactionContent: FC<IProps> = ({
   network,
   transaction,
 }: IProps) => {
@@ -67,8 +63,8 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
-  const { asset, updating } = useAsset(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
+  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
   const explorer: IExplorer | null =
@@ -79,10 +75,6 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
 
-  if (!asset || updating) {
-    return <LoadingTransactionContent />;
-  }
-
   return (
     <VStack
       alignItems="flex-start"
@@ -91,60 +83,209 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       spacing={4}
       w="full"
     >
-      {/*asset id*/}
-      <PageItem fontSize="sm" label={t<string>('labels.assetId')}>
-        <HStack spacing={0}>
+      {/*asset name*/}
+      {transaction.name && (
+        <PageItem fontSize="sm" label={t<string>('labels.name')}>
           <Text color={subTextColor} fontSize="sm">
-            {asset.id}
+            {transaction.name}
           </Text>
-          <CopyIconButton
-            ariaLabel="Copy asset ID"
-            copiedTooltipLabel={t<string>('captions.assetIdCopied')}
-            size="sm"
-            value={asset.id}
-          />
-          {explorer && (
-            <OpenTabIconButton
-              size="sm"
-              tooltipLabel={t<string>('captions.openOn', {
-                name: explorer.canonicalName,
-              })}
-              url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
-            />
-          )}
-        </HStack>
-      </PageItem>
+        </PageItem>
+      )}
 
-      {/*frozen account*/}
-      <PageItem
-        fontSize="sm"
-        label={t<string>(
-          transaction.type === TransactionTypeEnum.AssetFreeze
-            ? 'labels.accountToFreeze'
-            : 'labels.accountToUnfreeze'
-        )}
-      >
+      {/*creator address*/}
+      <PageItem fontSize="sm" label={t<string>('labels.creatorAccount')}>
         <HStack spacing={0}>
           <AddressDisplay
-            address={transaction.frozenAddress}
-            ariaLabel="Address to freeze/unfreeze"
+            address={transaction.creator}
+            ariaLabel="Creator address"
             color={subTextColor}
             fontSize="sm"
             network={network}
           />
 
           {/*open in explorer button*/}
-          {!isAccountKnown(accounts, transaction.frozenAddress) && explorer && (
+          {!isAccountKnown(accounts, transaction.creator) && explorer && (
             <OpenTabIconButton
               size="sm"
               tooltipLabel={t<string>('captions.openOn', {
                 name: explorer.canonicalName,
               })}
-              url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.frozenAddress}`}
+              url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.creator}`}
             />
           )}
         </HStack>
       </PageItem>
+
+      {/*total supply*/}
+      <PageItem fontSize="sm" label={t<string>('labels.totalSupply')}>
+        <AssetDisplay
+          amountColor={subTextColor}
+          atomicUnitAmount={new BigNumber(transaction.total)}
+          decimals={transaction.decimals}
+          displayUnit={true}
+          displayUnitColor={subTextColor}
+          fontSize="sm"
+          icon={
+            <AssetIcon
+              color={primaryButtonTextColor}
+              networkTheme={network.chakraTheme}
+              h={3}
+              w={3}
+            />
+          }
+          unit={transaction.unitName || undefined}
+        />
+      </PageItem>
+
+      {/*decimals*/}
+      <PageItem fontSize="sm" label={t<string>('labels.decimals')}>
+        <Text color={subTextColor} fontSize="sm">
+          {transaction.decimals.toString()}
+        </Text>
+      </PageItem>
+
+      {/*default frozen*/}
+      <PageItem fontSize="sm" label={t<string>('labels.defaultFrozen')}>
+        <Text color={subTextColor} fontSize="sm">
+          {transaction.defaultFrozen
+            ? t<string>('labels.yes')
+            : t<string>('labels.no')}
+        </Text>
+      </PageItem>
+
+      {/*url*/}
+      {transaction.url && (
+        <PageItem fontSize="sm" label={t<string>('labels.url')}>
+          <HStack spacing={0}>
+            <Code
+              borderRadius="md"
+              color={defaultTextColor}
+              fontSize="sm"
+              wordBreak="break-word"
+            >
+              {transaction.url}
+            </Code>
+            <OpenTabIconButton
+              size="sm"
+              tooltipLabel={t<string>('captions.openUrl')}
+              url={transaction.url}
+            />
+          </HStack>
+        </PageItem>
+      )}
+
+      {/*unit name*/}
+      {transaction.unitName && (
+        <PageItem fontSize="sm" label={t<string>('labels.unitName')}>
+          <Text color={subTextColor} fontSize="sm">
+            {transaction.unitName}
+          </Text>
+        </PageItem>
+      )}
+
+      {/*clawback address*/}
+      {transaction.clawback && (
+        <PageItem fontSize="sm" label={t<string>('labels.clawbackAccount')}>
+          <HStack spacing={0}>
+            <AddressDisplay
+              address={transaction.clawback}
+              ariaLabel="Clawback address"
+              color={subTextColor}
+              fontSize="sm"
+              network={network}
+            />
+
+            {/*open in explorer button*/}
+            {!isAccountKnown(accounts, transaction.clawback) && explorer && (
+              <OpenTabIconButton
+                size="sm"
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: explorer.canonicalName,
+                })}
+                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.clawback}`}
+              />
+            )}
+          </HStack>
+        </PageItem>
+      )}
+
+      {/*freeze address*/}
+      {transaction.freeze && (
+        <PageItem fontSize="sm" label={t<string>('labels.freezeAccount')}>
+          <HStack spacing={0}>
+            <AddressDisplay
+              address={transaction.freeze}
+              ariaLabel="Freeze address"
+              color={subTextColor}
+              fontSize="sm"
+              network={network}
+            />
+
+            {/*open in explorer button*/}
+            {!isAccountKnown(accounts, transaction.freeze) && explorer && (
+              <OpenTabIconButton
+                size="sm"
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: explorer.canonicalName,
+                })}
+                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.freeze}`}
+              />
+            )}
+          </HStack>
+        </PageItem>
+      )}
+
+      {/*manager address*/}
+      {transaction.manager && (
+        <PageItem fontSize="sm" label={t<string>('labels.managerAccount')}>
+          <HStack spacing={0}>
+            <AddressDisplay
+              address={transaction.manager}
+              ariaLabel="Manager address"
+              color={subTextColor}
+              fontSize="sm"
+              network={network}
+            />
+
+            {/*open in explorer button*/}
+            {!isAccountKnown(accounts, transaction.manager) && explorer && (
+              <OpenTabIconButton
+                size="sm"
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: explorer.canonicalName,
+                })}
+                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.manager}`}
+              />
+            )}
+          </HStack>
+        </PageItem>
+      )}
+
+      {/*reserve address*/}
+      {transaction.reserve && (
+        <PageItem fontSize="sm" label={t<string>('labels.reserveAccount')}>
+          <HStack spacing={0}>
+            <AddressDisplay
+              address={transaction.reserve}
+              ariaLabel="Reserve address"
+              color={subTextColor}
+              fontSize="sm"
+              network={network}
+            />
+
+            {/*open in explorer button*/}
+            {!isAccountKnown(accounts, transaction.reserve) && explorer && (
+              <OpenTabIconButton
+                size="sm"
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: explorer.canonicalName,
+                })}
+                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.reserve}`}
+              />
+            )}
+          </HStack>
+        </PageItem>
+      )}
 
       {/*fee*/}
       <PageItem fontSize="sm" label={t<string>('labels.fee')}>
@@ -273,4 +414,4 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   );
 };
 
-export default AssetTransferTransactionContent;
+export default AssetCreateTransactionContent;

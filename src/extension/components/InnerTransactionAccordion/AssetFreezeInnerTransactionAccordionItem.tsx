@@ -34,9 +34,6 @@ import {
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// Services
-import { AccountService } from '@extension/services';
-
 // Types
 import {
   IAccount,
@@ -45,6 +42,9 @@ import {
   IExplorer,
   INetwork,
 } from '@extension/types';
+
+// Utils
+import { isAccountKnown } from '@extension/utils';
 
 interface IProps {
   color?: ResponsiveValue<CSS.Property.Color>;
@@ -74,12 +74,6 @@ const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  const isFrozenKnown: boolean =
-    accounts.findIndex(
-      (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.frozenAddress
-    ) > -1;
 
   return (
     <AccordionItem border="none" px={3} py={2} w="full">
@@ -143,15 +137,16 @@ const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
               />
 
               {/*open in explorer button*/}
-              {!isFrozenKnown && explorer && (
-                <OpenTabIconButton
-                  size="xs"
-                  tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
-                  })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.frozenAddress}`}
-                />
-              )}
+              {!isAccountKnown(accounts, transaction.frozenAddress) &&
+                explorer && (
+                  <OpenTabIconButton
+                    size="xs"
+                    tooltipLabel={t<string>('captions.openOn', {
+                      name: explorer.canonicalName,
+                    })}
+                    url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.frozenAddress}`}
+                  />
+                )}
             </HStack>
           </PageItem>
 

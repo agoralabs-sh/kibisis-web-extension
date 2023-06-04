@@ -217,6 +217,7 @@ const translation: IResourceLanguage = {
     date: 'Date',
     decimals: 'Decimals',
     default: 'Default',
+    defaultFrozen: 'Default Frozen',
     did: 'DID',
     expirationDate: 'Expiration Date',
     fee: 'Fee',
@@ -242,6 +243,7 @@ const translation: IResourceLanguage = {
     moreInformation: 'More Information',
     name: 'Name',
     newPassword: 'New Password',
+    no: 'No',
     password: 'Password',
     preferredBlockExplorer: 'Preferred Block Explorer',
     removeAccount: 'Remove Account',
@@ -263,6 +265,7 @@ const translation: IResourceLanguage = {
     url: 'URL',
     voteKey: 'Participation Public Key',
     voteKeyDilution: 'Key Dilution',
+    yes: 'Yes',
   },
   placeholders: {
     enterPassword: 'Enter password',

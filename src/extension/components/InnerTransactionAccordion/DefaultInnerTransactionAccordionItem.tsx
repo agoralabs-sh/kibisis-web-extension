@@ -28,11 +28,11 @@ import {
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// Services
-import { AccountService } from '@extension/services';
-
 // Types
 import { IAccount, IExplorer, INetwork, ITransactions } from '@extension/types';
+
+// Utils
+import { isAccountKnown } from '@extension/utils';
 
 interface IProps {
   color?: ResponsiveValue<CSS.Property.Color>;
@@ -61,12 +61,6 @@ const DefaultInnerTransactionAccordionItem: FC<IProps> = ({
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  const isSenderKnown: boolean =
-    accounts.findIndex(
-      (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.sender
-    ) > -1;
 
   return (
     <AccordionItem border="none" px={3} py={2} w="full">
@@ -91,7 +85,7 @@ const DefaultInnerTransactionAccordionItem: FC<IProps> = ({
               />
 
               {/*open in explorer button*/}
-              {!isSenderKnown && explorer && (
+              {!isAccountKnown(accounts, transaction.sender) && explorer && (
                 <OpenTabIconButton
                   size="xs"
                   tooltipLabel={t<string>('captions.openOn', {

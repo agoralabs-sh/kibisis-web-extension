@@ -42,7 +42,7 @@ import {
 } from '@extension/types';
 
 // Utils
-import { createIconFromDataUri } from '@extension/utils';
+import { createIconFromDataUri, isAccountKnown } from '@extension/utils';
 
 interface IProps {
   account: IAccount;
@@ -76,18 +76,6 @@ const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  const isReceiverKnown: boolean =
-    accounts.findIndex(
-      (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.receiver
-    ) > -1;
-  const isSenderKnown: boolean =
-    accounts.findIndex(
-      (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.sender
-    ) > -1;
 
   return (
     <AccordionItem border="none" px={3} py={2} w="full">
@@ -146,7 +134,7 @@ const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
               />
 
               {/*open in explorer button*/}
-              {!isSenderKnown && explorer && (
+              {!isAccountKnown(accounts, transaction.sender) && explorer && (
                 <OpenTabIconButton
                   size="xs"
                   tooltipLabel={t<string>('captions.openOn', {
@@ -170,7 +158,7 @@ const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
               />
 
               {/*open in explorer button*/}
-              {!isReceiverKnown && explorer && (
+              {!isAccountKnown(accounts, transaction.receiver) && explorer && (
                 <OpenTabIconButton
                   size="xs"
                   tooltipLabel={t<string>('captions.openOn', {

@@ -42,14 +42,17 @@ import { AccountService } from '@extension/services';
 // Types
 import {
   IAccount,
-  IAsset,
   IAssetTransferTransaction,
   IExplorer,
   INetwork,
 } from '@extension/types';
 
 // Utils
-import { createIconFromDataUri, ellipseAddress } from '@extension/utils';
+import {
+  createIconFromDataUri,
+  ellipseAddress,
+  isAccountKnown,
+} from '@extension/utils';
 
 interface IProps {
   account: IAccount;
@@ -80,18 +83,6 @@ const AssetTransferTransactionContent: FC<IProps> = ({
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  const isReceiverKnown: boolean =
-    accounts.findIndex(
-      (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.receiver
-    ) > -1;
-  const isSenderKnown: boolean =
-    accounts.findIndex(
-      (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.sender
-    ) > -1;
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
@@ -160,7 +151,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           />
 
           {/*open in explorer button*/}
-          {!isSenderKnown && explorer && (
+          {!isAccountKnown(accounts, transaction.sender) && explorer && (
             <OpenTabIconButton
               size="sm"
               tooltipLabel={t<string>('captions.openOn', {
@@ -184,7 +175,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           />
 
           {/*open in explorer button*/}
-          {!isReceiverKnown && explorer && (
+          {!isAccountKnown(accounts, transaction.receiver) && explorer && (
             <OpenTabIconButton
               size="sm"
               tooltipLabel={t<string>('captions.openOn', {
