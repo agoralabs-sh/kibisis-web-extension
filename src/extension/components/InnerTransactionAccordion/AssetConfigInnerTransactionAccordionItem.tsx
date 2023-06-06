@@ -9,21 +9,18 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import BigNumber from 'bignumber.js';
 import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Components
 import AddressDisplay from '@extension/components/AddressDisplay';
-import AssetDisplay from '@extension/components/AssetDisplay';
-import AssetIcon from '@extension/components/AssetIcon';
+import CopyIconButton from '@extension/components/CopyIconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem from '@extension/components/PageItem';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // Selectors
@@ -35,7 +32,7 @@ import {
 // Types
 import {
   IAccount,
-  IAssetCreateTransaction,
+  IAssetConfigTransaction,
   IExplorer,
   INetwork,
 } from '@extension/types';
@@ -48,7 +45,7 @@ interface IProps {
   fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
   minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
   network: INetwork;
-  transaction: IAssetCreateTransaction;
+  transaction: IAssetConfigTransaction;
 }
 
 const AssetCreateInnerTransactionAccordionItem: FC<IProps> = ({
@@ -64,7 +61,6 @@ const AssetCreateInnerTransactionAccordionItem: FC<IProps> = ({
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
   const explorer: IExplorer | null =
@@ -83,14 +79,29 @@ const AssetCreateInnerTransactionAccordionItem: FC<IProps> = ({
       </AccordionButton>
       <AccordionPanel pb={0} pt={2} px={0}>
         <VStack spacing={2} w="full">
-          {/*asset name*/}
-          {transaction.name && (
-            <PageItem fontSize="xs" label={t<string>('labels.name')}>
+          {/*asset id*/}
+          <PageItem fontSize="xs" label={t<string>('labels.assetId')}>
+            <HStack spacing={0}>
               <Text color={subTextColor} fontSize="xs">
-                {transaction.name}
+                {transaction.assetId}
               </Text>
-            </PageItem>
-          )}
+              <CopyIconButton
+                ariaLabel="Copy asset ID"
+                copiedTooltipLabel={t<string>('captions.assetIdCopied')}
+                size="xs"
+                value={transaction.assetId}
+              />
+              {explorer && (
+                <OpenTabIconButton
+                  size="xs"
+                  tooltipLabel={t<string>('captions.openOn', {
+                    name: explorer.canonicalName,
+                  })}
+                  url={`${explorer.baseUrl}${explorer.assetPath}/${transaction.assetId}`}
+                />
+              )}
+            </HStack>
+          </PageItem>
 
           {/*creator address*/}
           <PageItem fontSize="xs" label={t<string>('labels.creatorAccount')}>
@@ -115,73 +126,6 @@ const AssetCreateInnerTransactionAccordionItem: FC<IProps> = ({
               )}
             </HStack>
           </PageItem>
-
-          {/*total supply*/}
-          <PageItem fontSize="xs" label={t<string>('labels.totalSupply')}>
-            <AssetDisplay
-              amountColor={subTextColor}
-              atomicUnitAmount={new BigNumber(transaction.total)}
-              decimals={transaction.decimals}
-              displayUnit={true}
-              displayUnitColor={subTextColor}
-              fontSize="xs"
-              icon={
-                <AssetIcon
-                  color={primaryButtonTextColor}
-                  networkTheme={network.chakraTheme}
-                  h={3}
-                  w={3}
-                />
-              }
-              unit={transaction.unitName || undefined}
-            />
-          </PageItem>
-
-          {/*decimals*/}
-          <PageItem fontSize="xs" label={t<string>('labels.decimals')}>
-            <Text color={subTextColor} fontSize="xs">
-              {transaction.decimals.toString()}
-            </Text>
-          </PageItem>
-
-          {/*default frozen*/}
-          <PageItem fontSize="xs" label={t<string>('labels.defaultFrozen')}>
-            <Text color={subTextColor} fontSize="xs">
-              {transaction.defaultFrozen
-                ? t<string>('labels.yes')
-                : t<string>('labels.no')}
-            </Text>
-          </PageItem>
-
-          {/*url*/}
-          {transaction.url && (
-            <PageItem fontSize="xs" label={t<string>('labels.url')}>
-              <HStack spacing={0}>
-                <Code
-                  borderRadius="md"
-                  color={defaultTextColor}
-                  fontSize="xs"
-                  wordBreak="break-word"
-                >
-                  {transaction.url}
-                </Code>
-                <OpenTabIconButton
-                  size="xs"
-                  tooltipLabel={t<string>('captions.openUrl')}
-                  url={transaction.url}
-                />
-              </HStack>
-            </PageItem>
-          )}
-
-          {/*unit name*/}
-          {transaction.unitName && (
-            <PageItem fontSize="xs" label={t<string>('labels.unitName')}>
-              <Text color={subTextColor} fontSize="xs">
-                {transaction.unitName}
-              </Text>
-            </PageItem>
-          )}
 
           {/*clawback address*/}
           {transaction.clawback && (
