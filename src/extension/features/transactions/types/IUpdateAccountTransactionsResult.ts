@@ -1,5 +1,5 @@
 // Types
-import { ITransaction } from '@extension/types';
+import { ITransactions } from '@extension/types';
 
 /**
  * @property {string} accountId - the account ID.
@@ -9,7 +9,7 @@ import { ITransaction } from '@extension/types';
 interface IUpdateAccountTransactionsResult {
   accountId: string;
   next: string | null;
-  transactions: ITransaction[];
+  transactions: ITransactions[];
 }
 
 export default IUpdateAccountTransactionsResult;
