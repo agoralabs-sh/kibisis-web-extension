@@ -7,6 +7,7 @@ import PageHeader from '@extension/components/PageHeader';
 import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetConfigTransactionContent from './AssetConfigTransactionContent';
 import AssetCreateTransactionContent from './AssetCreateTransactionContent';
+import AssetDestroyTransactionContent from './AssetDestroyTransactionContent';
 import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import LoadingTransactionContent from './LoadingTransactionContent';
@@ -65,6 +66,13 @@ const TransactionPage: FC = () => {
       case TransactionTypeEnum.AssetCreate:
         return (
           <AssetCreateTransactionContent
+            network={network}
+            transaction={transaction}
+          />
+        );
+      case TransactionTypeEnum.AssetDestroy:
+        return (
+          <AssetDestroyTransactionContent
             network={network}
             transaction={transaction}
           />

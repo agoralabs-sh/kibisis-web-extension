@@ -5,6 +5,7 @@ import React, { FC } from 'react';
 // Components
 import AssetConfigInnerTransactionAccordionItem from './AssetConfigInnerTransactionAccordionItem';
 import AssetCreateInnerTransactionAccordionItem from './AssetCreateInnerTransactionAccordionItem';
+import AssetDeleteInnerTransactionAccordionItem from './AssetDeleteInnerTransactionAccordionItem';
 import AssetFreezeInnerTransactionAccordionItem from './AssetFreezeInnerTransactionAccordionItem';
 import AssetTransferInnerTransactionAccordionItem from './AssetTransferInnerTransactionAccordionItem';
 import DefaultInnerTransactionAccordionItem from './DefaultInnerTransactionAccordionItem';
@@ -54,6 +55,16 @@ const InnerTransactionAccordion: FC<IProps> = ({
       case TransactionTypeEnum.AssetCreate:
         return (
           <AssetCreateInnerTransactionAccordionItem
+            color={color}
+            fontSize={fontSize}
+            minButtonHeight={minButtonHeight}
+            network={network}
+            transaction={transaction}
+          />
+        );
+      case TransactionTypeEnum.AssetDestroy:
+        return (
+          <AssetDeleteInnerTransactionAccordionItem
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}
