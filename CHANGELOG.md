@@ -1,3 +1,10 @@
+# [1.1.0-beta.17](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.16...v1.1.0-beta.17) (2023-06-13)
+
+
+### Features
+
+* fetch transactions ([#18](https://github.com/agoralabs-sh/kibisis-web-extension/issues/18)) ([b560c11](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b560c11a2dc73a0306238c43148db7b1e9ec0f0e))
+
 # [1.1.0-beta.16](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.15...v1.1.0-beta.16) (2023-04-28)
 
 
