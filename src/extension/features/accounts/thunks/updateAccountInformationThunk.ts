@@ -23,9 +23,9 @@ const updateAccountInformationThunk: AsyncThunk<
 > = createAsyncThunk<IAccount[], undefined, { state: IMainRootState }>(
   AccountsThunkEnum.UpdateAccountInformation,
   async (_, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const networks: INetwork[] = getState().networks.items;
-    const online: boolean = getState().application.online;
+    const online: boolean = getState().system.online;
     const selectedNetwork: INetwork | null =
       networks.find(
         (value) =>

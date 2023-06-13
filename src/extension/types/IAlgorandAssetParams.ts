@@ -2,7 +2,7 @@ interface IAlgorandAssetParams {
   clawback?: string;
   creator: string;
   decimals: bigint;
-  ['default-frozen']?: true;
+  ['default-frozen']: boolean;
   freeze?: string;
   manager?: string;
   ['metadata-hash']?: string;

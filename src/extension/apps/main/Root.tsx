@@ -21,7 +21,7 @@ import {
   setError,
   setNavigate,
   setToast,
-} from '@extension/features/application';
+} from '@extension/features/system';
 import {
   fetchAssetsThunk,
   updateAssetInformationThunk,

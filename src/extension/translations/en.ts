@@ -33,6 +33,7 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
     allowTestNet: 'Let TestNet networks appear in the networks list.',
+    applicationIdCopied: 'Application ID copied!',
     appOnComplete: 'This transaction will run the application.',
     [`appOnComplete_${TransactionTypeEnum.ApplicationClearState}`]: `This transaction will clear any application data associated with the sender's account.`,
     [`appOnComplete_${TransactionTypeEnum.ApplicationCloseOut}`]: `This transaction will run the application and clear any application data associated with the sender's account.`,
@@ -67,6 +68,7 @@ const translation: IResourceLanguage = {
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     freezeManagerAddressDoesNotMatch:
       'This account does not have the authority to freeze/unfreeze this asset. This transaction will likely fail.',
+    groupIdCopied: 'Group ID copied!',
     importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
     importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
     importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
@@ -114,6 +116,7 @@ const translation: IResourceLanguage = {
       'An application is requesting to sign multiple transactions.',
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
+    transactionIdCopied: 'Transaction ID copied!',
   },
   errors: {
     descriptions: {
@@ -153,6 +156,7 @@ const translation: IResourceLanguage = {
     newAccountComplete: 'Almost There...',
     noAccountsFound: 'No accounts found',
     noAssetsFound: 'No assets found',
+    noTransactionsFound: 'No transactions found',
     noSessionsFound: 'No sessions found',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
@@ -198,6 +202,8 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
     allowTestNet: 'Allow TestNet networks?',
     amount: 'Amount',
+    applicationId: 'Application ID',
+    assetId: 'Asset ID',
     assets: 'Assets',
     audience: 'Audience',
     authorizedAccounts: 'Authorized Accounts',
@@ -208,8 +214,10 @@ const translation: IResourceLanguage = {
       'I confirm I have copied my seed phrase to a secure place.',
     creatorAccount: 'Creator Account',
     dark: 'Dark',
+    date: 'Date',
     decimals: 'Decimals',
     default: 'Default',
+    defaultFrozen: 'Default Frozen',
     did: 'DID',
     expirationDate: 'Expiration Date',
     fee: 'Fee',
@@ -222,6 +230,7 @@ const translation: IResourceLanguage = {
     groupId: 'Group ID',
     id: 'ID',
     information: 'Information',
+    innerTransactions: 'Inner Transactions',
     issueDate: 'Issue Date',
     issuer: 'Issuer',
     lastRound: 'Last Round',
@@ -234,6 +243,7 @@ const translation: IResourceLanguage = {
     moreInformation: 'More Information',
     name: 'Name',
     newPassword: 'New Password',
+    no: 'No',
     password: 'Password',
     preferredBlockExplorer: 'Preferred Block Explorer',
     removeAccount: 'Remove Account',
@@ -255,6 +265,7 @@ const translation: IResourceLanguage = {
     url: 'URL',
     voteKey: 'Participation Public Key',
     voteKeyDilution: 'Key Dilution',
+    yes: 'Yes',
   },
   placeholders: {
     enterPassword: 'Enter password',

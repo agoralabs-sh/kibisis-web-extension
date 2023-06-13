@@ -23,7 +23,7 @@ const removeAuthorizedAddressThunk: AsyncThunk<
   string,
   { state: IMainRootState }
 >(SessionsThunkEnum.RemoveAuthorizedAddress, async (address, { getState }) => {
-  const logger: ILogger = getState().application.logger;
+  const logger: ILogger = getState().system.logger;
   const storageManager: StorageManager = new StorageManager();
   const storageItems: Record<string, unknown> =
     await storageManager.getAllItems();

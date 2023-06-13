@@ -32,7 +32,7 @@ const sendEnableResponseThunk: AsyncThunk<
   MessagesThunkEnum.SendEnableResponse,
   async ({ error, requestEventId, session, tabId }, { getState }) => {
     const accounts: IAccount[] = getState().accounts.items;
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const networks: INetwork[] = getState().networks.items;
     let message: ExtensionEnableResponseEvent;
     let network: INetwork | null;

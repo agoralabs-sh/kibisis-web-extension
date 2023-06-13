@@ -18,7 +18,7 @@ const sendResetThunk: AsyncThunk<
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
   MessagesThunkEnum.SendReset,
   async (_, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const event: ExtensionResetEvent = new ExtensionResetEvent();
 
     logger.debug(

@@ -104,11 +104,6 @@ const config: Configuration = {
         'features',
         'accounts'
       ),
-      ['@extension/features/application']: resolve(
-        EXTENSION_PATH,
-        'features',
-        'application'
-      ),
       ['@extension/features/assets']: resolve(
         EXTENSION_PATH,
         'features',
@@ -138,6 +133,16 @@ const config: Configuration = {
         EXTENSION_PATH,
         'features',
         'settings'
+      ),
+      ['@extension/features/system']: resolve(
+        EXTENSION_PATH,
+        'features',
+        'system'
+      ),
+      ['@extension/features/transactions']: resolve(
+        EXTENSION_PATH,
+        'features',
+        'transactions'
       ),
       ['@extension/fonts']: resolve(EXTENSION_PATH, 'fonts'),
       ['@extension/hooks']: resolve(EXTENSION_PATH, 'hooks'),

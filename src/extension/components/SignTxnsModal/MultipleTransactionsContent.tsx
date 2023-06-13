@@ -49,12 +49,15 @@ const MultipleTransactionsContent: FC<IProps> = ({
   transactions,
 }: IProps) => {
   const { t } = useTranslation();
-  const borderColor: string = useBorderColor();
+  // selectors
   const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
+  // hooks
+  const borderColor: string = useBorderColor();
+  // state
   const [openAccordions, setOpenAccordions] = useState<boolean[]>(
     Array.from({ length: transactions.length }, () => false)
   );
-  const computedGroupId: string = encodeBase64(computeGroupId(transactions));
+  // handlers
   const handleToggleAccordion = (accordionIndex: number) => (open: boolean) => {
     setOpenAccordions(
       openAccordions.map((value, index) =>
@@ -62,6 +65,8 @@ const MultipleTransactionsContent: FC<IProps> = ({
       )
     );
   };
+  // misc
+  const computedGroupId: string = encodeBase64(computeGroupId(transactions));
   const renderContent = (
     transaction: Transaction,
     transactionIndex: number
@@ -70,7 +75,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
       assets.find((value) => value.id === String(transaction.assetIndex)) ||
       null;
     const transactionType: TransactionTypeEnum = parseTransactionType(
-      transaction,
+      transaction.get_obj_for_encoding(),
       {
         network,
         sender: fromAccounts[transactionIndex] || null,

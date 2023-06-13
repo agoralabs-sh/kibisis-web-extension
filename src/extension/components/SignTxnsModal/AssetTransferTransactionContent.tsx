@@ -66,7 +66,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       <>
         {/*balance*/}
         <SignTxnsAssetItem
-          atomicUnitsAmount={atomicUintAmount}
+          atomicUnitAmount={atomicUintAmount}
           decimals={asset.decimals}
           displayUnit={true}
           icon={icon}
@@ -77,7 +77,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
         {/*fee*/}
         <SignTxnsAssetItem
-          atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+          atomicUnitAmount={new BigNumber(String(transaction.fee))}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
             color: subTextColor,
@@ -181,16 +181,19 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             w="full"
           >
             {t<string>('headings.transaction', {
-              context: parseTransactionType(transaction, {
-                network,
-                sender: fromAccount,
-              }),
+              context: parseTransactionType(
+                transaction.get_obj_for_encoding(),
+                {
+                  network,
+                  sender: fromAccount,
+                }
+              ),
             })}
           </Text>
 
           {/*amount*/}
           <SignTxnsAssetItem
-            atomicUnitsAmount={atomicUintAmount}
+            atomicUnitAmount={atomicUintAmount}
             decimals={asset.decimals}
             displayUnit={true}
             icon={assetIcon}
@@ -229,10 +232,13 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             w="full"
           >
             {t<string>('headings.transaction', {
-              context: parseTransactionType(transaction, {
-                network,
-                sender: fromAccount,
-              }),
+              context: parseTransactionType(
+                transaction.get_obj_for_encoding(),
+                {
+                  network,
+                  sender: fromAccount,
+                }
+              ),
             })}
           </Text>
         </>

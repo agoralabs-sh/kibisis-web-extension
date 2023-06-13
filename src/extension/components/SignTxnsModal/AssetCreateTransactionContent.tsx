@@ -49,7 +49,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
   const subTextColor: string = useSubTextColor();
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(
-    transaction,
+    transaction.get_obj_for_encoding(),
     {
       network,
       sender: fromAccount,
@@ -60,7 +60,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
       <>
         {/*fee*/}
         <SignTxnsAssetItem
-          atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+          atomicUnitAmount={new BigNumber(String(transaction.fee))}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
             color: subTextColor,
@@ -73,7 +73,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
 
         {/*total supply*/}
         <SignTxnsAssetItem
-          atomicUnitsAmount={new BigNumber(String(transaction.assetTotal))}
+          atomicUnitAmount={new BigNumber(String(transaction.assetTotal))}
           decimals={transaction.assetDecimals}
           icon={
             <AssetIcon

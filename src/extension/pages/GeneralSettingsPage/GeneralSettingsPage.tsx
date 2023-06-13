@@ -10,7 +10,7 @@ import SettingsSelectItem from '@extension/components/SettingsSelectItem';
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
 // Features
-import { setConfirm } from '@extension/features/application';
+import { setConfirm } from '@extension/features/system';
 import { sendResetThunk } from '@extension/features/messages';
 import { setSettings } from '@extension/features/settings';
 

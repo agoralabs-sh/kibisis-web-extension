@@ -20,7 +20,7 @@ const setSessionThunk: AsyncThunk<
 > = createAsyncThunk<ISession, ISession, { state: IMainRootState }>(
   SessionsThunkEnum.SetSession,
   async (session, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const storageManager: StorageManager = new StorageManager();
 
     logger.debug(

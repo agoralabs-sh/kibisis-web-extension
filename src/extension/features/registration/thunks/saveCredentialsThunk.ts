@@ -14,7 +14,7 @@ import { RegisterThunkEnum } from '@extension/enums';
 import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
 // Features
-import { setError } from '@extension/features/application';
+import { setError } from '@extension/features/system';
 import { sendRegistrationCompletedThunk } from '@extension/features/messages';
 
 // Services
@@ -40,8 +40,8 @@ const saveCredentialsThunk: AsyncThunk<
 >(
   RegisterThunkEnum.SaveCredentials,
   async ({ name, privateKey }, { dispatch, getState }) => {
-    const logger: ILogger = getState().application.logger;
-    const navigate: NavigateFunction | null = getState().application.navigate;
+    const logger: ILogger = getState().system.logger;
+    const navigate: NavigateFunction | null = getState().system.navigate;
     const password: string | null = getState().registration.password;
     let account: IAccount;
     let accountService: AccountService;

@@ -14,7 +14,7 @@ const stopPollingForAccountInformationThunk: AsyncThunk<
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
   AccountsThunkEnum.StopPollingForAccountInformation,
   (_, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const pollingId: number | null = getState().accounts.pollingId;
 
     if (pollingId) {

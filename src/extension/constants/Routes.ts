@@ -12,3 +12,4 @@ export const IMPORT_EXISTING_ACCOUNT_ROUTE: string = '/import-existing-account';
 export const SECURITY_ROUTE: string = '/security';
 export const SESSIONS_ROUTE: string = '/sessions';
 export const SETTINGS_ROUTE: string = '/settings';
+export const TRANSACTIONS_ROUTE: string = '/transactions';

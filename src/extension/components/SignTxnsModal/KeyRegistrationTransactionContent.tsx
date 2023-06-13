@@ -50,7 +50,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
     }
   );
   const transactionType: TransactionTypeEnum = parseTransactionType(
-    transaction,
+    transaction.get_obj_for_encoding(),
     {
       network,
       sender: fromAccount,
@@ -60,7 +60,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
     <>
       {/*fee*/}
       <SignTxnsAssetItem
-        atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+        atomicUnitAmount={new BigNumber(String(transaction.fee))}
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}

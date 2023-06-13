@@ -32,7 +32,7 @@ const updateAssetInformationThunk: AsyncThunk<
 >(
   AssetsThunkEnum.UpdateAssetInformation,
   async ({ ids, network }, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const assets: IAsset[] = [];
     let assetInformation: IAsset | null;
     let assetsStorageKey: string;

@@ -25,7 +25,7 @@ const sendSignBytesResponse: AsyncThunk<
   MessagesThunkEnum.SendSignBytesResponse,
   async ({ encodedSignature, error, requestEventId, tabId }, { getState }) => {
     const functionName: string = 'sendSignBytesResponse';
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     let message: ExtensionSignBytesResponseEvent;
 
     logger.debug(

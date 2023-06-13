@@ -18,11 +18,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
+import { generateAccount } from 'algosdk';
 import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { randomBytes } from 'tweetnacl';
 
 // Components
 import Button from '@extension/components/Button';
@@ -172,7 +172,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
           <SkeletonCircle size="12" />
           <Skeleton flexGrow={1}>
             <Text color={defaultTextColor} fontSize="md" textAlign="center">
-              {ellipseAddress(randomBytes(52).toString(), {
+              {ellipseAddress(generateAccount().addr, {
                 end: 10,
                 start: 10,
               })}

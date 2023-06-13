@@ -8,6 +8,6 @@ import { IBaseRootState } from '@extension/types';
 
 export default function useSelectError(): BaseExtensionError | null {
   return useSelector<IBaseRootState, BaseExtensionError | null>(
-    (state) => state.application.error
+    (state) => state.system.error
   );
 }

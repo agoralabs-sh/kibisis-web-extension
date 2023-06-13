@@ -18,7 +18,7 @@ const removeAccountByIdThunk: AsyncThunk<
 > = createAsyncThunk<string, string, { state: IMainRootState }>(
   AccountsThunkEnum.RemoveAccountById,
   async (id, { dispatch, getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const accountService: AccountService = new AccountService({
       logger,
     });

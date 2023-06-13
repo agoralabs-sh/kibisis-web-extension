@@ -31,6 +31,7 @@ import {
   useLocation,
   useNavigate,
   useParams,
+  useSearchParams,
 } from 'react-router-dom';
 
 // Components
@@ -54,7 +55,7 @@ import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 
 // Features
 import { removeAccountByIdThunk } from '@extension/features/accounts';
-import { setConfirm } from '@extension/features/application';
+import { setConfirm } from '@extension/features/system';
 import { setSettings } from '@extension/features/settings';
 
 // Hooks
@@ -95,14 +96,17 @@ import { ellipseAddress } from '@extension/utils';
 const AccountPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const location: Location = useLocation();
-  const navigate: NavigateFunction = useNavigate();
-  const { address } = useParams();
   const {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
+  const location: Location = useLocation();
+  const navigate: NavigateFunction = useNavigate();
+  const { address } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams({
+    accountTabId: '0',
+  });
   // selectors
   const account: IAccount | null = useSelectAccount(address);
   const accounts: IAccount[] = useSelectAccounts();
@@ -117,6 +121,7 @@ const AccountPage: FC = () => {
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
+  // misc
   const accountInformation: IAccountInformation | null =
     account && selectedNetwork
       ? AccountService.extractAccountInformationForNetwork(
@@ -124,6 +129,9 @@ const AccountPage: FC = () => {
           selectedNetwork
         )
       : null;
+  const accountTabId: number = parseInt(
+    searchParams.get('accountTabId') || '0'
+  );
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkSelect = (network: INetwork) => {
     dispatch(
@@ -158,6 +166,10 @@ const AccountPage: FC = () => {
       );
     }
   };
+  const handleTabChange = (index: number) =>
+    setSearchParams({
+      accountTabId: index.toString(),
+    });
   const renderContent = () => {
     const headerContainerProps: StackProps = {
       alignItems: 'flex-start',
@@ -307,12 +319,15 @@ const AccountPage: FC = () => {
             </HStack>
           </VStack>
 
+          <Spacer />
+
           {/*assets/nfts/activity tabs */}
           <Tabs
             colorScheme={primaryColorScheme}
-            flexGrow={1}
+            defaultIndex={accountTabId}
+            isLazy={true}
             m={0}
-            overflowY="scroll"
+            onChange={handleTabChange}
             sx={{ display: 'flex', flexDirection: 'column' }}
             w="full"
           >
@@ -323,12 +338,12 @@ const AccountPage: FC = () => {
             </TabList>
             <TabPanels
               flexGrow={1}
-              maxH="100dvh"
+              h="70dvh"
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
               <AccountAssetsTab account={account} />
               <AccountNftsTab />
-              <AccountActivityTab />
+              <AccountActivityTab account={account} network={selectedNetwork} />
             </TabPanels>
           </Tabs>
         </>
@@ -358,8 +373,6 @@ const AccountPage: FC = () => {
 
     // if there is no account, go to the first account, or the accounts index if no accounts exist
     if (!account) {
-      console.log('accounts:', accounts);
-      console.log('accounts[0]:', accounts[0]);
       navigate(
         `${ACCOUNTS_ROUTE}${
           accounts[0]
@@ -402,7 +415,12 @@ const AccountPage: FC = () => {
           onClose={onShareAddressModalClose}
         />
       )}
-      <VStack alignItems="flex-start" flexGrow={1} w="full">
+      <VStack
+        alignItems="center"
+        justifyContent="flex-start"
+        flexGrow={1}
+        w="full"
+      >
         {renderContent()}
       </VStack>
     </>

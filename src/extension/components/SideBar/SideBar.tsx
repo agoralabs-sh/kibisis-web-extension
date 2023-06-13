@@ -7,6 +7,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { generateAccount } from 'algosdk';
 import { nanoid } from 'nanoid';
 import React, {
   FC,
@@ -28,7 +29,6 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import { randomBytes } from 'tweetnacl';
 
 // Components
 import Divider from '@extension/components/Divider';
@@ -132,7 +132,7 @@ const SideBar: FC = () => {
             </Center>
             <Skeleton>
               <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
-                {ellipseAddress(randomBytes(52).toString(), {
+                {ellipseAddress(generateAccount().addr, {
                   end: 10,
                   start: 10,
                 })}

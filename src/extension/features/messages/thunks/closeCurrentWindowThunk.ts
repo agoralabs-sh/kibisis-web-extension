@@ -15,7 +15,7 @@ const closeCurrencyWindow: AsyncThunk<
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
   MessagesThunkEnum.CloseCurrencyWindow,
   async (_, { getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
     const window: Windows.Window = await browser.windows.getCurrent();
 
     if (window.id) {

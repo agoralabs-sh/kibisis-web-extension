@@ -64,7 +64,7 @@ const PaymentTransactionContent: FC<IProps> = ({
     }
   );
   const transactionType: TransactionTypeEnum = parseTransactionType(
-    transaction,
+    transaction.get_obj_for_encoding(),
     {
       network,
       sender: fromAccount,
@@ -74,7 +74,7 @@ const PaymentTransactionContent: FC<IProps> = ({
     <>
       {/*balance*/}
       <SignTxnsAssetItem
-        atomicUnitsAmount={
+        atomicUnitAmount={
           new BigNumber(accountInformation?.atomicBalance || '0')
         }
         decimals={network.nativeCurrency.decimals}
@@ -86,7 +86,7 @@ const PaymentTransactionContent: FC<IProps> = ({
 
       {/*fee*/}
       <SignTxnsAssetItem
-        atomicUnitsAmount={new BigNumber(String(transaction.fee))}
+        atomicUnitAmount={new BigNumber(String(transaction.fee))}
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
@@ -127,7 +127,7 @@ const PaymentTransactionContent: FC<IProps> = ({
 
           {/*amount*/}
           <SignTxnsAssetItem
-            atomicUnitsAmount={atomicUintAmount}
+            atomicUnitAmount={atomicUintAmount}
             decimals={network.nativeCurrency.decimals}
             icon={icon}
             label={`${t<string>('labels.amount')}:`}

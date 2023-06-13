@@ -9,47 +9,44 @@ import { StoreNameEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // Types
-import { IApplicationState, IConfirm } from './types';
+import { ISystemState, IConfirm } from './types';
 
 // Utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({
   initialState: getInitialState(),
-  name: StoreNameEnum.Application,
+  name: StoreNameEnum.System,
   reducers: {
     setConfirm: (
-      state: Draft<IApplicationState>,
+      state: Draft<ISystemState>,
       action: PayloadAction<IConfirm | null>
     ) => {
       state.confirm = action.payload;
     },
     setError: (
-      state: Draft<IApplicationState>,
+      state: Draft<ISystemState>,
       action: PayloadAction<BaseExtensionError | null>
     ) => {
       state.error = action.payload;
     },
     setNavigate: (
-      state: Draft<IApplicationState>,
+      state: Draft<ISystemState>,
       action: PayloadAction<NavigateFunction>
     ) => {
       state.navigate = action.payload;
     },
-    setOnline: (
-      state: Draft<IApplicationState>,
-      action: PayloadAction<boolean>
-    ) => {
+    setOnline: (state: Draft<ISystemState>, action: PayloadAction<boolean>) => {
       state.online = action.payload;
     },
     setSideBar: (
-      state: Draft<IApplicationState>,
+      state: Draft<ISystemState>,
       action: PayloadAction<boolean>
     ) => {
       state.sidebar = action.payload;
     },
     setToast: (
-      state: Draft<IApplicationState>,
+      state: Draft<ISystemState>,
       action: PayloadAction<CreateToastFnReturn>
     ) => {
       state.toast = action.payload;

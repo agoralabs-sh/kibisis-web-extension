@@ -20,7 +20,7 @@ const startPollingForAccountInformationThunk: AsyncThunk<
 > = createAsyncThunk<number, undefined, { state: IMainRootState }>(
   AccountsThunkEnum.StartPollingForAccountInformation,
   (_, { dispatch, getState }) => {
-    const logger: ILogger = getState().application.logger;
+    const logger: ILogger = getState().system.logger;
 
     logger.debug(
       `${startPollingForAccountInformationThunk.name}: started polling for account information`
