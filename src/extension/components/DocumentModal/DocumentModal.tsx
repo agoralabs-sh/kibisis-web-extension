@@ -32,7 +32,6 @@ import { theme } from '@extension/theme';
 
 // Utils
 import { createComponents } from './utils';
-import { APP_TITLE } from '../../../../webpack/constants';
 
 interface IProps {
   documentName: string;
