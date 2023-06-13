@@ -16,6 +16,7 @@ const translation: IResourceLanguage = {
     copySeedPhrase: 'Copy Seed Phrase',
     create: 'Create',
     dismiss: 'Dismiss',
+    download: 'Download',
     getStarted: 'Get Started',
     import: 'Import',
     next: 'Next',

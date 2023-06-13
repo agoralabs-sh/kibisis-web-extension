@@ -1,23 +1,21 @@
 import {
-  Alert,
   Heading,
-  ListItem,
+  HStack,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  OrderedList,
   Skeleton,
   Text,
-  UnorderedList,
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import React, { createRef, FC, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
+import browser from 'webextension-polyfill';
 
 // Components
 import Button from '@extension/components/Button';
@@ -27,10 +25,14 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // Hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useDocument from './useDocument';
+import useDocument from './hooks/useDocument';
 
 // Theme
 import { theme } from '@extension/theme';
+
+// Utils
+import { createComponents } from './utils';
+import { APP_TITLE } from '../../../../webpack/constants';
 
 interface IProps {
   documentName: string;
@@ -46,12 +48,21 @@ const DocumentModal: FC<IProps> = ({
   title,
 }: IProps) => {
   const { t, i18n } = useTranslation();
+  const documentUrl: string = `documents/${documentName}/${i18n.language}.md`;
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const { document, fetching } = useDocument(documentName, i18n.language);
+  const { document, fetching } = useDocument(documentUrl);
   // misc
   const initialRef: RefObject<HTMLButtonElement> | undefined = createRef();
   // handlers
+  const handleDownloadClick = async () => {
+    if (document) {
+      await browser.downloads.download({
+        filename: `${__APP_TITLE__.toLowerCase()}-${documentName}.md`,
+        url: URL.createObjectURL(document.blob),
+      });
+    }
+  };
   const handleDismissClick = () => onClose();
 
   return (
@@ -104,80 +115,33 @@ const DocumentModal: FC<IProps> = ({
             )}
             {document && (
               <ReactMarkdown
-                children={document}
-                components={{
-                  blockquote: ({ children }) => (
-                    <Alert status="info" variant="left-accent">
-                      {children}
-                    </Alert>
-                  ),
-                  h1: ({ children }) => (
-                    <Heading
-                      color={defaultTextColor}
-                      size="lg"
-                      textAlign="left"
-                    >
-                      {String(children)}
-                    </Heading>
-                  ),
-                  h2: ({ children }) => (
-                    <Heading
-                      color={defaultTextColor}
-                      size="md"
-                      textAlign="left"
-                    >
-                      {String(children)}
-                    </Heading>
-                  ),
-                  h3: ({ children }) => (
-                    <Heading
-                      color={defaultTextColor}
-                      size="sm"
-                      textAlign="left"
-                    >
-                      {String(children)}
-                    </Heading>
-                  ),
-                  li: ({ children, index, ordered }) => (
-                    <ListItem>
-                      <Text
-                        color={defaultTextColor}
-                        fontSize="sm"
-                        textAlign="left"
-                      >
-                        {String(children)}
-                      </Text>
-                    </ListItem>
-                  ),
-                  ol: ({ children }) => <OrderedList>{children}</OrderedList>,
-                  p: ({ children }) => (
-                    <Text
-                      color={defaultTextColor}
-                      fontSize="sm"
-                      textAlign="left"
-                    >
-                      {String(children)}
-                    </Text>
-                  ),
-                  strong: ({ children }) => <strong>{String(children)}</strong>,
-                  ul: ({ children }) => (
-                    <UnorderedList>{children}</UnorderedList>
-                  ),
-                }}
+                children={document.text}
+                components={createComponents(defaultTextColor)}
               />
             )}
           </VStack>
         </ModalBody>
         <ModalFooter p={DEFAULT_GAP}>
-          <Button
-            onClick={handleDismissClick}
-            ref={initialRef}
-            size="lg"
-            variant="outline"
-            w="full"
-          >
-            {t<string>('buttons.dismiss')}
-          </Button>
+          <HStack spacing={4} w="full">
+            <Button
+              onClick={handleDismissClick}
+              ref={initialRef}
+              size="lg"
+              variant="outline"
+              w="full"
+            >
+              {t<string>('buttons.dismiss')}
+            </Button>
+            <Button
+              isLoading={fetching}
+              onClick={handleDownloadClick}
+              size="lg"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.download')}
+            </Button>
+          </HStack>
         </ModalFooter>
       </ModalContent>
     </Modal>

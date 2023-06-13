@@ -1,35 +1,37 @@
 import { useEffect, useState } from 'react';
 
 // Types
-import { IUseDocumentState } from './types';
+import { IDocument, IUseDocumentState } from './types';
 
-export default function useDocument(
-  documentName: string,
-  language: string = 'en'
-): IUseDocumentState {
-  const [document, setDocument] = useState<string | null>(null);
+export default function useDocument(documentUrl: string): IUseDocumentState {
+  const [document, setDocument] = useState<IDocument | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
+      let blob: Blob;
       let response: Response;
       let text: string;
 
       try {
         setFetching(true);
 
-        response = await fetch(`documents/${documentName}/${language}.md`);
-        text = await response.text();
+        response = await fetch(documentUrl);
+        blob = await response.blob();
+        text = await blob.text();
 
-        setDocument(text.length > 0 ? text : null);
+        setDocument({
+          blob,
+          text,
+        });
       } catch (error) {
         setError(error.message);
       }
 
       setFetching(false);
     })();
-  }, [documentName]);
+  }, [documentUrl]);
 
   return {
     document,

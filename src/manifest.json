@@ -13,6 +13,7 @@
     "*://algosigner.api.purestake.io/*",
     "*://*.algonode.cloud/*",
     "*://*.algorpc.pro/*",
+    "downloads",
     "storage"
   ],
   "browser_specific_settings": {
@@ -24,22 +25,14 @@
     "default_title": "Kibisis"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ],
+    "scripts": ["background.js"],
     "persistent": true
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content-script.js"
-      ]
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"]
     }
   ],
-  "web_accessible_resources": [
-    "wallet-initializer.js"
-  ]
+  "web_accessible_resources": ["wallet-initializer.js"]
 }
