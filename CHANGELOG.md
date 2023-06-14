@@ -1,3 +1,10 @@
+# [1.1.0-beta.18](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.17...v1.1.0-beta.18) (2023-06-14)
+
+
+### Features
+
+* add strong password policy ([#19](https://github.com/agoralabs-sh/kibisis-web-extension/issues/19)) ([190f69e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/190f69ef4107250d6827a7e44afc78c8f60b82a2))
+
 # [1.1.0-beta.17](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.16...v1.1.0-beta.17) (2023-06-13)
 
 
