@@ -54,6 +54,10 @@ const config: Configuration = {
     new CopyPlugin({
       patterns: [
         {
+          from: resolve(SRC_PATH, 'documents'),
+          to: resolve(BUILD_PATH, 'documents'),
+        },
+        {
           from: resolve(SRC_PATH, 'icons'),
           to: resolve(BUILD_PATH, 'icons'),
         },

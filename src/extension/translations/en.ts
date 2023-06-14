@@ -15,6 +15,8 @@ const translation: IResourceLanguage = {
     confirm: 'Confirm',
     copySeedPhrase: 'Copy Seed Phrase',
     create: 'Create',
+    dismiss: 'Dismiss',
+    download: 'Download',
     getStarted: 'Get Started',
     import: 'Import',
     next: 'Next',
@@ -96,7 +98,7 @@ const translation: IResourceLanguage = {
     openOn: 'Open on {{name}}',
     openUrl: 'Open URL in your browser',
     passwordScoreInfo:
-      'To conform with our Strong Password policy, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
+      'To conform with our <2>Strong Password Policy</2>, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',
     removeAccount: 'Are you sure you want to remove account "{{address}}"?',
     removeAccountWarning:
@@ -272,6 +274,7 @@ const translation: IResourceLanguage = {
     nameAccount: 'Enter a name for this account (optional)',
   },
   titles: {
+    strongPasswordPolicy: 'Strong Password Policy',
     page: '',
     page_accountSetup: 'Choose How To Add An Account',
     page_advanced: 'Advanced',
