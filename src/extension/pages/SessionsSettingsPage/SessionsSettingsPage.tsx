@@ -13,11 +13,11 @@ import { faker } from '@faker-js/faker';
 import { nanoid } from 'nanoid';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAdd, IoLinkOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // Components
 import Button from '@extension/components/Button';
+import EmptyState from '@extension/components/EmptyState';
 import ManageSessionModal from '@extension/components/ManageSessionModal';
 import PageHeader from '@extension/components/PageHeader';
 import SettingsSessionItem from '@extension/components/SettingsSessionItem';
@@ -27,6 +27,7 @@ import { setConfirm } from '@extension/features/system';
 import {
   clearSessionsThunk,
   removeSessionByIdThunk,
+  removeSessionByTopicThunk,
 } from '@extension/features/sessions';
 
 // Hooks
@@ -41,16 +42,19 @@ import {
 
 // Types
 import { IAppThunkDispatch, ISession } from '@extension/types';
-import EmptyState from '@extension/components/EmptyState';
 
 const SessionsSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // selectors
   const fetching: boolean = useSelectFetchingSessions();
   const sessions: ISession[] = useSelectSessions();
+  // hooks
   const defaultSubTextColor: string = useSubTextColor();
   const defaultTextColor: string = useDefaultTextColor();
+  // states
   const [managedSession, setManagedSession] = useState<ISession | null>(null);
+  // handlers
   const handleManageSessionClose = () => setManagedSession(null);
   const handleManageSession = (id: string) =>
     setManagedSession(sessions.find((value) => value.id === id) || null);
@@ -62,8 +66,24 @@ const SessionsSettingsPage: FC = () => {
         title: t<string>('headings.removeAllSessions'),
       })
     );
-  const handleRemoveSession = (id: string) =>
-    dispatch(removeSessionByIdThunk(id));
+  const handleRemoveSession = (id: string) => {
+    const session: ISession | null =
+      sessions.find((value) => value.id === id) || null;
+
+    if (session) {
+      // if this is a walletconnect session, remove by topic
+      if (session.walletConnectMetadata) {
+        dispatch(
+          removeSessionByTopicThunk(session.walletConnectMetadata.topic)
+        );
+
+        return;
+      }
+
+      dispatch(removeSessionByIdThunk(id));
+    }
+  };
+  // misc
   const renderContent = () => {
     if (fetching) {
       return (
