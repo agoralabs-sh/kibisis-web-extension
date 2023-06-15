@@ -39,11 +39,7 @@ import Fonts from '@extension/components/Fonts';
 import WalletConnectIcon from '@extension/components/WalletConnectIcon';
 
 // Config
-import {
-  networks,
-  walletConnectSupportedChains,
-  walletConnectSupportedMethods,
-} from '@extension/config';
+import { networks } from '@extension/config';
 
 // Tabs
 import ApplicationActionsTab from './ApplicationActionsTab';
@@ -71,21 +67,22 @@ const App: FC = () => {
     isClosable: true,
     position: 'top',
   });
+  const { connect } = useConnect({
+    requiredNamespaces: {
+      algorand: {
+        chains: ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe'], // testnet
+        events: [],
+        methods: ['algorand_signTransaction', 'algorand_signMessage'],
+      },
+    },
+  });
+  // states
   const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
     []
   );
   const [selectedAccount, setSelectedAccount] =
     useState<IAccountInformation | null>(null);
   const [selectedNetwork, setSelectedNetwork] = useState<INetwork | null>(null);
-  const { connect } = useConnect({
-    requiredNamespaces: {
-      algorand: {
-        chains: walletConnectSupportedChains,
-        events: [],
-        methods: walletConnectSupportedMethods,
-      },
-    },
-  });
   const handleAddressSelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const account: IAccountInformation | null =
       enabledAccounts.find((value) => value.address === event.target.value) ||

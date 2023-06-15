@@ -23,6 +23,7 @@ import { Rings } from 'react-loader-spinner';
 // Components
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
+import SessionRequestHeader from '@extension/components/SessionRequestHeader';
 import WalletConnectBannerIcon from '@extension/components/WalletConnectBannerIcon';
 
 // Constants
@@ -56,7 +57,6 @@ import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 
 // Utils
 import { ellipseAddress } from '@extension/utils';
-import SessionRequestHeader from '@extension/components/SessionRequestHeader';
 
 interface IProps {
   onClose: () => void;

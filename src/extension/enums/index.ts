@@ -9,4 +9,3 @@ export { default as SettingsThunkEnum } from './SettingsThunkEnum';
 export { default as StoreNameEnum } from './StoreNameEnum';
 export { default as TransactionsThunkEnum } from './TransactionsThunkEnum';
 export { default as TransactionTypeEnum } from './TransactionTypeEnum';
-export { default as WalletConnectChainsEnum } from './WalletConnectChainsEnum';
