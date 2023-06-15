@@ -63,6 +63,11 @@ const networks: INetwork[] = [
         url: 'https://mainnet-idx.algonode.cloud',
       },
     ],
+    namespace: {
+      key: 'algorand',
+      methods: ['signTransaction', 'signMessage'],
+      reference: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73k',
+    },
     nativeCurrency: {
       code: 'ALGO',
       decimals: 6,
@@ -125,6 +130,11 @@ const networks: INetwork[] = [
         url: 'https://betanet-idx.algonode.cloud',
       },
     ],
+    namespace: {
+      key: 'algorand',
+      methods: ['signTransaction', 'signMessage'],
+      reference: 'mFgazF-2uRS1tMiL9dsj01hJGySEmPN2',
+    },
     nativeCurrency: {
       code: 'ALGO',
       decimals: 6,
@@ -192,6 +202,11 @@ const networks: INetwork[] = [
         url: 'https://testnet-idx.algonode.cloud',
       },
     ],
+    namespace: {
+      key: 'algorand',
+      methods: ['signTransaction', 'signMessage'],
+      reference: 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe',
+    },
     nativeCurrency: {
       code: 'ALGO',
       decimals: 6,
@@ -220,6 +235,11 @@ const networks: INetwork[] = [
         url: 'https://voitest-idx.algorpc.pro',
       },
     ],
+    namespace: {
+      key: 'voi',
+      methods: ['signTransaction', 'signMessage'],
+      reference: 'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2_z',
+    },
     nativeCurrency: {
       code: 'VOI',
       decimals: 6,

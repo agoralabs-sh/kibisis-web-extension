@@ -62,4 +62,5 @@ export type { default as ITinyManAssetResponse } from './ITinyManAssetResponse';
 export type { default as ITransactions } from './ITransactions';
 export type { default as IVestigeFiAssetResponse } from './IVestigeFiAssetResponse';
 export type { default as IUnknownTransaction } from './IUnknownTransaction';
-export type { default as IWalletConnectSupportedNamespace } from './IWalletConnectSupportedNamespace';
+export type { default as IChainNamespace } from './IChainNamespace';
+export type { default as IWalletConnectSessionMetadata } from './IWalletConnectSessionMetadata';
