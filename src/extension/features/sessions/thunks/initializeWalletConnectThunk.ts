@@ -9,6 +9,9 @@ import { KIBISIS_LINK } from '@extension/constants';
 // Enums
 import { SessionsThunkEnum } from '@extension/enums';
 
+// Thunks
+import removeSessionByTopicThunk from './removeSessionByTopicThunk';
+
 // Types
 import { IMainRootState } from '@extension/types';
 import { ILogger } from '@common/types';
@@ -19,7 +22,7 @@ const initializeWalletConnectThunk: AsyncThunk<
   Record<string, never>
 > = createAsyncThunk<IWeb3Wallet, undefined, { state: IMainRootState }>(
   SessionsThunkEnum.InitializeWalletConnect,
-  async (_, { getState }) => {
+  async (_, { dispatch, getState }) => {
     const logger: ILogger = getState().system.logger;
     const web3Wallet: IWeb3Wallet = await Web3Wallet.init({
       core: new Core({
@@ -34,10 +37,9 @@ const initializeWalletConnectThunk: AsyncThunk<
     });
 
     // add event listeners
-    web3Wallet.on('session_delete', (event) => {
-      // TODO: handle session disconnected
-      console.log(event);
-    });
+    web3Wallet.on('session_delete', (event) =>
+      dispatch(removeSessionByTopicThunk(event.topic))
+    );
 
     return web3Wallet;
   }

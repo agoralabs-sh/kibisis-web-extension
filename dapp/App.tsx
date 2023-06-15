@@ -66,15 +66,6 @@ import { IAccountInformation } from './types';
 import { getAccountInformation } from './utils';
 
 const App: FC = () => {
-  const { connect } = useConnect({
-    requiredNamespaces: {
-      algorand: {
-        chains: walletConnectSupportedChains,
-        events: [],
-        methods: walletConnectSupportedMethods,
-      },
-    },
-  });
   const toast: CreateToastFnReturn = useToast({
     duration: 3000,
     isClosable: true,
@@ -86,6 +77,15 @@ const App: FC = () => {
   const [selectedAccount, setSelectedAccount] =
     useState<IAccountInformation | null>(null);
   const [selectedNetwork, setSelectedNetwork] = useState<INetwork | null>(null);
+  const { connect } = useConnect({
+    requiredNamespaces: {
+      algorand: {
+        chains: walletConnectSupportedChains,
+        events: [],
+        methods: walletConnectSupportedMethods,
+      },
+    },
+  });
   const handleAddressSelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const account: IAccountInformation | null =
       enabledAccounts.find((value) => value.address === event.target.value) ||

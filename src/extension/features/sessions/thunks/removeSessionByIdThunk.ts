@@ -10,12 +10,12 @@ import { SessionService } from '@extension/services';
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 
-const removeSessionThunk: AsyncThunk<
+const removeSessionByIdThunk: AsyncThunk<
   string, // return
   string, // args
   Record<string, never>
 > = createAsyncThunk<string, string, { state: IMainRootState }>(
-  SessionsThunkEnum.RemoveSession,
+  SessionsThunkEnum.RemoveSessionById,
   async (id, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const sessionService: SessionService = new SessionService({
@@ -23,7 +23,7 @@ const removeSessionThunk: AsyncThunk<
     });
 
     logger.debug(
-      `${removeSessionThunk.name}: removing session "${id}" from storage`
+      `${removeSessionByIdThunk.name}: removing session "${id}" from storage`
     );
 
     await sessionService.removeById(id);
@@ -32,4 +32,4 @@ const removeSessionThunk: AsyncThunk<
   }
 );
 
-export default removeSessionThunk;
+export default removeSessionByIdThunk;

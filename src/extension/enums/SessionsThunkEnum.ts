@@ -3,7 +3,8 @@ enum SessionsThunkEnum {
   FetchSessions = 'sessions/fetchSessions',
   InitializeWalletConnect = 'sessions/initializeWalletConnect',
   RemoveAuthorizedAddress = 'sessions/removeAuthorizedAddress',
-  RemoveSession = 'sessions/removeSession',
+  RemoveSessionById = 'sessions/removeSessionById',
+  RemoveSessionByTopic = 'sessions/removeSessionByTopic',
   SetSession = 'sessions/setSession',
 }
 

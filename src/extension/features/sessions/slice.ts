@@ -10,7 +10,8 @@ import {
   fetchSessionsThunk,
   initializeWalletConnectThunk,
   removeAuthorizedAddressThunk,
-  removeSessionThunk,
+  removeSessionByIdThunk,
+  removeSessionByTopicThunk,
   setSessionThunk,
 } from './thunks';
 
@@ -95,9 +96,9 @@ const slice = createSlice({
         state.saving = false;
       }
     );
-    /** Remove session **/
+    /** Remove session by id **/
     builder.addCase(
-      removeSessionThunk.fulfilled,
+      removeSessionByIdThunk.fulfilled,
       (state: ISessionsState, action: PayloadAction<string>) => {
         state.items = state.items.filter(
           (value) => value.id !== action.payload
@@ -105,12 +106,40 @@ const slice = createSlice({
         state.saving = false;
       }
     );
-    builder.addCase(removeSessionThunk.pending, (state: ISessionsState) => {
+    builder.addCase(removeSessionByIdThunk.pending, (state: ISessionsState) => {
       state.saving = true;
     });
-    builder.addCase(removeSessionThunk.rejected, (state: ISessionsState) => {
-      state.saving = false;
-    });
+    builder.addCase(
+      removeSessionByIdThunk.rejected,
+      (state: ISessionsState) => {
+        state.saving = false;
+      }
+    );
+    /** Remove session by topic **/
+    builder.addCase(
+      removeSessionByTopicThunk.fulfilled,
+      (state: ISessionsState, action: PayloadAction<string | null>) => {
+        if (action.payload) {
+          state.items = state.items.filter(
+            (value) => value.id !== action.payload
+          );
+        }
+
+        state.saving = false;
+      }
+    );
+    builder.addCase(
+      removeSessionByTopicThunk.pending,
+      (state: ISessionsState) => {
+        state.saving = true;
+      }
+    );
+    builder.addCase(
+      removeSessionByTopicThunk.rejected,
+      (state: ISessionsState) => {
+        state.saving = false;
+      }
+    );
     /** Set session **/
     builder.addCase(
       setSessionThunk.fulfilled,

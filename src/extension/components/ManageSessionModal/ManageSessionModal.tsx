@@ -33,7 +33,7 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // Features
 import {
-  removeSessionThunk,
+  removeSessionByIdThunk,
   setSessionThunk,
 } from '@extension/features/sessions';
 
@@ -98,7 +98,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
 
     // if all authorized accounts are removed, remove the session
     if (authorizedAddresses.length <= 0) {
-      dispatch(removeSessionThunk(session.id));
+      dispatch(removeSessionByIdThunk(session.id));
 
       onClose();
 

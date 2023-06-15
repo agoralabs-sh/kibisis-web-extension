@@ -62,6 +62,20 @@ export default class SessionService {
   }
 
   /**
+   * Gets the session for a given WalletConnect topic.
+   * @param {string} topic - the WalletConnect topic to search for.
+   * @returns {Promise<ISession | null>} the session or null.
+   */
+  public async getByTopic(topic: string): Promise<ISession | null> {
+    const sessions: ISession[] = await this.getAll();
+
+    return (
+      sessions.find((value) => value.walletConnectMetadata?.topic === topic) ||
+      null
+    );
+  }
+
+  /**
    * Removes a session by its ID.
    * @param {string} id - the session ID.
    */

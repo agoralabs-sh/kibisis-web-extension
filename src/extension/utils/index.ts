@@ -20,6 +20,7 @@ export { default as mapAddressToWalletAccount } from './mapAddressToWalletAccoun
 export { default as mapAlgorandAccountInformationToAccount } from './mapAlgorandAccountInformationToAccount';
 export { default as mapAlgorandTransactionToTransaction } from './mapAlgorandTransactionToTransaction';
 export { default as mapSessionFromEnableRequest } from './mapSessionFromEnableRequest';
+export { default as mapSessionFromWalletConnectSession } from './mapSessionFromWalletConnectSession';
 export { default as parseTransactionType } from './parseTransactionType';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';
 export { default as upsertItemsById } from './upsertItemsById';

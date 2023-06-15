@@ -1,35 +1,32 @@
 import { ProposalTypes, SessionTypes } from '@walletconnect/types';
 import { buildApprovedNamespaces } from '@walletconnect/utils';
 
-// Config
-import {
-  walletConnectSupportedChains as chains,
-  walletConnectSupportedMethods as methods,
-} from '@extension/config';
+// Types
+import { INetwork } from '@extension/types';
 
 interface IOptions {
-  addresses: string[];
+  authorizedAddresses: string[];
+  network: INetwork;
   proposalParams: ProposalTypes.Struct;
 }
 
 export default function createSessionNamespaces({
-  addresses,
+  authorizedAddresses,
+  network,
   proposalParams,
 }: IOptions): SessionTypes.Namespaces {
+  const chainId: string = `${network.namespace.key}:${network.namespace.reference}`; // in CAIP-2 format e.g. ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe']
+
   return buildApprovedNamespaces({
     proposal: proposalParams,
     supportedNamespaces: {
       algorand: {
-        accounts: chains.reduce<string[]>(
-          (acc, chain) => [
-            ...acc,
-            ...addresses.map((address) => `${chain}:${address}`),
-          ],
-          []
-        ), // accounts that comply with the CAIP-10 format e.g. ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe:ULDXF5B7ZJFIKUY25RFE7EIBV3CS47FZLZDCJHUHQFRSX74L5S6V75M4NE']
-        chains,
+        accounts: authorizedAddresses.map((value) => `${chainId}:${value}`), // accounts that comply with the CAIP-10 format e.g. ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe:ULDXF5B7ZJFIKUY25RFE7EIBV3CS47FZLZDCJHUHQFRSX74L5S6V75M4NE']
+        chains: [chainId],
         events: [],
-        methods,
+        methods: network.namespace.methods.map(
+          (value) => `${network.namespace.key}_${value}`
+        ),
       },
     },
   });

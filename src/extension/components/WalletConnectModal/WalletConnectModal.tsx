@@ -52,12 +52,7 @@ import { AccountService } from '@extension/services';
 import { theme } from '@extension/theme';
 
 // Types
-import {
-  IAccount,
-  IAccountInformation,
-  IAppThunkDispatch,
-  INetwork,
-} from '@extension/types';
+import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 
 // Utils
 import { ellipseAddress } from '@extension/utils';
@@ -94,11 +89,11 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
   // handlers
   const handleApproveClick = async () => {
-    if (authorizedAddresses.length > 0) {
-      await approveSessionProposalAction(authorizedAddresses);
-
-      handleClose();
+    if (authorizedAddresses.length > 0 && network) {
+      await approveSessionProposalAction(authorizedAddresses, network);
     }
+
+    handleClose();
   };
   const handleCancelClick = () => handleClose();
   const handleClose = () => {

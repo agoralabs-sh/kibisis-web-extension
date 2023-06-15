@@ -1,7 +1,11 @@
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
+import { INetwork } from '@extension/types';
 
 interface IUseWalletConnectState {
-  approveSessionProposalAction: (addresses: string[]) => Promise<void>;
+  approveSessionProposalAction: (
+    authorizedAddresses: string[],
+    network: INetwork
+  ) => Promise<void>;
   pairing: boolean;
   rejectSessionProposalAction: () => Promise<void>;
   sessionProposal: Web3WalletTypes.SessionProposal | null;

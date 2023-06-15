@@ -26,7 +26,7 @@ import SettingsSessionItem from '@extension/components/SettingsSessionItem';
 import { setConfirm } from '@extension/features/system';
 import {
   clearSessionsThunk,
-  removeSessionThunk,
+  removeSessionByIdThunk,
 } from '@extension/features/sessions';
 
 // Hooks
@@ -62,7 +62,8 @@ const SessionsSettingsPage: FC = () => {
         title: t<string>('headings.removeAllSessions'),
       })
     );
-  const handleRemoveSession = (id: string) => dispatch(removeSessionThunk(id));
+  const handleRemoveSession = (id: string) =>
+    dispatch(removeSessionByIdThunk(id));
   const renderContent = () => {
     if (fetching) {
       return (

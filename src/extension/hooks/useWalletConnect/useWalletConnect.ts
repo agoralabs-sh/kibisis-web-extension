@@ -3,20 +3,27 @@ import { getSdkError } from '@walletconnect/utils';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+// Features
+import { setSessionThunk } from '@extension/features/sessions';
 
 // Selectors
 import { useSelectLogger, useSelectWeb3Wallet } from '@extension/selectors';
 
 // Types
 import { ILogger } from '@common/types';
+import { IAppThunkDispatch, INetwork } from '@extension/types';
 import { IUseWalletConnectState } from './types';
 
 // Utils
+import { mapSessionFromWalletConnectSession } from '@extension/utils';
 import { createSessionNamespaces } from './utils';
 
 export default function useWalletConnect(
   uri: string | null
 ): IUseWalletConnectState {
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const logger: ILogger = useSelectLogger();
   const web3Wallet: IWeb3Wallet | null = useSelectWeb3Wallet();
@@ -25,8 +32,12 @@ export default function useWalletConnect(
   const [sessionProposal, setSessionProposal] =
     useState<Web3WalletTypes.SessionProposal | null>(null);
   const approveSessionProposalAction: (
-    addresses: string[]
-  ) => Promise<void> = async (addresses: string[]) => {
+    authorizedAddresses: string[],
+    network: INetwork
+  ) => Promise<void> = async (
+    authorizedAddresses: string[],
+    network: INetwork
+  ) => {
     let session: SessionTypes.Struct;
 
     if (web3Wallet && sessionProposal) {
@@ -37,15 +48,22 @@ export default function useWalletConnect(
       session = await web3Wallet.approveSession({
         id: sessionProposal.id,
         namespaces: createSessionNamespaces({
-          addresses,
+          authorizedAddresses,
+          network,
           proposalParams: sessionProposal.params,
         }),
       });
 
-      // TODO: add session to sessions
-
-      console.log(JSON.stringify(session));
-      console.log(JSON.stringify(sessionProposal));
+      // add the session to the store
+      dispatch(
+        setSessionThunk(
+          mapSessionFromWalletConnectSession({
+            authorizedAddresses,
+            network,
+            walletConnectSession: session,
+          })
+        )
+      );
 
       // clean up
       setPairing(false);

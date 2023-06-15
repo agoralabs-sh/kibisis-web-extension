@@ -1,3 +1,6 @@
+// Tyoes
+import IWalletConnectSessionMetadata from './IWalletConnectSessionMetadata';
+
 /**
  * @property {string} appName - the name of the dApp.
  * @property {string[]} authorizedAddresses - a list of authorized addresses.
@@ -9,6 +12,7 @@
  * @property {string | null} iconUrl - an icon url for the app.
  * @property {string} id - a unique identifier for this session as a UUID v4.
  * @property {number} usedAt - a timestamp (in milliseconds) for when this session was last used.
+ * @property {IWalletConnectSessionMetadata | null} walletConnectMetadata - extra data if this is a WalletConnect session.
  */
 interface ISession {
   appName: string;
@@ -21,6 +25,7 @@ interface ISession {
   iconUrl: string | null;
   id: string;
   usedAt: number;
+  walletConnectMetadata: IWalletConnectSessionMetadata | null;
 }
 
 export default ISession;
