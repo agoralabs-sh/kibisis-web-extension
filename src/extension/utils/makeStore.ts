@@ -7,6 +7,7 @@ import {
   setNavigate,
   setToast,
 } from '@extension/features/system';
+import { initializeWalletConnectThunk } from '@extension/features/sessions';
 
 // Types
 import { IBaseRootState } from '@extension/types';
@@ -19,12 +20,14 @@ export default function makeStore<T extends IBaseRootState>(
       getDefaultMiddleware({
         serializableCheck: {
           ignoredActions: [
+            initializeWalletConnectThunk.fulfilled.type,
             setConfirm.type,
             setError.type,
             setNavigate.type,
             setToast.type,
           ],
           ignoredPaths: [
+            'sessions.web3Wallet',
             'system.confirm.onCancel',
             'system.confirm.onConfirm',
             'system.error',

@@ -1,4 +1,5 @@
 export { default as bootstrapApp } from './bootstrapApp';
+export { default as convertDataUriToImageData } from './convertDataUriToImageData';
 export { default as convertGenesisHashToHex } from './convertGenesisHashToHex';
 export { default as createIconFromDataUri } from './createIconFromDataUri';
 export { default as decodeJwt } from './decodeJwt';

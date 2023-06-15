@@ -20,9 +20,11 @@ import {
   IoAddCircleOutline,
   IoChevronBack,
   IoChevronForward,
+  IoScanOutline,
   IoSettingsOutline,
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import {
   Location,
   NavigateFunction,
@@ -48,6 +50,9 @@ import {
   SIDEBAR_MIN_WIDTH,
 } from '@extension/constants';
 
+// Features
+import { openWalletConnectModal } from '@extension/features/sessions';
+
 // Hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -64,27 +69,32 @@ import {
 import { AccountService } from '@extension/services';
 
 // Types
-import { IAccount } from '@extension/types';
+import { IAccount, IAppThunkDispatch } from '@extension/types';
 
 // Utils
 import { ellipseAddress } from '@extension/utils';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
-  const accounts: IAccount[] = useSelectAccounts();
-  const fetchingAccounts: boolean = useSelectFetchingAccounts();
+  // hooks
   const borderColor: string = useBorderColor();
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = usePrimaryColor();
+  // selectors
+  const accounts: IAccount[] = useSelectAccounts();
+  const fetchingAccounts: boolean = useSelectFetchingAccounts();
+  // state
   const [activeAccountAddress, setActiveAccountAddress] = useState<
     string | null
   >(null);
   const [width, setWidth] = useState<number>(SIDEBAR_MIN_WIDTH);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHeaderShowing, setIsHeaderShowing] = useState<boolean>(false);
+  // handlers
   const onCloseSideBar = () => {
     setIsHeaderShowing(false);
     setIsOpen(false);
@@ -101,6 +111,7 @@ const SideBar: FC = () => {
     onCloseSideBar();
     navigate(ADD_ACCOUNT_ROUTE);
   };
+  const handleConnectWalletClick = () => dispatch(openWalletConnectModal());
   const handleSettingsClick = () => {
     onCloseSideBar();
     navigate(SETTINGS_ROUTE);
@@ -227,12 +238,23 @@ const SideBar: FC = () => {
       <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
         {renderAccounts()}
       </VStack>
+
       <Divider />
+      {/*connect dapp*/}
+      <SideBarActionItem
+        icon={IoScanOutline}
+        label={t<string>('labels.connectWallet')}
+        onClick={handleConnectWalletClick}
+      />
+
+      {/*add account*/}
       <SideBarActionItem
         icon={IoAddCircleOutline}
         label={t<string>('labels.addAccount')}
         onClick={handleAddAccountClick}
       />
+
+      {/*settings*/}
       <SideBarActionItem
         icon={IoSettingsOutline}
         label={t<string>('labels.settings')}

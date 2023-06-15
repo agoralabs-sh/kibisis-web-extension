@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 
 // Enums
 import { StoreNameEnum } from '@extension/enums';
@@ -7,6 +8,7 @@ import { StoreNameEnum } from '@extension/enums';
 import {
   clearSessionsThunk,
   fetchSessionsThunk,
+  initializeWalletConnectThunk,
   removeAuthorizedAddressThunk,
   removeSessionThunk,
   setSessionThunk,
@@ -46,6 +48,26 @@ const slice = createSlice({
     builder.addCase(fetchSessionsThunk.rejected, (state: ISessionsState) => {
       state.fetching = false;
     });
+    /** Initialize WalletConnect **/
+    builder.addCase(
+      initializeWalletConnectThunk.fulfilled,
+      (state: ISessionsState, action: PayloadAction<IWeb3Wallet>) => {
+        state.web3Wallet = action.payload;
+        state.initializingWalletConnect = false;
+      }
+    );
+    builder.addCase(
+      initializeWalletConnectThunk.pending,
+      (state: ISessionsState) => {
+        state.initializingWalletConnect = true;
+      }
+    );
+    builder.addCase(
+      initializeWalletConnectThunk.rejected,
+      (state: ISessionsState) => {
+        state.initializingWalletConnect = false;
+      }
+    );
     /** Remove authorized address **/
     builder.addCase(
       removeAuthorizedAddressThunk.fulfilled,
@@ -107,10 +129,15 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Sessions,
   reducers: {
-    noop: () => {
-      return;
+    closeWalletConnectModal: (state: Draft<ISessionsState>) => {
+      state.walletConnectModalOpen = false;
+    },
+    openWalletConnectModal: (state: Draft<ISessionsState>) => {
+      state.walletConnectModalOpen = true;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
+export const { closeWalletConnectModal, openWalletConnectModal } =
+  slice.actions;

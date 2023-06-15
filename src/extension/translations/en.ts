@@ -9,10 +9,12 @@ const translation: IResourceLanguage = {
     addAccount: 'Add Account',
     addAsset: 'Add Asset',
     allow: 'Allow',
+    approve: 'Approve',
     cancel: 'Cancel',
     changePassword: 'Change Password',
     clearAllData: 'Clear All Data',
     confirm: 'Confirm',
+    connect: 'Connect',
     copySeedPhrase: 'Copy Seed Phrase',
     create: 'Create',
     dismiss: 'Dismiss',
@@ -23,6 +25,7 @@ const translation: IResourceLanguage = {
     ok: 'OK',
     previous: 'Previous',
     receive: 'Receive',
+    reject: 'Reject',
     removeAllSessions: 'Remove All Sessions',
     save: 'Save',
     send: 'Send',
@@ -57,6 +60,7 @@ const translation: IResourceLanguage = {
     clearAllData: 'Are you sure you want to clear all your data?',
     clearAllDataWarning:
       'Once this has been completed, it cannot be reversed. All your settings and accounts will be removed',
+    connectingToWalletConnect: 'Attempting to connect to WalletConnect.',
     copied: 'Copied!',
     createNewAccount:
       'Create a new account. You will be prompted to save a mnemonic seed phrase.',
@@ -74,6 +78,8 @@ const translation: IResourceLanguage = {
     importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
     importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
     importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
+    initializingWalletConnect:
+      'Putting the final touches into your WalletConnect interface.',
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
     managerAddressDoesNotMatch:
       'This account does not have the authority to alter this asset. This transaction will likely fail.',
@@ -109,6 +115,8 @@ const translation: IResourceLanguage = {
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
+    scanningForQrCode:
+      'Scanning for a WalletConnect QR Code. Make sure the WalletConnect QR code is visible in the background.',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
@@ -212,6 +220,7 @@ const translation: IResourceLanguage = {
     authorizedAddresses: 'Authorized Addresses',
     balance: 'Balance',
     clawbackAccount: 'Clawback Account',
+    connectWallet: 'Connect Wallet',
     copySeedPhraseConfirm:
       'I confirm I have copied my seed phrase to a secure place.',
     creatorAccount: 'Creator Account',

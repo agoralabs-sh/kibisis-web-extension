@@ -39,7 +39,11 @@ import Fonts from '@extension/components/Fonts';
 import WalletConnectIcon from '@extension/components/WalletConnectIcon';
 
 // Config
-import { networks } from '@extension/config';
+import {
+  networks,
+  walletConnectSupportedChains,
+  walletConnectSupportedMethods,
+} from '@extension/config';
 
 // Tabs
 import ApplicationActionsTab from './ApplicationActionsTab';
@@ -65,9 +69,9 @@ const App: FC = () => {
   const { connect } = useConnect({
     requiredNamespaces: {
       algorand: {
-        chains: ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe'],
+        chains: walletConnectSupportedChains,
         events: [],
-        methods: ['algorand_signTransaction', 'algorand_signMessage'],
+        methods: walletConnectSupportedMethods,
       },
     },
   });

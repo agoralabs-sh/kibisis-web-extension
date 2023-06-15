@@ -15,6 +15,7 @@ export { default as useSelectFetchingAssets } from './useSelectFetchingAssets';
 export { default as useSelectFetchingSessions } from './useSelectFetchingSessions';
 export { default as useSelectFetchingSettings } from './useSelectFetchingSettings';
 export { default as useSelectFetchingTransactionsByAccountId } from './useSelectFetchingTransactionsByAccountId';
+export { default as useSelectInitializingWalletConnect } from './useSelectInitializingWalletConnect';
 export { default as useSelectIsOnline } from './useSelectIsOnline';
 export { default as useSelectLogger } from './useSelectLogger';
 export { default as useSelectNetworkByGenesisHash } from './useSelectNetworkByGenesisHash';
@@ -33,3 +34,5 @@ export { default as useSelectSignTxnsRequest } from './useSelectSignTxnsRequest'
 export { default as useSelectToast } from './useSelectToast';
 export { default as useSelectUpdatingAccounts } from './useSelectUpdatingAccounts';
 export { default as useSelectUpdatingAssets } from './useSelectUpdatingAssets';
+export { default as useSelectWalletConnectModalOpen } from './useSelectWalletConnectModalOpen';
+export { default as useSelectWeb3Wallet } from './useSelectWeb3Wallet';
