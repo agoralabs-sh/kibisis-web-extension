@@ -10,7 +10,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
-import { nanoid } from 'nanoid';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -88,8 +87,15 @@ const SessionsSettingsPage: FC = () => {
     if (fetching) {
       return (
         <VStack spacing={2} w="full">
-          {Array.from({ length: 3 }, () => (
-            <HStack key={nanoid()} m={0} pt={2} px={4} spacing={2} w="full">
+          {Array.from({ length: 3 }, (_, index) => (
+            <HStack
+              key={`sessions-settings-page-fetching-sessions-item-${index}`}
+              m={0}
+              pt={2}
+              px={4}
+              spacing={2}
+              w="full"
+            >
               <SkeletonCircle size="10" />
               <VStack
                 alignItems="flex-start"
@@ -121,9 +127,9 @@ const SessionsSettingsPage: FC = () => {
     if (sessions.length > 0) {
       return (
         <VStack spacing={2} w="full">
-          {sessions.map((session) => (
+          {sessions.map((session, index) => (
             <SettingsSessionItem
-              key={nanoid()}
+              key={`sessions-settings-page-sessions-item-${index}`}
               onManageSession={handleManageSession}
               onRemoveSession={handleRemoveSession}
               session={session}

@@ -31,7 +31,6 @@ import {
 } from '@chakra-ui/react';
 import { SessionTypes } from '@walletconnect/types';
 import { Web3ModalSign, useConnect } from '@web3modal/sign-react';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // Components
@@ -206,8 +205,8 @@ const App: FC = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {enabledAccounts.map((value) => (
-                    <Tr key={nanoid()}>
+                  {enabledAccounts.map((value, index) => (
+                    <Tr key={`enabled-account-item-${index}`}>
                       <Td>{value.address}</Td>
                       <Td>{value.name || '-'}</Td>
                     </Tr>
@@ -262,8 +261,8 @@ const App: FC = () => {
                 placeholder="Select an address"
                 value={selectedAccount?.address || undefined}
               >
-                {enabledAccounts.map((value) => (
-                  <option key={nanoid()} value={value.address}>
+                {enabledAccounts.map((value, index) => (
+                  <option key={`address-option-${index}`} value={value.address}>
                     {value.address}
                   </option>
                 ))}

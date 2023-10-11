@@ -14,7 +14,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -163,8 +162,13 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     let accountNodes: ReactNode[];
 
     if (!enableRequest || fetching) {
-      return Array.from({ length: 3 }, () => (
-        <HStack key={nanoid()} py={4} spacing={4} w="full">
+      return Array.from({ length: 3 }, (_, index) => (
+        <HStack
+          key={`enable-modal-fetching-item-${index}`}
+          py={4}
+          spacing={4}
+          w="full"
+        >
           <SkeletonCircle size="12" />
           <Skeleton flexGrow={1}>
             <Text color={defaultTextColor} fontSize="md" textAlign="center">
@@ -197,7 +201,12 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
 
         return [
           ...acc,
-          <HStack key={nanoid()} py={4} spacing={4} w="full">
+          <HStack
+            key={`enable-modal-account-information-${currentIndex}`}
+            py={4}
+            spacing={4}
+            w="full"
+          >
             <Avatar name={accountInformation.name || address} />
             {accountInformation.name ? (
               <VStack

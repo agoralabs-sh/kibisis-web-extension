@@ -6,7 +6,6 @@ import {
   MenuItem,
   MenuList,
 } from '@chakra-ui/react';
-import { nanoid } from 'nanoid';
 import React, { FC } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 
@@ -55,9 +54,9 @@ const AccountSelect: FC<IProps> = ({ accounts, onSelect, value }: IProps) => {
         </HStack>
       </MenuButton>
       <MenuList minW="full">
-        {accounts.map((account) => (
+        {accounts.map((account, index) => (
           <MenuItem
-            key={nanoid()}
+            key={`account-select-item-${index}`}
             minH={`${minimumHeight}px`}
             onClick={handleAccountClick(account)}
           >

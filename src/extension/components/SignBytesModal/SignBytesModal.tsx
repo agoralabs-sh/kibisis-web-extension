@@ -15,7 +15,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -149,8 +148,8 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
               </Text>
             </Skeleton>
           </HStack>
-          {Array.from({ length: 3 }, () => (
-            <Skeleton key={nanoid()}>
+          {Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={`sign-bytes-modal-fetching-item-${index}`}>
               <Text color={defaultTextColor} fontSize="md" textAlign="center">
                 {ellipseAddress(generateAccount().addr, {
                   end: 10,

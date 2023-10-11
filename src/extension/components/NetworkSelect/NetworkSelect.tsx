@@ -6,7 +6,6 @@ import {
   MenuItem,
   MenuList,
 } from '@chakra-ui/react';
-import { nanoid } from 'nanoid';
 import React, { FC } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 
@@ -43,8 +42,12 @@ const NetworkSelect: FC<IProps> = ({ network, networks, onSelect }: IProps) => {
         </HStack>
       </MenuButton>
       <MenuList>
-        {networks.map((value) => (
-          <MenuItem key={nanoid()} minH="48px" onClick={() => onSelect(value)}>
+        {networks.map((value, index) => (
+          <MenuItem
+            key={`network-select-network-item-${index}`}
+            minH="48px"
+            onClick={() => onSelect(value)}
+          >
             <ChainBadge network={value} />
           </MenuItem>
         ))}

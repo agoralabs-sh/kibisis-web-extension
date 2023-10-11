@@ -17,7 +17,6 @@ import {
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import { generateAccount } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -134,8 +133,13 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
     let accountNodes: ReactNode[];
 
     if (!network || fetching) {
-      return Array.from({ length: 3 }, () => (
-        <HStack key={nanoid()} py={4} spacing={4} w="full">
+      return Array.from({ length: 3 }, (_, index) => (
+        <HStack
+          key={`manage-session-fetching-item-${index}`}
+          py={4}
+          spacing={4}
+          w="full"
+        >
           <SkeletonCircle size="12" />
           <Skeleton flexGrow={1}>
             <Text color={defaultTextColor} fontSize="md" textAlign="center">
@@ -149,67 +153,77 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
       ));
     }
 
-    accountNodes = accounts.reduce<ReactNode[]>((acc, account) => {
-      const accountInformation: IAccountInformation | null =
-        AccountService.extractAccountInformationForNetwork(account, network);
-      let address: string;
+    accountNodes = accounts.reduce<ReactNode[]>(
+      (acc, account, currentIndex) => {
+        const accountInformation: IAccountInformation | null =
+          AccountService.extractAccountInformationForNetwork(account, network);
+        let address: string;
 
-      if (!accountInformation) {
-        return acc;
-      }
+        if (!accountInformation) {
+          return acc;
+        }
 
-      address = AccountService.convertPublicKeyToAlgorandAddress(
-        account.publicKey
-      );
+        address = AccountService.convertPublicKeyToAlgorandAddress(
+          account.publicKey
+        );
 
-      return [
-        ...acc,
-        <HStack key={nanoid()} py={4} spacing={4} w="full">
-          <Avatar name={accountInformation.name || address} />
-          {accountInformation.name ? (
-            <VStack
-              alignItems="flex-start"
-              flexGrow={1}
-              justifyContent="space-evenly"
-              spacing={0}
-            >
+        return [
+          ...acc,
+          <HStack
+            key={`manage-session-modal-account-information-item-${currentIndex}`}
+            py={4}
+            spacing={4}
+            w="full"
+          >
+            <Avatar name={accountInformation.name || address} />
+            {accountInformation.name ? (
+              <VStack
+                alignItems="flex-start"
+                flexGrow={1}
+                justifyContent="space-evenly"
+                spacing={0}
+              >
+                <Text
+                  color={defaultTextColor}
+                  fontSize="md"
+                  maxW={400}
+                  noOfLines={1}
+                  textAlign="left"
+                >
+                  {accountInformation.name}
+                </Text>
+                <Text color={subTextColor} fontSize="sm" textAlign="left">
+                  {ellipseAddress(address, {
+                    end: 10,
+                    start: 10,
+                  })}
+                </Text>
+              </VStack>
+            ) : (
               <Text
                 color={defaultTextColor}
+                flexGrow={1}
                 fontSize="md"
-                maxW={400}
-                noOfLines={1}
                 textAlign="left"
               >
-                {accountInformation.name}
-              </Text>
-              <Text color={subTextColor} fontSize="sm" textAlign="left">
                 {ellipseAddress(address, {
                   end: 10,
                   start: 10,
                 })}
               </Text>
-            </VStack>
-          ) : (
-            <Text
-              color={defaultTextColor}
-              flexGrow={1}
-              fontSize="md"
-              textAlign="left"
-            >
-              {ellipseAddress(address, {
-                end: 10,
-                start: 10,
-              })}
-            </Text>
-          )}
-          <Checkbox
-            colorScheme={primaryColorScheme}
-            isChecked={!!authorizedAddresses.find((value) => value === address)}
-            onChange={handleOnAccountCheckChange(address)}
-          />
-        </HStack>,
-      ];
-    }, []);
+            )}
+            <Checkbox
+              colorScheme={primaryColorScheme}
+              isChecked={
+                !!authorizedAddresses.find((value) => value === address)
+              }
+              onChange={handleOnAccountCheckChange(address)}
+            />
+          </HStack>,
+        ];
+      },
+      []
+    );
 
     return accountNodes.length > 0 ? (
       accountNodes

@@ -37,7 +37,6 @@ import {
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // Enums
@@ -338,8 +337,8 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
             w="full"
           >
             <Stack spacing={4} w="full">
-              {account.assets.map((asset) => (
-                <HStack key={nanoid()} spacing={2} w="full">
+              {account.assets.map((asset, index) => (
+                <HStack key={`asset-action-item-${index}`} spacing={2} w="full">
                   <Radio size="lg" value={asset.id} />
                   <Text size="md">{asset.name || asset.id}</Text>
                   <Spacer />
@@ -418,8 +417,10 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
               type: TransactionTypeEnum.AssetUnfreeze,
               label: 'Send Asset Unfreeze Transaction',
             },
-          ].map(({ disabled, label, type }) => (
-            <GridItem key={nanoid()}>
+          ].map(({ disabled, label, type }, index) => (
+            <GridItem
+              key={`asset-action-sign-transaction-button-item-${index}`}
+            >
               <Button
                 borderRadius={theme.radii['3xl']}
                 colorScheme="primaryLight"

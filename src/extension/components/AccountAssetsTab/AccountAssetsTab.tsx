@@ -12,7 +12,6 @@ import {
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
-import { nanoid } from 'nanoid';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAdd, IoChevronForward } from 'react-icons/io5';
@@ -79,13 +78,13 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
     let assetNodes: ReactNode[] = [];
 
     if (fetching || updating) {
-      return Array.from({ length: 3 }, () => (
+      return Array.from({ length: 3 }, (_, index) => (
         <Button
           borderRadius={0}
           fontSize="md"
           h={16}
           justifyContent="start"
-          key={nanoid()}
+          key={`account-assets-fetching-item-${index}`}
           pl={3}
           pr={1}
           py={0}
@@ -111,7 +110,7 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
 
     if (accountInformation && accountInformation.assetHoldings.length > 0) {
       assetNodes = accountInformation.assetHoldings.reduce<ReactNode[]>(
-        (acc, assetHolding) => {
+        (acc, assetHolding, currentIndex) => {
           const asset: IAsset | null =
             assets.find((value) => value.id === assetHolding.id) || null;
           let standardUnitAmount: BigNumber;
@@ -129,7 +128,7 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
             ...acc,
             <Tooltip
               aria-label="Asset"
-              key={nanoid()}
+              key={`account-asset-asset-holding-item-${currentIndex}`}
               label={asset.name || asset.id}
             >
               <Button

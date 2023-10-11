@@ -15,7 +15,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Rings } from 'react-loader-spinner';
@@ -206,8 +205,13 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
       return (
         <>
           <ModalBody display="flex" px={DEFAULT_GAP}>
-            {Array.from({ length: 3 }, () => (
-              <HStack key={nanoid()} py={4} spacing={4} w="full">
+            {Array.from({ length: 3 }, (_, index) => (
+              <HStack
+                key={`wallet-connect-modal-fetching-item-${index}`}
+                py={4}
+                spacing={4}
+                w="full"
+              >
                 <SkeletonCircle size="12" />
                 <Skeleton flexGrow={1}>
                   <Text
@@ -254,7 +258,12 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
         return [
           ...acc,
-          <HStack key={nanoid()} py={4} spacing={4} w="full">
+          <HStack
+            key={`wallet-connect-modal-item-${currentIndex}`}
+            py={4}
+            spacing={4}
+            w="full"
+          >
             <Avatar name={accountInformation.name || address} />
             {accountInformation.name ? (
               <VStack

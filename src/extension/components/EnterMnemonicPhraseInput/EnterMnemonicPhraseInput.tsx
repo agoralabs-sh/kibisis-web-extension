@@ -8,7 +8,6 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { nanoid } from 'nanoid';
 import React, {
   ChangeEvent,
   ClipboardEvent,
@@ -76,7 +75,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
       <Grid gap={2} templateColumns="repeat(3, 1fr)" w="full">
         {phrases.map((value, index, array) => {
           const input: ReactNode = (
-            <InputGroup key={nanoid()} size="md">
+            <InputGroup size="md">
               <InputLeftElement
                 color={subTextColor}
                 pointerEvents="none"
@@ -103,13 +102,23 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
 
           if (index >= array.length - 1) {
             return (
-              <GridItem colEnd={2} colStart={2} key={nanoid()}>
+              <GridItem
+                colEnd={2}
+                colStart={2}
+                key={`enter-mnemonic-phrase-input-phrase-input-item-${index}`}
+              >
                 {input}
               </GridItem>
             );
           }
 
-          return <GridItem key={nanoid()}>{input}</GridItem>;
+          return (
+            <GridItem
+              key={`enter-mnemonic-phrase-input-phrase-input-item-${index}`}
+            >
+              {input}
+            </GridItem>
+          );
         })}
       </Grid>
     </VStack>

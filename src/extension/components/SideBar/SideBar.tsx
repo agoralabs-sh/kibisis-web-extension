@@ -8,7 +8,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, {
   FC,
   ReactNode,
@@ -123,7 +122,7 @@ const SideBar: FC = () => {
   };
   const renderAccounts: () => ReactNode = () => {
     if (fetchingAccounts) {
-      return Array.from({ length: 3 }, () => (
+      return Array.from({ length: 3 }, (_, index) => (
         <Button
           _hover={{
             bg: buttonHoverBackgroundColor,
@@ -132,7 +131,7 @@ const SideBar: FC = () => {
           fontSize="md"
           h={SIDEBAR_ITEM_HEIGHT}
           justifyContent="start"
-          key={nanoid()}
+          key={`sidebar-fetching-item-${index}`}
           p={0}
           variant="ghost"
           w="full"
@@ -154,7 +153,7 @@ const SideBar: FC = () => {
       ));
     }
 
-    return accounts.map((value) => (
+    return accounts.map((value, index) => (
       <SideBarAccountItem
         active={
           activeAccountAddress
@@ -164,7 +163,7 @@ const SideBar: FC = () => {
             : false
         }
         account={value}
-        key={nanoid()}
+        key={`sidebar-item-${index}`}
         onClick={handleAccountClick}
       />
     ));
