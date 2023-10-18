@@ -1,6 +1,5 @@
 import { Skeleton, Text, VStack } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
-import { nanoid } from 'nanoid';
 import React, { FC } from 'react';
 
 // Constants
@@ -14,8 +13,8 @@ const LoadingTransactionContent: FC = () => (
     spacing={4}
     w="full"
   >
-    {Array.from({ length: 3 }, () => (
-      <Skeleton key={nanoid()} w="full">
+    {Array.from({ length: 3 }, (_, index) => (
+      <Skeleton key={`loading-transaction-item-${index}`} w="full">
         <Text fontSize="sm" w="full">
           {faker.random.alphaNumeric(10)}
         </Text>

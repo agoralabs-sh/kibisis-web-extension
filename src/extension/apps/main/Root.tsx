@@ -10,6 +10,7 @@ import ErrorModal from '@extension/components/ErrorModal';
 import MainLayout from '@extension/components/MainLayout';
 import SignBytesModal from '@extension/components/SignBytesModal';
 import SignTxnsModal from '@extension/components/SignTxnsModal';
+import WalletConnectModal from '@extension/components/WalletConnectModal';
 
 // Features
 import {
@@ -31,7 +32,11 @@ import {
   setSignBytesRequest,
   setSignTxnsRequest,
 } from '@extension/features/messages';
-import { fetchSessionsThunk } from '@extension/features/sessions';
+import {
+  closeWalletConnectModal,
+  fetchSessionsThunk,
+  initializeWalletConnectThunk,
+} from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
 
 // Hooks
@@ -87,6 +92,8 @@ const Root: FC = () => {
   const handleErrorModalClose = () => dispatch(setError(null));
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
   const handleSignTxnsModalClose = () => dispatch(setSignTxnsRequest(null));
+  const handleWalletConnectModalClose = () =>
+    dispatch(closeWalletConnectModal());
 
   useEffect(() => {
     dispatch(setNavigate(navigate));
@@ -94,6 +101,7 @@ const Root: FC = () => {
     dispatch(fetchSettings());
     dispatch(fetchSessionsThunk());
     dispatch(fetchAssetsThunk());
+    dispatch(initializeWalletConnectThunk());
   }, []);
   // fetch accounts when the selected network has been found
   useEffect(() => {
@@ -149,6 +157,7 @@ const Root: FC = () => {
       <EnableModal onClose={handleEnableModalClose} />
       <SignTxnsModal onClose={handleSignTxnsModalClose} />
       <SignBytesModal onClose={handleSignBytesModalClose} />
+      <WalletConnectModal onClose={handleWalletConnectModalClose} />
       <ToastContainer />
       <MainLayout>
         <Outlet />

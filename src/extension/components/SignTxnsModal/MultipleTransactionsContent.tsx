@@ -1,7 +1,6 @@
 import { Box, VStack } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -202,7 +201,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
           borderRadius="md"
           borderStyle="solid"
           borderWidth={1}
-          key={nanoid()}
+          key={`sign-bytes-modal-item-${index}`}
           px={4}
           py={2}
           w="full"

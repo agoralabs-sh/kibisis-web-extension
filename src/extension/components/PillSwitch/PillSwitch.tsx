@@ -6,7 +6,6 @@ import {
   Tabs,
   Text,
 } from '@chakra-ui/react';
-import { nanoid } from 'nanoid';
 import React, { FC } from 'react';
 
 // Hooks
@@ -43,8 +42,8 @@ const PillSwitch: FC<IProps> = ({ index, labels, onChange }: IProps) => {
         py={padding}
         px={padding * 2}
       >
-        {labels.map((value) => (
-          <Tab key={nanoid()} minW={minWidth}>
+        {labels.map((value, index) => (
+          <Tab key={`pill-switch-labels-item-${index}`} minW={minWidth}>
             <Text color={defaultTextColor} textAlign="center" w="full">
               {value}
             </Text>

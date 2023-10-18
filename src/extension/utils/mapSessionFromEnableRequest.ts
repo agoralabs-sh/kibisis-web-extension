@@ -25,5 +25,6 @@ export default function mapSessionFromEnableRequest({
     iconUrl,
     id,
     usedAt: now.getTime(),
+    walletConnectMetadata: null,
   };
 }

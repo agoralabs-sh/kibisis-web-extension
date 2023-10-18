@@ -28,7 +28,6 @@ import {
   SignedTransaction,
   Transaction,
 } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useState } from 'react';
 
 // Enums
@@ -211,8 +210,10 @@ const ApplicationActionsTab: FC<IProps> = ({
               type: TransactionTypeEnum.ApplicationUpdate,
               label: 'Send Update App Transaction',
             },
-          ].map(({ label, type }) => (
-            <GridItem key={nanoid()}>
+          ].map(({ label, type }, index) => (
+            <GridItem
+              key={`application-action-sign-transaction-button-item-${index}`}
+            >
               <Button
                 borderRadius={theme.radii['3xl']}
                 colorScheme="primaryLight"

@@ -1,4 +1,5 @@
 export { default as bootstrapApp } from './bootstrapApp';
+export { default as convertDataUriToImageData } from './convertDataUriToImageData';
 export { default as convertGenesisHashToHex } from './convertGenesisHashToHex';
 export { default as createIconFromDataUri } from './createIconFromDataUri';
 export { default as decodeJwt } from './decodeJwt';
@@ -19,6 +20,7 @@ export { default as mapAddressToWalletAccount } from './mapAddressToWalletAccoun
 export { default as mapAlgorandAccountInformationToAccount } from './mapAlgorandAccountInformationToAccount';
 export { default as mapAlgorandTransactionToTransaction } from './mapAlgorandTransactionToTransaction';
 export { default as mapSessionFromEnableRequest } from './mapSessionFromEnableRequest';
+export { default as mapSessionFromWalletConnectSession } from './mapSessionFromWalletConnectSession';
 export { default as parseTransactionType } from './parseTransactionType';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';
 export { default as upsertItemsById } from './upsertItemsById';

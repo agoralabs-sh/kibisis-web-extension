@@ -13,7 +13,6 @@ import {
 } from '@chakra-ui/react';
 import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
 import { Step, useSteps } from 'chakra-ui-steps';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
@@ -134,14 +133,20 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
                     .map((value, index, array) => {
                       if (index >= array.length - 1) {
                         return (
-                          <GridItem colEnd={2} colStart={2} key={nanoid()}>
+                          <GridItem
+                            colEnd={2}
+                            colStart={2}
+                            key={`create-new-account-page-mnemonic-phrase-item-${index}`}
+                          >
                             <Code w="full">{value}</Code>
                           </GridItem>
                         );
                       }
 
                       return (
-                        <GridItem key={nanoid()}>
+                        <GridItem
+                          key={`create-new-account-page-mnemonic-phrase-item-${index}`}
+                        >
                           <Code w="full">{value}</Code>
                         </GridItem>
                       );

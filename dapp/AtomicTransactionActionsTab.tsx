@@ -45,7 +45,6 @@ import {
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import { nanoid } from 'nanoid';
 import React, { FC, useEffect, useState } from 'react';
 
 // Enums
@@ -285,8 +284,8 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
               </Tr>
             </Thead>
             <Tbody>
-              {signedTransactions.map((value) => (
-                <Tr key={nanoid()}>
+              {signedTransactions.map((value, index) => (
+                <Tr key={`atomic-transaction-action-item-${index}`}>
                   <Td>
                     <Code fontSize="sm" wordBreak="break-word">
                       {value ? value.txn.txID() : 'unsigned'}
@@ -307,9 +306,13 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
           <Stack spacing={4} w="full">
             {/*assets*/}
             {assetValues.length > 0 ? (
-              assetValues.map((value) => (
-                <HStack key={nanoid()} spacing={2} w="full">
-                  {/*asset iD/name*/}
+              assetValues.map((value, index) => (
+                <HStack
+                  key={`atomic-transaction-action-asset-item-${index}`}
+                  spacing={2}
+                  w="full"
+                >
+                  {/*asset id/name*/}
                   <HStack>
                     <Checkbox
                       isChecked={value.isChecked}

@@ -1,8 +1,6 @@
 import {
   Avatar,
-  Box,
   Checkbox,
-  Heading,
   HStack,
   Modal,
   ModalBody,
@@ -12,22 +10,20 @@ import {
   Skeleton,
   SkeletonCircle,
   Spacer,
-  Tag,
-  TagLabel,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { faker } from '@faker-js/faker';
 import { generateAccount } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // Components
 import Button from '@extension/components/Button';
-import ChainBadge from '@extension/components/ChainBadge';
 import EmptyState from '@extension/components/EmptyState';
+import SessionRequestHeader, {
+  SessionRequestHeaderSkeleton,
+} from '@extension/components/SessionRequestHeader';
 
 // Constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -46,7 +42,6 @@ import { setSessionThunk } from '@extension/features/sessions';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // Selectors
 import {
@@ -90,7 +85,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
+  // handlers
   const handleCancelClick = () => {
     if (enableRequest) {
       dispatch(
@@ -167,8 +162,13 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     let accountNodes: ReactNode[];
 
     if (!enableRequest || fetching) {
-      return Array.from({ length: 3 }, () => (
-        <HStack key={nanoid()} py={4} spacing={4} w="full">
+      return Array.from({ length: 3 }, (_, index) => (
+        <HStack
+          key={`enable-modal-fetching-item-${index}`}
+          py={4}
+          spacing={4}
+          w="full"
+        >
           <SkeletonCircle size="12" />
           <Skeleton flexGrow={1}>
             <Text color={defaultTextColor} fontSize="md" textAlign="center">
@@ -201,7 +201,12 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
 
         return [
           ...acc,
-          <HStack key={nanoid()} py={4} spacing={4} w="full">
+          <HStack
+            key={`enable-modal-account-information-${currentIndex}`}
+            py={4}
+            spacing={4}
+            w="full"
+          >
             <Avatar name={accountInformation.name || address} />
             {accountInformation.name ? (
               <VStack
@@ -259,94 +264,6 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       </>
     );
   };
-  const renderHeader = () => {
-    if (!enableRequest) {
-      return (
-        <>
-          <HStack
-            alignItems="center"
-            justifyContent="center"
-            spacing={4}
-            w="full"
-          >
-            <SkeletonCircle size="10" />
-            <Skeleton>
-              <Heading size="md" textAlign="center">
-                {faker.commerce.productName()}
-              </Heading>
-            </Skeleton>
-          </HStack>
-          <Skeleton>
-            <Text fontSize="xs" textAlign="center">
-              {faker.internet.domainName()}
-            </Text>
-          </Skeleton>
-          <Skeleton>
-            <Text fontSize="xs" textAlign="center">
-              {faker.random.words(8)}
-            </Text>
-          </Skeleton>
-          <Skeleton>
-            <Tag size="sm">
-              <TagLabel>{faker.internet.domainName()}</TagLabel>
-            </Tag>
-          </Skeleton>
-        </>
-      );
-    }
-
-    return (
-      <>
-        <HStack
-          alignItems="center"
-          justifyContent="center"
-          spacing={4}
-          w="full"
-        >
-          {/*app icon */}
-          <Avatar
-            name={enableRequest.appName}
-            size="sm"
-            src={enableRequest.iconUrl || undefined}
-          />
-
-          {/*app name*/}
-          <Heading color={defaultTextColor} size="md" textAlign="center">
-            {enableRequest.appName}
-          </Heading>
-        </HStack>
-
-        <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
-          {/*app description*/}
-          {enableRequest.description && (
-            <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-              {enableRequest.description}
-            </Text>
-          )}
-
-          {/*app host*/}
-          <Box
-            backgroundColor={textBackgroundColor}
-            borderRadius={theme.radii['3xl']}
-            px={2}
-            py={1}
-          >
-            <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-              {enableRequest.host}
-            </Text>
-          </Box>
-
-          {/*network*/}
-          <ChainBadge network={enableRequest.network} />
-
-          {/*caption*/}
-          <Text color={subTextColor} fontSize="md" textAlign="center">
-            {t<string>('captions.enableRequest')}
-          </Text>
-        </VStack>
-      </>
-    );
-  };
 
   return (
     <Modal
@@ -362,9 +279,18 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          <VStack alignItems="center" spacing={5} w="full">
-            {renderHeader()}
-          </VStack>
+          {enableRequest ? (
+            <SessionRequestHeader
+              caption={t<string>('captions.enableRequest')}
+              description={enableRequest.description || undefined}
+              host={enableRequest.host}
+              iconUrl={enableRequest.iconUrl || undefined}
+              name={enableRequest.appName}
+              network={enableRequest.network}
+            />
+          ) : (
+            <SessionRequestHeaderSkeleton />
+          )}
         </ModalHeader>
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
         <ModalFooter p={DEFAULT_GAP}>

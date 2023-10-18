@@ -1,6 +1,5 @@
 import { Box, HStack, Skeleton, Spacer, Text, VStack } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
-import { nanoid } from 'nanoid';
 import React, { FC, ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -56,10 +55,10 @@ const AccountActivityTab: FC<IProps> = ({ account, network }: IProps) => {
     let nodes: ReactNode[] = [];
 
     if (accountTransaction) {
-      nodes = accountTransaction.transactions.map((value) => (
+      nodes = accountTransaction.transactions.map((value, index) => (
         <TransactionItem
           account={account}
-          key={nanoid()}
+          key={`account-activity-account-transaction-item-${index}`}
           network={network}
           transaction={value}
         />
@@ -69,8 +68,13 @@ const AccountActivityTab: FC<IProps> = ({ account, network }: IProps) => {
       if (accountTransaction.fetching) {
         nodes = [
           ...nodes,
-          ...Array.from({ length: 3 }, () => (
-            <Box key={nanoid()} px={3} py={2} w="full">
+          ...Array.from({ length: 3 }, (_, index) => (
+            <Box
+              key={`account-activity-account-transaction-fetching-item-${index}`}
+              px={3}
+              py={2}
+              w="full"
+            >
               <VStack
                 alignItems="flex-start"
                 justifyContent="center"

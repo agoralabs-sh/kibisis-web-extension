@@ -29,11 +29,13 @@ import {
   Text,
   Select,
 } from '@chakra-ui/react';
-import { nanoid } from 'nanoid';
+import { SessionTypes } from '@walletconnect/types';
+import { Web3ModalSign, useConnect } from '@web3modal/sign-react';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // Components
 import Fonts from '@extension/components/Fonts';
+import WalletConnectIcon from '@extension/components/WalletConnectIcon';
 
 // Config
 import { networks } from '@extension/config';
@@ -64,6 +66,16 @@ const App: FC = () => {
     isClosable: true,
     position: 'top',
   });
+  const { connect } = useConnect({
+    requiredNamespaces: {
+      algorand: {
+        chains: ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe'], // testnet
+        events: [],
+        methods: ['algorand_signTransaction', 'algorand_signMessage'],
+      },
+    },
+  });
+  // states
   const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
     []
   );
@@ -130,6 +142,11 @@ const App: FC = () => {
       });
     }
   };
+  const handleWalletConnectClick = async () => {
+    const data: SessionTypes.Struct = await connect();
+
+    console.log(data);
+  };
 
   useEffect(() => {
     if (enabledAccounts) {
@@ -140,6 +157,20 @@ const App: FC = () => {
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
+      <Web3ModalSign
+        metadata={{
+          description: 'The Kibisis dApp example',
+          icons: [
+            `${window.location.protocol}//${window.location.host}/favicon.png`,
+          ],
+          name: document.title,
+          url: 'https://kibis.is',
+        }}
+        modalOptions={{
+          explorerRecommendedWalletIds: 'NONE',
+        }}
+        projectId="0451c3741ac5a5eba94c213ee1073cb1"
+      />
       <Center as="main" backgroundColor="white">
         <Flex
           alignItems="center"
@@ -174,8 +205,8 @@ const App: FC = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {enabledAccounts.map((value) => (
-                    <Tr key={nanoid()}>
+                  {enabledAccounts.map((value, index) => (
+                    <Tr key={`enabled-account-item-${index}`}>
                       <Td>{value.address}</Td>
                       <Td>{value.name || '-'}</Td>
                     </Tr>
@@ -183,31 +214,45 @@ const App: FC = () => {
                 </Tbody>
               </Table>
             </TableContainer>
+
             {/* Enable CTAs */}
-            <HStack justifyContent="center" spacing={2} w="full">
+            <VStack>
+              <HStack justifyContent="center" spacing={2} w="full">
+                <Button
+                  borderRadius={theme.radii['3xl']}
+                  colorScheme="primaryLight"
+                  minW={250}
+                  onClick={handleEnableClick(
+                    'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=' // algorand testnet
+                  )}
+                  size="lg"
+                >
+                  Enable Algorand TestNet
+                </Button>
+                <Button
+                  borderRadius={theme.radii['3xl']}
+                  colorScheme="primaryLight"
+                  minW={250}
+                  onClick={handleEnableClick(
+                    'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2/zGwEEcg3C8Gg=' // voi testnet
+                  )}
+                  size="lg"
+                >
+                  Enable Voi TestNet
+                </Button>
+              </HStack>
+
               <Button
                 borderRadius={theme.radii['3xl']}
-                colorScheme="primaryLight"
+                colorScheme="blue"
                 minW={250}
-                onClick={handleEnableClick(
-                  'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=' // algorand testnet
-                )}
+                onClick={handleWalletConnectClick}
+                rightIcon={<WalletConnectIcon />}
                 size="lg"
               >
-                Enable Algorand TestNet
+                Connect WalletConnect
               </Button>
-              <Button
-                borderRadius={theme.radii['3xl']}
-                colorScheme="primaryLight"
-                minW={250}
-                onClick={handleEnableClick(
-                  'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2/zGwEEcg3C8Gg=' // voi testnet
-                )}
-                size="lg"
-              >
-                Enable Voi TestNet
-              </Button>
-            </HStack>
+            </VStack>
             {/* Select address */}
             <HStack spacing={2} w="full">
               <Text>Address:</Text>
@@ -216,8 +261,8 @@ const App: FC = () => {
                 placeholder="Select an address"
                 value={selectedAccount?.address || undefined}
               >
-                {enabledAccounts.map((value) => (
-                  <option key={nanoid()} value={value.address}>
+                {enabledAccounts.map((value, index) => (
+                  <option key={`address-option-${index}`} value={value.address}>
                     {value.address}
                   </option>
                 ))}

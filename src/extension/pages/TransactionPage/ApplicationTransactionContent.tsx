@@ -12,7 +12,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import { nanoid } from 'nanoid';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -280,7 +279,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
                     color={defaultTextColor}
                     fontSize="sm"
                     isOpen={openInnerTransactionAccordions[index]}
-                    key={nanoid()}
+                    key={`transaction-page-application-inner-transaction-item-${index}`}
                     minButtonHeight={ITEM_HEIGHT}
                     network={network}
                     onChange={handleInnerTransactionsAccordionToggle(index)}

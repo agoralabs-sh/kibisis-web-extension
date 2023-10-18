@@ -58,6 +58,9 @@
     "@types/zxcvbn": "^4.4.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
+    "@walletconnect/types": "^2.8.0",
+    "@web3modal/sign-react": "^2.4.5",
+    "add": "^2.0.6",
     "concurrently": "^7.6.0",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
@@ -82,7 +85,8 @@
     "webpack": "^5.76.3",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.0",
-    "webpack-merge": "^5.8.0"
+    "webpack-merge": "^5.8.0",
+    "yarn": "^1.22.19"
   },
   "dependencies": {
     "@agoralabs-sh/algorand-provider": "^1.1.0",
@@ -98,6 +102,9 @@
     "@stablelib/base64": "^1.0.1",
     "@stablelib/hex": "^1.0.1",
     "@stablelib/utf8": "^1.0.1",
+    "@walletconnect/core": "^2.8.0",
+    "@walletconnect/utils": "^2.8.0",
+    "@walletconnect/web3wallet": "^1.8.0",
     "algosdk": "^2.1.0",
     "bignumber.js": "^9.1.1",
     "buffer": "^6.0.3",
@@ -106,7 +113,7 @@
     "dompurify": "^3.0.1",
     "framer-motion": "^10.0.1",
     "i18next": "^22.4.10",
-    "nanoid": "^4.0.1",
+    "jsqr": "^1.4.0",
     "numbro": "^2.3.6",
     "qrcode": "^1.5.1",
     "react": "^18.2.0",

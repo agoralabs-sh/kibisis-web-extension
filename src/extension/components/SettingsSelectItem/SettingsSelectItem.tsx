@@ -1,5 +1,4 @@
 import { Box, HStack, Select, Text, VStack } from '@chakra-ui/react';
-import { nanoid } from 'nanoid';
 import React, { ChangeEvent, FC } from 'react';
 
 // Constants
@@ -57,8 +56,11 @@ const SettingsSelectItem: FC<IProps> = ({
       </VStack>
       <Box minW="40%">
         <Select onChange={onChange} value={value}>
-          {options.map((option) => (
-            <option key={nanoid()} value={option.value}>
+          {options.map((option, index) => (
+            <option
+              key={`settings-select-option-${index}`}
+              value={option.value}
+            >
               {option.label}
             </option>
           ))}
