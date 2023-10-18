@@ -1,3 +1,10 @@
+# [1.1.0-beta.20](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.19...v1.1.0-beta.20) (2023-10-18)
+
+
+### Features
+
+* remove algoscan ([#21](https://github.com/agoralabs-sh/kibisis-web-extension/issues/21)) ([596a3f8](https://github.com/agoralabs-sh/kibisis-web-extension/commit/596a3f89f344fdf1d4c564f411bc0659336ffe80))
+
 # [1.1.0-beta.19](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.18...v1.1.0-beta.19) (2023-10-18)
 
 
