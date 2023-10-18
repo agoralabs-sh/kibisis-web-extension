@@ -1,6 +1,6 @@
 import { NetworkTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
 const networks: INetwork[] = [
@@ -29,17 +29,6 @@ const networks: INetwork[] = [
         canonicalName: 'AlgoExplorer',
         groupPath: '/tx/group',
         id: 'algoexplorer',
-        transactionPath: '/tx',
-      },
-      {
-        accountPath: '/address',
-        applicationPath: '/app',
-        assetPath: '/asset',
-        baseUrl: 'https://algoscan.app',
-        blockPath: '/block',
-        canonicalName: 'AlgoScan',
-        groupPath: '/tx/group',
-        id: 'algoscan',
         transactionPath: '/tx',
       },
       {
@@ -96,17 +85,6 @@ const networks: INetwork[] = [
         canonicalName: 'AlgoExplorer',
         groupPath: '/tx/group',
         id: 'algoexplorer',
-        transactionPath: '/tx',
-      },
-      {
-        accountPath: '/address',
-        applicationPath: '/app',
-        assetPath: '/asset',
-        baseUrl: 'https://betanet.algoscan.app',
-        blockPath: '/block',
-        canonicalName: 'AlgoScan',
-        groupPath: '/tx/group',
-        id: 'algoscan',
         transactionPath: '/tx',
       },
       {
@@ -171,17 +149,6 @@ const networks: INetwork[] = [
         transactionPath: '/tx',
       },
       {
-        accountPath: '/address',
-        applicationPath: '/app',
-        assetPath: '/asset',
-        baseUrl: 'https://testnet.algoscan.app',
-        blockPath: '/block',
-        canonicalName: 'AlgoScan',
-        groupPath: '/tx/group',
-        id: 'algoscan',
-        transactionPath: '/tx',
-      },
-      {
         accountPath: '/account',
         applicationPath: '/application',
         assetPath: '/asset',
@@ -218,9 +185,9 @@ const networks: INetwork[] = [
   {
     algods: [
       {
-        canonicalName: 'AlgoRPC.pro',
+        canonicalName: 'AlgoNode',
         port: '',
-        url: 'https://voitest-api.algorpc.pro',
+        url: 'https://testnet-api.voi.nodly.io',
       },
     ],
     canonicalName: 'Voi',
@@ -230,9 +197,9 @@ const networks: INetwork[] = [
     genesisHash: 'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2/zGwEEcg3C8Gg=',
     indexers: [
       {
-        canonicalName: 'AlgoRPC.pro',
+        canonicalName: 'AlgoNode',
         port: '',
-        url: 'https://voitest-idx.algorpc.pro',
+        url: 'https://testnet-idx.voi.nodly.io',
       },
     ],
     namespace: {
