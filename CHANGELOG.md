@@ -1,3 +1,10 @@
+# [1.1.0-beta.19](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.18...v1.1.0-beta.19) (2023-10-18)
+
+
+### Features
+
+* implement walletconnect and scan qr code ([#20](https://github.com/agoralabs-sh/kibisis-web-extension/issues/20)) ([d84d048](https://github.com/agoralabs-sh/kibisis-web-extension/commit/d84d048a1ec4d82abb49d248e0474ad53cd73c9b))
+
 # [1.1.0-beta.18](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0-beta.17...v1.1.0-beta.18) (2023-06-14)
 
 
