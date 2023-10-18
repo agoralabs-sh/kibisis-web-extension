@@ -21,28 +21,29 @@ import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import EmptyState from '@extension/components/EmptyState';
+import SessionAvatar from '@extension/components/SessionAvatar';
 import Warning from '@extension/components/Warning';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Features
+// features
 import {
   removeSessionByIdThunk,
   setSessionThunk,
 } from '@extension/features/sessions';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectFetchingAccounts,
@@ -50,13 +51,13 @@ import {
   useSelectSavingSessions,
 } from '@extension/selectors';
 
-// Services
+// services
 import { AccountService } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,
@@ -65,7 +66,7 @@ import {
   ISession,
 } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress } from '@extension/utils';
 
 interface IProps {
@@ -241,6 +242,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
       return (
         <VStack alignItems="center" spacing={5} w="full">
           <SkeletonCircle size="12" />
+
           <VStack
             alignItems="center"
             justifyContent="flex-start"
@@ -252,11 +254,13 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
                 {faker.animal.cetacean()}
               </Text>
             </Skeleton>
+
             <Skeleton w="full">
               <Text color={defaultTextColor} fontSize="xs" textAlign="center">
                 {faker.animal.cetacean()}
               </Text>
             </Skeleton>
+
             <Skeleton w="full">
               <Text color={defaultTextColor} fontSize="xs" textAlign="center">
                 {faker.animal.cetacean()}
@@ -269,25 +273,33 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
 
     return (
       <VStack alignItems="center" spacing={5} w="full">
-        {/* App icon */}
-        <Avatar name={session.appName} src={session.iconUrl || undefined} />
+        {/*app icon*/}
+        <SessionAvatar
+          iconUrl={session.iconUrl || undefined}
+          name={session.appName}
+          isWalletConnect={!!session.walletConnectMetadata}
+        />
+        {/*<Avatar name={session.appName} src={session.iconUrl || undefined} />*/}
+
         <VStack
           alignItems="center"
           justifyContent="flex-start"
           spacing={2}
           w="full"
         >
-          {/* App name */}
+          {/*app name*/}
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {session.appName}
           </Heading>
-          {/* App description */}
+
+          {/*app description*/}
           {session.description && (
             <Text color={defaultTextColor} fontSize="sm" textAlign="center">
               {session.description}
             </Text>
           )}
-          {/* App host */}
+
+          {/*app host*/}
           <Box
             backgroundColor={textBackgroundColor}
             borderRadius={theme.radii['3xl']}
@@ -298,13 +310,16 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
               {session.host}
             </Text>
           </Box>
-          {/* Network */}
+
+          {/*network*/}
           {network && <ChainBadge network={network} />}
-          {/* Creation date */}
+
+          {/*creation date*/}
           <Text color={defaultTextColor} fontSize="xs" textAlign="center">
             {new Date(session.createdAt).toLocaleString()}
           </Text>
-          {/* Remove warning */}
+
+          {/*remove warning*/}
           {authorizedAddresses.length <= 0 && (
             <Warning
               message={t<string>('captions.removeAllAccountsWarning')}
@@ -342,7 +357,9 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           {renderHeader()}
         </ModalHeader>
+
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
             <Button
@@ -353,6 +370,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
             >
               {t<string>('buttons.cancel')}
             </Button>
+
             <Button
               isLoading={saving}
               onClick={handleSaveClick}

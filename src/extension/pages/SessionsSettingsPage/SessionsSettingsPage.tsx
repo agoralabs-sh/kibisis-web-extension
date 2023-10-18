@@ -14,14 +14,14 @@ import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import ManageSessionModal from '@extension/components/ManageSessionModal';
 import PageHeader from '@extension/components/PageHeader';
 import SettingsSessionItem from '@extension/components/SettingsSessionItem';
 
-// Features
+// features
 import { setConfirm } from '@extension/features/system';
 import {
   clearSessionsThunk,
@@ -29,17 +29,17 @@ import {
   removeSessionByTopicThunk,
 } from '@extension/features/sessions';
 
-// Hooks
+// hooks
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// Selectors
+// selectors
 import {
   useSelectFetchingSessions,
   useSelectSessions,
 } from '@extension/selectors';
 
-// Types
+// types
 import { IAppThunkDispatch, ISession } from '@extension/types';
 
 const SessionsSettingsPage: FC = () => {
@@ -159,6 +159,7 @@ const SessionsSettingsPage: FC = () => {
         session={managedSession}
       />
       <PageHeader title={t<string>('titles.page', { context: 'sessions' })} />
+
       <Stack alignItems="center" justifyContent="center" px={4} py={4} w="full">
         <Button
           color="white"

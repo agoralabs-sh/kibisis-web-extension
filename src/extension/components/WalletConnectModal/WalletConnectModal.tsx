@@ -19,16 +19,16 @@ import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Rings } from 'react-loader-spinner';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import SessionRequestHeader from '@extension/components/SessionRequestHeader';
 import WalletConnectBannerIcon from '@extension/components/WalletConnectBannerIcon';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Hooks
+// hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
@@ -36,7 +36,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useWalletConnect from '@extension/hooks/useWalletConnect';
 import useCaptureQrCode from './hooks/useCaptureQrCode';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectFetchingAccounts,
@@ -45,16 +45,16 @@ import {
   useSelectWalletConnectModalOpen,
 } from '@extension/selectors';
 
-// Services
+// services
 import { AccountService } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress } from '@extension/utils';
 
 interface IProps {
@@ -324,6 +324,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
             )}
           </VStack>
         </ModalBody>
+
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
             <Button
@@ -334,6 +335,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
             >
               {t<string>('buttons.reject')}
             </Button>
+
             <Button
               onClick={handleApproveClick}
               size="lg"
@@ -374,6 +376,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
               description={sessionProposal.params.proposer.metadata.description}
               host={sessionProposal.params.proposer.metadata.url}
               iconUrl={sessionProposal.params.proposer.metadata.icons[0]}
+              isWalletConnect={true}
               name={sessionProposal.params.proposer.metadata.name}
               network={network || undefined}
             />
@@ -381,6 +384,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
             <WalletConnectBannerIcon h={9} w={60} />
           )}
         </ModalHeader>
+
         {renderContent()}
       </ModalContent>
     </Modal>

@@ -61,6 +61,9 @@ const theme: Dict = extendTheme({
       800: '#441492',
       900: '#2f0e65',
     },
+    walletConnect: {
+      500: '#3B99FC',
+    },
   },
   components: {
     Steps,

@@ -1,18 +1,19 @@
 import { Avatar, Box, Heading, HStack, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Components
+// components
 import ChainBadge from '@extension/components/ChainBadge';
+import SessionAvatar from '@extension/components/SessionAvatar';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
 interface IProps {
@@ -20,6 +21,7 @@ interface IProps {
   description?: string;
   host: string;
   iconUrl?: string;
+  isWalletConnect?: boolean;
   name: string;
   network?: INetwork;
 }
@@ -29,6 +31,7 @@ const SessionRequestHeader: FC<IProps> = ({
   description,
   host,
   iconUrl,
+  isWalletConnect = false,
   name,
   network,
 }: IProps) => {
@@ -41,7 +44,12 @@ const SessionRequestHeader: FC<IProps> = ({
     <VStack alignItems="center" spacing={5} w="full">
       <HStack alignItems="center" justifyContent="center" spacing={4} w="full">
         {/*app icon */}
-        <Avatar name={name} size="sm" src={iconUrl || undefined} />
+        {/*<Avatar name={name} size="sm" src={iconUrl} />*/}
+        <SessionAvatar
+          iconUrl={iconUrl}
+          name={name}
+          isWalletConnect={isWalletConnect}
+        />
 
         {/*app name*/}
         <Heading color={defaultTextColor} size="md" textAlign="center">

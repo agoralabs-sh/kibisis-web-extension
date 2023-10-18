@@ -1,5 +1,4 @@
 import {
-  Avatar,
   HStack,
   Icon,
   Menu,
@@ -18,18 +17,19 @@ import {
   IoUnlinkOutline,
 } from 'react-icons/io5';
 
-// Components
+// components
 import ChainBadge from '@extension/components/ChainBadge';
 import IconButton from '@extension/components/IconButton';
+import SessionAvatar from '@extension/components/SessionAvatar';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import { useSelectNetworkByGenesisHash } from '@extension/selectors';
 
-// Types
+// types
 import { INetwork, ISession } from '@extension/types';
 
 interface IProps {
@@ -54,20 +54,22 @@ const SettingsSessionItem: FC<IProps> = ({
 
   return (
     <HStack m={0} pt={2} px={4} spacing={2} w="full">
-      {/* App icon */}
-      {session.iconUrl ? (
-        <Avatar name={session.appName} size="sm" src={session.iconUrl} />
-      ) : (
-        <Avatar name={session.appName} size="sm" />
-      )}
-      {/* App name/description/creation date */}
+      {/*app icon*/}
+      <SessionAvatar
+        name={session.appName}
+        iconUrl={session.iconUrl || undefined}
+        isWalletConnect={!!session.walletConnectMetadata}
+        size="sm"
+      />
+
+      {/*app name/description/creation date*/}
       <VStack
         alignItems="flex-start"
         flexGrow={1}
         justifyContent="space-evenly"
         spacing={0}
       >
-        {/* App name */}
+        {/*app name*/}
         <Tooltip label={session.appName}>
           <Text
             color={defaultTextColor}
@@ -79,7 +81,8 @@ const SettingsSessionItem: FC<IProps> = ({
             {session.appName}
           </Text>
         </Tooltip>
-        {/* App description */}
+
+        {/*app description*/}
         {session.description && (
           <Tooltip label={session.description}>
             <Text
@@ -93,7 +96,8 @@ const SettingsSessionItem: FC<IProps> = ({
             </Text>
           </Tooltip>
         )}
-        {/* Chain badge and creation date */}
+
+        {/*chain badge and creation date*/}
         <HStack
           alignItems="center"
           justifyContent="space-between"
@@ -112,7 +116,8 @@ const SettingsSessionItem: FC<IProps> = ({
           {network && <ChainBadge network={network} size="xs" />}
         </HStack>
       </VStack>
-      {/* Overflow menu */}
+
+      {/*overflow menu*/}
       <Menu>
         <MenuButton
           as={IconButton}
