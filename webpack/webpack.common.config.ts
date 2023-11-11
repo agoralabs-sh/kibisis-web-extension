@@ -3,7 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { resolve } from 'path';
 import { Configuration } from 'webpack';
 
-// Constants
+// constants
 import { APP_TITLE, BUILD_PATH, SRC_PATH } from './constants';
 
 const COMMON_PATH: string = resolve(SRC_PATH, 'common');
@@ -30,6 +30,7 @@ const config: Configuration = {
       'index.ts'
     ),
   },
+
   module: {
     rules: [
       {
@@ -45,11 +46,13 @@ const config: Configuration = {
       },
     ],
   },
+
   output: {
     clean: true,
     filename: '[name].js',
     path: BUILD_PATH,
   },
+
   plugins: [
     new CopyPlugin({
       patterns: [
@@ -66,7 +69,7 @@ const config: Configuration = {
         },
       ],
     }),
-    /* HTMLs */
+    /* htmls */
     new HtmlWebpackPlugin({
       chunks: ['background-app'],
       filename: 'background-app.html',
@@ -89,15 +92,16 @@ const config: Configuration = {
       title: APP_TITLE,
     }),
   ],
+
   resolve: {
     alias: {
-      // Common
+      // common
       ['@common/enums']: resolve(COMMON_PATH, 'enums'),
       ['@common/errors']: resolve(COMMON_PATH, 'errors'),
       ['@common/events']: resolve(COMMON_PATH, 'events'),
       ['@common/types']: resolve(COMMON_PATH, 'types'),
       ['@common/utils']: resolve(COMMON_PATH, 'utils'),
-      // Extension
+      // extension
       ['@extension/components']: resolve(EXTENSION_PATH, 'components'),
       ['@extension/config']: resolve(EXTENSION_PATH, 'config'),
       ['@extension/constants']: resolve(EXTENSION_PATH, 'constants'),
@@ -157,12 +161,18 @@ const config: Configuration = {
       ['@extension/translations']: resolve(EXTENSION_PATH, 'translations'),
       ['@extension/types']: resolve(EXTENSION_PATH, 'types'),
       ['@extension/utils']: resolve(EXTENSION_PATH, 'utils'),
-      // External
+      // external
       ['@external/constants']: resolve(EXTERNAL_PATH, 'constants'),
       ['@external/services']: resolve(EXTERNAL_PATH, 'services'),
       ['@external/types']: resolve(EXTERNAL_PATH, 'types'),
     },
+
     extensions: ['.js', '.ts', '.tsx'],
+  },
+
+  stats: {
+    assetsSpace: 100,
+    modules: false,
   },
 };
 
