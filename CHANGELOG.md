@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0...v1.2.0) (2023-11-11)
+
+
+### Features
+
+* update webpack config to chunk node modules ([#22](https://github.com/agoralabs-sh/kibisis-web-extension/issues/22)) ([a4f7d16](https://github.com/agoralabs-sh/kibisis-web-extension/commit/a4f7d168fc76ed645b811d4ffa09619249b1e153))
+
 # [1.1.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.0.0...v1.1.0) (2023-11-11)
 
 
