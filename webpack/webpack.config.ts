@@ -4,12 +4,12 @@ import { Configuration, DefinePlugin } from 'webpack';
 import { Configuration as DevelopmentConfiguration } from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
-// Config
+// config
 import { version } from '../package.json';
 import { browser_specific_settings } from '../src/manifest.json';
 import commonConfig from './webpack.common.config';
 
-// Constants
+// constants
 import {
   APP_TITLE,
   DEVELOPMENT_ENVIRONMENT,
@@ -19,14 +19,15 @@ import {
   PRODUCTION_ENVIRONMENT,
 } from './constants';
 
-// Plugins
+// plugins
 import WebExtPlugin from './plugins/WebExtPlugin';
 
 const dappPort: number = 8080;
+const maxSize: number = 4000000; // 4 MB
 
 const configs: (Configuration | DevelopmentConfiguration)[] = [
   /**
-   * Development
+   * development
    */
   merge(commonConfig, {
     devtool: 'cheap-module-source-map',
@@ -71,11 +72,15 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
       }),
     ],
   }),
+
   /**
-   * Production
+   * production
    */
   merge(commonConfig, {
+    devtool: 'source-map',
+
     mode: 'production',
+
     module: {
       rules: [
         {
@@ -92,7 +97,33 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
         },
       ],
     },
+
     name: PRODUCTION_ENVIRONMENT,
+
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          vendor: {
+            chunks: 'all',
+            maxSize,
+            name: 'vendor',
+            reuseExistingChunk: true,
+            test: /[\\/]node_modules[\\/]/,
+          },
+        },
+      },
+
+      runtimeChunk: {
+        name: 'runtime',
+      },
+    },
+
+    performance: {
+      hints: 'warning',
+      maxAssetSize: maxSize,
+      maxEntrypointSize: 10000000, // 10 MB
+    },
+
     plugins: [
       new DefinePlugin({
         __EXTENSION_ID__: JSON.stringify(browser_specific_settings.gecko.id),
@@ -102,8 +133,9 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
       }),
     ],
   }),
+
   /**
-   * Example dApp
+   * example dapp
    */
   {
     devtool: 'cheap-module-source-map',
