@@ -61,7 +61,7 @@ jobs:
         run: yarn test
 
   ##
-  # needs install/build
+  # needs [install, build]
   ##
 
   validate_firefox:
@@ -81,3 +81,19 @@ jobs:
         run: unzip build.zip
       - name: "✅ Validate"
         run: yarn validate:firefox
+
+  ##
+  # needs validate_firefox
+  ##
+
+  clean_up:
+    name: "Clean Up"
+    needs: validate_firefox
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🗑️ Delete artifacts"
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          failOnError: false
+          name: |
+            build
