@@ -16,11 +16,13 @@ jobs:
           node-version: 'lts/*'
       - name: "📦 Install"
         run: yarn install --ignore-scripts
+      - name: "🗜️ Zip dependencies"
+        run: zip -r node_modules.zip node_modules/
       - name: "📤 Upload dependencies"
         uses: actions/upload-artifact@v3
         with:
          name: node_modules
-         path: node_modules
+         path: node_modules.zip
 
   ##
   # needs install
@@ -41,6 +43,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: node_modules
+      - name: "🗜️ Unzip dependencies"
+        run: unzip node_modules.zip
       - name: "👕 Lint"
         run: yarn lint
 
@@ -59,13 +63,17 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: node_modules
+      - name: "🗜️ Unzip dependencies"
+        run: unzip node_modules.zip
       - name: "🏗️ Build"
         run: yarn build
+      - name: "🗜️ Zip build"
+        run: zip -r build.zip .build/
       - name: "📤 Upload build"
         uses: actions/upload-artifact@v3
         with:
           name: build
-          path: .build
+          path: build.zip
 
   test:
     name: "Test"
@@ -82,6 +90,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: node_modules
+      - name: "🗜️ Unzip dependencies"
+        run: unzip node_modules.zip
       - name: "🧪 Test"
         run: yarn test
 
@@ -104,9 +114,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: node_modules
+      - name: "🗜️ Unzip dependencies"
+        run: unzip node_modules.zip
       - name: "📥 Download build"
         uses: actions/download-artifact@v3
         with:
           name: build
+      - name: "🗜️ Unzip build"
+        run: unzip build.zip
       - name: "✅ Validate"
         run: yarn validate:firefox
