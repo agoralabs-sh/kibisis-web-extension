@@ -1,0 +1,112 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+
+jobs:
+  install:
+    name: "Install"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: "📦 Install"
+        run: yarn install --ignore-scripts
+      - name: "📤 Upload dependencies"
+        uses: actions/upload-artifact@v3
+        with:
+         name: node_modules
+         path: node_modules
+
+  ##
+  # needs install
+  ##
+
+  lint:
+    name: "Lint"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: "📥 Download dependencies"
+        uses: actions/download-artifact@v3
+        with:
+          name: node_modules
+      - name: "👕 Lint"
+        run: yarn lint
+
+  build:
+    name: "Build"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: "📥 Download dependencies"
+        uses: actions/download-artifact@v3
+        with:
+          name: node_modules
+      - name: "🏗️ Build"
+        run: yarn build
+      - name: "📤 Upload build"
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: .build
+
+  test:
+    name: "Test"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: "📥 Download dependencies"
+        uses: actions/download-artifact@v3
+        with:
+          name: node_modules
+      - name: "🧪 Test"
+        run: yarn test
+
+  ##
+  # needs install/build
+  ##
+
+  validate_firefox:
+    name: "Validate Firefox"
+    needs: [install, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: "📥 Download dependencies"
+        uses: actions/download-artifact@v3
+        with:
+          name: node_modules
+      - name: "📥 Download build"
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+      - name: "✅ Validate"
+        run: yarn validate:firefox
