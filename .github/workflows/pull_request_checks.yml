@@ -4,8 +4,22 @@ on:
   pull_request:
 
 jobs:
+  install:
+    name: "Install"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/setup
+
+  ##
+  # needs install
+  ##
+
   lint:
     name: "Lint"
+    needs: install
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
@@ -17,6 +31,7 @@ jobs:
 
   build:
     name: "Build"
+    needs: install
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
@@ -35,6 +50,7 @@ jobs:
 
   test:
     name: "Test"
+    needs: install
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
@@ -50,7 +66,7 @@ jobs:
 
   validate_firefox:
     name: "Validate Firefox"
-    needs: build
+    needs: [install, build]
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"

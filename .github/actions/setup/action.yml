@@ -19,3 +19,4 @@ runs:
     - name: "📦 Install"
       if: steps.cache-dependencies.outputs.cache-hit != 'true'
       run: yarn install --ignore-scripts
+      shell: bash
