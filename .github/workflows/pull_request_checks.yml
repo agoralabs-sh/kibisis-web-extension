@@ -11,7 +11,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
       - name: "🔧 Setup"
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/use-dependencies
 
   ##
   # needs install
@@ -25,7 +25,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
       - name: "🔧 Setup"
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/use-dependencies
       - name: "👕 Lint"
         run: yarn lint
 
@@ -37,7 +37,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
       - name: "🔧 Setup"
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/use-dependencies
       - name: "🏗️ Build"
         run: yarn build
       - name: "🗜️ Zip build"
@@ -56,7 +56,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
       - name: "🔧 Setup"
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/use-dependencies
       - name: "🧪 Test"
         run: yarn test
 
@@ -72,7 +72,7 @@ jobs:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
       - name: "🔧 Setup"
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/use-dependencies
       - name: "📥 Download build"
         uses: actions/download-artifact@v3
         with:
