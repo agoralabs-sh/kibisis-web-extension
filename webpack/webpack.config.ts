@@ -77,7 +77,7 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
    * production
    */
   merge(commonConfig, {
-    devtool: 'source-map',
+    devtool: false,
 
     mode: 'production',
 

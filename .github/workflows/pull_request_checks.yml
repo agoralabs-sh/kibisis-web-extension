@@ -1,0 +1,99 @@
+name: "Pull Request Checks"
+
+on:
+  pull_request:
+
+jobs:
+  install:
+    name: "Install"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+
+  ##
+  # needs install
+  ##
+
+  lint:
+    name: "Lint"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "👕 Lint"
+        run: yarn lint
+
+  build:
+    name: "Build"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "🏗️ Build"
+        run: yarn build
+      - name: "🗜️ Zip build"
+        run: zip -r build.zip .build/
+      - name: "📤 Upload build"
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build.zip
+
+  test:
+    name: "Test"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "🧪 Test"
+        run: yarn test
+
+  ##
+  # needs [install, build]
+  ##
+
+  validate_firefox:
+    name: "Validate Firefox"
+    needs: [install, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "📥 Download build"
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+      - name: "🗜️ Unzip build"
+        run: unzip build.zip
+      - name: "✅ Validate"
+        run: yarn validate:firefox
+
+  ##
+  # needs validate_firefox
+  ##
+
+  clean_up:
+    name: "Clean Up"
+    needs: validate_firefox
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🗑️ Delete artifacts"
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          failOnError: false
+          name: |
+            build

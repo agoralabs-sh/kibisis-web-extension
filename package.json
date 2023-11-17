@@ -35,7 +35,8 @@
     "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",
     "start:dapp": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack serve --config webpack/webpack.config.ts --config-name dapp",
     "start:firefox": "web-ext run",
-    "test": "jest"
+    "test": "jest",
+    "validate:firefox": "addons-linter .build/"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",
@@ -61,6 +62,7 @@
     "@walletconnect/types": "^2.8.0",
     "@web3modal/sign-react": "^2.4.5",
     "add": "^2.0.6",
+    "addons-linter": "^6.17.0",
     "concurrently": "^7.6.0",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",

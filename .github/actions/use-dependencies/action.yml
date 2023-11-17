@@ -1,0 +1,22 @@
+name: "Use Dependencies"
+
+description: "Checks if the dependencies have been cached with the hash of the yarn.lock file."
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🔧 Setup"
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+        cache: 'yarn'
+    - name: "💾 Cache dependencies"
+      uses: actions/cache@v3
+      id: cache-dependencies
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('yarn.lock') }}
+    - name: "📦 Install"
+      if: steps.cache-dependencies.outputs.cache-hit != 'true'
+      run: yarn install --ignore-scripts
+      shell: bash
