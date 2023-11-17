@@ -29,7 +29,7 @@
     "build": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name production",
     "lint": "eslint . --ext .ts --ext .tsx --ext .js",
     "package": "web-ext build",
-    "prepare": "husky install && ./bin/install_firefox.sh",
+    "prepare": "husky install && concurrently --names \"CHROME_INSTALL,FIREFOX_INSTALL\" -c \"bgYellow.bold,bgOrange.bold\" \"./bin/install_chrome.sh\" \"./bin/install_firefox.sh\"",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts,tsx}\"",
     "start": "concurrently --names \"DAPP,EXTENSION\" -c \"bgBlue.bold,bgMagenta.bold\" \"yarn start:dapp\" \"yarn start:extension\"",
     "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",

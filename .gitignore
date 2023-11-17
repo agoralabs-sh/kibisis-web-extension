@@ -280,6 +280,9 @@ fabric.properties
 
 # intermediary directories
 .build/
+.chrome/
+.chrome_profile/
 .dapp/
 .firefox/
 .firefox_profile/
+.tmp/
