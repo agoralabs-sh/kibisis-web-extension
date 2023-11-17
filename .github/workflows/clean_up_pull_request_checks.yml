@@ -2,7 +2,7 @@ name: Clean Up Pull Request Checks
 
 on:
   workflow_run:
-    workflows: ["Pull Request Checks"]
+    workflows: [Pull Request Checks]
     types:
       - completed
 
@@ -18,4 +18,3 @@ jobs:
           failOnError: false
           name: |
             build
-            node_modules

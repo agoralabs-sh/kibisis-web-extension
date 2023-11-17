@@ -14,15 +14,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-      - name: "📦 Install"
-        run: yarn install --ignore-scripts
-      - name: "🗜️ Zip dependencies"
-        run: zip -r node_modules.zip node_modules/
-      - name: "📤 Upload dependencies"
-        uses: actions/upload-artifact@v3
+          cache: 'yarn'
+      - name: "💾 Cache dependencies"
+        uses: actions/cache@v3
+        id: cache-dependencies
         with:
-         name: node_modules
-         path: node_modules.zip
+         path: node_modules
+         key: ${{ runner.os }}-node-${{ hashFiles('yarn.lock') }}
+      - name: "📦 Install"
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --ignore-scripts
 
   ##
   # needs install
@@ -39,12 +40,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-      - name: "📥 Download dependencies"
-        uses: actions/download-artifact@v3
+          cache: 'yarn'
+      - name: "💾 Cache dependencies"
+        uses: actions/cache@v3
         with:
-          name: node_modules
-      - name: "🗜️ Unzip dependencies"
-        run: unzip node_modules.zip
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('yarn.lock') }}
       - name: "👕 Lint"
         run: yarn lint
 
@@ -59,12 +60,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-      - name: "📥 Download dependencies"
-        uses: actions/download-artifact@v3
+          cache: 'yarn'
+      - name: "💾 Cache dependencies"
+        uses: actions/cache@v3
         with:
-          name: node_modules
-      - name: "🗜️ Unzip dependencies"
-        run: unzip node_modules.zip
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('yarn.lock') }}
       - name: "🏗️ Build"
         run: yarn build
       - name: "🗜️ Zip build"
@@ -86,12 +87,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-      - name: "📥 Download dependencies"
-        uses: actions/download-artifact@v3
+          cache: 'yarn'
+      - name: "💾 Cache dependencies"
+        uses: actions/cache@v3
         with:
-          name: node_modules
-      - name: "🗜️ Unzip dependencies"
-        run: unzip node_modules.zip
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('yarn.lock') }}
       - name: "🧪 Test"
         run: yarn test
 
@@ -110,12 +111,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-      - name: "📥 Download dependencies"
-        uses: actions/download-artifact@v3
+          cache: 'yarn'
+      - name: "💾 Cache dependencies"
+        uses: actions/cache@v3
         with:
-          name: node_modules
-      - name: "🗜️ Unzip dependencies"
-        run: unzip node_modules.zip
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('yarn.lock') }}
       - name: "📥 Download build"
         uses: actions/download-artifact@v3
         with:
