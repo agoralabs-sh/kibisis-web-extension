@@ -23,7 +23,7 @@ import { createLogger } from '@common/utils';
   );
 
   // listen to special events
-  browser.browserAction.onClicked.addListener(
+  browser.action.onClicked.addListener(
     backgroundService.onExtensionClick.bind(backgroundService)
   );
   browser.windows.onRemoved.addListener(

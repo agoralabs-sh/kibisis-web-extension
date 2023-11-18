@@ -1,47 +1,37 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Kibisis",
   "version": "1.2.0",
-  "description": "An Algorand wallet browser extension to sign data, send transactions and rekey with another account.",
+  "description": "An AVM wallet in your browser that goes beyond just DeFi.",
+  "author": "Agora Labs",
   "icons": {
     "48": "icons/icon-48.png",
     "96": "icons/icon-96.png"
   },
-  "permissions": [
-    "*://developer.mozilla.org/*",
-    "*://*.algoexplorerapi.io/*",
-    "*://algosigner.api.purestake.io/*",
-    "*://*.algonode.cloud/*",
-    "*://*.algorpc.pro/*",
-    "<all_urls>",
-    "downloads",
-    "storage"
-  ],
+  "homepage_url": "https://kibis.is",
+  "permissions": ["downloads", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Kibisis"
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "kibisis@kibis.is"
     }
   },
-  "browser_action": {
-    "default_title": "Kibisis"
-  },
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": true
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content-script.js"
-      ]
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"]
     }
   ],
   "web_accessible_resources": [
-    "wallet-initializer.js"
+    {
+      "matches": ["<all_urls>"],
+      "resources": ["wallet-initializer.js"]
+    }
   ]
 }
