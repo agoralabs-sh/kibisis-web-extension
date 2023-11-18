@@ -22,10 +22,17 @@ import {
 // plugins
 import WebExtPlugin from './plugins/WebExtPlugin';
 
+// types
+import { IWebpackEnvironmentVariables } from './types';
+
 const dappPort: number = 8080;
 const maxSize: number = 4000000; // 4 MB
 
-const configs: (Configuration | DevelopmentConfiguration)[] = [
+const configs: (
+  env: IWebpackEnvironmentVariables
+) => (Configuration | DevelopmentConfiguration)[] = ({
+  WEB_EXT_TARGET,
+}: IWebpackEnvironmentVariables) => [
   /**
    * development
    */
@@ -69,6 +76,7 @@ const configs: (Configuration | DevelopmentConfiguration)[] = [
         devtools: true,
         persistState: true,
         startUrls: [`http://localhost:${dappPort}`], // navigate to the dapp
+        target: WEB_EXT_TARGET,
       }),
     ],
   }),

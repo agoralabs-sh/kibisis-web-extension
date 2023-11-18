@@ -1,13 +1,13 @@
 import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 
-// Services
+// services
 import { KibisisWalletManager } from '@external/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IWindow } from '@external/types';
 
-// Utils
+// utils
 import { createLogger } from '@common/utils';
 
 (() => {

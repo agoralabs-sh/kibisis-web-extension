@@ -31,10 +31,10 @@
     "package": "web-ext build",
     "prepare": "husky install && concurrently --names \"CHROME_INSTALL,FIREFOX_INSTALL\" -c \"bgYellow.bold,bgOrange.bold\" \"./bin/install_chrome.sh\" \"./bin/install_firefox.sh\"",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts,tsx}\"",
-    "start": "concurrently --names \"DAPP,EXTENSION\" -c \"bgBlue.bold,bgMagenta.bold\" \"yarn start:dapp\" \"yarn start:extension\"",
-    "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",
+    "start:chrome": "concurrently --names \"DAPP,EXTENSION\" -c \"bgBlue.bold,bgMagenta.bold\" \"yarn start:dapp\" \"yarn start:extension --env WEB_EXT_TARGET=chrome\"",
     "start:dapp": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack serve --config webpack/webpack.config.ts --config-name dapp",
-    "start:firefox": "web-ext run",
+    "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",
+    "start:firefox": "concurrently --names \"DAPP,EXTENSION\" -c \"bgBlue.bold,bgMagenta.bold\" \"yarn start:dapp\" \"yarn start:extension --env WEB_EXT_TARGET=firefox\"",
     "test": "jest",
     "validate:firefox": "addons-linter .build/"
   },
