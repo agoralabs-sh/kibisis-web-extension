@@ -90,14 +90,17 @@ $ yarn start:<chrome|firefox>
 
 ### 4.1 Useful Commands
 
-| Command               | Description                                                                                                                                                                                            |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `yarn build`          | Bundles the source code and the add-on assets in the `build/` directory.                                                                                                                               |
-| `yarn package`        | Packages the contents of the `build/` directory into a `.zip` file, ready for submission. See [use `web-ext`][use-web-ext].                                                                            |
-| `yarn prettier`       | Runs `prettier` with the same configuration that is run on the pre-commit hooks.                                                                                                                       |
-| `yarn start:chrome`   | Bundles the source code & the add-on assets, starts the local ChromeFor Testing Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension.  |
-| `yarn start:firefox`  | Bundles the source code & the add-on assets, starts the local Firefox Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension.            |
-| `yarn start:dapp`     | Starts the example dApp at [http://localhost:8080](http://localhost:8080)                                                                                                                              |
+| Command                | Description                                                                                                                                                                                            |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `yarn build`           | Bundles the source code and the add-on assets in the `build/` directory.                                                                                                                               |
+| `yarn install:chrome`  | Installs the latest version of Chrome For Testing browser to the project root. This removes the existing version if it exists.                                                                         |
+| `yarn install:firefox` | Installs the latest version of Firefox Developer Edition browser to the project root. This removes the existing version if it exists.                                                                  |
+| `yarn build`           | Bundles the source code and the add-on assets in the `build/` directory.                                                                                                                               |
+| `yarn package`         | Packages the contents of the `build/` directory into a `.zip` file, ready for submission. See [use `web-ext`][use-web-ext].                                                                            |
+| `yarn prettier`        | Runs `prettier` with the same configuration that is run on the pre-commit hooks.                                                                                                                       |
+| `yarn start:chrome`    | Bundles the source code & the add-on assets, starts the local Chrome For Testing Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension. |
+| `yarn start:firefox`   | Bundles the source code & the add-on assets, starts the local Firefox Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension.            |
+| `yarn start:dapp`      | Starts the example dApp at [http://localhost:8080](http://localhost:8080)                                                                                                                              |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -117,7 +120,6 @@ Please refer to the [LICENSE][license] file.
 [contribute]: ./CONTRIBUTING.md
 [jq]: https://github.com/jqlang/jq
 [license]: ./LICENSE
-[local-firefox-dir]: ./.firefox
 [table-of-contents]: #table-of-contents
 [use-web-ext]: https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/#using-web-ext-section
 [yarn]: https://yarnpkg.com/
