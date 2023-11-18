@@ -2,7 +2,7 @@ import { extendTheme } from '@chakra-ui/react';
 import { Dict } from '@chakra-ui/utils';
 import { StepsTheme as Steps } from 'chakra-ui-steps';
 
-// Themes
+// themes
 import Tag from './tag';
 
 const theme: Dict = extendTheme({
@@ -70,8 +70,17 @@ const theme: Dict = extendTheme({
     Tag,
   },
   fonts: {
-    heading: 'AnonymousPro - Bold',
+    heading: 'AnonymousPro',
     body: 'AnonymousPro',
+  },
+  styles: {
+    global: {
+      // remove scrollbars
+      ['*::-webkit-scrollbar']: {
+        display: 'none',
+      },
+      ['scrollbar-width']: 'none',
+    },
   },
 });
 

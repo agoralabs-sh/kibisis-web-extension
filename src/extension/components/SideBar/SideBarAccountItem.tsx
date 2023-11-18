@@ -115,6 +115,7 @@ const SideBarAccountItem: FC<IProps> = ({
               >
                 {accountInformation.name}
               </Text>
+
               <Text color={subTextColor} fontSize="xs">
                 {ellipseAddress(address, {
                   end: 10,
