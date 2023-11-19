@@ -1,7 +1,7 @@
-// Apps
+// components
 import App from './App';
 
-// Utils
+// utils
 import { bootstrapApp } from '@extension/utils';
 
 window.onload = bootstrapApp(App);
