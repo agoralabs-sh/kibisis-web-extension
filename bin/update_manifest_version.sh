@@ -17,7 +17,7 @@ function main {
   set_vars
 
   if [ -z "${1}" ]; then
-    printf "%b no version specified, use: ./bin/update_version.sh [version] \n" "${ERROR_PREFIX}"
+    printf "%b no version specified, use: ./bin/update_manifest_version.sh [version] \n" "${ERROR_PREFIX}"
     exit 1
   fi
 

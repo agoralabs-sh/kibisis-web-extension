@@ -22,11 +22,8 @@ function main() {
   chrome_dir="${PWD}/.chrome"
   tmp_dir="${PWD}/.tmp"
 
-  if [[ -d "${chrome_dir}" ]];
-    then
-      printf "%b chrome already installed \n" "${INFO_PREFIX}"
-      exit 0
-  fi
+  # remove any previous installations
+  rm -rf "${chrome_dir}"
 
   # determine which os package to download
   if [[ "${OSTYPE}" == "darwin"* ]];
