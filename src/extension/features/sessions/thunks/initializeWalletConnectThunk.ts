@@ -3,10 +3,6 @@ import { Core } from '@walletconnect/core';
 import { Web3Wallet } from '@walletconnect/web3wallet';
 import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 
-// config
-// @ts-ignore
-import config from './config.json';
-
 // constants
 import { KIBISIS_LINK } from '@extension/constants';
 
