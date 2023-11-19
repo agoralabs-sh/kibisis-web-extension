@@ -34,41 +34,28 @@ export default class WebExtPlugin {
   }
 
   private run(sourceDir: string): void {
-    let binaryFlag: string = `--firefox-binary=${resolve(
-      process.cwd(),
-      '.firefox',
-      'firefox'
-    )}`;
-    let profileFlag: string = `--firefox-profile=${resolve(
-      process.cwd(),
-      '.firefox_profile'
-    )}`;
+    let targetFlag: string = `--target=firefox-desktop`;
     let runCommand: string[] = [
       'run',
-      `--target=chromium`,
-      '--no-config-discovery', // ignore the config file
+      `--chromium-profile=${resolve(process.cwd(), '.chrome_profile')}`,
+      `--chromium-binary=${resolve(process.cwd(), '.chrome', 'chrome')}`,
+      `--firefox=${resolve(process.cwd(), '.firefox', 'firefox')}`,
+      `--firefox-profile=${resolve(process.cwd(), '.firefox_profile')}`,
+      '--no-config-discovery', // ignore the config file at project root
       `--source-dir=${sourceDir}`,
       ...this.startUrls.map((value) => `--start-url=${value}`),
     ];
 
     switch (this.target) {
       case 'chrome':
-        binaryFlag = `--chromium-binary=${resolve(
-          process.cwd(),
-          '.chrome',
-          'chrome'
-        )}`;
-        profileFlag = `--chromium-profile=${resolve(
-          process.cwd(),
-          '.chrome_profile'
-        )}`;
+        targetFlag = '--target=chromium';
         break;
       case 'firefox':
       default:
         break;
     }
 
-    runCommand = [...runCommand, binaryFlag, profileFlag];
+    runCommand = [...runCommand, targetFlag];
 
     if (this.browserConsole) {
       runCommand = [...runCommand, '--browser-console'];
