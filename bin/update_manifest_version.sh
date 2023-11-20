@@ -2,9 +2,9 @@
 
 SCRIPT_DIR=$(dirname "${0}")
 
-source "${SCRIPT_DIR}"/set_vars.sh
+source "${SCRIPT_DIR}/set_vars.sh"
 
-# Public: Updates the src/manifest.json "version" with the release version.
+# Public: Updates the src/manifest.common.json "version" with the release version.
 #
 # $1 - The version to bump.
 #
@@ -27,8 +27,8 @@ function main {
     exit 1
   fi
 
-  printf "%b updating manifest.json#version to version '%s' \n" "${INFO_PREFIX}" "${1}"
-  cat <<< $(jq --arg version "${1}" '.version = $version' src/manifest.json) > src/manifest.json
+  printf "%b updating manifest.common.json#version to version '%s' \n" "${INFO_PREFIX}" "${1}"
+  cat <<< $(jq --arg version "${1}" '.version = $version' src/manifest.common.json) > manifest.common.json
 
   exit 0
 }
