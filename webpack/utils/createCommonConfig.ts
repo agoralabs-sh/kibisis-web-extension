@@ -4,7 +4,12 @@ import { resolve } from 'path';
 import { Configuration } from 'webpack';
 
 // constants
-import { APP_TITLE, BUILD_PATH, SRC_PATH } from '../constants';
+import {
+  APP_TITLE,
+  CHROME_BUILD_PATH,
+  FIREFOX_BUILD_PATH,
+  SRC_PATH,
+} from '../constants';
 
 // plugins
 import ManifestBuilderPlugin from '../plugins/ManifestBuilderPlugin';
@@ -27,6 +32,16 @@ export default function createCommonConfig({
   const commonPath: string = resolve(SRC_PATH, 'common');
   const extensionPath: string = resolve(SRC_PATH, 'extension');
   const externalPath: string = resolve(SRC_PATH, 'external');
+  let buildPath: string = FIREFOX_BUILD_PATH;
+
+  switch (target) {
+    case 'chrome':
+      buildPath = CHROME_BUILD_PATH;
+      break;
+    case 'firefox':
+    default:
+      break;
+  }
 
   return {
     entry: {
@@ -69,7 +84,7 @@ export default function createCommonConfig({
     output: {
       clean: true,
       filename: '[name].js',
-      path: BUILD_PATH,
+      path: buildPath,
     },
 
     plugins: [
@@ -78,11 +93,11 @@ export default function createCommonConfig({
         patterns: [
           {
             from: resolve(SRC_PATH, 'documents'),
-            to: resolve(BUILD_PATH, 'documents'),
+            to: resolve(buildPath, 'documents'),
           },
           {
             from: resolve(SRC_PATH, 'icons'),
-            to: resolve(BUILD_PATH, 'icons'),
+            to: resolve(buildPath, 'icons'),
           },
         ],
       }),

@@ -57,7 +57,7 @@ jobs:
       - name: "🏗️ Build"
         run: yarn build:firefox
       - name: "🗜️ Zip build"
-        run: zip -qr build.zip .build/
+        run: zip -qr firefox_build.zip .firefox_build/
       - name: "📤 Upload build"
         uses: actions/upload-artifact@v3
         with:
