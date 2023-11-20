@@ -67,11 +67,17 @@ const App: FC = () => {
     position: 'top',
   });
   const { connect } = useConnect({
-    requiredNamespaces: {
+    optionalNamespaces: {
+      // testnets
       algorand: {
-        chains: ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe'], // testnet
+        chains: ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe'],
         events: [],
         methods: ['algorand_signTransaction', 'algorand_signMessage'],
+      },
+      voi: {
+        chains: ['voi:xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2_z'],
+        events: [],
+        methods: ['voi_signTransaction', 'voi_signMessage'],
       },
     },
   });
