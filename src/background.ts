@@ -1,12 +1,12 @@
-import browser from 'webextension-polyfill';
+import browser, { Action, BrowserAction } from 'webextension-polyfill';
 
-// Services
+// services
 import { BackgroundService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 
-// Utils
+// utils
 import { createLogger } from '@common/utils';
 
 (() => {
@@ -16,6 +16,8 @@ import { createLogger } from '@common/utils';
   const backgroundService: BackgroundService = new BackgroundService({
     logger,
   });
+  const browserAction: Action.Static | BrowserAction.Static =
+    browser.action || browser.browserAction; // TODO: use browser.action for v3
 
   // listen to extension messages
   browser.runtime.onMessage.addListener(
@@ -23,7 +25,7 @@ import { createLogger } from '@common/utils';
   );
 
   // listen to special events
-  browser.action.onClicked.addListener(
+  browserAction.onClicked.addListener(
     backgroundService.onExtensionClick.bind(backgroundService)
   );
   browser.windows.onRemoved.addListener(
