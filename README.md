@@ -72,17 +72,18 @@ $ yarn install
 
 > ⚠️ **NOTE:** a couple of post install scripts will run that will download and install Chrome and Firefox browser binaries at the project root. These binaries will be used for running development versions of the extension.
 
+2. In the newly created `.env` file, replace the environment values with the desired values.
+
 <sup>[Back to top ^][table-of-contents]</sup>
 
 ### 3.3. Run
-
 
 * To run simply use:
 ```bash
 $ yarn start:<chrome|firefox>
 ```
 
-> ⚠️ **NOTE:** this command will bundle the TypeScript source code and add-on assets to the `.build/` directory and depending on your intended target (you can choose '`chrome`' or '`firefox`') the corresponding browser will start up with the unpacked extension as a temporary add-on.
+> ⚠️ **NOTE:** this command will bundle the TypeScript source code and extension assets into the `.build/` directory and depending on your intended target (you can choose '`chrome`' or '`firefox`') the corresponding browser will start up with the unpacked extension as a temporary extension.
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -92,7 +93,8 @@ $ yarn start:<chrome|firefox>
 
 | Command                | Description                                                                                                                                                                                            |
 |------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `yarn build`           | Bundles the source code and the add-on assets in the `build/` directory.                                                                                                                               |
+| `yarn build:chrome`    | Bundles the source code and Chrome specific assets into the `build/` directory.                                                                                                                        |
+| `yarn build:firefox`   | Bundles the source code and Firefox specific assets into the `build/` directory.                                                                                                                       |
 | `yarn install:chrome`  | Installs the latest version of Chrome For Testing browser to the project root. This removes the existing version if it exists.                                                                         |
 | `yarn install:firefox` | Installs the latest version of Firefox Developer Edition browser to the project root. This removes the existing version if it exists.                                                                  |
 | `yarn build`           | Bundles the source code and the add-on assets in the `build/` directory.                                                                                                                               |
