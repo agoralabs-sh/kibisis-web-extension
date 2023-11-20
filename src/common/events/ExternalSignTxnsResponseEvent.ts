@@ -1,12 +1,12 @@
 import { ISignTxnsResult } from '@agoralabs-sh/algorand-provider';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Errors
+// errors
 import { BaseSerializableError } from '@common/errors';
 
-// Events
+// events
 import BaseResponseEvent from './BaseResponseEvent';
 
 type IPayload = ISignTxnsResult;

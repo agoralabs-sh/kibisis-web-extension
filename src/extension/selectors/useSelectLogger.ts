@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IBaseRootState } from '@extension/types';
 

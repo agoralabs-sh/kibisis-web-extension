@@ -1,4 +1,4 @@
-// Types
+// types
 import IBaseRequest from './IBaseRequest';
 
 interface ISignBytesRequest extends IBaseRequest {

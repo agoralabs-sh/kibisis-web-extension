@@ -6,7 +6,7 @@ import {
   UnknownError,
 } from '@agoralabs-sh/algorand-provider';
 
-// Errors
+// errors
 import {
   BaseSerializableError,
   SerializableNetworkNotSupportedError,

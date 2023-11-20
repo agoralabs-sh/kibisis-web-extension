@@ -1,6 +1,6 @@
 import { ISignTxnsOptions } from '@agoralabs-sh/algorand-provider';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 import IBaseExtensionRequestPayload from './IBaseExtensionRequestPayload';
 

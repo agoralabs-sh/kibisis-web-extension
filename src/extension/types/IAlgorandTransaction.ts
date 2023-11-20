@@ -1,4 +1,4 @@
-// Types
+// types
 import IAlgorandApplicationTransaction from './IAlgorandApplicationTransaction';
 import IAlgorandAssetConfigTransaction from './IAlgorandAssetConfigTransaction';
 import IAlgorandAssetFreezeTransaction from './IAlgorandAssetFreezeTransaction';

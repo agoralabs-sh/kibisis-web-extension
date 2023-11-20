@@ -8,11 +8,11 @@ import {
 import React, { FC, MouseEvent } from 'react';
 import { IconType } from 'react-icons';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import EmptyIcon from '@extension/components/EmptyIcon';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 

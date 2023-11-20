@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { IoOpenOutline } from 'react-icons/io5';
 import browser from 'webextension-polyfill';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 

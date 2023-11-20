@@ -3,17 +3,17 @@ import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
-// Components
+// components
 import ErrorModal from '@extension/components/ErrorModal';
 
-// Features
+// features
 import { setError, setNavigate, setToast } from '@extension/features/system';
 import { fetchSettings } from '@extension/features/settings';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { IAppThunkDispatch } from '@extension/types';
 
 const Root: FC = () => {

@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
 export default class BaseEvent {

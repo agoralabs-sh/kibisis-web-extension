@@ -19,49 +19,49 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import AccountSelect from '@extension/components/AccountSelect';
 import AccountItem from '@extension/components/AccountItem';
 import Button from '@extension/components/Button';
 import PasswordInput from '@extension/components/PasswordInput';
 import SignBytesJwtContent from './SignBytesJwtContent';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Enums
+// enums
 import { ErrorCodeEnum } from '@extension/enums';
 
-// Errors
+// errors
 import {
   SerializableOperationCanceledError,
   SerializableUnknownError,
 } from '@common/errors';
 
-// Features
+// features
 import { setError } from '@extension/features/system';
 import { sendSignBytesResponse } from '@extension/features/messages';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSignBytes from '@extension/hooks/useSignBytes';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectFetchingAccounts,
   useSelectSignBytesRequest,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import {
   IAccount,
   IAppThunkDispatch,
@@ -69,7 +69,7 @@ import {
   ISignBytesRequest,
 } from '@extension/types';
 
-// Utils
+// utils
 import { decodeJwt, ellipseAddress } from '@extension/utils';
 
 interface IProps {

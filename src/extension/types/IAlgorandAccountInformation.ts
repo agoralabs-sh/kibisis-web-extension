@@ -1,4 +1,4 @@
-// Types
+// types
 import IAlgorandAssetHolding from './IAlgorandAssetHolding';
 
 interface IAlgorandAccountInformation {

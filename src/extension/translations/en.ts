@@ -1,7 +1,7 @@
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import { IResourceLanguage } from '@extension/types';
 
 const translation: IResourceLanguage = {

@@ -1,4 +1,4 @@
-// Types
+// types
 import IDecodedJwtHeader from './IDecodedJwtHeader';
 import IDecodedJwtPayload from './IDecodedJwtPayload';
 

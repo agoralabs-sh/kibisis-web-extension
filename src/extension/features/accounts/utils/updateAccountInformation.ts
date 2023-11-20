@@ -1,12 +1,12 @@
 import { Algodv2 } from 'algosdk';
 
-// Constants
+// constants
 import { ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT } from '@extension/constants';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IBaseOptions } from '@common/types';
 import {
   IAccount,
@@ -15,7 +15,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { getAlgodClient } from '@common/utils';
 import {
   convertGenesisHashToHex,

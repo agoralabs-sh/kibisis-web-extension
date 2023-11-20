@@ -18,30 +18,30 @@ import { toString } from 'qrcode';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import PillSwitch from '@extension/components/PillSwitch';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Hooks
+// hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// Selectors
+// selectors
 import { useSelectSettings } from '@extension/selectors';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { ISettings } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress } from '@extension/utils';
 
 interface IProps {

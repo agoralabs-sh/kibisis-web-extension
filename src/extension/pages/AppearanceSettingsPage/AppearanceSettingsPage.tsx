@@ -3,17 +3,17 @@ import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import PageHeader from '@extension/components/PageHeader';
 import SettingsSelectItem from '@extension/components/SettingsSelectItem';
 
-// Features
+// features
 import { setSettings } from '@extension/features/settings';
 
-// Selectors
+// selectors
 import { useSelectSettings } from '@extension/selectors';
 
-// Types
+// types
 import { IAppThunkDispatch, ISettings } from '@extension/types';
 
 const AppearanceSettingsPage: FC = () => {

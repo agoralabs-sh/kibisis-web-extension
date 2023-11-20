@@ -2,13 +2,13 @@ import React, { FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
 
-// Constants
+// constants
 import {
   CREATE_NEW_ACCOUNT_ROUTE,
   IMPORT_EXISTING_ACCOUNT_ROUTE,
 } from '@extension/constants';
 
-// Features
+// features
 import { saveCredentialsThunk } from '@extension/features/registration';
 
 // Pages
@@ -16,10 +16,10 @@ import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
 
-// Selectors
+// selectors
 import { useSelectSavingRegistration } from '@extension/selectors';
 
-// Types
+// types
 import {
   IAddAccountCompleteFunction,
   IAddAccountCompleteResult,

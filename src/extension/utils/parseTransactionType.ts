@@ -1,13 +1,13 @@
 import { encode as encodeHex } from '@stablelib/hex';
 import { EncodedTransaction, OnApplicationComplete } from 'algosdk';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 
 interface IOptions {

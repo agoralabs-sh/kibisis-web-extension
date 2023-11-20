@@ -1,6 +1,6 @@
 import { IWalletTransaction } from '@agoralabs-sh/algorand-provider';
 
-// Types
+// types
 import IBaseRequest from './IBaseRequest';
 import INetwork from './INetwork';
 

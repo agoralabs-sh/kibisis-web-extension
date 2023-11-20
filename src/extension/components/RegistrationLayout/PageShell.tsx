@@ -1,7 +1,7 @@
 import { Center, Flex, FlexProps } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 interface IProps extends FlexProps {

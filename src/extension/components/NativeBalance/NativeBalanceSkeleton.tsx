@@ -2,10 +2,10 @@ import { HStack, Skeleton, Text } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import AlgorandIcon from '@extension/components/AlgorandIcon';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 const NativeBalanceSkeleton: FC = () => {

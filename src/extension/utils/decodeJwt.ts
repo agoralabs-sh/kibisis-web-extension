@@ -1,6 +1,6 @@
 import { decodeURLSafe as decodeBase64Url } from '@stablelib/base64';
 
-// Types
+// types
 import {
   IDecodedJwt,
   IDecodedJwtHeader,

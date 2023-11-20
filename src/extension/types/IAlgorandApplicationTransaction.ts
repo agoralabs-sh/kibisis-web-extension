@@ -1,4 +1,4 @@
-// Types
+// types
 import IAlgorandStateSchema from './IAlgorandStateSchema';
 
 interface IAlgorandApplicationTransaction {

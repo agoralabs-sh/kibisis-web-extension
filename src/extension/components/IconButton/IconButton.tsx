@@ -12,7 +12,7 @@ import React, {
 } from 'react';
 import { IconType } from 'react-icons';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 

@@ -4,24 +4,24 @@ import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import CreatePasswordInput, {
   validate,
 } from '@extension/components/CreatePasswordInput';
 import PageHeader from '@extension/components/PageHeader';
 
-// Constants
+// constants
 import { ADD_ACCOUNT_ROUTE, DEFAULT_GAP } from '@extension/constants';
 
-// Features
+// features
 import { setPassword } from '@extension/features/registration';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Types
+// types
 import { IAppThunkDispatch, IRegistrationRootState } from '@extension/types';
 
 const CreatePasswordPage: FC = () => {

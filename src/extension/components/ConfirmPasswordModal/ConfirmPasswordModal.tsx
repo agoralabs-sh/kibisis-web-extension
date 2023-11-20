@@ -11,23 +11,23 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import PasswordInput from '@extension/components/PasswordInput';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Selectors
+// selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// Services
+// servcies
 import { PrivateKeyService } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 
 interface IProps {

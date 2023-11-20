@@ -2,18 +2,18 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
-// Enums
+// enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IAccount, IMainRootState, INetwork } from '@extension/types';
 import { IFetchAccountsFromStoragePayload } from '../types';
 
-// Utils
+// utils
 import { selectDefaultNetwork } from '@extension/utils';
 import { updateAccountInformation } from '../utils';
 

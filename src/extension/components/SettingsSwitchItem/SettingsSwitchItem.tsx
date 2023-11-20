@@ -1,10 +1,10 @@
 import { HStack, Switch, Text, VStack } from '@chakra-ui/react';
 import React, { ChangeEvent, FC } from 'react';
 
-// Constants
+// constants
 import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';

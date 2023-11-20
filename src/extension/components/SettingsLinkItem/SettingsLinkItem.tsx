@@ -4,10 +4,10 @@ import { IconType } from 'react-icons';
 import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
-// Constants
+// constants
 import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 

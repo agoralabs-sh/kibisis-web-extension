@@ -1,15 +1,15 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Constants
+// constants
 import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
-// Enums
+// enums
 import { SessionsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { StorageManager } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IMainRootState, IStorageItemTypes } from '@extension/types';
 

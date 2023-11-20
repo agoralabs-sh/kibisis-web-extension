@@ -4,30 +4,30 @@ import React, { FC, ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import EmptyState from '@extension/components/EmptyState';
 import ScrollableTabPanel from '@extension/components/ScrollableTabPanel';
 import TransactionItem from '@extension/components/TransactionItem';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Features
+// features
 import {
   IAccountTransaction,
   updateAccountTransactionsThunk,
 } from '@extension/features/transactions';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// Selectors
+// selectors
 import { useSelectAccountTransactionByAccountId } from '@extension/selectors';
 
-// Types
+// types
 import { IAccount, IAppThunkDispatch, INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress } from '@extension/utils';
 
 interface IProps {

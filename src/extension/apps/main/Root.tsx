@@ -3,7 +3,7 @@ import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
-// Components
+// components
 import ConfirmModal from '@extension/components/ConfirmModal';
 import EnableModal from '@extension/components/EnableModal';
 import ErrorModal from '@extension/components/ErrorModal';
@@ -12,7 +12,7 @@ import SignBytesModal from '@extension/components/SignBytesModal';
 import SignTxnsModal from '@extension/components/SignTxnsModal';
 import WalletConnectModal from '@extension/components/WalletConnectModal';
 
-// Features
+// features
 import {
   fetchAccountsFromStorageThunk,
   startPollingForAccountInformationThunk,
@@ -39,21 +39,21 @@ import {
 } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
 
-// Hooks
+// hooks
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
 import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectAssets,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,
@@ -63,7 +63,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { convertGenesisHashToHex } from '@extension/utils';
 
 const Root: FC = () => {

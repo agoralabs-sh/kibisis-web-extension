@@ -2,17 +2,17 @@ import { Avatar, Center, HStack, Icon, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
-// Hooks
+// hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Types
+// types
 import { IAccount, IAccountInformation } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress } from '@extension/utils';
 import { AccountService } from '@extension/services';
 

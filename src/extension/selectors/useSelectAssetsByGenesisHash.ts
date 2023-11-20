@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { IAsset, IMainRootState } from '@extension/types';
 
-// Utils
+// utils
 import { convertGenesisHashToHex } from '@extension/utils';
 
 /**

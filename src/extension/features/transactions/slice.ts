@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
 // Thunks
 import { updateAccountTransactionsThunk } from './thunks';
 
-// Types
+// types
 import { ITransactionsState, IUpdateAccountTransactionsResult } from './types';
 
-// Utils
+// utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({

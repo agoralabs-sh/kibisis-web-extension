@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux';
 
-// Enums
+// enums
 import { NetworkTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import { IMainRootState, INetwork } from '@extension/types';
 
 /**

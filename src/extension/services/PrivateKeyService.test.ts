@@ -2,13 +2,13 @@ import { faker } from '@faker-js/faker';
 import { encode as encodeHex } from '@stablelib/hex';
 import { Account, generateAccount } from 'algosdk';
 
-// Services
+// servcies
 import PrivateKeyService from './PrivateKeyService';
 
-// Types
+// types
 import type { ILogger } from '@common/types';
 
-// Utils
+// utils
 import { createLogger } from '@common/utils';
 
 describe(PrivateKeyService.name, () => {

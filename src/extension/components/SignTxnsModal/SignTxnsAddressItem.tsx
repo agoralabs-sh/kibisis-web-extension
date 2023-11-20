@@ -2,27 +2,27 @@ import { HStack, StackProps, Text } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 
-// Constants
+// constants
 import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IAccount, IExplorer, INetwork } from '@extension/types';
 
 interface IProps extends StackProps {

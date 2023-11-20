@@ -11,7 +11,7 @@ import {
   Transaction,
 } from 'algosdk';
 
-// Utils
+// utils
 import verifyTransactionGroupId from './verifyTransactionGroupId';
 
 describe(`${verifyTransactionGroupId.name}()`, () => {

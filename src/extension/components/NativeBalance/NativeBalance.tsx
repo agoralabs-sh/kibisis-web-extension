@@ -4,18 +4,18 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoInformationCircleOutline } from 'react-icons/io5';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// Utils
+// utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 import { createIconFromDataUri } from '@extension/utils';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { INativeCurrency } from '@extension/types';
 
 interface IProps {

@@ -1,10 +1,10 @@
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Errors
+// errors
 import { BaseSerializableError } from '@common/errors';
 
-// Events
+// events
 import BaseResponseEvent from './BaseResponseEvent';
 
 export default class BaseExtensionResponseEvent extends BaseResponseEvent {

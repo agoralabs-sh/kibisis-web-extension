@@ -1,7 +1,7 @@
 import { Steps as ChakraSteps, StepsProps } from 'chakra-ui-steps';
 import React, { FC } from 'react';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 

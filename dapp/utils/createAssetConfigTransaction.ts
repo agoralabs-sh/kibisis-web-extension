@@ -6,10 +6,10 @@ import {
   Transaction,
 } from 'algosdk';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
-// Utils
+// utils
 import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 interface IOptions {

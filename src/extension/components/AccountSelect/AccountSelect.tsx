@@ -9,14 +9,14 @@ import {
 import React, { FC } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 
-// Components
+// components
 import AccountItem from '@extension/components/AccountItem';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
-// Types
+// types
 import { IAccount } from '@extension/types';
 
 interface IProps {

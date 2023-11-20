@@ -2,17 +2,17 @@ import { decode as decodeBase64 } from '@stablelib/base64';
 import { decode as decodeUtf8 } from '@stablelib/utf8';
 import { BigNumber } from 'bignumber.js';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import {
   IAlgorandTransaction,
   IBaseTransaction,
   ITransactions,
 } from '@extension/types';
 
-// Utils
+// utils
 import parseApplicationTransaction from './parseApplicationTransaction';
 import parseAssetConfigTransaction from './parseAssetConfigTransaction';
 import parseAssetFreezeTransaction from './parseAssetFreezeTransaction';

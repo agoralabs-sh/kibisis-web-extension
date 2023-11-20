@@ -1,4 +1,4 @@
-// Enums
+// enums
 import { ErrorCodeEnum } from '../enums';
 
 export default abstract class BaseExtensionError extends Error {

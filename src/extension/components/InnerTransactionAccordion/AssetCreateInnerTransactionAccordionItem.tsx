@@ -14,25 +14,25 @@ import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetDisplay from '@extension/components/AssetDisplay';
 import AssetIcon from '@extension/components/AssetIcon';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem from '@extension/components/PageItem';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// Types
+// types
 import {
   IAccount,
   IAssetCreateTransaction,
@@ -40,7 +40,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { isAccountKnown } from '@extension/utils';
 
 interface IProps {

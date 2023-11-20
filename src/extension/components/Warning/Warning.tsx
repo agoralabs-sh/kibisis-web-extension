@@ -2,7 +2,7 @@ import { HStack, Icon, Text } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
 interface IProps {

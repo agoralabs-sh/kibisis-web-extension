@@ -1,9 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import {
   IAlgorandApplicationTransaction,
   IAlgorandTransaction,
@@ -12,7 +12,7 @@ import {
   IBaseTransaction,
 } from '@extension/types';
 
-// Utils
+// utils
 import mapAlgorandTransactionToTransaction from './mapAlgorandTransactionToTransaction';
 
 export default function parseApplicationTransaction(

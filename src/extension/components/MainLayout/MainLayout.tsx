@@ -1,13 +1,13 @@
 import { Center, HStack, VStack } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 
-// Components
+// components
 import SideBar from '@extension/components/SideBar';
 
-// Constants
+// constants
 import { SIDEBAR_BORDER_WIDTH, SIDEBAR_MIN_WIDTH } from '@extension/constants';
 
-// Selectors
+// selectors
 import { useSelectSideBar } from '@extension/selectors';
 
 interface IProps {

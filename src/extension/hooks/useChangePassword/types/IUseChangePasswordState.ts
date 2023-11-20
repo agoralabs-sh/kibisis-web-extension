@@ -1,7 +1,7 @@
-// Errors
+// errors
 import { BaseExtensionError } from '@extension/errors';
 
-// Types
+// types
 import { IPasswordTag } from '@extension/types';
 
 interface IUseChangePasswordState {

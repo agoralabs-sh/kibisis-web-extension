@@ -4,7 +4,7 @@ import { Transaction } from 'algosdk';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetConfigTransactionContent from './AssetConfigTransactionContent';
 import AssetCreateTransactionContent from './AssetCreateTransactionContent';
@@ -14,19 +14,19 @@ import KeyRegistrationTransactionContent from './KeyRegistrationTransactionConte
 import PaymentTransactionContent from './PaymentTransactionContent';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Hooks
+// hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
 
-// Selectors
+// selectors
 import { useSelectAssetsByGenesisHash } from '@extension/selectors';
 
-// Types
+// types
 import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { computeGroupId } from '@common/utils';
 import { parseTransactionType } from '@extension/utils';
 

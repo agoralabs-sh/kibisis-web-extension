@@ -22,14 +22,14 @@ import React, { ChangeEvent, FC, useState } from 'react';
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from 'react-icons/io5';
 import { v4 as uuid } from 'uuid';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { IWindow } from '@external/types';
 import { IAccountInformation } from './types';
 
-// Utils
+// utils
 import { isValidJwt } from './utils';
 
 interface IProps {

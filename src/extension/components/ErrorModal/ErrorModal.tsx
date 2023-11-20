@@ -13,23 +13,23 @@ import React, { FC } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { IoWarning } from 'react-icons/io5';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 
-// Constants
+// constants
 import { SUPPORT_MAIL_TO_LINK } from '@extension/constants';
 
-// Errors
+// errors
 import { BaseExtensionError } from '@extension/errors';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import { useSelectError } from '@extension/selectors';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
 interface IProps {

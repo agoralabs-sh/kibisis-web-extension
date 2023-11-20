@@ -1,6 +1,6 @@
 import { Algodv2 } from 'algosdk';
 
-// Types
+// types
 import { INetwork, INode } from '@extension/types';
 
 /**

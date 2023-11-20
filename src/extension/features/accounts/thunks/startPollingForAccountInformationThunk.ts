@@ -1,15 +1,15 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Constants
+// constants
 import { ACCOUNT_INFORMATION_REFRESH_INTERVAL } from '@extension/constants';
 
-// Enums
+// enums
 import { AccountsThunkEnum } from '@extension/enums';
 
 // Thunks
 import updateAccountInformationThunk from './updateAccountInformationThunk';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 

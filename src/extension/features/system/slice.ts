@@ -2,16 +2,16 @@ import { CreateToastFnReturn } from '@chakra-ui/react';
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { NavigateFunction } from 'react-router-dom';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
-// Errors
+// errors
 import { BaseExtensionError } from '@extension/errors';
 
-// Types
+// types
 import { ISystemState, IConfirm } from './types';
 
-// Utils
+// utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({

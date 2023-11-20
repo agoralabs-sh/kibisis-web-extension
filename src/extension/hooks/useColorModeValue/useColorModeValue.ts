@@ -1,4 +1,4 @@
-// Selectors
+// selectors
 import { useSelectColorMode } from '@extension/selectors';
 
 export default function useColorModeValue<

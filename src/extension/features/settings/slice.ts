@@ -1,16 +1,16 @@
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
 // Thunks
 import { fetchSettings, setSettings } from './thunks';
 
-// Types
+// types
 import { ISettings } from '@extension/types';
 import { ISettingsState } from './types';
 
-// Utils
+// utils
 import { getInitialState, mapSettingsToState } from './utils';
 
 const slice = createSlice({

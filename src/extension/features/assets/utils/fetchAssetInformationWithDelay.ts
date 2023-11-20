@@ -1,6 +1,6 @@
 import { Algodv2, IntDecoding } from 'algosdk';
 
-// Types
+// types
 import { IAlgorandAsset } from '@extension/types';
 
 interface IOptions {

@@ -2,10 +2,10 @@ import { Button, Center, HStack, Icon, Text, Tooltip } from '@chakra-ui/react';
 import React, { FC, MouseEvent } from 'react';
 import { IconType } from 'react-icons';
 
-// Constants
+// constants
 import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 

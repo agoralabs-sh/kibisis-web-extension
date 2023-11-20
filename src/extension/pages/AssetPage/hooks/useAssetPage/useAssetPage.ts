@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 
-// Hooks
+// hooks
 import useAssets from '@extension/hooks/useAssets';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,

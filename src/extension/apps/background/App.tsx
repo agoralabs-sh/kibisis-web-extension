@@ -3,11 +3,11 @@ import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 
-// Components
+// components
 import ThemeProvider from '@extension/components/ThemeProvider';
 import Root from './Root';
 
-// Features
+// features
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as assetsReducer } from '@extension/features/assets';
 import { reducer as messagesReducer } from '@extension/features/messages';
@@ -17,10 +17,10 @@ import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as systemReducer } from '@extension/features/system';
 import { reducer as transactionsReducer } from '@extension/features/transactions';
 
-// Types
+// types
 import { IAppProps, IMainRootState } from '@extension/types';
 
-// Utils
+// utils
 import { makeStore } from '@extension/utils';
 
 const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {

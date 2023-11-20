@@ -1,7 +1,7 @@
 import { Box, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
 import React, { FC, ElementType } from 'react';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';

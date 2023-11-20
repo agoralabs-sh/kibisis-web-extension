@@ -1,7 +1,7 @@
 import { Transaction } from 'algosdk';
 import { encode as encodeBase64 } from '@stablelib/base64';
 
-// Utils
+// utils
 import { computeGroupId } from '@common/utils';
 
 /**

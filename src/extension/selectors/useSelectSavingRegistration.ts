@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { IRegistrationRootState } from '@extension/types';
 export default function useSelectSavingRegistration(): boolean {
   return useSelector<IRegistrationRootState, boolean>(

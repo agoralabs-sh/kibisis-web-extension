@@ -1,4 +1,4 @@
-// Features
+// features
 import { ISystemState } from '@extension/features/system';
 
 interface IBaseRootState {

@@ -2,11 +2,11 @@ import { HStack, Spacer, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Types
+// types
 import { INetwork, ITransactions } from '@extension/types';
 import AddressDisplay from '@extension/components/AddressDisplay';
 

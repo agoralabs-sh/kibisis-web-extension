@@ -1,7 +1,7 @@
 import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { IMainRootState } from '@extension/types';
 export default function useSelectWeb3Wallet(): IWeb3Wallet | null {
   return useSelector<IMainRootState, IWeb3Wallet | null>(

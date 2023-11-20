@@ -1,10 +1,10 @@
 import { Text } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Hooks
+// hooks
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps {

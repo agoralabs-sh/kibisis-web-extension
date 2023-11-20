@@ -1,4 +1,4 @@
-// Types
+// types
 import IAlgorandTransaction from './IAlgorandTransaction';
 
 interface IAlgorandAccountTransaction {

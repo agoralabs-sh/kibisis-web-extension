@@ -4,18 +4,18 @@ import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
-// Components
+// components
 import ThemeProvider from '@extension/components/ThemeProvider';
 import Root from './Root';
 
-// Constants
+// constants
 import {
   ADD_ACCOUNT_ROUTE,
   CREATE_PASSWORD_ROUTE,
   GET_STARTED_ROUTE,
 } from '@extension/constants';
 
-// Features
+// features
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as registrationReducer } from '@extension/features/registration';
@@ -26,10 +26,10 @@ import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
 import RegistrationAddAccountRouter from '@extension/pages/RegistrationAddAccountRouter';
 
-// Types
+// types
 import { IAppProps, IRegistrationRootState } from '@extension/types';
 
-// Utils
+// utils
 import { makeStore } from '@extension/utils';
 
 const createRouter = () =>

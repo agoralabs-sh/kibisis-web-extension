@@ -1,6 +1,6 @@
 import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 
-// Types
+// types
 import { ISession } from '@extension/types';
 
 /**

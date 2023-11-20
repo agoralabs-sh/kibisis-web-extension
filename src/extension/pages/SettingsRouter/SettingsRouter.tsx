@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-// Constants
+// constants
 import {
   ADVANCED_ROUTE,
   APPEARANCE_ROUTE,

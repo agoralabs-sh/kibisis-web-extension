@@ -1,4 +1,4 @@
-// Types
+// types
 import { ISession } from '@extension/types';
 
 /**

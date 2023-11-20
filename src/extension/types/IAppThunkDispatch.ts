@@ -1,6 +1,6 @@
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 
-// Types
+// types
 import IMainRootState from './IMainRootState';
 
 type IAppThunkDispatch = ThunkDispatch<IMainRootState, unknown, AnyAction>;

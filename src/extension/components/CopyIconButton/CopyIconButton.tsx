@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { IoCheckmarkOutline, IoCopyOutline } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 

@@ -1,10 +1,10 @@
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Events
+// events
 import BaseEvent from './BaseEvent';
 
-// Types
+// types
 import { IBaseSignBytesRequestPayload } from '@common/types';
 
 type IPayload = IBaseSignBytesRequestPayload;

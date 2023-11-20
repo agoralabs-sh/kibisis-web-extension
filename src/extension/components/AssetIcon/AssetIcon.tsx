@@ -1,7 +1,7 @@
 import { Icon, IconProps } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Components
+// components
 import AlgorandAssetIcon from '@extension/components/AlgorandAssetIcon';
 import VoiAssetIcon from '@extension/components/VoiAssetIcon';
 

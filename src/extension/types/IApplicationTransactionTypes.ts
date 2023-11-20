@@ -1,4 +1,4 @@
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
 type IApplicationTransactionTypes =

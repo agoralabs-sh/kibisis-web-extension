@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
 // Thunks
 import { fetchAssetsThunk, updateAssetInformationThunk } from './thunks';
 
-// Types
+// types
 import { IAsset } from '@extension/types';
 import { IAssetsState, IUpdateAssetInformationResult } from './types';
 
-// Utils
+// utils
 import { upsertItemsById } from '@extension/utils';
 import { getInitialState } from './utils';
 

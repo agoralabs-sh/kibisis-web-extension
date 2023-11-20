@@ -1,4 +1,4 @@
-// Types
+// types
 import { IAsset } from '@extension/types';
 
 interface IUseAssetState {

@@ -1,4 +1,4 @@
-// Types
+// types
 import IAccount from './IAccount';
 import IAdvancedSettings from './IAdvancedSettings';
 import IAppearanceSettings from './IAppearanceSettings';

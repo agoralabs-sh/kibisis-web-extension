@@ -17,20 +17,20 @@ import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import browser from 'webextension-polyfill';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useDocument from './hooks/useDocument';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Utils
+// utils
 import { createComponents } from './utils';
 
 interface IProps {

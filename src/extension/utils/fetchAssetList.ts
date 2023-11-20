@@ -1,7 +1,7 @@
-// Constants
+// constants
 import { TINYMAN_ASA_LIST_API_URL } from '@extension/constants';
 
-// Types
+// types
 import { IBaseOptions, ILogger } from '@common/types';
 import { ITinyManAssetResponse } from '@extension/types';
 

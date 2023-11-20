@@ -1,4 +1,4 @@
-// Types
+// types
 import { ISettings } from '@extension/types';
 
 /**

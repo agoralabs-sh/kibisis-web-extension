@@ -2,13 +2,13 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 import { getSdkError } from '@walletconnect/utils';
 
-// Enums
+// enums
 import { SessionsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { SessionService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IMainRootState, ISession } from '@extension/types';
 

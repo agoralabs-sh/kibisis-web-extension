@@ -1,22 +1,22 @@
 import { ChakraProvider, ColorMode } from '@chakra-ui/react';
 import React, { FC, PropsWithChildren, useEffect, useState } from 'react';
 
-// Components
+// components
 import Fonts from '@extension/components/Fonts';
 
-// Selectors
+// selectors
 import { useSelectSettings } from '@extension/selectors';
 
-// Services
+// servcies
 import { ColorModeManager } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { ISettings } from '@extension/types';
 
-// Utils
+// utils
 import { setDocumentColorMode } from './utils';
 
 interface IProps extends PropsWithChildren {

@@ -2,13 +2,13 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Indexer, IntDecoding } from 'algosdk';
 import LookupAccountTransactions from 'algosdk/dist/types/client/v2/indexer/lookupAccountTransactions';
 
-// Enums
+// enums
 import { TransactionsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import {
   IAccount,
@@ -21,7 +21,7 @@ import {
   IUpdateAccountTransactionsResult,
 } from '../types';
 
-// Utils
+// utils
 import { getIndexerClient } from '@common/utils';
 import { mapAlgorandTransactionToTransaction } from '@extension/utils';
 

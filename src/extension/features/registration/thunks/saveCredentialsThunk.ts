@@ -4,23 +4,23 @@ import { NavigateFunction } from 'react-router-dom';
 import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
 
-// Constants
+// constants
 import { CREATE_PASSWORD_ROUTE } from '@extension/constants';
 
-// Enums
+// enums
 import { RegisterThunkEnum } from '@extension/enums';
 
-// Errors
+// errors
 import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
-// Features
+// features
 import { setError } from '@extension/features/system';
 import { sendRegistrationCompletedThunk } from '@extension/features/messages';
 
-// Services
+// servcies
 import { AccountService, PrivateKeyService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import {
   IAccount,

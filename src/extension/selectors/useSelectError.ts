@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux';
 
-// Errors
+// errors
 import { BaseExtensionError } from '@extension/errors';
 
-// Types
+// types
 import { IBaseRootState } from '@extension/types';
 
 export default function useSelectError(): BaseExtensionError | null {

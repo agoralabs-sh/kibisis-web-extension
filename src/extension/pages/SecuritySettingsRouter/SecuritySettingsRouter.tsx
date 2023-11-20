@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-// Constants
+// constants
 import { CHANGE_PASSWORD_ROUTE } from '@extension/constants';
 
 // Pages

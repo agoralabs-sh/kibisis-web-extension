@@ -1,9 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import {
   IAlgorandKeyRegistrationTransaction,
   IBaseTransaction,

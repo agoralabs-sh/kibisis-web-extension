@@ -11,7 +11,7 @@ import {
 import { useState } from 'react';
 import browser from 'webextension-polyfill';
 
-// Errors
+// errors
 import {
   BaseExtensionError,
   DecryptionError,
@@ -19,13 +19,13 @@ import {
   MalformedDataError,
 } from '@extension/errors';
 
-// Selectors
+// selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// Services
+// servcies
 import { PrivateKeyService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { ISignTransactionsOptions, IUseSignTransactionsState } from './types';
 

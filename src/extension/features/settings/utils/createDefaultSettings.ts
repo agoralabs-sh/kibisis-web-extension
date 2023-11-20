@@ -1,7 +1,7 @@
-// Types
+// types
 import { INetwork, ISettings } from '@extension/types';
 
-// Utils
+// utils
 import { selectDefaultNetwork } from '@extension/utils';
 
 /**

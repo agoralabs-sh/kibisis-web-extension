@@ -6,20 +6,20 @@ import { Address, decodeAddress, signBytes as algoSignBytes } from 'algosdk';
 import { useState } from 'react';
 import browser from 'webextension-polyfill';
 
-// Errors
+// errors
 import {
   BaseExtensionError,
   DecryptionError,
   MalformedDataError,
 } from '@extension/errors';
 
-// Selectors
+// selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// Services
+// servcies
 import { PrivateKeyService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { ISignBytesOptions, IUseSignBytesState } from './types';
 

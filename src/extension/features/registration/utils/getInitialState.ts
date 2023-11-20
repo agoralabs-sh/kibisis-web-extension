@@ -1,4 +1,4 @@
-// Types
+// types
 import { IRegistrationState } from '../types';
 
 export default function getInitialState(): IRegistrationState {

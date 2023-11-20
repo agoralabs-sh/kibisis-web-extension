@@ -2,10 +2,10 @@ import { Avatar, AvatarBadge, AvatarProps, Icon } from '@chakra-ui/react';
 import React, { FC, ReactElement } from 'react';
 import { IoCheckmarkOutline } from 'react-icons/io5';
 
-// Hooks
+// hooks
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
-// Types
+// types
 import { IAsset } from '@extension/types';
 
 interface IProps extends AvatarProps {

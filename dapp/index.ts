@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
-// Components
+// components
 import App from './App';
 
 async function onLoad(): Promise<void> {

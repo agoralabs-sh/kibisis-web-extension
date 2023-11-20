@@ -1,22 +1,22 @@
 import browser, { Runtime, Windows } from 'webextension-polyfill';
 
-// Constants
+// constants
 import {
   DEFAULT_POPUP_HEIGHT,
   DEFAULT_POPUP_WIDTH,
 } from '@extension/constants';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Events
+// events
 import { BaseEvent, ExtensionBackgroundAppLoadEvent } from '@common/events';
 
-// Services
+// servcies
 import PrivateKeyService from './PrivateKeyService';
 import StorageManager from './StorageManager';
 
-// Types
+// types
 import {
   IBaseOptions,
   IAllExtensionEvents,

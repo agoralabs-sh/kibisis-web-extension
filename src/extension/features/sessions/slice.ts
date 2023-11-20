@@ -1,7 +1,7 @@
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
 // Thunks
@@ -15,11 +15,11 @@ import {
   setSessionThunk,
 } from './thunks';
 
-// Types
+// types
 import { ISession } from '@extension/types';
 import { IRemoveAuthorizedAddressResult, ISessionsState } from './types';
 
-// Utils
+// utils
 import { getInitialState, upsertSessions } from './utils';
 
 const slice = createSlice({

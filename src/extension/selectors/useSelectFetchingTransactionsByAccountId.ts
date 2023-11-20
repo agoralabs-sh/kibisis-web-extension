@@ -1,12 +1,12 @@
 import { useSelector } from 'react-redux';
 
-// Features
+// features
 import { IAccountTransaction } from '@extension/features/transactions';
 
-// Selectors
+// selectors
 import useSelectAccountTransactionByAccountId from './useSelectAccountTransactionByAccountId';
 
-// Types
+// types
 import { IMainRootState } from '@extension/types';
 
 /**

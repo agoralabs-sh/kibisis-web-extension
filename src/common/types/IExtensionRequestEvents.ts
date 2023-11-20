@@ -1,4 +1,4 @@
-// Events
+// events
 import {
   ExtensionEnableRequestEvent,
   ExtensionSignBytesRequestEvent,

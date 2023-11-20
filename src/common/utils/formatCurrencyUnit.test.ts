@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-// Utils
+// utils
 import formatCurrencyUnit from './formatCurrencyUnit';
 
 interface ITestParams {

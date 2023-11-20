@@ -2,13 +2,13 @@ import { HStack, Skeleton, StackProps, Text } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode } from 'react';
 
-// Components
+// components
 import AssetDisplay from '@extension/components/AssetDisplay';
 
-// Constants
+// constants
 import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 

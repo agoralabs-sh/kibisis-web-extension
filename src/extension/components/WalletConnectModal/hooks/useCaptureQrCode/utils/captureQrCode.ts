@@ -1,7 +1,7 @@
 import jsQR, { QRCode } from 'jsqr';
 import browser, { Windows } from 'webextension-polyfill';
 
-// Utils
+// utils
 import { convertDataUriToImageData } from '@extension/utils';
 
 export default async function captureQrCode(): Promise<string> {

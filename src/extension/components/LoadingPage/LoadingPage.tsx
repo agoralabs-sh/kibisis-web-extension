@@ -2,10 +2,10 @@ import { Center, Flex } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { InfinitySpin } from 'react-loader-spinner';
 
-// Hooks
+// hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
 const LoadingPage: FC = () => {
