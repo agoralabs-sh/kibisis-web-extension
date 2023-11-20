@@ -4,6 +4,10 @@ on:
   pull_request:
 
 jobs:
+  ##
+  # install
+  ##
+
   install:
     name: "Install"
     runs-on: ubuntu-latest
@@ -14,7 +18,7 @@ jobs:
         uses: ./.github/actions/use-dependencies
 
   ##
-  # needs install
+  # lint, build and test
   ##
 
   lint:
@@ -29,8 +33,8 @@ jobs:
       - name: "👕 Lint"
         run: yarn lint
 
-  build:
-    name: "Build"
+  build_chrome:
+    name: "Build Chrome"
     needs: install
     runs-on: ubuntu-latest
     steps:
@@ -39,14 +43,26 @@ jobs:
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "🏗️ Build"
-        run: yarn build
+        run: yarn build:chrome
+
+  build_firefox:
+    name: "Build Firefox"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "🏗️ Build"
+        run: yarn build:firefox
       - name: "🗜️ Zip build"
-        run: zip -r build.zip .build/
+        run: zip -qr build.zip .build/
       - name: "📤 Upload build"
         uses: actions/upload-artifact@v3
         with:
-          name: build
-          path: build.zip
+          name: firefox_build
+          path: firefox_build.zip
 
   test:
     name: "Test"
@@ -61,12 +77,12 @@ jobs:
         run: yarn test
 
   ##
-  # needs [install, build]
+  # build validation
   ##
 
   validate_firefox:
     name: "Validate Firefox"
-    needs: [install, build]
+    needs: [install, build_firefox]
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
@@ -76,14 +92,14 @@ jobs:
       - name: "📥 Download build"
         uses: actions/download-artifact@v3
         with:
-          name: build
+          name: firefox_build
       - name: "🗜️ Unzip build"
-        run: unzip build.zip
+        run: unzip -q firefox_build.zip
       - name: "✅ Validate"
         run: yarn validate:firefox
 
   ##
-  # needs validate_firefox
+  # clean up
   ##
 
   clean_up:
@@ -96,4 +112,4 @@ jobs:
         with:
           failOnError: false
           name: |
-            build
+            firefox_build
