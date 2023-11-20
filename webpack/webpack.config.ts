@@ -1,22 +1,22 @@
 import { config } from 'dotenv';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { resolve } from 'path';
-import { Configuration, DefinePlugin } from 'webpack';
+import { Configuration } from 'webpack';
 import { Configuration as DevelopmentConfiguration } from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
 // config
 import { version } from '../package.json';
-import { browser_specific_settings } from '../src/manifest.json';
+
+// enums
+import { EnvironmentEnum } from './enums';
 
 // constants
 import {
   APP_TITLE,
-  DEVELOPMENT_ENVIRONMENT,
-  DAPP_ENVIRONMENT,
+  DAPP_CONFIG_NAME,
   DAPP_BUILD_PATH,
   DAPP_SRC_PATH,
-  PRODUCTION_ENVIRONMENT,
 } from './constants';
 
 // plugins
@@ -26,7 +26,7 @@ import WebExtPlugin from './plugins/WebExtPlugin';
 import { IWebpackEnvironmentVariables } from './types';
 
 // utils
-import { createCommonConfig } from './utils';
+import { createCommonConfig, createDefinePlugin } from './utils';
 
 const dappPort: number = 8080;
 const maxSize: number = 4000000; // 4 MB
@@ -34,13 +34,15 @@ const maxSize: number = 4000000; // 4 MB
 const configs: (
   env: IWebpackEnvironmentVariables
 ) => (Configuration | DevelopmentConfiguration)[] = ({
-  WEB_EXT_TARGET,
+  target = 'firefox', // default to firefox
 }: IWebpackEnvironmentVariables) => {
   let commonConfig: Configuration;
 
   config();
 
-  commonConfig = createCommonConfig();
+  commonConfig = createCommonConfig({
+    target,
+  });
 
   return [
     /**
@@ -66,7 +68,7 @@ const configs: (
           },
         ],
       },
-      name: DEVELOPMENT_ENVIRONMENT,
+      name: EnvironmentEnum.Development,
       optimization: {
         removeAvailableModules: false,
         removeEmptyChunks: false,
@@ -76,20 +78,17 @@ const configs: (
         pathinfo: false,
       },
       plugins: [
-        new DefinePlugin({
-          __EXTENSION_ID__: JSON.stringify(browser_specific_settings.gecko.id),
-          __APP_TITLE__: JSON.stringify(APP_TITLE),
-          __ENV__: JSON.stringify(DEVELOPMENT_ENVIRONMENT),
-          __VERSION__: JSON.stringify(version),
-          __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
-            process.env.WALLET_CONNECT_PROJECT_ID
-          ),
+        createDefinePlugin({
+          environment: EnvironmentEnum.Development,
+          target,
+          version,
+          walletConnectProjectId: process.env.WALLET_CONNECT_PROJECT_ID || '',
         }),
         new WebExtPlugin({
           devtools: true,
           persistState: true,
           startUrls: [`http://localhost:${dappPort}`], // navigate to the dapp
-          target: WEB_EXT_TARGET,
+          target,
         }),
       ],
     }),
@@ -116,7 +115,7 @@ const configs: (
           },
         ],
       },
-      name: PRODUCTION_ENVIRONMENT,
+      name: EnvironmentEnum.Production,
       optimization: {
         splitChunks: {
           cacheGroups: {
@@ -139,11 +138,11 @@ const configs: (
         maxEntrypointSize: 10000000, // 10 MB
       },
       plugins: [
-        new DefinePlugin({
-          __EXTENSION_ID__: JSON.stringify(browser_specific_settings.gecko.id),
-          __APP_TITLE__: JSON.stringify(APP_TITLE),
-          __ENV__: JSON.stringify(PRODUCTION_ENVIRONMENT),
-          __VERSION__: JSON.stringify(version),
+        createDefinePlugin({
+          environment: EnvironmentEnum.Production,
+          target,
+          version,
+          walletConnectProjectId: process.env.WALLET_CONNECT_PROJECT_ID || '',
         }),
       ],
     }),
@@ -179,7 +178,7 @@ const configs: (
           },
         ],
       },
-      name: DAPP_ENVIRONMENT,
+      name: DAPP_CONFIG_NAME,
       optimization: {
         removeAvailableModules: false,
         removeEmptyChunks: false,

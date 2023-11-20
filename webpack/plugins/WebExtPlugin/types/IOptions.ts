@@ -1,5 +1,5 @@
 // types
-import ITargetType from './ITargetType';
+import { ITargetType } from '../../../types';
 
 /**
  * @property {boolean} browserConsole - [optional] opens the browser console. Defaults to `false`.

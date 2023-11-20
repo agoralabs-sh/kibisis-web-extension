@@ -1,10 +1,10 @@
-// plugins
-import { ITargetType } from '../plugins/WebExtPlugin';
+// types
+import ITargetType from './ITargetType';
 
 interface IWebpackEnvironmentVariables {
-  WEB_EXT_TARGET?: ITargetType;
   WEBPACK_SERVE?: boolean;
   WEBPACK_WATCH?: boolean;
+  target?: ITargetType;
 }
 
 export default IWebpackEnvironmentVariables;

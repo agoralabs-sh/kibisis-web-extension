@@ -6,11 +6,24 @@ import { Configuration } from 'webpack';
 // constants
 import { APP_TITLE, BUILD_PATH, SRC_PATH } from '../constants';
 
+// plugins
+import ManifestBuilderPlugin from '../plugins/ManifestBuilderPlugin';
+
+// types
+import { ITargetType } from '../types';
+
+interface IOptions {
+  target: ITargetType;
+}
+
 /**
  * Creates a common config.
+ * @param {IOptions} options - various options to alter the configuration.
  * @returns {Configuration} a common configuration.
  */
-export default function createCommonConfig(): Configuration {
+export default function createCommonConfig({
+  target,
+}: IOptions): Configuration {
   const commonPath: string = resolve(SRC_PATH, 'common');
   const extensionPath: string = resolve(SRC_PATH, 'extension');
   const externalPath: string = resolve(SRC_PATH, 'external');
@@ -60,6 +73,7 @@ export default function createCommonConfig(): Configuration {
     },
 
     plugins: [
+      //assets
       new CopyPlugin({
         patterns: [
           {
@@ -70,12 +84,13 @@ export default function createCommonConfig(): Configuration {
             from: resolve(SRC_PATH, 'icons'),
             to: resolve(BUILD_PATH, 'icons'),
           },
-          {
-            from: resolve(SRC_PATH, 'manifest.json'),
-          },
         ],
       }),
-      /* htmls */
+      new ManifestBuilderPlugin(
+        resolve(SRC_PATH, 'manifest.common.json'),
+        resolve(SRC_PATH, `manifest.${target}.json`)
+      ),
+      // htmls
       new HtmlWebpackPlugin({
         chunks: ['background-app'],
         filename: 'background-app.html',

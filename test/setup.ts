@@ -2,7 +2,7 @@ import 'mockzilla-webextension';
 import { TextDecoder, TextEncoder } from 'util';
 
 import { version } from '../package.json';
-import { browser_specific_settings } from '../src/manifest.json';
+import { browser_specific_settings } from '../src/manifest.firefox.json';
 
 Object.defineProperty(global, '__EXTENSION_ID__', {
   value: browser_specific_settings.gecko.id,

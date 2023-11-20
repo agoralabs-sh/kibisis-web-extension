@@ -3,7 +3,8 @@ import { resolve } from 'path';
 import { Compiler } from 'webpack';
 
 // types
-import { ICompilationHookFunction, IOptions, ITargetType } from './types';
+import { ICompilationHookFunction, ITargetType } from '../../types';
+import { IOptions } from './types';
 
 export default class WebExtPlugin {
   private readonly browserConsole: boolean;
