@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { resolve } from 'path';
-import { Configuration } from 'webpack';
+import { Configuration, DefinePlugin } from 'webpack';
 import { Configuration as DevelopmentConfiguration } from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
@@ -26,7 +26,7 @@ import WebExtPlugin from './plugins/WebExtPlugin';
 import { IWebpackEnvironmentVariables } from './types';
 
 // utils
-import { createCommonConfig, createDefinePlugin } from './utils';
+import { createCommonConfig } from './utils';
 
 const dappPort: number = 8080;
 const maxSize: number = 4000000; // 4 MB
@@ -78,11 +78,13 @@ const configs: (
         pathinfo: false,
       },
       plugins: [
-        createDefinePlugin({
-          environment: EnvironmentEnum.Development,
-          target,
-          version,
-          walletConnectProjectId: process.env.WALLET_CONNECT_PROJECT_ID || '',
+        new DefinePlugin({
+          __APP_TITLE__: JSON.stringify(APP_TITLE),
+          __ENV__: JSON.stringify(EnvironmentEnum.Development),
+          __VERSION__: JSON.stringify(version),
+          __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
+            process.env.WALLET_CONNECT_PROJECT_ID
+          ),
         }),
         new WebExtPlugin({
           devtools: true,
@@ -138,11 +140,13 @@ const configs: (
         maxEntrypointSize: 10000000, // 10 MB
       },
       plugins: [
-        createDefinePlugin({
-          environment: EnvironmentEnum.Production,
-          target,
-          version,
-          walletConnectProjectId: process.env.WALLET_CONNECT_PROJECT_ID || '',
+        new DefinePlugin({
+          __APP_TITLE__: JSON.stringify(APP_TITLE),
+          __ENV__: JSON.stringify(EnvironmentEnum.Production),
+          __VERSION__: JSON.stringify(version),
+          __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
+            process.env.WALLET_CONNECT_PROJECT_ID
+          ),
         }),
       ],
     }),

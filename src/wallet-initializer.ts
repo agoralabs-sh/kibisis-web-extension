@@ -28,7 +28,6 @@ import { createLogger } from '@common/utils';
   }
 
   walletManager = new KibisisWalletManager({
-    extensionId: __EXTENSION_ID__,
     logger,
   });
 
