@@ -8,7 +8,8 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version}"
+        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version}",
+        "publishCmd": "yarn concurrently \"yarn build:chrome && yarn package:chrome\" \"yarn build:firefox && yarn package:firefox\""
       }
     ],
     [
