@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.3.0...v1.3.1) (2023-11-21)
+
+
+### Bug Fixes
+
+* manifest version not being updated ([#25](https://github.com/agoralabs-sh/kibisis-web-extension/issues/25)) ([debbc7e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/debbc7e6fee4d2034573024c89beca0f0a1d6ccf))
+
 # [1.3.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.2.0...v1.3.0) (2023-11-21)
 
 
