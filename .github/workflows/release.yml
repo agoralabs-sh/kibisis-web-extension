@@ -33,6 +33,10 @@ jobs:
         uses: actions/checkout@v3
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
+      - name: "📝 Create .env file"
+        uses: ./.github/actions/create-env-file
+        with:
+          walletconnect_project_id: ${{ secrets.PRODUCTION_WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
         run: yarn build:chrome
       - name: "🗜️ Zip build"
@@ -52,6 +56,10 @@ jobs:
         uses: actions/checkout@v3
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
+      - name: "📝 Create .env file"
+        uses: ./.github/actions/create-env-file
+        with:
+          walletconnect_project_id: ${{ secrets.PRODUCTION_WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
         run: yarn build:firefox
       - name: "🗜️ Zip build"
