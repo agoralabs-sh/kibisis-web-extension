@@ -1,17 +1,21 @@
 import 'mockzilla-webextension';
 import { TextDecoder, TextEncoder } from 'util';
+import { v4 as uuid } from 'uuid';
 
-import { version } from '../package.json';
-import { browser_specific_settings } from '../src/manifest.firefox.json';
+// config
+import { name, version } from '../package.json';
 
-Object.defineProperty(global, '__EXTENSION_ID__', {
-  value: browser_specific_settings.gecko.id,
+Object.defineProperty(global, '__APP_TITLE__', {
+  value: `${name}-test`,
 });
 Object.defineProperty(global, '__ENV__', {
   value: 'test',
 });
 Object.defineProperty(global, '__VERSION__', {
   value: `${version}-test`,
+});
+Object.defineProperty(global, '__WALLET_CONNECT_PROJECT_ID__', {
+  value: uuid(),
 });
 Object.defineProperty(global, 'TextDecoder', {
   value: TextDecoder,
