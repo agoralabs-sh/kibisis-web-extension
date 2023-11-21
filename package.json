@@ -33,7 +33,8 @@
     "install:chrome": "./bin/install_chrome.sh",
     "install:firefox": "./bin/install_firefox.sh",
     "lint": "eslint . --ext .ts --ext .tsx --ext .js",
-    "package": "web-ext build",
+    "package:chrome": "./bin/package.sh chrome",
+    "package:firefox": "./bin/package.sh firefox",
     "prepare": "husky install && ./bin/post_install.sh",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts,tsx}\"",
     "start:chrome": "concurrently --names \"DAPP,EXTENSION\" -c \"blue.bold,magenta.bold\" \"yarn start:dapp\" \"yarn start:extension --env target=chrome\"",
@@ -41,7 +42,7 @@
     "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",
     "start:firefox": "concurrently --names \"DAPP,EXTENSION\" -c \"blue.bold,magenta.bold\" \"yarn start:dapp\" \"yarn start:extension --env target=firefox\"",
     "test": "jest",
-    "validate:firefox": "addons-linter .build/"
+    "validate:firefox": "addons-linter .firefox_build/"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",
