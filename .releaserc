@@ -8,8 +8,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version}",
-        "publishCmd": "yarn package"
+        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version}"
       }
     ],
     [
