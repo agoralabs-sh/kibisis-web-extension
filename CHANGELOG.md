@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.2.0...v1.3.0) (2023-11-21)
+
+
+### Features
+
+* chrome extension compatibility ([#24](https://github.com/agoralabs-sh/kibisis-web-extension/issues/24)) ([559e141](https://github.com/agoralabs-sh/kibisis-web-extension/commit/559e1411e080bcabf1bf277d55934cf45f09d139))
+
 # [1.2.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.1.0...v1.2.0) (2023-11-11)
 
 
