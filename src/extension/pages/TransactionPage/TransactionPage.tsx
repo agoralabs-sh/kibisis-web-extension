@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
-// Components
+// components
 import PageHeader from '@extension/components/PageHeader';
 import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetConfigTransactionContent from './AssetConfigTransactionContent';
@@ -13,13 +13,13 @@ import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import LoadingTransactionContent from './LoadingTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 
-// Constants
+// constants
 import { ACCOUNTS_ROUTE } from '@extension/constants';
 
-// Hooks
+// hooks
 import useTransactionPage from './hooks/useTransactionPage';
 
-// Utils
+// utils
 import { TransactionTypeEnum } from '@extension/enums';
 
 const TransactionPage: FC = () => {

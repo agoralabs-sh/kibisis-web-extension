@@ -1,7 +1,7 @@
 import { Icon, IconProps } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Hooks
+// hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
 const WalletConnectBannerIcon: FC<IconProps> = (props: IconProps) => {

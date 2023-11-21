@@ -3,24 +3,24 @@ import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import PageHeader from '@extension/components/PageHeader';
 import SettingsSelectItem from '@extension/components/SettingsSelectItem';
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
-// Features
+// features
 import { setConfirm } from '@extension/features/system';
 import { sendResetThunk } from '@extension/features/messages';
 import { setSettings } from '@extension/features/settings';
 
-// Selectors
+// selectors
 import {
   useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
 
-// Types
+// types
 import {
   IAppThunkDispatch,
   IExplorer,

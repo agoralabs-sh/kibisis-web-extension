@@ -5,7 +5,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoWarningOutline } from 'react-icons/io5';
 
-// Components
+// components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
@@ -16,24 +16,24 @@ import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsLoadingItem from './SignTxnsLoadingItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Features
+// features
 import { updateAccountInformation } from '@extension/features/accounts';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import {
   IAccount,
@@ -45,7 +45,7 @@ import {
 } from '@extension/types';
 import { ICondensedProps } from './types';
 
-// Utils
+// utils
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {

@@ -1,0 +1,17 @@
+name: "Create Env File"
+
+description: "Creates an .env file"
+
+inputs:
+  walletconnect_project_id:
+    description: "WalletConnect project ID"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "📝 Create .env file"
+      run: |
+        rm -f .env
+        echo "WALLET_CONNECT_PROJECT_ID=${{ inputs.walletconnect_project_id }}" >> .env
+      shell: bash

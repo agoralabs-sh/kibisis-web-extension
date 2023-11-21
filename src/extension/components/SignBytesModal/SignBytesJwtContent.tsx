@@ -15,17 +15,17 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoWarningOutline } from 'react-icons/io5';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { IAccount, IDecodedJwt } from '@extension/types';
 
 interface IProps {

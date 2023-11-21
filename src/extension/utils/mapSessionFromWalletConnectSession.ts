@@ -1,7 +1,7 @@
 import { SessionTypes } from '@walletconnect/types';
 import { v4 as uuid } from 'uuid';
 
-// Types
+// types
 import { INetwork, ISession } from '@extension/types';
 
 interface IOptions {

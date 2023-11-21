@@ -1,16 +1,16 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import EnableModal from '@extension/components/EnableModal';
 import LoadingPage from '@extension/components/LoadingPage';
 import SignTxnsModal from '@extension/components/SignTxnsModal';
 import SignBytesModal from '@extension/components/SignBytesModal';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Features
+// features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
 import {
   closeCurrentWindowThunk,
@@ -22,16 +22,16 @@ import {
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
 
-// Hooks
+// hooks
 import useOnBackgroundAppMessage from '@extension/hooks/useOnBackgroundAppMessage';
 
-// Selectors
+// selectors
 import { useSelectSelectedNetwork } from '@extension/selectors';
 
-// Types
+// types
 import { IAppThunkDispatch, INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { decodeURLSearchParam } from '@extension/utils';
 
 enum ModalTypeEnum {

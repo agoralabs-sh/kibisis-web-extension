@@ -1,9 +1,9 @@
 import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 
 interface IOptions {

@@ -1,4 +1,4 @@
-// Features
+// features
 import { IAccountsState } from '@extension/features/accounts';
 import { IAssetsState } from '@extension/features/assets';
 import { IMessagesState } from '@extension/features/messages';
@@ -7,7 +7,7 @@ import { ISessionsState } from '@extension/features/sessions';
 import { ISettingsState } from '@extension/features/settings';
 import { ITransactionsState } from '@extension/features/transactions';
 
-// Types
+// types
 import IBaseRootState from './IBaseRootState';
 
 interface IMainRootState extends IBaseRootState {

@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 
-// Features
+// features
 import { IAccountTransaction } from '@extension/features/transactions';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectAccountTransactions,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,

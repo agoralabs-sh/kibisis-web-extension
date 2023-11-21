@@ -1,15 +1,15 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Constants
+// constants
 import { ASSETS_KEY_PREFIX, NODE_REQUEST_DELAY } from '@extension/constants';
 
-// Enums
+// enums
 import { AssetsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { StorageManager } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IAsset, IMainRootState } from '@extension/types';
 import {
@@ -17,7 +17,7 @@ import {
   IUpdateAssetInformationResult,
 } from '../types';
 
-// Utils
+// utils
 import { convertGenesisHashToHex, upsertItemsById } from '@extension/utils';
 import { fetchAssetInformationById } from '../utils';
 

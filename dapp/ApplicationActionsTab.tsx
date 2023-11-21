@@ -30,18 +30,18 @@ import {
 } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
 import { IAccountInformation } from './types';
 
-// Utils
+// utils
 import { convertToStandardUnit } from '@common/utils';
 import { createAppCallTransaction } from './utils';
 

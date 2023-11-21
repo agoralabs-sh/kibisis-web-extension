@@ -1,10 +1,10 @@
-// Constants
+// constants
 import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
-// Services
+// servcies
 import StorageManager from './StorageManager';
 
-// Types
+// types
 import { IBaseOptions, ILogger } from '@common/types';
 import { ISession } from '@extension/types';
 

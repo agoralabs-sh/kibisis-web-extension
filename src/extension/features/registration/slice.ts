@@ -1,15 +1,15 @@
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
 // Thunks
 import { saveCredentialsThunk } from './thunks';
 
-// Types
+// types
 import { IRegistrationState, ISetPasswordPayload } from './types';
 
-// Utils
+// utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({

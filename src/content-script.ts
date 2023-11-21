@@ -1,12 +1,12 @@
 import browser from 'webextension-polyfill';
 
-// Services
+// servcies
 import { ExternalEventService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 
-// Utils
+// utils
 import { createLogger } from '@common/utils';
 import { injectScript } from '@extension/utils';
 

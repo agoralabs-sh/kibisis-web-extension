@@ -1,4 +1,4 @@
-// Types
+// types
 import IAssetConfigTransaction from './IAssetConfigTransaction';
 import IAssetCreateTransaction from './IAssetCreateTransaction';
 import IAssetDestroyTransaction from './IAssetDestroyTransaction';

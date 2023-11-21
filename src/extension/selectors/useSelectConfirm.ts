@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux';
 
-// Features
+// features
 import { IConfirm } from '@extension/features/system';
 
-// Types
+// types
 import { IBaseRootState } from '@extension/types';
 
 export default function useSelectConfirm(): IConfirm | null {

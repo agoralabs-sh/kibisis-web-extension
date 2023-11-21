@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { IMainRootState, ISignTxnsRequest } from '@extension/types';
 
 /**

@@ -5,7 +5,7 @@ import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoWarningOutline } from 'react-icons/io5';
 
-// Components
+// components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
@@ -17,19 +17,19 @@ import SignTxnsChangeAddressItem from './SignTxnsChangeAddressItem';
 import SignTxnsLoadingItem from './SignTxnsLoadingItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Types
+// types
 import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
-// Utils
+// utils
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 import Warning from '@extension/components/Warning';
 

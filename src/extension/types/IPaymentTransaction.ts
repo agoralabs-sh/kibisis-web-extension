@@ -1,7 +1,7 @@
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import IBaseTransaction from './IBaseTransaction';
 
 interface IPaymentTransaction extends IBaseTransaction {

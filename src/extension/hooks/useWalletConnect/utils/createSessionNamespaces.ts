@@ -1,7 +1,7 @@
 import { ProposalTypes, SessionTypes } from '@walletconnect/types';
 import { buildApprovedNamespaces } from '@walletconnect/utils';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
 interface IOptions {

@@ -34,15 +34,15 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { ChangeEvent, FC, useState } from 'react';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
 import { IAccountInformation } from './types';
 
-// Utils
+// utils
 import { convertToAtomicUnit, convertToStandardUnit } from '@common/utils';
 import { createPaymentTransaction } from './utils';
 

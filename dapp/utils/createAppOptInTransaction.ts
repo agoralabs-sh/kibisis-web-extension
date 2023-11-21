@@ -5,13 +5,13 @@ import {
   Transaction,
 } from 'algosdk';
 
-// Constants
+// constants
 import { TESTNET_APP_INDEX } from '../constants';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
-// Utils
+// utils
 import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 interface IOptions {

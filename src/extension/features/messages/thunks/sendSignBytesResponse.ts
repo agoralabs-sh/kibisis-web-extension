@@ -1,14 +1,14 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
-// Events
+// events
 import { ExtensionSignBytesResponseEvent } from '@common/events';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 import { IBaseResponseThunkPayload } from '../types';

@@ -1,19 +1,19 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Constants
+// constants
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
-// Enums
+// enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IAccount, IMainRootState, INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { updateAccountInformation } from '../utils';
 
 const updateAccountInformationThunk: AsyncThunk<

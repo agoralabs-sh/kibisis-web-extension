@@ -1,7 +1,7 @@
 import { encodeAddress } from 'algosdk';
 import { sign } from 'tweetnacl';
 
-// Types
+// types
 import { IBaseOptions } from '@common/types';
 
 /**

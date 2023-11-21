@@ -5,18 +5,18 @@ import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-// Features
+// features
 import { setSessionThunk } from '@extension/features/sessions';
 
-// Selectors
+// selectors
 import { useSelectLogger, useSelectWeb3Wallet } from '@extension/selectors';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IAppThunkDispatch, INetwork } from '@extension/types';
 import { IUseWalletConnectState } from './types';
 
-// Utils
+// utils
 import { mapSessionFromWalletConnectSession } from '@extension/utils';
 import { createSessionNamespaces } from './utils';
 

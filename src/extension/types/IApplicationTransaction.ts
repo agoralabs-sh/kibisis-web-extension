@@ -1,4 +1,4 @@
-// Types
+// types
 import IApplicationTransactionTypes from './IApplicationTransactionTypes';
 import IBaseTransaction from './IBaseTransaction';
 import ITransactions from './ITransactions';

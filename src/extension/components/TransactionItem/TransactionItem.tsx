@@ -4,28 +4,28 @@ import { useTranslation } from 'react-i18next';
 import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
-// Components
+// components
 import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
 import DefaultTransactionItemContent from './DefaultTransactionItemContent';
 import PaymentTransactionItemContent from './PaymentTransactionItemContent';
 
-// Constants
+// constants
 import { ACCOUNTS_ROUTE, TRANSACTIONS_ROUTE } from '@extension/constants';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IAccount, INetwork, ITransactions } from '@extension/types';
 
-// Utils
+// utils
 import AssetTransferTransactionItemContent from './AssetTransferTransactionItemContent';
 
 interface IProps {

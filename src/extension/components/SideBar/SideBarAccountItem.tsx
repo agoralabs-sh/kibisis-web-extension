@@ -12,10 +12,10 @@ import {
 import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
-// Constants
+// constants
 import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
 
-// Hooks
+// hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
@@ -24,13 +24,13 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IAccount, IAccountInformation } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress } from '@extension/utils';
 
 interface IProps {
@@ -115,6 +115,7 @@ const SideBarAccountItem: FC<IProps> = ({
               >
                 {accountInformation.name}
               </Text>
+
               <Text color={subTextColor} fontSize="xs">
                 {ellipseAddress(address, {
                   end: 10,

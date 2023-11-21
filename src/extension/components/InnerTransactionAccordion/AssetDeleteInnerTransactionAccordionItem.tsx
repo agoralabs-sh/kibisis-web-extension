@@ -13,23 +13,23 @@ import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem from '@extension/components/PageItem';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// Types
+// types
 import {
   IAccount,
   IAssetDestroyTransaction,
@@ -37,7 +37,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { isAccountKnown } from '@extension/utils';
 
 interface IProps {

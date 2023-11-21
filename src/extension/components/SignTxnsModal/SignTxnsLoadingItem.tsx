@@ -2,10 +2,10 @@ import { HStack, Skeleton, StackProps, Text } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import React, { FC } from 'react';
 
-// Constants
+// constants
 import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 

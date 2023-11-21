@@ -9,8 +9,8 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/actions/workflows/lint_build_test.yml" target="_blank">
-    <img src="https://github.com/agoralabs-sh/kibisis-web-extension/actions/workflows/lint_build_test.yml/badge.svg" alt="Build, lint and test" />
+  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/actions/workflows/pull_request_checks.yml" target="_blank">
+    <img src="https://github.com/agoralabs-sh/kibisis-web-extension/actions/workflows/pull_request_checks.yml/badge.svg" alt="Pull Request Checks" />
   </a>
   <a href="https://img.shields.io/amo/v/kibisis@kibis.is" target="_blank">
     <img src="https://img.shields.io/amo/v/kibisis@kibis.is" alt="Mozilla add-on" />
@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  An Algorand wallet browser extension to sign data, send transactions and rekey with another account.
+  An AVM wallet in your browser that goes beyond just DeFi.
 </p>
 
 ### Table of contents
@@ -59,6 +59,7 @@ Coming soon...
 ### 3.1. Requirements
 
 * Install [Yarn v1.22.5+][yarn]
+* Install [jq][jq]
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -69,16 +70,20 @@ Coming soon...
 $ yarn install
 ```
 
+> ⚠️ **NOTE:** a couple of post install scripts will run that will download and install Chrome and Firefox browser binaries at the project root. These binaries will be used for running development versions of the extension.
+
+2. In the newly created `.env` file, replace the environment values with the desired values.
+
 <sup>[Back to top ^][table-of-contents]</sup>
 
 ### 3.3. Run
 
 * To run simply use:
 ```bash
-$ yarn start
+$ yarn start:<chrome|firefox>
 ```
 
-This will bundle the Typescript source code and the add-on assets into a `build/` directory and once the build files have been bundled, Webpack will start the locally installed Firefox Developer Edition (located at [`./.firefox/`][local-firefox-dir]) with the local extension as a temporary add-on.
+> ⚠️ **NOTE:** this command will bundle the TypeScript source code and extension assets into the `.build/` directory and depending on your intended target (you can choose '`chrome`' or '`firefox`') the corresponding browser will start up with the unpacked extension as a temporary extension.
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -86,13 +91,18 @@ This will bundle the Typescript source code and the add-on assets into a `build/
 
 ### 4.1 Useful Commands
 
-| Command              | Description                                                                                                                                                                           |
-|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `yarn build`         | Bundles the source code and the add-on assets in the `build/` directory.                                                                                                              |
-| `yarn package`       | Packages the contents of the `build/` directory into a `.zip` file, ready for submission. See [use `web-ext`][use-web-ext].                                                           |
-| `yarn prettier`      | Runs `prettier` with the same configuration that is run on the pre-commit hooks.                                                                                                      |
-| `yarn start`         | Bundles the source code & the add-on assets, starts the Firefox Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension. |
-| `yarn start:firefox` | Starts up the local Firefox Developer edition and installs the local add-on as a temporary add-on.                                                                                    |
+| Command                | Description                                                                                                                                                                                            |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `yarn build:chrome`    | Bundles the source code and Chrome specific assets into the `.chrome_build/` directory.                                                                                                                |
+| `yarn build:firefox`   | Bundles the source code and Firefox specific assets into the `.firefox_build/` directory.                                                                                                              |
+| `yarn install:chrome`  | Installs the latest version of Chrome For Testing browser to the project root. This removes the existing version if it exists.                                                                         |
+| `yarn install:firefox` | Installs the latest version of Firefox Developer Edition browser to the project root. This removes the existing version if it exists.                                                                  |
+| `yarn package:chrome`  | Packages the contents of the `.chrome_build/` directory into a `kibisis-chrome-{version}.zip` file, ready for submission.                                                                              |
+| `yarn package:firefox` | Packages the contents of the `.firefox_build/` directory into a `kibisis-firefox-{version}.zip` file, ready for submission.                                                                            |
+| `yarn prettier`        | Runs `prettier` with the same configuration that is run on the pre-commit hooks.                                                                                                                       |
+| `yarn start:chrome`    | Bundles the source code & the add-on assets, starts the local Chrome For Testing Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension. |
+| `yarn start:firefox`   | Bundles the source code & the add-on assets, starts the local Firefox Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension.            |
+| `yarn start:dapp`      | Starts the example dApp at [http://localhost:8080](http://localhost:8080)                                                                                                                              |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -110,8 +120,8 @@ Please refer to the [LICENSE][license] file.
 
 <!-- Links -->
 [contribute]: ./CONTRIBUTING.md
+[jq]: https://github.com/jqlang/jq
 [license]: ./LICENSE
-[local-firefox-dir]: ./.firefox
 [table-of-contents]: #table-of-contents
 [use-web-ext]: https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/#using-web-ext-section
 [yarn]: https://yarnpkg.com/

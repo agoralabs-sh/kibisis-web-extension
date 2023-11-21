@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-// Constants
+// constants
 import { NETWORK_CONNECTIVITY_CHECK_INTERVAL } from '@extension/constants';
 
-// Features
+// features
 import { setOnline } from '@extension/features/system';
 
-// Types
+// types
 import { IAppThunkDispatch } from '@extension/types';
 
 export default function useOnNetworkConnectivity(): void {

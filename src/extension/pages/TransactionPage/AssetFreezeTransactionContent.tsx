@@ -10,7 +10,7 @@ import BigNumber from 'bignumber.js';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetDisplay from '@extension/components/AssetDisplay';
 import CopyIconButton from '@extension/components/CopyIconButton';
@@ -19,24 +19,24 @@ import MoreInformationAccordion from '@extension/components/MoreInformationAccor
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Hooks
+// hooks
 import useAsset from '@extension/hooks/useAsset';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// Types
+// types
 import {
   IAccount,
   IAssetFreezeTransaction,
@@ -45,7 +45,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import {
   createIconFromDataUri,
   ellipseAddress,

@@ -7,20 +7,100 @@ on:
       - main
 
 jobs:
-  release:
-    name: "Release"
+  ##
+  # install
+  ##
+
+  install:
+    name: "Install"
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
       - name: "🔧 Setup"
-        uses: actions/setup-node@v3
+        uses: ./.github/actions/use-dependencies
+
+  ##
+  # package
+  ##
+
+  build_chrome:
+    name: "Build Chrome"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "📝 Create .env file"
+        uses: ./.github/actions/create-env-file
         with:
-          node-version: 'lts/*'
-      - name: "📦 Install"
-        run: yarn install --ignore-scripts
+          walletconnect_project_id: ${{ secrets.PRODUCTION_WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
-        run: yarn build
+        run: yarn build:chrome
+      - name: "🗜️ Zip build"
+        run: zip -qr chrome_build.zip .chrome_build/
+      - name: "📤 Upload build"
+        uses: actions/upload-artifact@v3
+        with:
+          name: chrome_build
+          path: chrome_build.zip
+
+  build_firefox:
+    name: "Build Firefox"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "📝 Create .env file"
+        uses: ./.github/actions/create-env-file
+        with:
+          walletconnect_project_id: ${{ secrets.PRODUCTION_WALLETCONNECT_PROJECT_ID }}
+      - name: "🏗️ Build"
+        run: yarn build:firefox
+      - name: "🗜️ Zip build"
+        run: zip -qr firefox_build.zip .firefox_build/
+      - name: "📤 Upload build"
+        uses: actions/upload-artifact@v3
+        with:
+          name: firefox_build
+          path: firefox_build.zip
+
+  ##
+  # release
+  ##
+
+  release:
+    name: "Release"
+    needs: [install, build_chrome, build_firefox]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      # download & package chrome build
+      - name: "📥 Download Chrome build"
+        uses: actions/download-artifact@v3
+        with:
+          name: chrome_build
+      - name: "🗜️ Unzip Chrome build"
+        run: unzip -q chrome_build.zip
+      - name: "📦 Package Chrome build"
+        run: yarn package:chrome
+      # download & package firefox build
+      - name: "📥 Download Firefox build"
+        uses: actions/download-artifact@v3
+        with:
+          name: firefox_build
+      - name: "🗜️ Unzip Firefox build"
+        run: unzip -q firefox_build.zip
+      - name: "📦 Package Firefox build"
+        run: yarn package:firefox
       - name: "🔖 Release"
         env:
           # appears on the release commits
@@ -31,3 +111,20 @@ jobs:
           # used to push the release commit and create the tags
           GITHUB_TOKEN: ${{ secrets.WRITE_REPOS_TOKEN }}
         run: yarn semantic-release
+
+  ##
+  # clean up
+  ##
+
+  clean_up:
+    name: "Clean Up"
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🗑️ Delete artifacts"
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          failOnError: false
+          name: |
+            chrome_build
+            firefox_build

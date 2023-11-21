@@ -1,7 +1,7 @@
-// Enums
+// enums
 import { NetworkTypeEnum } from '../enums';
 
-// Types
+// types
 import IChainNamespace from './IChainNamespace';
 import IExplorer from './IExplorer';
 import INativeCurrency from './INativeCurrency';

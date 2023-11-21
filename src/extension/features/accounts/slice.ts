@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
 // Thunks
@@ -13,11 +13,11 @@ import {
   updateAccountInformationThunk,
 } from './thunks';
 
-// Types
+// types
 import { IAccount } from '@extension/types';
 import { IAccountsState } from './types';
 
-// Utils
+// utils
 import { upsertItemsById } from '@extension/utils';
 import { getInitialState } from './utils';
 

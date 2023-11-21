@@ -1,13 +1,13 @@
 import { useState } from 'react';
 
-// Selectors
+// selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IUseCaptureQrCodeState } from './types';
 
-// Utils
+// utils
 import { captureQrCode } from './utils';
 
 export default function useCaptureQrCode(): IUseCaptureQrCodeState {

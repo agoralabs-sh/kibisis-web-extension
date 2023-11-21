@@ -11,7 +11,7 @@ import * as CSS from 'csstype';
 import React, { FC, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 interface IProps {

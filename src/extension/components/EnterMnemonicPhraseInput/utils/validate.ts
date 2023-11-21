@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
 
-// Utils
+// utils
 import { isMnemonicValid } from '@extension/utils';
 
 export default function validate(

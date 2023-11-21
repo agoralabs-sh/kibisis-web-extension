@@ -1,9 +1,9 @@
 import { ISignTxnsOptions } from '@agoralabs-sh/algorand-provider';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Events
+// events
 import BaseEvent from './BaseEvent';
 
 type IPayload = ISignTxnsOptions;

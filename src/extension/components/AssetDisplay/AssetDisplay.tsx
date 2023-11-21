@@ -3,10 +3,10 @@ import BigNumber from 'bignumber.js';
 import * as CSS from 'csstype';
 import React, { FC, ReactNode } from 'react';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// Utils
+// utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 
 interface IProps {

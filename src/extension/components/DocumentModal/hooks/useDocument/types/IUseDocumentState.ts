@@ -1,4 +1,4 @@
-// Types
+// types
 import IDocument from './IDocument';
 
 interface IUseDocumentState {

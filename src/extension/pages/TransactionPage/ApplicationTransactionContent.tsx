@@ -15,25 +15,25 @@ import BigNumber from 'bignumber.js';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import AssetDisplay from '@extension/components/AssetDisplay';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import { useSelectPreferredBlockExplorer } from '@extension/selectors';
 
-// Types
+// types
 import {
   IAccount,
   IApplicationTransaction,
@@ -41,7 +41,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { createIconFromDataUri, ellipseAddress } from '@extension/utils';
 import InnerTransactionAccordion from '@extension/components/InnerTransactionAccordion';
 

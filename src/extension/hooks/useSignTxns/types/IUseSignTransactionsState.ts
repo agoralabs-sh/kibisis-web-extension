@@ -1,7 +1,7 @@
-// Errors
+// errors
 import { BaseExtensionError } from '@extension/errors';
 
-// Types
+// types
 import ISignTransactionsOptions from 'src/extension/hooks/useSignTxns/types/ISignTransactionsOptions';
 
 interface IUseSignTransactionsState {

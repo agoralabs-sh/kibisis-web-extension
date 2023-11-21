@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { IoCheckmarkOutline, IoCopyOutline } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 
 interface IProps extends ButtonProps {

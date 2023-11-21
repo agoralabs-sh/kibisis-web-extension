@@ -1,13 +1,13 @@
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Errors
+// errors
 import { BaseSerializableError } from '@common/errors';
 
-// Events
+// events
 import BaseExtensionResponseEvent from './BaseExtensionResponseEvent';
 
-// Types
+// types
 import { IBaseSignBytesResponsePayload } from '@common/types';
 
 type IPayload = IBaseSignBytesResponsePayload;

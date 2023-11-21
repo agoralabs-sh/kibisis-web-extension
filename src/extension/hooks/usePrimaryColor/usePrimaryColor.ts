@@ -1,4 +1,4 @@
-// Hooks
+// hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
 export default function usePrimaryColor(): string {

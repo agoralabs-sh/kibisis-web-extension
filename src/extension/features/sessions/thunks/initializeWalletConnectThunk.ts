@@ -3,16 +3,16 @@ import { Core } from '@walletconnect/core';
 import { Web3Wallet } from '@walletconnect/web3wallet';
 import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 
-// Constants
+// constants
 import { KIBISIS_LINK } from '@extension/constants';
 
-// Enums
+// enums
 import { SessionsThunkEnum } from '@extension/enums';
 
-// Thunks
+// thunks
 import removeSessionByTopicThunk from './removeSessionByTopicThunk';
 
-// Types
+// types
 import { IMainRootState } from '@extension/types';
 import { ILogger } from '@common/types';
 
@@ -23,10 +23,9 @@ const initializeWalletConnectThunk: AsyncThunk<
 > = createAsyncThunk<IWeb3Wallet, undefined, { state: IMainRootState }>(
   SessionsThunkEnum.InitializeWalletConnect,
   async (_, { dispatch, getState }) => {
-    const logger: ILogger = getState().system.logger;
     const web3Wallet: IWeb3Wallet = await Web3Wallet.init({
       core: new Core({
-        projectId: '86eaff455340651e0ee12c8572c2d228',
+        projectId: __WALLET_CONNECT_PROJECT_ID__,
       }),
       metadata: {
         name: __APP_TITLE__,

@@ -17,7 +17,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';

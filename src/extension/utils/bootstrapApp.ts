@@ -3,16 +3,16 @@ import { createElement, FC } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { initReactI18next } from 'react-i18next';
 
-// Constants
+// constants
 import { SETTINGS_APPEARANCE_KEY } from '@extension/constants';
 
-// Services
+// services
 import { StorageManager } from '@extension/services';
 
-// Translations
+// translations
 import { en } from '@extension/translations';
 
-// Types
+// types
 import { IAppearanceSettings, IAppProps } from '@extension/types';
 
 export default function bootstrapApp(app: FC<IAppProps>): () => Promise<void> {

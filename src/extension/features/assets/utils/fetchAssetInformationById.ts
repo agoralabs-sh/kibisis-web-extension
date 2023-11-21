@@ -1,6 +1,6 @@
 import { Algodv2 } from 'algosdk';
 
-// Types
+// types
 import { IBaseOptions } from '@common/types';
 import {
   IAlgorandAsset,
@@ -9,7 +9,7 @@ import {
   ITinyManAssetResponse,
 } from '@extension/types';
 
-// Utils
+// utils
 import { getAlgodClient } from '@common/utils';
 import {
   fetchAssetList,

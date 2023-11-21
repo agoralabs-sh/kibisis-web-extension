@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 
-// Selectors
+// selectors
 import {
   useSelectAccountById,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 
 export default function useAccountInformation(

@@ -2,7 +2,7 @@ import { Heading, Spacer, TabPanel, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 const AccountNftsTab: FC = () => {

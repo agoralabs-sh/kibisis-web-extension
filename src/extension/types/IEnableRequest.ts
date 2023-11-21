@@ -1,4 +1,4 @@
-// Types
+// types
 import IBaseRequest from './IBaseRequest';
 import INetwork from './INetwork';
 

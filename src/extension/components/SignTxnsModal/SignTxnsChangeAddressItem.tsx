@@ -3,30 +3,30 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoWalletOutline } from 'react-icons/io5';
 
-// Components
+// components
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 
-// Constants
+// constants
 import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,
@@ -34,7 +34,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress } from '@extension/utils';
 
 interface IProps extends StackProps {

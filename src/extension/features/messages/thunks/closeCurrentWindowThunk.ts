@@ -1,10 +1,10 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser, { Windows } from 'webextension-polyfill';
 
-// Enums
+// enums
 import { MessagesThunkEnum } from '@extension/enums';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 

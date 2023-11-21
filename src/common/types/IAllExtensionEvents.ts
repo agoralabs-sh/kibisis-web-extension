@@ -1,11 +1,11 @@
-// Events
+// events
 import {
   ExtensionBackgroundAppLoadEvent,
   ExtensionRegistrationCompletedEvent,
   ExtensionResetEvent,
 } from '@common/events';
 
-// Types
+// types
 import IExtensionRequestEvents from './IExternalRequestEvents';
 import IExtensionResponseEvents from './IExtensionResponseEvents';
 

@@ -17,15 +17,15 @@ import { useTranslation } from 'react-i18next';
 import { IoAdd, IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
-// Components
+// components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import EmptyState from '@extension/components/EmptyState';
 
-// Constants
+// constants
 import { ACCOUNTS_ROUTE, ASSETS_ROUTE } from '@extension/constants';
 
-// Hooks
+// hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useAssets from '@extension/hooks/useAssets';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -33,17 +33,17 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import {
   useSelectFetchingAssets,
   useSelectSelectedNetwork,
   useSelectUpdatingAssets,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,
@@ -51,7 +51,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 
 interface IProps {

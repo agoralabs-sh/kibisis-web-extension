@@ -1,6 +1,6 @@
 import { Indexer } from 'algosdk';
 
-// Types
+// types
 import { IBaseOptions } from '@common/types';
 import { INetwork, INode } from '@extension/types';
 

@@ -2,7 +2,7 @@ import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
 import { Algodv2, IntDecoding } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
-// Types
+// types
 import {
   IAlgorandAccountInformation,
   IAlgorandAsset,
@@ -10,7 +10,7 @@ import {
 } from '@extension/types';
 import { IAccountInformation, IAssetInformation } from '../types';
 
-// Utils
+// utils
 import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 export default async function getAccountInformation(

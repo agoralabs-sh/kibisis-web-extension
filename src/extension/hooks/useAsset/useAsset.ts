@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-// Features
+// features
 import { updateAssetInformationThunk } from '@extension/features/assets';
 
-// Hooks
+// hooks
 import useAssets from '@extension/hooks/useAssets';
 
-// Selectors
+// selectors
 import {
   useSelectSelectedNetwork,
   useSelectUpdatingAssets,
 } from '@extension/selectors';
 
-// Types
+// types
 import { IAppThunkDispatch, IAsset, INetwork } from '@extension/types';
 import { IUseAssetState } from './types';
 

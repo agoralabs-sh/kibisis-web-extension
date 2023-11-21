@@ -3,13 +3,13 @@ import React, { FC } from 'react';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-// Components
+// components
 import IconButton from '@extension/components/IconButton';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 

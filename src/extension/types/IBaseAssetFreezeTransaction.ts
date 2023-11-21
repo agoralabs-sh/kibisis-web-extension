@@ -1,4 +1,4 @@
-// Types
+// types
 import IBaseTransaction from './IBaseTransaction';
 
 interface IBaseAssetFreezeTransaction extends IBaseTransaction {

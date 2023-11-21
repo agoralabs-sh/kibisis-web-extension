@@ -1,4 +1,4 @@
-// Types
+// types
 import { ISettingsState } from '../types';
 
 export default function getInitialState(): ISettingsState {

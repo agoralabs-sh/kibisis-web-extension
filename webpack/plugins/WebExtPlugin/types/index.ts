@@ -1,2 +1,1 @@
-export { default as ICompilationHookFunction } from './ICompilationHookFunction';
-export { default as IOptions } from './IOptions';
+export type { default as IOptions } from './IOptions';

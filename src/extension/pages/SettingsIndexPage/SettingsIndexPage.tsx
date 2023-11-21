@@ -9,10 +9,10 @@ import {
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import SettingsLinkItem from '@extension/components/SettingsLinkItem';
 
-// Constants
+// constants
 import {
   ADVANCED_ROUTE,
   APPEARANCE_ROUTE,
@@ -23,7 +23,7 @@ import {
   SETTINGS_ROUTE,
 } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 const SettingsIndexPage: FC = () => {

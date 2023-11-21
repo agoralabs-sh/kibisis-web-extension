@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
 
-// Constants
+// constants
 import { PASSWORD_MIN_LENGTH, PASSWORD_MIN_SCORE } from '@extension/constants';
 
 /**

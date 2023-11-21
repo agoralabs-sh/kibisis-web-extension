@@ -17,16 +17,16 @@ import {
   encode as encodeBase64,
 } from '@stablelib/base64';
 
-// Constants
+// constants
 import {
   EXTERNAL_MESSAGE_REQUEST_TIMEOUT,
   WALLET_ID,
 } from '@external/constants';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Events
+// events
 import {
   BaseEvent,
   ExternalEnableRequestEvent,
@@ -34,7 +34,7 @@ import {
   ExternalSignTxnsRequestEvent,
 } from '@common/events';
 
-// Types
+// types
 import type {
   IBaseOptions,
   IBaseSignBytesResponsePayload,
@@ -42,25 +42,20 @@ import type {
   ILogger,
 } from '@common/types';
 
-// Utils
+// utils
 import { mapSerializableErrors } from '@common/utils';
 
 type IResults = IBaseSignBytesResponsePayload | IEnableResult | ISignTxnsResult;
-
-interface INewOptions extends IBaseOptions {
-  extensionId: string;
-}
 
 export default class KibisisWalletManager extends BaseWalletManager {
   private readonly extensionId: string;
   private readonly logger: ILogger | null;
 
-  constructor({ extensionId, logger }: INewOptions) {
+  constructor({ logger }: IBaseOptions) {
     super({
       id: WALLET_ID,
     });
 
-    this.extensionId = extensionId;
     this.logger = logger || null;
   }
 
@@ -73,6 +68,8 @@ export default class KibisisWalletManager extends BaseWalletManager {
     responseEvent?: string,
     timeout?: number
   ): Promise<IResults> {
+    const _functionName: string = 'handleEvent';
+
     return new Promise<IResults>((resolve, reject) => {
       const controller: AbortController = new AbortController();
       let eventListener: (event: MessageEvent<IExternalResponseEvents>) => void;
@@ -80,7 +77,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
 
       this.logger &&
         this.logger.debug(
-          `${KibisisWalletManager.name}#handleEvent(): handling event "${message.event}"`
+          `${KibisisWalletManager.name}#${_functionName}(): handling event "${message.event}"`
         );
 
       eventListener = (event: MessageEvent<IExternalResponseEvents>) => {
@@ -94,7 +91,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
 
         this.logger &&
           this.logger.debug(
-            `${KibisisWalletManager.name}#handleEvent(): handling response event "${event.data.event}"`
+            `${KibisisWalletManager.name}#${_functionName}(): handling response event "${event.data.event}"`
           );
 
         // clear the timer, we can handle it from here
@@ -135,7 +132,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
       timer = window.setTimeout(() => {
         this.logger &&
           this.logger.debug(
-            `${KibisisWalletManager.name}#handleEvent(): event "${message.event}" timed out`
+            `${KibisisWalletManager.name}#${_functionName}(): event "${message.event}" timed out`
           );
 
         window.removeEventListener('message', eventListener);

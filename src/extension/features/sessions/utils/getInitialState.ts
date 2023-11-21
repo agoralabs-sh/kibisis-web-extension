@@ -1,4 +1,4 @@
-// Types
+// types
 import { ISessionsState } from '../types';
 
 export default function getInitialState(): ISessionsState {

@@ -2,16 +2,16 @@ import { decode as decodeAsHex, encode as encodeHex } from '@stablelib/hex';
 import { decodeAddress, encodeAddress } from 'algosdk';
 import { v4 as uuid } from 'uuid';
 
-// Config
+// config
 import { networks } from '@extension/config';
 
-// Constants
+// constants
 import { ACCOUNTS_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // Service
 import StorageManager from './StorageManager';
 
-// Types
+// types
 import { IBaseOptions, ILogger } from '@common/types';
 import {
   IAccount,
@@ -20,7 +20,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { convertGenesisHashToHex } from '@extension/utils';
 
 export default class AccountService {

@@ -47,18 +47,18 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { FC, useEffect, useState } from 'react';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
 import { IAccountInformation, IAssetInformation } from './types';
 
-// Utils
+// utils
 import {
   convertToAtomicUnit,
   convertToStandardUnit,

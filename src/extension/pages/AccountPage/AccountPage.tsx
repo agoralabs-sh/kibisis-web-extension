@@ -34,7 +34,7 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 
-// Components
+// components
 import AccountActivityTab from '@extension/components/AccountActivityTab';
 import AccountAssetsTab from '@extension/components/AccountAssetsTab';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
@@ -50,20 +50,20 @@ import NativeBalance, {
   NativeBalanceSkeleton,
 } from '@extension/components/NativeBalance';
 
-// Constants
+// constants
 import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 
-// Features
+// features
 import { removeAccountByIdThunk } from '@extension/features/accounts';
 import { setConfirm } from '@extension/features/system';
 import { setSettings } from '@extension/features/settings';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccount,
   useSelectAccountByPublicKey,
@@ -77,10 +77,10 @@ import {
   useSelectSettings,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,
@@ -90,7 +90,7 @@ import {
   ISettings,
 } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress } from '@extension/utils';
 
 const AccountPage: FC = () => {

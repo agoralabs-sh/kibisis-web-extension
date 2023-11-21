@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 
-// Selectors
+// selectors
 import {
   useSelectAssets,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// Types
+// types
 import { IAsset, INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { convertGenesisHashToHex } from '@extension/utils';
 
 export default function useAssets(): IAsset[] {

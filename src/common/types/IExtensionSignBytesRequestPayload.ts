@@ -1,4 +1,4 @@
-// Types
+// types
 import IBaseExtensionRequestPayload from './IBaseExtensionRequestPayload';
 import IBaseSignBytesRequestPayload from './IBaseSignBytesRequestPayload';
 

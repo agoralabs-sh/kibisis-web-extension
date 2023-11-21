@@ -18,10 +18,10 @@ import { encode as encodeHex } from '@stablelib/hex';
 import { verifyBytes } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { IWindow } from '@external/types';
 import { IAccountInformation } from './types';
 

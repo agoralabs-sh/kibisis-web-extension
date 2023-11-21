@@ -1,6 +1,6 @@
 import { configureStore, Store, Reducer } from '@reduxjs/toolkit';
 
-// Features
+// features
 import {
   setConfirm,
   setError,
@@ -9,7 +9,7 @@ import {
 } from '@extension/features/system';
 import { initializeWalletConnectThunk } from '@extension/features/sessions';
 
-// Types
+// types
 import { IBaseRootState } from '@extension/types';
 
 export default function makeStore<T extends IBaseRootState>(

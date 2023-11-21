@@ -18,32 +18,32 @@ import React, { ChangeEvent, FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import SessionRequestHeader, {
   SessionRequestHeaderSkeleton,
 } from '@extension/components/SessionRequestHeader';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Errors
+// errors
 import { SerializableOperationCanceledError } from '@common/errors';
 
-// Features
+// features
 import {
   sendEnableResponseThunk,
   setEnableRequest,
 } from '@extension/features/messages';
 import { setSessionThunk } from '@extension/features/sessions';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectEnableRequest,
@@ -51,13 +51,13 @@ import {
   useSelectSavingSessions,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,
@@ -66,7 +66,7 @@ import {
   ISession,
 } from '@extension/types';
 
-// Utils
+// utils
 import { ellipseAddress, mapSessionFromEnableRequest } from '@extension/utils';
 
 interface IProps {

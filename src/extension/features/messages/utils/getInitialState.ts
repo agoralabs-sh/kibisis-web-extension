@@ -1,4 +1,4 @@
-// Types
+// types
 import { IMessagesState } from '../types';
 
 export default function getInitialState(): IMessagesState {

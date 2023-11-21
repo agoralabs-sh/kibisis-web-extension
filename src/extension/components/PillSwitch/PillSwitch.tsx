@@ -8,11 +8,11 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Hooks
+// hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
 interface IProps {

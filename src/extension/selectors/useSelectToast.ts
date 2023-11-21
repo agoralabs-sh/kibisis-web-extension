@@ -1,7 +1,7 @@
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { IBaseRootState } from '@extension/types';
 
 export default function useSelectToast(): CreateToastFnReturn | null {

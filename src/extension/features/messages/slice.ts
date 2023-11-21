@@ -1,9 +1,9 @@
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
-// Types
+// types
 import {
   IEnableRequest,
   ISignBytesRequest,
@@ -11,7 +11,7 @@ import {
 } from '@extension/types';
 import { IMessagesState } from './types';
 
-// Utils
+// utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({

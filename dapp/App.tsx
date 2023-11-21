@@ -33,14 +33,14 @@ import { SessionTypes } from '@walletconnect/types';
 import { Web3ModalSign, useConnect } from '@web3modal/sign-react';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
-// Components
+// components
 import Fonts from '@extension/components/Fonts';
 import WalletConnectIcon from '@extension/components/WalletConnectIcon';
 
-// Config
+// config
 import { networks } from '@extension/config';
 
-// Tabs
+// tabs
 import ApplicationActionsTab from './ApplicationActionsTab';
 import AssetActionsTab from './AssetActionsTab';
 import AtomicTransactionActionsTab from './AtomicTransactionActionsTab';
@@ -49,15 +49,15 @@ import PaymentActionsTab from './PaymentActionsTab';
 import SignDataTab from './SignDataTab';
 import SignJwtTab from './SignJwtTab';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { IWindow } from '@external/types';
 import { INetwork } from '@extension/types';
 import { IAccountInformation } from './types';
 
-// Utils
+// utils
 import { getAccountInformation } from './utils';
 
 const App: FC = () => {
@@ -67,11 +67,17 @@ const App: FC = () => {
     position: 'top',
   });
   const { connect } = useConnect({
-    requiredNamespaces: {
+    optionalNamespaces: {
+      // testnets
       algorand: {
-        chains: ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe'], // testnet
+        chains: ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe'],
         events: [],
         methods: ['algorand_signTransaction', 'algorand_signMessage'],
+      },
+      voi: {
+        chains: ['voi:xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2_z'],
+        events: [],
+        methods: ['voi_signTransaction', 'voi_signMessage'],
       },
     },
   });

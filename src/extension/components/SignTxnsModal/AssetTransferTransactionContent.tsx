@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
@@ -15,16 +15,16 @@ import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsLoadingItem from './SignTxnsLoadingItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Types
+// types
 import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
-// Utils
+// utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 

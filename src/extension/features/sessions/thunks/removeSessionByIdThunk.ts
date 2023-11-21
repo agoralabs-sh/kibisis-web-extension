@@ -1,12 +1,12 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { SessionsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { SessionService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 

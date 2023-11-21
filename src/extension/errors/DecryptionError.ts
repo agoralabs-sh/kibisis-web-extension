@@ -1,7 +1,7 @@
-// Enums
+// enums
 import { ErrorCodeEnum } from '../enums';
 
-// Errors
+// errors
 import BaseExtensionError from './BaseExtensionError';
 
 export default class DecryptionError extends BaseExtensionError {

@@ -8,10 +8,10 @@ import {
 import * as CSS from 'csstype';
 import React, { FC, PropsWithChildren } from 'react';
 
-// Constants
+// constants
 import { ITEM_HEIGHT } from './constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 interface IProps extends PropsWithChildren<StackProps> {

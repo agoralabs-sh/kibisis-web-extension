@@ -1,16 +1,16 @@
 import { ColorMode, HStack, Tag, TagLabel } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Enums
+// enums
 import { NetworkTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { createIconFromDataUri } from '@extension/utils';
 
-// Selectors
+// selectors
 import { useSelectColorMode } from '@extension/selectors';
 
 interface IProps {

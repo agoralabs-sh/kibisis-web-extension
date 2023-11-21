@@ -12,17 +12,17 @@ import KeyRegistrationTransactionContent from './KeyRegistrationTransactionConte
 import MultipleTransactionsContent from './MultipleTransactionsContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 
-// Constants
+// constants
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Features
+// features
 import { updateAccountInformation } from '@extension/features/accounts';
 import { updateAssetInformationThunk } from '@extension/features/assets';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectAssetsByGenesisHash,
@@ -31,7 +31,7 @@ import {
   useSelectUpdatingAssets,
 } from '@extension/selectors';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import {
   IAccount,
@@ -41,7 +41,7 @@ import {
   INetwork,
 } from '@extension/types';
 
-// Utils
+// utils
 import { parseTransactionType } from '@extension/utils';
 import { AccountService } from '@extension/services';
 

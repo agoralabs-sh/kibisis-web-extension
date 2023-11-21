@@ -1,4 +1,4 @@
-// Types
+// types
 import IAlgorandAssetParams from './IAlgorandAssetParams';
 
 interface IAlgorandAsset {

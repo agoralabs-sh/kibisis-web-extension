@@ -1,7 +1,7 @@
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IAccount } from '@extension/types';
 
 export default function isAccountKnown(

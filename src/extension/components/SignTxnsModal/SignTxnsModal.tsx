@@ -22,41 +22,41 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import PasswordInput from '@extension/components/PasswordInput';
 import SignTxnsModalContent from './SignTxnsModalContent';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Enums
+// enums
 import { ErrorCodeEnum } from '@extension/enums';
 
-// Errors
+// errors
 import {
   SerializableOperationCanceledError,
   SerializableUnknownError,
 } from '@common/errors';
 
-// Features
+// features
 import { setError } from '@extension/features/system';
 import { sendSignTxnsResponse } from '@extension/features/messages';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSignTxns from '@extension/hooks/useSignTxns';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// Selectors
+// selectors
 import { useSelectSignTxnsRequest } from '@extension/selectors';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { IAppThunkDispatch, ISignTxnsRequest } from '@extension/types';
 
 interface IProps {

@@ -1,13 +1,13 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
-// Enums
+// enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { AccountService, PrivateKeyService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IAccount, IMainRootState } from '@extension/types';
 

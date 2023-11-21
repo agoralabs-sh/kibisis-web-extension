@@ -1,4 +1,4 @@
-// Types
+// types
 import { ITransactionsState } from '../types';
 
 export default function getInitialState(): ITransactionsState {

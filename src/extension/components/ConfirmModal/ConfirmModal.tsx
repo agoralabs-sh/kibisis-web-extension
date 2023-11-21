@@ -13,23 +13,23 @@ import {
 import React, { createRef, FC, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import Warning from '@extension/components/Warning';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Features
+// features
 import { IConfirm } from '@extension/features/system';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// Selectors
+// selectors
 import { useSelectConfirm } from '@extension/selectors';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
 interface IProps {

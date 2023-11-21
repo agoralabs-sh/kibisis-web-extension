@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { IMainRootState } from '@extension/types';
 export default function useSelectWalletConnectModalOpen(): boolean {
   return useSelector<IMainRootState, boolean>(

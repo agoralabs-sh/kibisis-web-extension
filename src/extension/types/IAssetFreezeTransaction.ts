@@ -1,7 +1,7 @@
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import IBaseAssetFreezeTransaction from './IBaseAssetFreezeTransaction';
 
 interface IAssetFreezeTransaction extends IBaseAssetFreezeTransaction {

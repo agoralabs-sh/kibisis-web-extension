@@ -1,22 +1,22 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Constants
+// constants
 import {
   SETTINGS_ADVANCED_KEY,
   SETTINGS_APPEARANCE_KEY,
   SETTINGS_GENERAL_KEY,
 } from '@extension/constants';
 
-// Enums
+// enums
 import { NetworkTypeEnum, SettingsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { StorageManager } from '@extension/services';
 
-// Types
+// types
 import { IMainRootState, INetwork, ISettings } from '@extension/types';
 
-// Utils
+// utils
 import { selectDefaultNetwork } from '@extension/utils';
 
 const setSettings: AsyncThunk<

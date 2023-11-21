@@ -2,17 +2,17 @@ import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Route, Routes, useNavigate } from 'react-router-dom';
 
-// Components
+// components
 import ConfirmPasswordModal from '@extension/components/ConfirmPasswordModal';
 
-// Constants
+// constants
 import {
   ACCOUNTS_ROUTE,
   CREATE_NEW_ACCOUNT_ROUTE,
   IMPORT_EXISTING_ACCOUNT_ROUTE,
 } from '@extension/constants';
 
-// Features
+// features
 import {
   saveNewAccountThunk,
   updateAccountInformationThunk,
@@ -23,17 +23,17 @@ import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectLogger,
   useSelectSavingAccounts,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import {
   IAccount,
@@ -42,7 +42,7 @@ import {
   IAppThunkDispatch,
 } from '@extension/types';
 
-// Utils
+// utils
 import { getAddressFromPrivateKey } from '@extension/utils';
 
 const MainAddAccountRouter: FC = () => {

@@ -7,10 +7,10 @@ import {
 } from 'algosdk';
 import { faker } from '@faker-js/faker';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
-// Utils
+// utils
 import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 interface IOptions {

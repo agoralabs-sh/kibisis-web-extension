@@ -3,14 +3,14 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-// Components
+// components
 import KibisisIcon from '@extension/components/KibisisIcon';
 import Button from '@extension/components/Button';
 
-// Constants
+// constants
 import { CREATE_PASSWORD_ROUTE, DEFAULT_GAP } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';

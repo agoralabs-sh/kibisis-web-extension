@@ -2,7 +2,7 @@ import { Skeleton, Text, VStack } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import React, { FC } from 'react';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 const LoadingTransactionContent: FC = () => (

@@ -1,4 +1,4 @@
-// Types
+// types
 import { IAssetsState } from '../types';
 
 export default function getInitialState(): IAssetsState {

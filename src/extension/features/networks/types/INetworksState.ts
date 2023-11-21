@@ -1,4 +1,4 @@
-// Types
+// types
 import { INetwork } from '@extension/types';
 
 /**

@@ -8,14 +8,13 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version}",
-        "publishCmd": "yarn package"
+        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version}"
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": ["src/manifest.json", "package.json", "CHANGELOG.md"],
+        "assets": ["src/manifest.common.json", "package.json", "CHANGELOG.md"],
         "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
       }
     ],

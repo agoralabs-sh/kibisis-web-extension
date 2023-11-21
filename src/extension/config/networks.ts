@@ -204,7 +204,7 @@ const networks: INetwork[] = [
     ],
     namespace: {
       key: 'voi',
-      methods: ['signTransaction', 'signMessage'],
+      methods: ['voi_signTransaction', 'voi_signMessage'],
       reference: 'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2_z',
     },
     nativeCurrency: {

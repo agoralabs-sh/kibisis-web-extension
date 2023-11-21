@@ -2,27 +2,27 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import browser, { Runtime } from 'webextension-polyfill';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Events
+// events
 import {
   ExtensionEnableRequestEvent,
   ExtensionSignBytesRequestEvent,
   ExtensionSignTxnsRequestEvent,
 } from '@common/events';
 
-// Features
+// features
 import {
   setEnableRequest,
   setSignBytesRequest,
   setSignTxnsRequest,
 } from '@extension/features/messages';
 
-// Selectors
+// selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// Types
+// types
 import { IExtensionRequestEvents, ILogger } from '@common/types';
 import { IAppThunkDispatch } from '@extension/types';
 

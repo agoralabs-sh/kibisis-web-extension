@@ -1,11 +1,11 @@
-// Constants
+// constants
 import { VESTIGE_FI_API_URL } from '@extension/constants';
 
-// Types
+// types
 import { IBaseOptions, ILogger } from '@common/types';
 import { IVestigeFiAssetResponse } from '@extension/types';
 
-// Utils
+// utils
 import fetchWithDelay from './fetchWithDelay';
 
 interface IOptions extends IBaseOptions {

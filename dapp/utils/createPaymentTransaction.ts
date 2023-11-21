@@ -6,10 +6,10 @@ import {
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
-// Utils
+// utils
 import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 interface IOptions {

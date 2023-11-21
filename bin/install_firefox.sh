@@ -21,11 +21,8 @@ function main() {
   firefox_dir="${PWD}/.firefox"
   tmp_dir="${PWD}/.tmp"
 
-  if [[ -d "${firefox_dir}" ]];
-    then
-      printf "%b firefox already installed \n" "${INFO_PREFIX}"
-      exit 0
-  fi
+  # remove any previous installations
+  rm -rf "${firefox_dir}"
 
   # determine which os package to download
   if [[ "${OSTYPE}" == "darwin"* ]];

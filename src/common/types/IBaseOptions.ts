@@ -1,4 +1,4 @@
-// Types
+// types
 import ILogger from './ILogger';
 
 interface IBaseOptions {

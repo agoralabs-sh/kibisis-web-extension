@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-// Types
+// types
 import {
   IAccount,
   IAccountInformation,

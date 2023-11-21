@@ -2,10 +2,10 @@ import { Button as ChakraButton, HStack, Skeleton } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 
-// Components
+// components
 import ChainBadge from '@extension/components/ChainBadge';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
 interface IProps {

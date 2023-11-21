@@ -1,9 +1,9 @@
 import { createSlice, Reducer } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
-// Utils
+// utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({

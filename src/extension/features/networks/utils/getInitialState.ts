@@ -1,7 +1,7 @@
-// Config
+// config
 import { networks } from '@extension/config';
 
-// Types
+// types
 import { INetworksState } from '../types';
 
 export default function getInitialState(): INetworksState {

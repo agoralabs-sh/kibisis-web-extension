@@ -1,7 +1,7 @@
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 
-// Enums
+// enums
 import { StoreNameEnum } from '@extension/enums';
 
 // Thunks
@@ -15,16 +15,16 @@ import {
   setSessionThunk,
 } from './thunks';
 
-// Types
+// types
 import { ISession } from '@extension/types';
 import { IRemoveAuthorizedAddressResult, ISessionsState } from './types';
 
-// Utils
+// utils
 import { getInitialState, upsertSessions } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** Clear sessions **/
+    /**clear sessions**/
     builder.addCase(clearSessionsThunk.fulfilled, (state: ISessionsState) => {
       state.items = [];
       state.saving = false;
@@ -35,7 +35,7 @@ const slice = createSlice({
     builder.addCase(clearSessionsThunk.rejected, (state: ISessionsState) => {
       state.saving = false;
     });
-    /** Fetch sessions **/
+    /**fetch sessions**/
     builder.addCase(
       fetchSessionsThunk.fulfilled,
       (state: ISessionsState, action: PayloadAction<ISession[]>) => {
@@ -49,7 +49,7 @@ const slice = createSlice({
     builder.addCase(fetchSessionsThunk.rejected, (state: ISessionsState) => {
       state.fetching = false;
     });
-    /** Initialize WalletConnect **/
+    /**initialize walletconnect**/
     builder.addCase(
       initializeWalletConnectThunk.fulfilled,
       (state: ISessionsState, action: PayloadAction<IWeb3Wallet>) => {
@@ -69,7 +69,7 @@ const slice = createSlice({
         state.initializingWalletConnect = false;
       }
     );
-    /** Remove authorized address **/
+    /**remove authorized address**/
     builder.addCase(
       removeAuthorizedAddressThunk.fulfilled,
       (
@@ -96,7 +96,7 @@ const slice = createSlice({
         state.saving = false;
       }
     );
-    /** Remove session by id **/
+    /**remove session by id**/
     builder.addCase(
       removeSessionByIdThunk.fulfilled,
       (state: ISessionsState, action: PayloadAction<string>) => {
@@ -115,7 +115,7 @@ const slice = createSlice({
         state.saving = false;
       }
     );
-    /** Remove session by topic **/
+    /**remove session by topic**/
     builder.addCase(
       removeSessionByTopicThunk.fulfilled,
       (state: ISessionsState, action: PayloadAction<string | null>) => {
@@ -140,7 +140,7 @@ const slice = createSlice({
         state.saving = false;
       }
     );
-    /** Set session **/
+    /**set session**/
     builder.addCase(
       setSessionThunk.fulfilled,
       (state: ISessionsState, action: PayloadAction<ISession>) => {

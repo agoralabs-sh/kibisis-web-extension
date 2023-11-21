@@ -1,4 +1,4 @@
-// Errors
+// errors
 import { BaseSerializableError } from '@common/errors';
 
 interface IBaseResponseThunkPayload {

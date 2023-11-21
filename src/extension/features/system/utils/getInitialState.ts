@@ -1,7 +1,7 @@
-// Utils
+// utils
 import { createLogger } from '@common/utils';
 
-// Types
+// types
 import { ISystemState } from '../types';
 
 export default function getInitialState(): ISystemState {

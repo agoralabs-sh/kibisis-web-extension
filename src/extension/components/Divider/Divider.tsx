@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Hooks
+// hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
 
 const Divider: FC = () => (

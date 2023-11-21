@@ -1,19 +1,19 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Constants
+// constants
 import {
   SETTINGS_ADVANCED_KEY,
   SETTINGS_APPEARANCE_KEY,
   SETTINGS_GENERAL_KEY,
 } from '@extension/constants';
 
-// Enums
+// enums
 import { SettingsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { StorageManager } from '@extension/services';
 
-// Types
+// types
 import {
   IAdvancedSettings,
   IAppearanceSettings,
@@ -23,7 +23,7 @@ import {
   ISettings,
 } from '@extension/types';
 
-// Utils
+// utils
 import { createDefaultSettings } from '../utils';
 
 const fetchSettings: AsyncThunk<

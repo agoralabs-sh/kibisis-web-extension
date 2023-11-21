@@ -1,10 +1,10 @@
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { NavigateFunction } from 'react-router-dom';
 
-// Errors
+// errors
 import { BaseExtensionError } from '@extension/errors';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import IConfirm from './IConfirm';
 

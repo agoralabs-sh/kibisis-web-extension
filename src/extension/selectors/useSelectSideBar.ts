@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { IBaseRootState } from '@extension/types';
 
 export default function useSelectSideBar(): boolean {

@@ -8,7 +8,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import ConfirmPasswordModal from '@extension/components/ConfirmPasswordModal';
 import CreatePasswordInput, {
@@ -16,18 +16,18 @@ import CreatePasswordInput, {
 } from '@extension/components/CreatePasswordInput';
 import PageHeader from '@extension/components/PageHeader';
 
-// Constants
+// constants
 import {
   DEFAULT_GAP,
   SECURITY_ROUTE,
   SETTINGS_ROUTE,
 } from '@extension/constants';
 
-// Hooks
+// hooks
 import useChangePassword from '@extension/hooks/useChangePassword';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Selectors
+// selectors
 import { useSelectToast } from '@extension/selectors';
 
 const ChangePasswordPage: FC = () => {

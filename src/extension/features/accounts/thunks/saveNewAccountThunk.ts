@@ -3,22 +3,22 @@ import { encode as encodeHex } from '@stablelib/hex';
 import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
 
-// Errors
+// errors
 import {
   MalformedDataError,
   PrivateKeyAlreadyExistsError,
 } from '@extension/errors';
 
-// Features
+// features
 import { setError } from '@extension/features/system';
 
-// Enums
+// enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { AccountService, PrivateKeyService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import {
   IAccount,

@@ -4,13 +4,13 @@ import scrypt from 'scrypt-async';
 import { hash, randomBytes, secretbox, sign, SignKeyPair } from 'tweetnacl';
 import { v4 as uuid } from 'uuid';
 
-// Constants
+// constants
 import {
   PASSWORD_TAG_ITEM_KEY,
   PRIVATE_KEY_ITEM_KEY_PREFIX,
 } from '@extension/constants';
 
-// Errors
+// errors
 import {
   DecryptionError,
   EncryptionError,
@@ -18,10 +18,10 @@ import {
   MalformedDataError,
 } from '@extension/errors';
 
-// Services
+// servcies
 import StorageManager from './StorageManager';
 
-// Types
+// types
 import { IBaseOptions, ILogger } from '@common/types';
 import { IPasswordTag, IPrivateKey } from '@extension/types';
 

@@ -13,18 +13,18 @@ import React, { ChangeEvent, FC, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 
-// Components
+// components
 import DocumentModal from '@extension/components/DocumentModal';
 import IconButton from '@extension/components/IconButton';
 import StrengthMeter from '@extension/components/StrengthMeter';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Utils
+// utils
 import { validate } from './utils';
 
 interface IProps {

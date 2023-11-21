@@ -4,18 +4,18 @@ import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
-// Components
+// components
 import ThemeProvider from '@extension/components/ThemeProvider';
 import Root from './Root';
 
-// Constants
+// constants
 import {
   ADD_ACCOUNT_ROUTE,
   ACCOUNTS_ROUTE,
   SETTINGS_ROUTE,
 } from '@extension/constants';
 
-// Features
+// features
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as assetsReducer } from '@extension/features/assets';
 import { reducer as messagesReducer } from '@extension/features/messages';
@@ -33,10 +33,10 @@ import AccountRouter from '@extension/pages/AccountRouter';
 import AddAccountRouter from '@extension/pages/MainAddAccountRouter';
 import SettingsRouter from '@extension/pages/SettingsRouter';
 
-// Types
+// types
 import { IAppProps, IAppThunkDispatch, IMainRootState } from '@extension/types';
 
-// Utils
+// utils
 import { makeStore } from '@extension/utils';
 
 const createRouter = (dispatch: IAppThunkDispatch) =>

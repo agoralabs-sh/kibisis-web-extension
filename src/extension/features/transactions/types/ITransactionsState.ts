@@ -1,4 +1,4 @@
-// Types
+// types
 import IAccountTransaction from './IAccountTransaction';
 
 /**

@@ -2,22 +2,22 @@ import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
-// Events
+// events
 import { ExtensionEnableResponseEvent } from '@common/events';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IAccount, IMainRootState, INetwork, ISession } from '@extension/types';
 import { IBaseResponseThunkPayload } from '../types';
 
-// Utils
+// utils
 import { mapAddressToWalletAccount } from '@extension/utils';
 
 interface IPayload extends IBaseResponseThunkPayload {

@@ -3,12 +3,12 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoLockClosedOutline } from 'react-icons/io5';
 
-// Components
+// components
 import PageHeader from '@extension/components/PageHeader';
 import SettingsLinkItem from '@extension/components/SettingsLinkItem';
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
-// Constants
+// constants
 import {
   CHANGE_PASSWORD_ROUTE,
   SECURITY_ROUTE,

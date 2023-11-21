@@ -1,10 +1,10 @@
 import { Code, HStack, StackProps, Text } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Constants
+// constants
 import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 interface IProps extends StackProps {

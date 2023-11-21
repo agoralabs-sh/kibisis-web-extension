@@ -1,9 +1,9 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Enums
+// enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 

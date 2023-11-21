@@ -1,6 +1,6 @@
 import { ErrorCodeEnum } from '@agoralabs-sh/algorand-provider';
 
-// Errors
+// errors
 import BaseSerializableError from './BaseSerializableError';
 
 export default class SerializableInvalidGroupIdError extends BaseSerializableError {

@@ -3,14 +3,14 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-// Components
+// components
 import CreateNewAccountIcon from '@extension/components/CreateNewAccountIcon';
 import ImportAccountIcon from '@extension/components/ImportAccountIcon';
 import ImportRekeyAccountIcon from '@extension/components/ImportRekeyAccountIcon';
 import PageHeader from '@extension/components/PageHeader';
 import AccountTypeItem from './AccountTypeItem';
 
-// Constants
+// constants
 import {
   ADD_ACCOUNT_ROUTE,
   CREATE_NEW_ACCOUNT_ROUTE,

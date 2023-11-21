@@ -2,7 +2,7 @@ import { Accordion, ResponsiveValue } from '@chakra-ui/react';
 import * as CSS from 'csstype';
 import React, { FC } from 'react';
 
-// Components
+// components
 import AssetConfigInnerTransactionAccordionItem from './AssetConfigInnerTransactionAccordionItem';
 import AssetCreateInnerTransactionAccordionItem from './AssetCreateInnerTransactionAccordionItem';
 import AssetDeleteInnerTransactionAccordionItem from './AssetDeleteInnerTransactionAccordionItem';
@@ -11,10 +11,10 @@ import AssetTransferInnerTransactionAccordionItem from './AssetTransferInnerTran
 import DefaultInnerTransactionAccordionItem from './DefaultInnerTransactionAccordionItem';
 import PaymentInnerTransactionAccordionItem from './PaymentInnerTransactionAccordionItem';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import { IAccount, INetwork, ITransactions } from '@extension/types';
 
 interface IProps {

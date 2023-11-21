@@ -1,10 +1,10 @@
 import { Icon, IconProps } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
-// Hooks
+// hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
 interface IProps extends Omit<IconProps, 'fill'> {

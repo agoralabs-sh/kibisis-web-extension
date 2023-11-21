@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-// Types
+// types
 import { IDocument, IUseDocumentState } from './types';
 
 export default function useDocument(documentUrl: string): IUseDocumentState {

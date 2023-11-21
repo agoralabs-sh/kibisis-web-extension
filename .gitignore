@@ -279,7 +279,11 @@ fabric.properties
 /coverage
 
 # intermediary directories
-.build/
+.chrome/
+.chrome_build/
+.chrome_profile/
 .dapp/
 .firefox/
+.firefox_build/
 .firefox_profile/
+.tmp/

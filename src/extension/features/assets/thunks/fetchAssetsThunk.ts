@@ -2,17 +2,17 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { ASSETS_KEY_PREFIX } from '@extension/constants';
 
-// Enums
+// enums
 import { AssetsThunkEnum } from '@extension/enums';
 
-// Services
+// servcies
 import { StorageManager } from '@extension/services';
 
-// Types
+// types
 import { ILogger } from '@common/types';
 import { IAsset, IMainRootState, INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { convertGenesisHashToHex } from '@extension/utils';
 
 const fetchAssetsThunk: AsyncThunk<

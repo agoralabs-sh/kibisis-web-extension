@@ -1,13 +1,4 @@
-import {
-  Button,
-  Center,
-  HStack,
-  Skeleton,
-  SkeletonCircle,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { generateAccount } from 'algosdk';
+import { HStack, Text, VStack } from '@chakra-ui/react';
 import React, {
   FC,
   ReactNode,
@@ -31,14 +22,15 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
-// Components
+// components
 import Divider from '@extension/components/Divider';
 import IconButton from '@extension/components/IconButton';
 import KibisisIcon from '@extension/components/KibisisIcon';
 import SideBarAccountItem from './SideBarAccountItem';
 import SideBarActionItem from './SideBarActionItem';
+import SideBarSkeletonAccountItem from './SideBarSkeletonAccountItem';
 
-// Constants
+// constants
 import {
   ADD_ACCOUNT_ROUTE,
   ACCOUNTS_ROUTE,
@@ -49,29 +41,26 @@ import {
   SIDEBAR_MIN_WIDTH,
 } from '@extension/constants';
 
-// Features
+// features
 import { openWalletConnectModal } from '@extension/features/sessions';
 
-// Hooks
+// hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectFetchingAccounts,
 } from '@extension/selectors';
 
-// Service
+// service
 import { AccountService } from '@extension/services';
 
-// Types
+// types
 import { IAccount, IAppThunkDispatch } from '@extension/types';
-
-// Utils
-import { ellipseAddress } from '@extension/utils';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
@@ -123,33 +112,7 @@ const SideBar: FC = () => {
   const renderAccounts: () => ReactNode = () => {
     if (fetchingAccounts) {
       return Array.from({ length: 3 }, (_, index) => (
-        <Button
-          _hover={{
-            bg: buttonHoverBackgroundColor,
-          }}
-          borderRadius={0}
-          fontSize="md"
-          h={SIDEBAR_ITEM_HEIGHT}
-          justifyContent="start"
-          key={`sidebar-fetching-item-${index}`}
-          p={0}
-          variant="ghost"
-          w="full"
-        >
-          <HStack m={0} p={0} spacing={0} w="full">
-            <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
-              <SkeletonCircle size="9" />
-            </Center>
-            <Skeleton>
-              <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
-                {ellipseAddress(generateAccount().addr, {
-                  end: 10,
-                  start: 10,
-                })}
-              </Text>
-            </Skeleton>
-          </HStack>
-        </Button>
+        <SideBarSkeletonAccountItem key={`sidebar-fetching-item-${index}`} />
       ));
     }
 
@@ -233,7 +196,10 @@ const SideBar: FC = () => {
           variant="ghost"
         />
       </HStack>
+
       <Divider />
+
+      {/*accounts*/}
       <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
         {renderAccounts()}
       </VStack>

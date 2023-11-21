@@ -1,7 +1,7 @@
 import { IconProps } from '@chakra-ui/react';
 import React, { ReactNode } from 'react';
 
-// Utils
+// utils
 import createIconFromDataUri from './createIconFromDataUri';
 
 interface ITestParams {

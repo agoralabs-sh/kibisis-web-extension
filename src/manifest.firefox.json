@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "permissions": ["<all_urls>", "downloads", "storage"],
+  "browser_action": {
+    "default_title": "Kibisis"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kibisis@kibis.is"
+    }
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "web_accessible_resources": ["wallet-initializer.js"]
+}

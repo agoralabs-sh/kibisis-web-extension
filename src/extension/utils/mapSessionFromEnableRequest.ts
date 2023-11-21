@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-// Types
+// types
 import { IEnableRequest, ISession } from '@extension/types';
 
 export default function mapSessionFromEnableRequest({

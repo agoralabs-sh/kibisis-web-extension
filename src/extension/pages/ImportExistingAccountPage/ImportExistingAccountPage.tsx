@@ -13,7 +13,7 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-// Components
+// components
 import Button from '@extension/components/Button';
 import EnterMnemonicPhraseInput, {
   validate,
@@ -21,16 +21,16 @@ import EnterMnemonicPhraseInput, {
 import PageHeader from '@extension/components/PageHeader';
 import Steps from '@extension/components/Steps';
 
-// Constants
+// constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Types
+// types
 import { IAddAccountCompleteFunction } from '@extension/types';
 
 interface IProps {

@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Components
+// components
 import AssetIcon from '@extension/components/AssetIcon';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
@@ -13,19 +13,19 @@ import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsLoadingItem from './SignTxnsLoadingItem';
 import SignTxnsTextItem from './SignTxnsTextItem';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// Types
+// types
 import { IAccount, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
-// Utils
+// utils
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {

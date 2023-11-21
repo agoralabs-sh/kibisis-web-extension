@@ -1,7 +1,7 @@
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Events
+// events
 import BaseEvent from './BaseEvent';
 
 interface IPayload {

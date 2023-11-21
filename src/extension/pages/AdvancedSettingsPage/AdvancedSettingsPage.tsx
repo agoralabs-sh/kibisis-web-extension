@@ -3,18 +3,18 @@ import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-// Components
+// components
 import PageHeader from '@extension/components/PageHeader';
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 
-// Features
+// features
 import { setSettings } from '@extension/features/settings';
 
-// Selectors
+// selectors
 import { useSelectSettings } from '@extension/selectors';
 
-// Types
+// types
 import {
   IAdvancedSettings,
   IAppThunkDispatch,

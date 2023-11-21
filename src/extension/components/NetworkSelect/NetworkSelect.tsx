@@ -9,13 +9,13 @@ import {
 import React, { FC } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 
-// Components
+// components
 import ChainBadge from '@extension/components/ChainBadge';
 
-// Hooks
+// hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
 interface IProps {

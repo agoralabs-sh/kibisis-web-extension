@@ -13,16 +13,16 @@ import {
   OnApplicationComplete,
 } from 'algosdk';
 
-// Constants
+// constants
 import { TESTNET_APP_INDEX } from '../constants';
 
-// Enums
+// enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// Types
+// types
 import { INetwork } from '@extension/types';
 
-// Utils
+// utils
 import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
 
 interface IOptions {

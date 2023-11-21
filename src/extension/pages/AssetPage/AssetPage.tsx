@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { IoArrowDownOutline, IoArrowUpOutline } from 'react-icons/io5';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
-// Components
+// components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import Button from '@extension/components/Button';
@@ -13,17 +13,17 @@ import LoadingPage from '@extension/components/LoadingPage';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
 
-// Constants
+// constants
 import { ACCOUNTS_ROUTE } from '@extension/constants';
 
-// Hooks
+// hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import useAssetPage from './hooks/useAssetPage';
 
-// Selectors
+// selectors
 import {
   useSelectAccounts,
   useSelectFetchingAssets,
@@ -31,16 +31,16 @@ import {
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// Services
+// servcies
 import { AccountService } from '@extension/services';
 
-// Theme
+// theme
 import { theme } from '@extension/theme';
 
-// Types
+// types
 import { IAccount, IExplorer, INetwork } from '@extension/types';
 
-// Utils
+// utils
 import { formatCurrencyUnit } from '@common/utils';
 import { ellipseAddress } from '@extension/utils';
 

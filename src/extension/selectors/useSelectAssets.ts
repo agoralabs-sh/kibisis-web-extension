@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-// Types
+// types
 import { IAsset, IMainRootState } from '@extension/types';
 
 /**

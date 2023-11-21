@@ -5,16 +5,16 @@ import {
 import { decodeUnsignedTransaction, Transaction } from 'algosdk';
 import browser from 'webextension-polyfill';
 
-// Config
+// config
 import { networks } from '@extension/config';
 
-// Constants
+// constants
 import { SETTINGS_GENERAL_KEY } from '@extension/constants';
 
-// Enums
+// enums
 import { EventNameEnum } from '@common/enums';
 
-// Errors
+// errors
 import {
   SerializableInvalidGroupIdError,
   SerializableInvalidInputError,
@@ -22,7 +22,7 @@ import {
   SerializableUnauthorizedSignerError,
 } from '@common/errors';
 
-// Events
+// events
 import {
   ExtensionEnableRequestEvent,
   ExtensionEnableResponseEvent,
@@ -38,12 +38,12 @@ import {
   ExternalSignTxnsResponseEvent,
 } from '@common/events';
 
-// Services
+// servcies
 import AccountService from './AccountService';
 import SessionService from './SessionService';
 import StorageManager from './StorageManager';
 
-// Types
+// types
 import {
   IBaseExtensionRequestPayload,
   IBaseOptions,
@@ -61,7 +61,7 @@ import {
   IStorageItemTypes,
 } from '@extension/types';
 
-// Utils
+// utils
 import { computeGroupId } from '@common/utils';
 import {
   getAuthorizedAddressesForHost,
