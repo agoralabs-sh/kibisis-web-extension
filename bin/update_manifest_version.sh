@@ -28,7 +28,7 @@ function main {
   fi
 
   printf "%b updating manifest.common.json#version to version '%s' \n" "${INFO_PREFIX}" "${1}"
-  cat <<< $(jq --arg version "${1}" '.version = $version' src/manifest.common.json) > manifest.common.json
+  cat <<< $(jq --arg version "${1}" '.version = $version' "${PWD}/src/manifest.common.json") > "${PWD}/src/manifest.common.json"
 
   exit 0
 }
