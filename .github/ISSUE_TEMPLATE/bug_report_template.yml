@@ -1,17 +1,15 @@
 name: "\U0001F41B Bug Report"
 description: "File a bug report"
 title: "[Bug]: "
-labels: ["🐛 bug"]
+labels: ["\U0001F41B bug"]
 assignees:
   - kieranroneill
-
 body:
   # welcome
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report, all issues are welcome and remember, you're awesome!
-
   # contact
   - type: input
     id: contact
@@ -21,7 +19,6 @@ body:
       placeholder: e.g. email@example.com
     validations:
       required: false
-
   # version
   - type: dropdown
     id: version
@@ -29,10 +26,34 @@ body:
       label: Version
       description: What version of the software are you running?
       options:
-        - 1.0.0 (Default)
+        - 1.3.1
+        - 1.3.0
+        - 1.2.0
+        - 1.1.0
+        - 1.1.0-beta.20
+        - 1.1.0-beta.19
+        - 1.1.0-beta.18
+        - 1.1.0-beta.17
+        - 1.1.0-beta.16
+        - 1.1.0-beta.15
+        - 1.1.0-beta.14
+        - 1.1.0-beta.13
+        - 1.1.0-beta.12
+        - 1.1.0-beta.1
+        - 1.0.0
     validations:
       required: true
-
+  # browser
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browser are you seeing the problem on?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+    validations:
+      required: true
   # description
   - type: textarea
     id: description
@@ -43,17 +64,15 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-
   # steps to reproduce
   - type: textarea
     id: reproduction
     attributes:
       label: Steps To Reproduce
       description: Use a simple bulleted pointed list of the steps to reproduce.
-      placeholder: * Light a small spark...
+      placeholder: "* Light a small spark..."
     validations:
       required: true
-
   # expected Results
   - type: textarea
     id: expected
@@ -63,7 +82,6 @@ body:
       placeholder: My NFDomain data!
     validations:
       required: true
-
   # actual Results
   - type: textarea
     id: actual
@@ -73,7 +91,6 @@ body:
       placeholder: The quantum realm is threatened and we must miniaturize to save it!
     validations:
       required: true
-
   # logs
   - type: textarea
     id: browser-console-logs
