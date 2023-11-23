@@ -31,6 +31,8 @@ jobs:
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
+      - name: "📦 Install yq"
+        uses: ./.github/actions/install-yq
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "📝 Create .env file"

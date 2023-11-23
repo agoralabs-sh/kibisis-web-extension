@@ -8,14 +8,14 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version}",
+        "prepareCmd": "./bin/update_manifest_version.sh ${nextRelease.version} && ./bin/update_issue_template.sh ${nextRelease.version}",
         "publishCmd": "yarn concurrently \"yarn build:chrome && yarn package:chrome\" \"yarn build:firefox && yarn package:firefox\""
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": ["src/manifest.common.json", "package.json", "CHANGELOG.md"],
+        "assets": [".github/ISSUE_TEMPLATE/bug_report_template.yml", "src/manifest.common.json", "package.json", "CHANGELOG.md"],
         "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
       }
     ],
