@@ -1,16 +1,18 @@
-name: Bug
-description: File a bug
+name: "\U0001F41B Bug Report"
+description: "File a bug report"
 title: "[Bug]: "
 labels: ["🐛 bug"]
 assignees:
-  - nettle-bot
+  - kieranroneill
+
 body:
-  # Welcome
+  # welcome
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug, all issues are welcome and remember, you're awesome!
-  # Contact
+        Thanks for taking the time to fill out this bug report, all issues are welcome and remember, you're awesome!
+
+  # contact
   - type: input
     id: contact
     attributes:
@@ -19,7 +21,8 @@ body:
       placeholder: e.g. email@example.com
     validations:
       required: false
-  # Version
+
+  # version
   - type: dropdown
     id: version
     attributes:
@@ -29,7 +32,8 @@ body:
         - 1.0.0 (Default)
     validations:
       required: true
-  # Description
+
+  # description
   - type: textarea
     id: description
     attributes:
@@ -39,7 +43,8 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-  # Steps to reproduce
+
+  # steps to reproduce
   - type: textarea
     id: reproduction
     attributes:
@@ -48,7 +53,8 @@ body:
       placeholder: * Light a small spark...
     validations:
       required: true
-  # Expected Results
+
+  # expected Results
   - type: textarea
     id: expected
     attributes:
@@ -57,7 +63,8 @@ body:
       placeholder: My NFDomain data!
     validations:
       required: true
-  # Actual Results
+
+  # actual Results
   - type: textarea
     id: actual
     attributes:
@@ -66,12 +73,13 @@ body:
       placeholder: The quantum realm is threatened and we must miniaturize to save it!
     validations:
       required: true
-  # Logs
+
+  # logs
   - type: textarea
-    id: logs
+    id: browser-console-logs
     attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      label: Relevant browser console output
+      description: Please copy and paste any relevant browser console output. This will be automatically formatted into code, so no need for backticks.
       render: shell
     validations:
       required: false
