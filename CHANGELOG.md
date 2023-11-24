@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.3.1...v1.4.0) (2023-11-24)
+
+
+### Features
+
+* tighten permissions ([#27](https://github.com/agoralabs-sh/kibisis-web-extension/issues/27)) ([09edbe8](https://github.com/agoralabs-sh/kibisis-web-extension/commit/09edbe8eb5e4d3ce0d37caf72a0864a4048da40e))
+
 ## [1.3.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.3.0...v1.3.1) (2023-11-21)
 
 
