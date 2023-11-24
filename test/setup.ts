@@ -11,6 +11,9 @@ Object.defineProperty(global, '__APP_TITLE__', {
 Object.defineProperty(global, '__ENV__', {
   value: 'test',
 });
+Object.defineProperty(global, '__TARGET__', {
+  value: 'firefox-test',
+});
 Object.defineProperty(global, '__VERSION__', {
   value: `${version}-test`,
 });
