@@ -33,6 +33,7 @@
   * [3.3. Run](#33-run)
 * [4. Appendix](#-4-appendix)
   * [4.1. Useful Commands](#41-useful-commands)
+  * [4.2. Manifest Permissions](#42-manifest-permissions)
 * [5. How To Contribute](#-5-how-to-contribute)
 * [6. License](#-6-license)
 
@@ -89,7 +90,7 @@ $ yarn start:<chrome|firefox>
 
 ## 📑 4. Appendix
 
-### 4.1 Useful Commands
+### 4.1. Useful Commands
 
 | Command                | Description                                                                                                                                                                                            |
 |------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -103,6 +104,16 @@ $ yarn start:<chrome|firefox>
 | `yarn start:chrome`    | Bundles the source code & the add-on assets, starts the local Chrome For Testing Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension. |
 | `yarn start:firefox`   | Bundles the source code & the add-on assets, starts the local Firefox Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension.            |
 | `yarn start:dapp`      | Starts the example dApp at [http://localhost:8080](http://localhost:8080)                                                                                                                              |
+<sup>[Back to top ^][table-of-contents]</sup>
+
+### 4.2. Manifest Permissions
+
+| Value         | Version  | Justification                                                                                                                                                                  |
+|---------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `<all_urls>`  | 2        | When the extension attempts to scan the QR code of a WalletConnect dapp, the [`tabs.captureVisibleTab()`][capture-visible-tab-api] function is used.                           |
+| `activeTab`   | 3        | As above, the extension requires access to the [`tabs.captureVisibleTab()`][capture-visible-tab-api].                                                                          |
+| `downloads`   | 2 and 3  | Documents, such as the Strong Password Policy, can be viewed in app, or can optionally be downloaded directly from the extension using [`downloads.download()`][download-api]. |
+| `storage`     | 2 and 3  | The [storage][storage-api] API is used to maintain the state of the extension. It saves encrypted private keys, settings and the lists of AVM assets.                          |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -119,9 +130,12 @@ Please refer to the [LICENSE][license] file.
 <sup>[Back to top ^][table-of-contents]</sup>
 
 <!-- Links -->
+[capture-visible-tab-api]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/captureVisibleTab
 [contribute]: ./CONTRIBUTING.md
+[download-api]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/downloads/download
 [jq]: https://github.com/jqlang/jq
 [license]: ./LICENSE
+[storage-api]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage
 [table-of-contents]: #table-of-contents
 [use-web-ext]: https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/#using-web-ext-section
 [yarn]: https://yarnpkg.com/

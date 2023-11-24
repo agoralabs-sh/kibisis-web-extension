@@ -1,7 +1,6 @@
 {
   "manifest_version": 3,
-  "permissions": ["downloads", "storage"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": ["activeTab", "downloads", "storage"],
   "action": {
     "default_title": "Kibisis"
   },
@@ -10,7 +9,7 @@
   },
   "web_accessible_resources": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["*://*/*"],
       "resources": ["wallet-initializer.js"]
     }
   ]

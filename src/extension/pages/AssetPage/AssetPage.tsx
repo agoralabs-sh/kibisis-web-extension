@@ -38,7 +38,7 @@ import { AccountService } from '@extension/services';
 import { theme } from '@extension/theme';
 
 // types
-import { IAccount, IExplorer, INetwork } from '@extension/types';
+import { IExplorer, INetwork } from '@extension/types';
 
 // utils
 import { formatCurrencyUnit } from '@common/utils';
@@ -194,7 +194,7 @@ const AssetPage: FC = () => {
               <CopyIconButton
                 ariaLabel="Copy asset ID"
                 copiedTooltipLabel={t<string>('captions.assetIdCopied')}
-                value={account.id}
+                value={asset.id}
               />
 
               {/*open asset on explorer*/}
