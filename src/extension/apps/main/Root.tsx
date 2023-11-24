@@ -65,6 +65,7 @@ import {
 
 // utils
 import { convertGenesisHashToHex } from '@extension/utils';
+import { __TARGET__ } from '../../../@types/global';
 
 const Root: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();

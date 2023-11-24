@@ -81,6 +81,7 @@ const configs: (
         new DefinePlugin({
           __APP_TITLE__: JSON.stringify(APP_TITLE),
           __ENV__: JSON.stringify(EnvironmentEnum.Development),
+          __TARGET__: JSON.stringify(target),
           __VERSION__: JSON.stringify(version),
           __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
             process.env.WALLET_CONNECT_PROJECT_ID
@@ -143,6 +144,7 @@ const configs: (
         new DefinePlugin({
           __APP_TITLE__: JSON.stringify(APP_TITLE),
           __ENV__: JSON.stringify(EnvironmentEnum.Production),
+          __TARGET__: JSON.stringify(target),
           __VERSION__: JSON.stringify(version),
           __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
             process.env.WALLET_CONNECT_PROJECT_ID

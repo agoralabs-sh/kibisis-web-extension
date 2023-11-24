@@ -18,16 +18,22 @@ export default function useOnNetworkConnectivity(): void {
     let result: Response;
     let url: string = 'https://developer.chrome.com';
 
-    if (window.navigator.userAgent.includes('Firefox')) {
-      url = 'https://developer.mozilla.org';
-    }
-
-    if (window.navigator.userAgent.includes('Edg')) {
-      url = 'https://developer.microsoft.com';
-    }
-
-    if (window.navigator.userAgent.includes('Safari')) {
-      url = 'https://developer.apple.com';
+    switch (__TARGET__) {
+      case 'edge':
+        url = 'https://developer.microsoft.com';
+        break;
+      case 'firefox':
+        url = 'https://developer.mozilla.org';
+        break;
+      case 'opera':
+        url = 'https://dev.opera.com';
+        break;
+      case 'safari':
+        url = 'https://developer.apple.com';
+        break;
+      case 'chrome':
+      default:
+        break;
     }
 
     try {
