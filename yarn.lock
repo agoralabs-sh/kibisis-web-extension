@@ -9612,16 +9612,6 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
-mockzilla-webextension@^0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/mockzilla-webextension/-/mockzilla-webextension-0.15.0.tgz#3cb8137d8aa71d0f9eb84d16f334719b4b0464a6"
-  integrity sha512-gnyHsk41jEsVgmsLomceOXJV9vxMF3e3B9ltQbWVCSvaVjz5o/+5gzHn0c5Y62NkRAnVOz3cRA7tZq0ZhKJ+Qg==
-
-mockzilla@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/mockzilla/-/mockzilla-0.14.0.tgz#cada40e3eba35d8e651ca8e5e95d943ad273838a"
-  integrity sha512-vkRwyJaAAeTj6oH9NHUDELhUCwTCYleLZoNmo4+o08/hoUGn7tle3yZjp3Q4ZQ2HUEEFwpGJh50ZFMWWhLgI5Q==
-
 modify-values@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"

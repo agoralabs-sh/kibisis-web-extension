@@ -1,4 +1,3 @@
-import 'mockzilla-webextension';
 import { TextDecoder, TextEncoder } from 'util';
 import { v4 as uuid } from 'uuid';
 
