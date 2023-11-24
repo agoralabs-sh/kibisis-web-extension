@@ -79,7 +79,7 @@ const theme: Dict = extendTheme({
       ['*::-webkit-scrollbar']: {
         display: 'none',
       },
-      ['scrollbar-width']: 'none',
+      scrollbarWidth: 'none',
     },
   },
 });
