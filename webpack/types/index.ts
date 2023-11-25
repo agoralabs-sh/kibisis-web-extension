@@ -1,3 +1,3 @@
-export type { default as ICompilationHookFunction } from './ICompilationHookFunction';
-export type { default as ITargetType } from './ITargetType';
+export type { default as IAfterEmitHookFunction } from './IAfterEmitHookFunction';
+export type { default as IDoneHookFunction } from './IDoneHookFunction';
 export type { default as IWebpackEnvironmentVariables } from './IWebpackEnvironmentVariables';

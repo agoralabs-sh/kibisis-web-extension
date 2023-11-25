@@ -1,9 +1,6 @@
-import { readFileSync } from 'fs';
-import { writeFile } from 'fs/promises';
-import { Compiler } from 'webpack';
-
-// types
-import { ICompilationHookFunction } from '../../types';
+import { existsSync, readFileSync } from 'fs';
+import { mkdir, writeFile } from 'fs/promises';
+import { Compiler, Stats } from 'webpack';
 
 export default class ManifestBuilderPlugin {
   private readonly manifestPaths: string[];
@@ -13,8 +10,8 @@ export default class ManifestBuilderPlugin {
     this.manifestPaths = manifestPaths || [];
   }
 
-  private afterEmit(compiler: Compiler): ICompilationHookFunction {
-    return async (): Promise<void> => await this.run(compiler.outputPath);
+  private async done(stats: Stats): Promise<void> {
+    await this.run(stats.compilation.compiler.outputPath);
   }
 
   private async run(outputPath: string): Promise<void> {
@@ -30,13 +27,15 @@ export default class ManifestBuilderPlugin {
       {}
     );
 
+    // create directory if it doesn't exist
+    if (!existsSync(outputPath)) {
+      await mkdir(outputPath, { recursive: true });
+    }
+
     await writeFile(`${outputPath}/manifest.json`, JSON.stringify(manifest));
   }
 
   public apply(compiler: Compiler): void {
-    compiler.hooks.afterEmit.tapPromise(
-      this.pluginName,
-      this.afterEmit(compiler)
-    );
+    compiler.hooks.done.tapPromise(this.pluginName, this.done.bind(this));
   }
 }

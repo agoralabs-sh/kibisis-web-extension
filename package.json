@@ -28,8 +28,8 @@
     "node": ">=15.0.0"
   },
   "scripts": {
-    "build:chrome": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name production --env target=chrome",
-    "build:firefox": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name production --env target=firefox",
+    "build:chrome": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=chrome",
+    "build:firefox": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=firefox",
     "install:chrome": "./bin/install_chrome.sh",
     "install:firefox": "./bin/install_firefox.sh",
     "lint": "eslint . --ext .ts --ext .tsx --ext .js",
@@ -38,8 +38,8 @@
     "prepare": "husky install && ./bin/post_install.sh",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts,tsx}\"",
     "start:chrome": "concurrently --names \"DAPP,EXTENSION\" -c \"blue.bold,magenta.bold\" \"yarn start:dapp\" \"yarn start:extension --env target=chrome\"",
-    "start:dapp": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack serve --config webpack/webpack.config.ts --config-name dapp",
-    "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name development --watch",
+    "start:dapp": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack serve --config webpack/webpack.config.ts --config-name dapp-example",
+    "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=development --watch",
     "start:firefox": "concurrently --names \"DAPP,EXTENSION\" -c \"blue.bold,magenta.bold\" \"yarn start:dapp\" \"yarn start:extension --env target=firefox\"",
     "test": "jest",
     "validate:firefox": "addons-linter .firefox_build/"
