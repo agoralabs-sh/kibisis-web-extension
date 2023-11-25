@@ -28,6 +28,8 @@
     "node": ">=15.0.0"
   },
   "scripts": {
+    "analyze:chrome": "yarn build:chrome --analyze",
+    "analyze:firefox": "yarn build:firefox --analyze",
     "build:chrome": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=chrome",
     "build:firefox": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=firefox",
     "install:chrome": "./bin/install_chrome.sh",
@@ -90,6 +92,7 @@
     "typescript": "4.9.5",
     "web-ext": "^7.8.0",
     "webpack": "^5.76.3",
+    "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.0",
     "webpack-merge": "^5.8.0",

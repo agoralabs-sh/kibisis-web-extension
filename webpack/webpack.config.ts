@@ -134,8 +134,8 @@ const configs: (
     default:
       devtool = 'cheap-module-source-map';
       optimization = {
-        removeAvailableModules: false,
-        // removeEmptyChunks: true,
+        removeAvailableModules: true,
+        removeEmptyChunks: true,
         splitChunks: false,
       };
       output = {
