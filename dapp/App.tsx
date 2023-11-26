@@ -34,7 +34,6 @@ import { Web3ModalSign, useConnect } from '@web3modal/sign-react';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // components
-import Fonts from '@extension/components/Fonts';
 import WalletConnectIcon from '@extension/components/WalletConnectIcon';
 
 // config
@@ -162,7 +161,6 @@ const App: FC = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      <Fonts />
       <Web3ModalSign
         metadata={{
           description: 'The Kibisis dApp example',

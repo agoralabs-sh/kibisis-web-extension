@@ -24,7 +24,6 @@ import {
   IExtensionResponseEvents,
   ILogger,
 } from '@common/types';
-import { IStorageItemTypes } from '@extension/types';
 
 interface IBackgroundEvent {
   message: BaseEvent;

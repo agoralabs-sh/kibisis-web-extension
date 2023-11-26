@@ -1,10 +1,11 @@
-// types
-import ITargetType from './ITargetType';
+// enums
+import { EnvironmentEnum, TargetEnum } from '../enums';
 
 interface IWebpackEnvironmentVariables {
   WEBPACK_SERVE?: boolean;
   WEBPACK_WATCH?: boolean;
-  target?: ITargetType;
+  environment?: EnvironmentEnum;
+  target?: TargetEnum;
 }
 
 export default IWebpackEnvironmentVariables;

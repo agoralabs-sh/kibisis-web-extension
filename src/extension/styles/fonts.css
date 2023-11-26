@@ -1,0 +1,23 @@
+/* latin */
+@font-face {
+  font-family: 'AnonymousPro';
+  font-style: normal;
+  font-weight: 600 700;
+  font-display: swap;
+  src: url('@extension/fonts/AnonymousPro/AnonymousPro-Bold.woff2') format('woff2'),
+  url('@extension/fonts/AnonymousPro/AnonymousPro-Bold.woff') format('woff'),
+  url('@extension/fonts/AnonymousPro/AnonymousPro-Bold.ttf') format('truetype'),
+  url('@extension/fonts/AnonymousPro/AnonymousPro-Bold.svg#AnonymousPro-Bold') format('svg');
+}
+
+  /* latin */
+@font-face {
+  font-family: 'AnonymousPro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('@extension/fonts/AnonymousPro/AnonymousPro-Regular.woff2') format('woff2'),
+  url('@extension/fonts/AnonymousPro/AnonymousPro-Regular.woff') format('woff'),
+  url('@extension/fonts/AnonymousPro/AnonymousPro-Regular.ttf') format('truetype'),
+  url('@extension/fonts/AnonymousPro/AnonymousPro-Regular.svg#AnonymousPro-Regular') format('svg');
+}

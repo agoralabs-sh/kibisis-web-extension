@@ -2,39 +2,44 @@ import { ChildProcess, spawn } from 'child_process';
 import { resolve } from 'path';
 import { Compiler } from 'webpack';
 
+// enums
+import { TargetEnum } from '../../enums';
+
 // types
-import { ICompilationHookFunction, ITargetType } from '../../types';
+import { IAfterEmitHookFunction } from '../../types';
 import { IOptions } from './types';
 
 export default class WebExtPlugin {
+  private readonly buildPath: string | undefined;
   private readonly browserConsole: boolean;
   private readonly devtools: boolean;
   private readonly persistState: boolean;
   private readonly pluginName: string = 'WebExtPlugin';
   private readonly startUrls: string[];
-  private readonly target: ITargetType;
+  private readonly target: TargetEnum;
   private webExtRunProcess: ChildProcess | null;
 
   constructor(options?: IOptions) {
+    this.buildPath = options?.buildPath;
     this.browserConsole = options?.browserConsole || false;
     this.devtools = options?.devtools || false;
     this.persistState = options?.persistState || false;
     this.startUrls = options?.startUrls || [
       'http://info.cern.ch/hypertext/WWW/TheProject.html',
     ];
-    this.target = options?.target || 'firefox';
+    this.target = options?.target || TargetEnum.Firefox;
     this.webExtRunProcess = null;
   }
 
-  private afterEmit(compiler: Compiler): ICompilationHookFunction {
+  private afterEmit(compiler: Compiler): IAfterEmitHookFunction {
     return async (): Promise<void> => {
       if (!this.webExtRunProcess) {
-        this.run(compiler.outputPath);
+        this.run(compiler);
       }
     };
   }
 
-  private run(sourceDir: string): void {
+  private run(compiler: Compiler): void {
     let targetFlag: string = `--target=firefox-desktop`;
     let runCommand: string[] = [
       'run',
@@ -43,7 +48,7 @@ export default class WebExtPlugin {
       `--firefox=${resolve(process.cwd(), '.firefox', 'firefox')}`,
       `--firefox-profile=${resolve(process.cwd(), '.firefox_profile')}`,
       '--no-config-discovery', // ignore the config file at project root
-      `--source-dir=${sourceDir}`,
+      `--source-dir=${this.buildPath || compiler.outputPath}`,
       ...this.startUrls.map((value) => `--start-url=${value}`),
     ];
 

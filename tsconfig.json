@@ -46,6 +46,7 @@
       "@extension/pages/*": ["src/extension/pages/*"],
       "@extension/selectors": ["src/extension/selectors"],
       "@extension/services": ["src/extension/services"],
+      "@extension/styles/*": ["src/external/styles/*"],
       "@extension/theme": ["src/extension/theme"],
       "@extension/translations": ["src/extension/translations"],
       "@extension/types": ["src/extension/types"],

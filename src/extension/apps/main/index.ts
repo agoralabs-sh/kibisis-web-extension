@@ -1,3 +1,5 @@
+import '@extension/styles/fonts.css';
+
 // components
 import App from './App';
 
