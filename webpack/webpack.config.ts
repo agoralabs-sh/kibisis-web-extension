@@ -38,30 +38,24 @@ const configs: (
   environment = EnvironmentEnum.Development,
   target = TargetEnum.Firefox,
 }: IWebpackEnvironmentVariables) => {
-  let assetLoaderRule: RuleSetRule;
   let buildPath: string;
   let commonConfig: Configuration;
   let dappPort: number;
   let definePlugin: DefinePlugin;
   let devtool: string | false | undefined;
   let extensionPath: string;
+  let fontLoaderRule: RuleSetRule;
   let handleBarsLoaderRule: RuleSetRule;
   let maxSize: number;
   let optimization: Record<string, unknown>;
   let output: Record<string, unknown>;
   let performance: Record<string, unknown> | false;
+  let stylesLoaderRule: RuleSetRule;
   let tsLoaderRule: RuleSetRule;
 
   // load .env file
   config();
 
-  assetLoaderRule = {
-    test: /\.(svg?.+|ttf?.+|woff?.+|woff2?.+)$/,
-    type: 'asset/resource',
-    generator: {
-      filename: 'assets/[hash][ext][query]',
-    },
-  };
   dappPort = 8080;
   definePlugin = new DefinePlugin({
     __APP_TITLE__: JSON.stringify(APP_TITLE),
@@ -73,12 +67,36 @@ const configs: (
     ),
   });
   extensionPath = resolve(SRC_PATH, 'extension');
+  fontLoaderRule = {
+    test: /\.(svg?.+|ttf?.+|woff?.+|woff2?.+)$/,
+    type: 'asset/resource',
+    generator: {
+      filename: 'assets/[hash][ext][query]',
+    },
+  };
   handleBarsLoaderRule = {
     loader: 'handlebars-loader',
     test: /\.hbs$/,
   };
   maxSize = 4000000; // 4 MB
   commonConfig = createCommonConfig();
+  stylesLoaderRule = {
+    test: /\.css$/i,
+    use: [
+      {
+        loader: 'style-loader',
+        options: {
+          injectType: 'styleTag',
+        },
+      },
+      {
+        loader: 'css-loader',
+        options: {
+          url: true,
+        },
+      },
+    ],
+  };
 
   switch (target) {
     case 'chrome':
@@ -217,7 +235,12 @@ const configs: (
       },
       mode: environment,
       module: {
-        rules: [assetLoaderRule, handleBarsLoaderRule, tsLoaderRule],
+        rules: [
+          tsLoaderRule,
+          stylesLoaderRule,
+          handleBarsLoaderRule,
+          fontLoaderRule,
+        ],
       },
       name: ConfigNameEnum.ExtensionApps,
       optimization,
@@ -287,8 +310,6 @@ const configs: (
       mode: 'development',
       module: {
         rules: [
-          assetLoaderRule,
-          handleBarsLoaderRule,
           {
             exclude: /node_modules/,
             test: /\.tsx?$/,
@@ -302,6 +323,9 @@ const configs: (
               },
             ],
           },
+          stylesLoaderRule,
+          handleBarsLoaderRule,
+          fontLoaderRule,
         ],
       },
       name: ConfigNameEnum.DappExample,

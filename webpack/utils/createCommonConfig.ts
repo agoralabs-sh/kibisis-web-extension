@@ -78,6 +78,7 @@ export default function createCommonConfig(): Configuration {
         ['@extension/pages']: resolve(extensionPath, 'pages'),
         ['@extension/selectors']: resolve(extensionPath, 'selectors'),
         ['@extension/services']: resolve(extensionPath, 'services'),
+        ['@extension/styles']: resolve(extensionPath, 'styles'),
         ['@extension/theme']: resolve(extensionPath, 'theme'),
         ['@extension/translations']: resolve(extensionPath, 'translations'),
         ['@extension/types']: resolve(extensionPath, 'types'),
@@ -88,7 +89,7 @@ export default function createCommonConfig(): Configuration {
         ['@external/types']: resolve(externalPath, 'types'),
       },
 
-      extensions: ['.js', '.ts', '.tsx'],
+      extensions: ['.css', '.js', '.ts', '.tsx'],
     },
 
     stats: {
