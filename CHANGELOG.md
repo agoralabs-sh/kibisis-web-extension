@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.4.1...v1.5.0) (2023-11-26)
+
+
+### Features
+
+* remove purestake block explorer and algod api ([#30](https://github.com/agoralabs-sh/kibisis-web-extension/issues/30)) ([0d6e276](https://github.com/agoralabs-sh/kibisis-web-extension/commit/0d6e276911161a35b2aebac5b3bca30c1014f3ac))
+
 ## [1.4.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.4.0...v1.4.1) (2023-11-26)
 
 
