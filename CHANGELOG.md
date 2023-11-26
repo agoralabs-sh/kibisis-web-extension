@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.4.0...v1.4.1) (2023-11-26)
+
+
+### Bug Fixes
+
+* content scripts reply on modules ([#29](https://github.com/agoralabs-sh/kibisis-web-extension/issues/29)) ([6ffd64a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/6ffd64a0a5218ebf85b19285d13a5d0fbbde568e))
+
 # [1.4.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.3.1...v1.4.0) (2023-11-24)
 
 
