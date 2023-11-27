@@ -69,7 +69,30 @@ export default function useAssetPage({
   useEffect(() => {
     let selectedAsset: IAsset | null;
 
-    if (assetId && assets.length > 0) {
+    if (assetId && assetId === "0") {
+      selectedAsset = {
+        clawbackAddress: null,
+        creator: "",
+        decimals: selectedNetwork?.nativeCurrency.decimals || 6,
+        defaultFrozen: false,
+        deleted: false,
+        freezeAddress: null,
+        iconUrl: selectedNetwork?.nativeCurrency.iconUri || null,
+        id: "0",
+        managerAddress: null,
+        metadataHash: null,
+        name: selectedNetwork?.canonicalName || null,
+        nameBase64: null,
+        reserveAddress: null,
+        total: "0",
+        unitName: selectedNetwork?.nativeCurrency.code || null,
+        unitNameBase64: null,
+        url: null,
+        urlBase64: null,
+        verified: true,
+      }
+      setAsset(selectedAsset);
+    } else if (assetId && assets.length > 0) {
       selectedAsset = assets.find((value) => value.id === assetId) || null;
 
       // if there is no asset, we have an error
@@ -101,7 +124,16 @@ export default function useAssetPage({
           (value) => value.id === assetId
         ) || null;
 
-      // if teh account does not have the asset holding, we have an error
+      // if the account does not have the asset holding, we have an error
+
+      if (assetId && assetId == "0") {
+        selectedAssetHolding = {
+          amount: accountInformation.atomicBalance,
+          id: "0",
+          isFrozen: false,
+        }
+      }
+
       if (!selectedAssetHolding) {
         return onError();
       }
