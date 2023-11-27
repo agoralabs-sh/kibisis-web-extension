@@ -125,9 +125,9 @@ const AccountPage: FC = () => {
   const accountInformation: IAccountInformation | null =
     account && selectedNetwork
       ? AccountService.extractAccountInformationForNetwork(
-          account,
-          selectedNetwork
-        )
+        account,
+        selectedNetwork
+      )
       : null;
   const accountTabId: number = parseInt(
     searchParams.get('accountTabId') || '0'
@@ -267,6 +267,7 @@ const AccountPage: FC = () => {
                   new BigNumber(accountInformation.minAtomicBalance)
                 }
                 nativeCurrency={selectedNetwork.nativeCurrency}
+                publicKey={account.publicKey}
               />
             </HStack>
 
@@ -374,12 +375,11 @@ const AccountPage: FC = () => {
     // if there is no account, go to the first account, or the accounts index if no accounts exist
     if (!account) {
       navigate(
-        `${ACCOUNTS_ROUTE}${
-          accounts[0]
-            ? `/${AccountService.convertPublicKeyToAlgorandAddress(
-                accounts[0].publicKey
-              )}`
-            : ''
+        `${ACCOUNTS_ROUTE}${accounts[0]
+          ? `/${AccountService.convertPublicKeyToAlgorandAddress(
+            accounts[0].publicKey
+          )}`
+          : ''
         }`,
         {
           replace: true,
