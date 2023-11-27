@@ -74,7 +74,7 @@ const App: FC = () => {
         methods: ['algorand_signTransaction', 'algorand_signMessage'],
       },
       voi: {
-        chains: ['voi:xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2_z'],
+        chains: ['voi:IXnoWtviVVJW5LGivNFc0Dq14V3kqaXu'],
         events: [],
         methods: ['voi_signTransaction', 'voi_signMessage'],
       },
@@ -238,7 +238,7 @@ const App: FC = () => {
                   colorScheme="primaryLight"
                   minW={250}
                   onClick={handleEnableClick(
-                    'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2/zGwEEcg3C8Gg=' // voi testnet
+                    'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=' // voi testnet
                   )}
                   size="lg"
                 >

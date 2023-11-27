@@ -150,8 +150,8 @@ const networks: INetwork[] = [
     canonicalName: 'Voi',
     chakraTheme: 'voi',
     explorers: [],
-    genesisId: 'voi-test-v1',
-    genesisHash: 'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2/zGwEEcg3C8Gg=',
+    genesisId: 'voitest-v1',
+    genesisHash: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=',
     indexers: [
       {
         canonicalName: 'AlgoNode',
@@ -162,7 +162,7 @@ const networks: INetwork[] = [
     namespace: {
       key: 'voi',
       methods: ['voi_signTransaction', 'voi_signMessage'],
-      reference: 'xK6y2kD4Rnq9EYD1Ta1JTf56TBQTu2_z',
+      reference: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXu',
     },
     nativeCurrency: {
       code: 'VOI',
