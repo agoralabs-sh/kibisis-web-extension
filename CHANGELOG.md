@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.5.0...v1.5.1) (2023-11-27)
+
+
+### Bug Fixes
+
+* voitest-v1 config ([#31](https://github.com/agoralabs-sh/kibisis-web-extension/issues/31)) ([86fbebc](https://github.com/agoralabs-sh/kibisis-web-extension/commit/86fbebcbfc9e25a7ba1939c50d77f2b828001d9e))
+
 # [1.5.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.4.1...v1.5.0) (2023-11-26)
 
 
