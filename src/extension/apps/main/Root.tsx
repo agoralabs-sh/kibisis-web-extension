@@ -8,6 +8,7 @@ import ConfirmModal from '@extension/components/ConfirmModal';
 import EnableModal from '@extension/components/EnableModal';
 import ErrorModal from '@extension/components/ErrorModal';
 import MainLayout from '@extension/components/MainLayout';
+import SendAssetModal from '@extension/components/SendAssetModal';
 import SignBytesModal from '@extension/components/SignBytesModal';
 import SignTxnsModal from '@extension/components/SignTxnsModal';
 import WalletConnectModal from '@extension/components/WalletConnectModal';
@@ -18,12 +19,6 @@ import {
   startPollingForAccountInformationThunk,
 } from '@extension/features/accounts';
 import {
-  setConfirm,
-  setError,
-  setNavigate,
-  setToast,
-} from '@extension/features/system';
-import {
   fetchAssetsThunk,
   updateAssetInformationThunk,
 } from '@extension/features/assets';
@@ -32,12 +27,19 @@ import {
   setSignBytesRequest,
   setSignTxnsRequest,
 } from '@extension/features/messages';
+import { setSelectedAsset } from '@extension/features/send-assets';
 import {
   closeWalletConnectModal,
   fetchSessionsThunk,
   initializeWalletConnectThunk,
 } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
+import {
+  setConfirm,
+  setError,
+  setNavigate,
+  setToast,
+} from '@extension/features/system';
 
 // hooks
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
@@ -92,6 +94,7 @@ const Root: FC = () => {
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));
+  const handleSendAssetModalClose = () => dispatch(setSelectedAsset(null));
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
   const handleSignTxnsModalClose = () => dispatch(setSignTxnsRequest(null));
   const handleWalletConnectModalClose = () =>
@@ -160,6 +163,7 @@ const Root: FC = () => {
       <EnableModal onClose={handleEnableModalClose} />
       <SignTxnsModal onClose={handleSignTxnsModalClose} />
       <SignBytesModal onClose={handleSignBytesModalClose} />
+      <SendAssetModal onClose={handleSendAssetModalClose} />
       <WalletConnectModal onClose={handleWalletConnectModalClose} />
       <ToastContainer />
       <MainLayout>

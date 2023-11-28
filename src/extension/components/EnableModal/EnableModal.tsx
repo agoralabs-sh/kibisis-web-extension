@@ -280,7 +280,9 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
             <SessionRequestHeaderSkeleton />
           )}
         </ModalHeader>
+
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
             <Button

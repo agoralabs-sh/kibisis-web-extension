@@ -173,6 +173,7 @@ const translation: IResourceLanguage = {
     noSessionsFound: 'No sessions found',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
+    sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
     [`transaction_${TransactionTypeEnum.ApplicationClearState}`]:
@@ -265,6 +266,7 @@ const translation: IResourceLanguage = {
     reserveAccount: 'Reserve Account',
     seedPhrase: 'Seed Phrase',
     selectionKey: 'VRF Public Key',
+    sendAsset: 'Send {{nativeCurrency}}Asset',
     settings: 'Settings',
     shareAddress: 'Share Address',
     signingMethod: 'Signing Method',

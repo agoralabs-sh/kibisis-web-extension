@@ -53,6 +53,11 @@ export default function createCommonConfig(): Configuration {
           'features',
           'registration'
         ),
+        ['@extension/features/send-assets']: resolve(
+          extensionPath,
+          'features',
+          'send-assets'
+        ),
         ['@extension/features/sessions']: resolve(
           extensionPath,
           'features',
@@ -67,11 +72,6 @@ export default function createCommonConfig(): Configuration {
           extensionPath,
           'features',
           'system'
-        ),
-        ['@extension/features/transactions']: resolve(
-          extensionPath,
-          'features',
-          'transactions'
         ),
         ['@extension/fonts']: resolve(extensionPath, 'fonts'),
         ['@extension/hooks']: resolve(extensionPath, 'hooks'),

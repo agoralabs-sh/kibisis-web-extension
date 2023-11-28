@@ -2,6 +2,7 @@ import { Box, Heading, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowDownOutline, IoArrowUpOutline } from 'react-icons/io5';
+import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // components
@@ -25,9 +26,9 @@ import useAssetPage from './hooks/useAssetPage';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectFetchingAssets,
   useSelectPreferredBlockExplorer,
+  useSelectSendingSelectedAsset,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -38,14 +39,16 @@ import { AccountService } from '@extension/services';
 import { theme } from '@extension/theme';
 
 // types
-import { IExplorer, INetwork } from '@extension/types';
+import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
 
 // utils
 import { formatCurrencyUnit } from '@common/utils';
 import { ellipseAddress } from '@extension/utils';
+import { setSelectedAsset } from '@extension/features/send-assets';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { address, assetId } = useParams();
   // selectors
@@ -74,9 +77,7 @@ const AssetPage: FC = () => {
   const handleReceiveClick = () => {
     console.log('open receive modal');
   };
-  const handleSendClick = () => {
-    console.log('open send asset!');
-  };
+  const handleSendClick = () => dispatch(setSelectedAsset(asset));
   const reset = () =>
     navigate(ACCOUNTS_ROUTE, {
       replace: true,
