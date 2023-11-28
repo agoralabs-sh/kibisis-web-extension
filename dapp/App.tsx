@@ -42,6 +42,7 @@ import { networks } from '@extension/config';
 // tabs
 import ApplicationActionsTab from './ApplicationActionsTab';
 import AssetActionsTab from './AssetActionsTab';
+import ARC200ActionsTab from './ARC200ActionsTab';
 import AtomicTransactionActionsTab from './AtomicTransactionActionsTab';
 import KeyRegistrationActionsTab from './KeyRegistrationActionsTab';
 import PaymentActionsTab from './PaymentActionsTab';
@@ -276,6 +277,7 @@ const App: FC = () => {
               <TabList>
                 <Tab>Payments</Tab>
                 <Tab>Assets</Tab>
+                <Tab>Assets (ARC200)</Tab>
                 <Tab>Atomic Txns</Tab>
                 <Tab>Apps</Tab>
                 <Tab>Keys</Tab>
@@ -289,6 +291,11 @@ const App: FC = () => {
                   toast={toast}
                 />
                 <AssetActionsTab
+                  account={selectedAccount}
+                  network={selectedNetwork}
+                  toast={toast}
+                />
+                <ARC200ActionsTab
                   account={selectedAccount}
                   network={selectedNetwork}
                   toast={toast}
