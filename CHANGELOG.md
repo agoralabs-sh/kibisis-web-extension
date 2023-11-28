@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.5.1...v1.5.2) (2023-11-28)
+
+
+### Bug Fixes
+
+* previous transactions not showing on network change ([#34](https://github.com/agoralabs-sh/kibisis-web-extension/issues/34)) ([5fce063](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5fce06311cc318d084b164c4b1557fccac3539a8))
+
 ## [1.5.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.5.0...v1.5.1) (2023-11-27)
 
 
