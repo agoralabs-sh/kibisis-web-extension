@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { encode as encodeHex } from '@stablelib/hex';
 import { Account, generateAccount } from 'algosdk';
 
-// servcies
+// services
 import PrivateKeyService from './PrivateKeyService';
 
 // types

@@ -6,7 +6,7 @@ import { ACCOUNT_INFORMATION_REFRESH_INTERVAL } from '@extension/constants';
 // enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// Thunks
+// thunks
 import updateAccountInformationThunk from './updateAccountInformationThunk';
 
 // types

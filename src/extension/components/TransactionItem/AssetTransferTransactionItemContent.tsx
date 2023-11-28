@@ -12,7 +12,7 @@ import useAsset from '@extension/hooks/useAsset';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types

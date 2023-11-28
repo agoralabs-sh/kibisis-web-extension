@@ -3,7 +3,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // enums
 import { SessionsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { SessionService } from '@extension/services';
 
 // types

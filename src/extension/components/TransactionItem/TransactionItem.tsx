@@ -19,7 +19,7 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types

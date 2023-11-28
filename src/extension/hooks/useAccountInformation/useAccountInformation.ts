@@ -6,7 +6,7 @@ import {
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types

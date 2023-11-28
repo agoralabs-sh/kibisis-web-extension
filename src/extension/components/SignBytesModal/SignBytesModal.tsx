@@ -55,7 +55,7 @@ import {
   useSelectSignBytesRequest,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // theme

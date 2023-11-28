@@ -18,7 +18,7 @@ import {
   MalformedDataError,
 } from '@extension/errors';
 
-// servcies
+// services
 import StorageManager from './StorageManager';
 
 // types

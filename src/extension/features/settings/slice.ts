@@ -3,7 +3,7 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
-// Thunks
+// thunks
 import { fetchSettings, setSettings } from './thunks';
 
 // types

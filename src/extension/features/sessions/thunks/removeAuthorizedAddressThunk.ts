@@ -6,7 +6,7 @@ import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 // enums
 import { SessionsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { StorageManager } from '@extension/services';
 
 // types

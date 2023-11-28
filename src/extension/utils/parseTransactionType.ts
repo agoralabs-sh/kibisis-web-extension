@@ -4,7 +4,7 @@ import { EncodedTransaction, OnApplicationComplete } from 'algosdk';
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types

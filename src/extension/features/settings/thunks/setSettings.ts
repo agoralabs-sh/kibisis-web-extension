@@ -10,7 +10,7 @@ import {
 // enums
 import { NetworkTypeEnum, SettingsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { StorageManager } from '@extension/services';
 
 // types

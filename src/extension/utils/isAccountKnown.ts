@@ -1,4 +1,4 @@
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types

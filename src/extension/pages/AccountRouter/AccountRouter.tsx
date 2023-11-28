@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 // constants
 import { ASSETS_ROUTE, TRANSACTIONS_ROUTE } from '@extension/constants';
 
-// Pages
+// pages
 import AccountPage from '@extension/pages/AccountPage';
 import AssetPage from '@extension/pages/AssetPage';
 import TransactionPage from '@extension/pages/TransactionPage';

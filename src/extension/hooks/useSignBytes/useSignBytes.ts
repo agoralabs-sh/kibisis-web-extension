@@ -16,7 +16,7 @@ import {
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// servcies
+// services
 import { PrivateKeyService } from '@extension/services';
 
 // types

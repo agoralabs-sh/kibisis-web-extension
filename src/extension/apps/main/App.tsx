@@ -27,7 +27,7 @@ import {
   setSideBar,
 } from '@extension/features/system';
 
-// Pages
+// pages
 import AccountRouter from '@extension/pages/AccountRouter';
 import AddAccountRouter from '@extension/pages/MainAddAccountRouter';
 import SettingsRouter from '@extension/pages/SettingsRouter';

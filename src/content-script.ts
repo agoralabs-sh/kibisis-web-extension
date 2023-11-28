@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 
-// servcies
+// services
 import { ExternalEventService } from '@extension/services';
 
 // types

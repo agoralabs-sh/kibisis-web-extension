@@ -11,7 +11,7 @@ import AssetDisplay from '@extension/components/AssetDisplay';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
