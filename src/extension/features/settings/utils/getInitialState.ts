@@ -6,7 +6,7 @@ export default function getInitialState(): ISettingsState {
     advanced: {
       allowBetaNet: false,
       allowDidTokenFormat: false,
-      allowTestNet: false,
+      allowMainNet: false,
     },
     appearance: {
       theme: 'light',

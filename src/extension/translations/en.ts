@@ -37,7 +37,10 @@ const translation: IResourceLanguage = {
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
-    allowTestNet: 'Let TestNet networks appear in the networks list.',
+    allowMainNet: 'Let MainNet networks appear in the networks list.',
+    allowMainNetConfirm: 'Are you sure you want to allow MainNet networks?',
+    allowMainNetWarning:
+      'Kibisis is still in the early development so allow MainNet networks at your own risk!',
     applicationIdCopied: 'Application ID copied!',
     appOnComplete: 'This transaction will run the application.',
     [`appOnComplete_${TransactionTypeEnum.ApplicationClearState}`]: `This transaction will clear any application data associated with the sender's account.`,
@@ -52,8 +55,7 @@ const translation: IResourceLanguage = {
     assetIdCopied: 'Asset ID copied!',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
-    changePassword1:
-      'Enter your new password. You will be prompted to enter your current password.',
+    changePassword1: 'Enter your new password.',
     changePassword2:
       'You will be prompted to enter your current password when you press "Change Password".',
     changeTheme: 'Choose between dark and light mode.',
@@ -149,6 +151,7 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    allowMainNetConfirm: 'Allow MainNet Networks',
     authentication: 'Authentication',
     beta: 'Beta',
     clearAllData: 'Clear All Data',
@@ -210,7 +213,7 @@ const translation: IResourceLanguage = {
     addAccount: 'Add Account',
     allowBetaNet: 'Allow BetaNet networks?',
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
-    allowTestNet: 'Allow TestNet networks?',
+    allowMainNet: 'Allow MainNet networks?',
     amount: 'Amount',
     applicationId: 'Application ID',
     assetId: 'Asset ID',

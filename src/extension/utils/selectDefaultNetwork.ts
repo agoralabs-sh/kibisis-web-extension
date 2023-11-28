@@ -12,7 +12,6 @@ import { INetwork } from '@extension/types';
  */
 export default function selectDefaultNetwork(networks: INetwork[]): INetwork {
   return (
-    networks.find((value) => value.type === NetworkTypeEnum.Stable) ||
-    networks[0]
+    networks.find((value) => value.type === NetworkTypeEnum.Test) || networks[0]
   );
 }

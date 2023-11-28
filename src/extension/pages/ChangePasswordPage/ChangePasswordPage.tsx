@@ -34,11 +34,14 @@ const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const { isOpen, onClose, onOpen } = useDisclosure();
+  // hooks
   const toast: CreateToastFnReturn | null = useSelectToast();
   const { changePassword, error, passwordTag, saving } = useChangePassword();
   const subTextColor: string = useSubTextColor();
+  // state
   const [newPassword, setNewPassword] = useState<string | null>(null);
   const [score, setScore] = useState<number>(-1);
+  // handlers
   const handlePasswordChange = (newPassword: string, newScore: number) => {
     setNewPassword(newPassword);
     setScore(newScore);
@@ -93,20 +96,23 @@ const ChangePasswordPage: FC = () => {
       <PageHeader
         title={t<string>('titles.page', { context: 'changePassword' })}
       />
+
       <VStack
         flexGrow={1}
         pb={DEFAULT_GAP}
         px={DEFAULT_GAP}
-        spacing={8}
+        spacing={DEFAULT_GAP + 2}
         w="full"
       >
-        <VStack flexGrow={1} spacing={4} w="full">
-          <Text color={subTextColor} size="md" textAlign="left">
+        <VStack flexGrow={1} spacing={DEFAULT_GAP / 2} w="full">
+          <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
             {t<string>('captions.changePassword1')}
           </Text>
-          <Text color={subTextColor} size="md" textAlign="left">
+
+          <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
             {t<string>('captions.changePassword2')}
           </Text>
+
           <CreatePasswordInput
             disabled={saving}
             label={t<string>('labels.newPassword')}
@@ -115,6 +121,7 @@ const ChangePasswordPage: FC = () => {
             value={newPassword || ''}
           />
         </VStack>
+
         <Button
           isLoading={saving}
           onClick={handleChangeClick}

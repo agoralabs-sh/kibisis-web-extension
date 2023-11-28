@@ -16,8 +16,10 @@ const SettingsSubHeading: FC<IProps> = ({ color, text }: IProps) => {
 
   return (
     <Text
+      as="b"
       color={color || subTextColor}
-      fontSize="sm"
+      fontSize="md"
+      pb={DEFAULT_GAP - 2}
       px={DEFAULT_GAP - 2}
       textAlign="left"
       w="full"
