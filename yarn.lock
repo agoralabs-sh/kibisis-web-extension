@@ -4197,13 +4197,12 @@ anymatch@^3.0.3, anymatch@~3.1.2:
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-2.0.0.tgz#52520b8ae5b569215b354efc0caa3fe1e45a8adc"
   integrity sha512-lYe4Gx7QT+MKGbDsA+Z+he/Wtef0BiwDOlK/XkBrdfsh9J/jPPXbX0tE9x9cl27Tmu5gg3QUbUrQYa/y+KOHPQ==
 
-arc200js@^1.2.20:
-  version "1.2.20"
-  resolved "https://registry.yarnpkg.com/arc200js/-/arc200js-1.2.20.tgz#2da6373513d4564cc77b974a160c824ba7bf3289"
-  integrity sha512-r02gtnfy/G9Fx7a4RBMk+R9hXgCo9dsdmZ/Vuqu/P7GAERRVdiPX0Py9CzU+xIog7kBqyGP++MS4RypdcI5Cdw==
+arc200js@^1.2.21:
+  version "1.2.21"
+  resolved "https://registry.yarnpkg.com/arc200js/-/arc200js-1.2.21.tgz#c3d250b336758043f3e80b831793cef1a27babc2"
+  integrity sha512-CXyI/M8ZDeHZ255nWdUhUboa6NrSAJxyyX3wZyIzB/iBl+P+gh8PMcafd8jarS4tzde9JKg6ddLACHSCAAs4MQ==
   dependencies:
     arccjs "^1.1.3"
-    express "^4.18.2"
 
 arccjs@^1.1.3:
   version "1.1.3"
@@ -6436,7 +6435,7 @@ expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
-express@^4.17.3, express@^4.18.2:
+express@^4.17.3:
   version "4.18.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.18.2.tgz#3fabe08296e930c796c19e3c516979386ba9fd59"
   integrity sha512-5/PsL6iGPdfQ/lKM1UuielYgv3BUoJfz1aUwU9vHZ+J7gyvwdQXFEBIEIaxeGf0GIcreATNyBExtalisDbuMqQ==
