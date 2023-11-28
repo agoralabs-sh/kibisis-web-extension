@@ -28,6 +28,10 @@ const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // hooks
+  const defaultTextColor: string = useDefaultTextColor();
+  const subTextColor: string = useSubTextColor();
+  // selectors
   const password: string | null = useSelector<
     IRegistrationRootState,
     string | null
@@ -35,8 +39,7 @@ const CreatePasswordPage: FC = () => {
   const score: number = useSelector<IRegistrationRootState, number>(
     (state) => state.registration.score
   );
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  // handlers
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
       navigate(ADD_ACCOUNT_ROUTE);
@@ -63,21 +66,29 @@ const CreatePasswordPage: FC = () => {
         spacing={2}
         w="full"
       >
-        <VStack flexGrow={1} spacing={8} w="full">
-          <VStack spacing={3} w="full">
-            <Text color={defaultTextColor}>
+        <VStack flexGrow={1} spacing={DEFAULT_GAP + 2} w="full">
+          <VStack spacing={DEFAULT_GAP / 2} w="full">
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
               {t<string>('captions.createPassword1')}
             </Text>
-            <Text color={subTextColor}>
+
+            <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
               {t<string>('captions.createPassword2')}
             </Text>
           </VStack>
+
           <CreatePasswordInput
             onChange={handlePasswordChange}
             score={score}
             value={password || ''}
           />
         </VStack>
+
         <Button onClick={handleNextClick} size="lg" variant="solid" w="full">
           {t<string>('buttons.next')}
         </Button>

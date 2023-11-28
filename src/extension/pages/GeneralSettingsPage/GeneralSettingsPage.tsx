@@ -67,11 +67,11 @@ const GeneralSettingsPage: FC = () => {
     <>
       <PageHeader title={t<string>('titles.page', { context: 'general' })} />
       <VStack spacing={4} w="full">
-        {/*Network*/}
+        {/* network */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.network')} />
 
-          {/*Preferred block explorer*/}
+          {/* preferred block explorer */}
           {selectedNetwork && selectedNetwork.explorers.length > 0 && (
             <SettingsSelectItem
               description={t<string>('captions.preferredBlockExplorer')}
@@ -89,7 +89,7 @@ const GeneralSettingsPage: FC = () => {
           )}
         </VStack>
 
-        {/*Danger zone*/}
+        {/* danger zone */}
         <VStack w="full">
           <SettingsSubHeading
             color="red.500"
@@ -102,7 +102,7 @@ const GeneralSettingsPage: FC = () => {
             py={4}
             w="full"
           >
-            {/*Clear all data*/}
+            {/* clear all data */}
             <Button
               color="white"
               colorScheme="red"

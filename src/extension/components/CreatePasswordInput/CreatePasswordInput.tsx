@@ -81,10 +81,12 @@ const CreatePasswordInput: FC<IProps> = ({
           <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
             {label || t<string>('labels.password')}
           </Text>
+
           <Text color="red.300" fontSize="xs" textAlign="right">
             {error}
           </Text>
         </HStack>
+
         <InputGroup size="md">
           <Input
             disabled={disabled}
@@ -106,6 +108,7 @@ const CreatePasswordInput: FC<IProps> = ({
             />
           </InputRightElement>
         </InputGroup>
+
         <Text color={subTextColor} fontSize="xs" textAlign="left">
           <Trans i18nKey="captions.passwordScoreInfo">
             To conform with our{' '}
@@ -121,6 +124,7 @@ const CreatePasswordInput: FC<IProps> = ({
             must be at least 8 characters.
           </Trans>
         </Text>
+
         <StrengthMeter score={score} />
       </VStack>
     </>

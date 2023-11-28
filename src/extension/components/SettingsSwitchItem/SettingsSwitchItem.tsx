@@ -31,6 +31,7 @@ const SettingsSwitchItem: FC<IProps> = ({
       alignItems="center"
       minH={SETTINGS_ITEM_HEIGHT}
       justifyContent="space-between"
+      pb={DEFAULT_GAP - 2}
       px={DEFAULT_GAP - 2}
       spacing={2}
       w="full"

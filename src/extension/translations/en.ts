@@ -55,8 +55,7 @@ const translation: IResourceLanguage = {
     assetIdCopied: 'Asset ID copied!',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
-    changePassword1:
-      'Enter your new password. You will be prompted to enter your current password.',
+    changePassword1: 'Enter your new password.',
     changePassword2:
       'You will be prompted to enter your current password when you press "Change Password".',
     changeTheme: 'Choose between dark and light mode.',

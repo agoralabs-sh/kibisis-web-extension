@@ -43,7 +43,7 @@ const Warning: FC<IProps> = ({ message, size = 'md' }: IProps) => {
       spacing={2}
     >
       <Icon as={IoWarningOutline} color="white" h={iconSize} w={iconSize} />
-      <Text color="white" fontWeight={600} fontSize={size} textAlign="left">
+      <Text as="b" color="white" fontSize={size} textAlign="left">
         {message}
       </Text>
     </HStack>
