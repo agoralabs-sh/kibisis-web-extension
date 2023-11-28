@@ -4083,6 +4083,21 @@ algo-msgpack-with-bigint@^2.1.1:
   resolved "https://registry.yarnpkg.com/algo-msgpack-with-bigint/-/algo-msgpack-with-bigint-2.1.1.tgz#38bb717220525b3ff42232eefdcd9efb9ad405d6"
   integrity sha512-F1tGh056XczEaEAqu7s+hlZUDWwOBT70Eq0lfMpBP2YguSQVyxRbprLq5rELXKQOyOaixTWYhMeMQMzP0U5FoQ==
 
+algosdk@2.7.0, algosdk@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/algosdk/-/algosdk-2.7.0.tgz#6ebab130d25fc3cb4c74dce4d8753c7e86db1404"
+  integrity sha512-sBE9lpV7bup3rZ+q2j3JQaFAE9JwZvjWKX00vPlG8e9txctXbgLL56jZhSWZndqhDI9oI+0P4NldkuQIWdrUyg==
+  dependencies:
+    algo-msgpack-with-bigint "^2.1.1"
+    buffer "^6.0.3"
+    hi-base32 "^0.5.1"
+    js-sha256 "^0.9.0"
+    js-sha3 "^0.8.0"
+    js-sha512 "^0.8.0"
+    json-bigint "^1.0.0"
+    tweetnacl "^1.0.3"
+    vlq "^2.0.4"
+
 algosdk@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/algosdk/-/algosdk-2.1.0.tgz#2d9538445a58f84d648836182f90985762715418"
@@ -4181,6 +4196,21 @@ anymatch@^3.0.3, anymatch@~3.1.2:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-2.0.0.tgz#52520b8ae5b569215b354efc0caa3fe1e45a8adc"
   integrity sha512-lYe4Gx7QT+MKGbDsA+Z+he/Wtef0BiwDOlK/XkBrdfsh9J/jPPXbX0tE9x9cl27Tmu5gg3QUbUrQYa/y+KOHPQ==
+
+arc200js@^1.2.22:
+  version "1.2.22"
+  resolved "https://registry.yarnpkg.com/arc200js/-/arc200js-1.2.22.tgz#0743a776c6f03fb8366caae8000380d0e6d24e31"
+  integrity sha512-B9jo4oksk6ZFrT/rBungBgtqzRJDJadLsLf6xPcy7VD0ROWPm4kV2+Y4OsvryB9YPKaovAW0fUWnvk3dKHrtSQ==
+  dependencies:
+    arccjs "^1.1.4"
+
+arccjs@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/arccjs/-/arccjs-1.1.4.tgz#b2ea54d8313d1b54ba2b40818410da562d53bc2c"
+  integrity sha512-achg0rZfwATl42J2so+rRvwz5qYTTzhiI92MDDwfMZ7F3EInuAQco1kOyOJ6qXXC/CIqhH76UuZgPn3zqux2Fg==
+  dependencies:
+    algosdk "^2.7.0"
+    buffer "^6.0.3"
 
 archy@~1.0.0:
   version "1.0.0"
