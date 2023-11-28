@@ -16,7 +16,7 @@ export default function createDefaultSettings(networks: INetwork[]): ISettings {
     advanced: {
       allowBetaNet: false,
       allowDidTokenFormat: false,
-      allowTestNet: false,
+      allowMainNet: false,
     },
     appearance: {
       theme: 'light',

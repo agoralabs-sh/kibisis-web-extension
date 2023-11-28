@@ -37,7 +37,7 @@ const translation: IResourceLanguage = {
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
-    allowTestNet: 'Let TestNet networks appear in the networks list.',
+    allowMainNet: 'Let MainNet networks appear in the networks list.',
     applicationIdCopied: 'Application ID copied!',
     appOnComplete: 'This transaction will run the application.',
     [`appOnComplete_${TransactionTypeEnum.ApplicationClearState}`]: `This transaction will clear any application data associated with the sender's account.`,
@@ -210,7 +210,7 @@ const translation: IResourceLanguage = {
     addAccount: 'Add Account',
     allowBetaNet: 'Allow BetaNet networks?',
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
-    allowTestNet: 'Allow TestNet networks?',
+    allowMainNet: 'Allow MainNet networks?',
     amount: 'Amount',
     applicationId: 'Application ID',
     assetId: 'Asset ID',

@@ -47,10 +47,10 @@ const AdvancedSettingsPage: FC = () => {
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.developer')} />
           <SettingsSwitchItem
-            checked={settings.advanced.allowTestNet}
-            description={t<string>('captions.allowTestNet')}
-            label={t<string>('labels.allowTestNet')}
-            onChange={handleOnSwitchChange('allowTestNet')}
+            checked={settings.advanced.allowMainNet}
+            description={t<string>('captions.allowMainNet')}
+            label={t<string>('labels.allowMainNet')}
+            onChange={handleOnSwitchChange('allowMainNet')}
           />
         </VStack>
 

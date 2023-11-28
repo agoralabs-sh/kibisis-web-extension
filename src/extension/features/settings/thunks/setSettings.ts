@@ -39,7 +39,7 @@ const setSettings: AsyncThunk<
       !selectedNetwork ||
       (!settings.advanced.allowBetaNet &&
         selectedNetwork.type === NetworkTypeEnum.Beta) ||
-      (!settings.advanced.allowTestNet &&
+      (!settings.advanced.allowMainNet &&
         selectedNetwork.type === NetworkTypeEnum.Test)
     ) {
       selectedNetwork = selectDefaultNetwork(networks);

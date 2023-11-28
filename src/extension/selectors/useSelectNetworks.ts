@@ -16,9 +16,9 @@ export default function useSelectNetworks(): INetwork[] {
       switch (value.type) {
         case NetworkTypeEnum.Beta:
           return settings.advanced.allowBetaNet;
-        case NetworkTypeEnum.Test:
-          return settings.advanced.allowTestNet;
         case NetworkTypeEnum.Stable:
+          return settings.advanced.allowMainNet;
+        case NetworkTypeEnum.Test:
         default:
           return true;
       }
