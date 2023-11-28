@@ -33,6 +33,7 @@ const Warning: FC<IProps> = ({ message, size = 'md' }: IProps) => {
 
   return (
     <HStack
+      backgroundColor="red.500"
       borderColor="red.500"
       borderRadius={theme.radii['3xl']}
       borderStyle="solid"
@@ -41,8 +42,8 @@ const Warning: FC<IProps> = ({ message, size = 'md' }: IProps) => {
       py={1}
       spacing={2}
     >
-      <Icon as={IoWarningOutline} color="red.500" h={iconSize} w={iconSize} />
-      <Text color="red.500" fontSize={size} textAlign="left">
+      <Icon as={IoWarningOutline} color="white" h={iconSize} w={iconSize} />
+      <Text color="white" fontWeight={600} fontSize={size} textAlign="left">
         {message}
       </Text>
     </HStack>

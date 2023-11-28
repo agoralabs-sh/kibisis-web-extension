@@ -38,6 +38,9 @@ const translation: IResourceLanguage = {
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
     allowMainNet: 'Let MainNet networks appear in the networks list.',
+    allowMainNetConfirm: 'Are you sure you want to allow MainNet networks?',
+    allowMainNetWarning:
+      'Kibisis is still in the early development so allow MainNet networks at your own risk!',
     applicationIdCopied: 'Application ID copied!',
     appOnComplete: 'This transaction will run the application.',
     [`appOnComplete_${TransactionTypeEnum.ApplicationClearState}`]: `This transaction will clear any application data associated with the sender's account.`,
@@ -149,6 +152,7 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    allowMainNetConfirm: 'Allow MainNet Networks',
     authentication: 'Authentication',
     beta: 'Beta',
     clearAllData: 'Clear All Data',

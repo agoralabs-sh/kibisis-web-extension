@@ -20,11 +20,52 @@ import {
   IAppThunkDispatch,
   ISettings,
 } from '@extension/types';
+import { setConfirm } from '@extension/features/system';
+import { ellipseAddress } from '@extension/utils';
+import { AccountService } from '@extension/services';
+import { removeAccountByIdThunk } from '@extension/features/accounts';
 
 const AdvancedSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // selectors
   const settings: ISettings = useSelectSettings();
+  // handlers
+  const handleMainNetSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    // if the switch is being enabled, get the user to confirmation
+    if (event.target.checked) {
+      console.log('confirm?');
+      dispatch(
+        setConfirm({
+          description: t<string>('captions.allowMainNetConfirm'),
+          onConfirm: () =>
+            dispatch(
+              setSettings({
+                ...settings,
+                advanced: {
+                  ...settings.advanced,
+                  allowMainNet: event.target.checked,
+                },
+              })
+            ),
+          title: t<string>('headings.allowMainNetConfirm'),
+          warningText: t<string>('captions.allowMainNetWarning'),
+        })
+      );
+
+      return;
+    }
+
+    dispatch(
+      setSettings({
+        ...settings,
+        advanced: {
+          ...settings.advanced,
+          allowMainNet: event.target.checked,
+        },
+      })
+    );
+  };
   const handleOnSwitchChange =
     (key: keyof IAdvancedSettings) =>
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -43,18 +84,18 @@ const AdvancedSettingsPage: FC = () => {
     <>
       <PageHeader title={t<string>('titles.page', { context: 'advanced' })} />
       <VStack spacing={4} w="full">
-        {/* Developer */}
+        {/* developer */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.developer')} />
           <SettingsSwitchItem
             checked={settings.advanced.allowMainNet}
             description={t<string>('captions.allowMainNet')}
             label={t<string>('labels.allowMainNet')}
-            onChange={handleOnSwitchChange('allowMainNet')}
+            onChange={handleMainNetSwitchChange}
           />
         </VStack>
 
-        {/* Beta */}
+        {/* beta */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.beta')} />
           <SettingsSwitchItem
