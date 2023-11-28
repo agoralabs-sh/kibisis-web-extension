@@ -5,7 +5,7 @@ import { ASSETS_KEY_PREFIX } from '@extension/constants';
 // enums
 import { AssetsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { StorageManager } from '@extension/services';
 
 // types

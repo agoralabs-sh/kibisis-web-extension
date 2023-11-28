@@ -52,7 +52,7 @@ import { AccountService } from '@extension/services';
 import { theme } from '@extension/theme';
 
 // types
-import { IAccount, IAccountInformation, INetwork } from '@extension/types';
+import { IAccount, INetwork } from '@extension/types';
 
 // utils
 import { ellipseAddress } from '@extension/utils';
@@ -244,17 +244,8 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
     accountNodes = accounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
-        const accountInformation: IAccountInformation | null =
-          AccountService.extractAccountInformationForNetwork(account, network);
-        let address: string;
-
-        if (!accountInformation) {
-          return acc;
-        }
-
-        address = AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
-        );
+        const address: string =
+          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
 
         return [
           ...acc,
@@ -264,8 +255,8 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
             spacing={4}
             w="full"
           >
-            <Avatar name={accountInformation.name || address} />
-            {accountInformation.name ? (
+            <Avatar name={account.name || address} />
+            {account.name ? (
               <VStack
                 alignItems="flex-start"
                 flexGrow={1}
@@ -273,7 +264,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
                 spacing={0}
               >
                 <Text color={defaultTextColor} fontSize="md" textAlign="left">
-                  {accountInformation.name}
+                  {account.name}
                 </Text>
                 <Text color={subTextColor} fontSize="sm" textAlign="left">
                   {ellipseAddress(address, {

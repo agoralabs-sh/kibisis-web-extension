@@ -35,6 +35,7 @@ import {
 import { ILogger } from '@common/types';
 import {
   IAccount,
+  IAccountInformation,
   IAppThunkDispatch,
   IAsset,
   IExplorer,
@@ -42,7 +43,10 @@ import {
 } from '@extension/types';
 
 // utils
-import { parseTransactionType } from '@extension/utils';
+import {
+  convertGenesisHashToHex,
+  parseTransactionType,
+} from '@extension/utils';
 import { AccountService } from '@extension/services';
 
 interface IProps {
@@ -111,6 +115,7 @@ const SignTxnsModalContent: FC<IProps> = ({
               (value) =>
                 value.publicKey.toUpperCase() === encodedPublicKey.toUpperCase()
             ) || null;
+          let accountInformation: IAccountInformation;
 
           // if we have this account, just return it
           if (account) {
@@ -120,12 +125,20 @@ const SignTxnsModalContent: FC<IProps> = ({
           account = AccountService.initializeDefaultAccount({
             publicKey: encodedPublicKey,
           });
-
-          return await updateAccountInformation(account, {
+          accountInformation = await updateAccountInformation(account, {
             delay: index * NODE_REQUEST_DELAY,
             logger,
             network,
           });
+
+          return {
+            ...account,
+            networkInformation: {
+              ...account.networkInformation,
+              [convertGenesisHashToHex(network.genesisHash).toUpperCase()]:
+                accountInformation,
+            },
+          };
         })
       );
 

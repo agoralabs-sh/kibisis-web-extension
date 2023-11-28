@@ -19,7 +19,7 @@ import { IoWarningOutline } from 'react-icons/io5';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // theme

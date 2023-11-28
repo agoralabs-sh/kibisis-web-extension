@@ -15,7 +15,6 @@ import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
 import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as systemReducer } from '@extension/features/system';
-import { reducer as transactionsReducer } from '@extension/features/transactions';
 
 // types
 import { IAppProps, IMainRootState } from '@extension/types';
@@ -33,7 +32,6 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       sessions: sessionsReducer,
       settings: settingsReducer,
       system: systemReducer,
-      transactions: transactionsReducer,
     })
   );
 

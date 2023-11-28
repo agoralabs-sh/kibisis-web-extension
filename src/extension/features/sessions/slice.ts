@@ -4,7 +4,7 @@ import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
-// Thunks
+// thunks
 import {
   clearSessionsThunk,
   fetchSessionsThunk,

@@ -3,7 +3,7 @@ import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
-// Thunks
+// thunks
 import {
   fetchAccountsFromStorageThunk,
   removeAccountByIdThunk,
@@ -11,6 +11,7 @@ import {
   startPollingForAccountInformationThunk,
   stopPollingForAccountInformationThunk,
   updateAccountInformationThunk,
+  updateAccountTransactionsForAccountThunk,
 } from './thunks';
 
 // types
@@ -23,7 +24,7 @@ import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** Fetch accounts from storage **/
+    /** fetch accounts from storage **/
     builder.addCase(
       fetchAccountsFromStorageThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<IAccount[]>) => {
@@ -43,7 +44,7 @@ const slice = createSlice({
         state.fetching = false;
       }
     );
-    /** Remove account by id **/
+    /** remove account by id **/
     builder.addCase(
       removeAccountByIdThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<string>) => {
@@ -62,7 +63,7 @@ const slice = createSlice({
         state.saving = false;
       }
     );
-    /** Save new account **/
+    /** save new account **/
     builder.addCase(
       saveNewAccountThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<IAccount>) => {
@@ -81,38 +82,63 @@ const slice = createSlice({
     builder.addCase(saveNewAccountThunk.rejected, (state: IAccountsState) => {
       state.saving = false;
     });
-    /** Start polling for account information **/
+    /** start polling for account information **/
     builder.addCase(
       startPollingForAccountInformationThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<number>) => {
         state.pollingId = action.payload;
       }
     );
-    /** Stop polling for account information **/
+    /** stop polling for account information **/
     builder.addCase(
       stopPollingForAccountInformationThunk.fulfilled,
       (state: IAccountsState) => {
         state.pollingId = null;
       }
     );
-    /** Update account information **/
+    /** update account information **/
     builder.addCase(
       updateAccountInformationThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<IAccount[]>) => {
         state.items = action.payload;
-        state.updating = false;
+        state.updatingTransactions = false;
       }
     );
     builder.addCase(
       updateAccountInformationThunk.pending,
       (state: IAccountsState) => {
-        state.updating = true;
+        state.updatingInformation = true;
       }
     );
     builder.addCase(
       updateAccountInformationThunk.rejected,
       (state: IAccountsState) => {
-        state.updating = false;
+        state.updatingInformation = false;
+      }
+    );
+    /** update account transactions **/
+    builder.addCase(
+      updateAccountTransactionsForAccountThunk.fulfilled,
+      (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
+        if (action.payload) {
+          state.items = state.items.map((value) =>
+            value.id === action.payload?.id ? action.payload : value
+          );
+        }
+
+        state.updatingTransactions = false;
+      }
+    );
+    builder.addCase(
+      updateAccountTransactionsForAccountThunk.pending,
+      (state: IAccountsState) => {
+        state.updatingTransactions = true;
+      }
+    );
+    builder.addCase(
+      updateAccountTransactionsForAccountThunk.rejected,
+      (state: IAccountsState) => {
+        state.updatingTransactions = false;
       }
     );
   },

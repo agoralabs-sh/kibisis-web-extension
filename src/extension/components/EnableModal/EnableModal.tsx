@@ -51,7 +51,7 @@ import {
   useSelectSavingSessions,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // theme
@@ -184,20 +184,8 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
 
     accountNodes = accounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
-        const accountInformation: IAccountInformation | null =
-          AccountService.extractAccountInformationForNetwork(
-            account,
-            enableRequest.network
-          );
-        let address: string;
-
-        if (!accountInformation) {
-          return acc;
-        }
-
-        address = AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
-        );
+        const address: string =
+          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
 
         return [
           ...acc,
@@ -207,8 +195,8 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
             spacing={4}
             w="full"
           >
-            <Avatar name={accountInformation.name || address} />
-            {accountInformation.name ? (
+            <Avatar name={account.name || address} />
+            {account.name ? (
               <VStack
                 alignItems="flex-start"
                 flexGrow={1}
@@ -216,7 +204,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
                 spacing={0}
               >
                 <Text color={defaultTextColor} fontSize="md" textAlign="left">
-                  {accountInformation.name}
+                  {account.name}
                 </Text>
                 <Text color={subTextColor} fontSize="sm" textAlign="left">
                   {ellipseAddress(address, {

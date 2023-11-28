@@ -4,7 +4,7 @@ import React, { FC, PropsWithChildren, useEffect, useState } from 'react';
 // selectors
 import { useSelectSettings } from '@extension/selectors';
 
-// servcies
+// services
 import { ColorModeManager } from '@extension/services';
 
 // theme

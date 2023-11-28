@@ -7,5 +7,4 @@ export { default as RegisterThunkEnum } from './RegisterThunkEnum';
 export { default as SessionsThunkEnum } from './SessionsThunkEnum';
 export { default as SettingsThunkEnum } from './SettingsThunkEnum';
 export { default as StoreNameEnum } from './StoreNameEnum';
-export { default as TransactionsThunkEnum } from './TransactionsThunkEnum';
 export { default as TransactionTypeEnum } from './TransactionTypeEnum';

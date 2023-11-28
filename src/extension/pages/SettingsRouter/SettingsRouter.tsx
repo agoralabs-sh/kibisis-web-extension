@@ -10,7 +10,7 @@ import {
   SESSIONS_ROUTE,
 } from '@extension/constants';
 
-// Pages
+// pages
 import AdvancedSettingsPage from '@extension/pages/AdvancedSettingsPage';
 import AppearanceSettingsPage from '@extension/pages/AppearanceSettingsPage';
 import GeneralSettingsPage from '@extension/pages/GeneralSettingsPage';

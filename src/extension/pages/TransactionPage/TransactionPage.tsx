@@ -27,15 +27,20 @@ const TransactionPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { address, transactionId } = useParams();
   // hooks
-  const { account, accountInformation, network, transaction } =
-    useTransactionPage({
-      address: address || null,
-      transactionId: transactionId || null,
-      onError: () =>
-        navigate(ACCOUNTS_ROUTE, {
-          replace: true,
-        }),
+  const { account, network, transaction } = useTransactionPage({
+    address: address || null,
+    transactionId: transactionId || null,
+    onError: () =>
+      navigate(ACCOUNTS_ROUTE, {
+        replace: true,
+      }),
+  });
+  // misc
+  const reset = () =>
+    navigate(ACCOUNTS_ROUTE, {
+      replace: true,
     });
+  // renders
   const renderContent = () => {
     if (!account || !network || !transaction) {
       return <LoadingTransactionContent />;
@@ -105,10 +110,6 @@ const TransactionPage: FC = () => {
         return null;
     }
   };
-  const reset = () =>
-    navigate(ACCOUNTS_ROUTE, {
-      replace: true,
-    });
 
   // if we don't have the params, return to accounts page
   useEffect(() => {

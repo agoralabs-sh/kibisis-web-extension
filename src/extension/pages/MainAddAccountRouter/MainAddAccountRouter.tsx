@@ -18,7 +18,7 @@ import {
   updateAccountInformationThunk,
 } from '@extension/features/accounts';
 
-// Pages
+// pages
 import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
@@ -30,7 +30,7 @@ import {
   useSelectSavingAccounts,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types

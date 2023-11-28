@@ -6,7 +6,7 @@ import { ASSETS_KEY_PREFIX, NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { AssetsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { StorageManager } from '@extension/services';
 
 // types

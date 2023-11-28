@@ -4,7 +4,7 @@ import browser from 'webextension-polyfill';
 // enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { AccountService, PrivateKeyService } from '@extension/services';
 
 // types
@@ -27,14 +27,14 @@ const removeAccountByIdThunk: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${removeAccountByIdThunk.name}: account "${id}" does not exist, ignoring`
+        `${AccountsThunkEnum.RemoveAccountById}: account "${id}" does not exist, ignoring`
       );
 
       return id;
     }
 
     logger.debug(
-      `${removeAccountByIdThunk.name}: removing account "${id}" from storage`
+      `${AccountsThunkEnum.RemoveAccountById}: removing account "${id}" from storage`
     );
 
     // remove the account
@@ -46,7 +46,7 @@ const removeAccountByIdThunk: AsyncThunk<
     });
 
     logger.debug(
-      `${removeAccountByIdThunk.name}: removing private key "${account.publicKey}" from storage`
+      `${AccountsThunkEnum.RemoveAccountById}: removing private key "${account.publicKey}" from storage`
     );
 
     // remove the private key

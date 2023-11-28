@@ -33,7 +33,7 @@ import {
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types

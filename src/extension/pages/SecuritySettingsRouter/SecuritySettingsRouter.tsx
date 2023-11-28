@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 // constants
 import { CHANGE_PASSWORD_ROUTE } from '@extension/constants';
 
-// Pages
+// pages
 import ChangePasswordPage from '@extension/pages/ChangePasswordPage';
 import SecuritySettingsIndexPage from '@extension/pages/SecuritySettingsIndexPage';
 

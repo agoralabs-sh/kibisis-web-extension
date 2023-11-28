@@ -31,7 +31,7 @@ import {
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // theme
@@ -108,13 +108,12 @@ const AssetPage: FC = () => {
     <>
       <PageHeader
         subTitle={
-          accountInformation.name
+          account.name
             ? ellipseAddress(accountAddress, { end: 10, start: 10 })
             : undefined
         }
         title={
-          accountInformation.name ||
-          ellipseAddress(accountAddress, { end: 10, start: 10 })
+          account.name || ellipseAddress(accountAddress, { end: 10, start: 10 })
         }
       />
       <VStack

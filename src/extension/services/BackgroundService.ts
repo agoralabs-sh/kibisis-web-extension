@@ -12,7 +12,7 @@ import { EventNameEnum } from '@common/enums';
 // events
 import { BaseEvent, ExtensionBackgroundAppLoadEvent } from '@common/events';
 
-// servcies
+// services
 import PrivateKeyService from './PrivateKeyService';
 import StorageManager from './StorageManager';
 

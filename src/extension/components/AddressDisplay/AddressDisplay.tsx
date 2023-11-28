@@ -1,11 +1,4 @@
-import {
-  HStack,
-  Icon,
-  ResponsiveValue,
-  StackProps,
-  Text,
-  Tooltip,
-} from '@chakra-ui/react';
+import { HStack, Icon, ResponsiveValue, Text, Tooltip } from '@chakra-ui/react';
 import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
@@ -15,19 +8,16 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectAccounts } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import { IAccount, IAccountInformation, INetwork } from '@extension/types';
+import { IAccount, INetwork } from '@extension/types';
 
 // utils
 import { ellipseAddress } from '@extension/utils';
@@ -58,9 +48,6 @@ const AddressDisplay: FC<IProps> = ({
         AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
         address
     ) || null;
-  const accountInformation: IAccountInformation | null = account
-    ? AccountService.extractAccountInformationForNetwork(account, network)
-    : null;
   const getIconSize: () => number = () => {
     switch (fontSize) {
       case 'xs':
@@ -92,7 +79,7 @@ const AddressDisplay: FC<IProps> = ({
             w={getIconSize()}
           />
           <Text color={color || defaultTextColor} fontSize={fontSize}>
-            {accountInformation?.name ||
+            {account.name ||
               ellipseAddress(
                 AccountService.convertPublicKeyToAlgorandAddress(
                   account.publicKey

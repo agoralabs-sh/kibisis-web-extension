@@ -21,7 +21,7 @@ import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as registrationReducer } from '@extension/features/registration';
 import { reducer as systemReducer } from '@extension/features/system';
 
-// Pages
+// pages
 import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
 import RegistrationAddAccountRouter from '@extension/pages/RegistrationAddAccountRouter';

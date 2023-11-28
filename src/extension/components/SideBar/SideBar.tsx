@@ -56,7 +56,7 @@ import {
   useSelectFetchingAccounts,
 } from '@extension/selectors';
 
-// service
+// services
 import { AccountService } from '@extension/services';
 
 // types

@@ -5,7 +5,7 @@ import { getSdkError } from '@walletconnect/utils';
 // enums
 import { SessionsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { SessionService } from '@extension/services';
 
 // types

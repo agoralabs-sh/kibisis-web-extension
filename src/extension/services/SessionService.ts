@@ -1,7 +1,7 @@
 // constants
 import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
-// servcies
+// services
 import StorageManager from './StorageManager';
 
 // types

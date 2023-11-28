@@ -9,12 +9,14 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// services
+import { AccountService } from '@extension/services';
+
 // types
 import { IAccount, IAccountInformation } from '@extension/types';
 
 // utils
 import { ellipseAddress } from '@extension/utils';
-import { AccountService } from '@extension/services';
 
 interface IProps {
   account: IAccount;
@@ -47,7 +49,7 @@ const AccountItem: FC<IProps> = ({
           size="sm"
         />
       </Center>
-      {accountInformation?.name ? (
+      {account.name ? (
         <VStack
           alignItems="flex-start"
           flexGrow={1}
@@ -61,7 +63,7 @@ const AccountItem: FC<IProps> = ({
             noOfLines={1}
             textAlign="left"
           >
-            {accountInformation.name}
+            {account.name}
           </Text>
           <Text
             color={subTextColor || defaultSubTextColor}

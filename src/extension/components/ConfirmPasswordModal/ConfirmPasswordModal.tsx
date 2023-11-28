@@ -21,7 +21,7 @@ import { DEFAULT_GAP } from '@extension/constants';
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// servcies
+// services
 import { PrivateKeyService } from '@extension/services';
 
 // theme

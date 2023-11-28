@@ -38,7 +38,7 @@ import {
   ExternalSignTxnsResponseEvent,
 } from '@common/events';
 
-// servcies
+// services
 import AccountService from './AccountService';
 import SessionService from './SessionService';
 import StorageManager from './StorageManager';
@@ -54,7 +54,6 @@ import {
 } from '@common/types';
 import {
   IAccount,
-  IAccountInformation,
   IGeneralSettings,
   INetwork,
   ISession,
@@ -65,10 +64,10 @@ import {
 import { computeGroupId } from '@common/utils';
 import {
   getAuthorizedAddressesForHost,
-  mapAddressToWalletAccount,
   selectDefaultNetwork,
   verifyTransactionGroupId,
 } from '@extension/utils';
+import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
 
 export default class ExternalEventService {
   // private variables
@@ -302,17 +301,23 @@ export default class ExternalEventService {
         return this.sendExternalResponse(
           new ExternalEnableResponseEvent(
             {
-              accounts: session.authorizedAddresses.map((address) =>
-                mapAddressToWalletAccount(address, {
-                  account:
+              accounts: session.authorizedAddresses.map<IWalletAccount>(
+                (address) => {
+                  const account: IAccount | null =
                     accounts.find(
                       (value) =>
                         AccountService.convertPublicKeyToAlgorandAddress(
                           value.publicKey
                         ) === address
-                    ) || null,
-                  network: sessionNetwork,
-                })
+                    ) || null;
+
+                  return {
+                    address,
+                    ...(account?.name && {
+                      name: account.name,
+                    }),
+                  };
+                }
               ),
               genesisHash: session.genesisHash,
               genesisId: session.genesisId,

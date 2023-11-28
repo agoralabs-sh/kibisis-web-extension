@@ -20,19 +20,14 @@ import {
   useSelectPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import {
-  IAccount,
-  IAccountInformation,
-  IExplorer,
-  INetwork,
-} from '@extension/types';
+import { IAccount, IExplorer, INetwork } from '@extension/types';
 
 // utils
 import { ellipseAddress } from '@extension/utils';
@@ -78,10 +73,6 @@ const SignTxnsChangeAddressItem: FC<IProps> = ({
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const renderAccount = (address: string, account: IAccount | null) => {
-    const accountInformation: IAccountInformation | null = account
-      ? AccountService.extractAccountInformationForNetwork(account, network)
-      : null;
-
     return (
       <Tooltip aria-label={ariaLabel} label={address}>
         {account ? (
@@ -94,7 +85,7 @@ const SignTxnsChangeAddressItem: FC<IProps> = ({
           >
             <Icon as={IoWalletOutline} color={subTextColor} h={2} w={2} />
             <Text color={subTextColor} fontSize="xs">
-              {accountInformation?.name ||
+              {account.name ||
                 ellipseAddress(
                   AccountService.convertPublicKeyToAlgorandAddress(
                     account.publicKey

@@ -26,9 +26,8 @@ import {
   reducer as systemReducer,
   setSideBar,
 } from '@extension/features/system';
-import { reducer as transactionsReducer } from '@extension/features/transactions';
 
-// Pages
+// pages
 import AccountRouter from '@extension/pages/AccountRouter';
 import AddAccountRouter from '@extension/pages/MainAddAccountRouter';
 import SettingsRouter from '@extension/pages/SettingsRouter';
@@ -90,7 +89,6 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       sessions: sessionsReducer,
       settings: settingsReducer,
       system: systemReducer,
-      transactions: transactionsReducer,
     })
   );
 

@@ -7,7 +7,7 @@ import { BaseExtensionError } from '@extension/errors';
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// servcies
+// services
 import { PrivateKeyService } from '@extension/services';
 
 // types

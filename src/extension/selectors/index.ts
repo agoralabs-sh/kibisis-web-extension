@@ -1,9 +1,6 @@
 export { default as useSelectAccount } from './useSelectAccount';
 export { default as useSelectAccountById } from './useSelectAccountById';
-export { default as useSelectAccountByPublicKey } from './useSelectAccountByPublicKey';
 export { default as useSelectAccounts } from './useSelectAccounts';
-export { default as useSelectAccountTransactionByAccountId } from './useSelectAccountTransactionByAccountId';
-export { default as useSelectAccountTransactions } from './useSelectAccountTransactions';
 export { default as useSelectAssets } from './useSelectAssets';
 export { default as useSelectAssetsByGenesisHash } from './useSelectAssetsByGenesisHash';
 export { default as useSelectColorMode } from './useSelectColorMode';
@@ -14,7 +11,6 @@ export { default as useSelectFetchingAccounts } from './useSelectFetchingAccount
 export { default as useSelectFetchingAssets } from './useSelectFetchingAssets';
 export { default as useSelectFetchingSessions } from './useSelectFetchingSessions';
 export { default as useSelectFetchingSettings } from './useSelectFetchingSettings';
-export { default as useSelectFetchingTransactionsByAccountId } from './useSelectFetchingTransactionsByAccountId';
 export { default as useSelectInitializingWalletConnect } from './useSelectInitializingWalletConnect';
 export { default as useSelectIsOnline } from './useSelectIsOnline';
 export { default as useSelectLogger } from './useSelectLogger';
@@ -32,7 +28,8 @@ export { default as useSelectSideBar } from './useSelectSideBar';
 export { default as useSelectSignBytesRequest } from './useSelectSignBytesRequest';
 export { default as useSelectSignTxnsRequest } from './useSelectSignTxnsRequest';
 export { default as useSelectToast } from './useSelectToast';
-export { default as useSelectUpdatingAccounts } from './useSelectUpdatingAccounts';
+export { default as useSelectUpdatingAccountInformation } from './useSelectUpdatingAccountInformation';
+export { default as useSelectUpdatingAccountTransactions } from './useSelectUpdatingAccountTransactions';
 export { default as useSelectUpdatingAssets } from './useSelectUpdatingAssets';
 export { default as useSelectWalletConnectModalOpen } from './useSelectWalletConnectModalOpen';
 export { default as useSelectWeb3Wallet } from './useSelectWeb3Wallet';

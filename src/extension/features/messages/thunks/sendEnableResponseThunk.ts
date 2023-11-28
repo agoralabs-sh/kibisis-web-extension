@@ -9,16 +9,13 @@ import { MessagesThunkEnum } from '@extension/enums';
 // events
 import { ExtensionEnableResponseEvent } from '@common/events';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
 import { IAccount, IMainRootState, INetwork, ISession } from '@extension/types';
 import { IBaseResponseThunkPayload } from '../types';
-
-// utils
-import { mapAddressToWalletAccount } from '@extension/utils';
 
 interface IPayload extends IBaseResponseThunkPayload {
   session: ISession | null;
@@ -33,9 +30,7 @@ const sendEnableResponseThunk: AsyncThunk<
   async ({ error, requestEventId, session, tabId }, { getState }) => {
     const accounts: IAccount[] = getState().accounts.items;
     const logger: ILogger = getState().system.logger;
-    const networks: INetwork[] = getState().networks.items;
     let message: ExtensionEnableResponseEvent;
-    let network: INetwork | null;
 
     logger.debug(
       `${sendEnableResponseThunk.name}(): sending "${EventNameEnum.ExtensionEnableResponse}" message to content script`
@@ -54,23 +49,26 @@ const sendEnableResponseThunk: AsyncThunk<
     }
 
     if (session) {
-      network =
-        networks.find((value) => value.genesisHash === session?.genesisHash) ||
-        null;
       message = new ExtensionEnableResponseEvent(
         requestEventId,
         {
-          accounts: session.authorizedAddresses.map<IWalletAccount>((address) =>
-            mapAddressToWalletAccount(address, {
-              account:
+          accounts: session.authorizedAddresses.map<IWalletAccount>(
+            (address) => {
+              const account: IAccount | null =
                 accounts.find(
                   (value) =>
                     AccountService.convertPublicKeyToAlgorandAddress(
                       value.publicKey
                     ) === address
-                ) || null,
-              network,
-            })
+                ) || null;
+
+              return {
+                address,
+                ...(account?.name && {
+                  name: account.name,
+                }),
+              };
+            }
           ),
           genesisHash: session.genesisHash,
           genesisId: session.genesisId,

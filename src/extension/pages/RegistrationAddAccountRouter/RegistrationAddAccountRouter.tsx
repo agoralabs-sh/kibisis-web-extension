@@ -11,7 +11,7 @@ import {
 // features
 import { saveCredentialsThunk } from '@extension/features/registration';
 
-// Pages
+// pages
 import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';

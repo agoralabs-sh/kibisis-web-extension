@@ -1,22 +1,18 @@
 import { useEffect, useState } from 'react';
 
-// features
-import { IAccountTransaction } from '@extension/features/transactions';
-
 // selectors
 import {
   useSelectAccounts,
-  useSelectAccountTransactions,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
 import {
   IAccount,
-  IAccountInformation,
+  IAccountTransactions,
   INetwork,
   ITransactions,
 } from '@extension/types';
@@ -30,12 +26,8 @@ export default function useTransactionPage({
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const network: INetwork | null = useSelectSelectedNetwork();
-  const accountTransactions: IAccountTransaction[] =
-    useSelectAccountTransactions();
   // state
   const [account, setAccount] = useState<IAccount | null>(null);
-  const [accountInformation, setAccountInformation] =
-    useState<IAccountInformation | null>(null);
   const [transaction, setTransaction] = useState<ITransactions | null>(null);
 
   // 1. when we have the address and accounts, get the account
@@ -59,39 +51,30 @@ export default function useTransactionPage({
       setAccount(selectedAccount);
     }
   }, [address, accounts]);
-  // 2a. when the account has been found, and we have the selected network, get the account information
+  // 2. when the account has been found, and we have the selected network, get the account transaction
   useEffect(() => {
-    if (account && network) {
-      setAccountInformation(
-        AccountService.extractAccountInformationForNetwork(account, network) ||
-          null
-      );
-    }
-  }, [account, network]);
-  // 2b. when the account has been found, get the transaction information
-  useEffect(() => {
-    let accountTransaction: IAccountTransaction | null;
+    let accountTransactions: IAccountTransactions | null;
     let selectedTransaction: ITransactions | null;
 
-    if (account) {
-      accountTransaction =
-        accountTransactions.find((value) => value.accountId === account.id) ||
-        null;
+    if (account && network) {
+      accountTransactions = AccountService.extractAccountTransactionsForNetwork(
+        account,
+        network
+      );
 
-      if (accountTransaction) {
+      if (accountTransactions) {
         selectedTransaction =
-          accountTransaction.transactions.find(
+          accountTransactions.transactions.find(
             (value) => value.id === transactionId
           ) || null;
 
         setTransaction(selectedTransaction);
       }
     }
-  }, [account]);
+  }, [account, network]);
 
   return {
     account,
-    accountInformation,
     network,
     transaction,
   };
