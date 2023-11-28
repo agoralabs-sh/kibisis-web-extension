@@ -69,9 +69,11 @@ import { convertGenesisHashToHex } from '@extension/utils';
 const Root: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
+  // hooks
   const accounts: IAccount[] = useSelectAccounts();
   const assets: Record<string, IAsset[]> | null = useSelectAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  // misc
   const { toast, ToastContainer } = createStandaloneToast({
     defaultOptions: {
       containerStyle: {
@@ -86,7 +88,7 @@ const Root: FC = () => {
     },
     theme,
   });
-
+  // handlers
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));
@@ -102,18 +104,19 @@ const Root: FC = () => {
     dispatch(fetchSessionsThunk());
     dispatch(fetchAssetsThunk());
     dispatch(initializeWalletConnectThunk());
+    dispatch(startPollingForAccountInformationThunk());
   }, []);
-  // fetch accounts when the selected network has been found
+  // fetch accounts when the selected network has been found and no accounts exist
   useEffect(() => {
-    if (assets && selectedNetwork) {
+    if (selectedNetwork && accounts.length < 1) {
       dispatch(
         fetchAccountsFromStorageThunk({
           updateAccountInformation: true,
+          updateAccountTransactions: true,
         })
       );
-      dispatch(startPollingForAccountInformationThunk());
     }
-  }, [assets, selectedNetwork]);
+  }, [selectedNetwork]);
   // whenever the accounts are updated, check if any new assets exist in the account
   useEffect(() => {
     if (accounts.length > 0 && assets && selectedNetwork) {
@@ -122,7 +125,7 @@ const Root: FC = () => {
           selectedNetwork.genesisHash
         ).toUpperCase();
         const accountInformation: IAccountInformation | null =
-          account.networkInfo[encodedGenesisHash] || null;
+          account.networkInformation[encodedGenesisHash] || null;
         let newAssets: IAssetHolding[];
 
         if (accountInformation) {

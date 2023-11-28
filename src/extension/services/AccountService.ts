@@ -8,7 +8,7 @@ import { networks } from '@extension/config';
 // constants
 import { ACCOUNTS_ITEM_KEY_PREFIX } from '@extension/constants';
 
-// Service
+// services
 import StorageManager from './StorageManager';
 
 // types
@@ -16,12 +16,17 @@ import { IBaseOptions, ILogger } from '@common/types';
 import {
   IAccount,
   IAccountInformation,
+  IAccountTransactions,
   IInitializeAccountOptions,
   INetwork,
 } from '@extension/types';
 
 // utils
 import { convertGenesisHashToHex } from '@extension/utils';
+
+export interface ISaveAccountsOptions {
+  saveTransactions?: boolean;
+}
 
 export default class AccountService {
   // private variables
@@ -58,16 +63,35 @@ export default class AccountService {
   }
 
   /**
-   * Convenience function that extracts the account for a given network.
+   * Convenience function that extracts the account information for a given network.
    * @param {IAccount} account - the account to get the account information from.
    * @param {INetwork} network - the network to look for.
    * @returns {IAccountInformation | null} the account information for the network, or none if no network exists.
    */
   public static extractAccountInformationForNetwork(
-    { networkInfo }: IAccount,
+    { networkInformation }: IAccount,
     { genesisHash }: INetwork
   ): IAccountInformation | null {
-    return networkInfo[convertGenesisHashToHex(genesisHash)] || null;
+    return (
+      networkInformation[convertGenesisHashToHex(genesisHash).toUpperCase()] ||
+      null
+    );
+  }
+
+  /**
+   * Convenience function that extracts the account transactions for a given network.
+   * @param {IAccount} account - the account to get the account transactions from.
+   * @param {INetwork} network - the network to look for.
+   * @returns {IAccountInformation | null} the account transactions for the network, or none if no network exists.
+   */
+  public static extractAccountTransactionsForNetwork(
+    { networkTransactions }: IAccount,
+    { genesisHash }: INetwork
+  ): IAccountTransactions | null {
+    return (
+      networkTransactions[convertGenesisHashToHex(genesisHash).toUpperCase()] ||
+      null
+    );
   }
 
   /**
@@ -86,11 +110,22 @@ export default class AccountService {
     return {
       createdAt: createdAtOrNow,
       id: id || uuid(),
-      networkInfo: networks.reduce<Record<string, IAccountInformation>>(
+      name: name || null,
+      networkInformation: networks.reduce<Record<string, IAccountInformation>>(
         (acc, { genesisHash }) => ({
           ...acc,
           [convertGenesisHashToHex(genesisHash)]:
-            AccountService.initializeDefaultAccountInformation(name),
+            AccountService.initializeDefaultAccountInformation(),
+        }),
+        {}
+      ),
+      networkTransactions: networks.reduce<
+        Record<string, IAccountTransactions>
+      >(
+        (acc, { genesisHash }) => ({
+          ...acc,
+          [convertGenesisHashToHex(genesisHash)]:
+            AccountService.initializeDefaultAccountTransactions(),
         }),
         {}
       ),
@@ -99,16 +134,20 @@ export default class AccountService {
     };
   }
 
-  public static initializeDefaultAccountInformation(
-    name?: string
-  ): IAccountInformation {
+  public static initializeDefaultAccountInformation(): IAccountInformation {
     return {
       assetHoldings: [],
       atomicBalance: '0',
       authAddress: null,
       minAtomicBalance: '0',
-      name: name || null,
       updatedAt: null,
+    };
+  }
+
+  public static initializeDefaultAccountTransactions(): IAccountTransactions {
+    return {
+      next: null,
+      transactions: [],
     };
   }
 
@@ -169,13 +208,13 @@ export default class AccountService {
 
     return accounts.map((account) => ({
       ...account,
-      // if there are new networks in the config, retrieve the default network
-      networkInfo: networks.reduce<Record<string, IAccountInformation>>(
+      // if there are new networks in the config, create default account information and transactions for these new networks
+      networkInformation: networks.reduce<Record<string, IAccountInformation>>(
         (acc, { genesisHash }) => {
           const encodedGenesisHash: string =
             convertGenesisHashToHex(genesisHash).toUpperCase();
           const accountInformation: IAccountInformation | null =
-            account.networkInfo[encodedGenesisHash] || null;
+            account.networkInformation[encodedGenesisHash] || null;
 
           return {
             ...acc,
@@ -191,6 +230,26 @@ export default class AccountService {
         },
         {}
       ),
+      networkTransactions: networks.reduce<
+        Record<string, IAccountTransactions>
+      >((acc, { genesisHash }) => {
+        const encodedGenesisHash: string =
+          convertGenesisHashToHex(genesisHash).toUpperCase();
+        const accountTransactions: IAccountTransactions | null =
+          account.networkTransactions[encodedGenesisHash] || null;
+
+        return {
+          ...acc,
+          ...(accountTransactions
+            ? {
+                [encodedGenesisHash]: accountTransactions,
+              }
+            : {
+                [encodedGenesisHash]:
+                  AccountService.initializeDefaultAccountTransactions(),
+              }),
+        };
+      }, {}),
     }));
   }
 
@@ -202,12 +261,40 @@ export default class AccountService {
     await this.storageManager.remove(this.createAccountItemKey(id));
   }
 
-  public async saveAccounts(accounts: IAccount[]): Promise<IAccount[]> {
+  /**
+   * Convenience function that saves accounts to local storage. Each network's account information is stored, but each
+   * network's account transactions are only stored, if the `options.saveTransactions` is set to true, but by default
+   * no transaction data is saved.
+   *
+   * This function will overwrite any previous account data indexed by the account ID.
+   * @param {IAccount[]} accounts - the list of accounts to save.
+   * @param {ISaveAccountsOptions} options - [optional] various options to affect how the data is saved.
+   * @returns {IAccount[]} the accounts that were passed in the argument.
+   * @todo cache the first 100 transactions
+   */
+  public async saveAccounts(
+    accounts: IAccount[],
+    { saveTransactions }: ISaveAccountsOptions = { saveTransactions: false }
+  ): Promise<IAccount[]> {
     await this.storageManager.setItems(
-      accounts.reduce(
-        (acc, value) => ({
+      accounts.reduce<Record<string, IAccount>>(
+        (acc, account) => ({
           ...acc,
-          [this.createAccountItemKey(value.id)]: value,
+          [this.createAccountItemKey(account.id)]: {
+            ...account,
+            // only save transactions if explicitly allowed
+            // TODO: cache the first 100
+            ...(!saveTransactions && {
+              networkTransactions: networks.reduce(
+                (acc, { genesisHash }) => ({
+                  ...acc,
+                  [convertGenesisHashToHex(genesisHash).toUpperCase()]:
+                    AccountService.initializeDefaultAccountTransactions(),
+                }),
+                {}
+              ),
+            }),
+          },
         }),
         {}
       )

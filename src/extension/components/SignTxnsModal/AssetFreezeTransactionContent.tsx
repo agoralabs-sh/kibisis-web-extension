@@ -30,7 +30,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
@@ -46,7 +46,11 @@ import {
 import { ICondensedProps } from './types';
 
 // utils
-import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
+import {
+  convertGenesisHashToHex,
+  createIconFromDataUri,
+  parseTransactionType,
+} from '@extension/utils';
 
 interface IProps {
   asset: IAsset | null;
@@ -83,6 +87,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
   const [freezeAccount, setFreezeAccount] = useState<IAccount | null>(null);
   const [atomicUnitFreezeAccountBalance, setAtomicUnitFreezeAccountBalance] =
     useState<BigNumber>(new BigNumber('0'));
+  // misc
   const freezeAddress: string | null = transaction.freezeAccount
     ? encodeAddress(transaction.freezeAccount.publicKey)
     : null;
@@ -94,6 +99,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       sender: fromAccount,
     }
   );
+  // renders
   const renderExtraInformation = () => {
     if (!asset) {
       return null;
@@ -101,7 +107,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
 
     return (
       <>
-        {/*freeze account balance*/}
+        {/* freeze account balance */}
         <SignTxnsAssetItem
           atomicUnitAmount={atomicUnitFreezeAccountBalance}
           decimals={asset.decimals}
@@ -157,6 +163,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
   useEffect(() => {
     (async () => {
       let account: IAccount | null;
+      let accountInformation: IAccountInformation;
 
       if (!freezeAddress) {
         return;
@@ -183,13 +190,19 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
         publicKey:
           AccountService.convertAlgorandAddressToPublicKey(freezeAddress),
       });
-
-      account = await updateAccountInformation(account, {
+      accountInformation = await updateAccountInformation(account, {
         logger,
         network,
       });
 
-      setFreezeAccount(account);
+      setFreezeAccount({
+        ...account,
+        networkInformation: {
+          ...account.networkInformation,
+          [convertGenesisHashToHex(network.genesisHash).toUpperCase()]:
+            accountInformation,
+        },
+      });
       setFetchingFreezeAccountInformation(false);
     })();
   }, []);
@@ -237,14 +250,14 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       spacing={condensed ? 2 : 4}
       w="full"
     >
-      {/*heading*/}
+      {/* heading */}
       <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
         {t<string>('headings.transaction', {
           context: transactionType,
         })}
       </Text>
 
-      {/*asset id*/}
+      {/* asset id */}
       <HStack spacing={0} w="full">
         <SignTxnsTextItem
           flexGrow={1}
@@ -268,7 +281,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
         )}
       </HStack>
 
-      {/*freeze manager*/}
+      {/* freeze manager */}
       {fromAddress !== asset.freezeAddress ? (
         <HStack
           alignItems="center"
@@ -305,7 +318,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
         />
       )}
 
-      {/*freeze/unfreeze account*/}
+      {/* freeze/unfreeze account */}
       {freezeAddress && (
         <SignTxnsAddressItem
           address={freezeAddress}

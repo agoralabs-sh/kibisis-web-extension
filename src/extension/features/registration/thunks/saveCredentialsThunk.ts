@@ -17,7 +17,7 @@ import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 import { setError } from '@extension/features/system';
 import { sendRegistrationCompletedThunk } from '@extension/features/messages';
 
-// servcies
+// services
 import { AccountService, PrivateKeyService } from '@extension/services';
 
 // types

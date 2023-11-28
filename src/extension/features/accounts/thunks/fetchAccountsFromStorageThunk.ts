@@ -5,7 +5,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
@@ -14,8 +14,11 @@ import { IAccount, IMainRootState, INetwork } from '@extension/types';
 import { IFetchAccountsFromStoragePayload } from '../types';
 
 // utils
-import { selectDefaultNetwork } from '@extension/utils';
-import { updateAccountInformation } from '../utils';
+import {
+  convertGenesisHashToHex,
+  selectNetworkFromSettings,
+} from '@extension/utils';
+import { updateAccountInformation, updateAccountTransactions } from '../utils';
 
 const fetchAccountsFromStorageThunk: AsyncThunk<
   IAccount[], // return
@@ -32,13 +35,12 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   const accountService: AccountService = new AccountService({
     logger,
   });
-  const selectedNetwork: INetwork | null =
-    networks.find(
-      (value) =>
-        value.genesisHash ===
-        getState().settings.general.selectedNetworkGenesisHash
-    ) || null;
+  const selectedNetwork: INetwork | null = selectNetworkFromSettings(
+    networks,
+    getState().settings
+  );
   let accounts: IAccount[];
+  let encodedGenesisHash: string;
 
   logger.debug(
     `${AccountsThunkEnum.FetchAccountsFromStorage}: fetching accounts from storage`
@@ -47,25 +49,57 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   accounts = await accountService.getAllAccounts();
   accounts = accounts.sort((a, b) => a.createdAt - b.createdAt); // sort by created at date (oldest first)
 
-  // update account information, if requested
-  if (options?.updateAccountInformation && online && selectedNetwork) {
-    logger.debug(
-      `${AccountsThunkEnum.FetchAccountsFromStorage}: updating account information for "${selectedNetwork.genesisId}"`
-    );
+  if (online && selectedNetwork) {
+    encodedGenesisHash = convertGenesisHashToHex(
+      selectedNetwork.genesisHash
+    ).toUpperCase();
 
-    accounts = await Promise.all(
-      accounts.map(
-        async (account, index) =>
-          await updateAccountInformation(account, {
-            delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
-            logger,
-            network: selectedNetwork,
-          })
-      )
-    );
+    // update the account information for selected network
+    if (options?.updateAccountInformation) {
+      logger.debug(
+        `${AccountsThunkEnum.FetchAccountsFromStorage}: updating account information for "${selectedNetwork.genesisId}"`
+      );
 
-    // save accounts to storage
-    accounts = await accountService.saveAccounts(accounts);
+      accounts = await Promise.all(
+        accounts.map(async (account, index) => ({
+          ...account,
+          networkInformation: {
+            ...account.networkInformation,
+            [encodedGenesisHash]: await updateAccountInformation(account, {
+              delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+              logger,
+              network: selectedNetwork,
+            }),
+          },
+        }))
+      );
+
+      // save accounts to storage
+      accounts = await accountService.saveAccounts(accounts);
+    }
+
+    // update the accounts transactions for selected network
+    if (options?.updateAccountTransactions) {
+      logger.debug(
+        `${AccountsThunkEnum.FetchAccountsFromStorage}: updating account transactions for "${selectedNetwork.genesisId}"`
+      );
+
+      accounts = await Promise.all(
+        accounts.map(async (account, index) => ({
+          ...account,
+          networkTransactions: {
+            ...account.networkTransactions,
+            [encodedGenesisHash]: await updateAccountTransactions(account, {
+              logger,
+              network: selectedNetwork,
+            }),
+          },
+        }))
+      );
+
+      // save accounts to storage
+      accounts = await accountService.saveAccounts(accounts);
+    }
   }
 
   return accounts;

@@ -35,7 +35,7 @@ import {
 } from 'react-router-dom';
 
 // components
-import AccountActivityTab from '@extension/components/AccountActivityTab';
+import ActivityTab from '@extension/components/ActivityTab';
 import AccountAssetsTab from '@extension/components/AccountAssetsTab';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
@@ -54,7 +54,10 @@ import NativeBalance, {
 import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 
 // features
-import { removeAccountByIdThunk } from '@extension/features/accounts';
+import {
+  removeAccountByIdThunk,
+  updateAccountTransactionsForAccountThunk,
+} from '@extension/features/accounts';
 import { setConfirm } from '@extension/features/system';
 import { setSettings } from '@extension/features/settings';
 
@@ -66,7 +69,6 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import {
   useSelectAccount,
-  useSelectAccountByPublicKey,
   useSelectAccounts,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
@@ -77,13 +79,14 @@ import {
   useSelectSettings,
 } from '@extension/selectors';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
 import {
   IAccount,
   IAccountInformation,
+  IAccountTransactions,
   IAppThunkDispatch,
   IExplorer,
   INetwork,
@@ -129,9 +132,17 @@ const AccountPage: FC = () => {
           selectedNetwork
         )
       : null;
+  const accountTransactions: IAccountTransactions | null =
+    account && selectedNetwork
+      ? AccountService.extractAccountTransactionsForNetwork(
+          account,
+          selectedNetwork
+        )
+      : null;
   const accountTabId: number = parseInt(
     searchParams.get('accountTabId') || '0'
   );
+  // handlers
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkSelect = (network: INetwork) => {
     dispatch(
@@ -170,6 +181,12 @@ const AccountPage: FC = () => {
     setSearchParams({
       accountTabId: index.toString(),
     });
+  const handleActivityScrollEnd = () => {
+    if (account && accountTransactions && accountTransactions.next) {
+      dispatch(updateAccountTransactionsForAccountThunk(account.id));
+    }
+  };
+  // renders
   const renderContent = () => {
     const headerContainerProps: StackProps = {
       alignItems: 'flex-start',
@@ -183,7 +200,7 @@ const AccountPage: FC = () => {
         <VStack {...headerContainerProps}>
           <NetworkSelectSkeleton network={networks[0]} />
           <HStack alignItems="center" w="full">
-            {/*address*/}
+            {/* address */}
             <Skeleton>
               <Text color="gray.500" fontSize="xs">
                 {ellipseAddress(faker.random.alphaNumeric(58).toUpperCase())}
@@ -192,7 +209,7 @@ const AccountPage: FC = () => {
 
             <Spacer />
 
-            {/*balance*/}
+            {/* balance */}
             <NativeBalanceSkeleton />
           </HStack>
         </VStack>
@@ -206,9 +223,9 @@ const AccountPage: FC = () => {
 
       return (
         <>
-          {/*header*/}
+          {/* header */}
           <VStack {...headerContainerProps}>
-            {/*network connectivity*/}
+            {/* network connectivity */}
             <HStack w="full">
               {!online && (
                 <Tooltip
@@ -236,12 +253,9 @@ const AccountPage: FC = () => {
               />
             </HStack>
             <HStack alignItems="center" w="full">
-              {/*name/address*/}
-              {accountInformation.name ? (
-                <Tooltip
-                  aria-label="Name of account"
-                  label={accountInformation.name}
-                >
+              {/* name/address */}
+              {account.name ? (
+                <Tooltip aria-label="Name of account" label={account.name}>
                   <Heading
                     color={defaultTextColor}
                     maxW={400}
@@ -249,7 +263,7 @@ const AccountPage: FC = () => {
                     size="md"
                     textAlign="left"
                   >
-                    {accountInformation.name}
+                    {account.name}
                   </Heading>
                 </Tooltip>
               ) : (
@@ -260,7 +274,7 @@ const AccountPage: FC = () => {
 
               <Spacer />
 
-              {/*balance*/}
+              {/* balance */}
               <NativeBalance
                 atomicBalance={new BigNumber(accountInformation.atomicBalance)}
                 minAtomicBalance={
@@ -270,22 +284,24 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/*address and interactions*/}
+            {/* address and interactions */}
             <HStack alignItems="center" spacing={1} w="full">
               <Tooltip label={address}>
                 <Text color={subTextColor} fontSize="xs">
                   {ellipseAddress(address, { end: 10, start: 10 })}
                 </Text>
               </Tooltip>
+
               <Spacer />
-              {/*copy address*/}
+
+              {/* copy address */}
               <CopyIconButton
                 ariaLabel="Copy address"
                 copiedTooltipLabel={t<string>('captions.addressCopied')}
                 value={address}
               />
 
-              {/*open address on explorer*/}
+              {/* open address on explorer */}
               {explorer && (
                 <OpenTabIconButton
                   tooltipLabel={t<string>('captions.openOn', {
@@ -295,7 +311,7 @@ const AccountPage: FC = () => {
                 />
               )}
 
-              {/*share address*/}
+              {/* share address */}
               <Tooltip label={t<string>('labels.shareAddress')}>
                 <IconButton
                   aria-label="Show QR code"
@@ -306,7 +322,7 @@ const AccountPage: FC = () => {
                 />
               </Tooltip>
 
-              {/*remove account*/}
+              {/* remove account */}
               <Tooltip label={t<string>('labels.removeAccount')}>
                 <IconButton
                   aria-label="Remove account"
@@ -321,7 +337,7 @@ const AccountPage: FC = () => {
 
           <Spacer />
 
-          {/*assets/nfts/activity tabs */}
+          {/* assets/nfts/activity tabs */}
           <Tabs
             colorScheme={primaryColorScheme}
             defaultIndex={accountTabId}
@@ -336,14 +352,22 @@ const AccountPage: FC = () => {
               <Tab>{t<string>('labels.nfts')}</Tab>
               <Tab>{t<string>('labels.activity')}</Tab>
             </TabList>
+
             <TabPanels
               flexGrow={1}
               h="70dvh"
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
               <AccountAssetsTab account={account} />
+
               <AccountNftsTab />
-              <AccountActivityTab account={account} network={selectedNetwork} />
+
+              <ActivityTab
+                account={account}
+                fetching={fetchingAccounts}
+                network={selectedNetwork}
+                onScrollEnd={handleActivityScrollEnd}
+              />
             </TabPanels>
           </Tabs>
         </>
@@ -352,7 +376,7 @@ const AccountPage: FC = () => {
 
     return (
       <>
-        {/*empty state*/}
+        {/* empty state */}
         <Spacer />
         <EmptyState
           button={{
@@ -403,6 +427,17 @@ const AccountPage: FC = () => {
       return;
     }
   }, [account]);
+  useEffect(() => {
+    if (account) {
+      // if we have no transaction data, or the transaction data is empty, attempt a fetch
+      if (
+        !accountTransactions ||
+        accountTransactions.transactions.length <= 0
+      ) {
+        dispatch(updateAccountTransactionsForAccountThunk(account.id));
+      }
+    }
+  }, [selectedNetwork]);
 
   return (
     <>

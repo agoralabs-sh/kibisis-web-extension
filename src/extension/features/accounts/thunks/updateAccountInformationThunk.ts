@@ -6,7 +6,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
@@ -14,6 +14,10 @@ import { ILogger } from '@common/types';
 import { IAccount, IMainRootState, INetwork } from '@extension/types';
 
 // utils
+import {
+  convertGenesisHashToHex,
+  selectNetworkFromSettings,
+} from '@extension/utils';
 import { updateAccountInformation } from '../utils';
 
 const updateAccountInformationThunk: AsyncThunk<
@@ -26,18 +30,16 @@ const updateAccountInformationThunk: AsyncThunk<
     const logger: ILogger = getState().system.logger;
     const networks: INetwork[] = getState().networks.items;
     const online: boolean = getState().system.online;
-    const selectedNetwork: INetwork | null =
-      networks.find(
-        (value) =>
-          value.genesisHash ===
-          getState().settings.general.selectedNetworkGenesisHash
-      ) || null;
+    const selectedNetwork: INetwork | null = selectNetworkFromSettings(
+      networks,
+      getState().settings
+    );
     let accountService: AccountService;
     let accounts: IAccount[] = getState().accounts.items;
 
     if (!online) {
       logger.debug(
-        `${updateAccountInformationThunk.name}: the extension appears to be offline, skipping`
+        `${AccountsThunkEnum.UpdateAccountInformation}: the extension appears to be offline, skipping`
       );
 
       return accounts;
@@ -45,25 +47,29 @@ const updateAccountInformationThunk: AsyncThunk<
 
     if (!selectedNetwork) {
       logger.debug(
-        `${updateAccountInformationThunk.name}: no network selected, skipping`
+        `${AccountsThunkEnum.UpdateAccountInformation}: no network selected, skipping`
       );
 
       return accounts;
     }
 
     logger.debug(
-      `${updateAccountInformationThunk.name}: updating account information for "${selectedNetwork.genesisId}"`
+      `${AccountsThunkEnum.UpdateAccountInformation}: updating account information for "${selectedNetwork.genesisId}"`
     );
 
     accounts = await Promise.all(
-      accounts.map(
-        async (account, index) =>
-          await updateAccountInformation(account, {
-            delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
-            logger,
-            network: selectedNetwork,
-          })
-      )
+      accounts.map(async (account, index) => ({
+        ...account,
+        networkInformation: {
+          ...account.networkInformation,
+          [convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()]:
+            await updateAccountInformation(account, {
+              delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+              logger,
+              network: selectedNetwork,
+            }),
+        },
+      }))
     );
     accountService = new AccountService({
       logger,

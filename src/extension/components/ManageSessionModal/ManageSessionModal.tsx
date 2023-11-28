@@ -60,7 +60,6 @@ import { theme } from '@extension/theme';
 // types
 import {
   IAccount,
-  IAccountInformation,
   IAppThunkDispatch,
   INetwork,
   ISession,
@@ -156,17 +155,8 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
 
     accountNodes = accounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
-        const accountInformation: IAccountInformation | null =
-          AccountService.extractAccountInformationForNetwork(account, network);
-        let address: string;
-
-        if (!accountInformation) {
-          return acc;
-        }
-
-        address = AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
-        );
+        const address: string =
+          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
 
         return [
           ...acc,
@@ -176,8 +166,8 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
             spacing={4}
             w="full"
           >
-            <Avatar name={accountInformation.name || address} />
-            {accountInformation.name ? (
+            <Avatar name={account.name || address} />
+            {account.name ? (
               <VStack
                 alignItems="flex-start"
                 flexGrow={1}
@@ -191,7 +181,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
                   noOfLines={1}
                   textAlign="left"
                 >
-                  {accountInformation.name}
+                  {account.name}
                 </Text>
                 <Text color={subTextColor} fontSize="sm" textAlign="left">
                   {ellipseAddress(address, {

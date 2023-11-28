@@ -7,6 +7,7 @@ export default function getInitialState(): IAccountsState {
     items: [],
     pollingId: null,
     saving: false,
-    updating: false,
+    updatingInformation: false,
+    updatingTransactions: false,
   };
 }

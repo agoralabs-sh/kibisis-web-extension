@@ -16,7 +16,6 @@ import { IoWalletOutline } from 'react-icons/io5';
 import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
 
 // hooks
-import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -24,11 +23,11 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
-import { IAccount, IAccountInformation } from '@extension/types';
+import { IAccount } from '@extension/types';
 
 // utils
 import { ellipseAddress } from '@extension/utils';
@@ -45,9 +44,6 @@ const SideBarAccountItem: FC<IProps> = ({
   onClick,
 }: IProps) => {
   // hooks
-  const accountInformation: IAccountInformation | null = useAccountInformation(
-    account.id
-  );
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
@@ -77,7 +73,7 @@ const SideBarAccountItem: FC<IProps> = ({
   return (
     <Tooltip
       aria-label="Name or address of the account"
-      label={accountInformation?.name || address}
+      label={account.name || address}
     >
       <Button
         {...activeProps}
@@ -100,7 +96,7 @@ const SideBarAccountItem: FC<IProps> = ({
               size="sm"
             />
           </Center>
-          {accountInformation?.name ? (
+          {account.name ? (
             <VStack
               alignItems="flex-start"
               flexGrow={1}
@@ -113,7 +109,7 @@ const SideBarAccountItem: FC<IProps> = ({
                 maxW={195}
                 noOfLines={1}
               >
-                {accountInformation.name}
+                {account.name}
               </Text>
 
               <Text color={subTextColor} fontSize="xs">

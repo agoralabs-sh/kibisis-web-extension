@@ -3,7 +3,7 @@ import { Algodv2 } from 'algosdk';
 // constants
 import { ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT } from '@extension/constants';
 
-// servcies
+// services
 import { AccountService } from '@extension/services';
 
 // types
@@ -37,12 +37,12 @@ interface IOptions extends IBaseOptions {
 export default async function updateAccountInformation(
   account: IAccount,
   { delay = 0, logger, network }: IOptions
-): Promise<IAccount> {
+): Promise<IAccountInformation> {
   const encodedGenesisHash: string = convertGenesisHashToHex(
     network.genesisHash
   );
   const accountInformation: IAccountInformation =
-    account.networkInfo[encodedGenesisHash] ||
+    account.networkInformation[encodedGenesisHash] ||
     AccountService.initializeDefaultAccountInformation();
   let address: string;
   let algorandAccountInformation: IAlgorandAccountInformation;
@@ -62,7 +62,7 @@ export default async function updateAccountInformation(
         ).toString()}", skipping`
       );
 
-    return account;
+    return accountInformation;
   }
 
   address = AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
@@ -94,23 +94,17 @@ export default async function updateAccountInformation(
         }" at "${updatedAt.toString()}"`
       );
 
-    return {
-      ...account,
-      networkInfo: {
-        ...account.networkInfo,
-        [encodedGenesisHash]: mapAlgorandAccountInformationToAccount(
-          algorandAccountInformation,
-          accountInformation,
-          updatedAt.getTime()
-        ),
-      },
-    };
+    return mapAlgorandAccountInformationToAccount(
+      algorandAccountInformation,
+      accountInformation,
+      updatedAt.getTime()
+    );
   } catch (error) {
     logger &&
       logger.error(
         `${updateAccountInformation.name}: failed to get account information for "${address}" on ${network.genesisId}: ${error.message}`
       );
 
-    return account;
+    return accountInformation;
   }
 }
