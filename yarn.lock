@@ -4197,17 +4197,17 @@ anymatch@^3.0.3, anymatch@~3.1.2:
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-2.0.0.tgz#52520b8ae5b569215b354efc0caa3fe1e45a8adc"
   integrity sha512-lYe4Gx7QT+MKGbDsA+Z+he/Wtef0BiwDOlK/XkBrdfsh9J/jPPXbX0tE9x9cl27Tmu5gg3QUbUrQYa/y+KOHPQ==
 
-arc200js@^1.2.21:
-  version "1.2.21"
-  resolved "https://registry.yarnpkg.com/arc200js/-/arc200js-1.2.21.tgz#c3d250b336758043f3e80b831793cef1a27babc2"
-  integrity sha512-CXyI/M8ZDeHZ255nWdUhUboa6NrSAJxyyX3wZyIzB/iBl+P+gh8PMcafd8jarS4tzde9JKg6ddLACHSCAAs4MQ==
+arc200js@^1.2.22:
+  version "1.2.22"
+  resolved "https://registry.yarnpkg.com/arc200js/-/arc200js-1.2.22.tgz#0743a776c6f03fb8366caae8000380d0e6d24e31"
+  integrity sha512-B9jo4oksk6ZFrT/rBungBgtqzRJDJadLsLf6xPcy7VD0ROWPm4kV2+Y4OsvryB9YPKaovAW0fUWnvk3dKHrtSQ==
   dependencies:
-    arccjs "^1.1.3"
+    arccjs "^1.1.4"
 
-arccjs@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/arccjs/-/arccjs-1.1.3.tgz#8c64aca8e798c2e42f1a09300b18aa20b7160ce7"
-  integrity sha512-T0e78ozJyZaT2A5lUY42L1XgBsG9gRWjVALgHLEezBLoZw6PIbP/1YwvVhaAS6TgQ2xH3017TZpDJfDu2+Hyxg==
+arccjs@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/arccjs/-/arccjs-1.1.4.tgz#b2ea54d8313d1b54ba2b40818410da562d53bc2c"
+  integrity sha512-achg0rZfwATl42J2so+rRvwz5qYTTzhiI92MDDwfMZ7F3EInuAQco1kOyOJ6qXXC/CIqhH76UuZgPn3zqux2Fg==
   dependencies:
     algosdk "^2.7.0"
     buffer "^6.0.3"
