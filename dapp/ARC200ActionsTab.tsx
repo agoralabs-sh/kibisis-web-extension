@@ -117,11 +117,6 @@ const ARC200ActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
 
       try {
         switch (type) {
-          case TransactionTypeEnum.AssetCreate:
-            // TODO: handle arc200 asset create
-            break;
-          case TransactionTypeEnum.AssetDestroy:
-          // TODO: handle arc200 asset destroy
           case TransactionTypeEnum.AssetTransfer: {
             if (!selectedAsset) {
               toast({
