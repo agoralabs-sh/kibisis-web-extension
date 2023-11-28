@@ -1,3 +1,10 @@
+# [1.6.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.5.2...v1.6.0-beta.1) (2023-11-28)
+
+
+### Features
+
+* use testnet by default and add settings option to allow mainnet ([#36](https://github.com/agoralabs-sh/kibisis-web-extension/issues/36)) ([593785b](https://github.com/agoralabs-sh/kibisis-web-extension/commit/593785be20c48413290ad2b3d6c72205ba251a3f))
+
 ## [1.5.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.5.1...v1.5.2) (2023-11-28)
 
 
