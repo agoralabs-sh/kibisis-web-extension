@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoInformationCircleOutline } from 'react-icons/io5';
-import SendNativeTokenButton from '@extension/components/SendNativeTokenButton';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -23,14 +22,12 @@ interface IProps {
   atomicBalance: BigNumber;
   minAtomicBalance: BigNumber;
   nativeCurrency: INativeCurrency;
-  publicKey: string
 }
 
 const NativeBalance: FC<IProps> = ({
   atomicBalance,
   minAtomicBalance,
   nativeCurrency,
-  publicKey
 }: IProps) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
@@ -85,7 +82,6 @@ const NativeBalance: FC<IProps> = ({
           })}
         </HStack>
       </Tooltip>
-      <SendNativeTokenButton ariaLabel={'Send Native Token'} toolTipLabel='Send' publicKey={publicKey}/>
     </HStack>
   );
 };

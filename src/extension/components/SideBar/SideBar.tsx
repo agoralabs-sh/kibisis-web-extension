@@ -12,6 +12,7 @@ import {
   IoChevronForward,
   IoScanOutline,
   IoSettingsOutline,
+  IoSendOutline
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -39,6 +40,7 @@ import {
   SIDEBAR_ITEM_HEIGHT,
   SIDEBAR_MAX_WIDTH,
   SIDEBAR_MIN_WIDTH,
+  ASSETS_ROUTE
 } from '@extension/constants';
 
 // features
@@ -99,6 +101,10 @@ const SideBar: FC = () => {
     onCloseSideBar();
     navigate(ADD_ACCOUNT_ROUTE);
   };
+  const handleSendNativeToken = () => {
+    onCloseSideBar();
+    navigate(`${ACCOUNTS_ROUTE}/${activeAccountAddress}${ASSETS_ROUTE}/${0}`);
+  }
   const handleConnectWalletClick = () => dispatch(openWalletConnectModal());
   const handleSettingsClick = () => {
     onCloseSideBar();
@@ -121,8 +127,8 @@ const SideBar: FC = () => {
         active={
           activeAccountAddress
             ? AccountService.convertPublicKeyToAlgorandAddress(
-                value.publicKey
-              ) === activeAccountAddress
+              value.publicKey
+            ) === activeAccountAddress
             : false
         }
         account={value}
@@ -205,6 +211,13 @@ const SideBar: FC = () => {
       </VStack>
 
       <Divider />
+      {/*Send native token*/}
+      <SideBarActionItem
+        icon={IoSendOutline}
+        label={t<string>('labels.sendNativeToken')}
+        onClick={handleSendNativeToken}
+      />
+
       {/*connect dapp*/}
       <SideBarActionItem
         icon={IoScanOutline}

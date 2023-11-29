@@ -267,7 +267,6 @@ const AccountPage: FC = () => {
                   new BigNumber(accountInformation.minAtomicBalance)
                 }
                 nativeCurrency={selectedNetwork.nativeCurrency}
-                publicKey={account.publicKey}
               />
             </HStack>
 
