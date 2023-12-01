@@ -14,10 +14,17 @@ import { NetworkTypeEnum, SettingsThunkEnum } from '@extension/enums';
 import { StorageManager } from '@extension/services';
 
 // types
-import { IMainRootState, INetwork, ISettings } from '@extension/types';
+import {
+  IMainRootState,
+  INetworkWithTransactionParams,
+  ISettings,
+} from '@extension/types';
 
 // utils
-import { selectDefaultNetwork } from '@extension/utils';
+import {
+  selectDefaultNetwork,
+  selectNetworkFromSettings,
+} from '@extension/utils';
 
 const setSettings: AsyncThunk<
   ISettings, // return
@@ -27,12 +34,9 @@ const setSettings: AsyncThunk<
   SettingsThunkEnum.SetSettings,
   async (settings, { getState }) => {
     const storageManager: StorageManager = new StorageManager();
-    const networks: INetwork[] = getState().networks.items;
-    let selectedNetwork: INetwork | null =
-      networks.find(
-        (value) =>
-          value.genesisHash === settings.general.selectedNetworkGenesisHash
-      ) || null;
+    const networks: INetworkWithTransactionParams[] = getState().networks.items;
+    let selectedNetwork: INetworkWithTransactionParams | null =
+      selectNetworkFromSettings(networks, settings);
 
     // if the beta/main-net has been disallowed and the selected network is one of the disallowed, set it to a test one
     if (

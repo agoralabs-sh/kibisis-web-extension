@@ -7,6 +7,7 @@ import IGeneralSettings from './IGeneralSettings';
 import IPasswordTag from './IPasswordTag';
 import IPrivateKey from './IPrivateKey';
 import ISession from './ISession';
+import ITransactionParams from './ITransactionParams';
 
 type IStorageItemTypes =
   | IAccount
@@ -16,6 +17,7 @@ type IStorageItemTypes =
   | IGeneralSettings
   | IPasswordTag
   | IPrivateKey
-  | ISession;
+  | ISession
+  | ITransactionParams;
 
 export default IStorageItemTypes;

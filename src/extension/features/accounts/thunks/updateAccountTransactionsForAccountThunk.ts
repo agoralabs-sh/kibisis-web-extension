@@ -5,7 +5,11 @@ import { AccountsThunkEnum } from '@extension/enums';
 
 // types
 import { ILogger } from '@common/types';
-import { IAccount, IMainRootState, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IMainRootState,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 
 // utils
 import {
@@ -22,11 +26,11 @@ const updateAccountTransactionsForAccountThunk: AsyncThunk<
   AccountsThunkEnum.UpdateAccountTransactionsForAccount,
   async (accountId, { getState }) => {
     const logger: ILogger = getState().system.logger;
-    const networks: INetwork[] = getState().networks.items;
+    const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const online: boolean = getState().system.online;
     let account: IAccount | null;
     let encodedGenesisHash: string;
-    let selectedNetwork: INetwork | null;
+    let selectedNetwork: INetworkWithTransactionParams | null;
 
     if (!online) {
       logger.debug(

@@ -4,6 +4,9 @@ import { Algodv2 } from 'algosdk';
 import { IBaseOptions } from '@common/types';
 import { INetwork, INode } from '@extension/types';
 
+// utils
+import getRandomNode from './getRandomNode';
+
 /**
  * Gets a random algod node from the given network.
  * @param {INetwork} network - the network to choose the node from.
@@ -14,8 +17,7 @@ export default function getAlgodClient(
   network: INetwork,
   { logger }: IBaseOptions = { logger: undefined }
 ): Algodv2 {
-  const algod: INode =
-    network.algods[Math.floor(Math.random() * network.algods.length)];
+  const algod: INode = getRandomNode(network.algods);
 
   logger &&
     logger.debug(

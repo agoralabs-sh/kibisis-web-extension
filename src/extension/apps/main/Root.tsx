@@ -27,6 +27,10 @@ import {
   setSignBytesRequest,
   setSignTxnsRequest,
 } from '@extension/features/messages';
+import {
+  fetchTransactionParamsFromStorageThunk,
+  startPollingForTransactionsParamsThunk,
+} from '@extension/features/networks';
 import { setSelectedAsset } from '@extension/features/send-assets';
 import {
   closeWalletConnectModal,
@@ -100,6 +104,7 @@ const Root: FC = () => {
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
 
+  // 1. fetched required data from storage
   useEffect(() => {
     dispatch(setNavigate(navigate));
     dispatch(setToast(toast));
@@ -108,16 +113,23 @@ const Root: FC = () => {
     dispatch(fetchAssetsThunk());
     dispatch(initializeWalletConnectThunk());
     dispatch(startPollingForAccountInformationThunk());
+    dispatch(startPollingForTransactionsParamsThunk());
   }, []);
-  // fetch accounts when the selected network has been found and no accounts exist
+  // 2. when the selected network has been fetched from storage
   useEffect(() => {
-    if (selectedNetwork && accounts.length < 1) {
-      dispatch(
-        fetchAccountsFromStorageThunk({
-          updateAccountInformation: true,
-          updateAccountTransactions: true,
-        })
-      );
+    if (selectedNetwork) {
+      // fetch accounts when no accounts exist
+      if (accounts.length < 1) {
+        dispatch(
+          fetchAccountsFromStorageThunk({
+            updateAccountInformation: true,
+            updateAccountTransactions: true,
+          })
+        );
+      }
+
+      // fetch the most recent transaction params for the selected network
+      dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [selectedNetwork]);
   // whenever the accounts are updated, check if any new assets exist in the account

@@ -4,6 +4,9 @@ import { Indexer } from 'algosdk';
 import { IBaseOptions } from '@common/types';
 import { INetwork, INode } from '@extension/types';
 
+// utils
+import getRandomNode from './getRandomNode';
+
 /**
  * Gets a random indexer node from the given network.
  * @param {INetwork} network - the network to choose the node from.
@@ -14,8 +17,7 @@ export default function getIndexerClient(
   network: INetwork,
   { logger }: IBaseOptions = { logger: undefined }
 ): Indexer {
-  const indexer: INode =
-    network.indexers[Math.floor(Math.random() * network.indexers.length)];
+  const indexer: INode = getRandomNode(network.indexers);
 
   logger &&
     logger.debug(

@@ -1,25 +1,25 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { NetworksThunkEnum } from '@extension/enums';
 
 // types
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 
-const stopPollingForAccountInformationThunk: AsyncThunk<
+const stopPollingForTransactionsParamsThunk: AsyncThunk<
   void, // return
   undefined, // args
   Record<string, never>
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
-  AccountsThunkEnum.StopPollingForAccountInformation,
+  NetworksThunkEnum.StopPollingForTransactionParams,
   (_, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const pollingId: number | null = getState().accounts.pollingId;
 
     if (pollingId) {
       logger.debug(
-        `${AccountsThunkEnum.StopPollingForAccountInformation}: stopped polling for account information`
+        `${NetworksThunkEnum.StopPollingForTransactionParams}: stopped polling for network transaction params`
       );
 
       window.clearInterval(pollingId);
@@ -27,4 +27,4 @@ const stopPollingForAccountInformationThunk: AsyncThunk<
   }
 );
 
-export default stopPollingForAccountInformationThunk;
+export default stopPollingForTransactionsParamsThunk;

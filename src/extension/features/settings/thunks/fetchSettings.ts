@@ -19,7 +19,7 @@ import {
   IAppearanceSettings,
   IGeneralSettings,
   IMainRootState,
-  INetwork,
+  INetworkWithTransactionParams,
   ISettings,
 } from '@extension/types';
 
@@ -33,7 +33,7 @@ const fetchSettings: AsyncThunk<
 > = createAsyncThunk<ISettings, undefined, { state: IMainRootState }>(
   SettingsThunkEnum.FetchSettings,
   async (_, { getState }) => {
-    const networks: INetwork[] = getState().networks.items;
+    const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const storageManager: StorageManager = new StorageManager();
     const storageItems: Record<string, unknown> =
       await storageManager.getAllItems();

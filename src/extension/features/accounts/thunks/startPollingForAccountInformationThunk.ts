@@ -23,7 +23,7 @@ const startPollingForAccountInformationThunk: AsyncThunk<
     const logger: ILogger = getState().system.logger;
 
     logger.debug(
-      `${startPollingForAccountInformationThunk.name}: started polling for account information`
+      `${AccountsThunkEnum.StartPollingForAccountInformation}: started polling for account information`
     );
 
     return window.setInterval(

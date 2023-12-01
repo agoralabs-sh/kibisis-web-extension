@@ -11,7 +11,11 @@ import { AccountService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
-import { IAccount, IMainRootState, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IMainRootState,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 
 // utils
 import {
@@ -28,12 +32,10 @@ const updateAccountInformationThunk: AsyncThunk<
   AccountsThunkEnum.UpdateAccountInformation,
   async (_, { getState }) => {
     const logger: ILogger = getState().system.logger;
-    const networks: INetwork[] = getState().networks.items;
+    const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const online: boolean = getState().system.online;
-    const selectedNetwork: INetwork | null = selectNetworkFromSettings(
-      networks,
-      getState().settings
-    );
+    const selectedNetwork: INetworkWithTransactionParams | null =
+      selectNetworkFromSettings(networks, getState().settings);
     let accountService: AccountService;
     let accounts: IAccount[] = getState().accounts.items;
 

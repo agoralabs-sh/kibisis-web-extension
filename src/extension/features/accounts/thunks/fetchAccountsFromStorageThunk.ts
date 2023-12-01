@@ -10,7 +10,11 @@ import { AccountService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
-import { IAccount, IMainRootState, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IMainRootState,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 import { IFetchAccountsFromStoragePayload } from '../types';
 
 // utils
@@ -30,15 +34,13 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   { state: IMainRootState }
 >(AccountsThunkEnum.FetchAccountsFromStorage, async (options, { getState }) => {
   const logger: ILogger = getState().system.logger;
-  const networks: INetwork[] = getState().networks.items;
+  const networks: INetworkWithTransactionParams[] = getState().networks.items;
   const online: boolean = getState().system.online;
   const accountService: AccountService = new AccountService({
     logger,
   });
-  const selectedNetwork: INetwork | null = selectNetworkFromSettings(
-    networks,
-    getState().settings
-  );
+  const selectedNetwork: INetworkWithTransactionParams | null =
+    selectNetworkFromSettings(networks, getState().settings);
   let accounts: IAccount[];
   let encodedGenesisHash: string;
 
