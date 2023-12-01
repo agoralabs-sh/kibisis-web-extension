@@ -17,6 +17,9 @@ import PageHeader from '@extension/components/PageHeader';
 // constants
 import { ACCOUNTS_ROUTE } from '@extension/constants';
 
+// features
+import { initializeSendAsset } from '@extension/features/send-assets';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
@@ -28,7 +31,6 @@ import useAssetPage from './hooks/useAssetPage';
 import {
   useSelectFetchingAssets,
   useSelectPreferredBlockExplorer,
-  useSelectSendingSelectedAsset,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -44,7 +46,6 @@ import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
 // utils
 import { formatCurrencyUnit } from '@common/utils';
 import { ellipseAddress } from '@extension/utils';
-import { setSelectedAsset } from '@extension/features/send-assets';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
@@ -77,7 +78,16 @@ const AssetPage: FC = () => {
   const handleReceiveClick = () => {
     console.log('open receive modal');
   };
-  const handleSendClick = () => dispatch(setSelectedAsset(asset));
+  const handleSendClick = () => {
+    if (asset && address) {
+      dispatch(
+        initializeSendAsset({
+          fromAddress: address,
+          selectedAsset: asset,
+        })
+      );
+    }
+  };
   const reset = () =>
     navigate(ACCOUNTS_ROUTE, {
       replace: true,

@@ -31,7 +31,7 @@ import {
   fetchTransactionParamsFromStorageThunk,
   startPollingForTransactionsParamsThunk,
 } from '@extension/features/networks';
-import { setSelectedAsset } from '@extension/features/send-assets';
+import { reset as resetSendAsset } from '@extension/features/send-assets';
 import {
   closeWalletConnectModal,
   fetchSessionsThunk,
@@ -98,7 +98,7 @@ const Root: FC = () => {
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));
-  const handleSendAssetModalClose = () => dispatch(setSelectedAsset(null));
+  const handleSendAssetModalClose = () => dispatch(resetSendAsset());
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
   const handleSignTxnsModalClose = () => dispatch(setSignTxnsRequest(null));
   const handleWalletConnectModalClose = () =>

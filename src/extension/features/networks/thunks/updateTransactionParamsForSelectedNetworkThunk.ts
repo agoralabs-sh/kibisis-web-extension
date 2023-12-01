@@ -72,6 +72,7 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
         updatedNetwork.genesisHash
       ).toUpperCase()}`]: {
         fee: updatedNetwork.fee,
+        minFee: updatedNetwork.minFee,
         updatedAt: updatedNetwork.updatedAt,
       },
     });

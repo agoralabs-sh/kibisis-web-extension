@@ -327,7 +327,9 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
             </VStack>
           </VStack>
         </ModalHeader>
+
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+
         <ModalFooter p={DEFAULT_GAP}>
           <VStack alignItems="flex-start" spacing={4} w="full">
             <PasswordInput

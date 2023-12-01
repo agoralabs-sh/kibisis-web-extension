@@ -43,7 +43,7 @@ import {
 } from '@extension/constants';
 
 // features
-import { setSelectedAsset } from '@extension/features/send-assets';
+import { initializeSendAsset } from '@extension/features/send-assets';
 import { openWalletConnectModal } from '@extension/features/sessions';
 
 // hooks
@@ -107,7 +107,12 @@ const SideBar: FC = () => {
   const handleConnectWalletClick = () => dispatch(openWalletConnectModal());
   const handleSendAssetClick = () => {
     if (network) {
-      dispatch(setSelectedAsset(createNativeCurrencyAsset(network)));
+      dispatch(
+        initializeSendAsset({
+          fromAddress: activeAccountAddress || null,
+          selectedAsset: createNativeCurrencyAsset(network),
+        })
+      );
     }
   };
   const handleSettingsClick = () => {

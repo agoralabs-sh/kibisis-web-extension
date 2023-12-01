@@ -85,6 +85,8 @@ const translation: IResourceLanguage = {
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
     managerAddressDoesNotMatch:
       'This account does not have the authority to alter this asset. This transaction will likely fail.',
+    maximumNativeCurrencyTransactionAmount:
+      'The maximum {{nativeCurrencyCode}} amount is calculated by: the balance ({{balance}}), minus the minimum balance needed to keep the account open ({{minBalance}}), minus the minimum transaction fee ({{minFee}})',
     minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
     mustEnterPasswordToSign: 'Enter your password to sign.',
@@ -254,6 +256,7 @@ const translation: IResourceLanguage = {
     note: 'Note',
     managerAccount: 'Manager Account',
     manageAccounts: 'Manage Accounts',
+    max: 'Max',
     message: 'Message',
     moreInformation: 'More Information',
     name: 'Name',
