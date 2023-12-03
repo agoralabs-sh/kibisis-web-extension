@@ -35,7 +35,7 @@ const AccountSelect: FC<IProps> = ({ accounts, onSelect, value }: IProps) => {
   const minimumHeight: number = 48;
 
   return (
-    <Menu>
+    <Menu matchWidth={true}>
       <MenuButton
         _expanded={{ bg: expandedBackground }}
         _focus={{ boxShadow: 'outline' }}
@@ -53,7 +53,8 @@ const AccountSelect: FC<IProps> = ({ accounts, onSelect, value }: IProps) => {
           <Icon as={IoChevronDown} />
         </HStack>
       </MenuButton>
-      <MenuList minW="full">
+
+      <MenuList w="full">
         {accounts.map((account, index) => (
           <MenuItem
             key={`account-select-item-${index}`}

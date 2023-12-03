@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
+import AccountSelect from '@extension/components/AccountSelect';
 import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
 import SendAmountInput from './SendAmountInput';
@@ -24,7 +25,10 @@ import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { setSelectedAsset } from '@extension/features/send-assets';
+import {
+  setFromAddress,
+  setSelectedAsset,
+} from '@extension/features/send-assets';
 
 // hooks
 import useAssets from '@extension/hooks/useAssets';
@@ -51,6 +55,7 @@ import {
 
 // utils
 import { calculateMaxTransactionAmount } from '@extension/utils';
+import { AccountService } from '@extension/services';
 
 interface IProps {
   onClose: () => void;
@@ -78,6 +83,14 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleAmountChange = (value: BigNumber | null) => setAmount(value);
   const handleAssetChange = (value: IAsset) =>
     dispatch(setSelectedAsset(value));
+  const handleFromAccountChange = (account: IAccount) =>
+    dispatch(
+      setFromAddress(
+        AccountService.convertPublicKeyToAlgorandAddress(
+          account.publicKey
+        ).toUpperCase()
+      )
+    );
   const handleSendClick = async () => {
     console.log('send!!');
   };
@@ -163,6 +176,25 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
                   network={network}
                   onAssetChange={handleAssetChange}
                   value={selectedAsset}
+                />
+              </VStack>
+
+              {/*select from account*/}
+              <VStack w="full">
+                {/*label*/}
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  {t<string>('labels.from')}
+                </Text>
+
+                <AccountSelect
+                  accounts={accounts}
+                  onSelect={handleFromAccountChange}
+                  value={fromAccount}
                 />
               </VStack>
             </VStack>

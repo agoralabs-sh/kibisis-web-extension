@@ -252,6 +252,7 @@ const AccountPage: FC = () => {
                 onSelect={handleNetworkSelect}
               />
             </HStack>
+
             <HStack alignItems="center" w="full">
               {/* name/address */}
               {account.name ? (
@@ -294,14 +295,14 @@ const AccountPage: FC = () => {
 
               <Spacer />
 
-              {/* copy address */}
+              {/*copy address*/}
               <CopyIconButton
                 ariaLabel="Copy address"
                 copiedTooltipLabel={t<string>('captions.addressCopied')}
                 value={address}
               />
 
-              {/* open address on explorer */}
+              {/*open address on explorer*/}
               {explorer && (
                 <OpenTabIconButton
                   tooltipLabel={t<string>('captions.openOn', {
@@ -311,7 +312,7 @@ const AccountPage: FC = () => {
                 />
               )}
 
-              {/* share address */}
+              {/*share address*/}
               <Tooltip label={t<string>('labels.shareAddress')}>
                 <IconButton
                   aria-label="Show QR code"

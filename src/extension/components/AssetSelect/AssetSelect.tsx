@@ -143,7 +143,7 @@ const AssetSelect: FC<IProps> = ({
         }),
         indicatorSeparator: (baseStyles) => ({
           ...baseStyles,
-          backgroundColor: borderColor,
+          display: 'none',
         }),
         menu: (baseStyles) => ({
           ...baseStyles,

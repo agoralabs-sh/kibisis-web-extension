@@ -25,6 +25,12 @@ const slice = createSlice({
       state.fromAddress = null;
       state.selectedAsset = null;
     },
+    setFromAddress: (
+      state: Draft<ISendAssetsState>,
+      action: PayloadAction<string>
+    ) => {
+      state.fromAddress = action.payload;
+    },
     setSelectedAsset: (
       state: Draft<ISendAssetsState>,
       action: PayloadAction<IAsset>
@@ -35,4 +41,5 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { initializeSendAsset, reset, setSelectedAsset } = slice.actions;
+export const { initializeSendAsset, reset, setFromAddress, setSelectedAsset } =
+  slice.actions;

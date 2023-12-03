@@ -1,4 +1,12 @@
-import { Box, Heading, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  HStack,
+  Text,
+  Tooltip,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowDownOutline, IoArrowUpOutline } from 'react-icons/io5';
@@ -13,6 +21,7 @@ import CopyIconButton from '@extension/components/CopyIconButton';
 import LoadingPage from '@extension/components/LoadingPage';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
+import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // constants
 import { ACCOUNTS_ROUTE } from '@extension/constants';
@@ -52,6 +61,11 @@ const AssetPage: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { address, assetId } = useParams();
+  const {
+    isOpen: isShareAddressModalOpen,
+    onClose: onShareAddressModalClose,
+    onOpen: onShareAddressModalOpen,
+  } = useDisclosure();
   // selectors
   const fetchingAssets: boolean = useSelectFetchingAssets();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
@@ -75,9 +89,8 @@ const AssetPage: FC = () => {
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
-  const handleReceiveClick = () => {
-    console.log('open receive modal');
-  };
+  // handlers
+  const handleReceiveClick = () => onShareAddressModalOpen();
   const handleSendClick = () => {
     if (asset && address) {
       dispatch(
@@ -117,6 +130,15 @@ const AssetPage: FC = () => {
 
   return (
     <>
+      {account && (
+        <ShareAddressModal
+          address={AccountService.convertPublicKeyToAlgorandAddress(
+            account.publicKey
+          )}
+          isOpen={isShareAddressModalOpen}
+          onClose={onShareAddressModalClose}
+        />
+      )}
       <PageHeader
         subTitle={
           account.name

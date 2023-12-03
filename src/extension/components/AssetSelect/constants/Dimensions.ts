@@ -1,1 +1,1 @@
-export const OPTION_HEIGHT: string = '48px';
+export const OPTION_HEIGHT: string = '57px';
