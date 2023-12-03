@@ -96,6 +96,8 @@ const translation: IResourceLanguage = {
       'Enter your password to sign this transaction.',
     mustEnterPasswordToSignTransactions:
       'Enter your password to sign these transactions.',
+    mustEnterPasswordToSendTransaction:
+      'You must enter your password to send transaction.',
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
