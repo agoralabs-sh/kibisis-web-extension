@@ -200,7 +200,7 @@ const AccountPage: FC = () => {
         <VStack {...headerContainerProps}>
           <NetworkSelectSkeleton network={networks[0]} />
           <HStack alignItems="center" w="full">
-            {/* address */}
+            {/*address*/}
             <Skeleton>
               <Text color="gray.500" fontSize="xs">
                 {ellipseAddress(faker.random.alphaNumeric(58).toUpperCase())}
@@ -209,7 +209,7 @@ const AccountPage: FC = () => {
 
             <Spacer />
 
-            {/* balance */}
+            {/*balance*/}
             <NativeBalanceSkeleton />
           </HStack>
         </VStack>
@@ -223,9 +223,9 @@ const AccountPage: FC = () => {
 
       return (
         <>
-          {/* header */}
+          {/*header*/}
           <VStack {...headerContainerProps}>
-            {/* network connectivity */}
+            {/*network connectivity*/}
             <HStack w="full">
               {!online && (
                 <Tooltip
@@ -254,7 +254,7 @@ const AccountPage: FC = () => {
             </HStack>
 
             <HStack alignItems="center" w="full">
-              {/* name/address */}
+              {/*name/address*/}
               {account.name ? (
                 <Tooltip aria-label="Name of account" label={account.name}>
                   <Heading
@@ -275,7 +275,7 @@ const AccountPage: FC = () => {
 
               <Spacer />
 
-              {/* balance */}
+              {/*balance*/}
               <NativeBalance
                 atomicBalance={new BigNumber(accountInformation.atomicBalance)}
                 minAtomicBalance={
@@ -285,7 +285,7 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/* address and interactions */}
+            {/*address and interactions*/}
             <HStack alignItems="center" spacing={1} w="full">
               <Tooltip label={address}>
                 <Text color={subTextColor} fontSize="xs">
@@ -323,7 +323,7 @@ const AccountPage: FC = () => {
                 />
               </Tooltip>
 
-              {/* remove account */}
+              {/*remove account*/}
               <Tooltip label={t<string>('labels.removeAccount')}>
                 <IconButton
                   aria-label="Remove account"
@@ -338,7 +338,7 @@ const AccountPage: FC = () => {
 
           <Spacer />
 
-          {/* assets/nfts/activity tabs */}
+          {/*assets/nfts/activity tabs*/}
           <Tabs
             colorScheme={primaryColorScheme}
             defaultIndex={accountTabId}
@@ -377,7 +377,7 @@ const AccountPage: FC = () => {
 
     return (
       <>
-        {/* empty state */}
+        {/*empty state*/}
         <Spacer />
         <EmptyState
           button={{

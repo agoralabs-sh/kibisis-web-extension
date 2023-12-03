@@ -97,6 +97,7 @@ const CreatePasswordInput: FC<IProps> = ({
             type={show ? 'text' : 'password'}
             value={value}
           />
+
           <InputRightElement>
             <IconButton
               aria-label="Eye open and closed"

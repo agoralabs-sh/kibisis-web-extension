@@ -140,6 +140,7 @@ const translation: IResourceLanguage = {
     inputs: {
       copySeedPhraseRequired:
         'You must confirm you have copied the seed phrase',
+      invalidAddress: 'Invalid address',
       invalidMnemonic: 'Invalid seed phrase',
       invalidPassword: 'Invalid password',
       passwordMinLength: 'Must be at least 8 characters',
@@ -255,6 +256,7 @@ const translation: IResourceLanguage = {
     light: 'Light',
     nfts: 'NFTs',
     note: 'Note',
+    noteOptional: 'Note (optional)',
     managerAccount: 'Manager Account',
     manageAccounts: 'Manage Accounts',
     max: 'Max',
@@ -288,6 +290,8 @@ const translation: IResourceLanguage = {
     yes: 'Yes',
   },
   placeholders: {
+    enterAddress: 'Enter address',
+    enterNote: 'Enter an optional note',
     enterPassword: 'Enter password',
     nameAccount: 'Enter a name for this account (optional)',
   },

@@ -43,10 +43,10 @@ import { convertGenesisHashToHex } from '@extension/utils';
 interface IProps {
   account: IAccount;
   network: INetworkWithTransactionParams;
-  maximumTransactionAmount: BigNumber;
-  onValueChange: (value: BigNumber | null) => void;
+  maximumTransactionAmount: string;
+  onValueChange: (value: string | null) => void;
   selectedAsset: IAsset;
-  value: BigNumber | null;
+  value: string | null;
 }
 
 const SendAmountInput: FC<IProps> = ({
@@ -81,14 +81,20 @@ const SendAmountInput: FC<IProps> = ({
     ]?.minAtomicBalance || 0
   );
   const maximumTransactionAmountInStandardUnit: BigNumber =
-    convertToStandardUnit(maximumTransactionAmount, assetDecimals);
+    convertToStandardUnit(
+      new BigNumber(maximumTransactionAmount),
+      assetDecimals
+    );
   // handlers
   const handleMaximumAmountClick = () =>
     onValueChange(maximumTransactionAmount);
   const handleValueChange = (valueInStandardUnit: string) => {
     onValueChange(
       valueInStandardUnit?.length > 1
-        ? convertToAtomicUnit(new BigNumber(valueInStandardUnit), assetDecimals)
+        ? convertToAtomicUnit(
+            new BigNumber(valueInStandardUnit),
+            assetDecimals
+          ).toString()
         : null
     );
   };
@@ -191,7 +197,10 @@ const SendAmountInput: FC<IProps> = ({
           ).toNumber()}
           value={
             value
-              ? convertToStandardUnit(value, assetDecimals).toString()
+              ? convertToStandardUnit(
+                  new BigNumber(value),
+                  assetDecimals
+                ).toString()
               : undefined
           }
           w="full"

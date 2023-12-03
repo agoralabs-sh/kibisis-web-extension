@@ -22,8 +22,11 @@ export { default as useSelectSavingRegistration } from './useSelectSavingRegistr
 export { default as useSelectSavingSessions } from './useSelectSavingSessions';
 export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';
+export { default as useSelectSendingAssetAmount } from './useSelectSendingAssetAmount';
 export { default as useSelectSendingAssetFromAccount } from './useSelectSendingAssetFromAccount';
+export { default as useSelectSendingAssetNote } from './useSelectSendingAssetNote';
 export { default as useSelectSendingAssetSelectedAsset } from './useSelectSendingAssetSelectedAsset';
+export { default as useSelectSendingAssetToAddress } from './useSelectSendingAssetToAddress';
 export { default as useSelectSessions } from './useSelectSessions';
 export { default as useSelectSettings } from './useSelectSettings';
 export { default as useSelectSideBar } from './useSelectSideBar';
