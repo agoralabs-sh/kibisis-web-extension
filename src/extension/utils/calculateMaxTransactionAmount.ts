@@ -13,15 +13,15 @@ import convertGenesisHashToHex from './convertGenesisHashToHex';
 
 interface IOptions {
   account: IAccount;
-  assetId: string | null;
+  assetId: string;
   network: INetworkWithTransactionParams;
 }
 
 /**
  * Convenience function that calculates the maximum transaction amount.
- * - If the `assetId` is supplied, then the transaction amount for that asset is calculated. Zero is returned if the
+ * - If the `assetId` is not zero, then the transaction amount for that asset is calculated. Zero is returned if the
  * account does not hold any asset holding for the supplied asset.
- * - If the `assetId` is omitted, the native currency is assumed and is the balance - min balance to keep account open -
+ * - If the `assetId` is '0', this will be the native currency and is the balance - min balance to keep account open -
  * the minimum transaction fee. If the balance is calculated to fall below zero, zero is returned.
  * @param {IOptions} options - the account, assetId and network.
  * @returns {BigNumber} the maximum transaction amount for the given asset or the native currency.
@@ -45,8 +45,8 @@ export default function calculateMaxTransactionAmount({
     return new BigNumber('0');
   }
 
-  // if we have an asset id, use the balance of the asset
-  if (assetId) {
+  // if the asset id is not 0 it is an asa, use the balance of the asset
+  if (assetId != '0') {
     assetHolding =
       accountInformation.assetHoldings.find((value) => value.id === assetId) ||
       null;

@@ -29,7 +29,7 @@ const fetchAssetsThunk: AsyncThunk<
   const storageManager: StorageManager = new StorageManager();
   const assetItems: Record<string, IAsset[]> = {};
 
-  logger.debug(`${fetchAssetsThunk.name}: fetching assets from storage`);
+  logger.debug(`${AssetsThunkEnum.FetchAssets}: fetching assets from storage`);
 
   await Promise.all(
     networks.map(async (network) => {
@@ -44,7 +44,7 @@ const fetchAssetsThunk: AsyncThunk<
       // if we have no assets stored for this network, create a new entry
       if (!assets) {
         logger.debug(
-          `${fetchAssetsThunk.name}: no asset entry found for "${network.genesisId}", creating an empty one`
+          `${AssetsThunkEnum.FetchAssets}: no asset entry found for "${network.genesisId}", creating an empty one`
         );
 
         assets = [];

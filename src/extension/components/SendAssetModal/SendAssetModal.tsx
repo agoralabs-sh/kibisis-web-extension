@@ -6,29 +6,29 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  NumberInput,
-  NumberInputField,
-  Spacer,
   Text,
-  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
 // components
+import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
+import SendAmountInput from './SendAmountInput';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// features
+import { setSelectedAsset } from '@extension/features/send-assets';
+
 // hooks
+import useAssets from '@extension/hooks/useAssets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
@@ -44,14 +44,13 @@ import { theme } from '@extension/theme';
 // types
 import {
   IAccount,
+  IAppThunkDispatch,
   IAsset,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
 // utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 import { calculateMaxTransactionAmount } from '@extension/utils';
-import SendAmountInput from '@extension/components/SendAssetModal/SendAmountInput';
 
 interface IProps {
   onClose: () => void;
@@ -59,6 +58,7 @@ interface IProps {
 
 const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
@@ -66,36 +66,43 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     useSelectSelectedNetwork();
   const selectedAsset: IAsset | null = useSelectSendingAssetSelectedAsset();
   // hooks
+  const assets: IAsset[] = useAssets();
   const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
   // state
-  const [amount, setAmount] = useState<BigNumber>(new BigNumber(0));
+  const [amount, setAmount] = useState<BigNumber | null>(null);
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<BigNumber>(new BigNumber(0));
   // misc
   const isOpen: boolean = !!selectedAsset;
   // handlers
-  const handleAmountChange = (value: BigNumber) => {
-    console.log(value.toString());
-    setAmount(value);
-  };
+  const handleAmountChange = (value: BigNumber | null) => setAmount(value);
+  const handleAssetChange = (value: IAsset) =>
+    dispatch(setSelectedAsset(value));
   const handleSendClick = async () => {
     console.log('send!!');
   };
   const handleCancelClick = () => handleClose();
-  const handleClose = () => onClose();
+  const handleClose = () => {
+    setAmount(new BigNumber(0));
+    onClose();
+  };
 
   useEffect(() => {
+    let newMaximumTransactionAmount: BigNumber;
+
     if (fromAccount && network && selectedAsset) {
-      setMaximumTransactionAmount(
-        calculateMaxTransactionAmount({
-          account: fromAccount,
-          assetId: selectedAsset.id !== '0' ? selectedAsset.id : null, // native currency will have an asset id of 0, so we omit it in order to calculate the native currency
-          network,
-        })
-      );
+      newMaximumTransactionAmount = calculateMaxTransactionAmount({
+        account: fromAccount,
+        assetId: selectedAsset.id, // native currency should have an asset id of 0
+        network,
+      });
+
+      setMaximumTransactionAmount(newMaximumTransactionAmount);
+
+      // if the amount exceeds the new maximum transaction amount, set the amount to the maximum transaction amount
+      if (amount?.gt(newMaximumTransactionAmount)) {
+        setAmount(newMaximumTransactionAmount);
+      }
 
       return;
     }
@@ -126,16 +133,38 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
         <ModalBody display="flex" px={DEFAULT_GAP}>
           {fromAccount && network && selectedAsset ? (
-            <VStack w="full">
+            <VStack spacing={DEFAULT_GAP - 2} w="full">
               {/*amount*/}
               <SendAmountInput
                 account={fromAccount}
-                asset={selectedAsset}
                 network={network}
                 maximumTransactionAmount={maximumTransactionAmount}
                 onValueChange={handleAmountChange}
+                selectedAsset={selectedAsset}
                 value={amount}
               />
+
+              {/*select asset*/}
+              <VStack w="full">
+                {/*label*/}
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  {t<string>('labels.asset')}
+                </Text>
+
+                <AssetSelect
+                  account={fromAccount}
+                  assets={assets}
+                  includeNativeCurrency={true}
+                  network={network}
+                  onAssetChange={handleAssetChange}
+                  value={selectedAsset}
+                />
+              </VStack>
             </VStack>
           ) : (
             <SendAssetModalContentSkeleton />

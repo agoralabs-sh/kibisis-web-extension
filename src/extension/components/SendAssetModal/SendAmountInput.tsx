@@ -9,6 +9,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
+import BigNumber from 'bignumber.js';
 import React, { FC, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoInformationCircleOutline } from 'react-icons/io5';
@@ -37,24 +38,23 @@ import {
   convertToStandardUnit,
   formatCurrencyUnit,
 } from '@common/utils';
-import BigNumber from 'bignumber.js';
 import { convertGenesisHashToHex } from '@extension/utils';
 
 interface IProps {
   account: IAccount;
-  asset: IAsset;
   network: INetworkWithTransactionParams;
   maximumTransactionAmount: BigNumber;
-  onValueChange: (value: BigNumber) => void;
-  value: BigNumber;
+  onValueChange: (value: BigNumber | null) => void;
+  selectedAsset: IAsset;
+  value: BigNumber | null;
 }
 
 const SendAmountInput: FC<IProps> = ({
   account,
-  asset,
   network,
   maximumTransactionAmount,
   onValueChange,
+  selectedAsset,
   value,
 }: IProps) => {
   const { t } = useTranslation();
@@ -72,7 +72,9 @@ const SendAmountInput: FC<IProps> = ({
     ]?.atomicBalance || 0
   );
   const assetDecimals: number =
-    asset.id !== '0' ? asset.decimals : network.nativeCurrency.decimals;
+    selectedAsset.id !== '0'
+      ? selectedAsset.decimals
+      : network.nativeCurrency.decimals;
   const minBalance: BigNumber = new BigNumber(
     account.networkInformation[
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
@@ -84,9 +86,10 @@ const SendAmountInput: FC<IProps> = ({
   const handleMaximumAmountClick = () =>
     onValueChange(maximumTransactionAmount);
   const handleValueChange = (valueInStandardUnit: string) => {
-    console.log();
     onValueChange(
-      convertToAtomicUnit(new BigNumber(valueInStandardUnit), assetDecimals)
+      valueInStandardUnit?.length > 1
+        ? convertToAtomicUnit(new BigNumber(valueInStandardUnit), assetDecimals)
+        : null
     );
   };
   // renders
@@ -103,13 +106,13 @@ const SendAmountInput: FC<IProps> = ({
           {`${t<string>(
             'labels.max'
           )}: ${maximumTransactionAmountInStandardUnit.toString()} ${
-            asset.unitName
+            selectedAsset.unitName
           }`}
         </Text>
       </HStack>
     );
 
-    if (asset.id === '0') {
+    if (selectedAsset.id === '0') {
       return (
         <HStack alignItems="center" justifyContent="center" spacing={1}>
           <Tooltip
@@ -171,7 +174,7 @@ const SendAmountInput: FC<IProps> = ({
         {renderMaximumTransactionAmountLabel()}
       </HStack>
 
-      <HStack spacing={0} w="full">
+      <HStack spacing={1} w="full">
         {/*input*/}
         <NumberInput
           colorScheme={primaryColorScheme}
@@ -186,12 +189,17 @@ const SendAmountInput: FC<IProps> = ({
             new BigNumber(1),
             assetDecimals
           ).toNumber()}
-          value={convertToStandardUnit(value, assetDecimals).toString()}
+          value={
+            value
+              ? convertToStandardUnit(value, assetDecimals).toString()
+              : undefined
+          }
           w="full"
         >
           <NumberInputField textAlign="right" />
         </NumberInput>
 
+        {/*maximum button*/}
         <Button
           _hover={{
             bg: buttonHoverBackgroundColor,

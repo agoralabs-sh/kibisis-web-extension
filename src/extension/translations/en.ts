@@ -219,6 +219,7 @@ const translation: IResourceLanguage = {
     allowMainNet: 'Allow MainNet networks?',
     amount: 'Amount',
     applicationId: 'Application ID',
+    asset: 'Asset',
     assetId: 'Asset ID',
     assets: 'Assets',
     audience: 'Audience',
