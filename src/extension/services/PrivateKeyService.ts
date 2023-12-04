@@ -585,6 +585,7 @@ export default class PrivateKeyService {
    * @returns {boolean} true if the password is valid, false otherwise.
    */
   public async verifyPassword(password: string): Promise<boolean> {
+    const _functionName: string = 'verifyPassword';
     const passwordTag: IPasswordTag | null =
       await this.storageManager.getItem<IPasswordTag>(PASSWORD_TAG_ITEM_KEY);
     let decryptedPasswordTag: Uint8Array;
@@ -593,7 +594,7 @@ export default class PrivateKeyService {
     if (passwordTag) {
       this.logger &&
         this.logger.debug(
-          `${PrivateKeyService.name}#verifyPassword(): password tag "${passwordTag.id}" found, attempting to validate`
+          `${PrivateKeyService.name}#${_functionName}(): password tag "${passwordTag.id}" found, attempting to validate`
         );
 
       try {
@@ -609,7 +610,7 @@ export default class PrivateKeyService {
       } catch (error) {
         this.logger &&
           this.logger.debug(
-            `${PrivateKeyService.name}#verifyPassword(): failed to decrypt password tag "${passwordTag.id}"`
+            `${PrivateKeyService.name}#${_functionName}(): failed to decrypt password tag "${passwordTag.id}"`
           );
 
         return false;

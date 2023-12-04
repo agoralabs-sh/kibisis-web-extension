@@ -1,5 +1,4 @@
 import {
-  Code,
   Heading,
   HStack,
   Modal,
@@ -17,10 +16,6 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
-import AddressDisplay from '@extension/components/AddressDisplay';
-import AssetAvatar from '@extension/components/AssetAvatar';
-import AssetDisplay from '@extension/components/AssetDisplay';
-import AssetIcon from '@extension/components/AssetIcon';
 import AccountSelect from '@extension/components/AccountSelect';
 import AddressInput, {
   useAddressInput,
@@ -32,32 +27,39 @@ import PasswordInput, {
 } from '@extension/components/PasswordInput';
 import SendAmountInput from './SendAmountInput';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
-import SendAssetSummaryItem from './SendAssetSummaryItem';
+import SendAssetModalSummaryContent from './SendAssetModalSummaryContent';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// enums
+import { ErrorCodeEnum } from '@extension/enums';
+
+// errors
+import { BaseExtensionError } from '@extension/errors';
+
 // features
 import {
   setAmount,
+  setError,
   setFromAddress,
   setNote,
   setSelectedAsset,
   setToAddress,
+  submitTransactionThunk,
 } from '@extension/features/send-assets';
 
 // hooks
 import useAssets from '@extension/hooks/useAssets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
   useSelectAccounts,
   useSelectSelectedNetwork,
   useSelectSendingAssetAmount,
+  useSelectSendingAssetError,
   useSelectSendingAssetFromAccount,
   useSelectSendingAssetNote,
   useSelectSendingAssetSelectedAsset,
@@ -78,10 +80,7 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  calculateMaxTransactionAmount,
-  createIconFromDataUri,
-} from '@extension/utils';
+import { calculateMaxTransactionAmount } from '@extension/utils';
 
 interface IProps {
   onClose: () => void;
@@ -92,7 +91,8 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const amount: string | null = useSelectSendingAssetAmount();
+  const amount: string = useSelectSendingAssetAmount();
+  const error: BaseExtensionError | null = useSelectSendingAssetError();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
@@ -112,12 +112,12 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const {
     error: passwordError,
     onChange: onPasswordChange,
-    password,
     reset: resetPassword,
+    setError: setPasswordError,
+    validate: validatePassword,
+    value: password,
   } = usePassword();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const primaryColor: string = usePrimaryColor();
-  const subTextColor: string = useSubTextColor();
   // state
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<string>('0');
@@ -125,8 +125,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // misc
   const isOpen: boolean = !!selectedAsset;
   // handlers
-  const handleAmountChange = (value: string | null) =>
-    dispatch(setAmount(value));
+  const handleAmountChange = (value: string) => dispatch(setAmount(value));
   const handleAssetChange = (value: IAsset) =>
     dispatch(setSelectedAsset(value));
   const handleCancelClick = () => handleClose();
@@ -155,7 +154,10 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   const handlePreviousClick = () => setShowSummary(false);
   const handleSendClick = async () => {
-    console.log('send!!');
+    if (!validatePassword()) {
+      dispatch(setError(null));
+      dispatch(submitTransactionThunk(password));
+    }
   };
   const handleToAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch(
@@ -168,110 +170,14 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     if (fromAccount && network && selectedAsset) {
       if (showSummary) {
         return (
-          <VStack
-            alignItems="flex-start"
-            justifyContent="flex-start"
-            spacing={DEFAULT_GAP - 2}
-            w="full"
-          >
-            {/*asset*/}
-            <SendAssetSummaryItem
-              item={
-                <AssetDisplay
-                  atomicUnitAmount={new BigNumber(amount || '0')}
-                  amountColor={subTextColor}
-                  decimals={selectedAsset.decimals}
-                  displayUnit={selectedAsset.id !== '0'}
-                  fontSize="xs"
-                  icon={
-                    selectedAsset.id === '0' ? (
-                      createIconFromDataUri(network.nativeCurrency.iconUri, {
-                        color: subTextColor,
-                        h: 3,
-                        w: 3,
-                      })
-                    ) : (
-                      <AssetAvatar
-                        asset={selectedAsset}
-                        fallbackIcon={
-                          <AssetIcon
-                            color={primaryButtonTextColor}
-                            networkTheme={network.chakraTheme}
-                            h={3}
-                            w={3}
-                          />
-                        }
-                        size="2xs"
-                      />
-                    )
-                  }
-                  unit={selectedAsset.unitName || undefined}
-                />
-              }
-              label={t<string>('labels.asset')}
-            />
-
-            {/*from account*/}
-            <SendAssetSummaryItem
-              item={
-                <AddressDisplay
-                  address={AccountService.convertPublicKeyToAlgorandAddress(
-                    fromAccount.publicKey
-                  )}
-                  ariaLabel="From address"
-                  color={subTextColor}
-                  fontSize="xs"
-                  network={network}
-                />
-              }
-              label={t<string>('labels.from')}
-            />
-
-            {/*to address*/}
-            <SendAssetSummaryItem
-              item={
-                <AddressDisplay
-                  address={toAddress}
-                  ariaLabel="To address"
-                  color={subTextColor}
-                  fontSize="xs"
-                  network={network}
-                />
-              }
-              label={t<string>('labels.to')}
-            />
-
-            {/*fee*/}
-            <SendAssetSummaryItem
-              item={
-                <AssetDisplay
-                  atomicUnitAmount={new BigNumber(network.minFee)}
-                  amountColor={subTextColor}
-                  decimals={network.nativeCurrency.decimals}
-                  fontSize="xs"
-                  icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
-                    color: subTextColor,
-                    h: 3,
-                    w: 3,
-                  })}
-                  unit={network.nativeCurrency.code}
-                />
-              }
-              label={t<string>('labels.fee')}
-            />
-
-            {/*note*/}
-            {note && note.length > 0 && (
-              <SendAssetSummaryItem
-                item={
-                  <Code borderRadius="md" fontSize="xs" wordBreak="break-word">
-                    {note}
-                  </Code>
-                }
-                label={t<string>('labels.note')}
-              />
-            )}
-          </VStack>
+          <SendAssetModalSummaryContent
+            amount={amount || '0'}
+            asset={selectedAsset}
+            fromAccount={fromAccount}
+            network={network}
+            note={note}
+            toAddress={toAddress}
+          />
         );
       }
 
@@ -387,6 +293,18 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     setMaximumTransactionAmount('0');
   }, [fromAccount, network, selectedAsset]);
+  useEffect(() => {
+    if (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.InvalidPasswordError:
+          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+          break;
+        default:
+          break;
+      }
+    }
+  }, [error]);
 
   return (
     <Modal

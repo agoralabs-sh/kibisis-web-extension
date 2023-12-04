@@ -1,7 +1,13 @@
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
+// errors
+import { BaseExtensionError } from '@extension/errors';
+
 // enums
 import { StoreNameEnum } from '@extension/enums';
+
+// thunks
+import { submitTransactionThunk } from './thunks';
 
 // types
 import { IAsset } from '@extension/types';
@@ -11,6 +17,31 @@ import { IInitializeSendAssetPayload, ISendAssetsState } from './types';
 import { getInitialState } from './utils';
 
 const slice = createSlice({
+  extraReducers: (builder) => {
+    /** submit transaction **/
+    builder.addCase(
+      submitTransactionThunk.fulfilled,
+      (
+        state: ISendAssetsState,
+        action: PayloadAction<BaseExtensionError | null>
+      ) => {
+        state.error = action.payload;
+        state.confirming = false;
+      }
+    );
+    builder.addCase(
+      submitTransactionThunk.pending,
+      (state: ISendAssetsState) => {
+        state.confirming = true;
+      }
+    );
+    builder.addCase(
+      submitTransactionThunk.rejected,
+      (state: ISendAssetsState) => {
+        state.confirming = false;
+      }
+    );
+  },
   initialState: getInitialState(),
   name: StoreNameEnum.SendAssets,
   reducers: {
@@ -22,7 +53,8 @@ const slice = createSlice({
       state.selectedAsset = action.payload.selectedAsset;
     },
     reset: (state: Draft<ISendAssetsState>) => {
-      state.amount = null;
+      state.amount = '0';
+      state.error = null;
       state.fromAddress = null;
       state.note = null;
       state.selectedAsset = null;
@@ -30,9 +62,15 @@ const slice = createSlice({
     },
     setAmount: (
       state: Draft<ISendAssetsState>,
-      action: PayloadAction<string | null>
+      action: PayloadAction<string>
     ) => {
       state.amount = action.payload;
+    },
+    setError: (
+      state: Draft<ISendAssetsState>,
+      action: PayloadAction<BaseExtensionError | null>
+    ) => {
+      state.error = action.payload;
     },
     setFromAddress: (
       state: Draft<ISendAssetsState>,
@@ -66,6 +104,7 @@ export const {
   initializeSendAsset,
   reset,
   setAmount,
+  setError,
   setFromAddress,
   setNote,
   setSelectedAsset,

@@ -44,7 +44,7 @@ interface IProps {
   account: IAccount;
   network: INetworkWithTransactionParams;
   maximumTransactionAmount: string;
-  onValueChange: (value: string | null) => void;
+  onValueChange: (value: string) => void;
   selectedAsset: IAsset;
   value: string | null;
 }
@@ -95,7 +95,7 @@ const SendAmountInput: FC<IProps> = ({
             new BigNumber(valueInStandardUnit),
             assetDecimals
           ).toString()
-        : null
+        : '0'
     );
   };
   // renders

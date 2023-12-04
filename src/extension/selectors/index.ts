@@ -23,6 +23,7 @@ export { default as useSelectSavingSessions } from './useSelectSavingSessions';
 export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';
 export { default as useSelectSendingAssetAmount } from './useSelectSendingAssetAmount';
+export { default as useSelectSendingAssetError } from './useSelectSendingAssetError';
 export { default as useSelectSendingAssetFromAccount } from './useSelectSendingAssetFromAccount';
 export { default as useSelectSendingAssetNote } from './useSelectSendingAssetNote';
 export { default as useSelectSendingAssetSelectedAsset } from './useSelectSendingAssetSelectedAsset';

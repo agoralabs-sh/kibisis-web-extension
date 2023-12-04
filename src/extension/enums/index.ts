@@ -5,6 +5,7 @@ export { default as MessagesThunkEnum } from './MessagesThunkEnum';
 export { default as NetworksThunkEnum } from './NetworksThunkEnum';
 export { default as NetworkTypeEnum } from './NetworkTypeEnum';
 export { default as RegisterThunkEnum } from './RegisterThunkEnum';
+export { default as SendAssetsThunkEnum } from './SendAssetsThunkEnum';
 export { default as SessionsThunkEnum } from './SessionsThunkEnum';
 export { default as SettingsThunkEnum } from './SettingsThunkEnum';
 export { default as StoreNameEnum } from './StoreNameEnum';

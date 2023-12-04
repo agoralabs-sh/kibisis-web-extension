@@ -36,6 +36,7 @@ export default function useAddressInput(): IUseAddressInputState {
     onBlur,
     onChange,
     reset,
+    setError,
     validate,
     value,
   };

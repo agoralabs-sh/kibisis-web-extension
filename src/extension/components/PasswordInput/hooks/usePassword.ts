@@ -1,26 +1,43 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, FocusEvent, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // types
 import { IUsePasswordState } from '../types';
 
+// utils
+import { validate as validatePassword } from '../utils';
+
 export default function usePassword(): IUsePasswordState {
+  const { t } = useTranslation();
   // state
   const [error, setError] = useState<string | null>(null);
-  const [password, setPassword] = useState<string>('');
+  const [value, setValue] = useState<string>('');
   // actions
+  const onBlur = (event: FocusEvent<HTMLInputElement>) =>
+    setError(validatePassword(event.target.value, t));
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setError(null);
-    setPassword(event.target.value);
+    setValue(event.target.value);
   };
   const reset = () => {
     setError(null);
-    setPassword('');
+    setValue('');
+  };
+  const validate: () => string | null = () => {
+    const newError: string | null = validatePassword(value, t);
+
+    setError(newError);
+
+    return newError;
   };
 
   return {
     error,
+    onBlur,
     onChange,
-    password,
     reset,
+    setError,
+    validate,
+    value,
   };
 }

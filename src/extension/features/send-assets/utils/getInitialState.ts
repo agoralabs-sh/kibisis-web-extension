@@ -3,7 +3,9 @@ import { ISendAssetsState } from '../types';
 
 export default function getInitialState(): ISendAssetsState {
   return {
-    amount: null,
+    amount: '0',
+    confirming: false,
+    error: null,
     fromAddress: null,
     note: null,
     selectedAsset: null,

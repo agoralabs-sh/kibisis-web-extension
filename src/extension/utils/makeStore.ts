@@ -1,13 +1,14 @@
 import { configureStore, Store, Reducer } from '@reduxjs/toolkit';
 
 // features
+import { submitTransactionThunk } from '@extension/features/send-assets';
+import { initializeWalletConnectThunk } from '@extension/features/sessions';
 import {
   setConfirm,
   setError,
   setNavigate,
   setToast,
 } from '@extension/features/system';
-import { initializeWalletConnectThunk } from '@extension/features/sessions';
 
 // types
 import { IBaseRootState } from '@extension/types';
@@ -25,8 +26,10 @@ export default function makeStore<T extends IBaseRootState>(
             setError.type,
             setNavigate.type,
             setToast.type,
+            submitTransactionThunk.fulfilled.type,
           ],
           ignoredPaths: [
+            'sendAssets.error',
             'sessions.web3Wallet',
             'system.confirm.onCancel',
             'system.confirm.onConfirm',
