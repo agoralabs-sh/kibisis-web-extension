@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
@@ -68,8 +68,10 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
-  useSelectAccount,
+  useSelectAccountByAddress,
+  useSelectAccountInformationByAddress,
   useSelectAccounts,
+  useSelectAccountTransactionsByAddress,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
   useSelectIsOnline,
@@ -111,8 +113,12 @@ const AccountPage: FC = () => {
     accountTabId: '0',
   });
   // selectors
-  const account: IAccount | null = useSelectAccount(address);
+  const account: IAccount | null = useSelectAccountByAddress(address);
+  const accountInformation: IAccountInformation | null =
+    useSelectAccountInformationByAddress(address);
   const accounts: IAccount[] = useSelectAccounts();
+  const accountTransactions: IAccountTransactions | null =
+    useSelectAccountTransactionsByAddress(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
   const online: boolean = useSelectIsOnline();
@@ -124,11 +130,6 @@ const AccountPage: FC = () => {
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
-  // state
-  const [accountInformation, setAccountInformation] =
-    useState<IAccountInformation | null>(null);
-  const [accountTransactions, setAccountTransactions] =
-    useState<IAccountTransactions | null>(null);
   // misc
   const accountTabId: number = parseInt(
     searchParams.get('accountTabId') || '0'
@@ -438,22 +439,6 @@ const AccountPage: FC = () => {
       }
     }
   }, [selectedNetwork]);
-  useEffect(() => {
-    if (account && selectedNetwork) {
-      setAccountInformation(
-        AccountService.extractAccountInformationForNetwork(
-          account,
-          selectedNetwork
-        )
-      );
-      setAccountTransactions(
-        AccountService.extractAccountTransactionsForNetwork(
-          account,
-          selectedNetwork
-        )
-      );
-    }
-  }, [account, selectedNetwork]);
 
   return (
     <>

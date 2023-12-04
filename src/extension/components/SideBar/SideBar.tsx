@@ -21,6 +21,7 @@ import {
   NavigateFunction,
   useLocation,
   useNavigate,
+  useSearchParams,
 } from 'react-router-dom';
 
 // components
@@ -72,6 +73,9 @@ const SideBar: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams({
+    accountTabId: '0',
+  });
   // hooks
   const borderColor: string = useBorderColor();
   const defaultTextColor: string = useDefaultTextColor();
@@ -98,7 +102,11 @@ const SideBar: FC = () => {
   };
   const handleAccountClick = (address: string) => {
     onCloseSideBar();
-    navigate(`${ACCOUNTS_ROUTE}/${address}`);
+    navigate(
+      `${ACCOUNTS_ROUTE}/${address}?accountTabId=${
+        searchParams.get('accountTabId') || '0'
+      }`
+    );
   };
   const handleAddAccountClick = () => {
     onCloseSideBar();

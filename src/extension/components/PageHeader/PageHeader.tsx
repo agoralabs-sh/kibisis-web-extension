@@ -20,12 +20,14 @@ interface IProps {
 
 const PageHeader: FC<IProps> = ({ subTitle, title }: IProps) => {
   const navigate: NavigateFunction = useNavigate();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
+  // handlers
   const handleBackClick = () => navigate(-1);
 
   return (
-    <HStack pb={DEFAULT_GAP - 2} spacing={4} w="full">
+    <HStack pb={DEFAULT_GAP - 2} spacing={DEFAULT_GAP - 2} w="full">
       <IconButton
         aria-label="Go back"
         icon={IoArrowBackOutline}
@@ -41,6 +43,7 @@ const PageHeader: FC<IProps> = ({ subTitle, title }: IProps) => {
         <Heading color={defaultTextColor} size="md" textAlign="center">
           {title}
         </Heading>
+
         {subTitle && (
           <Text color={subTextColor} fontSize="xs" textAlign="center">
             {subTitle}

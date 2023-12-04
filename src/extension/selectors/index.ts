@@ -1,6 +1,8 @@
-export { default as useSelectAccount } from './useSelectAccount';
+export { default as useSelectAccountByAddress } from './useSelectAccountByAddress';
 export { default as useSelectAccountById } from './useSelectAccountById';
+export { default as useSelectAccountInformationByAddress } from './useSelectAccountInformationByAddress';
 export { default as useSelectAccounts } from './useSelectAccounts';
+export { default as useSelectAccountTransactionsByAddress } from './useSelectAccountTransactionsByAddress';
 export { default as useSelectAssets } from './useSelectAssets';
 export { default as useSelectAssetsByGenesisHash } from './useSelectAssetsByGenesisHash';
 export { default as useSelectColorMode } from './useSelectColorMode';

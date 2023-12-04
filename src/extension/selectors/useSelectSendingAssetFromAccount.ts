@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // selectors
-import useSelectAccount from './useSelectAccount';
+import useSelectAccountByAddress from './useSelectAccountByAddress';
 
 // types
 import { IAccount, IMainRootState } from '@extension/types';
@@ -11,5 +11,9 @@ export default function useSelectSendingAssetFromAccount(): IAccount | null {
     (state) => state.sendAssets.fromAddress
   );
 
-  return useSelectAccount(fromAddress || undefined);
+  if (!fromAddress) {
+    return null;
+  }
+
+  return useSelectAccountByAddress(fromAddress);
 }
