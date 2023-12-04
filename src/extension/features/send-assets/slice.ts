@@ -54,6 +54,7 @@ const slice = createSlice({
     },
     reset: (state: Draft<ISendAssetsState>) => {
       state.amount = '0';
+      state.confirming = false;
       state.error = null;
       state.fromAddress = null;
       state.note = null;

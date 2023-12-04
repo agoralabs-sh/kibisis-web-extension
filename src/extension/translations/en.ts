@@ -62,6 +62,7 @@ const translation: IResourceLanguage = {
     clearAllData: 'Are you sure you want to clear all your data?',
     clearAllDataWarning:
       'Once this has been completed, it cannot be reversed. All your settings and accounts will be removed',
+    confirmingTransaction: 'Please wait, just processing your transaction.',
     connectingToWalletConnect: 'Attempting to connect to WalletConnect.',
     copied: 'Copied!',
     createNewAccount:

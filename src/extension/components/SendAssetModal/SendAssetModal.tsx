@@ -6,6 +6,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
   Text,
   Textarea,
   VStack,
@@ -59,6 +60,7 @@ import {
   useSelectAccounts,
   useSelectSelectedNetwork,
   useSelectSendingAssetAmount,
+  useSelectSendingAssetConfirming,
   useSelectSendingAssetError,
   useSelectSendingAssetFromAccount,
   useSelectSendingAssetNote,
@@ -92,6 +94,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const amount: string = useSelectSendingAssetAmount();
+  const confirming: boolean = useSelectSendingAssetConfirming();
   const error: BaseExtensionError | null = useSelectSendingAssetError();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
   const network: INetworkWithTransactionParams | null =
@@ -167,6 +170,34 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   // renders
   const renderContent = () => {
+    if (confirming) {
+      return (
+        <VStack
+          alignItems="center"
+          flexGrow={1}
+          justifyContent="center"
+          spacing={DEFAULT_GAP / 2}
+          w="full"
+        >
+          <Spinner
+            color={primaryColor}
+            emptyColor={defaultTextColor}
+            size="xl"
+            speed="0.65s"
+            thickness="4px"
+          />
+          <Text
+            color={defaultTextColor}
+            fontSize="md"
+            textAlign="center"
+            w="full"
+          >
+            {t<string>('captions.confirmingTransaction')}
+          </Text>
+        </VStack>
+      );
+    }
+
     if (fromAccount && network && selectedAsset) {
       if (showSummary) {
         return (
@@ -270,6 +301,61 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     return <SendAssetModalContentSkeleton />;
   };
+  const renderFooter = () => {
+    if (confirming) {
+      return null;
+    }
+
+    if (showSummary) {
+      return (
+        <VStack alignItems="flex-start" spacing={4} w="full">
+          <PasswordInput
+            error={passwordError}
+            hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
+            onChange={onPasswordChange}
+            value={password}
+          />
+
+          <HStack spacing={4} w="full">
+            <Button
+              onClick={handlePreviousClick}
+              size="lg"
+              variant="outline"
+              w="full"
+            >
+              {t<string>('buttons.previous')}
+            </Button>
+
+            <Button
+              onClick={handleSendClick}
+              size="lg"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.send')}
+            </Button>
+          </HStack>
+        </VStack>
+      );
+    }
+
+    return (
+      <HStack spacing={DEFAULT_GAP - 2} w="full">
+        <Button
+          onClick={handleCancelClick}
+          size="lg"
+          variant="outline"
+          w="full"
+        >
+          {t<string>('buttons.cancel')}
+        </Button>
+
+        <Button onClick={handleNextClick} size="lg" variant="solid" w="full">
+          {t<string>('buttons.next')}
+        </Button>
+      </HStack>
+    );
+  };
 
   useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
@@ -331,58 +417,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {renderContent()}
         </ModalBody>
 
-        <ModalFooter p={DEFAULT_GAP}>
-          {showSummary ? (
-            <VStack alignItems="flex-start" spacing={4} w="full">
-              <PasswordInput
-                error={passwordError}
-                hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
-                onChange={onPasswordChange}
-                value={password}
-              />
-
-              <HStack spacing={4} w="full">
-                <Button
-                  onClick={handlePreviousClick}
-                  size="lg"
-                  variant="outline"
-                  w="full"
-                >
-                  {t<string>('buttons.previous')}
-                </Button>
-
-                <Button
-                  onClick={handleSendClick}
-                  size="lg"
-                  variant="solid"
-                  w="full"
-                >
-                  {t<string>('buttons.send')}
-                </Button>
-              </HStack>
-            </VStack>
-          ) : (
-            <HStack spacing={DEFAULT_GAP - 2} w="full">
-              <Button
-                onClick={handleCancelClick}
-                size="lg"
-                variant="outline"
-                w="full"
-              >
-                {t<string>('buttons.cancel')}
-              </Button>
-
-              <Button
-                onClick={handleNextClick}
-                size="lg"
-                variant="solid"
-                w="full"
-              >
-                {t<string>('buttons.next')}
-              </Button>
-            </HStack>
-          )}
-        </ModalFooter>
+        <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
       </ModalContent>
     </Modal>
   );

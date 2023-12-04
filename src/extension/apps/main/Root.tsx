@@ -89,7 +89,7 @@ const Root: FC = () => {
         padding: '0.5rem',
         width: '100%',
       },
-      duration: 6000,
+      duration: 9000,
       position: 'top',
     },
     theme,
