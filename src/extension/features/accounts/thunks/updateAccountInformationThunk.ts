@@ -16,6 +16,7 @@ import {
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
+import { IUpdateAccountInformationPayload } from '../types';
 
 // utils
 import {
@@ -26,11 +27,15 @@ import { updateAccountInformation } from '../utils';
 
 const updateAccountInformationThunk: AsyncThunk<
   IAccount[], // return
-  undefined, // args
+  IUpdateAccountInformationPayload | undefined, // args
   Record<string, never>
-> = createAsyncThunk<IAccount[], undefined, { state: IMainRootState }>(
+> = createAsyncThunk<
+  IAccount[],
+  IUpdateAccountInformationPayload | undefined,
+  { state: IMainRootState }
+>(
   AccountsThunkEnum.UpdateAccountInformation,
-  async (_, { getState }) => {
+  async ({ forceUpdate } = { forceUpdate: false }, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const online: boolean = getState().system.online;
@@ -67,6 +72,7 @@ const updateAccountInformationThunk: AsyncThunk<
           [convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()]:
             await updateAccountInformation(account, {
               delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+              forceUpdate,
               logger,
               network: selectedNetwork,
             }),

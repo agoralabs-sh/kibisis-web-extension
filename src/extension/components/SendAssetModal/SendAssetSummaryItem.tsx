@@ -1,4 +1,11 @@
-import { HStack, Skeleton, StackProps, Text } from '@chakra-ui/react';
+import {
+  HStack,
+  ResponsiveValue,
+  Skeleton,
+  StackProps,
+  Text,
+} from '@chakra-ui/react';
+import * as CSS from 'csstype';
 import React, { FC, ReactNode } from 'react';
 
 // constants
@@ -9,12 +16,14 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps extends StackProps {
+  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
   isLoading?: boolean;
   item: ReactNode;
   label: string;
 }
 
 const SendAssetSummaryItem: FC<IProps> = ({
+  fontSize = 'sm',
   isLoading = false,
   item,
   label,
@@ -32,7 +41,7 @@ const SendAssetSummaryItem: FC<IProps> = ({
       w="full"
       {...stackProps}
     >
-      <Text color={defaultTextColor} fontSize="xs">
+      <Text color={defaultTextColor} fontSize={fontSize}>
         {label}
       </Text>
       {isLoading ? (

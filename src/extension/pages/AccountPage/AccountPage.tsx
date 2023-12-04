@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
@@ -124,21 +124,12 @@ const AccountPage: FC = () => {
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
+  // state
+  const [accountInformation, setAccountInformation] =
+    useState<IAccountInformation | null>(null);
+  const [accountTransactions, setAccountTransactions] =
+    useState<IAccountTransactions | null>(null);
   // misc
-  const accountInformation: IAccountInformation | null =
-    account && selectedNetwork
-      ? AccountService.extractAccountInformationForNetwork(
-          account,
-          selectedNetwork
-        )
-      : null;
-  const accountTransactions: IAccountTransactions | null =
-    account && selectedNetwork
-      ? AccountService.extractAccountTransactionsForNetwork(
-          account,
-          selectedNetwork
-        )
-      : null;
   const accountTabId: number = parseInt(
     searchParams.get('accountTabId') || '0'
   );
@@ -183,7 +174,11 @@ const AccountPage: FC = () => {
     });
   const handleActivityScrollEnd = () => {
     if (account && accountTransactions && accountTransactions.next) {
-      dispatch(updateAccountTransactionsForAccountThunk(account.id));
+      dispatch(
+        updateAccountTransactionsForAccountThunk({
+          accountId: account.id,
+        })
+      );
     }
   };
   // renders
@@ -435,10 +430,30 @@ const AccountPage: FC = () => {
         !accountTransactions ||
         accountTransactions.transactions.length <= 0
       ) {
-        dispatch(updateAccountTransactionsForAccountThunk(account.id));
+        dispatch(
+          updateAccountTransactionsForAccountThunk({
+            accountId: account.id,
+          })
+        );
       }
     }
   }, [selectedNetwork]);
+  useEffect(() => {
+    if (account && selectedNetwork) {
+      setAccountInformation(
+        AccountService.extractAccountInformationForNetwork(
+          account,
+          selectedNetwork
+        )
+      );
+      setAccountTransactions(
+        AccountService.extractAccountTransactionsForNetwork(
+          account,
+          selectedNetwork
+        )
+      );
+    }
+  }, [account, selectedNetwork]);
 
   return (
     <>

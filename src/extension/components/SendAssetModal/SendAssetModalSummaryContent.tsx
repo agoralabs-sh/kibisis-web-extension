@@ -61,13 +61,14 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
     >
       {/*amount/asset*/}
       <SendAssetSummaryItem
+        fontSize="sm"
         item={
           <AssetDisplay
             atomicUnitAmount={new BigNumber(amount)}
             amountColor={subTextColor}
             decimals={asset.decimals}
             displayUnit={asset.id !== '0'}
-            fontSize="xs"
+            fontSize="sm"
             icon={
               asset.id === '0' ? (
                 createIconFromDataUri(network.nativeCurrency.iconUri, {
@@ -98,6 +99,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
 
       {/*from account*/}
       <SendAssetSummaryItem
+        fontSize="sm"
         item={
           <AddressDisplay
             address={AccountService.convertPublicKeyToAlgorandAddress(
@@ -105,7 +107,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
             )}
             ariaLabel="From address"
             color={subTextColor}
-            fontSize="xs"
+            fontSize="sm"
             network={network}
           />
         }
@@ -114,12 +116,13 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
 
       {/*to address*/}
       <SendAssetSummaryItem
+        fontSize="sm"
         item={
           <AddressDisplay
             address={toAddress}
             ariaLabel="To address"
             color={subTextColor}
-            fontSize="xs"
+            fontSize="sm"
             network={network}
           />
         }
@@ -128,12 +131,13 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
 
       {/*fee*/}
       <SendAssetSummaryItem
+        fontSize="sm"
         item={
           <AssetDisplay
             atomicUnitAmount={new BigNumber(network.minFee)}
             amountColor={subTextColor}
             decimals={network.nativeCurrency.decimals}
-            fontSize="xs"
+            fontSize="sm"
             icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
               color: subTextColor,
               h: 3,
@@ -148,8 +152,9 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       {/*note*/}
       {note && note.length > 0 && (
         <SendAssetSummaryItem
+          fontSize="sm"
           item={
-            <Code borderRadius="md" fontSize="xs" wordBreak="break-word">
+            <Code borderRadius="md" fontSize="sm" wordBreak="break-word">
               {note}
             </Code>
           }

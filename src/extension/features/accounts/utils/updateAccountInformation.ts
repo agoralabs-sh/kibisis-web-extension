@@ -25,6 +25,7 @@ import fetchAlgorandAccountInformationWithDelay from './fetchAlgorandAccountInfo
 
 interface IOptions extends IBaseOptions {
   delay?: number;
+  forceUpdate?: boolean;
   network: INetwork;
 }
 
@@ -36,7 +37,7 @@ interface IOptions extends IBaseOptions {
  */
 export default async function updateAccountInformation(
   account: IAccount,
-  { delay = 0, logger, network }: IOptions
+  { delay = 0, forceUpdate = false, logger, network }: IOptions
 ): Promise<IAccountInformation> {
   const encodedGenesisHash: string = convertGenesisHashToHex(
     network.genesisHash
@@ -51,6 +52,7 @@ export default async function updateAccountInformation(
 
   // if the account information is not out-of-date just return the account
   if (
+    !forceUpdate &&
     accountInformation.updatedAt &&
     accountInformation.updatedAt + ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT >
       new Date().getTime()

@@ -170,6 +170,7 @@ const Root: FC = () => {
 
   return (
     <>
+      <ToastContainer />
       <ErrorModal onClose={handleErrorModalClose} />
       <ConfirmModal onClose={handleConfirmClose} />
       <EnableModal onClose={handleEnableModalClose} />
@@ -177,7 +178,6 @@ const Root: FC = () => {
       <SignBytesModal onClose={handleSignBytesModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <WalletConnectModal onClose={handleWalletConnectModalClose} />
-      <ToastContainer />
       <MainLayout>
         <Outlet />
       </MainLayout>

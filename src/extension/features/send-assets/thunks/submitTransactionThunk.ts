@@ -25,14 +25,19 @@ import {
 } from '@extension/errors';
 
 // features
+import {
+  updateAccountInformationThunk,
+  updateAccountTransactionsForAccountThunk,
+} from '@extension/features/accounts';
 import { reset } from '../slice';
 
 // services
-import { PrivateKeyService } from '@extension/services';
+import { AccountService, PrivateKeyService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
 import {
+  IAccount,
   IAlgorandPendingTransactionResponse,
   IAsset,
   IMainRootState,
@@ -66,6 +71,7 @@ const submitTransactionThunk: AsyncThunk<
       selectNetworkFromSettings(networks, getState().settings);
     const toAddress: string | null = getState().sendAssets.toAddress;
     const toast: CreateToastFnReturn | null = getState().system.toast;
+    let fromAccount: IAccount | null;
     let algodClient: Algodv2;
     let decodedAddress: Address;
     let privateKey: Uint8Array | null;
@@ -82,6 +88,23 @@ const submitTransactionThunk: AsyncThunk<
       );
 
       return new MalformedDataError('required fields missing');
+    }
+
+    fromAccount =
+      getState().accounts.items.find(
+        (value) =>
+          AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
+          fromAddress
+      ) || null;
+
+    if (!fromAccount) {
+      logger.debug(
+        `${SendAssetsThunkEnum.SubmitTransaction}: no account found for "${fromAddress}"`
+      );
+
+      return new MalformedDataError(
+        `no account data found for "${fromAddress}" in wallet`
+      );
     }
 
     if (!online) {
@@ -182,11 +205,25 @@ const submitTransactionThunk: AsyncThunk<
           description: `Transaction "${ellipseAddress(
             sentRawTransaction.txId
           )}" successful!`,
+          duration: null,
           isClosable: true,
           status: 'success',
           title: 'Transaction Successful!',
         });
       }
+
+      // refresh the account information and account transactions
+      dispatch(
+        updateAccountInformationThunk({
+          forceUpdate: true,
+        })
+      );
+      dispatch(
+        updateAccountTransactionsForAccountThunk({
+          accountId: fromAccount.id,
+          refresh: true,
+        })
+      );
 
       // reset send assets to close the modal.
       dispatch(reset());

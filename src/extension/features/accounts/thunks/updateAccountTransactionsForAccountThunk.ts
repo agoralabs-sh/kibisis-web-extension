@@ -10,6 +10,7 @@ import {
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
+import { IUpdateAccountTransactionsForAccountPayload } from '../types';
 
 // utils
 import {
@@ -20,11 +21,15 @@ import { updateAccountTransactions } from '../utils';
 
 const updateAccountTransactionsForAccountThunk: AsyncThunk<
   IAccount | null, // return
-  string, // args
+  IUpdateAccountTransactionsForAccountPayload, // args
   Record<string, never>
-> = createAsyncThunk<IAccount | null, string, { state: IMainRootState }>(
+> = createAsyncThunk<
+  IAccount | null,
+  IUpdateAccountTransactionsForAccountPayload,
+  { state: IMainRootState }
+>(
   AccountsThunkEnum.UpdateAccountTransactionsForAccount,
-  async (accountId, { getState }) => {
+  async ({ accountId, refresh = false }, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const online: boolean = getState().system.online;
@@ -72,6 +77,7 @@ const updateAccountTransactionsForAccountThunk: AsyncThunk<
         [encodedGenesisHash]: await updateAccountTransactions(account, {
           logger,
           network: selectedNetwork,
+          refresh,
         }),
       },
     };
