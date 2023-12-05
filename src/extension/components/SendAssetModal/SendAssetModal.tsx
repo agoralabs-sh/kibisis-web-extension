@@ -196,6 +196,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             speed="0.65s"
             thickness="4px"
           />
+
           <Text
             color={defaultTextColor}
             fontSize="md"
@@ -239,7 +240,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             {/*label*/}
             <Text
               color={defaultTextColor}
-              fontSize="sm"
+              fontSize="md"
               textAlign="left"
               w="full"
             >
@@ -261,7 +262,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             {/*label*/}
             <Text
               color={defaultTextColor}
-              fontSize="sm"
+              fontSize="md"
               textAlign="left"
               w="full"
             >
@@ -289,7 +290,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             {/*label*/}
             <Text
               color={defaultTextColor}
-              fontSize="sm"
+              fontSize="md"
               textAlign="left"
               w="full"
             >
@@ -301,7 +302,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
               onChange={handleNoteChange}
               placeholder={t<string>('placeholders.enterNote')}
               resize="vertical"
-              size="lg"
+              size="md"
               value={note || ''}
             />
           </VStack>

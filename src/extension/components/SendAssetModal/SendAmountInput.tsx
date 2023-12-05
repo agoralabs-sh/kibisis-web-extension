@@ -177,7 +177,7 @@ const SendAmountInput: FC<IProps> = ({
     <VStack w="full">
       <HStack justifyContent="space-between" w="full">
         {/*label*/}
-        <Text color={defaultTextColor} fontSize="sm" textAlign="left">
+        <Text color={defaultTextColor} fontSize="md" textAlign="left">
           {t<string>('labels.amount')}
         </Text>
 
@@ -197,7 +197,7 @@ const SendAmountInput: FC<IProps> = ({
           min={0}
           onChange={handleValueChange}
           precision={assetDecimals}
-          size="lg"
+          size="md"
           step={convertToStandardUnit(
             new BigNumber(1),
             assetDecimals
@@ -225,7 +225,7 @@ const SendAmountInput: FC<IProps> = ({
           fontSize="md"
           onClick={handleMaximumAmountClick}
           p={0}
-          size="lg"
+          size="md"
           variant="ghost"
         >
           <Text color={defaultTextColor} fontSize="md">

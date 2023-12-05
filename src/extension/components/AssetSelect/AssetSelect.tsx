@@ -50,10 +50,6 @@ const AssetSelect: FC<IProps> = ({
   width,
 }: IProps) => {
   // hooks
-  const borderColor: string = useColorModeValue(
-    theme.colors.gray['200'],
-    theme.colors.whiteAlpha['400']
-  );
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
@@ -139,6 +135,7 @@ const AssetSelect: FC<IProps> = ({
         control: (baseStyles, state) => ({
           ...baseStyles,
           backgroundColor: 'var(--chakra-colors-chakra-body-bg)',
+          cursor: 'pointer',
           height: '100%',
         }),
         indicatorSeparator: (baseStyles) => ({

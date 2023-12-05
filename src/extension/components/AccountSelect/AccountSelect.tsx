@@ -18,6 +18,7 @@ import useColorModeValue from '@extension/hooks/useColorModeValue';
 
 // types
 import { IAccount } from '@extension/types';
+import { DEFAULT_GAP } from '@extension/constants';
 
 interface IProps {
   accounts: IAccount[];
@@ -43,8 +44,8 @@ const AccountSelect: FC<IProps> = ({ accounts, onSelect, value }: IProps) => {
         borderRadius="md"
         borderWidth="1px"
         minH={`${minimumHeight}px`}
-        px={4}
-        py={2}
+        px={DEFAULT_GAP - 2}
+        py={DEFAULT_GAP / 3}
         transition="all 0.2s"
         w="full"
       >

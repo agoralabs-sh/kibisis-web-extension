@@ -32,13 +32,13 @@ const AddressInput: FC<IProps> = ({
     <VStack alignItems="flex-start" w="full">
       <Text
         color={error ? 'red.300' : defaultTextColor}
-        fontSize="sm"
+        fontSize="md"
         textAlign="left"
       >
         {label || t<string>('labels.address')}
       </Text>
 
-      <InputGroup size="lg">
+      <InputGroup size="md">
         <Input
           disabled={disabled}
           focusBorderColor={error ? 'red.300' : primaryColor}

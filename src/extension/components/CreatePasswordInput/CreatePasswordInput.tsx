@@ -78,7 +78,11 @@ const CreatePasswordInput: FC<IProps> = ({
       />
       <VStack>
         <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-          <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
+          <Text
+            color={error ? 'red.300' : defaultTextColor}
+            fontSize="md"
+            textAlign="left"
+          >
             {label || t<string>('labels.password')}
           </Text>
 
