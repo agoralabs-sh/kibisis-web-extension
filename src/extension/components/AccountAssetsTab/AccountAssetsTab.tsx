@@ -200,7 +200,7 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
 
                   {/*amount*/}
                   <Text color={defaultTextColor} fontSize="sm">
-                    {formatCurrencyUnit(standardUnitAmount)}
+                    {formatCurrencyUnit(standardUnitAmount, asset.decimals)}
                   </Text>
                 </HStack>
               </Button>

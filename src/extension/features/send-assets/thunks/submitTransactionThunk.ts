@@ -1,4 +1,3 @@
-import { CreateToastFnReturn } from '@chakra-ui/react';
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   Address,
@@ -46,20 +45,21 @@ import {
 
 // utils
 import { getAlgodClient } from '@common/utils';
-import { ellipseAddress, selectNetworkFromSettings } from '@extension/utils';
+import { selectNetworkFromSettings } from '@extension/utils';
 import { createSendAssetTransaction } from '../utils';
 
+interface AsyncThunkConfig {
+  state: IMainRootState;
+  rejectValue?: BaseExtensionError;
+}
+
 const submitTransactionThunk: AsyncThunk<
-  BaseExtensionError | null, // return
+  string, // return
   string, // args
-  Record<string, never>
-> = createAsyncThunk<
-  BaseExtensionError | null,
-  string,
-  { state: IMainRootState }
->(
+  AsyncThunkConfig
+> = createAsyncThunk<string, string, AsyncThunkConfig>(
   SendAssetsThunkEnum.SubmitTransaction,
-  async (password, { dispatch, getState }) => {
+  async (password, { getState, rejectWithValue }) => {
     const amount: string | null = getState().sendAssets.amount;
     const asset: IAsset | null = getState().sendAssets.selectedAsset;
     const fromAddress: string | null = getState().sendAssets.fromAddress;
@@ -70,7 +70,6 @@ const submitTransactionThunk: AsyncThunk<
     const selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(networks, getState().settings);
     const toAddress: string | null = getState().sendAssets.toAddress;
-    const toast: CreateToastFnReturn | null = getState().system.toast;
     let fromAccount: IAccount | null;
     let algodClient: Algodv2;
     let decodedAddress: Address;
@@ -87,7 +86,7 @@ const submitTransactionThunk: AsyncThunk<
         `${SendAssetsThunkEnum.SubmitTransaction}: required fields not completed`
       );
 
-      return new MalformedDataError('required fields missing');
+      return rejectWithValue(new MalformedDataError('required fields missing'));
     }
 
     fromAccount =
@@ -102,27 +101,20 @@ const submitTransactionThunk: AsyncThunk<
         `${SendAssetsThunkEnum.SubmitTransaction}: no account found for "${fromAddress}"`
       );
 
-      return new MalformedDataError(
-        `no account data found for "${fromAddress}" in wallet`
+      return rejectWithValue(
+        new MalformedDataError(
+          `no account data found for "${fromAddress}" in wallet`
+        )
       );
     }
 
-    if (!online) {
+    if (online) {
       logger.debug(
         `${SendAssetsThunkEnum.SubmitTransaction}: extension offline`
       );
 
-      if (toast) {
-        toast({
-          description: `You appear to be offline.`,
-          isClosable: true,
-          status: 'error',
-          title: 'Offline',
-        });
-      }
-
-      return new OfflineError(
-        'attempted to send transaction, but extension offline'
+      return rejectWithValue(
+        new OfflineError('attempted to send transaction, but extension offline')
       );
     }
 
@@ -131,8 +123,10 @@ const submitTransactionThunk: AsyncThunk<
         `${SendAssetsThunkEnum.SubmitTransaction}: no network selected`
       );
 
-      return new NetworkNotSelectedError(
-        'attempted to send transaction, but no network selected'
+      return rejectWithValue(
+        new NetworkNotSelectedError(
+          'attempted to send transaction, but no network selected'
+        )
       );
     }
 
@@ -149,8 +143,10 @@ const submitTransactionThunk: AsyncThunk<
       );
 
       if (!privateKey) {
-        throw new DecryptionError(
-          `failed to get private key for signer "${fromAddress}"`
+        return rejectWithValue(
+          new DecryptionError(
+            `failed to get private key for signer "${fromAddress}"`
+          )
         );
       }
     } catch (error) {
@@ -158,7 +154,7 @@ const submitTransactionThunk: AsyncThunk<
         `${SendAssetsThunkEnum.SubmitTransaction}(): ${error.message}`
       );
 
-      return error;
+      return rejectWithValue(error);
     }
 
     algodClient = getAlgodClient(selectedNetwork, {
@@ -200,50 +196,41 @@ const submitTransactionThunk: AsyncThunk<
         `${SendAssetsThunkEnum.SubmitTransaction}: transaction "${sentRawTransaction.txId}" confirmed in round "${transactionResponse['confirmed-round']}"`
       );
 
-      if (toast) {
-        toast({
-          description: `Transaction "${ellipseAddress(
-            sentRawTransaction.txId
-          )}" successful!`,
-          duration: null,
-          isClosable: true,
-          status: 'success',
-          title: 'Transaction Successful!',
-        });
-      }
+      // if (toast) {
+      //   toast({
+      //     description: `Transaction "${ellipseAddress(
+      //       sentRawTransaction.txId
+      //     )}" successful!`,
+      //     isClosable: true,
+      //     status: 'success',
+      //     title: 'Transaction Successful!',
+      //   });
+      // }
+      //
+      // // refresh the account information and account transactions
+      // dispatch(
+      //   updateAccountInformationThunk({
+      //     forceUpdate: true,
+      //   })
+      // );
+      // dispatch(
+      //   updateAccountTransactionsForAccountThunk({
+      //     accountId: fromAccount.id,
+      //     refresh: true,
+      //   })
+      // );
+      //
+      // // reset send assets to close the modal.
+      // dispatch(reset());
 
-      // refresh the account information and account transactions
-      dispatch(
-        updateAccountInformationThunk({
-          forceUpdate: true,
-        })
-      );
-      dispatch(
-        updateAccountTransactionsForAccountThunk({
-          accountId: fromAccount.id,
-          refresh: true,
-        })
-      );
-
-      // reset send assets to close the modal.
-      dispatch(reset());
-
-      return null;
+      // on success, return the transaction id
+      return sentRawTransaction.txId;
     } catch (error) {
       logger.debug(
         `${SendAssetsThunkEnum.SubmitTransaction}(): ${error.message}`
       );
 
-      if (toast) {
-        toast({
-          description: `Failed to send the transaction to the network.`,
-          isClosable: true,
-          status: 'error',
-          title: 'Transaction Failure',
-        });
-      }
-
-      return new FailedToSendTransactionError(error.message);
+      return rejectWithValue(new FailedToSendTransactionError(error.message));
     }
   }
 );

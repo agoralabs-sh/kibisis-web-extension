@@ -25,6 +25,7 @@ export default function useSelectAccountTransactionsByAddress(
     useSelectSelectedNetwork();
 
   if (!account || !network) {
+    console.log('here');
     return null;
   }
 

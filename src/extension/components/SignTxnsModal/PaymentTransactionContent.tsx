@@ -150,9 +150,14 @@ const PaymentTransactionContent: FC<IProps> = ({
               w="full"
             >
               <Heading color={defaultTextColor} size="lg" textAlign="center">
-                {formatCurrencyUnit(standardUnitAmount)}
+                {formatCurrencyUnit(
+                  standardUnitAmount,
+                  network.nativeCurrency.decimals
+                )}
               </Heading>
+
               {icon}
+
               <Text color={defaultTextColor} fontSize="sm" textAlign="center">
                 {network.nativeCurrency.code}
               </Text>

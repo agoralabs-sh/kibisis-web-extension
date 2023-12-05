@@ -10,5 +10,6 @@ export default function getInitialState(): ISendAssetsState {
     note: null,
     selectedAsset: null,
     toAddress: null,
+    transactionId: null,
   };
 }

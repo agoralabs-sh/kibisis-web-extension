@@ -1,4 +1,3 @@
-import { createStandaloneToast } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
@@ -38,12 +37,7 @@ import {
   initializeWalletConnectThunk,
 } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
-import {
-  setConfirm,
-  setError,
-  setNavigate,
-  setToast,
-} from '@extension/features/system';
+import { setConfirm, setError, setNavigate } from '@extension/features/system';
 
 // hooks
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
@@ -55,9 +49,6 @@ import {
   useSelectAssets,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
-
-// theme
-import { theme } from '@extension/theme';
 
 // types
 import {
@@ -79,21 +70,6 @@ const Root: FC = () => {
   const accounts: IAccount[] = useSelectAccounts();
   const assets: Record<string, IAsset[]> | null = useSelectAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  // misc
-  const { toast, ToastContainer } = createStandaloneToast({
-    defaultOptions: {
-      containerStyle: {
-        margin: '0',
-        maxWidth: '100%',
-        minWidth: '100%',
-        padding: '0.5rem',
-        width: '100%',
-      },
-      duration: 9000,
-      position: 'top',
-    },
-    theme,
-  });
   // handlers
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
@@ -107,7 +83,6 @@ const Root: FC = () => {
   // 1. fetched required data from storage
   useEffect(() => {
     dispatch(setNavigate(navigate));
-    dispatch(setToast(toast));
     dispatch(fetchSettings());
     dispatch(fetchSessionsThunk());
     dispatch(fetchAssetsThunk());
@@ -170,7 +145,6 @@ const Root: FC = () => {
 
   return (
     <>
-      <ToastContainer />
       <ErrorModal onClose={handleErrorModalClose} />
       <ConfirmModal onClose={handleConfirmClose} />
       <EnableModal onClose={handleEnableModalClose} />

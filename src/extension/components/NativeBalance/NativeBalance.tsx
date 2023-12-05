@@ -46,7 +46,10 @@ const NativeBalance: FC<IProps> = ({
       <Tooltip
         aria-label="Minimum balance information"
         label={t<string>('captions.minimumBalance', {
-          amount: formatCurrencyUnit(minumumStandardUnit),
+          amount: formatCurrencyUnit(
+            minumumStandardUnit,
+            nativeCurrency.decimals
+          ),
         })}
       >
         <span
@@ -58,6 +61,7 @@ const NativeBalance: FC<IProps> = ({
           <Icon as={IoInformationCircleOutline} color={defaultTextColor} />
         </span>
       </Tooltip>
+
       <Tooltip
         aria-label="Full balance"
         label={`${balanceStandardUnit.toString()} ${nativeCurrency.code.toUpperCase()}`}
@@ -72,9 +76,11 @@ const NativeBalance: FC<IProps> = ({
           <Text color={defaultTextColor} fontSize="sm">{`${t<string>(
             'labels.balance'
           )}:`}</Text>
+
           <Text color={defaultTextColor} fontSize="sm">
-            {formatCurrencyUnit(balanceStandardUnit)}
+            {formatCurrencyUnit(balanceStandardUnit, nativeCurrency.decimals)}
           </Text>
+
           {createIconFromDataUri(nativeCurrency.iconUri, {
             color: 'black.500',
             h: 3,

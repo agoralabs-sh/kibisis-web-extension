@@ -247,7 +247,7 @@ const AssetPage: FC = () => {
             label={standardUnitAmount.toString()}
           >
             <Heading color={defaultTextColor} size="lg" textAlign="center">
-              {formatCurrencyUnit(standardUnitAmount)}
+              {formatCurrencyUnit(standardUnitAmount, asset.decimals)}
             </Heading>
           </Tooltip>
         </VStack>

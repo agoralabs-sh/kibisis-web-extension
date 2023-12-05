@@ -1,4 +1,5 @@
 import {
+  CreateToastFnReturn,
   Heading,
   HStack,
   Modal,
@@ -54,6 +55,7 @@ import {
 import useAssets from '@extension/hooks/useAssets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import useToastWithDefaultOptions from '@extension/hooks/useToastWithDefaultOptions';
 
 // selectors
 import {
@@ -83,6 +85,7 @@ import {
 
 // utils
 import { calculateMaxTransactionAmount } from '@extension/utils';
+import { setPassword } from '@extension/features/registration';
 
 interface IProps {
   onClose: () => void;
@@ -91,6 +94,7 @@ interface IProps {
 const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const toast: CreateToastFnReturn = useToastWithDefaultOptions();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const amount: string = useSelectSendingAssetAmount();
@@ -131,13 +135,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleAmountChange = (value: string) => dispatch(setAmount(value));
   const handleAssetChange = (value: IAsset) =>
     dispatch(setSelectedAsset(value));
-  const handleCancelClick = () => handleClose();
-  const handleClose = () => {
-    onClose();
-    setShowSummary(false);
-    resetToAddress();
-    resetPassword();
-  };
+  const handleCancelClick = () => onClose();
   const handleFromAccountChange = (account: IAccount) =>
     dispatch(
       setFromAddress(
@@ -155,7 +153,10 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     dispatch(
       setNote(event.target.value.length > 0 ? event.target.value : null)
     );
-  const handlePreviousClick = () => setShowSummary(false);
+  const handlePreviousClick = () => {
+    resetPassword();
+    setShowSummary(false);
+  };
   const handleSendClick = async () => {
     if (!validatePassword()) {
       dispatch(setError(null));
@@ -358,6 +359,13 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
 
   useEffect(() => {
+    if (!selectedAsset) {
+      setShowSummary(false);
+      resetToAddress();
+      resetPassword();
+    }
+  }, [selectedAsset]);
+  useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
 
     if (fromAccount && network && selectedAsset) {
@@ -386,7 +394,22 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           setPasswordError(t<string>('errors.inputs.invalidPassword'));
 
           break;
+        case ErrorCodeEnum.OfflineError:
+          toast({
+            description: `You appear to be offline.`,
+            isClosable: true,
+            status: 'error',
+            title: 'Offline',
+          });
+          break;
         default:
+          toast({
+            description: `Please contact support with code "${error.code}" and describe what happened.`,
+            duration: null,
+            isClosable: true,
+            status: 'error',
+            title: 'Something when wrong.',
+          });
           break;
       }
     }

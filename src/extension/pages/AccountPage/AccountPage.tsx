@@ -58,8 +58,8 @@ import {
   removeAccountByIdThunk,
   updateAccountTransactionsForAccountThunk,
 } from '@extension/features/accounts';
-import { setConfirm } from '@extension/features/system';
 import { setSettings } from '@extension/features/settings';
+import { setConfirm } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -124,8 +124,8 @@ const AccountPage: FC = () => {
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
-  const settings: ISettings = useSelectSettings();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const settings: ISettings = useSelectSettings();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();

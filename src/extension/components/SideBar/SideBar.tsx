@@ -38,7 +38,6 @@ import {
   ACCOUNTS_ROUTE,
   SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
-  SIDEBAR_ITEM_HEIGHT,
   SIDEBAR_MAX_WIDTH,
   SIDEBAR_MIN_WIDTH,
 } from '@extension/constants';
@@ -73,7 +72,7 @@ const SideBar: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams({
+  const [searchParams] = useSearchParams({
     accountTabId: '0',
   });
   // hooks

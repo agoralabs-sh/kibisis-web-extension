@@ -1,4 +1,10 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  Draft,
+  PayloadAction,
+  Reducer,
+  SerializedError,
+} from '@reduxjs/toolkit';
 
 // errors
 import { BaseExtensionError } from '@extension/errors';
@@ -10,7 +16,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { submitTransactionThunk } from './thunks';
 
 // types
-import { IAsset } from '@extension/types';
+import { IAsset, IRejectedActionMeta } from '@extension/types';
 import { IInitializeSendAssetPayload, ISendAssetsState } from './types';
 
 // utils
@@ -21,11 +27,8 @@ const slice = createSlice({
     /** submit transaction **/
     builder.addCase(
       submitTransactionThunk.fulfilled,
-      (
-        state: ISendAssetsState,
-        action: PayloadAction<BaseExtensionError | null>
-      ) => {
-        state.error = action.payload;
+      (state: ISendAssetsState, action: PayloadAction<string>) => {
+        state.transactionId = action.payload;
         state.confirming = false;
       }
     );
@@ -37,7 +40,16 @@ const slice = createSlice({
     );
     builder.addCase(
       submitTransactionThunk.rejected,
-      (state: ISendAssetsState) => {
+      (
+        state: ISendAssetsState,
+        action: PayloadAction<
+          BaseExtensionError,
+          string,
+          IRejectedActionMeta,
+          SerializedError
+        >
+      ) => {
+        state.error = action.payload;
         state.confirming = false;
       }
     );
@@ -60,6 +72,7 @@ const slice = createSlice({
       state.note = null;
       state.selectedAsset = null;
       state.toAddress = null;
+      state.transactionId = null;
     },
     setAmount: (
       state: Draft<ISendAssetsState>,

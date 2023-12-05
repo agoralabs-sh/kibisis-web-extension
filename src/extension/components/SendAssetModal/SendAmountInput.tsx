@@ -101,21 +101,25 @@ const SendAmountInput: FC<IProps> = ({
   // renders
   const renderMaximumTransactionAmountLabel = () => {
     const maximumTransactionAmountLabel: ReactElement = (
-      <HStack
-        backgroundColor={textBackgroundColor}
-        borderRadius={theme.radii['3xl']}
-        px={2}
-        py={1}
-        spacing={1}
+      <Tooltip
+        aria-label="Full maximum amount"
+        label={maximumTransactionAmountInStandardUnit.toString()}
       >
-        <Text color={subTextColor} fontSize="xs" textAlign="right">
-          {`${t<string>(
-            'labels.max'
-          )}: ${maximumTransactionAmountInStandardUnit.toString()} ${
-            selectedAsset.unitName
-          }`}
-        </Text>
-      </HStack>
+        <HStack
+          backgroundColor={textBackgroundColor}
+          borderRadius={theme.radii['3xl']}
+          px={2}
+          py={1}
+          spacing={1}
+        >
+          <Text color={subTextColor} fontSize="xs" textAlign="right">
+            {`${t<string>('labels.max')}: ${formatCurrencyUnit(
+              maximumTransactionAmountInStandardUnit,
+              selectedAsset.decimals
+            )} ${selectedAsset.unitName}`}
+          </Text>
+        </HStack>
+      </Tooltip>
     );
 
     if (selectedAsset.id === '0') {
@@ -130,19 +134,22 @@ const SendAmountInput: FC<IProps> = ({
                   convertToStandardUnit(
                     balance,
                     network.nativeCurrency.decimals
-                  )
+                  ),
+                  network.nativeCurrency.decimals
                 ),
                 minBalance: formatCurrencyUnit(
                   convertToStandardUnit(
                     minBalance,
                     network.nativeCurrency.decimals
-                  )
+                  ),
+                  network.nativeCurrency.decimals
                 ),
                 minFee: formatCurrencyUnit(
                   convertToStandardUnit(
                     new BigNumber(network.minFee),
                     network.nativeCurrency.decimals
-                  )
+                  ),
+                  network.nativeCurrency.decimals
                 ),
                 nativeCurrencyCode: network.nativeCurrency.code,
               }

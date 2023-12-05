@@ -215,9 +215,11 @@ const AssetTransferTransactionContent: FC<IProps> = ({
               w="full"
             >
               <Heading color={defaultTextColor} size="lg" textAlign="center">
-                {formatCurrencyUnit(standardUnitAmount)}
+                {formatCurrencyUnit(standardUnitAmount, asset.decimals)}
               </Heading>
+
               {assetIcon}
+
               <Text color={defaultTextColor} fontSize="sm" textAlign="center">
                 {asset.unitName || asset.id}
               </Text>

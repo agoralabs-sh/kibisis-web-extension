@@ -12,6 +12,5 @@ export default function getInitialState(): ISystemState {
     navigate: null,
     online: true,
     sidebar: false,
-    toast: null,
   };
 }

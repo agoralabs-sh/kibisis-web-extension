@@ -34,6 +34,7 @@ export type { default as IAssetFreezeTransaction } from './IAssetFreezeTransacti
 export type { default as IAssetHolding } from './IAssetHolding';
 export type { default as IAssetTransferTransaction } from './IAssetTransferTransaction';
 export type { default as IAssetUnfreezeTransaction } from './IAssetUnfreezeTransaction';
+export type { default as IBaseActionMeta } from './IBaseActionMeta';
 export type { default as IBaseAssetFreezeTransaction } from './IBaseAssetFreezeTransaction';
 export type { default as IBaseRequest } from './IBaseRequest';
 export type { default as IBaseRootState } from './IBaseRootState';
@@ -43,6 +44,7 @@ export type { default as IDecodedJwtHeader } from './IDecodedJwtHeader';
 export type { default as IDecodedJwtPayload } from './IDecodedJwtPayload';
 export type { default as IEnableRequest } from './IEnableRequest';
 export type { default as IExplorer } from './IExplorer';
+export type { default as IFulfilledActionMeta } from './IFulfilledActionMeta';
 export type { default as IGeneralSettings } from './IGeneralSettings';
 export type { default as IInitializeAccountOptions } from './IInitializeAccountOptions';
 export type { default as IKeyRegistrationOfflineTransaction } from './IKeyRegistrationOfflineTransaction';
@@ -54,8 +56,10 @@ export type { default as INetworkWithTransactionParams } from './INetworkWithTra
 export type { default as INode } from './INode';
 export type { default as IPasswordTag } from './IPasswordTag';
 export type { default as IPaymentTransaction } from './IPaymentTransaction';
+export type { default as IPendingActionMeta } from './IPendingActionMeta';
 export type { default as IPrivateKey } from './IPrivateKey';
 export type { default as IRegistrationRootState } from './IRegistrationRootState';
+export type { default as IRejectedActionMeta } from './IRejectedActionMeta';
 export type { default as IResourceLanguage } from './IResourceLanguage';
 export type { default as ISession } from './ISession';
 export type { default as ISettings } from './ISettings';
