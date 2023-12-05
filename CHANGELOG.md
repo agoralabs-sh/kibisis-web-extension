@@ -1,3 +1,10 @@
+# [1.6.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0-beta.2...v1.6.0-beta.3) (2023-12-05)
+
+
+### Features
+
+* add voi testnet block explorer ([#38](https://github.com/agoralabs-sh/kibisis-web-extension/issues/38)) ([b7498d1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b7498d1c6582a35919b664cb12c4314d46fac69b))
+
 # [1.6.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0-beta.1...v1.6.0-beta.2) (2023-12-05)
 
 
