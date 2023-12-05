@@ -22,6 +22,7 @@ import {
 
 // utils
 import {
+  convertGenesisHashToHex,
   selectDefaultNetwork,
   selectNetworkFromSettings,
 } from '@extension/utils';
@@ -48,8 +49,9 @@ const setSettings: AsyncThunk<
     ) {
       selectedNetwork = selectDefaultNetwork(networks);
 
-      settings.general.preferredBlockExplorerId =
-        selectedNetwork.explorers[0]?.id || null;
+      settings.general.preferredBlockExplorerIds[
+        convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
+      ] = selectedNetwork.explorers[0]?.id || null;
       settings.general.selectedNetworkGenesisHash = selectedNetwork.genesisHash;
     }
 

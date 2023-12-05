@@ -154,7 +154,7 @@ const networks: INetwork[] = [
         accountPath: '/account',
         applicationPath: '/application',
         assetPath: '/asset',
-        baseUrl: 'https://voi.observer',
+        baseUrl: 'https://voi.observer/explorer',
         blockPath: '/block',
         canonicalName: 'Voi Observer',
         groupPath: '/group',

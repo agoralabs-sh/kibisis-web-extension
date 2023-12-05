@@ -27,6 +27,7 @@ import {
   INetwork,
   ISettings,
 } from '@extension/types';
+import { convertGenesisHashToHex } from '@extension/utils';
 
 const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
@@ -45,21 +46,30 @@ const GeneralSettingsPage: FC = () => {
   const handlePreferredBlockExplorerChange = (
     event: ChangeEvent<HTMLSelectElement>
   ) => {
-    const explorer: IExplorer | null =
-      selectedNetwork?.explorers.find(
-        (value) => value.id === event.target.value
-      ) || null;
+    let explorer: IExplorer | null;
 
-    if (explorer) {
-      dispatch(
-        setSettings({
-          ...settings,
-          general: {
-            ...settings.general,
-            preferredBlockExplorerId: explorer.id,
-          },
-        })
-      );
+    if (selectedNetwork) {
+      explorer =
+        selectedNetwork?.explorers.find(
+          (value) => value.id === event.target.value
+        ) || null;
+
+      if (explorer) {
+        dispatch(
+          setSettings({
+            ...settings,
+            general: {
+              ...settings.general,
+              preferredBlockExplorerIds: {
+                ...settings.general.preferredBlockExplorerIds,
+                [convertGenesisHashToHex(
+                  selectedNetwork.genesisHash
+                ).toUpperCase()]: explorer.id,
+              },
+            },
+          })
+        );
+      }
     }
   };
 
@@ -82,8 +92,11 @@ const GeneralSettingsPage: FC = () => {
                 value: value.id,
               }))}
               value={
-                settings.general.preferredBlockExplorerId ||
-                selectedNetwork.explorers[0].id
+                settings.general.preferredBlockExplorerIds[
+                  convertGenesisHashToHex(
+                    selectedNetwork.genesisHash
+                  ).toUpperCase()
+                ] || selectedNetwork.explorers[0].id
               }
             />
           )}

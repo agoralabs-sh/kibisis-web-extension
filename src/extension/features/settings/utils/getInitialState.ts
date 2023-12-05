@@ -13,7 +13,7 @@ export default function getInitialState(): ISettingsState {
     },
     fetching: false,
     general: {
-      preferredBlockExplorerId: null,
+      preferredBlockExplorerIds: {},
       selectedNetworkGenesisHash: null,
     },
     saving: false,
