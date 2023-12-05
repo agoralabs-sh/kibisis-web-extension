@@ -1,5 +1,4 @@
-import { Indexer, IntDecoding } from 'algosdk';
-import LookupAccountTransactions from 'algosdk/dist/types/client/v2/indexer/lookupAccountTransactions';
+import { Indexer } from 'algosdk';
 
 // services
 import { AccountService } from '@extension/services';
@@ -19,8 +18,10 @@ import {
   convertGenesisHashToHex,
   mapAlgorandTransactionToTransaction,
 } from '@extension/utils';
+import fetchAlgorandAccountTransactionsWithDelay from './fetchAlgorandAccountTransactionsWithDelay';
 
 interface IOptions extends IBaseOptions {
+  delay?: number;
   network: INetwork;
   refresh?: boolean;
 }
@@ -33,7 +34,7 @@ interface IOptions extends IBaseOptions {
  */
 export default async function updateAccountTransactions(
   account: IAccount,
-  { logger, network, refresh = false }: IOptions
+  { delay = 0, logger, network, refresh = false }: IOptions
 ): Promise<IAccountTransactions> {
   const encodedGenesisHash: string = convertGenesisHashToHex(
     network.genesisHash
@@ -46,7 +47,6 @@ export default async function updateAccountTransactions(
   let client: Indexer;
   let limit: number = 20; // default
   let next: string | null = null;
-  let requestBuilder: LookupAccountTransactions;
 
   // if we are not refreshing, we can get the latest from the next token
   if (!refresh) {
@@ -82,15 +82,14 @@ export default async function updateAccountTransactions(
     );
 
   try {
-    requestBuilder = client.lookupAccountTransactions(address).limit(limit);
-
-    if (next) {
-      requestBuilder.nextToken(next);
-    }
-
-    algorandAccountTransaction = (await requestBuilder
-      .setIntDecoding(IntDecoding.BIGINT)
-      .do()) as IAlgorandAccountTransaction;
+    algorandAccountTransaction =
+      await fetchAlgorandAccountTransactionsWithDelay({
+        address,
+        client,
+        delay,
+        limit,
+        next,
+      });
 
     return {
       next: algorandAccountTransaction['next-token'] || null,

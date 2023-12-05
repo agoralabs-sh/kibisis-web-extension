@@ -31,6 +31,7 @@ export { default as useSelectSendingAssetFromAccount } from './useSelectSendingA
 export { default as useSelectSendingAssetNote } from './useSelectSendingAssetNote';
 export { default as useSelectSendingAssetSelectedAsset } from './useSelectSendingAssetSelectedAsset';
 export { default as useSelectSendingAssetToAddress } from './useSelectSendingAssetToAddress';
+export { default as useSelectSendingAssetTransactionId } from './useSelectSendingAssetTransactionId';
 export { default as useSelectSessions } from './useSelectSessions';
 export { default as useSelectSettings } from './useSelectSettings';
 export { default as useSelectSideBar } from './useSelectSideBar';

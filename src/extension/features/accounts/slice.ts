@@ -11,7 +11,7 @@ import {
   startPollingForAccountInformationThunk,
   stopPollingForAccountInformationThunk,
   updateAccountInformationThunk,
-  updateAccountTransactionsForAccountThunk,
+  updateAccountTransactionsThunk,
 } from './thunks';
 
 // types
@@ -100,8 +100,11 @@ const slice = createSlice({
     builder.addCase(
       updateAccountInformationThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<IAccount[]>) => {
-        state.items = action.payload;
-        state.updatingTransactions = false;
+        state.items = state.items.map(
+          (account) =>
+            action.payload.find((value) => value.id === account.id) || account
+        );
+        state.updatingInformation = false;
       }
     );
     builder.addCase(
@@ -118,25 +121,23 @@ const slice = createSlice({
     );
     /** update account transactions **/
     builder.addCase(
-      updateAccountTransactionsForAccountThunk.fulfilled,
-      (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
-        if (action.payload) {
-          state.items = state.items.map((value) =>
-            value.id === action.payload?.id ? action.payload : value
-          );
-        }
-
+      updateAccountTransactionsThunk.fulfilled,
+      (state: IAccountsState, action: PayloadAction<IAccount[]>) => {
+        state.items = state.items.map(
+          (account) =>
+            action.payload.find((value) => value.id === account.id) || account
+        );
         state.updatingTransactions = false;
       }
     );
     builder.addCase(
-      updateAccountTransactionsForAccountThunk.pending,
+      updateAccountTransactionsThunk.pending,
       (state: IAccountsState) => {
         state.updatingTransactions = true;
       }
     );
     builder.addCase(
-      updateAccountTransactionsForAccountThunk.rejected,
+      updateAccountTransactionsThunk.rejected,
       (state: IAccountsState) => {
         state.updatingTransactions = false;
       }

@@ -74,7 +74,7 @@ export default async function updateAccountInformation(
 
   logger &&
     logger.debug(
-      `${updateAccountInformation.name}: fetching account information for "${address}" on "${network.genesisId}"`
+      `${updateAccountInformation.name}: updating account information for "${address}" on "${network.genesisId}"`
     );
 
   try {

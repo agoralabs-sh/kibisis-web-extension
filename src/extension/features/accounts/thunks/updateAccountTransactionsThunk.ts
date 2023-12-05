@@ -6,9 +6,6 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { AccountsThunkEnum } from '@extension/enums';
 
-// services
-import { AccountService } from '@extension/services';
-
 // types
 import { ILogger } from '@common/types';
 import {
@@ -16,40 +13,36 @@ import {
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
-import { IUpdateAccountInformationPayload } from '../types';
+import { IUpdateAccountTransactionsPayload } from '../types';
 
 // utils
 import {
   convertGenesisHashToHex,
   selectNetworkFromSettings,
 } from '@extension/utils';
-import { updateAccountInformation } from '../utils';
+import { updateAccountTransactions } from '../utils';
 
-const updateAccountInformationThunk: AsyncThunk<
+const updateAccountTransactionsThunk: AsyncThunk<
   IAccount[], // return
-  IUpdateAccountInformationPayload | undefined, // args
+  IUpdateAccountTransactionsPayload | undefined, // args
   Record<string, never>
 > = createAsyncThunk<
   IAccount[],
-  IUpdateAccountInformationPayload | undefined,
+  IUpdateAccountTransactionsPayload | undefined,
   { state: IMainRootState }
 >(
-  AccountsThunkEnum.UpdateAccountInformation,
-  async (
-    { accountIds, forceUpdate } = { forceUpdate: false },
-    { getState }
-  ) => {
+  AccountsThunkEnum.UpdateAccountTransactions,
+  async ({ accountIds, refresh } = { refresh: false }, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const online: boolean = getState().system.online;
     const selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(networks, getState().settings);
-    let accountService: AccountService;
     let accounts: IAccount[] = getState().accounts.items;
 
     if (!online) {
       logger.debug(
-        `${AccountsThunkEnum.UpdateAccountInformation}: the extension appears to be offline, skipping`
+        `${AccountsThunkEnum.UpdateAccountTransactions}: the extension appears to be offline, ignoring`
       );
 
       return [];
@@ -57,7 +50,7 @@ const updateAccountInformationThunk: AsyncThunk<
 
     if (!selectedNetwork) {
       logger.debug(
-        `${AccountsThunkEnum.UpdateAccountInformation}: no network selected, skipping`
+        `${AccountsThunkEnum.UpdateAccountTransactions}: no network selected, ignoring`
       );
 
       return [];
@@ -70,30 +63,22 @@ const updateAccountInformationThunk: AsyncThunk<
       );
     }
 
-    accounts = await Promise.all(
+    return await Promise.all(
       accounts.map(async (account, index) => ({
         ...account,
-        networkInformation: {
-          ...account.networkInformation,
+        networkTransactions: {
+          ...account.networkTransactions,
           [convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()]:
-            await updateAccountInformation(account, {
+            await updateAccountTransactions(account, {
               delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
-              forceUpdate,
               logger,
               network: selectedNetwork,
+              refresh,
             }),
         },
       }))
     );
-    accountService = new AccountService({
-      logger,
-    });
-
-    // save accounts to storage
-    accounts = await accountService.saveAccounts(accounts);
-
-    return accounts;
   }
 );
 
-export default updateAccountInformationThunk;
+export default updateAccountTransactionsThunk;

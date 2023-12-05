@@ -23,13 +23,6 @@ import {
   OfflineError,
 } from '@extension/errors';
 
-// features
-import {
-  updateAccountInformationThunk,
-  updateAccountTransactionsForAccountThunk,
-} from '@extension/features/accounts';
-import { reset } from '../slice';
-
 // services
 import { AccountService, PrivateKeyService } from '@extension/services';
 
@@ -108,7 +101,7 @@ const submitTransactionThunk: AsyncThunk<
       );
     }
 
-    if (online) {
+    if (!online) {
       logger.debug(
         `${SendAssetsThunkEnum.SubmitTransaction}: extension offline`
       );
@@ -195,33 +188,6 @@ const submitTransactionThunk: AsyncThunk<
       logger.debug(
         `${SendAssetsThunkEnum.SubmitTransaction}: transaction "${sentRawTransaction.txId}" confirmed in round "${transactionResponse['confirmed-round']}"`
       );
-
-      // if (toast) {
-      //   toast({
-      //     description: `Transaction "${ellipseAddress(
-      //       sentRawTransaction.txId
-      //     )}" successful!`,
-      //     isClosable: true,
-      //     status: 'success',
-      //     title: 'Transaction Successful!',
-      //   });
-      // }
-      //
-      // // refresh the account information and account transactions
-      // dispatch(
-      //   updateAccountInformationThunk({
-      //     forceUpdate: true,
-      //   })
-      // );
-      // dispatch(
-      //   updateAccountTransactionsForAccountThunk({
-      //     accountId: fromAccount.id,
-      //     refresh: true,
-      //   })
-      // );
-      //
-      // // reset send assets to close the modal.
-      // dispatch(reset());
 
       // on success, return the transaction id
       return sentRawTransaction.txId;

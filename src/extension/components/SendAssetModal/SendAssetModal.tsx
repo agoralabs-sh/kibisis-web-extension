@@ -42,12 +42,17 @@ import { BaseExtensionError } from '@extension/errors';
 
 // features
 import {
+  updateAccountInformationThunk,
+  updateAccountTransactionsThunk,
+} from '@extension/features/accounts';
+import {
   setAmount,
   setError,
   setFromAddress,
   setNote,
   setSelectedAsset,
   setToAddress,
+  reset as resetSendAssets,
   submitTransactionThunk,
 } from '@extension/features/send-assets';
 
@@ -67,6 +72,7 @@ import {
   useSelectSendingAssetFromAccount,
   useSelectSendingAssetNote,
   useSelectSendingAssetSelectedAsset,
+  useSelectSendingAssetTransactionId,
 } from '@extension/selectors';
 
 // services
@@ -84,8 +90,10 @@ import {
 } from '@extension/types';
 
 // utils
-import { calculateMaxTransactionAmount } from '@extension/utils';
-import { setPassword } from '@extension/features/registration';
+import {
+  calculateMaxTransactionAmount,
+  ellipseAddress,
+} from '@extension/utils';
 
 interface IProps {
   onClose: () => void;
@@ -105,6 +113,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     useSelectSelectedNetwork();
   const note: string | null = useSelectSendingAssetNote();
   const selectedAsset: IAsset | null = useSelectSendingAssetSelectedAsset();
+  const transactionId: string | null = useSelectSendingAssetTransactionId();
   // hooks
   const {
     error: toAddressError,
@@ -359,13 +368,6 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
 
   useEffect(() => {
-    if (!selectedAsset) {
-      setShowSummary(false);
-      resetToAddress();
-      resetPassword();
-    }
-  }, [selectedAsset]);
-  useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
 
     if (fromAccount && network && selectedAsset) {
@@ -387,6 +389,43 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     setMaximumTransactionAmount('0');
   }, [fromAccount, network, selectedAsset]);
+  useEffect(() => {
+    if (transactionId) {
+      toast({
+        description: `Transaction "${ellipseAddress(
+          transactionId
+        )}" successful!`,
+        isClosable: true,
+        status: 'success',
+        title: 'Transaction Successful!',
+      });
+
+      // refresh the account transactions
+      if (fromAccount) {
+        // force update the account information as we spent fees
+        dispatch(
+          updateAccountInformationThunk({
+            accountIds: [fromAccount.id],
+            forceUpdate: true,
+          })
+        );
+        dispatch(
+          updateAccountTransactionsThunk({
+            accountIds: [fromAccount.id],
+            refresh: true,
+          })
+        );
+      }
+
+      // reset modal store - should close modal
+      dispatch(resetSendAssets());
+
+      // reset modal input
+      setShowSummary(false);
+      resetToAddress();
+      resetPassword();
+    }
+  }, [transactionId]);
   useEffect(() => {
     if (error) {
       switch (error.code) {
