@@ -5,6 +5,7 @@ import formatCurrencyUnit from './formatCurrencyUnit';
 
 interface ITestParams {
   input: BigNumber;
+  decimals?: number;
   expected: string;
 }
 
@@ -43,6 +44,16 @@ describe('formatCurrencyUnit()', () => {
       expected: '612,290.72',
     },
     {
+      input: new BigNumber('612290.716271'),
+      decimals: 5,
+      expected: '612,290.71627',
+    },
+    {
+      input: new BigNumber('612290.716271'),
+      decimals: 4,
+      expected: '612,290.7163',
+    },
+    {
       input: new BigNumber('12290.716271'),
       expected: '12,290.72',
     },
@@ -72,16 +83,28 @@ describe('formatCurrencyUnit()', () => {
     },
     {
       input: new BigNumber('0.16500'),
+      decimals: 3,
       expected: '0.165',
     },
     {
+      input: new BigNumber('0.23100'),
+      decimals: 2,
+      expected: '0.23',
+    },
+    {
+      input: new BigNumber('0.23500'),
+      decimals: 2,
+      expected: '0.24',
+    },
+    {
       input: new BigNumber('0.716271'),
+      decimals: 6,
       expected: '0.716271',
     },
   ])(
     `should format the unit of $input to $expected`,
-    ({ input, expected }: ITestParams) => {
-      expect(formatCurrencyUnit(input)).toBe(expected);
+    ({ input, decimals, expected }: ITestParams) => {
+      expect(formatCurrencyUnit(input, decimals)).toBe(expected);
     }
   );
 });

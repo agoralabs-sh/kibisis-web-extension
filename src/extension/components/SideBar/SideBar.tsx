@@ -11,6 +11,7 @@ import {
   IoChevronBack,
   IoChevronForward,
   IoScanOutline,
+  IoSendOutline,
   IoSettingsOutline,
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +21,7 @@ import {
   NavigateFunction,
   useLocation,
   useNavigate,
+  useSearchParams,
 } from 'react-router-dom';
 
 // components
@@ -36,17 +38,16 @@ import {
   ACCOUNTS_ROUTE,
   SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
-  SIDEBAR_ITEM_HEIGHT,
   SIDEBAR_MAX_WIDTH,
   SIDEBAR_MIN_WIDTH,
 } from '@extension/constants';
 
 // features
+import { initializeSendAsset } from '@extension/features/send-assets';
 import { openWalletConnectModal } from '@extension/features/sessions';
 
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
-import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
@@ -54,27 +55,34 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import {
   useSelectAccounts,
   useSelectFetchingAccounts,
+  useSelectSelectedNetwork,
 } from '@extension/selectors';
 
 // services
 import { AccountService } from '@extension/services';
 
 // types
-import { IAccount, IAppThunkDispatch } from '@extension/types';
+import { IAccount, IAppThunkDispatch, INetwork } from '@extension/types';
+
+// utils
+import { createNativeCurrencyAsset } from '@extension/utils';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
+  const [searchParams] = useSearchParams({
+    accountTabId: '0',
+  });
   // hooks
   const borderColor: string = useBorderColor();
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = usePrimaryColor();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
+  const network: INetwork | null = useSelectSelectedNetwork();
   // state
   const [activeAccountAddress, setActiveAccountAddress] = useState<
     string | null
@@ -93,13 +101,27 @@ const SideBar: FC = () => {
   };
   const handleAccountClick = (address: string) => {
     onCloseSideBar();
-    navigate(`${ACCOUNTS_ROUTE}/${address}`);
+    navigate(
+      `${ACCOUNTS_ROUTE}/${address}?accountTabId=${
+        searchParams.get('accountTabId') || '0'
+      }`
+    );
   };
   const handleAddAccountClick = () => {
     onCloseSideBar();
     navigate(ADD_ACCOUNT_ROUTE);
   };
   const handleConnectWalletClick = () => dispatch(openWalletConnectModal());
+  const handleSendAssetClick = () => {
+    if (network) {
+      dispatch(
+        initializeSendAsset({
+          fromAddress: activeAccountAddress || null,
+          selectedAsset: createNativeCurrencyAsset(network),
+        })
+      );
+    }
+  };
   const handleSettingsClick = () => {
     onCloseSideBar();
     navigate(SETTINGS_ROUTE);
@@ -199,27 +221,39 @@ const SideBar: FC = () => {
 
       <Divider />
 
-      {/*accounts*/}
+      {/* accounts */}
       <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
         {renderAccounts()}
       </VStack>
 
       <Divider />
-      {/*connect dapp*/}
+
+      {/* send asset */}
+      <SideBarActionItem
+        icon={IoSendOutline}
+        label={t<string>('labels.sendAsset', {
+          nativeCurrency: network?.nativeCurrency.code
+            ? `${network?.nativeCurrency.code}/`
+            : '',
+        })}
+        onClick={handleSendAssetClick}
+      />
+
+      {/* connect dapp */}
       <SideBarActionItem
         icon={IoScanOutline}
         label={t<string>('labels.connectWallet')}
         onClick={handleConnectWalletClick}
       />
 
-      {/*add account*/}
+      {/* add account */}
       <SideBarActionItem
         icon={IoAddCircleOutline}
         label={t<string>('labels.addAccount')}
         onClick={handleAddAccountClick}
       />
 
-      {/*settings*/}
+      {/* settings */}
       <SideBarActionItem
         icon={IoSettingsOutline}
         label={t<string>('labels.settings')}

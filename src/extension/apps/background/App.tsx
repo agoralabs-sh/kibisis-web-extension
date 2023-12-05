@@ -12,6 +12,7 @@ import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as assetsReducer } from '@extension/features/assets';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
+import { reducer as sendAssetsReducer } from '@extension/features/send-assets';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
 import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as systemReducer } from '@extension/features/system';
@@ -29,6 +30,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       assets: assetsReducer,
       messages: messagesReducer,
       networks: networksReducer,
+      sendAssets: sendAssetsReducer,
       sessions: sessionsReducer,
       settings: settingsReducer,
       system: systemReducer,

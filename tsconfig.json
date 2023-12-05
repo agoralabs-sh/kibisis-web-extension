@@ -35,12 +35,10 @@
       "@extension/features/registration": [
         "src/extension/features/registration"
       ],
+      "@extension/features/send-assets": ["src/extension/features/send-assets"],
       "@extension/features/sessions": ["src/extension/features/sessions"],
       "@extension/features/settings": ["src/extension/features/settings"],
       "@extension/features/system": ["src/extension/features/system"],
-      "@extension/features/transactions": [
-        "src/extension/features/transactions"
-      ],
       "@extension/fonts/*": ["src/extension/fonts/*"],
       "@extension/hooks/*": ["src/extension/hooks/*"],
       "@extension/pages/*": ["src/extension/pages/*"],

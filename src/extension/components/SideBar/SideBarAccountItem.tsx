@@ -96,6 +96,7 @@ const SideBarAccountItem: FC<IProps> = ({
               size="sm"
             />
           </Center>
+
           {account.name ? (
             <VStack
               alignItems="flex-start"
@@ -108,11 +109,18 @@ const SideBarAccountItem: FC<IProps> = ({
                 fontSize="sm"
                 maxW={195}
                 noOfLines={1}
+                textAlign="left"
+                w="full"
               >
                 {account.name}
               </Text>
 
-              <Text color={subTextColor} fontSize="xs">
+              <Text
+                color={subTextColor}
+                fontSize="xs"
+                textAlign="left"
+                w="full"
+              >
                 {ellipseAddress(address, {
                   end: 10,
                   start: 10,
@@ -120,7 +128,13 @@ const SideBarAccountItem: FC<IProps> = ({
               </Text>
             </VStack>
           ) : (
-            <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
+            <Text
+              color={defaultTextColor}
+              flexGrow={1}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
               {ellipseAddress(address, {
                 end: 10,
                 start: 10,

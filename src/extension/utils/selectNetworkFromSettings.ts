@@ -1,17 +1,20 @@
 // types
-import { INetwork, ISettings } from '@extension/types';
+import {
+  INetwork,
+  INetworkWithTransactionParams,
+  ISettings,
+} from '@extension/types';
 
 /**
  * Convenience function that simply gets the selected network from the settings.
- * @param {INetwork[]} networks - the list of networks.
+ * @param {<T extends INetwork | INetworkWithTransactionParams>[]} networks - the list of networks.
  * @param {ISettings} settings - the settings.
- * @returns {INetwork | null} the selected network in settings, or null if no network has been selected or the selected
+ * @returns {<T extends INetwork | INetworkWithTransactionParams> | null} the selected network in settings, or null if no network has been selected or the selected
  * network does not exit in the networks list.
  */
-export default function selectNetworkFromSettings(
-  networks: INetwork[],
-  settings: ISettings
-): INetwork | null {
+export default function selectNetworkFromSettings<
+  T extends INetwork | INetworkWithTransactionParams
+>(networks: T[], settings: ISettings): T | null {
   return (
     networks.find(
       (value) =>

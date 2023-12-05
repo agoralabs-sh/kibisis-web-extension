@@ -1,7 +1,16 @@
-import { Box, Heading, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  HStack,
+  Text,
+  Tooltip,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowDownOutline, IoArrowUpOutline } from 'react-icons/io5';
+import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // components
@@ -12,9 +21,13 @@ import CopyIconButton from '@extension/components/CopyIconButton';
 import LoadingPage from '@extension/components/LoadingPage';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
+import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // constants
 import { ACCOUNTS_ROUTE } from '@extension/constants';
+
+// features
+import { initializeSendAsset } from '@extension/features/send-assets';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -25,7 +38,6 @@ import useAssetPage from './hooks/useAssetPage';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectFetchingAssets,
   useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
@@ -38,7 +50,7 @@ import { AccountService } from '@extension/services';
 import { theme } from '@extension/theme';
 
 // types
-import { IExplorer, INetwork } from '@extension/types';
+import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
 
 // utils
 import { formatCurrencyUnit } from '@common/utils';
@@ -46,8 +58,14 @@ import { ellipseAddress } from '@extension/utils';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { address, assetId } = useParams();
+  const {
+    isOpen: isShareAddressModalOpen,
+    onClose: onShareAddressModalClose,
+    onOpen: onShareAddressModalOpen,
+  } = useDisclosure();
   // selectors
   const fetchingAssets: boolean = useSelectFetchingAssets();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
@@ -71,11 +89,17 @@ const AssetPage: FC = () => {
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
-  const handleReceiveClick = () => {
-    console.log('open receive modal');
-  };
+  // handlers
+  const handleReceiveClick = () => onShareAddressModalOpen();
   const handleSendClick = () => {
-    console.log('open send asset!');
+    if (asset && address) {
+      dispatch(
+        initializeSendAsset({
+          fromAddress: address,
+          selectedAsset: asset,
+        })
+      );
+    }
   };
   const reset = () =>
     navigate(ACCOUNTS_ROUTE, {
@@ -106,6 +130,15 @@ const AssetPage: FC = () => {
 
   return (
     <>
+      {account && (
+        <ShareAddressModal
+          address={AccountService.convertPublicKeyToAlgorandAddress(
+            account.publicKey
+          )}
+          isOpen={isShareAddressModalOpen}
+          onClose={onShareAddressModalClose}
+        />
+      )}
       <PageHeader
         subTitle={
           account.name
@@ -214,7 +247,7 @@ const AssetPage: FC = () => {
             label={standardUnitAmount.toString()}
           >
             <Heading color={defaultTextColor} size="lg" textAlign="center">
-              {formatCurrencyUnit(standardUnitAmount)}
+              {formatCurrencyUnit(standardUnitAmount, asset.decimals)}
             </Heading>
           </Tooltip>
         </VStack>

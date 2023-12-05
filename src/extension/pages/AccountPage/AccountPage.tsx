@@ -56,10 +56,10 @@ import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 // features
 import {
   removeAccountByIdThunk,
-  updateAccountTransactionsForAccountThunk,
+  updateAccountTransactionsThunk,
 } from '@extension/features/accounts';
-import { setConfirm } from '@extension/features/system';
 import { setSettings } from '@extension/features/settings';
+import { setConfirm } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -68,8 +68,10 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
-  useSelectAccount,
+  useSelectAccountByAddress,
+  useSelectAccountInformationByAddress,
   useSelectAccounts,
+  useSelectAccountTransactionsByAddress,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
   useSelectIsOnline,
@@ -111,34 +113,24 @@ const AccountPage: FC = () => {
     accountTabId: '0',
   });
   // selectors
-  const account: IAccount | null = useSelectAccount(address);
+  const account: IAccount | null = useSelectAccountByAddress(address);
+  const accountInformation: IAccountInformation | null =
+    useSelectAccountInformationByAddress(address);
   const accounts: IAccount[] = useSelectAccounts();
+  const accountTransactions: IAccountTransactions | null =
+    useSelectAccountTransactionsByAddress(address);
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
-  const settings: ISettings = useSelectSettings();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const settings: ISettings = useSelectSettings();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   // misc
-  const accountInformation: IAccountInformation | null =
-    account && selectedNetwork
-      ? AccountService.extractAccountInformationForNetwork(
-          account,
-          selectedNetwork
-        )
-      : null;
-  const accountTransactions: IAccountTransactions | null =
-    account && selectedNetwork
-      ? AccountService.extractAccountTransactionsForNetwork(
-          account,
-          selectedNetwork
-        )
-      : null;
   const accountTabId: number = parseInt(
     searchParams.get('accountTabId') || '0'
   );
@@ -183,7 +175,11 @@ const AccountPage: FC = () => {
     });
   const handleActivityScrollEnd = () => {
     if (account && accountTransactions && accountTransactions.next) {
-      dispatch(updateAccountTransactionsForAccountThunk(account.id));
+      dispatch(
+        updateAccountTransactionsThunk({
+          accountIds: [account.id],
+        })
+      );
     }
   };
   // renders
@@ -200,7 +196,7 @@ const AccountPage: FC = () => {
         <VStack {...headerContainerProps}>
           <NetworkSelectSkeleton network={networks[0]} />
           <HStack alignItems="center" w="full">
-            {/* address */}
+            {/*address*/}
             <Skeleton>
               <Text color="gray.500" fontSize="xs">
                 {ellipseAddress(faker.random.alphaNumeric(58).toUpperCase())}
@@ -209,7 +205,7 @@ const AccountPage: FC = () => {
 
             <Spacer />
 
-            {/* balance */}
+            {/*balance*/}
             <NativeBalanceSkeleton />
           </HStack>
         </VStack>
@@ -223,9 +219,9 @@ const AccountPage: FC = () => {
 
       return (
         <>
-          {/* header */}
+          {/*header*/}
           <VStack {...headerContainerProps}>
-            {/* network connectivity */}
+            {/*network connectivity*/}
             <HStack w="full">
               {!online && (
                 <Tooltip
@@ -252,8 +248,9 @@ const AccountPage: FC = () => {
                 onSelect={handleNetworkSelect}
               />
             </HStack>
+
             <HStack alignItems="center" w="full">
-              {/* name/address */}
+              {/*name/address*/}
               {account.name ? (
                 <Tooltip aria-label="Name of account" label={account.name}>
                   <Heading
@@ -274,7 +271,7 @@ const AccountPage: FC = () => {
 
               <Spacer />
 
-              {/* balance */}
+              {/*balance*/}
               <NativeBalance
                 atomicBalance={new BigNumber(accountInformation.atomicBalance)}
                 minAtomicBalance={
@@ -284,7 +281,7 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/* address and interactions */}
+            {/*address and interactions*/}
             <HStack alignItems="center" spacing={1} w="full">
               <Tooltip label={address}>
                 <Text color={subTextColor} fontSize="xs">
@@ -294,14 +291,14 @@ const AccountPage: FC = () => {
 
               <Spacer />
 
-              {/* copy address */}
+              {/*copy address*/}
               <CopyIconButton
                 ariaLabel="Copy address"
                 copiedTooltipLabel={t<string>('captions.addressCopied')}
                 value={address}
               />
 
-              {/* open address on explorer */}
+              {/*open address on explorer*/}
               {explorer && (
                 <OpenTabIconButton
                   tooltipLabel={t<string>('captions.openOn', {
@@ -311,7 +308,7 @@ const AccountPage: FC = () => {
                 />
               )}
 
-              {/* share address */}
+              {/*share address*/}
               <Tooltip label={t<string>('labels.shareAddress')}>
                 <IconButton
                   aria-label="Show QR code"
@@ -322,7 +319,7 @@ const AccountPage: FC = () => {
                 />
               </Tooltip>
 
-              {/* remove account */}
+              {/*remove account*/}
               <Tooltip label={t<string>('labels.removeAccount')}>
                 <IconButton
                   aria-label="Remove account"
@@ -337,7 +334,7 @@ const AccountPage: FC = () => {
 
           <Spacer />
 
-          {/* assets/nfts/activity tabs */}
+          {/*assets/nfts/activity tabs*/}
           <Tabs
             colorScheme={primaryColorScheme}
             defaultIndex={accountTabId}
@@ -376,7 +373,7 @@ const AccountPage: FC = () => {
 
     return (
       <>
-        {/* empty state */}
+        {/*empty state*/}
         <Spacer />
         <EmptyState
           button={{
@@ -434,7 +431,11 @@ const AccountPage: FC = () => {
         !accountTransactions ||
         accountTransactions.transactions.length <= 0
       ) {
-        dispatch(updateAccountTransactionsForAccountThunk(account.id));
+        dispatch(
+          updateAccountTransactionsThunk({
+            accountIds: [account.id],
+          })
+        );
       }
     }
   }, [selectedNetwork]);

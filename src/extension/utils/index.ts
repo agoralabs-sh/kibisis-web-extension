@@ -1,7 +1,9 @@
 export { default as bootstrapApp } from './bootstrapApp';
+export { default as calculateMaxTransactionAmount } from './calculateMaxTransactionAmount';
 export { default as convertDataUriToImageData } from './convertDataUriToImageData';
 export { default as convertGenesisHashToHex } from './convertGenesisHashToHex';
 export { default as createIconFromDataUri } from './createIconFromDataUri';
+export { default as createNativeCurrencyAsset } from './createNativeCurrencyAsset';
 export { default as decodeJwt } from './decodeJwt';
 export { default as decodeURLSearchParam } from './decodeURLSearchParam';
 export { default as ellipseAddress } from './ellipseAddress';

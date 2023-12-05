@@ -57,13 +57,13 @@ const updateAssetInformationThunk: AsyncThunk<
         }
 
         logger.debug(
-          `${updateAssetInformationThunk.name}: successfully updated asset information for "${id}" on "${network.genesisId}"`
+          `${AssetsThunkEnum.UpdateAssetInformation}: successfully updated asset information for "${id}" on "${network.genesisId}"`
         );
 
         assets.push(assetInformation);
       } catch (error) {
         logger.error(
-          `${updateAssetInformationThunk.name}: failed to get asset information for asset "${id}" on ${network.genesisId}: ${error.message}`
+          `${AssetsThunkEnum.UpdateAssetInformation}: failed to get asset information for asset "${id}" on ${network.genesisId}: ${error.message}`
         );
       }
     }
@@ -75,7 +75,7 @@ const updateAssetInformationThunk: AsyncThunk<
       (await storageManager.getItem<IAsset[]>(assetsStorageKey)) || []; // get the current assets from storage
 
     logger.debug(
-      `${updateAssetInformationThunk.name}: saving new asset information for network "${network.genesisId}" to storage`
+      `${AssetsThunkEnum.UpdateAssetInformation}: saving new asset information for network "${network.genesisId}" to storage`
     );
 
     // update the storage with the new asset information

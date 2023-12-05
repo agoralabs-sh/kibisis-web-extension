@@ -6,10 +6,13 @@ import numbro from 'numbro';
  * @param {BigNumber} input - the unit as a BigNumber.
  * @returns {string} the formatted unit.
  */
-export default function formatCurrencyUnit(input: BigNumber): string {
+export default function formatCurrencyUnit(
+  input: BigNumber,
+  decimals: number = 2
+): string {
   if (input.gte(1)) {
     // numbers >= 1m+
-    if (input.decimalPlaces(2).gte(new BigNumber(1000000))) {
+    if (input.decimalPlaces(decimals).gte(new BigNumber(1000000))) {
       return numbro(input.toString()).format({
         average: true,
         totalLength: 6,
@@ -19,7 +22,7 @@ export default function formatCurrencyUnit(input: BigNumber): string {
 
     // numbers <= 999,999.99
     return numbro(input.toString()).format({
-      mantissa: 2,
+      mantissa: decimals,
       thousandSeparated: true,
       trimMantissa: true,
     });
@@ -27,7 +30,7 @@ export default function formatCurrencyUnit(input: BigNumber): string {
 
   // numbers < 1
   return numbro(input.toString()).format({
-    mantissa: 6,
+    mantissa: decimals,
     trimMantissa: true,
   });
 }

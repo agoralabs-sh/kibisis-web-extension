@@ -26,16 +26,14 @@ import {
 // hooks
 import useChangePassword from '@extension/hooks/useChangePassword';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-
-// selectors
-import { useSelectToast } from '@extension/selectors';
+import useToastWithDefaultOptions from '@extension/hooks/useToastWithDefaultOptions';
 
 const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const { isOpen, onClose, onOpen } = useDisclosure();
   // hooks
-  const toast: CreateToastFnReturn | null = useSelectToast();
+  const toast: CreateToastFnReturn = useToastWithDefaultOptions();
   const { changePassword, error, passwordTag, saving } = useChangePassword();
   const subTextColor: string = useSubTextColor();
   // state
@@ -64,7 +62,7 @@ const ChangePasswordPage: FC = () => {
 
   // if there is an error from the hook, show a toast
   useEffect(() => {
-    if (error && toast) {
+    if (error) {
       toast({
         description: error.message,
         duration: null,

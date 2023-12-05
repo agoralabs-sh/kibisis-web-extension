@@ -1,4 +1,3 @@
-import { createStandaloneToast } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
@@ -8,6 +7,7 @@ import ConfirmModal from '@extension/components/ConfirmModal';
 import EnableModal from '@extension/components/EnableModal';
 import ErrorModal from '@extension/components/ErrorModal';
 import MainLayout from '@extension/components/MainLayout';
+import SendAssetModal from '@extension/components/SendAssetModal';
 import SignBytesModal from '@extension/components/SignBytesModal';
 import SignTxnsModal from '@extension/components/SignTxnsModal';
 import WalletConnectModal from '@extension/components/WalletConnectModal';
@@ -18,12 +18,6 @@ import {
   startPollingForAccountInformationThunk,
 } from '@extension/features/accounts';
 import {
-  setConfirm,
-  setError,
-  setNavigate,
-  setToast,
-} from '@extension/features/system';
-import {
   fetchAssetsThunk,
   updateAssetInformationThunk,
 } from '@extension/features/assets';
@@ -33,11 +27,17 @@ import {
   setSignTxnsRequest,
 } from '@extension/features/messages';
 import {
+  fetchTransactionParamsFromStorageThunk,
+  startPollingForTransactionsParamsThunk,
+} from '@extension/features/networks';
+import { reset as resetSendAsset } from '@extension/features/send-assets';
+import {
   closeWalletConnectModal,
   fetchSessionsThunk,
   initializeWalletConnectThunk,
 } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
+import { setConfirm, setError, setNavigate } from '@extension/features/system';
 
 // hooks
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
@@ -49,9 +49,6 @@ import {
   useSelectAssets,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
-
-// theme
-import { theme } from '@extension/theme';
 
 // types
 import {
@@ -73,48 +70,41 @@ const Root: FC = () => {
   const accounts: IAccount[] = useSelectAccounts();
   const assets: Record<string, IAsset[]> | null = useSelectAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  // misc
-  const { toast, ToastContainer } = createStandaloneToast({
-    defaultOptions: {
-      containerStyle: {
-        margin: '0',
-        maxWidth: '100%',
-        minWidth: '100%',
-        padding: '0.5rem',
-        width: '100%',
-      },
-      duration: 6000,
-      position: 'top',
-    },
-    theme,
-  });
   // handlers
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));
+  const handleSendAssetModalClose = () => dispatch(resetSendAsset());
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
   const handleSignTxnsModalClose = () => dispatch(setSignTxnsRequest(null));
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
 
+  // 1. fetched required data from storage
   useEffect(() => {
     dispatch(setNavigate(navigate));
-    dispatch(setToast(toast));
     dispatch(fetchSettings());
     dispatch(fetchSessionsThunk());
     dispatch(fetchAssetsThunk());
     dispatch(initializeWalletConnectThunk());
     dispatch(startPollingForAccountInformationThunk());
+    dispatch(startPollingForTransactionsParamsThunk());
   }, []);
-  // fetch accounts when the selected network has been found and no accounts exist
+  // 2. when the selected network has been fetched from storage
   useEffect(() => {
-    if (selectedNetwork && accounts.length < 1) {
-      dispatch(
-        fetchAccountsFromStorageThunk({
-          updateAccountInformation: true,
-          updateAccountTransactions: true,
-        })
-      );
+    if (selectedNetwork) {
+      // fetch accounts when no accounts exist
+      if (accounts.length < 1) {
+        dispatch(
+          fetchAccountsFromStorageThunk({
+            updateAccountInformation: true,
+            updateAccountTransactions: true,
+          })
+        );
+      }
+
+      // fetch the most recent transaction params for the selected network
+      dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [selectedNetwork]);
   // whenever the accounts are updated, check if any new assets exist in the account
@@ -160,8 +150,8 @@ const Root: FC = () => {
       <EnableModal onClose={handleEnableModalClose} />
       <SignTxnsModal onClose={handleSignTxnsModalClose} />
       <SignBytesModal onClose={handleSignBytesModalClose} />
+      <SendAssetModal onClose={handleSendAssetModalClose} />
       <WalletConnectModal onClose={handleWalletConnectModalClose} />
-      <ToastContainer />
       <MainLayout>
         <Outlet />
       </MainLayout>

@@ -1,4 +1,3 @@
-import { CreateToastFnReturn } from '@chakra-ui/react';
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { NavigateFunction } from 'react-router-dom';
 
@@ -45,21 +44,9 @@ const slice = createSlice({
     ) => {
       state.sidebar = action.payload;
     },
-    setToast: (
-      state: Draft<ISystemState>,
-      action: PayloadAction<CreateToastFnReturn>
-    ) => {
-      state.toast = action.payload;
-    },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const {
-  setConfirm,
-  setError,
-  setNavigate,
-  setOnline,
-  setSideBar,
-  setToast,
-} = slice.actions;
+export const { setConfirm, setError, setNavigate, setOnline, setSideBar } =
+  slice.actions;

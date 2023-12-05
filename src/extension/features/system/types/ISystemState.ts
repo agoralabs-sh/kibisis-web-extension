@@ -1,4 +1,3 @@
-import { CreateToastFnReturn } from '@chakra-ui/react';
 import { NavigateFunction } from 'react-router-dom';
 
 // errors
@@ -15,7 +14,6 @@ interface ISystemState {
   navigate: NavigateFunction | null;
   online: boolean;
   sidebar: boolean;
-  toast: CreateToastFnReturn | null;
 }
 
 export default ISystemState;

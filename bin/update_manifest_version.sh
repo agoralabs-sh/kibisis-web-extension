@@ -14,6 +14,8 @@ source "${SCRIPT_DIR}/set_vars.sh"
 #
 # Returns exit code 0 if successful, or 1 if the semantic version is incorrectly formatted.
 function main {
+  local version
+
   set_vars
 
   if [ -z "${1}" ]; then
@@ -27,8 +29,11 @@ function main {
     exit 1
   fi
 
-  printf "%b updating manifest.common.json#version to version '%s' \n" "${INFO_PREFIX}" "${1}"
-  cat <<< $(jq --arg version "${1}" '.version = $version' "${PWD}/src/manifest.common.json") > "${PWD}/src/manifest.common.json"
+  # for pre release versions, be sure to remove the *-beta.xx that is suffixed to the end of the semantic version
+  version=${1%-*}
+
+  printf "%b updating manifest.common.json#version to version '%s' \n" "${INFO_PREFIX}" "${version}"
+  cat <<< $(jq --arg version "${version}" '.version = $version' "${PWD}/src/manifest.common.json") > "${PWD}/src/manifest.common.json"
 
   exit 0
 }

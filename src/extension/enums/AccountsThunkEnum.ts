@@ -5,7 +5,7 @@ enum AccountsThunkEnum {
   StartPollingForAccountInformation = 'accounts/startPollingForAccountInformation',
   StopPollingForAccountInformation = 'accounts/stopPollingForAccountInformation',
   UpdateAccountInformation = 'accounts/updateAccountInformation',
-  UpdateAccountTransactionsForAccount = 'accounts/updateAccountTransactionsForAccount',
+  UpdateAccountTransactions = 'accounts/updateAccountTransactions',
 }
 
 export default AccountsThunkEnum;

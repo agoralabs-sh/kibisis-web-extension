@@ -4,6 +4,7 @@ enum StoreNameEnum {
   Messages = 'messages',
   Networks = 'networks',
   Register = 'register',
+  SendAssets = 'send-assets',
   Sessions = 'sessions',
   Settings = 'settings',
   System = 'system',

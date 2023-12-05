@@ -62,6 +62,7 @@ const translation: IResourceLanguage = {
     clearAllData: 'Are you sure you want to clear all your data?',
     clearAllDataWarning:
       'Once this has been completed, it cannot be reversed. All your settings and accounts will be removed',
+    confirmingTransaction: 'Please wait, the transaction is being processed.',
     connectingToWalletConnect: 'Attempting to connect to WalletConnect.',
     copied: 'Copied!',
     createNewAccount:
@@ -85,6 +86,8 @@ const translation: IResourceLanguage = {
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
     managerAddressDoesNotMatch:
       'This account does not have the authority to alter this asset. This transaction will likely fail.',
+    maximumNativeCurrencyTransactionAmount:
+      'The maximum {{nativeCurrencyCode}} amount is calculated by: the balance ({{balance}}), minus the minimum balance needed to keep the account open ({{minBalance}}), minus the minimum transaction fee ({{minFee}})',
     minimumBalance: `Minimum balance is {{amount}} algo. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
     mustEnterPasswordToSign: 'Enter your password to sign.',
@@ -94,6 +97,8 @@ const translation: IResourceLanguage = {
       'Enter your password to sign this transaction.',
     mustEnterPasswordToSignTransactions:
       'Enter your password to sign these transactions.',
+    mustEnterPasswordToSendTransaction:
+      'You must enter your password to send transaction.',
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
@@ -129,6 +134,7 @@ const translation: IResourceLanguage = {
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
     transactionIdCopied: 'Transaction ID copied!',
+    transactionSuccessful: 'Transaction "{{transactionId}}" was successful.',
   },
   errors: {
     descriptions: {
@@ -138,6 +144,7 @@ const translation: IResourceLanguage = {
     inputs: {
       copySeedPhraseRequired:
         'You must confirm you have copied the seed phrase',
+      invalidAddress: 'Invalid address',
       invalidMnemonic: 'Invalid seed phrase',
       invalidPassword: 'Invalid password',
       passwordMinLength: 'Must be at least 8 characters',
@@ -171,8 +178,10 @@ const translation: IResourceLanguage = {
     noAssetsFound: 'No assets found',
     noTransactionsFound: 'No transactions found',
     noSessionsFound: 'No sessions found',
+    offline: 'Offline',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
+    sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
     [`transaction_${TransactionTypeEnum.ApplicationClearState}`]:
@@ -202,6 +211,7 @@ const translation: IResourceLanguage = {
     [`transaction_${TransactionTypeEnum.KeyRegistrationOnline}`]:
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
+    transactionSuccessful: 'Transaction Successful!',
   },
   labels: {
     activity: 'Activity',
@@ -216,6 +226,7 @@ const translation: IResourceLanguage = {
     allowMainNet: 'Allow MainNet networks?',
     amount: 'Amount',
     applicationId: 'Application ID',
+    asset: 'Asset',
     assetId: 'Asset ID',
     assets: 'Assets',
     audience: 'Audience',
@@ -251,8 +262,10 @@ const translation: IResourceLanguage = {
     light: 'Light',
     nfts: 'NFTs',
     note: 'Note',
+    noteOptional: 'Note (optional)',
     managerAccount: 'Manager Account',
     manageAccounts: 'Manage Accounts',
+    max: 'Max',
     message: 'Message',
     moreInformation: 'More Information',
     name: 'Name',
@@ -265,6 +278,7 @@ const translation: IResourceLanguage = {
     reserveAccount: 'Reserve Account',
     seedPhrase: 'Seed Phrase',
     selectionKey: 'VRF Public Key',
+    sendAsset: 'Send {{nativeCurrency}}Asset',
     settings: 'Settings',
     shareAddress: 'Share Address',
     signingMethod: 'Signing Method',
@@ -282,6 +296,8 @@ const translation: IResourceLanguage = {
     yes: 'Yes',
   },
   placeholders: {
+    enterAddress: 'Enter address',
+    enterNote: 'Enter an optional note',
     enterPassword: 'Enter password',
     nameAccount: 'Enter a name for this account (optional)',
   },
