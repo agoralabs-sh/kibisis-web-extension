@@ -39,7 +39,7 @@ export default class AccountService {
   }
 
   /**
-   * Public static functions
+   * public static functions
    */
 
   /**
@@ -152,7 +152,7 @@ export default class AccountService {
   }
 
   /**
-   * Private functions
+   * private functions
    */
 
   /**
@@ -165,7 +165,7 @@ export default class AccountService {
   }
 
   /**
-   * Public functions
+   * public functions
    */
 
   /**

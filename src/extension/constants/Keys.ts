@@ -8,3 +8,4 @@ export const SETTINGS_ADVANCED_KEY: string = 'settings_advanced';
 export const SETTINGS_APPEARANCE_KEY: string = 'settings_appearance';
 export const SETTINGS_GENERAL_KEY: string = 'settings_general';
 export const SESSION_ITEM_KEY_PREFIX: string = 'session_';
+export const APP_WINDOW_KEY_PREFIX: string = 'app_window_';

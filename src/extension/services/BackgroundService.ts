@@ -8,22 +8,25 @@ import {
 
 // enums
 import { EventNameEnum } from '@common/enums';
+import { AppTypeEnum } from '@extension/enums';
 
 // events
 import { BaseEvent, ExtensionBackgroundAppLoadEvent } from '@common/events';
 
 // services
+import AppWindowManagerService from './AppWindowManagerService';
 import PrivateKeyService from './PrivateKeyService';
 import StorageManager from './StorageManager';
 
 // types
 import {
-  IBaseOptions,
   IAllExtensionEvents,
+  IBaseOptions,
   IExtensionRequestEvents,
   IExtensionResponseEvents,
   ILogger,
 } from '@common/types';
+import { IAppWindow } from '@extension/types';
 
 interface IBackgroundEvent {
   message: BaseEvent;
@@ -31,22 +34,22 @@ interface IBackgroundEvent {
 }
 
 export default class BackgroundService {
+  private readonly appWindowManagerService: AppWindowManagerService;
   private backgroundEvents: IBackgroundEvent[];
   private readonly logger: ILogger | null;
-  private mainWindow: Windows.Window | null;
   private readonly privateKeyService: PrivateKeyService;
-  private registrationWindow: Windows.Window | null;
   private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
+    this.appWindowManagerService = new AppWindowManagerService({
+      logger,
+    });
     this.backgroundEvents = [];
     this.logger = logger || null;
-    this.mainWindow = null;
     this.privateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
     });
-    this.registrationWindow = null;
     this.storageManager = new StorageManager();
   }
 
@@ -88,13 +91,15 @@ export default class BackgroundService {
   ): Promise<void> {
     const { id, event } = message;
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
+    const mainAppWindows: IAppWindow[] =
+      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
     let backgroundWindow: Windows.Window;
     let searchParams: URLSearchParams;
 
     if (
       !isInitialized || // not initialized, ignore it
       !sender.tab?.id || // no origin tab, no way to send a response, ignore
-      this.mainWindow // if the main window is open, let it handle the request
+      mainAppWindows.length > 0 // if a main window is open, let it handle the request
     ) {
       return;
     }
@@ -144,40 +149,65 @@ export default class BackgroundService {
   }
 
   private async handleRegistrationCompleted(): Promise<void> {
+    const _functionName: string = 'handleRegistrationCompleted';
+    const mainAppWindows: IAppWindow[] =
+      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+    const registrationAppWindows: IAppWindow[] =
+      await this.appWindowManagerService.getByType(AppTypeEnum.RegistrationApp);
+    let mainWindow: Windows.Window;
+
     this.logger &&
       this.logger.debug(
-        `${BackgroundService.name}#handleRegistrationCompleted(): extension message "${EventNameEnum.ExtensionRegistrationCompleted}" received from the popup`
+        `${BackgroundService.name}#${_functionName}(): extension message "${EventNameEnum.ExtensionRegistrationCompleted}" received from the popup`
       );
 
-    // if there is no main window, create a new one
-    if (!this.mainWindow) {
-      this.mainWindow = await browser.windows.create({
+    // if there is no main app windows, create a new one
+    if (mainAppWindows.length <= 0) {
+      mainWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
         url: 'main-app.html',
         width: DEFAULT_POPUP_WIDTH,
-        ...(this.registrationWindow && {
-          left: this.registrationWindow.left,
-          top: this.registrationWindow.top,
+        ...(registrationAppWindows[0] && {
+          left: registrationAppWindows[0].left,
+          top: registrationAppWindows[0].top,
         }),
       });
+
+      // save to storage
+      await this.appWindowManagerService.saveByBrowserWindowAndType(
+        mainWindow,
+        AppTypeEnum.MainApp
+      );
     }
 
-    // if the register window exists remove it
-    if (this.registrationWindow && this.registrationWindow.id) {
-      await browser.windows.remove(this.registrationWindow.id);
+    // if registration app windows exist remove them
+    if (registrationAppWindows.length > 0) {
+      await Promise.all(
+        registrationAppWindows.map(
+          async (value) => await browser.windows.remove(value.windowId)
+        )
+      );
     }
   }
 
   private async handleReset(): Promise<void> {
+    const _functionName: string = 'handleReset';
+    const mainAppWindows: IAppWindow[] =
+      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+
     this.logger &&
       this.logger.debug(
-        `${BackgroundService.name}#handleReset(): extension message "${EventNameEnum.ExtensionReset}" received from the popup`
+        `${BackgroundService.name}#${_functionName}(): extension message "${EventNameEnum.ExtensionReset}" received from the popup`
       );
 
-    // remove the main window if it exists
-    if (this.mainWindow && this.mainWindow.id) {
-      await browser.windows.remove(this.mainWindow.id);
+    // remove the main app windows if they exist
+    if (mainAppWindows.length > 0) {
+      await Promise.all(
+        mainAppWindows.map(
+          async (value) => await browser.windows.remove(value.windowId)
+        )
+      );
     }
 
     // remove any background windows
@@ -242,49 +272,64 @@ export default class BackgroundService {
   }
 
   public async onExtensionClick(): Promise<void> {
+    const _functionName: string = 'onExtensionClick';
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
+    const mainAppWindows: IAppWindow[] =
+      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+    let mainWindow: Windows.Window;
+    let registrationWindow: Windows.Window;
 
     if (!isInitialized) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundService.name}#onExtensionClick(): no account detected, registering new account`
+          `${BackgroundService.name}#${_functionName}(): no account detected, registering new account`
         );
 
       // remove everything from storage
       await this.storageManager.removeAll();
 
-      this.registrationWindow = await browser.windows.create({
+      registrationWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
         url: 'registration-app.html',
         width: DEFAULT_POPUP_WIDTH,
       });
 
-      return;
+      // save the registration window to storage
+      return await this.appWindowManagerService.saveByBrowserWindowAndType(
+        registrationWindow,
+        AppTypeEnum.RegistrationApp
+      );
     }
 
-    // if there is no main window up, we can open the app
-    if (!this.mainWindow) {
+    // if there is no main app window up, we can open the app
+    if (mainAppWindows.length <= 0) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundService.name}#onExtensionClick(): previous account detected, opening main app`
+          `${BackgroundService.name}#${_functionName}(): previous account detected, opening main app`
         );
 
-      this.mainWindow = await browser.windows.create({
+      mainWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
         url: 'main-app.html',
         width: DEFAULT_POPUP_WIDTH,
       });
 
-      return;
+      // save the main app window to storage
+      return await this.appWindowManagerService.saveByBrowserWindowAndType(
+        mainWindow,
+        AppTypeEnum.MainApp
+      );
     }
   }
 
-  public onWindowRemove(windowId: number): void {
+  public async onWindowRemove(windowId: number): Promise<void> {
+    const _functionName: string = 'onWindowRemove';
     const backgroundEvent: IBackgroundEvent | null =
       this.backgroundEvents.find((value) => value.windowId === windowId) ||
       null;
+    let appWindow: IAppWindow | null;
 
     if (backgroundEvent) {
       this.logger &&
@@ -298,22 +343,16 @@ export default class BackgroundService {
       );
     }
 
-    if (this.mainWindow && this.mainWindow.id === windowId) {
+    appWindow = await this.appWindowManagerService.getById(windowId);
+
+    // remove the app window from storage
+    if (appWindow) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundService.name}#onWindowRemove(): removed main app window`
+          `${BackgroundService.name}#${_functionName}(): removed "${appWindow.type}" window`
         );
 
-      this.mainWindow = null;
-    }
-
-    if (this.registrationWindow && this.registrationWindow.id === windowId) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundService.name}#onWindowRemove(): removed registration app window`
-        );
-
-      this.registrationWindow = null;
+      await this.appWindowManagerService.removeById(windowId);
     }
   }
 }
