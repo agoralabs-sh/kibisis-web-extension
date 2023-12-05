@@ -1,3 +1,10 @@
+# [1.6.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0-beta.1...v1.6.0-beta.2) (2023-12-05)
+
+
+### Features
+
+* send native currency and asas to another account ([#37](https://github.com/agoralabs-sh/kibisis-web-extension/issues/37)) ([525727c](https://github.com/agoralabs-sh/kibisis-web-extension/commit/525727c840eea34ee6698e38a0d13f787d53f4dc))
+
 # [1.6.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.5.2...v1.6.0-beta.1) (2023-11-28)
 
 
