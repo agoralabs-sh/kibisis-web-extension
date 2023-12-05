@@ -149,7 +149,19 @@ const networks: INetwork[] = [
     ],
     canonicalName: 'Voi',
     chakraTheme: 'voi',
-    explorers: [],
+    explorers: [
+      {
+        accountPath: '/account',
+        applicationPath: '/application',
+        assetPath: '/asset',
+        baseUrl: 'https://voi.observer',
+        blockPath: '/block',
+        canonicalName: 'Voi Observer',
+        groupPath: '/group',
+        id: 'voi-observer',
+        transactionPath: '/transaction',
+      },
+    ],
     genesisId: 'voitest-v1',
     genesisHash: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=',
     indexers: [
