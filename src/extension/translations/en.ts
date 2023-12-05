@@ -134,6 +134,7 @@ const translation: IResourceLanguage = {
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
     transactionIdCopied: 'Transaction ID copied!',
+    transactionSuccessful: 'Transaction "{{transactionId}}" was successful.',
   },
   errors: {
     descriptions: {
@@ -177,6 +178,7 @@ const translation: IResourceLanguage = {
     noAssetsFound: 'No assets found',
     noTransactionsFound: 'No transactions found',
     noSessionsFound: 'No sessions found',
+    offline: 'Offline',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     sendAsset: 'Send {{asset}}',
@@ -209,6 +211,7 @@ const translation: IResourceLanguage = {
     [`transaction_${TransactionTypeEnum.KeyRegistrationOnline}`]:
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
+    transactionSuccessful: 'Transaction Successful!',
   },
   labels: {
     activity: 'Activity',

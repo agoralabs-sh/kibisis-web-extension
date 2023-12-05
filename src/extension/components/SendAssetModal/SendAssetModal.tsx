@@ -392,12 +392,12 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   useEffect(() => {
     if (transactionId) {
       toast({
-        description: `Transaction "${ellipseAddress(
-          transactionId
-        )}" successful!`,
+        description: t<string>('captions.transactionSuccessful', {
+          transactionId: transactionId,
+        }),
         isClosable: true,
         status: 'success',
-        title: 'Transaction Successful!',
+        title: t<string>('headings.transactionSuccessful'),
       });
 
       // refresh the account transactions
@@ -435,10 +435,10 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           break;
         case ErrorCodeEnum.OfflineError:
           toast({
-            description: `You appear to be offline.`,
+            description: t<string>('captions.offline'),
             isClosable: true,
             status: 'error',
-            title: 'Offline',
+            title: t<string>('headings.offline'),
           });
           break;
         default:
@@ -447,7 +447,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             duration: null,
             isClosable: true,
             status: 'error',
-            title: 'Something when wrong.',
+            title: t<string>('errors.titles.code'),
           });
           break;
       }
