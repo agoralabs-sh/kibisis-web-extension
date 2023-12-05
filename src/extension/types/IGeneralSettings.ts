@@ -1,5 +1,5 @@
 interface IGeneralSettings {
-  preferredBlockExplorerId: string | null;
+  preferredBlockExplorerIds: Record<string, string | null>;
   selectedNetworkGenesisHash: string | null;
 }
 

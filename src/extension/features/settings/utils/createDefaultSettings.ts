@@ -22,7 +22,7 @@ export default function createDefaultSettings(networks: INetwork[]): ISettings {
       theme: 'light',
     },
     general: {
-      preferredBlockExplorerId: defaultNetwork.explorers[0]?.id || null,
+      preferredBlockExplorerIds: {},
       selectedNetworkGenesisHash: defaultNetwork.genesisHash,
     },
   };
