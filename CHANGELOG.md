@@ -1,3 +1,10 @@
+# [1.6.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0-beta.3...v1.6.0-beta.4) (2023-12-06)
+
+
+### Bug Fixes
+
+* registration window not closing on chrome ([#39](https://github.com/agoralabs-sh/kibisis-web-extension/issues/39)) ([0834389](https://github.com/agoralabs-sh/kibisis-web-extension/commit/08343899caf3782126b53eaaf2dd56066141cea6))
+
 # [1.6.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0-beta.2...v1.6.0-beta.3) (2023-12-05)
 
 
