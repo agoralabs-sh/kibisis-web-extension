@@ -1,3 +1,17 @@
+# [1.6.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.5.2...v1.6.0) (2023-12-06)
+
+
+### Bug Fixes
+
+* registration window not closing on chrome ([#39](https://github.com/agoralabs-sh/kibisis-web-extension/issues/39)) ([0834389](https://github.com/agoralabs-sh/kibisis-web-extension/commit/08343899caf3782126b53eaaf2dd56066141cea6))
+
+
+### Features
+
+* add voi testnet block explorer ([#38](https://github.com/agoralabs-sh/kibisis-web-extension/issues/38)) ([b7498d1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b7498d1c6582a35919b664cb12c4314d46fac69b))
+* send native currency and asas to another account ([#37](https://github.com/agoralabs-sh/kibisis-web-extension/issues/37)) ([525727c](https://github.com/agoralabs-sh/kibisis-web-extension/commit/525727c840eea34ee6698e38a0d13f787d53f4dc))
+* use testnet by default and add settings option to allow mainnet ([#36](https://github.com/agoralabs-sh/kibisis-web-extension/issues/36)) ([593785b](https://github.com/agoralabs-sh/kibisis-web-extension/commit/593785be20c48413290ad2b3d6c72205ba251a3f))
+
 # [1.6.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0-beta.3...v1.6.0-beta.4) (2023-12-06)
 
 
