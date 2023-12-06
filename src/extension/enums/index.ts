@@ -1,4 +1,5 @@
 export { default as AccountsThunkEnum } from './AccountsThunkEnum';
+export { default as AppTypeEnum } from './AppTypeEnum';
 export { default as AssetsThunkEnum } from './AssetsThunkEnum';
 export { default as ErrorCodeEnum } from './ErrorCodeEnum';
 export { default as MessagesThunkEnum } from './MessagesThunkEnum';

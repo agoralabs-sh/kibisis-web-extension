@@ -26,6 +26,7 @@ export type { default as IAppProps } from './IAppProps';
 export type { default as IAppThunkDispatch } from './IAppThunkDispatch';
 export type { default as IApplicationTransaction } from './IApplicationTransaction';
 export type { default as IApplicationTransactionTypes } from './IApplicationTransactionTypes';
+export type { default as IAppWindow } from './IAppWindow';
 export type { default as IAsset } from './IAsset';
 export type { default as IAssetConfigTransaction } from './IAssetConfigTransaction';
 export type { default as IAssetCreateTransaction } from './IAssetCreateTransaction';
