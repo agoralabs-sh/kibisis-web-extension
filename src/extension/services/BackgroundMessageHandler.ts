@@ -261,7 +261,7 @@ export default class BackgroundMessageHandler {
 
   private async handleFactoryResetMessage(): Promise<void> {
     const backgroundAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+      await this.appWindowManagerService.getByType(AppTypeEnum.BackgroundApp);
     const mainAppWindows: IAppWindow[] =
       await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
 
@@ -636,7 +636,7 @@ export default class BackgroundMessageHandler {
 
     this.logger &&
       this.logger.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.type}" received from the content scripts`
+        `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.type}" received`
       );
 
     switch (message.type) {
