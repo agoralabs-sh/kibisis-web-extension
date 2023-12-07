@@ -26,23 +26,18 @@ export default class ExternalMessageBroker {
   public onResponseMessage(message: IResponseMessages): void {
     const _functionName: string = 'onResponseMessage';
 
-    this.logger &&
-      this.logger.debug(
-        `${ExternalMessageBroker.name}#${_functionName}(): extension message "${message.type}" received`
-      );
-
     switch (message.type) {
       case MessageTypeEnum.EnableResponse:
       case MessageTypeEnum.SignBytesResponse:
       case MessageTypeEnum.SignTxnsResponse:
+        this.logger &&
+          this.logger.debug(
+            `${ExternalMessageBroker.name}#${_functionName}(): response message "${message.type}" received`
+          );
+
         // send the response to the web page
         return window.postMessage(message);
       default:
-        this.logger &&
-          this.logger.debug(
-            `${ExternalMessageBroker.name}#${_functionName}(): unknown message sent from the extension, ignoring`
-          );
-
         break;
     }
   }
@@ -56,23 +51,18 @@ export default class ExternalMessageBroker {
       return;
     }
 
-    this.logger &&
-      this.logger.debug(
-        `${ExternalMessageBroker.name}#${_functionName}(): webpage message "${message.data.type}" received`
-      );
-
     switch (message.data.type) {
       case MessageTypeEnum.EnableRequest:
       case MessageTypeEnum.SignBytesRequest:
       case MessageTypeEnum.SignTxnsRequest:
+        this.logger &&
+          this.logger.debug(
+            `${ExternalMessageBroker.name}#${_functionName}(): request message "${message.data.type}" received`
+          );
+
         // send the message to the main app (popup) or the background service
         return await browser.runtime.sendMessage(message.data);
       default:
-        this.logger &&
-          this.logger.debug(
-            `${ExternalMessageBroker.name}#${_functionName}(): unknown message sent from the webpage, ignoring`
-          );
-
         break;
     }
   }

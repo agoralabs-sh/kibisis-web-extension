@@ -30,13 +30,7 @@ export default class EventQueueService {
     const items: Record<string, unknown> =
       await this.storageManager.getAllItems();
 
-    return Object.keys(items).reduce<IEvent[]>(
-      (acc, key) =>
-        key.startsWith(EVENT_QUEUE_ITEM_KEY)
-          ? [...acc, items[key] as IEvent]
-          : acc,
-      []
-    );
+    return (items[EVENT_QUEUE_ITEM_KEY] as IEvent[]) || [];
   }
 
   /**
@@ -45,9 +39,9 @@ export default class EventQueueService {
    * @returns {Promise<IEvent | null>} the event or null.
    */
   public async getById(id: string): Promise<IEvent | null> {
-    const messages: IEvent[] = await this.getAll();
+    const events: IEvent[] = await this.getAll();
 
-    return messages.find((value) => value.id === id) || null;
+    return events.find((value) => value.id === id) || null;
   }
 
   /**

@@ -251,7 +251,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
         ...this.createBaseRequestPayload(),
         genesisHash: options?.genesisHash || null,
       }),
-      MessageTypeEnum.EnableRequest
+      MessageTypeEnum.EnableResponse
     )) as IEnableResult;
   }
 
@@ -268,7 +268,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
         encodedData: encodeBase64(options.data),
         signer: options.signer || null,
       }),
-      MessageTypeEnum.SignBytesRequest
+      MessageTypeEnum.SignBytesResponse
     )) as IBaseSignBytesResponsePayload;
 
     return {
@@ -282,7 +282,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
         ...this.createBaseRequestPayload(),
         ...options,
       }),
-      MessageTypeEnum.SignTxnsRequest
+      MessageTypeEnum.SignTxnsResponse
     )) as ISignTxnsResult;
   }
 }

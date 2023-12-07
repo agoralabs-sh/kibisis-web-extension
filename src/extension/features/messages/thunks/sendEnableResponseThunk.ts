@@ -53,7 +53,7 @@ const sendEnableResponseThunk: AsyncThunk<
 
     // if there is a session, send it back to the webpage (via the content script)
     if (session) {
-      return await browser.tabs.sendMessage(
+      await browser.tabs.sendMessage(
         tabId,
         new EnableResponseMessage(
           {

@@ -31,7 +31,6 @@ const sendTxnsBytesResponseThunk: AsyncThunk<
     { dispatch, getState }
   ) => {
     const logger: ILogger = getState().system.logger;
-    let message: SignTxnsResponseMessage;
 
     logger.debug(
       `${MessagesThunkEnum.SendSignTxnsResponse}: sending "${MessageTypeEnum.SignTxnsResponse}" message to content script`

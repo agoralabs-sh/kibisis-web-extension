@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 
 // services
-import { ExternalMessageBroker } from '@external/services';
+import { ExternalMessageBroker } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';

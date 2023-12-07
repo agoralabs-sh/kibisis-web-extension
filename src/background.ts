@@ -39,4 +39,7 @@ import { createLogger } from '@common/utils';
   browser.windows.onRemoved.addListener(
     backgroundEventListener.onWindowRemove.bind(backgroundEventListener)
   );
+  browser.runtime.onSuspend.addListener(() => {
+    console.log('suspended!!');
+  });
 })();
