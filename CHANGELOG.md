@@ -1,3 +1,10 @@
+## [1.6.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0...v1.6.1-beta.1) (2023-12-07)
+
+
+### Bug Fixes
+
+* unable to connect to dapps on chrome ([#43](https://github.com/agoralabs-sh/kibisis-web-extension/issues/43)) ([5c32151](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5c321513065d1fdb8ce7aea15a67e0aa49a20f9b))
+
 # [1.6.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.5.2...v1.6.0) (2023-12-06)
 
 
