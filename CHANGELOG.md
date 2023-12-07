@@ -1,3 +1,10 @@
+## [1.6.1-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.1-beta.1...v1.6.1-beta.2) (2023-12-07)
+
+
+### Bug Fixes
+
+* algorand icon showing on voi when selecting an asset ([#44](https://github.com/agoralabs-sh/kibisis-web-extension/issues/44)) ([42db6b3](https://github.com/agoralabs-sh/kibisis-web-extension/commit/42db6b3ce53e9619296f50a7196e95cd948fda1a))
+
 ## [1.6.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0...v1.6.1-beta.1) (2023-12-07)
 
 
