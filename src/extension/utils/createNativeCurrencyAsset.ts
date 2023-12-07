@@ -9,12 +9,12 @@ import { IAsset, INetwork } from '@extension/types';
 export default function createNativeCurrencyAsset(network: INetwork): IAsset {
   return {
     clawbackAddress: null,
-    creator: '0000000000000000000000000000000000000000000000000000000000', // null address
+    creator: network.feeSunkAddress, // null address
     decimals: network.nativeCurrency.decimals,
     defaultFrozen: false,
     deleted: false,
     freezeAddress: null,
-    iconUrl: 'https://asa-list.tinyman.org/assets/0/icon.png',
+    iconUrl: network.nativeCurrency.listingUri,
     id: '0',
     managerAddress: null,
     metadataHash: null,
