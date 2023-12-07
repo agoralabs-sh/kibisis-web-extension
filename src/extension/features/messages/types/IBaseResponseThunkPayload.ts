@@ -3,7 +3,7 @@ import { BaseSerializableError } from '@common/errors';
 
 interface IBaseResponseThunkPayload {
   error: BaseSerializableError | null;
-  requestEventId: string;
+  eventId: string;
   tabId: number;
 }
 

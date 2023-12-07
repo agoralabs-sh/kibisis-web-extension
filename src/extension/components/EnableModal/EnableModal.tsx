@@ -32,10 +32,8 @@ import { DEFAULT_GAP } from '@extension/constants';
 import { SerializableOperationCanceledError } from '@common/errors';
 
 // features
-import {
-  sendEnableResponseThunk,
-  setEnableRequest,
-} from '@extension/features/messages';
+import { setEnableRequest } from '@extension/features/events';
+import { sendEnableResponseThunk } from '@extension/features/messages';
 import { setSessionThunk } from '@extension/features/sessions';
 
 // hooks
@@ -93,7 +91,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
           error: new SerializableOperationCanceledError(
             `user dismissed connect modal`
           ),
-          requestEventId: enableRequest.requestEventId,
+          eventId: enableRequest.requestEventId,
           session: null,
           tabId: enableRequest.tabId,
         })
@@ -116,7 +114,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     dispatch(
       sendEnableResponseThunk({
         error: null,
-        requestEventId: enableRequest.requestEventId,
+        eventId: enableRequest.requestEventId,
         session,
         tabId: enableRequest.tabId,
       })

@@ -25,7 +25,7 @@ import {
   setEnableRequest,
   setSignBytesRequest,
   setSignTxnsRequest,
-} from '@extension/features/messages';
+} from '@extension/features/events';
 import {
   fetchTransactionParamsFromStorageThunk,
   startPollingForTransactionsParamsThunk,

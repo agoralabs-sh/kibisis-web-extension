@@ -11,7 +11,7 @@ import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
 // features
 import { setConfirm } from '@extension/features/system';
-import { sendResetThunk } from '@extension/features/messages';
+import { sendFactoryResetThunk } from '@extension/features/messages';
 import { setSettings } from '@extension/features/settings';
 
 // selectors
@@ -38,7 +38,7 @@ const GeneralSettingsPage: FC = () => {
     dispatch(
       setConfirm({
         description: t<string>('captions.clearAllData'),
-        onConfirm: () => dispatch(sendResetThunk()), // dispatch an event to the background
+        onConfirm: () => dispatch(sendFactoryResetThunk()), // dispatch an event to the background
         title: t<string>('headings.clearAllData'),
         warningText: t<string>('captions.clearAllDataWarning'),
       })

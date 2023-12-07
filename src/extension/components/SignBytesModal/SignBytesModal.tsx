@@ -40,7 +40,7 @@ import {
 
 // features
 import { setError } from '@extension/features/system';
-import { sendSignBytesResponse } from '@extension/features/messages';
+import { sendSignBytesResponseThunk } from '@extension/features/messages';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -98,12 +98,12 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleCancelClick = () => {
     if (signBytesRequest) {
       dispatch(
-        sendSignBytesResponse({
+        sendSignBytesResponseThunk({
           encodedSignature: null,
           error: new SerializableOperationCanceledError(
             `user dismissed sign bytes modal`
           ),
-          requestEventId: signBytesRequest.requestEventId,
+          eventId: signBytesRequest.requestEventId,
           tabId: signBytesRequest.tabId,
         })
       );
@@ -243,10 +243,10 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   useEffect(() => {
     if (encodedSignedBytes && signBytesRequest) {
       dispatch(
-        sendSignBytesResponse({
+        sendSignBytesResponseThunk({
           encodedSignature: encodedSignedBytes,
           error: null,
-          requestEventId: signBytesRequest.requestEventId,
+          eventId: signBytesRequest.requestEventId,
           tabId: signBytesRequest.tabId,
         })
       );
@@ -267,10 +267,10 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
 
           if (signBytesRequest) {
             dispatch(
-              sendSignBytesResponse({
+              sendSignBytesResponseThunk({
                 encodedSignature: null,
                 error: new SerializableUnknownError(error.message),
-                requestEventId: signBytesRequest.requestEventId,
+                eventId: signBytesRequest.requestEventId,
                 tabId: signBytesRequest.tabId,
               })
             );

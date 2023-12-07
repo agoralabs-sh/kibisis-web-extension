@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 
 // services
-import { ExternalEventService } from '@extension/services';
+import { ExternalMessageBroker } from '@external/services';
 
 // types
 import { ILogger } from '@common/types';
@@ -14,21 +14,22 @@ import { injectScript } from '@extension/utils';
   const logger: ILogger = createLogger(
     __ENV__ === 'development' ? 'debug' : 'error'
   );
-  const externalEventService: ExternalEventService = new ExternalEventService({
-    logger,
-  });
+  const externalMessageBroker: ExternalMessageBroker =
+    new ExternalMessageBroker({
+      logger,
+    });
 
-  // inject the web resources in to the web page to initialize the window.algorand object
+  // inject the web resources into the web page to initialize the window.algorand object
   injectScript(browser.runtime.getURL('wallet-initializer.js'));
 
-  // listen to incoming external messages (from the web page)
+  // listen to incoming webpage messages (messages coming from the injected wallet-initializer.js script in the webpage)
   window.addEventListener(
     'message',
-    externalEventService.onExternalMessage.bind(externalEventService)
+    externalMessageBroker.onRequestMessage.bind(externalMessageBroker)
   );
 
   // listen to incoming extension messages (from the background script / popup)
   browser.runtime.onMessage.addListener(
-    externalEventService.onExtensionMessage.bind(externalEventService)
+    externalMessageBroker.onResponseMessage.bind(externalMessageBroker)
   );
 })();

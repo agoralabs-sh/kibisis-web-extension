@@ -42,7 +42,7 @@ import {
 
 // features
 import { setError } from '@extension/features/system';
-import { sendSignTxnsResponse } from '@extension/features/messages';
+import { sendSignTxnsResponseThunk } from '@extension/features/messages';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -76,11 +76,11 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleCancelClick = () => {
     if (signTxnsRequest) {
       dispatch(
-        sendSignTxnsResponse({
+        sendSignTxnsResponseThunk({
           error: new SerializableOperationCanceledError(
             `user dismissed sign transaction modal`
           ),
-          requestEventId: signTxnsRequest.requestEventId,
+          eventId: signTxnsRequest.requestEventId,
           signedTransactions: null,
           tabId: signTxnsRequest.tabId,
         })
@@ -224,9 +224,9 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       encodedSignedTransactions.length === signTxnsRequest.transactions.length
     ) {
       dispatch(
-        sendSignTxnsResponse({
+        sendSignTxnsResponseThunk({
           error: null,
-          requestEventId: signTxnsRequest.requestEventId,
+          eventId: signTxnsRequest.requestEventId,
           signedTransactions: encodedSignedTransactions,
           tabId: signTxnsRequest.tabId,
         })
@@ -248,9 +248,9 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
 
           if (signTxnsRequest) {
             dispatch(
-              sendSignTxnsResponse({
+              sendSignTxnsResponseThunk({
                 error: new SerializableUnknownError(error.message),
-                requestEventId: signTxnsRequest.requestEventId,
+                eventId: signTxnsRequest.requestEventId,
                 signedTransactions: null,
                 tabId: signTxnsRequest.tabId,
               })

@@ -1,1 +1,1 @@
-export { default as EventNameEnum } from './EventNameEnum';
+export { default as MessageTypeEnum } from './MessageTypeEnum';

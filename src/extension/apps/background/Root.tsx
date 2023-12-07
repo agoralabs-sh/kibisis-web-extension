@@ -7,23 +7,17 @@ import LoadingPage from '@extension/components/LoadingPage';
 import SignTxnsModal from '@extension/components/SignTxnsModal';
 import SignBytesModal from '@extension/components/SignBytesModal';
 
-// enums
-import { EventNameEnum } from '@common/enums';
-
 // features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
 import {
-  closeCurrentWindowThunk,
-  sendBackgroundAppLoadThunk,
+  handleNewEventByIdThunk,
   setEnableRequest,
   setSignBytesRequest,
   setSignTxnsRequest,
-} from '@extension/features/messages';
+} from '@extension/features/events';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
-
-// hooks
-import useOnBackgroundAppMessage from '@extension/hooks/useOnBackgroundAppMessage';
+import { closeCurrentWindowThunk } from '@extension/features/system';
 
 // selectors
 import { useSelectSelectedNetwork } from '@extension/selectors';
@@ -48,14 +42,6 @@ const Root: FC = () => {
     'eventId',
     url.searchParams
   );
-  const filteredEvent: string | null = decodeURLSearchParam(
-    'eventType',
-    url.searchParams
-  );
-  const originTabId: string | null = decodeURLSearchParam(
-    'originTabId',
-    url.searchParams
-  );
   const handleModalClose = (type: ModalTypeEnum) => () => {
     switch (type) {
       case ModalTypeEnum.Enable:
@@ -73,11 +59,14 @@ const Root: FC = () => {
       default:
         break;
     }
+
+    // when the request has finished, close the window
+    dispatch(closeCurrentWindowThunk());
   };
 
   useEffect(() => {
     // if we don't have the necessary information, close this window
-    if (!eventId || !originTabId) {
+    if (!eventId) {
       dispatch(closeCurrentWindowThunk());
 
       return;
@@ -85,7 +74,6 @@ const Root: FC = () => {
 
     dispatch(fetchSettings());
     dispatch(fetchSessionsThunk());
-    dispatch(sendBackgroundAppLoadThunk(eventId));
   }, []);
   // fetch accounts when the selected network has been found
   useEffect(() => {
@@ -93,10 +81,11 @@ const Root: FC = () => {
       dispatch(fetchAccountsFromStorageThunk());
     }
   }, [selectedNetwork]);
-  useOnBackgroundAppMessage(
-    filteredEvent ? [filteredEvent as EventNameEnum] : [],
-    originTabId ? parseInt(originTabId) : null
-  ); // handle incoming messages by the filtered event
+  useEffect(() => {
+    if (eventId) {
+      dispatch(handleNewEventByIdThunk(eventId));
+    }
+  }, [eventId]);
 
   return (
     <>
