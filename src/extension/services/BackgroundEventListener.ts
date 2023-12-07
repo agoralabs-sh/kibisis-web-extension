@@ -43,10 +43,12 @@ export default class BackgroundEventListener {
   public async onExtensionClick(): Promise<void> {
     const _functionName: string = 'onExtensionClick';
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
-    const mainAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+    let mainAppWindows: IAppWindow[];
     let mainWindow: Windows.Window;
     let registrationWindow: Windows.Window;
+
+    // remove any closed windows
+    await this.appWindowManagerService.hydrateAppWindows();
 
     if (!isInitialized) {
       this.logger &&
@@ -70,6 +72,10 @@ export default class BackgroundEventListener {
         AppTypeEnum.RegistrationApp
       );
     }
+
+    mainAppWindows = await this.appWindowManagerService.getByType(
+      AppTypeEnum.MainApp
+    );
 
     // if there is no main app window up, we can open the app
     if (mainAppWindows.length <= 0) {

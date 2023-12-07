@@ -566,6 +566,9 @@ export default class BackgroundMessageHandler {
       return;
     }
 
+    // remove any closed windows
+    await this.appWindowManagerService.hydrateAppWindows();
+
     this.logger &&
       this.logger.debug(
         `${BackgroundMessageHandler.name}#${_functionName}(): saving event "${event.type}" to event queue`
