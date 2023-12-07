@@ -19,7 +19,7 @@ export default function createCommonConfig(): Configuration {
         // common
         ['@common/enums']: resolve(commonPath, 'enums'),
         ['@common/errors']: resolve(commonPath, 'errors'),
-        ['@common/events']: resolve(commonPath, 'events'),
+        ['@common/messages']: resolve(commonPath, 'messages'),
         ['@common/types']: resolve(commonPath, 'types'),
         ['@common/utils']: resolve(commonPath, 'utils'),
         // extension
@@ -37,6 +37,11 @@ export default function createCommonConfig(): Configuration {
           extensionPath,
           'features',
           'assets'
+        ),
+        ['@extension/features/events']: resolve(
+          extensionPath,
+          'features',
+          'events'
         ),
         ['@extension/features/messages']: resolve(
           extensionPath,

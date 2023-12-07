@@ -3,18 +3,21 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
 // enums
-import { EventNameEnum } from '@common/enums';
+import { MessageTypeEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
-// events
-import { ExtensionEnableResponseEvent } from '@common/events';
+// features
+import { removeEventByIdThunk } from '@extension/features/events';
+
+// messages
+import { EnableResponseMessage } from '@common/messages';
 
 // services
 import { AccountService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
-import { IAccount, IMainRootState, INetwork, ISession } from '@extension/types';
+import { IAccount, IMainRootState, ISession } from '@extension/types';
 import { IBaseResponseThunkPayload } from '../types';
 
 interface IPayload extends IBaseResponseThunkPayload {
@@ -27,65 +30,62 @@ const sendEnableResponseThunk: AsyncThunk<
   Record<string, never>
 > = createAsyncThunk<void, IPayload, { state: IMainRootState }>(
   MessagesThunkEnum.SendEnableResponse,
-  async ({ error, requestEventId, session, tabId }, { getState }) => {
+  async ({ error, eventId, session, tabId }, { dispatch, getState }) => {
     const accounts: IAccount[] = getState().accounts.items;
     const logger: ILogger = getState().system.logger;
-    let message: ExtensionEnableResponseEvent;
 
     logger.debug(
-      `${sendEnableResponseThunk.name}(): sending "${EventNameEnum.ExtensionEnableResponse}" message to content script`
+      `${MessagesThunkEnum.SendEnableResponse}: sending "${MessageTypeEnum.EnableResponse}" message to the content script`
     );
 
-    // send the error response to the background script & the content script
+    // send the error the webpage (via the content script)
     if (error) {
-      message = new ExtensionEnableResponseEvent(requestEventId, null, error);
-
-      await Promise.all([
-        browser.runtime.sendMessage(message),
-        browser.tabs.sendMessage(tabId, message),
-      ]);
-
-      return;
-    }
-
-    if (session) {
-      message = new ExtensionEnableResponseEvent(
-        requestEventId,
-        {
-          accounts: session.authorizedAddresses.map<IWalletAccount>(
-            (address) => {
-              const account: IAccount | null =
-                accounts.find(
-                  (value) =>
-                    AccountService.convertPublicKeyToAlgorandAddress(
-                      value.publicKey
-                    ) === address
-                ) || null;
-
-              return {
-                address,
-                ...(account?.name && {
-                  name: account.name,
-                }),
-              };
-            }
-          ),
-          genesisHash: session.genesisHash,
-          genesisId: session.genesisId,
-          sessionId: session.id,
-        },
-        null
+      await browser.tabs.sendMessage(
+        tabId,
+        new EnableResponseMessage(null, error)
       );
 
-      await Promise.all([
-        // send the response to the background
-        browser.runtime.sendMessage(message),
-        // send the response to the content script
-        browser.tabs.sendMessage(tabId, message),
-      ]);
+      // remove the event
+      dispatch(removeEventByIdThunk(eventId));
 
       return;
     }
+
+    // if there is a session, send it back to the webpage (via the content script)
+    if (session) {
+      await browser.tabs.sendMessage(
+        tabId,
+        new EnableResponseMessage(
+          {
+            accounts: session.authorizedAddresses.map<IWalletAccount>(
+              (address) => {
+                const account: IAccount | null =
+                  accounts.find(
+                    (value) =>
+                      AccountService.convertPublicKeyToAlgorandAddress(
+                        value.publicKey
+                      ) === address
+                  ) || null;
+
+                return {
+                  address,
+                  ...(account?.name && {
+                    name: account.name,
+                  }),
+                };
+              }
+            ),
+            genesisHash: session.genesisHash,
+            genesisId: session.genesisId,
+            sessionId: session.id,
+          },
+          null
+        )
+      );
+    }
+
+    // remove the event
+    dispatch(removeEventByIdThunk(eventId));
   }
 );
 

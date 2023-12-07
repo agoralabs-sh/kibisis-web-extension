@@ -24,22 +24,23 @@ import {
 } from '@external/constants';
 
 // enums
-import { EventNameEnum } from '@common/enums';
+import { MessageTypeEnum } from '@common/enums';
 
-// events
+// messages
 import {
-  BaseEvent,
-  ExternalEnableRequestEvent,
-  ExternalSignBytesRequestEvent,
-  ExternalSignTxnsRequestEvent,
-} from '@common/events';
+  BaseMessage,
+  EnableRequestMessage,
+  SignBytesRequestMessage,
+  SignTxnsRequestMessage,
+} from '@common/messages';
 
 // types
 import type {
   IBaseOptions,
   IBaseSignBytesResponsePayload,
-  IExternalResponseEvents,
+  IBaseRequestPayload,
   ILogger,
+  IResponseMessages,
 } from '@common/types';
 
 // utils
@@ -48,7 +49,6 @@ import { mapSerializableErrors } from '@common/utils';
 type IResults = IBaseSignBytesResponsePayload | IEnableResult | ISignTxnsResult;
 
 export default class KibisisWalletManager extends BaseWalletManager {
-  private readonly extensionId: string;
   private readonly logger: ILogger | null;
 
   constructor({ logger }: IBaseOptions) {
@@ -60,11 +60,103 @@ export default class KibisisWalletManager extends BaseWalletManager {
   }
 
   /**
-   * Private functions
+   * private functions
    */
 
+  /**
+   * Convenience function that constructs the base request properties.
+   * * appName - uses the content of the "application-name" meta tag, if this doesn't exist, it falls back to the document title.
+   * * description - uses the content of the "description" meta tag, if it exists.
+   * * host - uses host of the web page.
+   * * iconUrl - uses the favicon of the web page.
+   * @returns {IBaseRequestPayload} the base extension payload properties.
+   * @private
+   */
+  private createBaseRequestPayload(): IBaseRequestPayload {
+    return {
+      appName:
+        document
+          .querySelector('meta[name="application-name"]')
+          ?.getAttribute('content') || document.title,
+      description:
+        document
+          .querySelector('meta[name="description"]')
+          ?.getAttribute('content') || null,
+      host: `${window.location.protocol}//${window.location.host}`,
+      iconUrl: this.extractFaviconUrl(),
+    };
+  }
+
+  /**
+   * Utility function to extract the favicon URL.
+   * @returns {string} the favicon URL or null if no favicon is found.
+   * @see {@link https://stackoverflow.com/a/16844961}
+   * @private
+   */
+  private extractFaviconUrl(): string | null {
+    const links: HTMLCollectionOf<HTMLElementTagNameMap['link']> =
+      document.getElementsByTagName('link');
+    const iconUrls: string[] = [];
+
+    for (const link of Array.from(links)) {
+      const rel: string | null = link.getAttribute('rel');
+      let href: string | null;
+      let origin: string;
+
+      // if the link is not an icon; a favicon, ignore
+      if (!rel || !rel.toLowerCase().includes('icon')) {
+        continue;
+      }
+
+      href = link.getAttribute('href');
+
+      // if there is no href attribute there is no url
+      if (!href) {
+        continue;
+      }
+
+      // if it is an absolute url, just use it
+      if (
+        href.toLowerCase().indexOf('https:') === 0 ||
+        href.toLowerCase().indexOf('http:') === 0
+      ) {
+        iconUrls.push(href);
+
+        continue;
+      }
+
+      // if is an absolute url without a protocol,add the protocol
+      if (href.toLowerCase().indexOf('//') === 0) {
+        iconUrls.push(`${window.location.protocol}${href}`);
+
+        continue;
+      }
+
+      // whats left is relative urls
+      origin = `${window.location.protocol}//${window.location.host}`;
+
+      // if there is no forward slash prepended, the favicon is relative to the page
+      if (href.indexOf('/') === -1) {
+        href = window.location.pathname
+          .split('/')
+          .map((value, index, array) =>
+            !href || index < array.length - 1 ? value : href
+          ) // replace the current path with the href
+          .join('/');
+      }
+
+      iconUrls.push(`${origin}${href}`);
+    }
+
+    return (
+      iconUrls.find((value) => value.match(/\.(jpg|jpeg|png|gif)$/i)) || // favour image files over ico
+      iconUrls[0] ||
+      null
+    );
+  }
+
   private async handleEvent(
-    message: BaseEvent,
+    message: BaseMessage,
     responseEvent?: string,
     timeout?: number
   ): Promise<IResults> {
@@ -72,26 +164,26 @@ export default class KibisisWalletManager extends BaseWalletManager {
 
     return new Promise<IResults>((resolve, reject) => {
       const controller: AbortController = new AbortController();
-      let eventListener: (event: MessageEvent<IExternalResponseEvents>) => void;
+      let eventListener: (event: MessageEvent<IResponseMessages>) => void;
       let timer: number;
 
       this.logger &&
         this.logger.debug(
-          `${KibisisWalletManager.name}#${_functionName}(): handling event "${message.event}"`
+          `${KibisisWalletManager.name}#${_functionName}(): handling event "${message.type}"`
         );
 
-      eventListener = (event: MessageEvent<IExternalResponseEvents>) => {
+      eventListener = (event: MessageEvent<IResponseMessages>) => {
         if (
           event.source !== window ||
           !event.data ||
-          event.data.event !== responseEvent
+          event.data.type !== responseEvent
         ) {
           return;
         }
 
         this.logger &&
           this.logger.debug(
-            `${KibisisWalletManager.name}#${_functionName}(): handling response event "${event.data.event}"`
+            `${KibisisWalletManager.name}#${_functionName}(): handling response event "${event.data.type}"`
           );
 
         // clear the timer, we can handle it from here
@@ -132,14 +224,14 @@ export default class KibisisWalletManager extends BaseWalletManager {
       timer = window.setTimeout(() => {
         this.logger &&
           this.logger.debug(
-            `${KibisisWalletManager.name}#${_functionName}(): event "${message.event}" timed out`
+            `${KibisisWalletManager.name}#${_functionName}(): event "${message.type}" timed out`
           );
 
         window.removeEventListener('message', eventListener);
 
         reject(
           new OperationCanceledError(
-            `no response from wallet for "${message.event}"`
+            `no response from wallet for "${message.type}"`
           )
         );
       }, timeout || EXTERNAL_MESSAGE_REQUEST_TIMEOUT);
@@ -155,10 +247,11 @@ export default class KibisisWalletManager extends BaseWalletManager {
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
     return (await this.handleEvent(
-      new ExternalEnableRequestEvent({
+      new EnableRequestMessage({
+        ...this.createBaseRequestPayload(),
         genesisHash: options?.genesisHash || null,
       }),
-      EventNameEnum.ExternalEnableResponse
+      MessageTypeEnum.EnableResponse
     )) as IEnableResult;
   }
 
@@ -170,11 +263,12 @@ export default class KibisisWalletManager extends BaseWalletManager {
     options: ISignBytesOptions
   ): Promise<ISignBytesResult> {
     const result: IBaseSignBytesResponsePayload = (await this.handleEvent(
-      new ExternalSignBytesRequestEvent({
+      new SignBytesRequestMessage({
+        ...this.createBaseRequestPayload(),
         encodedData: encodeBase64(options.data),
         signer: options.signer || null,
       }),
-      EventNameEnum.ExternalSignBytesResponse
+      MessageTypeEnum.SignBytesResponse
     )) as IBaseSignBytesResponsePayload;
 
     return {
@@ -184,8 +278,11 @@ export default class KibisisWalletManager extends BaseWalletManager {
 
   public async signTxns(options: ISignTxnsOptions): Promise<ISignTxnsResult> {
     return (await this.handleEvent(
-      new ExternalSignTxnsRequestEvent(options),
-      EventNameEnum.ExternalSignTxnsResponse
+      new SignTxnsRequestMessage({
+        ...this.createBaseRequestPayload(),
+        ...options,
+      }),
+      MessageTypeEnum.SignTxnsResponse
     )) as ISignTxnsResult;
   }
 }

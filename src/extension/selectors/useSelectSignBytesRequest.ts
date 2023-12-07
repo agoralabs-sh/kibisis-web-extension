@@ -9,6 +9,6 @@ import { IMainRootState, ISignBytesRequest } from '@extension/types';
  */
 export default function useSelectSignBytesRequest(): ISignBytesRequest | null {
   return useSelector<IMainRootState, ISignBytesRequest | null>(
-    (state) => state.messages.signBytesRequest
+    (state) => state.events.signBytesRequest
   );
 }

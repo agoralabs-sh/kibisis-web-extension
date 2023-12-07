@@ -1,7 +1,7 @@
 // features
 import { IAccountsState } from '@extension/features/accounts';
 import { IAssetsState } from '@extension/features/assets';
-import { IMessagesState } from '@extension/features/messages';
+import { IEventsState } from '@extension/features/events';
 import { INetworksState } from '@extension/features/networks';
 import { ISendAssetsState } from '@extension/features/send-assets';
 import { ISessionsState } from '@extension/features/sessions';
@@ -13,7 +13,7 @@ import IBaseRootState from './IBaseRootState';
 interface IMainRootState extends IBaseRootState {
   accounts: IAccountsState;
   assets: IAssetsState;
-  messages: IMessagesState;
+  events: IEventsState;
   networks: INetworksState;
   sendAssets: ISendAssetsState;
   sessions: ISessionsState;

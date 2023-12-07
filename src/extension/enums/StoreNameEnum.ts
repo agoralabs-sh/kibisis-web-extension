@@ -1,6 +1,7 @@
 enum StoreNameEnum {
   Accounts = 'accounts',
   Assets = 'assets',
+  Events = 'events',
   Messages = 'messages',
   Networks = 'networks',
   Register = 'register',

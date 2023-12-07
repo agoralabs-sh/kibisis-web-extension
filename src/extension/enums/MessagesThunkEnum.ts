@@ -1,9 +1,7 @@
 enum MessagesThunkEnum {
-  CloseCurrencyWindow = 'messages/closeCurrencyWindow',
-  SendBackgroundAppLoad = 'messages/sendBackgroundAppLoad',
   SendEnableResponse = 'messages/sendEnableResponse',
+  SendFactoryReset = 'messages/sendFactoryReset',
   SendRegistrationCompleted = 'messages/sendRegistrationCompleted',
-  SendReset = 'messages/sendReset',
   SendSignBytesResponse = 'messages/sendSignBytesResponse',
   SendSignTxnsResponse = 'messages/sendSignTxnsResponse',
 }

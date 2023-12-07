@@ -1,4 +1,4 @@
-import { Windows } from 'webextension-polyfill';
+import browser, { Windows } from 'webextension-polyfill';
 
 // constants
 import { APP_WINDOW_KEY_PREFIX } from '@extension/constants';
@@ -67,6 +67,29 @@ export default class AppWindowManagerService {
     const appWindows: IAppWindow[] = await this.getAll();
 
     return appWindows.filter((value) => value.type === type);
+  }
+
+  /**
+   * Checks if the app windows in storage are still open. If the windows are no longer open, they are removed.
+   */
+  public async hydrateAppWindows(): Promise<void> {
+    const openWindows: Windows.Window[] = await browser.windows.getAll();
+    const appWindows: IAppWindow[] = await this.getAll();
+    const stagnantWindowKeys: string[] = [];
+
+    appWindows.forEach((appWindow) => {
+      const openWindow: Windows.Window | null =
+        openWindows.find((value) => value.id === appWindow.windowId) || null;
+
+      // if no window is open, remove it
+      if (!openWindow) {
+        stagnantWindowKeys.push(
+          this.createAppWindowItemKey(appWindow.windowId)
+        );
+      }
+    });
+
+    await this.storageManager.remove(stagnantWindowKeys);
   }
 
   public async removeById(id: number): Promise<void> {

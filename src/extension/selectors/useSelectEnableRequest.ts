@@ -9,6 +9,6 @@ import { IEnableRequest, IMainRootState } from '@extension/types';
  */
 export default function useSelectEnableRequest(): IEnableRequest | null {
   return useSelector<IMainRootState, IEnableRequest | null>(
-    (state) => state.messages.enableRequest
+    (state) => state.events.enableRequest
   );
 }

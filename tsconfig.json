@@ -20,7 +20,7 @@
     "paths": {
       "@common/enums": ["src/common/enums"],
       "@common/errors": ["src/common/errors"],
-      "@common/events": ["src/common/events"],
+      "@common/messages": ["src/common/messages"],
       "@common/types": ["src/common/types"],
       "@common/utils": ["src/common/utils"],
       "@extension/components/*": ["src/extension/components/*"],
@@ -30,6 +30,7 @@
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
       "@extension/features/assets": ["src/extension/features/assets"],
+      "@extension/features/events": ["src/extension/features/events"],
       "@extension/features/messages": ["src/extension/features/messages"],
       "@extension/features/networks": ["src/extension/features/networks"],
       "@extension/features/registration": [

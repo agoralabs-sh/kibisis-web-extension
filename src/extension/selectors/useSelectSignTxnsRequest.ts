@@ -9,6 +9,6 @@ import { IMainRootState, ISignTxnsRequest } from '@extension/types';
  */
 export default function useSelectSignTxnsRequest(): ISignTxnsRequest | null {
   return useSelector<IMainRootState, ISignTxnsRequest | null>(
-    (state) => state.messages.signTxnsRequest
+    (state) => state.events.signTxnsRequest
   );
 }

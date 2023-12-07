@@ -1,7 +1,10 @@
 import browser, { Action, BrowserAction } from 'webextension-polyfill';
 
 // services
-import { BackgroundService } from '@extension/services';
+import {
+  BackgroundEventListener,
+  BackgroundMessageHandler,
+} from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
@@ -13,22 +16,27 @@ import { createLogger } from '@common/utils';
   const logger: ILogger = createLogger(
     __ENV__ === 'development' ? 'debug' : 'error'
   );
-  const backgroundService: BackgroundService = new BackgroundService({
-    logger,
-  });
+  const backgroundEventListener: BackgroundEventListener =
+    new BackgroundEventListener({
+      logger,
+    });
   const browserAction: Action.Static | BrowserAction.Static =
     browser.action || browser.browserAction; // TODO: use browser.action for v3
+  const backgroundMessageHandler: BackgroundMessageHandler =
+    new BackgroundMessageHandler({
+      logger,
+    });
 
-  // listen to extension messages
+  // listen to incoming messages from the content scripts and apps (pop-ups)
   browser.runtime.onMessage.addListener(
-    backgroundService.onExtensionMessage.bind(backgroundService)
+    backgroundMessageHandler.onMessage.bind(backgroundMessageHandler)
   );
 
   // listen to special events
   browserAction.onClicked.addListener(
-    backgroundService.onExtensionClick.bind(backgroundService)
+    backgroundEventListener.onExtensionClick.bind(backgroundEventListener)
   );
   browser.windows.onRemoved.addListener(
-    backgroundService.onWindowRemove.bind(backgroundService)
+    backgroundEventListener.onWindowRemove.bind(backgroundEventListener)
   );
 })();

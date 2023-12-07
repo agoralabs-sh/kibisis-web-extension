@@ -5,6 +5,7 @@ import IAppearanceSettings from './IAppearanceSettings';
 import IAppWindow from './IAppWindow';
 import IAsset from './IAsset';
 import IGeneralSettings from './IGeneralSettings';
+import IEvent from './IEvent';
 import IPasswordTag from './IPasswordTag';
 import IPrivateKey from './IPrivateKey';
 import ISession from './ISession';
@@ -17,6 +18,7 @@ type IStorageItemTypes =
   | IAppWindow
   | IAsset[]
   | IGeneralSettings
+  | IEvent[]
   | IPasswordTag
   | IPrivateKey
   | ISession

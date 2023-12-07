@@ -1,5 +1,6 @@
 export const ACCOUNTS_ITEM_KEY_PREFIX: string = 'accounts_';
 export const ASSETS_KEY_PREFIX: string = 'assets_';
+export const EVENT_QUEUE_ITEM_KEY: string = 'event_queue';
 export const NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX: string =
   'network_transaction_params_';
 export const PASSWORD_TAG_ITEM_KEY: string = 'password_tag';
