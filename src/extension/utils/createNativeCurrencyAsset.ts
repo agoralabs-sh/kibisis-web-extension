@@ -9,7 +9,7 @@ import { IAsset, INetwork } from '@extension/types';
 export default function createNativeCurrencyAsset(network: INetwork): IAsset {
   return {
     clawbackAddress: null,
-    creator: '0000000000000000000000000000000000000000000000000000000000', // null address
+    creator: network.feeSunkAddress, // null address
     decimals: network.nativeCurrency.decimals,
     defaultFrozen: false,
     deleted: false,

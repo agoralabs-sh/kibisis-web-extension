@@ -90,10 +90,7 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  calculateMaxTransactionAmount,
-  ellipseAddress,
-} from '@extension/utils';
+import { calculateMaxTransactionAmount } from '@extension/utils';
 
 interface IProps {
   onClose: () => void;

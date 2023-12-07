@@ -11,6 +11,7 @@ interface INetwork {
   canonicalName: string;
   chakraTheme: string;
   explorers: IExplorer[];
+  feeSunkAddress: string;
   genesisHash: string;
   genesisId: string;
   namespace: IChainNamespace;
