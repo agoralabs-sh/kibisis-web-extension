@@ -14,7 +14,7 @@ export default function createNativeCurrencyAsset(network: INetwork): IAsset {
     defaultFrozen: false,
     deleted: false,
     freezeAddress: null,
-    iconUrl: 'https://asa-list.tinyman.org/assets/0/icon.png',
+    iconUrl: network.nativeCurrency.listingUri,
     id: '0',
     managerAddress: null,
     metadataHash: null,
