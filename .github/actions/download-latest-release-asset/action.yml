@@ -1,0 +1,19 @@
+name: "Download Latest Release Asset"
+
+description: "Checks for the latest release and downloads the asset for the prefix."
+
+inputs:
+  asset_prefix:
+    description: "The asset prefix, ie. 'kibisis-chrome'"
+    required: true
+  github_token:
+    description: "GitHub token to use to get release"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "📥 Get latest release asset"
+      run: |
+        GITHUB_TOKEN=${{ inputs.github_token }} ./bin/get_latest_release_asset.sh ${{ inputs.asset_prefix }}
+      shell: bash

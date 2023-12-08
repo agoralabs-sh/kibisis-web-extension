@@ -9,11 +9,35 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/actions/workflows/pull_request_checks.yml" target="_blank">
-    <img src="https://github.com/agoralabs-sh/kibisis-web-extension/actions/workflows/pull_request_checks.yml/badge.svg" alt="Pull Request Checks" />
+  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases/latest">
+    <img alt="GitHub release" src="https://img.shields.io/github/v/release/agoralabs-sh/kibisis-web-extension?&logo=github">
   </a>
-  <a href="https://img.shields.io/amo/v/kibisis@kibis.is" target="_blank">
-    <img src="https://img.shields.io/amo/v/kibisis@kibis.is" alt="Mozilla add-on" />
+  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases/latest">
+    <img alt="GitHub Release Date - Published_At" src="https://img.shields.io/github/release-date/agoralabs-sh/kibisis-web-extension?logo=github">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases">
+    <img alt="GitHub License" src="https://img.shields.io/github/v/release/agoralabs-sh/kibisis-web-extension?include_prereleases&label=pre-release&logo=github">
+  </a>
+  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases">
+    <img alt="GitHub Release Date - Published_At" src="https://img.shields.io/github/release-date-pre/agoralabs-sh/kibisis-web-extension?label=pre-release date&logo=github">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://addons.mozilla.org/en-GB/firefox/addon/kibisis" target="_blank">
+    <img src="https://img.shields.io/amo/v/kibisis?logo=firefox" alt="Mozilla add-on" />
+  </a>
+  <a href="https://chromewebstore.google.com/detail/kibisis/hcgejekffjilpgbommjoklpneekbkajb" target="_blank">
+    <img alt="Chrome Web Store Version" src="https://img.shields.io/chrome-web-store/v/hcgejekffjilpgbommjoklpneekbkajb?logo=googlechrome">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/blob/main/LICENSE">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/agoralabs-sh/kibisis-web-extension">
   </a>
 </p>
 
