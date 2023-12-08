@@ -12,6 +12,7 @@ runs:
   steps:
     - name: "📝 Create .env file"
       run: |
+        ./bin
         rm -f .env
         echo "WALLET_CONNECT_PROJECT_ID=${{ inputs.walletconnect_project_id }}" >> .env
       shell: bash

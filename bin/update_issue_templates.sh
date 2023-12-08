@@ -29,7 +29,7 @@ function main {
     exit 1
   fi
 
-#  printf "%b adding version '%s' to .github/ISSUE_TEMPLATE/bug_report_template.yml \n" "${INFO_PREFIX}" "${1}"
+  printf "%b adding version '%s' to .github/ISSUE_TEMPLATE/bug_report_template.yml \n" "${INFO_PREFIX}" "${1}"
   version_included=$(version="${1}" yq '(.body[]  | select(.id == "version") | .attributes.options) | contains([env(version)])' "${PWD}/.github/ISSUE_TEMPLATE/bug_report_template.yml")
 
   if ! "${version_included}"; then
