@@ -1,0 +1,30 @@
+name: "Publish To Chrome Web Store"
+
+on:
+  release:
+    types: [released] # triggered on main branch releases
+
+env:
+  asset_prefix: "kibisis-chrome"
+
+jobs:
+  deploy:
+    name: "Deploy"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "📥 Download Latest Release Asset"
+        uses: ./.github/actions/download-latest-release-asset
+        with:
+          asset_prefix: ${{ env.asset_prefix }}
+          github_token: ${{ secrets.WRITE_REPOS_TOKEN }}
+      - name: "🚀 Publish"
+        env:
+          CHROME_WEB_STORE_API_CLIENT_ID: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_ID }}
+          CHROME_WEB_STORE_API_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_SECRET }}
+          CHROME_WEB_STORE_API_REFRESH_TOKEN: ${{ secrets.CHROME_WEB_STORE_API_REFRESH_TOKEN }}
+        run: |
+          ./bin/publish_to_chrome.sh ${{ secrets.CHROME_WEB_STORE_ID }} ${{ env.asset_prefix }}.zip
+
