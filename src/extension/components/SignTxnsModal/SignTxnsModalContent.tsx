@@ -116,6 +116,7 @@ const SignTxnsModalContent: FC<IProps> = ({
                 value.publicKey.toUpperCase() === encodedPublicKey.toUpperCase()
             ) || null;
           let accountInformation: IAccountInformation;
+          let encodedGenesisHash: string;
 
           // if we have this account, just return it
           if (account) {
@@ -125,7 +126,17 @@ const SignTxnsModalContent: FC<IProps> = ({
           account = AccountService.initializeDefaultAccount({
             publicKey: encodedPublicKey,
           });
-          accountInformation = await updateAccountInformation(account, {
+          encodedGenesisHash = convertGenesisHashToHex(
+            network.genesisHash
+          ).toUpperCase();
+          accountInformation = await updateAccountInformation({
+            address:
+              AccountService.convertPublicKeyToAlgorandAddress(
+                encodedPublicKey
+              ),
+            currentAccountInformation:
+              account.networkInformation[encodedGenesisHash] ||
+              AccountService.initializeDefaultAccountInformation(),
             delay: index * NODE_REQUEST_DELAY,
             logger,
             network,

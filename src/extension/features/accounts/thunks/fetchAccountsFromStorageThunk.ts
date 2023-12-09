@@ -57,7 +57,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
     ).toUpperCase();
 
     // update the account information for selected network
-    if (options?.updateAccountInformation) {
+    if (options?.updateInformation) {
       logger.debug(
         `${AccountsThunkEnum.FetchAccountsFromStorage}: updating account information for "${selectedNetwork.genesisId}"`
       );
@@ -67,7 +67,13 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
           ...account,
           networkInformation: {
             ...account.networkInformation,
-            [encodedGenesisHash]: await updateAccountInformation(account, {
+            [encodedGenesisHash]: await updateAccountInformation({
+              address: AccountService.convertPublicKeyToAlgorandAddress(
+                account.publicKey
+              ),
+              currentAccountInformation:
+                account.networkInformation[encodedGenesisHash] ||
+                AccountService.initializeDefaultAccountInformation(),
               delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               logger,
               network: selectedNetwork,
@@ -81,7 +87,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
     }
 
     // update the accounts transactions for selected network
-    if (options?.updateAccountTransactions) {
+    if (options?.updateTransactions) {
       logger.debug(
         `${AccountsThunkEnum.FetchAccountsFromStorage}: updating account transactions for "${selectedNetwork.genesisId}"`
       );
@@ -91,7 +97,14 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
           ...account,
           networkTransactions: {
             ...account.networkTransactions,
-            [encodedGenesisHash]: await updateAccountTransactions(account, {
+            [encodedGenesisHash]: await updateAccountTransactions({
+              address: AccountService.convertPublicKeyToAlgorandAddress(
+                account.publicKey
+              ),
+              currentAccountTransactions:
+                account.networkTransactions[encodedGenesisHash] ||
+                AccountService.initializeDefaultAccountTransactions(),
+              delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               logger,
               network: selectedNetwork,
             }),

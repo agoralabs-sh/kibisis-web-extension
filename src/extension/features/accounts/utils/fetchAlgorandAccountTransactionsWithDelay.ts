@@ -6,6 +6,7 @@ import { IAlgorandAccountTransaction } from '@extension/types';
 
 interface IOptions {
   address: string;
+  afterTime: number | null;
   client: Indexer;
   delay: number;
   limit: number;
@@ -19,6 +20,7 @@ interface IOptions {
  */
 export default async function fetchAlgorandAccountTransactionsWithDelay({
   address,
+  afterTime,
   client,
   delay,
   limit,
@@ -31,6 +33,10 @@ export default async function fetchAlgorandAccountTransactionsWithDelay({
 
       try {
         requestBuilder = client.lookupAccountTransactions(address).limit(limit);
+
+        if (afterTime) {
+          requestBuilder.afterTime(new Date(afterTime).toISOString());
+        }
 
         if (next) {
           requestBuilder.nextToken(next);

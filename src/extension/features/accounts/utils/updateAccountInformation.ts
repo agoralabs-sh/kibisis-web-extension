@@ -3,13 +3,9 @@ import { Algodv2 } from 'algosdk';
 // constants
 import { ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT } from '@extension/constants';
 
-// services
-import { AccountService } from '@extension/services';
-
 // types
 import { IBaseOptions } from '@common/types';
 import {
-  IAccount,
   IAccountInformation,
   IAlgorandAccountInformation,
   INetwork,
@@ -17,13 +13,12 @@ import {
 
 // utils
 import { getAlgodClient } from '@common/utils';
-import {
-  convertGenesisHashToHex,
-  mapAlgorandAccountInformationToAccount,
-} from '@extension/utils';
+import { mapAlgorandAccountInformationToAccount } from '@extension/utils';
 import fetchAlgorandAccountInformationWithDelay from './fetchAlgorandAccountInformationWithDelay';
 
 interface IOptions extends IBaseOptions {
+  address: string;
+  currentAccountInformation: IAccountInformation;
   delay?: number;
   forceUpdate?: boolean;
   network: INetwork;
@@ -31,21 +26,17 @@ interface IOptions extends IBaseOptions {
 
 /**
  * Fetches the account information for a given address.
- * @param {IAccount} account - the account.
  * @param {IOptions} options - options needed to update the account information.
  * @returns {Promise<IAccountInformation>} the updated account information.
  */
-export default async function updateAccountInformation(
-  account: IAccount,
-  { delay = 0, forceUpdate = false, logger, network }: IOptions
-): Promise<IAccountInformation> {
-  const encodedGenesisHash: string = convertGenesisHashToHex(
-    network.genesisHash
-  );
-  const accountInformation: IAccountInformation =
-    account.networkInformation[encodedGenesisHash] ||
-    AccountService.initializeDefaultAccountInformation();
-  let address: string;
+export default async function updateAccountInformation({
+  address,
+  currentAccountInformation,
+  delay = 0,
+  forceUpdate = false,
+  logger,
+  network,
+}: IOptions): Promise<IAccountInformation> {
   let algorandAccountInformation: IAlgorandAccountInformation;
   let client: Algodv2;
   let updatedAt: Date;
@@ -53,21 +44,21 @@ export default async function updateAccountInformation(
   // if the account information is not out-of-date just return the account
   if (
     !forceUpdate &&
-    accountInformation.updatedAt &&
-    accountInformation.updatedAt + ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT >
+    currentAccountInformation.updatedAt &&
+    currentAccountInformation.updatedAt +
+      ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT >
       new Date().getTime()
   ) {
     logger &&
       logger.debug(
         `${updateAccountInformation.name}: last updated "${new Date(
-          accountInformation.updatedAt
+          currentAccountInformation.updatedAt
         ).toString()}", skipping`
       );
 
-    return accountInformation;
+    return currentAccountInformation;
   }
 
-  address = AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   client = getAlgodClient(network, {
     logger,
   });
@@ -98,7 +89,7 @@ export default async function updateAccountInformation(
 
     return mapAlgorandAccountInformationToAccount(
       algorandAccountInformation,
-      accountInformation,
+      currentAccountInformation,
       updatedAt.getTime()
     );
   } catch (error) {
@@ -107,6 +98,6 @@ export default async function updateAccountInformation(
         `${updateAccountInformation.name}: failed to get account information for "${address}" on ${network.genesisId}: ${error.message}`
       );
 
-    return accountInformation;
+    return currentAccountInformation;
   }
 }

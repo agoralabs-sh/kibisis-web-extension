@@ -7,7 +7,7 @@ import { ACCOUNT_INFORMATION_REFRESH_INTERVAL } from '@extension/constants';
 import { AccountsThunkEnum } from '@extension/enums';
 
 // thunks
-import updateAccountInformationThunk from './updateAccountInformationThunk';
+import updateAccountsThunk from './updateAccountsThunk';
 
 // types
 import { ILogger } from '@common/types';
@@ -27,7 +27,12 @@ const startPollingForAccountInformationThunk: AsyncThunk<
     );
 
     return window.setInterval(
-      () => dispatch(updateAccountInformationThunk()),
+      () =>
+        dispatch(
+          updateAccountsThunk({
+            informationOnly: true, // only update account information
+          })
+        ),
       ACCOUNT_INFORMATION_REFRESH_INTERVAL
     ); // update every 2 minutes
   }
