@@ -33,6 +33,9 @@
       "@extension/features/events": ["src/extension/features/events"],
       "@extension/features/messages": ["src/extension/features/messages"],
       "@extension/features/networks": ["src/extension/features/networks"],
+      "@extension/features/notifications": [
+        "src/extension/features/notifications"
+      ],
       "@extension/features/registration": [
         "src/extension/features/registration"
       ],

@@ -1,12 +1,8 @@
-import {
-  Text,
-  VStack,
-  useDisclosure,
-  CreateToastFnReturn,
-} from '@chakra-ui/react';
+import { Text, VStack, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
@@ -23,17 +19,22 @@ import {
   SETTINGS_ROUTE,
 } from '@extension/constants';
 
+// features
+import { create as createNotification } from '@extension/features/notifications';
+
 // hooks
 import useChangePassword from '@extension/hooks/useChangePassword';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useToastWithDefaultOptions from '@extension/hooks/useToastWithDefaultOptions';
+
+// types
+import { IAppThunkDispatch } from '@extension/types';
 
 const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   const { isOpen, onClose, onOpen } = useDisclosure();
   // hooks
-  const toast: CreateToastFnReturn = useToastWithDefaultOptions();
   const { changePassword, error, passwordTag, saving } = useChangePassword();
   const subTextColor: string = useSubTextColor();
   // state
@@ -63,13 +64,14 @@ const ChangePasswordPage: FC = () => {
   // if there is an error from the hook, show a toast
   useEffect(() => {
     if (error) {
-      toast({
-        description: error.message,
-        duration: null,
-        isClosable: true,
-        status: 'error',
-        title: `${error.code}: ${error.name}`,
-      });
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          description: error.message,
+          title: `${error.code}: ${error.name}`,
+          type: 'error',
+        })
+      );
     }
   }, [error]);
   // if we have the updated password tag navigate back

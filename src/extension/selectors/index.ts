@@ -18,6 +18,7 @@ export { default as useSelectIsOnline } from './useSelectIsOnline';
 export { default as useSelectLogger } from './useSelectLogger';
 export { default as useSelectNetworkByGenesisHash } from './useSelectNetworkByGenesisHash';
 export { default as useSelectNetworks } from './useSelectNetworks';
+export { default as useSelectNotShowingNotifications } from './useSelectNotShowingNotifications';
 export { default as useSelectPreferredBlockExplorer } from './useSelectPreferredBlockExplorer';
 export { default as useSelectSavingAccounts } from './useSelectSavingAccounts';
 export { default as useSelectSavingRegistration } from './useSelectSavingRegistration';

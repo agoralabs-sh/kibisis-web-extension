@@ -13,26 +13,24 @@ import { reducer as assetsReducer } from '@extension/features/assets';
 import { reducer as eventsReducer } from '@extension/features/events';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
-import { reducer as sendAssetsReducer } from '@extension/features/send-assets';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
 import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as systemReducer } from '@extension/features/system';
 
 // types
-import { IAppProps, IMainRootState } from '@extension/types';
+import { IAppProps, IBackgroundRootState } from '@extension/types';
 
 // utils
 import { makeStore } from '@extension/utils';
 
 const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
-  const store: Store<IMainRootState> = makeStore<IMainRootState>(
+  const store: Store<IBackgroundRootState> = makeStore<IBackgroundRootState>(
     combineReducers({
       accounts: accountsReducer,
       assets: assetsReducer,
       events: eventsReducer,
       messages: messagesReducer,
       networks: networksReducer,
-      sendAssets: sendAssetsReducer,
       sessions: sessionsReducer,
       settings: settingsReducer,
       system: systemReducer,
