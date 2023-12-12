@@ -1,12 +1,11 @@
 import { Indexer } from 'algosdk';
 
-// services
-import { AccountService } from '@extension/services';
+// constants
+import { DEFAULT_TRANSACTION_INDEXER_LIMIT } from '@extension/constants';
 
 // types
 import { IBaseOptions } from '@common/types';
 import {
-  IAccount,
   IAccountTransactions,
   IAlgorandAccountTransaction,
   INetwork,
@@ -14,87 +13,92 @@ import {
 
 // utils
 import { getIndexerClient } from '@common/utils';
-import {
-  convertGenesisHashToHex,
-  mapAlgorandTransactionToTransaction,
-} from '@extension/utils';
+import { mapAlgorandTransactionToTransaction } from '@extension/utils';
 import fetchAlgorandAccountTransactionsWithDelay from './fetchAlgorandAccountTransactionsWithDelay';
+import refreshTransactions from './refreshTransactions';
 
 interface IOptions extends IBaseOptions {
+  address: string;
+  currentAccountTransactions: IAccountTransactions;
   delay?: number;
   network: INetwork;
   refresh?: boolean;
 }
 
 /**
- * Fetches the account information for a given address.
- * @param {IAccount} account - the account.
- * @param {IOptions} options - options needed to update the account information.
- * @returns {Promise<IAccountInformation>} the updated account information.
+ * Gets the account transactions.
+ * @param {IOptions} options - options needed to fetch account transactions.
+ * @returns {Promise<IAccountTransactions>} the updated account information.
  */
-export default async function updateAccountTransactions(
-  account: IAccount,
-  { delay = 0, logger, network, refresh = false }: IOptions
-): Promise<IAccountTransactions> {
-  const encodedGenesisHash: string = convertGenesisHashToHex(
-    network.genesisHash
-  ).toUpperCase();
-  const accountTransactions: IAccountTransactions =
-    account.networkTransactions[encodedGenesisHash] ||
-    AccountService.initializeDefaultAccountTransactions();
-  let address: string;
-  let algorandAccountTransaction: IAlgorandAccountTransaction;
-  let client: Indexer;
-  let limit: number = 20; // default
-  let next: string | null = null;
-
-  // if we are not refreshing, we can get the latest from the next token
-  if (!refresh) {
-    next = accountTransactions.next;
-  }
-
-  // if we are refreshing, increase the limit to the number of transactions, but set a hard limit of 100
-  if (refresh) {
-    if (accountTransactions.transactions.length > 0) {
-      limit =
-        accountTransactions.transactions.length > limit
-          ? accountTransactions.transactions.length
-          : limit;
-
-      if (limit > 100) {
-        limit = 100;
-      }
-    }
-  }
-
-  address = AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
-  client = getIndexerClient(network, {
+export default async function updateAccountTransactions({
+  address,
+  currentAccountTransactions,
+  delay = 0,
+  logger,
+  network,
+  refresh = false,
+}: IOptions): Promise<IAccountTransactions> {
+  const client: Indexer = getIndexerClient(network, {
     logger,
   });
+  let algorandAccountTransaction: IAlgorandAccountTransaction;
+  let mostRecentTransactionTime: number;
+
+  // if it is a refresh, get all the transactions from the most recent transaction
+  if (refresh && currentAccountTransactions.transactions.length > 0) {
+    // get the date of the most recent transaction
+    mostRecentTransactionTime = currentAccountTransactions.transactions.reduce(
+      (acc, value) =>
+        value.completedAt && value.completedAt > acc ? value.completedAt : acc,
+      0
+    );
+
+    logger &&
+      logger.debug(
+        `${
+          updateAccountTransactions.name
+        }: 'refreshing account transactions for "${address}" on "${
+          network.genesisId
+        }" from "${new Date(mostRecentTransactionTime).toString()}"`
+      );
+
+    return {
+      ...currentAccountTransactions,
+      transactions: [
+        // get the most recent transactions
+        ...(await refreshTransactions({
+          address,
+          afterTime: mostRecentTransactionTime,
+          client,
+          logger,
+          network,
+          next: null,
+        })),
+        ...currentAccountTransactions.transactions,
+      ],
+    };
+  }
 
   logger &&
     logger.debug(
-      `${updateAccountTransactions.name}: ${
-        refresh ? 'refreshing' : 'updating'
-      } account transactions for "${account.id}" on "${network.genesisId}"${
-        next ? ` using next-token "${next}"` : ''
-      }`
+      `${updateAccountTransactions.name}: 'updating account transactions for "${address}" on "${network.genesisId}"`
     );
 
   try {
     algorandAccountTransaction =
       await fetchAlgorandAccountTransactionsWithDelay({
         address,
+        afterTime: null,
         client,
         delay,
-        limit,
-        next,
+        limit: DEFAULT_TRANSACTION_INDEXER_LIMIT,
+        next: currentAccountTransactions.next,
       });
 
     return {
       next: algorandAccountTransaction['next-token'] || null,
       transactions: [
-        ...(!refresh ? accountTransactions.transactions : []), // if it is not refreshing, append the previous transactions
+        ...currentAccountTransactions.transactions,
         ...algorandAccountTransaction.transactions.map(
           mapAlgorandTransactionToTransaction
         ),
@@ -106,6 +110,6 @@ export default async function updateAccountTransactions(
         `${updateAccountTransactions.name}: failed to get account transactions for "${address}" on ${network.genesisId}: ${error.message}`
       );
 
-    return accountTransactions;
+    return currentAccountTransactions;
   }
 }

@@ -38,8 +38,6 @@ export { default as useSelectSettings } from './useSelectSettings';
 export { default as useSelectSideBar } from './useSelectSideBar';
 export { default as useSelectSignBytesRequest } from './useSelectSignBytesRequest';
 export { default as useSelectSignTxnsRequest } from './useSelectSignTxnsRequest';
-export { default as useSelectUpdatingAccountInformation } from './useSelectUpdatingAccountInformation';
-export { default as useSelectUpdatingAccountTransactions } from './useSelectUpdatingAccountTransactions';
 export { default as useSelectUpdatingAssets } from './useSelectUpdatingAssets';
 export { default as useSelectWalletConnectModalOpen } from './useSelectWalletConnectModalOpen';
 export { default as useSelectWeb3Wallet } from './useSelectWeb3Wallet';

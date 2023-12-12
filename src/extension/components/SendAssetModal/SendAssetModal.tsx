@@ -40,10 +40,7 @@ import { ErrorCodeEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // features
-import {
-  updateAccountInformationThunk,
-  updateAccountTransactionsThunk,
-} from '@extension/features/accounts';
+import { updateAccountsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 import {
   setAmount,
@@ -403,17 +400,12 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
       // refresh the account transactions
       if (fromAccount) {
-        // force update the account information as we spent fees
+        // force update the account information as we spent fees and refresh all the new transactions
         dispatch(
-          updateAccountInformationThunk({
+          updateAccountsThunk({
             accountIds: [fromAccount.id],
-            forceUpdate: true,
-          })
-        );
-        dispatch(
-          updateAccountTransactionsThunk({
-            accountIds: [fromAccount.id],
-            refresh: true,
+            forceInformationUpdate: true,
+            refreshTransactions: true,
           })
         );
       }

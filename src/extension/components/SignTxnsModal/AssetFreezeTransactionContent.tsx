@@ -164,6 +164,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
     (async () => {
       let account: IAccount | null;
       let accountInformation: IAccountInformation;
+      let encodedGenesisHash: string;
 
       if (!freezeAddress) {
         return;
@@ -186,11 +187,18 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
 
       setFetchingFreezeAccountInformation(true);
 
+      encodedGenesisHash = convertGenesisHashToHex(
+        network.genesisHash
+      ).toUpperCase();
       account = AccountService.initializeDefaultAccount({
         publicKey:
           AccountService.convertAlgorandAddressToPublicKey(freezeAddress),
       });
-      accountInformation = await updateAccountInformation(account, {
+      accountInformation = await updateAccountInformation({
+        address: freezeAddress,
+        currentAccountInformation:
+          account.networkInformation[encodedGenesisHash] ||
+          AccountService.initializeDefaultAccountInformation(),
         logger,
         network,
       });
@@ -199,8 +207,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
         ...account,
         networkInformation: {
           ...account.networkInformation,
-          [convertGenesisHashToHex(network.genesisHash).toUpperCase()]:
-            accountInformation,
+          [encodedGenesisHash]: accountInformation,
         },
       });
       setFetchingFreezeAccountInformation(false);

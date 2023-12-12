@@ -10,17 +10,25 @@ import {
   saveNewAccountThunk,
   startPollingForAccountInformationThunk,
   stopPollingForAccountInformationThunk,
-  updateAccountInformationThunk,
-  updateAccountTransactionsThunk,
+  updateAccountsThunk,
 } from './thunks';
 
 // types
-import { IAccount } from '@extension/types';
-import { IAccountsState } from './types';
+import {
+  IAccount,
+  IPendingActionMeta,
+  IRejectedActionMeta,
+} from '@extension/types';
+import {
+  IAccountsState,
+  IAccountUpdate,
+  IUpdateAccountsPayload,
+} from './types';
 
 // utils
 import { upsertItemsById } from '@extension/utils';
 import { getInitialState } from './utils';
+import { stat } from 'copy-webpack-plugin/types/utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
@@ -96,50 +104,76 @@ const slice = createSlice({
         state.pollingId = null;
       }
     );
-    /** update account information **/
+    /** update accounts **/
     builder.addCase(
-      updateAccountInformationThunk.fulfilled,
+      updateAccountsThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<IAccount[]>) => {
         state.items = state.items.map(
           (account) =>
             action.payload.find((value) => value.id === account.id) || account
         );
-        state.updatingInformation = false;
-      }
-    );
-    builder.addCase(
-      updateAccountInformationThunk.pending,
-      (state: IAccountsState) => {
-        state.updatingInformation = true;
-      }
-    );
-    builder.addCase(
-      updateAccountInformationThunk.rejected,
-      (state: IAccountsState) => {
-        state.updatingInformation = false;
-      }
-    );
-    /** update account transactions **/
-    builder.addCase(
-      updateAccountTransactionsThunk.fulfilled,
-      (state: IAccountsState, action: PayloadAction<IAccount[]>) => {
-        state.items = state.items.map(
-          (account) =>
-            action.payload.find((value) => value.id === account.id) || account
+
+        // remove all the updated accounts from the account update list
+        state.updatingAccounts = state.updatingAccounts.filter(
+          (accountUpdate) =>
+            !action.payload.find((value) => value.id === accountUpdate.id)
         );
-        state.updatingTransactions = false;
       }
     );
     builder.addCase(
-      updateAccountTransactionsThunk.pending,
-      (state: IAccountsState) => {
-        state.updatingTransactions = true;
+      updateAccountsThunk.pending,
+      (state: IAccountsState, action) => {
+        // if no account ids, all accounts are being updated
+        if (!action.meta.arg?.accountIds) {
+          state.updatingAccounts = state.items.map((value) => ({
+            id: value.id,
+            information: true,
+            transactions: !action.meta?.arg?.informationOnly,
+          }));
+
+          return;
+        }
+
+        // filter the accounts by the supplied ids
+        state.updatingAccounts = [
+          ...(state.updatingAccounts = state.updatingAccounts.filter(
+            (accountUpdate) =>
+              !action.meta.arg?.accountIds?.find(
+                (value) => value === accountUpdate.id
+              )
+          )),
+          ...(action.meta.arg?.accountIds?.map((value) => ({
+            id: value,
+            information: true,
+            transactions: !action.meta?.arg?.informationOnly,
+          })) || []),
+        ];
       }
     );
     builder.addCase(
-      updateAccountTransactionsThunk.rejected,
-      (state: IAccountsState) => {
-        state.updatingTransactions = false;
+      updateAccountsThunk.rejected,
+      (state: IAccountsState, action) => {
+        // if no account ids, no accounts are being updated
+        if (!action.meta.arg?.accountIds) {
+          state.updatingAccounts = [];
+
+          return;
+        }
+
+        // filter the accounts by the supplied ids
+        state.updatingAccounts = [
+          ...(state.updatingAccounts = state.updatingAccounts.filter(
+            (accountUpdate) =>
+              !action.meta.arg?.accountIds?.find(
+                (value) => value === accountUpdate.id
+              )
+          )),
+          ...(action.meta.arg?.accountIds?.map((value) => ({
+            id: value,
+            information: false,
+            transactions: false,
+          })) || []),
+        ];
       }
     );
   },

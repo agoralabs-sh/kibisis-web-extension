@@ -56,7 +56,7 @@ import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
 // features
 import {
   removeAccountByIdThunk,
-  updateAccountTransactionsThunk,
+  updateAccountsThunk,
 } from '@extension/features/accounts';
 import { setSettings } from '@extension/features/settings';
 import { setConfirm } from '@extension/features/system';
@@ -176,7 +176,7 @@ const AccountPage: FC = () => {
   const handleActivityScrollEnd = () => {
     if (account && accountTransactions && accountTransactions.next) {
       dispatch(
-        updateAccountTransactionsThunk({
+        updateAccountsThunk({
           accountIds: [account.id],
         })
       );
@@ -432,7 +432,7 @@ const AccountPage: FC = () => {
         accountTransactions.transactions.length <= 0
       ) {
         dispatch(
-          updateAccountTransactionsThunk({
+          updateAccountsThunk({
             accountIds: [account.id],
           })
         );

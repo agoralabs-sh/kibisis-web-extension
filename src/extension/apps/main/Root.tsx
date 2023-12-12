@@ -98,8 +98,8 @@ const Root: FC = () => {
       if (accounts.length < 1) {
         dispatch(
           fetchAccountsFromStorageThunk({
-            updateAccountInformation: true,
-            updateAccountTransactions: true,
+            updateInformation: true,
+            updateTransactions: true,
           })
         );
       }

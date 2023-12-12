@@ -1,11 +1,11 @@
 /**
- * @property {boolean} updateAccountInformation - [optional] instruct the thunk to also update the account information.
- * @property {boolean} updateAccountTransactions - [optional] instruct the thunk to also update the account
+ * @property {boolean} updateInformation - [optional] instruct the thunk to also update the account information.
+ * @property {boolean} updateTransactions - [optional] instruct the thunk to also update the account
  * transactions.
  */
 interface IFetchAccountsFromStoragePayload {
-  updateAccountInformation?: boolean;
-  updateAccountTransactions?: boolean;
+  updateInformation?: boolean;
+  updateTransactions?: boolean;
 }
 
 export default IFetchAccountsFromStoragePayload;

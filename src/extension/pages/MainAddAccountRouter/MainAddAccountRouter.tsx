@@ -15,7 +15,7 @@ import {
 // features
 import {
   saveNewAccountThunk,
-  updateAccountInformationThunk,
+  updateAccountsThunk,
 } from '@extension/features/accounts';
 
 // pages
@@ -75,6 +75,7 @@ const MainAddAccountRouter: FC = () => {
   };
 
   useEffect(() => {
+    let account: IAccount | null;
     let address: string | null;
 
     if (addAccountResult) {
@@ -82,21 +83,27 @@ const MainAddAccountRouter: FC = () => {
         logger,
       });
 
-      // if the account has been added, navigate to the account and clean up
-      if (
-        address &&
-        accounts.find(
-          (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === address
-        )
-      ) {
-        setAddAccountResult(null);
-        dispatch(updateAccountInformationThunk());
-        navigate(`${ACCOUNTS_ROUTE}/${address}`, {
-          replace: true,
-        });
+      if (address) {
+        // if the account has been added, navigate to the account and update
+        account =
+          accounts.find(
+            (value) =>
+              AccountService.convertPublicKeyToAlgorandAddress(
+                value.publicKey
+              ) === address
+          ) || null;
+
+        if (account) {
+          setAddAccountResult(null);
+          dispatch(
+            updateAccountsThunk({
+              accountIds: [account.id],
+            })
+          );
+          navigate(`${ACCOUNTS_ROUTE}/${address}`, {
+            replace: true,
+          });
+        }
       }
     }
   }, [accounts]);
