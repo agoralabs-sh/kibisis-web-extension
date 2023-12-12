@@ -1,3 +1,10 @@
+# [1.7.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.1...v1.7.0-beta.2) (2023-12-12)
+
+
+### Bug Fixes
+
+* new recursive refresh txns mechanism and account info and txns are pooled together ([#47](https://github.com/agoralabs-sh/kibisis-web-extension/issues/47)) ([04ec48a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/04ec48aa79c467c28d5d6dcac9d206156d65651f))
+
 # [1.7.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.1-beta.2...v1.7.0-beta.1) (2023-12-12)
 
 
