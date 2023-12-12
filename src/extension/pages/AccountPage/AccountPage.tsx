@@ -42,13 +42,13 @@ import CopyIconButton from '@extension/components/CopyIconButton';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import ShareAddressModal from '@extension/components/ShareAddressModal';
 import NetworkSelect, {
   NetworkSelectSkeleton,
 } from '@extension/components/NetworkSelect';
 import NativeBalance, {
   NativeBalanceSkeleton,
 } from '@extension/components/NativeBalance';
+import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // constants
 import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';

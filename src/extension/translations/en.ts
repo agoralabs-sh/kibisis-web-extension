@@ -134,7 +134,8 @@ const translation: IResourceLanguage = {
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
     transactionIdCopied: 'Transaction ID copied!',
-    transactionSuccessful: 'Transaction "{{transactionId}}" was successful.',
+    transactionSendSuccessful:
+      'Transaction "{{transactionId}}" was successfully sent.',
   },
   errors: {
     descriptions: {
@@ -278,7 +279,7 @@ const translation: IResourceLanguage = {
     reserveAccount: 'Reserve Account',
     seedPhrase: 'Seed Phrase',
     selectionKey: 'VRF Public Key',
-    sendAsset: 'Send {{nativeCurrency}}Asset',
+    sendAsset: 'Send {{nativeCurrency}}/Asset',
     settings: 'Settings',
     shareAddress: 'Share Address',
     signingMethod: 'Signing Method',

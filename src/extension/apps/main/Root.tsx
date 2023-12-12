@@ -42,6 +42,7 @@ import { setConfirm, setError, setNavigate } from '@extension/features/system';
 // hooks
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
 import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
+import useNotifications from '@extension/hooks/useNotifications';
 
 // selectors
 import {
@@ -140,6 +141,7 @@ const Root: FC = () => {
       });
     }
   }, [accounts]);
+  useNotifications(); // handle notifications
   useOnNetworkConnectivity(); // listen to network connectivity
   useOnMainAppMessage(); // handle incoming messages
 

@@ -53,6 +53,11 @@ export default function createCommonConfig(): Configuration {
           'features',
           'networks'
         ),
+        ['@extension/features/notifications']: resolve(
+          extensionPath,
+          'features',
+          'notifications'
+        ),
         ['@extension/features/registration']: resolve(
           extensionPath,
           'features',
