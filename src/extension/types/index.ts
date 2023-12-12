@@ -35,6 +35,7 @@ export type { default as IAssetFreezeTransaction } from './IAssetFreezeTransacti
 export type { default as IAssetHolding } from './IAssetHolding';
 export type { default as IAssetTransferTransaction } from './IAssetTransferTransaction';
 export type { default as IAssetUnfreezeTransaction } from './IAssetUnfreezeTransaction';
+export type { default as IBackgroundRootState } from './IBackgroundRootState';
 export type { default as IBaseActionMeta } from './IBaseActionMeta';
 export type { default as IBaseAssetFreezeTransaction } from './IBaseAssetFreezeTransaction';
 export type { default as IBaseRequest } from './IBaseRequest';
@@ -57,6 +58,8 @@ export type { default as INativeCurrency } from './INativeCurrency';
 export type { default as INetwork } from './INetwork';
 export type { default as INetworkWithTransactionParams } from './INetworkWithTransactionParams';
 export type { default as INode } from './INode';
+export type { default as INotification } from './INotification';
+export type { default as INotificationType } from './INotificationType';
 export type { default as IPasswordTag } from './IPasswordTag';
 export type { default as IPaymentTransaction } from './IPaymentTransaction';
 export type { default as IPendingActionMeta } from './IPendingActionMeta';

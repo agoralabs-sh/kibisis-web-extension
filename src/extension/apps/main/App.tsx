@@ -21,6 +21,7 @@ import { reducer as assetsReducer } from '@extension/features/assets';
 import { reducer as eventsReducer } from '@extension/features/events';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
+import { reducer as notificationsReducer } from '@extension/features/notifications';
 import { reducer as sendAssetsReducer } from '@extension/features/send-assets';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
 import { reducer as settingsReducer } from '@extension/features/settings';
@@ -89,6 +90,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       events: eventsReducer,
       messages: messagesReducer,
       networks: networksReducer,
+      notifications: notificationsReducer,
       sendAssets: sendAssetsReducer,
       sessions: sessionsReducer,
       settings: settingsReducer,

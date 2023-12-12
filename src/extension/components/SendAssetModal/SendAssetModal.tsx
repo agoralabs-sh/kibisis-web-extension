@@ -1,5 +1,4 @@
 import {
-  CreateToastFnReturn,
   Heading,
   HStack,
   Modal,
@@ -45,6 +44,7 @@ import {
   updateAccountInformationThunk,
   updateAccountTransactionsThunk,
 } from '@extension/features/accounts';
+import { create as createNotification } from '@extension/features/notifications';
 import {
   setAmount,
   setError,
@@ -60,7 +60,6 @@ import {
 import useAssets from '@extension/hooks/useAssets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
-import useToastWithDefaultOptions from '@extension/hooks/useToastWithDefaultOptions';
 
 // selectors
 import {
@@ -90,7 +89,10 @@ import {
 } from '@extension/types';
 
 // utils
-import { calculateMaxTransactionAmount } from '@extension/utils';
+import {
+  calculateMaxTransactionAmount,
+  ellipseAddress,
+} from '@extension/utils';
 
 interface IProps {
   onClose: () => void;
@@ -99,7 +101,6 @@ interface IProps {
 const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const toast: CreateToastFnReturn = useToastWithDefaultOptions();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const amount: string = useSelectSendingAssetAmount();
@@ -389,14 +390,16 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   }, [fromAccount, network, selectedAsset]);
   useEffect(() => {
     if (transactionId) {
-      toast({
-        description: t<string>('captions.transactionSuccessful', {
-          transactionId: transactionId,
-        }),
-        isClosable: true,
-        status: 'success',
-        title: t<string>('headings.transactionSuccessful'),
-      });
+      // send a success transaction
+      dispatch(
+        createNotification({
+          description: t<string>('captions.transactionSendSuccessful', {
+            transactionId: ellipseAddress(transactionId),
+          }),
+          title: t<string>('headings.transactionSuccessful'),
+          type: 'success',
+        })
+      );
 
       // refresh the account transactions
       if (fromAccount) {
@@ -432,21 +435,23 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
           break;
         case ErrorCodeEnum.OfflineError:
-          toast({
-            description: t<string>('captions.offline'),
-            isClosable: true,
-            status: 'error',
-            title: t<string>('headings.offline'),
-          });
+          dispatch(
+            createNotification({
+              ephemeral: true,
+              title: t<string>('headings.offline'),
+              type: 'error',
+            })
+          );
           break;
         default:
-          toast({
-            description: `Please contact support with code "${error.code}" and describe what happened.`,
-            duration: null,
-            isClosable: true,
-            status: 'error',
-            title: t<string>('errors.titles.code'),
-          });
+          dispatch(
+            createNotification({
+              description: `Please contact support with code "${error.code}" and describe what happened.`,
+              ephemeral: true,
+              title: t<string>('errors.titles.code'),
+              type: 'error',
+            })
+          );
           break;
       }
     }
