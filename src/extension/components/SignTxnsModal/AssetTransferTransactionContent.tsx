@@ -21,7 +21,12 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IStandardAsset,
+  IExplorer,
+  INetwork,
+} from '@extension/types';
 import { ICondensedProps } from './types';
 
 // utils
@@ -29,7 +34,7 @@ import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {
-  asset: IAsset | null;
+  asset: IStandardAsset | null;
   condensed?: ICondensedProps;
   explorer: IExplorer;
   fromAccount: IAccount | null;

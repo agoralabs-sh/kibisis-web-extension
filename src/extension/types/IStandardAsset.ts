@@ -22,7 +22,7 @@
  * retrieved.
  * @property {boolean} verified - whether this asset is verified according to vestige.fi
  */
-interface IAsset {
+interface IStandardAsset {
   clawbackAddress: string | null;
   creator: string;
   decimals: number;
@@ -44,4 +44,4 @@ interface IAsset {
   verified: boolean;
 }
 
-export default IAsset;
+export default IStandardAsset;

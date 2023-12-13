@@ -81,7 +81,7 @@ import { theme } from '@extension/theme';
 import {
   IAccount,
   IAppThunkDispatch,
-  IAsset,
+  IStandardAsset,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
@@ -101,14 +101,15 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const amount: string = useSelectSendingAssetAmount();
-  const assets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
+  const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
   const confirming: boolean = useSelectSendingAssetConfirming();
   const error: BaseExtensionError | null = useSelectSendingAssetError();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
   const note: string | null = useSelectSendingAssetNote();
-  const selectedAsset: IAsset | null = useSelectSendingAssetSelectedAsset();
+  const selectedAsset: IStandardAsset | null =
+    useSelectSendingAssetSelectedAsset();
   const transactionId: string | null = useSelectSendingAssetTransactionId();
   // hooks
   const {
@@ -137,7 +138,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const isOpen: boolean = !!selectedAsset;
   // handlers
   const handleAmountChange = (value: string) => dispatch(setAmount(value));
-  const handleAssetChange = (value: IAsset) =>
+  const handleAssetChange = (value: IStandardAsset) =>
     dispatch(setSelectedAsset(value));
   const handleCancelClick = () => onClose();
   const handleFromAccountChange = (account: IAccount) =>

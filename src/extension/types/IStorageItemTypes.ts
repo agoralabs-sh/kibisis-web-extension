@@ -3,7 +3,7 @@ import IAccount from './IAccount';
 import IAdvancedSettings from './IAdvancedSettings';
 import IAppearanceSettings from './IAppearanceSettings';
 import IAppWindow from './IAppWindow';
-import IAsset from './IAsset';
+import IStandardAsset from './IStandardAsset';
 import IGeneralSettings from './IGeneralSettings';
 import IEvent from './IEvent';
 import IPasswordTag from './IPasswordTag';
@@ -16,7 +16,7 @@ type IStorageItemTypes =
   | IAdvancedSettings
   | IAppearanceSettings
   | IAppWindow
-  | IAsset[]
+  | IStandardAsset[]
   | IGeneralSettings
   | IEvent[]
   | IPasswordTag

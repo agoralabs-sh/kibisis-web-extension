@@ -6,10 +6,10 @@ import { IoCheckmarkOutline } from 'react-icons/io5';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // types
-import { IAsset } from '@extension/types';
+import { IStandardAsset } from '@extension/types';
 
 interface IProps extends AvatarProps {
-  asset: IAsset;
+  asset: IStandardAsset;
   fallbackIcon: ReactElement;
 }
 

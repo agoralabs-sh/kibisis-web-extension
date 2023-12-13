@@ -6,7 +6,7 @@ import StorageManager from './StorageManager';
 
 // types
 import { IBaseOptions, ILogger } from '@common/types';
-import { IAsset } from '@extension/types';
+import { IStandardAsset } from '@extension/types';
 
 // utils
 import { convertGenesisHashToHex } from '@extension/utils';
@@ -43,9 +43,11 @@ export default class StandardAssetService {
   /**
    * Gets the standard assets for a given genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
-   * @returns {Promise<IAsset[]>} the list of standard assets.
+   * @returns {Promise<IStandardAsset[]>} the list of standard assets.
    */
-  public async getByGenesisHash(genesisHash: string): Promise<IAsset[]> {
+  public async getByGenesisHash(
+    genesisHash: string
+  ): Promise<IStandardAsset[]> {
     return (
       (await this.storageManager.getItem(this.createItemKey(genesisHash))) || []
     );
@@ -62,13 +64,13 @@ export default class StandardAssetService {
   /**
    * Saves standard assets to storage by the network's genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
-   * @param {IAsset[]} assets - the standard assets to save to storage.
-   * @returns {IAsset[]} the saved standard assets.
+   * @param {IStandardAsset[]} assets - the standard assets to save to storage.
+   * @returns {IStandardAsset[]} the saved standard assets.
    */
   public async saveByGenesisHash(
     genesisHash: string,
-    assets: IAsset[]
-  ): Promise<IAsset[]> {
+    assets: IStandardAsset[]
+  ): Promise<IStandardAsset[]> {
     await this.storageManager.setItems({
       [this.createItemKey(genesisHash)]: assets,
     });

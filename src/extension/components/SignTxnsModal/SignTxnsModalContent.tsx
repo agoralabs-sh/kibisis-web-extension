@@ -37,7 +37,7 @@ import {
   IAccount,
   IAccountInformation,
   IAppThunkDispatch,
-  IAsset,
+  IStandardAsset,
   IExplorer,
   INetwork,
 } from '@extension/types';
@@ -62,7 +62,7 @@ const SignTxnsModalContent: FC<IProps> = ({
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const logger: ILogger = useSelectLogger();
-  const standardAssets: IAsset[] = useSelectStandardAssetsByGenesisHash(
+  const standardAssets: IStandardAsset[] = useSelectStandardAssetsByGenesisHash(
     network.genesisHash
   );
   const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
@@ -76,7 +76,7 @@ const SignTxnsModalContent: FC<IProps> = ({
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   let singleTransaction: Transaction | null;
-  let singleTransactionAsset: IAsset | null;
+  let singleTransactionAsset: IStandardAsset | null;
   let singleTransactionFromAccount: IAccount | null;
   let singleTransactionType: TransactionTypeEnum;
 

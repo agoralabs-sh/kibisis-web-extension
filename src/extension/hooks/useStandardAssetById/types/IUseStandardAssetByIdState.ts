@@ -1,8 +1,8 @@
 // types
-import { IAsset } from '@extension/types';
+import { IStandardAsset } from '@extension/types';
 
 interface IUseStandardAssetByIdState {
-  standardAsset: IAsset | null;
+  standardAsset: IStandardAsset | null;
   updating: boolean;
 }
 

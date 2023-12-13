@@ -1,13 +1,13 @@
 import { BigNumber } from 'bignumber.js';
 
 // types
-import { IAlgorandAsset, IAsset } from '@extension/types';
+import { IAlgorandAsset, IStandardAsset } from '@extension/types';
 
 export default function mapAssetFromAlgorandAsset(
   algorandAsset: IAlgorandAsset,
   iconUrl: string | null,
   verified: boolean
-): IAsset {
+): IStandardAsset {
   return {
     clawbackAddress: algorandAsset.params.clawback || null,
     creator: algorandAsset.params.creator,

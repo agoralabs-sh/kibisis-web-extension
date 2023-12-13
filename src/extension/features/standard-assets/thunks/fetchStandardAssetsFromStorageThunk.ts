@@ -8,17 +8,17 @@ import { StandardAssetService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
-import { IAsset, IMainRootState, INetwork } from '@extension/types';
+import { IStandardAsset, IMainRootState, INetwork } from '@extension/types';
 
 // utils
 import { convertGenesisHashToHex } from '@extension/utils';
 
 const fetchStandardAssetsFromStorageThunk: AsyncThunk<
-  Record<string, IAsset[]>, // return
+  Record<string, IStandardAsset[]>, // return
   undefined, // args
   Record<string, never>
 > = createAsyncThunk<
-  Record<string, IAsset[]>,
+  Record<string, IStandardAsset[]>,
   undefined,
   { state: IMainRootState }
 >(StandardAssetsThunkEnum.FetchAssetsFromStorage, async (_, { getState }) => {
@@ -27,7 +27,7 @@ const fetchStandardAssetsFromStorageThunk: AsyncThunk<
   const assetService: StandardAssetService = new StandardAssetService({
     logger,
   });
-  const assetItems: Record<string, IAsset[]> = {};
+  const assetItems: Record<string, IStandardAsset[]> = {};
 
   logger.debug(
     `${StandardAssetsThunkEnum.FetchAssetsFromStorage}: fetching assets from storage`

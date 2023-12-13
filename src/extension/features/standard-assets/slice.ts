@@ -10,7 +10,7 @@ import {
 } from './thunks';
 
 // types
-import { IAsset } from '@extension/types';
+import { IStandardAsset } from '@extension/types';
 import {
   IStandardAssetsState,
   IUpdateStandardAssetInformationResult,
@@ -27,7 +27,7 @@ const slice = createSlice({
       fetchStandardAssetsFromStorageThunk.fulfilled,
       (
         state: IStandardAssetsState,
-        action: PayloadAction<Record<string, IAsset[]>>
+        action: PayloadAction<Record<string, IStandardAsset[]>>
       ) => {
         state.items = action.payload;
         state.fetching = false;

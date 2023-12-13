@@ -23,7 +23,7 @@ import { AccountService } from '@extension/services';
 // types
 import {
   IAccount,
-  IAsset,
+  IStandardAsset,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
@@ -32,7 +32,7 @@ import { createIconFromDataUri } from '@extension/utils';
 
 interface IProps {
   amount: string;
-  asset: IAsset;
+  asset: IStandardAsset;
   fromAccount: IAccount;
   network: INetworkWithTransactionParams;
   note: string | null;

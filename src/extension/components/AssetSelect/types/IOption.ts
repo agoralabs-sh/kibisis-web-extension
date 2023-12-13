@@ -1,7 +1,7 @@
-import { IAsset } from '@extension/types';
+import { IStandardAsset } from '@extension/types';
 
 interface IOption {
-  asset: IAsset;
+  asset: IStandardAsset;
   value: string;
 }
 

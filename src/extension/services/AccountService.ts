@@ -136,10 +136,10 @@ export default class AccountService {
 
   public static initializeDefaultAccountInformation(): IAccountInformation {
     return {
-      assetHoldings: [],
       atomicBalance: '0',
       authAddress: null,
       minAtomicBalance: '0',
+      standardAssetHoldings: [],
       updatedAt: null,
     };
   }

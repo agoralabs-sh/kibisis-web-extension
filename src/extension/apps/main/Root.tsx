@@ -56,8 +56,8 @@ import {
   IAccount,
   IAccountInformation,
   IAppThunkDispatch,
-  IAsset,
-  IAssetHolding,
+  IStandardAsset,
+  IStandardAssetHolding,
   INetwork,
 } from '@extension/types';
 
@@ -69,7 +69,7 @@ const Root: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   // hooks
   const accounts: IAccount[] = useSelectAccounts();
-  const assets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
+  const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // handlers
   const handleConfirmClose = () => dispatch(setConfirm(null));
@@ -117,11 +117,11 @@ const Root: FC = () => {
         ).toUpperCase();
         const accountInformation: IAccountInformation | null =
           account.networkInformation[encodedGenesisHash] || null;
-        let newAssets: IAssetHolding[];
+        let newAssets: IStandardAssetHolding[];
 
         if (accountInformation) {
           // filter out any new assets
-          newAssets = accountInformation.assetHoldings.filter(
+          newAssets = accountInformation.standardAssetHoldings.filter(
             (assetHolding) =>
               !assets.some((value) => value.id === assetHolding.id)
           );

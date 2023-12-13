@@ -47,7 +47,7 @@ import { AccountService } from '@extension/services';
 import {
   IAccount,
   IAccountInformation,
-  IAsset,
+  IStandardAsset,
   INetwork,
 } from '@extension/types';
 
@@ -63,7 +63,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   // selectors
   const fetching: boolean = useSelectFetchingAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const assets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
+  const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
   const updating: boolean = useSelectUpdatingStandardAssets();
   // hooks
   const accountInformation: IAccountInformation | null = useAccountInformation(
@@ -108,10 +108,13 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
       ));
     }
 
-    if (accountInformation && accountInformation.assetHoldings.length > 0) {
-      assetNodes = accountInformation.assetHoldings.reduce<ReactNode[]>(
+    if (
+      accountInformation &&
+      accountInformation.standardAssetHoldings.length > 0
+    ) {
+      assetNodes = accountInformation.standardAssetHoldings.reduce<ReactNode[]>(
         (acc, assetHolding, currentIndex) => {
-          const asset: IAsset | null =
+          const asset: IStandardAsset | null =
             assets.find((value) => value.id === assetHolding.id) || null;
           let standardUnitAmount: BigNumber;
 

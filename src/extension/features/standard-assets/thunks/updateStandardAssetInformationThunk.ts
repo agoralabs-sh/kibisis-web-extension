@@ -11,7 +11,7 @@ import { StandardAssetService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
-import { IAsset, IMainRootState } from '@extension/types';
+import { IStandardAsset, IMainRootState } from '@extension/types';
 import {
   IUpdateStandardAssetInformationPayload,
   IUpdateStandardAssetInformationResult,
@@ -33,11 +33,11 @@ const updateStandardAssetInformationThunk: AsyncThunk<
   StandardAssetsThunkEnum.UpdateStandardAssetInformation,
   async ({ ids, network }, { getState }) => {
     const logger: ILogger = getState().system.logger;
-    let currentStandardAssets: IAsset[];
+    let currentStandardAssets: IStandardAsset[];
     let id: string;
-    let standardAssetInformation: IAsset | null;
+    let standardAssetInformation: IStandardAsset | null;
     let standardAssetService: StandardAssetService;
-    let updatedStandardAssets: IAsset[] = [];
+    let updatedStandardAssets: IStandardAsset[] = [];
 
     // get the information for each asset and add it to the array
     for (let i: number = 0; i < ids.length; i++) {
@@ -83,7 +83,10 @@ const updateStandardAssetInformationThunk: AsyncThunk<
     // update the storage with the new asset information
     currentStandardAssets = await standardAssetService.saveByGenesisHash(
       network.genesisHash,
-      upsertItemsById<IAsset>(currentStandardAssets, updatedStandardAssets)
+      upsertItemsById<IStandardAsset>(
+        currentStandardAssets,
+        updatedStandardAssets
+      )
     );
 
     return {

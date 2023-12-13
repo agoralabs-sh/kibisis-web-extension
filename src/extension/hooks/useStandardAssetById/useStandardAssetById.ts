@@ -12,7 +12,7 @@ import {
 } from '@extension/selectors';
 
 // types
-import { IAppThunkDispatch, IAsset, INetwork } from '@extension/types';
+import { IAppThunkDispatch, IStandardAsset, INetwork } from '@extension/types';
 import { IUseStandardAssetByIdState } from './types';
 
 export default function useStandardAssetById(
@@ -21,14 +21,17 @@ export default function useStandardAssetById(
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const standardAssets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
+  const standardAssets: IStandardAsset[] =
+    useSelectStandardAssetsBySelectedNetwork();
   const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
   // state
-  const [standardAsset, setStandardAsset] = useState<IAsset | null>(null);
+  const [standardAsset, setStandardAsset] = useState<IStandardAsset | null>(
+    null
+  );
 
   // fetch unknown asset information
   useEffect(() => {
-    const selectedAsset: IAsset | null =
+    const selectedAsset: IStandardAsset | null =
       standardAssets.find((value) => value.id === id) || null;
 
     if (selectedAsset) {

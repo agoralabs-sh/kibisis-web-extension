@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 
 // types
-import { IAsset, IMainRootState } from '@extension/types';
+import { IStandardAsset, IMainRootState } from '@extension/types';
 
-export default function useSelectSendingAssetSelectedAsset(): IAsset | null {
-  return useSelector<IMainRootState, IAsset | null>(
+export default function useSelectSendingAssetSelectedAsset(): IStandardAsset | null {
+  return useSelector<IMainRootState, IStandardAsset | null>(
     (state) => state.sendAssets.selectedAsset
   );
 }

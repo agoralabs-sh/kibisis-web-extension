@@ -28,7 +28,7 @@ import { theme } from '@extension/theme';
 // types
 import {
   IAccount,
-  IAsset,
+  IStandardAsset,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
@@ -45,7 +45,7 @@ interface IProps {
   network: INetworkWithTransactionParams;
   maximumTransactionAmount: string;
   onValueChange: (value: string) => void;
-  selectedAsset: IAsset;
+  selectedAsset: IStandardAsset;
   value: string | null;
 }
 

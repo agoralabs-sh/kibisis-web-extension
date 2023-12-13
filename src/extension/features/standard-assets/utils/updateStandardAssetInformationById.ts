@@ -4,7 +4,7 @@ import { Algodv2 } from 'algosdk';
 import { IBaseOptions } from '@common/types';
 import {
   IAlgorandAsset,
-  IAsset,
+  IStandardAsset,
   INetwork,
   ITinyManAssetResponse,
 } from '@extension/types';
@@ -27,12 +27,12 @@ interface IOptions extends IBaseOptions {
  * Gets the standard asset information.
  * @param {string} id - the ID of the standard asset to fetch.
  * @param {IOptions} options - options needed to fetch the standard asset information.
- * @returns {Promise<IAsset | null>} the standard asset information, or null if there was an error.
+ * @returns {Promise<IStandardAsset | null>} the standard asset information, or null if there was an error.
  */
 export default async function updateStandardAssetInformationById(
   id: string,
   { delay = 0, logger, network }: IOptions
-): Promise<IAsset | null> {
+): Promise<IStandardAsset | null> {
   let standardAssetInformation: IAlgorandAsset;
   let standardAssetList: Record<string, ITinyManAssetResponse> | null = null;
   let client: Algodv2;

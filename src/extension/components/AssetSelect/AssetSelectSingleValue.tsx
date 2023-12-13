@@ -13,11 +13,14 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 
 // types
-import { IAsset, INetworkWithTransactionParams } from '@extension/types';
+import {
+  IStandardAsset,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 import { DEFAULT_GAP } from '@extension/constants';
 
 interface IProps {
-  asset: IAsset;
+  asset: IStandardAsset;
   network: INetworkWithTransactionParams;
 }
 
