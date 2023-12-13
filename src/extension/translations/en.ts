@@ -104,8 +104,7 @@ const translation: IResourceLanguage = {
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
     noAccountsFound:
       'You can create a new account or import an existing account.',
-    noAssetsFound:
-      'You have not opt-ed into any assets. Try adding an asset now.',
+    noAssetsFound: 'You have not added any assets. Try adding one now.',
     noSessionsFound: 'Enabled dApps will appear here.',
     offline: 'It looks like you are offline, some features may not work',
     openOn: 'Open on {{name}}',
@@ -159,6 +158,7 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    addAsset: 'Add Asset',
     allowMainNetConfirm: 'Allow MainNet Networks',
     authentication: 'Authentication',
     beta: 'Beta',

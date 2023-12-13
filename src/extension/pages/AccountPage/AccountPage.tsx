@@ -36,6 +36,7 @@ import {
 
 // components
 import ActivityTab from '@extension/components/ActivityTab';
+import AddAssetModal from '@extension/components/AddAssetModal';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
 import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
@@ -101,6 +102,11 @@ import { ellipseAddress } from '@extension/utils';
 const AccountPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const {
+    isOpen: isAddAssetModalOpen,
+    onClose: onAddAssetModalClose,
+    onOpen: onAddAssetModalOpen,
+  } = useDisclosure();
   const {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,
@@ -355,7 +361,10 @@ const AccountPage: FC = () => {
               h="70dvh"
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
-              <AssetsTab account={account} />
+              <AssetsTab
+                account={account}
+                onAddAssetClick={onAddAssetModalOpen}
+              />
 
               <AccountNftsTab />
 
@@ -443,13 +452,19 @@ const AccountPage: FC = () => {
   return (
     <>
       {account && (
-        <ShareAddressModal
-          address={AccountService.convertPublicKeyToAlgorandAddress(
-            account.publicKey
-          )}
-          isOpen={isShareAddressModalOpen}
-          onClose={onShareAddressModalClose}
-        />
+        <>
+          <ShareAddressModal
+            address={AccountService.convertPublicKeyToAlgorandAddress(
+              account.publicKey
+            )}
+            isOpen={isShareAddressModalOpen}
+            onClose={onShareAddressModalClose}
+          />
+          <AddAssetModal
+            isOpen={isAddAssetModalOpen}
+            onClose={onAddAssetModalClose}
+          />
+        </>
       )}
       <VStack
         alignItems="center"

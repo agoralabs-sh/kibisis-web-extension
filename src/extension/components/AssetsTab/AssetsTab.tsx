@@ -1,13 +1,17 @@
-import { Spacer, TabPanel, VStack } from '@chakra-ui/react';
+import { HStack, Spacer, TabPanel, VStack } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAdd } from 'react-icons/io5';
 
 // components
+import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import AssetTabArc200AssetItem from './AssetTabArc200AssetItem';
 import AssetTabLoadingItem from './AssetTabLoadingItem';
 import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
@@ -37,9 +41,10 @@ interface IAssetHolding {
 }
 interface IProps {
   account: IAccount;
+  onAddAssetClick: () => void;
 }
 
-const AssetsTab: FC<IProps> = ({ account }: IProps) => {
+const AssetsTab: FC<IProps> = ({ account, onAddAssetClick }: IProps) => {
   const { t } = useTranslation();
   // selectors
   const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
@@ -68,7 +73,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
       ]
     : [];
   // handlers
-  const handleAddAssetClick = () => console.log('add an asset!');
+  const handleAddAssetClick = () => onAddAssetClick();
   // renders
   const renderContent = () => {
     let assetNodes: ReactNode[] = [];
@@ -129,12 +134,36 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
     }
 
     return assetNodes.length > 0 ? (
-      assetNodes
+      <VStack flexGrow={1} w="full">
+        {/*controls*/}
+        <HStack
+          alignItems="center"
+          justifyContent="flex-end"
+          px={DEFAULT_GAP / 2}
+          py={DEFAULT_GAP / 3}
+          spacing={1}
+          w="full"
+        >
+          <Button
+            leftIcon={<IoAdd />}
+            onClick={handleAddAssetClick}
+            size="sm"
+            variant="solid"
+          >
+            {t<string>('buttons.addAsset')}
+          </Button>
+        </HStack>
+
+        {/*asset list*/}
+        <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
+          {assetNodes}
+        </VStack>
+      </VStack>
     ) : (
-      <>
-        {/*empty state*/}
+      <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
         <Spacer />
 
+        {/*empty state*/}
         <EmptyState
           button={{
             icon: IoAdd,
@@ -146,7 +175,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
         />
 
         <Spacer />
-      </>
+      </VStack>
     );
   };
 
@@ -159,9 +188,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
       sx={{ display: 'flex', flexDirection: 'column' }}
       w="full"
     >
-      <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
-        {renderContent()}
-      </VStack>
+      {renderContent()}
     </TabPanel>
   );
 };
