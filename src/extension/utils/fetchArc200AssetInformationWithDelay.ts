@@ -1,13 +1,14 @@
-import { Algodv2 } from 'algosdk';
+import { Algodv2, Indexer } from 'algosdk';
 import Arc200Contract from 'arc200js';
 
 // types
 import { IArc200AssetInformation } from '@extension/types';
 
 interface IOptions {
-  client: Algodv2;
+  algodClient: Algodv2;
   delay: number;
   id: string;
+  indexerClient: Indexer;
 }
 
 /**
@@ -16,16 +17,17 @@ interface IOptions {
  * @returns {IArc200AssetInformation | null} ARC200 asset information from the node.
  */
 export default async function fetchArc200AssetInformationWithDelay({
-  client,
+  algodClient,
   delay,
   id,
+  indexerClient,
 }: IOptions): Promise<IArc200AssetInformation | null> {
   return new Promise((resolve, reject) =>
     setTimeout(async () => {
       const contract: Arc200Contract = new Arc200Contract(
         parseInt(id),
-        client,
-        undefined
+        algodClient,
+        indexerClient
       );
       let result: { returnValue: IArc200AssetInformation; success: boolean };
 

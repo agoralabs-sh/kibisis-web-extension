@@ -1,5 +1,3 @@
-import { Algodv2 } from 'algosdk';
-
 // types
 import { IBaseOptions } from '@common/types';
 import {
@@ -9,9 +7,11 @@ import {
 } from '@extension/types';
 
 // utils
-import { getAlgodClient } from '@common/utils';
-import { mapArc200AssetFromArc200AssetInformation } from '@extension/utils';
-import fetchArc200AssetInformationWithDelay from './fetchArc200AssetInformationWithDelay';
+import { getAlgodClient, getIndexerClient } from '@common/utils';
+import {
+  fetchArc200AssetInformationWithDelay,
+  mapArc200AssetFromArc200AssetInformation,
+} from '@extension/utils';
 
 interface IOptions extends IBaseOptions {
   delay?: number;
@@ -28,16 +28,18 @@ export default async function updateArc200AssetInformationById(
   id: string,
   { delay = 0, logger, network }: IOptions
 ): Promise<IArc200Asset | null> {
-  const client: Algodv2 = getAlgodClient(network, {
-    logger,
-  });
   let assetInformation: IArc200AssetInformation | null;
 
   try {
     assetInformation = await fetchArc200AssetInformationWithDelay({
-      client,
+      algodClient: getAlgodClient(network, {
+        logger,
+      }),
       delay,
       id,
+      indexerClient: getIndexerClient(network, {
+        logger,
+      }),
     });
 
     if (!assetInformation) {

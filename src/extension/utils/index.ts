@@ -7,6 +7,7 @@ export { default as createNativeCurrencyAsset } from './createNativeCurrencyAsse
 export { default as decodeJwt } from './decodeJwt';
 export { default as decodeURLSearchParam } from './decodeURLSearchParam';
 export { default as ellipseAddress } from './ellipseAddress';
+export { default as fetchArc200AssetInformationWithDelay } from './fetchArc200AssetInformationWithDelay';
 export { default as fetchAssetList } from './fetchAssetList';
 export { default as fetchAssetVerification } from './fetchAssetVerification';
 export { default as fetchWithDelay } from './fetchWithDelay';

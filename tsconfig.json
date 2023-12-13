@@ -29,6 +29,7 @@
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
+      "@extension/features/add-asset": ["src/extension/features/add-asset"],
       "@extension/features/arc200-assets": [
         "src/extension/features/arc200-assets"
       ],

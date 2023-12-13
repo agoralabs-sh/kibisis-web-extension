@@ -1,5 +1,6 @@
 enum StoreNameEnum {
   Accounts = 'accounts',
+  AddAsset = 'add-asset',
   Arc200Assets = 'arc200-assets',
   Events = 'events',
   Messages = 'messages',

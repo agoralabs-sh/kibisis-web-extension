@@ -6,6 +6,8 @@ export type { default as IAddAccountCompleteResult } from './IAddAccountComplete
 export type { default as IAdvancedSettings } from './IAdvancedSettings';
 export type { default as IAlgorandAccountInformation } from './IAlgorandAccountInformation';
 export type { default as IAlgorandAccountTransaction } from './IAlgorandAccountTransaction';
+export type { default as IAlgorandApplication } from './IAlgorandApplication';
+export type { default as IAlgorandApplicationParams } from './IAlgorandApplicationParams';
 export type { default as IAlgorandApplicationTransaction } from './IAlgorandApplicationTransaction';
 export type { default as IAlgorandAsset } from './IAlgorandAsset';
 export type { default as IAlgorandAssetHolding } from './IAlgorandAssetHolding';
@@ -16,6 +18,7 @@ export type { default as IAlgorandAssetTransferTransaction } from './IAlgorandAs
 export type { default as IAlgorandKeyRegistrationTransaction } from './IAlgorandKeyRegistrationTransaction';
 export type { default as IAlgorandPaymentTransaction } from './IAlgorandPaymentTransaction';
 export type { default as IAlgorandPendingTransactionResponse } from './IAlgorandPendingTransactionResponse';
+export type { default as IAlgorandSearchApplicationsResult } from './IAlgorandSearchApplicationsResult';
 export type { default as IAlgorandStateSchema } from './IAlgorandStateSchema';
 export type { default as IAlgorandTealKeyValue } from './IAlgorandTealKeyValue';
 export type { default as IAlgorandTealValue } from './IAlgorandTealValue';
