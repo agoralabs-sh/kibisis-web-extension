@@ -4187,6 +4187,21 @@ algosdk@^2.1.0:
     tweetnacl "^1.0.3"
     vlq "^2.0.4"
 
+algosdk@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/algosdk/-/algosdk-2.7.0.tgz#6ebab130d25fc3cb4c74dce4d8753c7e86db1404"
+  integrity sha512-sBE9lpV7bup3rZ+q2j3JQaFAE9JwZvjWKX00vPlG8e9txctXbgLL56jZhSWZndqhDI9oI+0P4NldkuQIWdrUyg==
+  dependencies:
+    algo-msgpack-with-bigint "^2.1.1"
+    buffer "^6.0.3"
+    hi-base32 "^0.5.1"
+    js-sha256 "^0.9.0"
+    js-sha3 "^0.8.0"
+    js-sha512 "^0.8.0"
+    json-bigint "^1.0.0"
+    tweetnacl "^1.0.3"
+    vlq "^2.0.4"
+
 ansi-align@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.1.tgz#0cdf12e111ace773a86e9a1fad1225c43cb19a59"
@@ -4269,6 +4284,22 @@ anymatch@^3.0.3, anymatch@~3.1.2:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-2.0.0.tgz#52520b8ae5b569215b354efc0caa3fe1e45a8adc"
   integrity sha512-lYe4Gx7QT+MKGbDsA+Z+he/Wtef0BiwDOlK/XkBrdfsh9J/jPPXbX0tE9x9cl27Tmu5gg3QUbUrQYa/y+KOHPQ==
+
+arc200js@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/arc200js/-/arc200js-2.3.1.tgz#51a537ff0841a0a209b013cc53a435699a018be0"
+  integrity sha512-rBhoVVcHi2rYUTEteTvayGpI596N1uCPbQsQ9zNLmyJPkd2o5uTYyu4wBC87rWSGdDJejljylaC9NPalcei1cg==
+  dependencies:
+    arccjs "^2.3.1"
+
+arccjs@^2.3.1:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/arccjs/-/arccjs-2.3.2.tgz#4177c332b70453fed040b8694241d0ec31abb676"
+  integrity sha512-RHdzIWU0UfYlnQP5f+RfVkPddsCyP9s0zwjOebIhdM1qnN21D7pAMBadg6JxDcawOVg9AktzQY+bghASb1uEJQ==
+  dependencies:
+    algosdk "^2.7.0"
+    buffer "^6.0.3"
+    sha512 "^0.0.1"
 
 archy@~1.0.0:
   version "1.0.0"
@@ -11993,6 +12024,11 @@ sha.js@2.4.11:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
+
+sha512@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/sha512/-/sha512-0.0.1.tgz#26e59022ef6abc75c7344f0a5ef3936caf2542d5"
+  integrity sha512-2t5rZu72ebMg2/OK44S/48UKxgBl7Kc3w/I0DkIzNld8NzDUxFBL2pOYAWEVknnuOqO62a3W+3x/xD7LrosGBg==
 
 shallow-clone@^3.0.0:
   version "3.0.1"

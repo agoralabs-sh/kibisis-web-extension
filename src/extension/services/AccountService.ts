@@ -136,6 +136,7 @@ export default class AccountService {
 
   public static initializeDefaultAccountInformation(): IAccountInformation {
     return {
+      arc200AssetHoldings: [],
       atomicBalance: '0',
       authAddress: null,
       minAtomicBalance: '0',
@@ -218,14 +219,10 @@ export default class AccountService {
 
           return {
             ...acc,
-            ...(accountInformation
-              ? {
-                  [encodedGenesisHash]: accountInformation,
-                }
-              : {
-                  [encodedGenesisHash]:
-                    AccountService.initializeDefaultAccountInformation(),
-                }),
+            [encodedGenesisHash]: {
+              ...AccountService.initializeDefaultAccountInformation(),
+              ...accountInformation,
+            },
           };
         },
         {}
@@ -240,14 +237,10 @@ export default class AccountService {
 
         return {
           ...acc,
-          ...(accountTransactions
-            ? {
-                [encodedGenesisHash]: accountTransactions,
-              }
-            : {
-                [encodedGenesisHash]:
-                  AccountService.initializeDefaultAccountTransactions(),
-              }),
+          [encodedGenesisHash]: {
+            ...AccountService.initializeDefaultAccountTransactions(),
+            ...accountTransactions,
+          },
         };
       }, {}),
     }));

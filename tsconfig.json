@@ -29,6 +29,9 @@
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
+      "@extension/features/arc200-assets": [
+        "src/extension/features/arc200-assets"
+      ],
       "@extension/features/events": ["src/extension/features/events"],
       "@extension/features/messages": ["src/extension/features/messages"],
       "@extension/features/networks": ["src/extension/features/networks"],

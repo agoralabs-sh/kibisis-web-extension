@@ -27,6 +27,8 @@ export type { default as IAppThunkDispatch } from './IAppThunkDispatch';
 export type { default as IApplicationTransaction } from './IApplicationTransaction';
 export type { default as IApplicationTransactionTypes } from './IApplicationTransactionTypes';
 export type { default as IAppWindow } from './IAppWindow';
+export type { default as IArc200Asset } from './IArc200Asset';
+export type { default as IArc200AssetHolding } from './IArc200AssetHolding';
 export type { default as IAssetConfigTransaction } from './IAssetConfigTransaction';
 export type { default as IAssetCreateTransaction } from './IAssetCreateTransaction';
 export type { default as IAssetDestroyTransaction } from './IAssetDestroyTransaction';
