@@ -1,47 +1,23 @@
-import {
-  Button,
-  HStack,
-  Icon,
-  Skeleton,
-  SkeletonCircle,
-  Spacer,
-  TabPanel,
-  Text,
-  Tooltip,
-  VStack,
-} from '@chakra-ui/react';
-import { faker } from '@faker-js/faker';
-import BigNumber from 'bignumber.js';
+import { Spacer, TabPanel, VStack } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAdd, IoChevronForward } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+import { IoAdd } from 'react-icons/io5';
 
 // components
-import AssetAvatar from '@extension/components/AssetAvatar';
-import AssetIcon from '@extension/components/AssetIcon';
 import EmptyState from '@extension/components/EmptyState';
-
-// constants
-import { ACCOUNTS_ROUTE, ASSETS_ROUTE } from '@extension/constants';
+import AssetTabLoadingItem from './AssetTabLoadingItem';
+import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
-import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
-  useSelectFetchingAssets,
+  useSelectFetchingStandardAssets,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
   useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
-
-// services
-import { AccountService } from '@extension/services';
 
 // types
 import {
@@ -51,9 +27,6 @@ import {
   INetwork,
 } from '@extension/types';
 
-// utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
-
 interface IProps {
   account: IAccount;
 }
@@ -61,153 +34,50 @@ interface IProps {
 const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const { t } = useTranslation();
   // selectors
-  const fetching: boolean = useSelectFetchingAssets();
+  const fetching: boolean = useSelectFetchingStandardAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
+  const standardAssets: IStandardAsset[] =
+    useSelectStandardAssetsBySelectedNetwork();
   const updating: boolean = useSelectUpdatingStandardAssets();
   // hooks
   const accountInformation: IAccountInformation | null = useAccountInformation(
     account.id
   );
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const subTextColor: string = useSubTextColor();
   const handleAddAssetClick = () => console.log('add an asset!');
   const renderContent = () => {
     let assetNodes: ReactNode[] = [];
 
     if (fetching || updating) {
       return Array.from({ length: 3 }, (_, index) => (
-        <Button
-          borderRadius={0}
-          fontSize="md"
-          h={16}
-          justifyContent="start"
-          key={`account-assets-fetching-item-${index}`}
-          pl={3}
-          pr={1}
-          py={0}
-          variant="ghost"
-          w="full"
-        >
-          <HStack m={0} p={0} spacing={2} w="full">
-            <SkeletonCircle size="9" />
-            <Skeleton flexGrow={1}>
-              <Text color={defaultTextColor} fontSize="sm">
-                {faker.company.bsBuzz()}
-              </Text>
-            </Skeleton>
-            <Skeleton>
-              <Text color={defaultTextColor} fontSize="sm">
-                {faker.random.numeric(3)}
-              </Text>
-            </Skeleton>
-          </HStack>
-        </Button>
+        <AssetTabLoadingItem key={`asset-tab-loading-item-${index}`} />
       ));
     }
 
     if (
+      selectedNetwork &&
       accountInformation &&
       accountInformation.standardAssetHoldings.length > 0
     ) {
       assetNodes = accountInformation.standardAssetHoldings.reduce<ReactNode[]>(
-        (acc, assetHolding, currentIndex) => {
-          const asset: IStandardAsset | null =
-            assets.find((value) => value.id === assetHolding.id) || null;
-          let standardUnitAmount: BigNumber;
+        (acc, standardAssetHolding, currentIndex) => {
+          const standardAsset: IStandardAsset | null =
+            standardAssets.find(
+              (value) => value.id === standardAssetHolding.id
+            ) || null;
 
-          if (!asset) {
+          if (!standardAsset) {
             return acc;
           }
 
-          standardUnitAmount = convertToStandardUnit(
-            new BigNumber(assetHolding.amount),
-            asset.decimals
-          );
-
           return [
             ...acc,
-            <Tooltip
-              aria-label="Asset"
-              key={`account-asset-asset-holding-item-${currentIndex}`}
-              label={asset.name || asset.id}
-            >
-              <Button
-                _hover={{
-                  bg: buttonHoverBackgroundColor,
-                }}
-                as={Link}
-                borderRadius={0}
-                fontSize="md"
-                h={16}
-                justifyContent="start"
-                pl={3}
-                pr={1}
-                py={0}
-                rightIcon={
-                  <Icon
-                    as={IoChevronForward}
-                    color={defaultTextColor}
-                    h={6}
-                    w={6}
-                  />
-                }
-                to={`${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
-                  account.publicKey
-                )}${ASSETS_ROUTE}/${asset.id}`}
-                variant="ghost"
-                w="full"
-              >
-                <HStack alignItems="center" m={0} p={0} spacing={2} w="full">
-                  {/*icon*/}
-                  <AssetAvatar
-                    asset={asset}
-                    fallbackIcon={
-                      <AssetIcon
-                        color={primaryButtonTextColor}
-                        networkTheme={selectedNetwork?.chakraTheme}
-                        h={6}
-                        w={6}
-                      />
-                    }
-                    size="sm"
-                  />
-
-                  {/*name/unit*/}
-                  {asset.unitName ? (
-                    <VStack
-                      alignItems="flex-start"
-                      flexGrow={1}
-                      justifyContent="space-between"
-                      spacing={0}
-                    >
-                      <Text
-                        color={defaultTextColor}
-                        fontSize="sm"
-                        maxW={175}
-                        noOfLines={1}
-                      >
-                        {asset.name || asset.id}
-                      </Text>
-                      <Text color={subTextColor} fontSize="xs">
-                        {asset.unitName}
-                      </Text>
-                    </VStack>
-                  ) : (
-                    <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
-                      {asset.name || asset.id}
-                    </Text>
-                  )}
-
-                  {/*amount*/}
-                  <Text color={defaultTextColor} fontSize="sm">
-                    {formatCurrencyUnit(standardUnitAmount, asset.decimals)}
-                  </Text>
-                </HStack>
-              </Button>
-            </Tooltip>,
+            <AssetTabStandardAssetItem
+              account={account}
+              key={`asset-tab-item-${currentIndex}`}
+              network={selectedNetwork}
+              standardAsset={standardAsset}
+              standardAssetHolding={standardAssetHolding}
+            />,
           ];
         },
         []
@@ -220,6 +90,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
       <>
         {/*empty state*/}
         <Spacer />
+
         <EmptyState
           button={{
             icon: IoAdd,
@@ -229,6 +100,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
           description={t<string>('captions.noAssetsFound')}
           text={t<string>('headings.noAssetsFound')}
         />
+
         <Spacer />
       </>
     );

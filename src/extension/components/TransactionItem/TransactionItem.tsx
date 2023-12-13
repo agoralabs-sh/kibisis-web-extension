@@ -10,7 +10,11 @@ import DefaultTransactionItemContent from './DefaultTransactionItemContent';
 import PaymentTransactionItemContent from './PaymentTransactionItemContent';
 
 // constants
-import { ACCOUNTS_ROUTE, TRANSACTIONS_ROUTE } from '@extension/constants';
+import {
+  ACCOUNTS_ROUTE,
+  TAB_ITEM_HEIGHT,
+  TRANSACTIONS_ROUTE,
+} from '@extension/constants';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -88,7 +92,7 @@ const TransactionItem: FC<IProps> = ({
       as={Link}
       borderRadius={0}
       fontSize="md"
-      h={16}
+      h={TAB_ITEM_HEIGHT}
       justifyContent="start"
       pl={3}
       pr={1}
