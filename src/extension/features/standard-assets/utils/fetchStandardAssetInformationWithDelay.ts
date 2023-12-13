@@ -10,11 +10,11 @@ interface IOptions {
 }
 
 /**
- * Fetches asset information from the node with a delay.
+ * Fetches standard asset information from the node with a delay.
  * @param {IOptions} options - options needed to send the request.
  * @returns {IAlgorandAsset} asset information from the node.
  */
-export default async function fetchAssetInformationWithDelay({
+export default async function fetchStandardAssetInformationWithDelay({
   client,
   delay,
   id,

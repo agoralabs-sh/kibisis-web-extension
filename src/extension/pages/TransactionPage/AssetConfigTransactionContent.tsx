@@ -23,7 +23,7 @@ import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
-import useAsset from '@extension/hooks/useAsset';
+import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -64,7 +64,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
   const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
-  const { asset, updating } = useAsset(transaction.assetId);
+  const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
@@ -376,7 +376,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
                   w={3}
                 />
               }
-              unit={asset?.unitName || undefined}
+              unit={standardAsset?.unitName || undefined}
             />
           </PageItem>
 
@@ -397,7 +397,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
           </PageItem>
 
           {/*url*/}
-          {asset?.url && (
+          {standardAsset?.url && (
             <PageItem fontSize="sm" label={t<string>('labels.url')}>
               <HStack spacing={0}>
                 <Code
@@ -406,22 +406,22 @@ const AssetConfigTransactionContent: FC<IProps> = ({
                   fontSize="sm"
                   wordBreak="break-word"
                 >
-                  {asset.url}
+                  {standardAsset.url}
                 </Code>
                 <OpenTabIconButton
                   size="sm"
                   tooltipLabel={t<string>('captions.openUrl')}
-                  url={asset.url}
+                  url={standardAsset.url}
                 />
               </HStack>
             </PageItem>
           )}
 
           {/*unit name*/}
-          {asset?.unitName && (
+          {standardAsset?.unitName && (
             <PageItem fontSize="sm" label={t<string>('labels.unitName')}>
               <Text color={subTextColor} fontSize="sm">
-                {asset.unitName}
+                {standardAsset.unitName}
               </Text>
             </PageItem>
           )}

@@ -27,7 +27,6 @@ import { ACCOUNTS_ROUTE, ASSETS_ROUTE } from '@extension/constants';
 
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
-import useAssets from '@extension/hooks/useAssets';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
@@ -36,8 +35,9 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import {
   useSelectFetchingAssets,
+  useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
-  useSelectUpdatingAssets,
+  useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
 
 // services
@@ -58,17 +58,17 @@ interface IProps {
   account: IAccount;
 }
 
-const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
+const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const { t } = useTranslation();
   // selectors
   const fetching: boolean = useSelectFetchingAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const updating: boolean = useSelectUpdatingAssets();
+  const assets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
+  const updating: boolean = useSelectUpdatingStandardAssets();
   // hooks
   const accountInformation: IAccountInformation | null = useAccountInformation(
     account.id
   );
-  const assets: IAsset[] = useAssets();
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
@@ -247,4 +247,4 @@ const AccountAssetsTab: FC<IProps> = ({ account }: IProps) => {
   );
 };
 
-export default AccountAssetsTab;
+export default AssetsTab;

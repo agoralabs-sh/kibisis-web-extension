@@ -33,11 +33,6 @@ export default function createCommonConfig(): Configuration {
           'features',
           'accounts'
         ),
-        ['@extension/features/assets']: resolve(
-          extensionPath,
-          'features',
-          'assets'
-        ),
         ['@extension/features/events']: resolve(
           extensionPath,
           'features',
@@ -77,6 +72,11 @@ export default function createCommonConfig(): Configuration {
           extensionPath,
           'features',
           'settings'
+        ),
+        ['@extension/features/standard-assets']: resolve(
+          extensionPath,
+          'features',
+          'standard-assets'
         ),
         ['@extension/features/system']: resolve(
           extensionPath,

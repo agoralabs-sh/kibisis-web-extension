@@ -16,7 +16,7 @@ import {
   fetchAssetVerification,
   mapAssetFromAlgorandAsset,
 } from '@extension/utils';
-import fetchAssetInformationWithDelay from './fetchAssetInformationWithDelay';
+import fetchStandardAssetInformationWithDelay from './fetchStandardAssetInformationWithDelay';
 
 interface IOptions extends IBaseOptions {
   delay?: number;
@@ -24,23 +24,23 @@ interface IOptions extends IBaseOptions {
 }
 
 /**
- * Gets the asset information.
- * @param {string} id - the ID of the asset to fetch.
- * @param {IOptions} options - options needed to fetch the asset information.
- * @returns {Promise<IAsset | null>} the asset information of null if there was an error.
+ * Gets the standard asset information.
+ * @param {string} id - the ID of the standard asset to fetch.
+ * @param {IOptions} options - options needed to fetch the standard asset information.
+ * @returns {Promise<IAsset | null>} the standard asset information, or null if there was an error.
  */
-export default async function fetchAssetInformationById(
+export default async function updateStandardAssetInformationById(
   id: string,
   { delay = 0, logger, network }: IOptions
 ): Promise<IAsset | null> {
-  let assetInformation: IAlgorandAsset;
-  let assetList: Record<string, ITinyManAssetResponse> | null = null;
+  let standardAssetInformation: IAlgorandAsset;
+  let standardAssetList: Record<string, ITinyManAssetResponse> | null = null;
   let client: Algodv2;
   let verified: boolean;
 
   // TODO: asset list only exists for algorand mainnet, move this url to config?
   if (network.genesisHash === 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=') {
-    assetList = await fetchAssetList({
+    standardAssetList = await fetchAssetList({
       logger,
     });
   }
@@ -51,7 +51,7 @@ export default async function fetchAssetInformationById(
   verified = false;
 
   try {
-    assetInformation = await fetchAssetInformationWithDelay({
+    standardAssetInformation = await fetchStandardAssetInformationWithDelay({
       client,
       delay,
       id,
@@ -59,7 +59,7 @@ export default async function fetchAssetInformationById(
 
     logger &&
       logger.debug(
-        `${fetchAssetInformationById.name}: getting verified status for "${id}" on "${network.genesisId}"`
+        `${updateStandardAssetInformationById.name}: getting verified status for "${id}" on "${network.genesisId}"`
       );
 
     // TODO: asset list only exists for algorand mainnet, move this url to config?
@@ -73,14 +73,14 @@ export default async function fetchAssetInformationById(
     }
 
     return mapAssetFromAlgorandAsset(
-      assetInformation,
-      assetList ? assetList[id]?.logo.svg || null : null,
+      standardAssetInformation,
+      standardAssetList ? standardAssetList[id]?.logo.svg || null : null,
       verified
     );
   } catch (error) {
     logger &&
       logger.error(
-        `${fetchAssetInformationById.name}: failed to get asset information for asset "${id}" on ${network.genesisId}: ${error.message}`
+        `${updateStandardAssetInformationById.name}: failed to get asset information for asset "${id}" on ${network.genesisId}: ${error.message}`
       );
 
     return null;

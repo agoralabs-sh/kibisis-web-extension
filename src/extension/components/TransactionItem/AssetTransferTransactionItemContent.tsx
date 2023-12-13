@@ -8,8 +8,8 @@ import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetDisplay from '@extension/components/AssetDisplay';
 
 // hooks
-import useAsset from '@extension/hooks/useAsset';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
@@ -35,7 +35,7 @@ const AssetTransferTransactionItemContent: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   // hooks
-  const { asset, updating } = useAsset(transaction.assetId);
+  const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const accountAddress: string =
@@ -63,7 +63,7 @@ const AssetTransferTransactionItemContent: FC<IProps> = ({
 
       <VStack alignItems="flex-end" justifyContent="center" spacing={2}>
         {/*amount*/}
-        {!asset || updating ? (
+        {!standardAsset || updating ? (
           <Skeleton>
             <HStack spacing={1}>
               <Text color={subTextColor} fontSize="sm">
@@ -81,7 +81,7 @@ const AssetTransferTransactionItemContent: FC<IProps> = ({
                 ? 'green.500'
                 : 'red.500'
             }
-            decimals={asset.decimals}
+            decimals={standardAsset.decimals}
             displayUnit={true}
             fontSize="sm"
             prefix={
@@ -91,7 +91,7 @@ const AssetTransferTransactionItemContent: FC<IProps> = ({
                 ? '+'
                 : '-'
             }
-            unit={asset.unitName || undefined}
+            unit={standardAsset.unitName || undefined}
           />
         )}
 

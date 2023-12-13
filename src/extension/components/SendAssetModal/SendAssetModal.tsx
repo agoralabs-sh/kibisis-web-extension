@@ -54,7 +54,6 @@ import {
 } from '@extension/features/send-assets';
 
 // hooks
-import useAssets from '@extension/hooks/useAssets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
@@ -69,6 +68,7 @@ import {
   useSelectSendingAssetNote,
   useSelectSendingAssetSelectedAsset,
   useSelectSendingAssetTransactionId,
+  useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
 // services
@@ -101,6 +101,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const amount: string = useSelectSendingAssetAmount();
+  const assets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
   const confirming: boolean = useSelectSendingAssetConfirming();
   const error: BaseExtensionError | null = useSelectSendingAssetError();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
@@ -118,7 +119,6 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     validate: validateToAddress,
     value: toAddress,
   } = useAddressInput();
-  const assets: IAsset[] = useAssets();
   const defaultTextColor: string = useDefaultTextColor();
   const {
     error: passwordError,

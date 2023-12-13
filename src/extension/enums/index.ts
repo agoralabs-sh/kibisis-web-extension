@@ -1,6 +1,5 @@
 export { default as AccountsThunkEnum } from './AccountsThunkEnum';
 export { default as AppTypeEnum } from './AppTypeEnum';
-export { default as AssetsThunkEnum } from './AssetsThunkEnum';
 export { default as ErrorCodeEnum } from './ErrorCodeEnum';
 export { default as EventsThunkEnum } from './EventsThunkEnum';
 export { default as EventTypeEnum } from './EventTypeEnum';
@@ -11,6 +10,7 @@ export { default as RegisterThunkEnum } from './RegisterThunkEnum';
 export { default as SendAssetsThunkEnum } from './SendAssetsThunkEnum';
 export { default as SessionsThunkEnum } from './SessionsThunkEnum';
 export { default as SettingsThunkEnum } from './SettingsThunkEnum';
+export { default as StandardAssetsThunkEnum } from './StandardAssetsThunkEnum';
 export { default as StoreNameEnum } from './StoreNameEnum';
 export { default as SystemThunkEnum } from './SystemThunkEnum';
 export { default as TransactionTypeEnum } from './TransactionTypeEnum';

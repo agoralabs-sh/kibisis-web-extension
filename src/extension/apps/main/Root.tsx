@@ -18,10 +18,6 @@ import {
   startPollingForAccountInformationThunk,
 } from '@extension/features/accounts';
 import {
-  fetchAssetsThunk,
-  updateAssetInformationThunk,
-} from '@extension/features/assets';
-import {
   setEnableRequest,
   setSignBytesRequest,
   setSignTxnsRequest,
@@ -37,6 +33,10 @@ import {
   initializeWalletConnectThunk,
 } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
+import {
+  fetchStandardAssetsFromStorageThunk,
+  updateStandardAssetInformationThunk,
+} from '@extension/features/standard-assets';
 import { setConfirm, setError, setNavigate } from '@extension/features/system';
 
 // hooks
@@ -47,7 +47,7 @@ import useNotifications from '@extension/hooks/useNotifications';
 // selectors
 import {
   useSelectAccounts,
-  useSelectAssets,
+  useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -69,7 +69,7 @@ const Root: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   // hooks
   const accounts: IAccount[] = useSelectAccounts();
-  const assets: Record<string, IAsset[]> | null = useSelectAssets();
+  const assets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // handlers
   const handleConfirmClose = () => dispatch(setConfirm(null));
@@ -86,7 +86,7 @@ const Root: FC = () => {
     dispatch(setNavigate(navigate));
     dispatch(fetchSettings());
     dispatch(fetchSessionsThunk());
-    dispatch(fetchAssetsThunk());
+    dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(initializeWalletConnectThunk());
     dispatch(startPollingForAccountInformationThunk());
     dispatch(startPollingForTransactionsParamsThunk());
@@ -123,15 +123,13 @@ const Root: FC = () => {
           // filter out any new assets
           newAssets = accountInformation.assetHoldings.filter(
             (assetHolding) =>
-              !assets[encodedGenesisHash].some(
-                (value) => value.id === assetHolding.id
-              )
+              !assets.some((value) => value.id === assetHolding.id)
           );
 
           // if we have any new assets, update the information
           if (newAssets.length > 0) {
             dispatch(
-              updateAssetInformationThunk({
+              updateStandardAssetInformationThunk({
                 ids: newAssets.map((value) => value.id),
                 network: selectedNetwork,
               })

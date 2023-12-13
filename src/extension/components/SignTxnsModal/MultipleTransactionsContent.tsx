@@ -21,7 +21,7 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useBorderColor from '@extension/hooks/useBorderColor';
 
 // selectors
-import { useSelectAssetsByGenesisHash } from '@extension/selectors';
+import { useSelectStandardAssetsByGenesisHash } from '@extension/selectors';
 
 // types
 import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
@@ -49,7 +49,9 @@ const MultipleTransactionsContent: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   // selectors
-  const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
+  const assets: IAsset[] = useSelectStandardAssetsByGenesisHash(
+    network.genesisHash
+  );
   // hooks
   const borderColor: string = useBorderColor();
   // state

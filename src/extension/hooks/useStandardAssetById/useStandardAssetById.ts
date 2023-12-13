@@ -2,38 +2,37 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 // features
-import { updateAssetInformationThunk } from '@extension/features/assets';
-
-// hooks
-import useAssets from '@extension/hooks/useAssets';
+import { updateStandardAssetInformationThunk } from '@extension/features/standard-assets';
 
 // selectors
 import {
   useSelectSelectedNetwork,
-  useSelectUpdatingAssets,
+  useSelectStandardAssetsBySelectedNetwork,
+  useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
 
 // types
 import { IAppThunkDispatch, IAsset, INetwork } from '@extension/types';
-import { IUseAssetState } from './types';
+import { IUseStandardAssetByIdState } from './types';
 
-export default function useAsset(assetId: string): IUseAssetState {
+export default function useStandardAssetById(
+  id: string
+): IUseStandardAssetByIdState {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const updatingAssets: boolean = useSelectUpdatingAssets();
-  //hooks
-  const assets: IAsset[] = useAssets();
+  const standardAssets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
+  const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
   // state
-  const [asset, setAsset] = useState<IAsset | null>(null);
+  const [standardAsset, setStandardAsset] = useState<IAsset | null>(null);
 
   // fetch unknown asset information
   useEffect(() => {
     const selectedAsset: IAsset | null =
-      assets.find((value) => value.id === assetId) || null;
+      standardAssets.find((value) => value.id === id) || null;
 
     if (selectedAsset) {
-      setAsset(selectedAsset);
+      setStandardAsset(selectedAsset);
 
       return;
     }
@@ -47,10 +46,10 @@ export default function useAsset(assetId: string): IUseAssetState {
       //   })
       // );
     }
-  }, [assets]);
+  }, [standardAssets]);
 
   return {
-    asset,
-    updating: updatingAssets,
+    standardAsset,
+    updating: updatingStandardAssets,
   };
 }

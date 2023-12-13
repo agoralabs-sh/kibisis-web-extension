@@ -7,4 +7,5 @@ export { default as EventQueueService } from './EventQueueService';
 export { default as ExternalMessageBroker } from './ExternalMessageBroker';
 export { default as PrivateKeyService } from './PrivateKeyService';
 export { default as SessionService } from './SessionService';
+export { default as StandardAssetService } from './StandardAssetService';
 export { default as StorageManager } from './StorageManager';

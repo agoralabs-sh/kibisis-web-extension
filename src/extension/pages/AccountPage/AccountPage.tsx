@@ -36,8 +36,8 @@ import {
 
 // components
 import ActivityTab from '@extension/components/ActivityTab';
-import AccountAssetsTab from '@extension/components/AccountAssetsTab';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
+import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
@@ -355,7 +355,7 @@ const AccountPage: FC = () => {
               h="70dvh"
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
-              <AccountAssetsTab account={account} />
+              <AssetsTab account={account} />
 
               <AccountNftsTab />
 

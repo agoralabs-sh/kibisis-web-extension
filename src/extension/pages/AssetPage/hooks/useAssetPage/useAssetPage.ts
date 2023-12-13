@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 
-// hooks
-import useAssets from '@extension/hooks/useAssets';
-
 // selectors
 import {
   useSelectAccounts,
   useSelectSelectedNetwork,
+  useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
 // services
@@ -32,8 +30,7 @@ export default function useAssetPage({
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  // hooks
-  const assets: IAsset[] = useAssets();
+  const assets: IAsset[] = useSelectStandardAssetsBySelectedNetwork();
   // state
   const [account, setAccount] = useState<IAccount | null>(null);
   const [accountInformation, setAccountInformation] =

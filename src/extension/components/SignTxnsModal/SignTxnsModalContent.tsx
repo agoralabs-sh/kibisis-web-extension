@@ -20,15 +20,15 @@ import { TransactionTypeEnum } from '@extension/enums';
 
 // features
 import { updateAccountInformation } from '@extension/features/accounts';
-import { updateAssetInformationThunk } from '@extension/features/assets';
+import { updateStandardAssetInformationThunk } from '@extension/features/standard-assets';
 
 // selectors
 import {
   useSelectAccounts,
-  useSelectAssetsByGenesisHash,
+  useSelectStandardAssetsByGenesisHash,
   useSelectLogger,
   useSelectPreferredBlockExplorer,
-  useSelectUpdatingAssets,
+  useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
 
 // types
@@ -61,9 +61,11 @@ const SignTxnsModalContent: FC<IProps> = ({
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
   const logger: ILogger = useSelectLogger();
-  const updatingAssets: boolean = useSelectUpdatingAssets();
+  const standardAssets: IAsset[] = useSelectStandardAssetsByGenesisHash(
+    network.genesisHash
+  );
+  const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // state
   const [fetchingAccountInformation, setFetchingAccountInformation] =
@@ -84,14 +86,16 @@ const SignTxnsModalContent: FC<IProps> = ({
       .filter((value) => value.type === 'axfer')
       .filter(
         (transaction) =>
-          !assets.some((value) => value.id === String(transaction.assetIndex))
+          !standardAssets.some(
+            (value) => value.id === String(transaction.assetIndex)
+          )
       )
       .map((value) => String(value.assetIndex));
 
     // if we have some unknown assets, update the asset storage
     if (unknownAssetIds.length > 0) {
       dispatch(
-        updateAssetInformationThunk({
+        updateStandardAssetInformationThunk({
           ids: unknownAssetIds,
           network,
         })
@@ -165,7 +169,7 @@ const SignTxnsModalContent: FC<IProps> = ({
         explorer={explorer}
         fromAccounts={fromAccounts}
         loadingAccountInformation={fetchingAccountInformation}
-        loadingAssetInformation={updatingAssets}
+        loadingAssetInformation={updatingStandardAssets}
         network={network}
         transactions={transactions}
       />
@@ -176,7 +180,7 @@ const SignTxnsModalContent: FC<IProps> = ({
 
   if (singleTransaction) {
     singleTransactionAsset =
-      assets.find(
+      standardAssets.find(
         (value) => value.id === String(singleTransaction?.assetIndex)
       ) || null;
     singleTransactionFromAccount = fromAccounts[0] || null;
@@ -206,7 +210,7 @@ const SignTxnsModalContent: FC<IProps> = ({
             asset={singleTransactionAsset}
             explorer={explorer}
             fromAccount={singleTransactionFromAccount}
-            loading={fetchingAccountInformation || updatingAssets}
+            loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={singleTransaction}
           />
@@ -217,7 +221,7 @@ const SignTxnsModalContent: FC<IProps> = ({
             asset={singleTransactionAsset}
             explorer={explorer}
             fromAccount={singleTransactionFromAccount}
-            loading={fetchingAccountInformation || updatingAssets}
+            loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={singleTransaction}
           />
@@ -236,7 +240,7 @@ const SignTxnsModalContent: FC<IProps> = ({
             asset={singleTransactionAsset}
             explorer={explorer}
             fromAccount={singleTransactionFromAccount}
-            loading={fetchingAccountInformation || updatingAssets}
+            loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={singleTransaction}
           />
