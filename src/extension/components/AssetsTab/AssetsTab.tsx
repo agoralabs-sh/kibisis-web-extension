@@ -5,6 +5,7 @@ import { IoAdd } from 'react-icons/io5';
 
 // components
 import EmptyState from '@extension/components/EmptyState';
+import AssetTabArc200AssetItem from './AssetTabArc200AssetItem';
 import AssetTabLoadingItem from './AssetTabLoadingItem';
 import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 
@@ -13,6 +14,7 @@ import useAccountInformation from '@extension/hooks/useAccountInformation';
 
 // selectors
 import {
+  useSelectArc200AssetsBySelectedNetwork,
   useSelectFetchingStandardAssets,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
@@ -25,8 +27,14 @@ import {
   IAccountInformation,
   IStandardAsset,
   INetwork,
+  IArc200Asset,
 } from '@extension/types';
 
+interface IAssetHolding {
+  amount: string;
+  id: string;
+  isArc200: boolean;
+}
 interface IProps {
   account: IAccount;
 }
@@ -34,6 +42,7 @@ interface IProps {
 const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const { t } = useTranslation();
   // selectors
+  const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
   const fetching: boolean = useSelectFetchingStandardAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const standardAssets: IStandardAsset[] =
@@ -43,7 +52,24 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const accountInformation: IAccountInformation | null = useAccountInformation(
     account.id
   );
+  // misc
+  const allAssetHoldings: IAssetHolding[] = accountInformation
+    ? [
+        ...accountInformation.arc200AssetHoldings.map(({ amount, id }) => ({
+          amount,
+          id,
+          isArc200: true,
+        })),
+        ...accountInformation.standardAssetHoldings.map(({ amount, id }) => ({
+          amount,
+          id,
+          isArc200: false,
+        })),
+      ]
+    : [];
+  // handlers
   const handleAddAssetClick = () => console.log('add an asset!');
+  // renders
   const renderContent = () => {
     let assetNodes: ReactNode[] = [];
 
@@ -53,30 +79,48 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
       ));
     }
 
-    if (
-      selectedNetwork &&
-      accountInformation &&
-      accountInformation.standardAssetHoldings.length > 0
-    ) {
-      assetNodes = accountInformation.standardAssetHoldings.reduce<ReactNode[]>(
-        (acc, standardAssetHolding, currentIndex) => {
-          const standardAsset: IStandardAsset | null =
-            standardAssets.find(
-              (value) => value.id === standardAssetHolding.id
-            ) || null;
+    if (selectedNetwork && accountInformation && allAssetHoldings.length > 0) {
+      assetNodes = allAssetHoldings.reduce<ReactNode[]>(
+        (acc, { amount, id, isArc200 }, currentIndex) => {
+          const key: string = `asset-tab-item-${currentIndex}`;
+          let arc200Asset: IArc200Asset | null;
+          let standardAsset: IStandardAsset | null;
 
-          if (!standardAsset) {
+          // for standard assets
+          if (!isArc200) {
+            standardAsset =
+              standardAssets.find((value) => value.id === id) || null;
+
+            if (!standardAsset) {
+              return acc;
+            }
+
+            return [
+              ...acc,
+              <AssetTabStandardAssetItem
+                account={account}
+                amount={amount}
+                key={key}
+                network={selectedNetwork}
+                standardAsset={standardAsset}
+              />,
+            ];
+          }
+
+          arc200Asset = arc200Assets.find((value) => value.id === id) || null;
+
+          if (!arc200Asset) {
             return acc;
           }
 
           return [
             ...acc,
-            <AssetTabStandardAssetItem
+            <AssetTabArc200AssetItem
               account={account}
-              key={`asset-tab-item-${currentIndex}`}
+              amount={amount}
+              arc200Asset={arc200Asset}
+              key={key}
               network={selectedNetwork}
-              standardAsset={standardAsset}
-              standardAssetHolding={standardAssetHolding}
             />,
           ];
         },

@@ -9,7 +9,7 @@ import {
 
 /**
  * Selects all the standard assets for the selected network.
- * @returns {IStandardAsset[]} all network assets, or null.
+ * @returns {IStandardAsset[]} all standard assets for the selected network.
  */
 export default function useSelectStandardAssetsBySelectedNetwork(): IStandardAsset[] {
   return useSelector<IMainRootState, IStandardAsset[]>((state) => {

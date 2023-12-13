@@ -3,6 +3,7 @@ export { default as useSelectAccountById } from './useSelectAccountById';
 export { default as useSelectAccountInformationByAddress } from './useSelectAccountInformationByAddress';
 export { default as useSelectAccounts } from './useSelectAccounts';
 export { default as useSelectAccountTransactionsByAddress } from './useSelectAccountTransactionsByAddress';
+export { default as useSelectArc200AssetsBySelectedNetwork } from './useSelectArc200AssetsBySelectedNetwork';
 export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConfirm } from './useSelectConfirm';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';

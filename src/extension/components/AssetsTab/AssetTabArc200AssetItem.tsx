@@ -39,7 +39,7 @@ import { useSelectColorMode } from '@extension/selectors';
 import { AccountService } from '@extension/services';
 
 // types
-import { IAccount, INetwork, IStandardAsset } from '@extension/types';
+import { IAccount, IArc200Asset, INetwork } from '@extension/types';
 
 // utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
@@ -47,15 +47,15 @@ import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 interface IProps {
   account: IAccount;
   amount: string;
+  arc200Asset: IArc200Asset;
   network: INetwork;
-  standardAsset: IStandardAsset;
 }
 
-const AssetTabStandardAssetItem: FC<IProps> = ({
+const AssetTabArc200AssetItem: FC<IProps> = ({
   account,
   amount,
+  arc200Asset,
   network,
-  standardAsset,
 }: IProps) => {
   // selectors
   const colorMode: ColorMode = useSelectColorMode();
@@ -67,13 +67,13 @@ const AssetTabStandardAssetItem: FC<IProps> = ({
   // misc
   const standardUnitAmount: BigNumber = convertToStandardUnit(
     new BigNumber(amount),
-    standardAsset.decimals
+    arc200Asset.decimals
   );
 
   return (
     <Tooltip
-      aria-label="Standard asset"
-      label={standardAsset.name || standardAsset.id}
+      aria-label="ARC200 asset"
+      label={arc200Asset.name || arc200Asset.id}
     >
       <Button
         _hover={{
@@ -92,14 +92,14 @@ const AssetTabStandardAssetItem: FC<IProps> = ({
         }
         to={`${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
           account.publicKey
-        )}${ASSETS_ROUTE}/${standardAsset.id}`}
+        )}${ASSETS_ROUTE}/${arc200Asset.id}`}
         variant="ghost"
         w="full"
       >
         <HStack alignItems="center" m={0} p={0} spacing={2} w="full">
           {/*icon*/}
           <AssetAvatar
-            asset={standardAsset}
+            asset={arc200Asset}
             fallbackIcon={
               <AssetIcon
                 color={primaryButtonTextColor}
@@ -111,8 +111,8 @@ const AssetTabStandardAssetItem: FC<IProps> = ({
             size="sm"
           />
 
-          {/*name/unit*/}
-          {standardAsset.unitName ? (
+          {/*name/symbol*/}
+          {arc200Asset.symbol ? (
             <VStack
               alignItems="flex-start"
               flexGrow={1}
@@ -126,16 +126,16 @@ const AssetTabStandardAssetItem: FC<IProps> = ({
                 maxW={175}
                 noOfLines={1}
               >
-                {standardAsset.name || standardAsset.id}
+                {arc200Asset.name || arc200Asset.id}
               </Text>
 
               <Text color={subTextColor} fontSize="xs">
-                {standardAsset.unitName}
+                {arc200Asset.symbol}
               </Text>
             </VStack>
           ) : (
             <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
-              {standardAsset.name || standardAsset.id}
+              {arc200Asset.name || arc200Asset.id}
             </Text>
           )}
 
@@ -147,15 +147,15 @@ const AssetTabStandardAssetItem: FC<IProps> = ({
             spacing={DEFAULT_GAP / 3}
           >
             <Text color={defaultTextColor} fontSize="sm">
-              {formatCurrencyUnit(standardUnitAmount, standardAsset.decimals)}
+              {formatCurrencyUnit(standardUnitAmount, arc200Asset.decimals)}
             </Text>
 
             <Tag
-              colorScheme="blue"
+              colorScheme="green"
               size="sm"
               variant={colorMode === 'dark' ? 'solid' : 'subtle'}
             >
-              <TagLabel>ASA</TagLabel>
+              <TagLabel>ARC200</TagLabel>
             </Tag>
           </VStack>
         </HStack>
@@ -164,4 +164,4 @@ const AssetTabStandardAssetItem: FC<IProps> = ({
   );
 };
 
-export default AssetTabStandardAssetItem;
+export default AssetTabArc200AssetItem;
