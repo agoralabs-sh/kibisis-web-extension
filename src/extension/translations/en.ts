@@ -32,6 +32,8 @@ const translation: IResourceLanguage = {
     sign: 'Sign',
   },
   captions: {
+    addAsset:
+      'Enter an asset ID, name, symbol or application ID (for ARC-200).',
     addressCopied: 'Address copied!',
     addressDoesNotMatch: 'This address does not match the signer',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
