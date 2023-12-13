@@ -29,6 +29,7 @@ export type { default as IApplicationTransactionTypes } from './IApplicationTran
 export type { default as IAppWindow } from './IAppWindow';
 export type { default as IArc200Asset } from './IArc200Asset';
 export type { default as IArc200AssetHolding } from './IArc200AssetHolding';
+export type { default as IArc200AssetInformation } from './IArc200AssetInformation';
 export type { default as IAssetConfigTransaction } from './IAssetConfigTransaction';
 export type { default as IAssetCreateTransaction } from './IAssetCreateTransaction';
 export type { default as IAssetDestroyTransaction } from './IAssetDestroyTransaction';

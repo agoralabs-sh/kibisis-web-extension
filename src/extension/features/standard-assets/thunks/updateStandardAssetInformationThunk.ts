@@ -11,7 +11,7 @@ import { StandardAssetService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
-import { IStandardAsset, IMainRootState } from '@extension/types';
+import { IMainRootState, IStandardAsset } from '@extension/types';
 import {
   IUpdateStandardAssetInformationPayload,
   IUpdateStandardAssetInformationResult,
@@ -33,27 +33,24 @@ const updateStandardAssetInformationThunk: AsyncThunk<
   StandardAssetsThunkEnum.UpdateStandardAssetInformation,
   async ({ ids, network }, { getState }) => {
     const logger: ILogger = getState().system.logger;
-    let currentStandardAssets: IStandardAsset[];
+    let asset: IStandardAsset | null;
+    let currentAssets: IStandardAsset[];
     let id: string;
-    let standardAssetInformation: IStandardAsset | null;
-    let standardAssetService: StandardAssetService;
-    let updatedStandardAssets: IStandardAsset[] = [];
+    let assetService: StandardAssetService;
+    let updatedAssets: IStandardAsset[] = [];
 
     // get the information for each asset and add it to the array
     for (let i: number = 0; i < ids.length; i++) {
       id = ids[i];
 
       try {
-        standardAssetInformation = await updateStandardAssetInformationById(
-          id,
-          {
-            delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
-            logger,
-            network,
-          }
-        );
+        asset = await updateStandardAssetInformationById(id, {
+          delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          logger,
+          network,
+        });
 
-        if (!standardAssetInformation) {
+        if (!asset) {
           continue;
         }
 
@@ -61,7 +58,7 @@ const updateStandardAssetInformationThunk: AsyncThunk<
           `${StandardAssetsThunkEnum.UpdateStandardAssetInformation}: successfully updated asset information for standard asset "${id}" on "${network.genesisId}"`
         );
 
-        updatedStandardAssets.push(standardAssetInformation);
+        updatedAssets.push(asset);
       } catch (error) {
         logger.error(
           `${StandardAssetsThunkEnum.UpdateStandardAssetInformation}: failed to get asset information for standard asset "${id}" on ${network.genesisId}: ${error.message}`
@@ -69,29 +66,24 @@ const updateStandardAssetInformationThunk: AsyncThunk<
       }
     }
 
-    standardAssetService = new StandardAssetService({
+    assetService = new StandardAssetService({
       logger,
     });
-    currentStandardAssets = await standardAssetService.getByGenesisHash(
-      network.genesisHash
-    );
+    currentAssets = await assetService.getByGenesisHash(network.genesisHash);
 
     logger.debug(
       `${StandardAssetsThunkEnum.UpdateStandardAssetInformation}: saving new asset information for network "${network.genesisId}" to storage`
     );
 
     // update the storage with the new asset information
-    currentStandardAssets = await standardAssetService.saveByGenesisHash(
+    currentAssets = await assetService.saveByGenesisHash(
       network.genesisHash,
-      upsertItemsById<IStandardAsset>(
-        currentStandardAssets,
-        updatedStandardAssets
-      )
+      upsertItemsById<IStandardAsset>(currentAssets, updatedAssets)
     );
 
     return {
       network,
-      standardAssets: currentStandardAssets,
+      standardAssets: currentAssets,
     };
   }
 );

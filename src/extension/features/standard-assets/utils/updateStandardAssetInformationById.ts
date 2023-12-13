@@ -14,7 +14,7 @@ import { getAlgodClient } from '@common/utils';
 import {
   fetchAssetList,
   fetchAssetVerification,
-  mapAssetFromAlgorandAsset,
+  mapStandardAssetFromAlgorandAsset,
 } from '@extension/utils';
 import fetchStandardAssetInformationWithDelay from './fetchStandardAssetInformationWithDelay';
 
@@ -72,7 +72,7 @@ export default async function updateStandardAssetInformationById(
       });
     }
 
-    return mapAssetFromAlgorandAsset(
+    return mapStandardAssetFromAlgorandAsset(
       standardAssetInformation,
       standardAssetList ? standardAssetList[id]?.logo.svg || null : null,
       verified

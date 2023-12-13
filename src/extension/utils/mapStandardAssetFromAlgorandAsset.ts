@@ -3,7 +3,7 @@ import { BigNumber } from 'bignumber.js';
 // types
 import { IAlgorandAsset, IStandardAsset } from '@extension/types';
 
-export default function mapAssetFromAlgorandAsset(
+export default function mapStandardAssetFromAlgorandAsset(
   algorandAsset: IAlgorandAsset,
   iconUrl: string | null,
   verified: boolean

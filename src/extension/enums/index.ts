@@ -1,5 +1,6 @@
 export { default as AccountsThunkEnum } from './AccountsThunkEnum';
 export { default as AppTypeEnum } from './AppTypeEnum';
+export { default as Arc200AssetsThunkEnum } from './Arc200AssetsThunkEnum';
 export { default as ErrorCodeEnum } from './ErrorCodeEnum';
 export { default as EventsThunkEnum } from './EventsThunkEnum';
 export { default as EventTypeEnum } from './EventTypeEnum';
