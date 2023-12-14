@@ -16,7 +16,7 @@ import {
 
 // utils
 import { mapAlgorandTransactionToTransaction } from '@extension/utils';
-import fetchAlgorandAccountTransactionsWithDelay from './fetchAlgorandAccountTransactionsWithDelay';
+import lookupAlgorandAccountTransactionsWithDelay from './lookupAlgorandAccountTransactionsWithDelay';
 
 interface IOptions extends IBaseOptions {
   address: string;
@@ -47,7 +47,7 @@ export default async function refreshTransactions({
 
   try {
     algorandAccountTransactions =
-      await fetchAlgorandAccountTransactionsWithDelay({
+      await lookupAlgorandAccountTransactionsWithDelay({
         address,
         afterTime,
         client,

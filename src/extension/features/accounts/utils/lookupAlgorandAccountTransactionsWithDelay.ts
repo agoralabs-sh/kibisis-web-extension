@@ -14,11 +14,11 @@ interface IOptions {
 }
 
 /**
- * Fetches account transactions from the node with a delay.
+ * Looks up the account transactions for a given address with a delay.
  * @param {IOptions} options - options needed to send the request.
  * @returns {IAlgorandAccountTransaction} account transactions from the node.
  */
-export default async function fetchAlgorandAccountTransactionsWithDelay({
+export default async function lookupAlgorandAccountTransactionsWithDelay({
   address,
   afterTime,
   client,

@@ -14,7 +14,7 @@ import {
 // utils
 import { getAlgodClient } from '@common/utils';
 import { mapAlgorandAccountInformationToAccount } from '@extension/utils';
-import fetchAlgorandAccountInformationWithDelay from './fetchAlgorandAccountInformationWithDelay';
+import algorandAccountInformationWithDelay from './algorandAccountInformationWithDelay';
 
 interface IOptions extends IBaseOptions {
   address: string;
@@ -69,13 +69,11 @@ export default async function updateAccountInformation({
     );
 
   try {
-    algorandAccountInformation = await fetchAlgorandAccountInformationWithDelay(
-      {
-        address,
-        client,
-        delay,
-      }
-    );
+    algorandAccountInformation = await algorandAccountInformationWithDelay({
+      address,
+      client,
+      delay,
+    });
     updatedAt = new Date();
 
     logger &&

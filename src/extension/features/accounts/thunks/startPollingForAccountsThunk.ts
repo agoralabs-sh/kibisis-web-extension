@@ -13,24 +13,25 @@ import updateAccountsThunk from './updateAccountsThunk';
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 
-const startPollingForAccountInformationThunk: AsyncThunk<
+const startPollingForAccountsThunk: AsyncThunk<
   number, // return
   undefined, // args
   Record<string, never>
 > = createAsyncThunk<number, undefined, { state: IMainRootState }>(
-  AccountsThunkEnum.StartPollingForAccountInformation,
+  AccountsThunkEnum.StartPollingForAccounts,
   (_, { dispatch, getState }) => {
     const logger: ILogger = getState().system.logger;
 
     logger.debug(
-      `${AccountsThunkEnum.StartPollingForAccountInformation}: started polling for account information`
+      `${AccountsThunkEnum.StartPollingForAccounts}: started polling for account information and recent transactions`
     );
 
     return window.setInterval(
       () =>
         dispatch(
           updateAccountsThunk({
-            informationOnly: true, // only update account information
+            informationOnly: false, // get account information
+            refreshTransactions: true, // get any new transactions
           })
         ),
       ACCOUNT_INFORMATION_REFRESH_INTERVAL
@@ -38,4 +39,4 @@ const startPollingForAccountInformationThunk: AsyncThunk<
   }
 );
 
-export default startPollingForAccountInformationThunk;
+export default startPollingForAccountsThunk;

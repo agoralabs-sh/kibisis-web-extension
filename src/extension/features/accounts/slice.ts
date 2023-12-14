@@ -8,8 +8,8 @@ import {
   fetchAccountsFromStorageThunk,
   removeAccountByIdThunk,
   saveNewAccountThunk,
-  startPollingForAccountInformationThunk,
-  stopPollingForAccountInformationThunk,
+  startPollingForAccountsThunk,
+  stopPollingForAccountsThunk,
   updateAccountsThunk,
 } from './thunks';
 
@@ -92,14 +92,14 @@ const slice = createSlice({
     });
     /** start polling for account information **/
     builder.addCase(
-      startPollingForAccountInformationThunk.fulfilled,
+      startPollingForAccountsThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<number>) => {
         state.pollingId = action.payload;
       }
     );
     /** stop polling for account information **/
     builder.addCase(
-      stopPollingForAccountInformationThunk.fulfilled,
+      stopPollingForAccountsThunk.fulfilled,
       (state: IAccountsState) => {
         state.pollingId = null;
       }
