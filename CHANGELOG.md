@@ -1,3 +1,10 @@
+# [1.7.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.3...v1.7.0-beta.4) (2023-12-14)
+
+
+### Bug Fixes
+
+* use network config code in minimum balance tooltip ([#54](https://github.com/agoralabs-sh/kibisis-web-extension/issues/54)) ([124c888](https://github.com/agoralabs-sh/kibisis-web-extension/commit/124c888e64f9745b72dd30481a08228ac17d4313))
+
 # [1.7.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.2...v1.7.0-beta.3) (2023-12-14)
 
 
