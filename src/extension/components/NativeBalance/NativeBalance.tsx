@@ -50,6 +50,7 @@ const NativeBalance: FC<IProps> = ({
             minumumStandardUnit,
             nativeCurrency.decimals
           ),
+          code: nativeCurrency.code.toLowerCase(),
         })}
       >
         <span
