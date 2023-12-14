@@ -1,3 +1,10 @@
+# [1.7.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.4...v1.7.0-beta.5) (2023-12-14)
+
+
+### Features
+
+* default to voi testnet network ([#56](https://github.com/agoralabs-sh/kibisis-web-extension/issues/56)) ([7e1b237](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7e1b2371af9aa8252304251c84ab65459652b782))
+
 # [1.7.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.3...v1.7.0-beta.4) (2023-12-14)
 
 
