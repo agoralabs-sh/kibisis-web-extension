@@ -133,9 +133,10 @@ const AddAssetModal: FC<IProps> = ({ isOpen, onClose }: IProps) => {
 
         <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
           {selectedNetwork &&
-            arc200Assets.map((value) => (
+            arc200Assets.map((value, index) => (
               <AddAssetArc200AssetItem
                 asset={value}
+                key={`add-asset-modal-item-${index}`}
                 network={selectedNetwork}
               />
             ))}

@@ -114,7 +114,7 @@ const AddAssetArc200AssetItem: FC<IProps> = ({ asset, network }: IProps) => {
             justifyContent="space-between"
             spacing={DEFAULT_GAP / 3}
           >
-            <Text color={defaultTextColor} fontSize="xs">
+            <Text color={subTextColor} fontSize="xs">
               {asset.id}
             </Text>
 
