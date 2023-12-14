@@ -1,3 +1,10 @@
+# [1.7.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.2...v1.7.0-beta.3) (2023-12-14)
+
+
+### Features
+
+* polls for new transactions when also fetching updated account information ([#53](https://github.com/agoralabs-sh/kibisis-web-extension/issues/53)) ([3279431](https://github.com/agoralabs-sh/kibisis-web-extension/commit/32794319867e238bd963a206595ea1ca61312154))
+
 # [1.7.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.1...v1.7.0-beta.2) (2023-12-12)
 
 
