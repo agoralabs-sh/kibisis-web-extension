@@ -14,7 +14,7 @@ import {
 // utils
 import { getIndexerClient } from '@common/utils';
 import { mapAlgorandTransactionToTransaction } from '@extension/utils';
-import fetchAlgorandAccountTransactionsWithDelay from './fetchAlgorandAccountTransactionsWithDelay';
+import lookupAlgorandAccountTransactionsWithDelay from './lookupAlgorandAccountTransactionsWithDelay';
 import refreshTransactions from './refreshTransactions';
 
 interface IOptions extends IBaseOptions {
@@ -86,7 +86,7 @@ export default async function updateAccountTransactions({
 
   try {
     algorandAccountTransaction =
-      await fetchAlgorandAccountTransactionsWithDelay({
+      await lookupAlgorandAccountTransactionsWithDelay({
         address,
         afterTime: null,
         client,
