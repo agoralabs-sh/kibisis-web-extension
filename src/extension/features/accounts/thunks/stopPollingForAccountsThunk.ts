@@ -7,19 +7,19 @@ import { AccountsThunkEnum } from '@extension/enums';
 import { ILogger } from '@common/types';
 import { IMainRootState } from '@extension/types';
 
-const stopPollingForAccountInformationThunk: AsyncThunk<
+const stopPollingForAccountsThunk: AsyncThunk<
   void, // return
   undefined, // args
   Record<string, never>
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
-  AccountsThunkEnum.StopPollingForAccountInformation,
+  AccountsThunkEnum.StopPollingForAccounts,
   (_, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const pollingId: number | null = getState().accounts.pollingId;
 
     if (pollingId) {
       logger.debug(
-        `${AccountsThunkEnum.StopPollingForAccountInformation}: stopped polling for account information`
+        `${AccountsThunkEnum.StopPollingForAccounts}: stopped polling for account information and recent transactions`
       );
 
       window.clearInterval(pollingId);
@@ -27,4 +27,4 @@ const stopPollingForAccountInformationThunk: AsyncThunk<
   }
 );
 
-export default stopPollingForAccountInformationThunk;
+export default stopPollingForAccountsThunk;

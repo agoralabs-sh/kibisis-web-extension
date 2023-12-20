@@ -15,7 +15,7 @@ import WalletConnectModal from '@extension/components/WalletConnectModal';
 // features
 import {
   fetchAccountsFromStorageThunk,
-  startPollingForAccountInformationThunk,
+  startPollingForAccountsThunk,
 } from '@extension/features/accounts';
 import { fetchArc200AssetsFromStorageThunk } from '@extension/features/arc200-assets';
 import {
@@ -90,7 +90,7 @@ const Root: FC = () => {
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchArc200AssetsFromStorageThunk());
     dispatch(initializeWalletConnectThunk());
-    dispatch(startPollingForAccountInformationThunk());
+    dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());
   }, []);
   // 2. when the selected network has been fetched from storage

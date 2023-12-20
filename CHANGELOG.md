@@ -1,3 +1,41 @@
+# [1.7.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0...v1.7.0) (2023-12-20)
+
+
+### Bug Fixes
+
+* algorand icon showing on voi when selecting an asset ([#44](https://github.com/agoralabs-sh/kibisis-web-extension/issues/44)) ([42db6b3](https://github.com/agoralabs-sh/kibisis-web-extension/commit/42db6b3ce53e9619296f50a7196e95cd948fda1a))
+* new recursive refresh txns mechanism and account info and txns are pooled together ([#47](https://github.com/agoralabs-sh/kibisis-web-extension/issues/47)) ([04ec48a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/04ec48aa79c467c28d5d6dcac9d206156d65651f))
+* unable to connect to dapps on chrome ([#43](https://github.com/agoralabs-sh/kibisis-web-extension/issues/43)) ([5c32151](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5c321513065d1fdb8ce7aea15a67e0aa49a20f9b))
+* use network config code in minimum balance tooltip ([#54](https://github.com/agoralabs-sh/kibisis-web-extension/issues/54)) ([124c888](https://github.com/agoralabs-sh/kibisis-web-extension/commit/124c888e64f9745b72dd30481a08228ac17d4313))
+
+
+### Features
+
+* default to voi testnet network ([#56](https://github.com/agoralabs-sh/kibisis-web-extension/issues/56)) ([7e1b237](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7e1b2371af9aa8252304251c84ab65459652b782))
+* polls for new transactions when also fetching updated account information ([#53](https://github.com/agoralabs-sh/kibisis-web-extension/issues/53)) ([3279431](https://github.com/agoralabs-sh/kibisis-web-extension/commit/32794319867e238bd963a206595ea1ca61312154))
+* show notification for new transactions ([#49](https://github.com/agoralabs-sh/kibisis-web-extension/issues/49)) ([e428218](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e428218f737bd8955a1144160f1c87e01cef6cab))
+
+# [1.7.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.4...v1.7.0-beta.5) (2023-12-14)
+
+
+### Features
+
+* default to voi testnet network ([#56](https://github.com/agoralabs-sh/kibisis-web-extension/issues/56)) ([7e1b237](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7e1b2371af9aa8252304251c84ab65459652b782))
+
+# [1.7.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.3...v1.7.0-beta.4) (2023-12-14)
+
+
+### Bug Fixes
+
+* use network config code in minimum balance tooltip ([#54](https://github.com/agoralabs-sh/kibisis-web-extension/issues/54)) ([124c888](https://github.com/agoralabs-sh/kibisis-web-extension/commit/124c888e64f9745b72dd30481a08228ac17d4313))
+
+# [1.7.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.2...v1.7.0-beta.3) (2023-12-14)
+
+
+### Features
+
+* polls for new transactions when also fetching updated account information ([#53](https://github.com/agoralabs-sh/kibisis-web-extension/issues/53)) ([3279431](https://github.com/agoralabs-sh/kibisis-web-extension/commit/32794319867e238bd963a206595ea1ca61312154))
+
 # [1.7.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0-beta.1...v1.7.0-beta.2) (2023-12-12)
 
 

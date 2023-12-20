@@ -14,7 +14,7 @@ interface IOptions {
  * @param {IOptions} options - options needed to send the request.
  * @returns {IAlgorandAccountInformation} account information from the node.
  */
-export default async function fetchAlgorandAccountInformationWithDelay({
+export default async function algorandAccountInformationWithDelay({
   address,
   client,
   delay,
