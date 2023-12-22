@@ -14,7 +14,7 @@ import SignTxnsModal from '@extension/components/SignTxnsModal';
 import WalletConnectModal from '@extension/components/WalletConnectModal';
 
 // features
-import { setAccountId } from '@extension/features/add-asset';
+import { reset as resetAddAsset } from '@extension/features/add-asset';
 import {
   fetchAccountsFromStorageThunk,
   startPollingForAccountsThunk,
@@ -61,7 +61,7 @@ const Root: FC = () => {
   const accounts: IAccount[] = useSelectAccounts();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // handlers
-  const handleAddAssetClose = () => dispatch(setAccountId(null));
+  const handleAddAssetClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));

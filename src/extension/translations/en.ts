@@ -138,6 +138,7 @@ const translation: IResourceLanguage = {
     transactionIdCopied: 'Transaction ID copied!',
     transactionSendSuccessful:
       'Transaction "{{transactionId}}" was successfully sent.',
+    updatingAssetInformation: 'Updating asset information',
   },
   errors: {
     descriptions: {

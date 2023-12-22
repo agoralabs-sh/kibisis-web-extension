@@ -14,6 +14,7 @@ export { default as useSelectConfirm } from './useSelectConfirm';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';
 export { default as useSelectError } from './useSelectError';
 export { default as useSelectFetchingAccounts } from './useSelectFetchingAccounts';
+export { default as useSelectFetchingArc200Assets } from './useSelectFetchingArc200Assets';
 export { default as useSelectFetchingSessions } from './useSelectFetchingSessions';
 export { default as useSelectFetchingSettings } from './useSelectFetchingSettings';
 export { default as useSelectFetchingStandardAssets } from './useSelectFetchingStandardAssets';
@@ -44,6 +45,7 @@ export { default as useSelectSignBytesRequest } from './useSelectSignBytesReques
 export { default as useSelectSignTxnsRequest } from './useSelectSignTxnsRequest';
 export { default as useSelectStandardAssetsByGenesisHash } from './useSelectStandardAssetsByGenesisHash';
 export { default as useSelectStandardAssetsBySelectedNetwork } from './useSelectStandardAssetsBySelectedNetwork';
+export { default as useSelectUpdatingArc200Assets } from './useSelectUpdatingArc200Assets';
 export { default as useSelectUpdatingStandardAssets } from './useSelectUpdatingStandardAssets';
 export { default as useSelectWalletConnectModalOpen } from './useSelectWalletConnectModalOpen';
 export { default as useSelectWeb3Wallet } from './useSelectWeb3Wallet';

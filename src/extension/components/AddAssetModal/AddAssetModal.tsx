@@ -132,8 +132,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
         );
       }
 
-      // reset the modal to close it
-      dispatch(reset());
+      handleClose();
     } catch (error) {
       dispatch(
         createNotification({
@@ -147,10 +146,15 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       );
     }
   };
-  const handleCancelClick = () => onClose();
+  const handleCancelClick = () => handleClose();
   const handleClearQuery = () => {
     setQuery('');
     dispatch(clearAssets());
+  };
+  const handleClose = () => {
+    setQuery('');
+    setQueryByIdDispatch(null);
+    onClose();
   };
   const handleKeyUp = () => {
     // if we have only numbers, we have an asset/app id

@@ -1,4 +1,11 @@
-import { HStack, Spacer, TabPanel, VStack } from '@chakra-ui/react';
+import {
+  HStack,
+  Spacer,
+  Spinner,
+  TabPanel,
+  Tooltip,
+  VStack,
+} from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAdd } from 'react-icons/io5';
@@ -19,13 +26,16 @@ import { setAccountId as setAddAssetAccountId } from '@extension/features/add-as
 
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // selectors
 import {
   useSelectArc200AssetsBySelectedNetwork,
+  useSelectFetchingArc200Assets,
   useSelectFetchingStandardAssets,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
+  useSelectUpdatingArc200Assets,
   useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
 
@@ -53,12 +63,15 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
-  const fetching: boolean = useSelectFetchingStandardAssets();
+  const fetchingArc200Assets: boolean = useSelectFetchingArc200Assets();
+  const fetchingStandardAssets: boolean = useSelectFetchingStandardAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
-  const updating: boolean = useSelectUpdatingStandardAssets();
+  const updatingArc200Assets: boolean = useSelectUpdatingArc200Assets();
+  const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
   // hooks
+  const defaultTextColor: string = useDefaultTextColor();
   const accountInformation: IAccountInformation | null = useAccountInformation(
     account.id
   );
@@ -83,7 +96,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const renderContent = () => {
     let assetNodes: ReactNode[] = [];
 
-    if (fetching || updating) {
+    if (fetchingArc200Assets || fetchingStandardAssets) {
       return Array.from({ length: 3 }, (_, index) => (
         <AssetTabLoadingItem key={`asset-tab-loading-item-${index}`} />
       ));
@@ -143,12 +156,31 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
         {/*controls*/}
         <HStack
           alignItems="center"
-          justifyContent="flex-end"
+          justifyContent="flex-start"
           px={DEFAULT_GAP / 2}
           py={DEFAULT_GAP / 3}
           spacing={1}
           w="full"
         >
+          {/*updating asset spinner*/}
+          {updatingArc200Assets ||
+            (updatingStandardAssets && (
+              <Tooltip
+                aria-label="Updating asset information spinner"
+                label={t<string>('captions.updatingAssetInformation')}
+              >
+                <Spinner
+                  thickness="1px"
+                  speed="0.65s"
+                  color={defaultTextColor}
+                  size="sm"
+                />
+              </Tooltip>
+            ))}
+
+          <Spacer />
+
+          {/*add asset*/}
           <Button
             leftIcon={<IoAdd />}
             onClick={handleAddAssetClick}
