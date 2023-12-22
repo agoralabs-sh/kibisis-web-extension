@@ -16,7 +16,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { submitTransactionThunk } from './thunks';
 
 // types
-import { IAsset, IRejectedActionMeta } from '@extension/types';
+import { IStandardAsset, IRejectedActionMeta } from '@extension/types';
 import { IInitializeSendAssetPayload, ISendAssetsState } from './types';
 
 // utils
@@ -100,7 +100,7 @@ const slice = createSlice({
     },
     setSelectedAsset: (
       state: Draft<ISendAssetsState>,
-      action: PayloadAction<IAsset>
+      action: PayloadAction<IStandardAsset>
     ) => {
       state.selectedAsset = action.payload;
     },

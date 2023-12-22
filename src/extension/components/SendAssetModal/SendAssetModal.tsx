@@ -54,7 +54,6 @@ import {
 } from '@extension/features/send-assets';
 
 // hooks
-import useAssets from '@extension/hooks/useAssets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
@@ -69,6 +68,7 @@ import {
   useSelectSendingAssetNote,
   useSelectSendingAssetSelectedAsset,
   useSelectSendingAssetTransactionId,
+  useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
 // services
@@ -81,7 +81,7 @@ import { theme } from '@extension/theme';
 import {
   IAccount,
   IAppThunkDispatch,
-  IAsset,
+  IStandardAsset,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
@@ -101,13 +101,15 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const amount: string = useSelectSendingAssetAmount();
+  const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
   const confirming: boolean = useSelectSendingAssetConfirming();
   const error: BaseExtensionError | null = useSelectSendingAssetError();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
   const note: string | null = useSelectSendingAssetNote();
-  const selectedAsset: IAsset | null = useSelectSendingAssetSelectedAsset();
+  const selectedAsset: IStandardAsset | null =
+    useSelectSendingAssetSelectedAsset();
   const transactionId: string | null = useSelectSendingAssetTransactionId();
   // hooks
   const {
@@ -118,7 +120,6 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     validate: validateToAddress,
     value: toAddress,
   } = useAddressInput();
-  const assets: IAsset[] = useAssets();
   const defaultTextColor: string = useDefaultTextColor();
   const {
     error: passwordError,
@@ -137,7 +138,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const isOpen: boolean = !!selectedAsset;
   // handlers
   const handleAmountChange = (value: string) => dispatch(setAmount(value));
-  const handleAssetChange = (value: IAsset) =>
+  const handleAssetChange = (value: IStandardAsset) =>
     dispatch(setSelectedAsset(value));
   const handleCancelClick = () => onClose();
   const handleFromAccountChange = (account: IAccount) =>

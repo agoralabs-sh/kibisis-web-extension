@@ -8,6 +8,7 @@ import { IBaseOptions } from '@common/types';
 import {
   IAccountInformation,
   IAlgorandAccountInformation,
+  IArc200AssetHolding,
   INetwork,
 } from '@extension/types';
 
@@ -15,6 +16,7 @@ import {
 import { getAlgodClient } from '@common/utils';
 import { mapAlgorandAccountInformationToAccount } from '@extension/utils';
 import algorandAccountInformationWithDelay from './algorandAccountInformationWithDelay';
+import fetchArc200AssetHoldingWithDelay from './fetchArc200AssetHoldingWithDelay';
 
 interface IOptions extends IBaseOptions {
   address: string;
@@ -38,6 +40,7 @@ export default async function updateAccountInformation({
   network,
 }: IOptions): Promise<IAccountInformation> {
   let algorandAccountInformation: IAlgorandAccountInformation;
+  let arc200AssetHoldings: IArc200AssetHolding[];
   let client: Algodv2;
   let updatedAt: Date;
 
@@ -74,6 +77,17 @@ export default async function updateAccountInformation({
       client,
       delay,
     });
+    arc200AssetHoldings = await Promise.all(
+      currentAccountInformation.arc200AssetHoldings.map(
+        async (value) =>
+          await fetchArc200AssetHoldingWithDelay({
+            address,
+            arc200AppId: value.id,
+            client,
+            delay,
+          })
+      )
+    );
     updatedAt = new Date();
 
     logger &&
@@ -87,7 +101,10 @@ export default async function updateAccountInformation({
 
     return mapAlgorandAccountInformationToAccount(
       algorandAccountInformation,
-      currentAccountInformation,
+      {
+        ...currentAccountInformation,
+        arc200AssetHoldings,
+      },
       updatedAt.getTime()
     );
   } catch (error) {

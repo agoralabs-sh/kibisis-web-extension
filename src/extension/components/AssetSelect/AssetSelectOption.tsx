@@ -20,10 +20,13 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { theme } from '@extension/theme';
 
 // types
-import { IAsset, INetworkWithTransactionParams } from '@extension/types';
+import {
+  IStandardAsset,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 
 interface IProps {
-  asset: IAsset;
+  asset: IStandardAsset;
   isSelected: boolean;
   onClick?: ReactEventHandler<HTMLDivElement>;
   network: INetworkWithTransactionParams;

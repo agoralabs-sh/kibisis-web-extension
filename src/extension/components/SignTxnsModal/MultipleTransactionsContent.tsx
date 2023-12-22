@@ -21,10 +21,15 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useBorderColor from '@extension/hooks/useBorderColor';
 
 // selectors
-import { useSelectAssetsByGenesisHash } from '@extension/selectors';
+import { useSelectStandardAssetsByGenesisHash } from '@extension/selectors';
 
 // types
-import { IAccount, IAsset, IExplorer, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IStandardAsset,
+  IExplorer,
+  INetwork,
+} from '@extension/types';
 
 // utils
 import { computeGroupId } from '@common/utils';
@@ -49,7 +54,9 @@ const MultipleTransactionsContent: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   // selectors
-  const assets: IAsset[] = useSelectAssetsByGenesisHash(network.genesisHash);
+  const assets: IStandardAsset[] = useSelectStandardAssetsByGenesisHash(
+    network.genesisHash
+  );
   // hooks
   const borderColor: string = useBorderColor();
   // state
@@ -70,7 +77,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
     transaction: Transaction,
     transactionIndex: number
   ) => {
-    const asset: IAsset | null =
+    const asset: IStandardAsset | null =
       assets.find((value) => value.id === String(transaction.assetIndex)) ||
       null;
     const transactionType: TransactionTypeEnum = parseTransactionType(

@@ -1,8 +1,8 @@
-import { IAsset } from '@extension/types';
+import { IStandardAsset } from '@extension/types';
 
 interface IInitializeSendAssetPayload {
   fromAddress: string | null;
-  selectedAsset: IAsset;
+  selectedAsset: IStandardAsset;
 }
 
 export default IInitializeSendAssetPayload;

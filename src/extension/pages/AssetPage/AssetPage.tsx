@@ -38,7 +38,7 @@ import useAssetPage from './hooks/useAssetPage';
 
 // selectors
 import {
-  useSelectFetchingAssets,
+  useSelectFetchingStandardAssets,
   useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
@@ -67,7 +67,7 @@ const AssetPage: FC = () => {
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
   // selectors
-  const fetchingAssets: boolean = useSelectFetchingAssets();
+  const fetchingAssets: boolean = useSelectFetchingStandardAssets();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // hooks
@@ -139,6 +139,7 @@ const AssetPage: FC = () => {
           onClose={onShareAddressModalClose}
         />
       )}
+
       <PageHeader
         subTitle={
           account.name
@@ -149,6 +150,7 @@ const AssetPage: FC = () => {
           account.name || ellipseAddress(accountAddress, { end: 10, start: 10 })
         }
       />
+
       <VStack
         alignItems="center"
         justifyContent="flex-start"

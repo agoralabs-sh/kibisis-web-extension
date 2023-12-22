@@ -17,7 +17,8 @@ import {
 
 // features
 import { reducer as accountsReducer } from '@extension/features/accounts';
-import { reducer as assetsReducer } from '@extension/features/assets';
+import { reducer as addAssetReducer } from '@extension/features/add-asset';
+import { reducer as arc200AssetsReducer } from '@extension/features/arc200-assets';
 import { reducer as eventsReducer } from '@extension/features/events';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
@@ -25,6 +26,7 @@ import { reducer as notificationsReducer } from '@extension/features/notificatio
 import { reducer as sendAssetsReducer } from '@extension/features/send-assets';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
 import { reducer as settingsReducer } from '@extension/features/settings';
+import { reducer as standardAssetsReducer } from '@extension/features/standard-assets';
 import {
   reducer as systemReducer,
   setSideBar,
@@ -86,7 +88,8 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IMainRootState> = makeStore<IMainRootState>(
     combineReducers({
       accounts: accountsReducer,
-      assets: assetsReducer,
+      addAsset: addAssetReducer,
+      arc200Assets: arc200AssetsReducer,
       events: eventsReducer,
       messages: messagesReducer,
       networks: networksReducer,
@@ -94,6 +97,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       sendAssets: sendAssetsReducer,
       sessions: sessionsReducer,
       settings: settingsReducer,
+      standardAssets: standardAssetsReducer,
       system: systemReducer,
     })
   );

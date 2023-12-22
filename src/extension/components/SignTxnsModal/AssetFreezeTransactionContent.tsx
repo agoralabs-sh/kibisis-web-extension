@@ -38,8 +38,8 @@ import { ILogger } from '@common/types';
 import {
   IAccount,
   IAccountInformation,
-  IAsset,
-  IAssetHolding,
+  IStandardAsset,
+  IStandardAssetHolding,
   IExplorer,
   INetwork,
 } from '@extension/types';
@@ -53,7 +53,7 @@ import {
 } from '@extension/utils';
 
 interface IProps {
-  asset: IAsset | null;
+  asset: IStandardAsset | null;
   condensed?: ICondensedProps;
   explorer: IExplorer;
   fromAccount: IAccount | null;
@@ -215,7 +215,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
   }, []);
   // once we have the freeze account information, check the asset balance
   useEffect(() => {
-    let assetHolding: IAssetHolding | null;
+    let assetHolding: IStandardAssetHolding | null;
     let freezeAccountInformation: IAccountInformation | null;
 
     if (asset && freezeAccount) {
@@ -225,7 +225,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
           network
         );
       assetHolding =
-        freezeAccountInformation?.assetHoldings.find(
+        freezeAccountInformation?.standardAssetHoldings.find(
           (value) => value.id === asset.id
         ) || null;
 

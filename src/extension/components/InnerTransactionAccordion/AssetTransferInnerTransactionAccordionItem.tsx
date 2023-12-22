@@ -23,8 +23,8 @@ import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem from '@extension/components/PageItem';
 
 // hooks
-import useAsset from '@extension/hooks/useAsset';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
@@ -69,7 +69,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
   const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
-  const { asset, updating } = useAsset(transaction.assetId);
+  const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
@@ -96,7 +96,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
           </Text>
 
           {/*amount*/}
-          {!asset || updating ? (
+          {!standardAsset || updating ? (
             <Skeleton>
               <Text color={defaultTextColor} fontSize={fontSize}>
                 0.001
@@ -112,7 +112,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
                   : 'red.500'
               }
               atomicUnitAmount={amount}
-              decimals={asset.decimals}
+              decimals={standardAsset.decimals}
               displayUnit={true}
               displayUnitColor={color || defaultTextColor}
               fontSize={fontSize}
@@ -123,7 +123,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
                   ? '+'
                   : '-'
               }
-              unit={asset.unitName || undefined}
+              unit={standardAsset.unitName || undefined}
             />
           )}
         </HStack>
@@ -133,7 +133,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
         <VStack spacing={2} w="full">
           {/*asset id*/}
           <PageItem fontSize="xs" label={t<string>('labels.assetId')}>
-            {!asset || updating ? (
+            {!standardAsset || updating ? (
               <Skeleton>
                 <Text color={subTextColor} fontSize="xs">
                   12345678
@@ -142,13 +142,13 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
             ) : (
               <HStack spacing={0}>
                 <Text color={subTextColor} fontSize="xs">
-                  {asset.id}
+                  {standardAsset.id}
                 </Text>
                 <CopyIconButton
                   ariaLabel="Copy asset ID"
                   copiedTooltipLabel={t<string>('captions.assetIdCopied')}
                   size="xs"
-                  value={asset.id}
+                  value={standardAsset.id}
                 />
                 {explorer && (
                   <OpenTabIconButton
@@ -156,7 +156,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<IProps> = ({
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+                    url={`${explorer.baseUrl}${explorer.assetPath}/${standardAsset.id}`}
                   />
                 )}
               </HStack>

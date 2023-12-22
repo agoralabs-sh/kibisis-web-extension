@@ -61,16 +61,11 @@ const AssetCreateTransactionContent: FC<IProps> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
-  // misc
-  const explorer: IExplorer | null =
-    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
-    network.explorers[0] ||
-    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();

@@ -33,10 +33,15 @@ export default function createCommonConfig(): Configuration {
           'features',
           'accounts'
         ),
-        ['@extension/features/assets']: resolve(
+        ['@extension/features/add-asset']: resolve(
           extensionPath,
           'features',
-          'assets'
+          'add-asset'
+        ),
+        ['@extension/features/arc200-assets']: resolve(
+          extensionPath,
+          'features',
+          'arc200-assets'
         ),
         ['@extension/features/events']: resolve(
           extensionPath,
@@ -77,6 +82,11 @@ export default function createCommonConfig(): Configuration {
           extensionPath,
           'features',
           'settings'
+        ),
+        ['@extension/features/standard-assets']: resolve(
+          extensionPath,
+          'features',
+          'standard-assets'
         ),
         ['@extension/features/system']: resolve(
           extensionPath,

@@ -31,7 +31,7 @@ import { ILogger } from '@common/types';
 import {
   IAccount,
   IAlgorandPendingTransactionResponse,
-  IAsset,
+  IStandardAsset,
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
@@ -54,7 +54,7 @@ const submitTransactionThunk: AsyncThunk<
   SendAssetsThunkEnum.SubmitTransaction,
   async (password, { getState, rejectWithValue }) => {
     const amount: string | null = getState().sendAssets.amount;
-    const asset: IAsset | null = getState().sendAssets.selectedAsset;
+    const asset: IStandardAsset | null = getState().sendAssets.selectedAsset;
     const fromAddress: string | null = getState().sendAssets.fromAddress;
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;

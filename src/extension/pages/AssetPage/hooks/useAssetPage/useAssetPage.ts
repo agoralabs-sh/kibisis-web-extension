@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 
-// hooks
-import useAssets from '@extension/hooks/useAssets';
-
 // selectors
 import {
   useSelectAccounts,
   useSelectSelectedNetwork,
+  useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
 // services
@@ -16,8 +14,8 @@ import { AccountService } from '@extension/services';
 import {
   IAccount,
   IAccountInformation,
-  IAsset,
-  IAssetHolding,
+  IStandardAsset,
+  IStandardAssetHolding,
   INetwork,
 } from '@extension/types';
 import { IUseAssetPageOptions, IUseAssetPageState } from './types';
@@ -32,14 +30,14 @@ export default function useAssetPage({
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  // hooks
-  const assets: IAsset[] = useAssets();
+  const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
   // state
   const [account, setAccount] = useState<IAccount | null>(null);
   const [accountInformation, setAccountInformation] =
     useState<IAccountInformation | null>(null);
-  const [asset, setAsset] = useState<IAsset | null>(null);
-  const [assetHolding, setAssetHolding] = useState<IAssetHolding | null>(null);
+  const [asset, setAsset] = useState<IStandardAsset | null>(null);
+  const [assetHolding, setAssetHolding] =
+    useState<IStandardAssetHolding | null>(null);
   const [standardUnitAmount, setStandardUnitAmount] = useState<BigNumber>(
     new BigNumber('0')
   );
@@ -67,7 +65,7 @@ export default function useAssetPage({
   }, [address, accounts]);
   // 1b. when we have the asset id and the assets, get the asset
   useEffect(() => {
-    let selectedAsset: IAsset | null;
+    let selectedAsset: IStandardAsset | null;
 
     if (assetId && assets.length > 0) {
       selectedAsset = assets.find((value) => value.id === assetId) || null;
@@ -93,11 +91,11 @@ export default function useAssetPage({
   }, [account, selectedNetwork]);
   // 3. when we have the account information, get the asset holding
   useEffect(() => {
-    let selectedAssetHolding: IAssetHolding | null;
+    let selectedAssetHolding: IStandardAssetHolding | null;
 
     if (accountInformation) {
       selectedAssetHolding =
-        accountInformation.assetHoldings.find(
+        accountInformation.standardAssetHoldings.find(
           (value) => value.id === assetId
         ) || null;
 

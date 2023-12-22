@@ -7,3 +7,4 @@ export const SIDEBAR_ITEM_HEIGHT: number = 12;
 export const SETTINGS_ITEM_HEIGHT: number = 16;
 export const SIDEBAR_MIN_WIDTH: number = 40;
 export const SIDEBAR_MAX_WIDTH: number = 250;
+export const TAB_ITEM_HEIGHT: number = 16;

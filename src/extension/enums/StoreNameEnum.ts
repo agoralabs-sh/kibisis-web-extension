@@ -1,6 +1,7 @@
 enum StoreNameEnum {
   Accounts = 'accounts',
-  Assets = 'assets',
+  AddAsset = 'add-asset',
+  Arc200Assets = 'arc200-assets',
   Events = 'events',
   Messages = 'messages',
   Networks = 'networks',
@@ -9,6 +10,7 @@ enum StoreNameEnum {
   SendAssets = 'send-assets',
   Sessions = 'sessions',
   Settings = 'settings',
+  StandardAssets = 'standard-assets',
   System = 'system',
 }
 

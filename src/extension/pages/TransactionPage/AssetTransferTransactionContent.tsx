@@ -25,9 +25,9 @@ import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
-import useAsset from '@extension/hooks/useAsset';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
+import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
@@ -71,7 +71,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
-  const { asset, updating } = useAsset(transaction.assetId);
+  const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
@@ -87,7 +87,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
 
-  if (!asset || updating) {
+  if (!standardAsset || updating) {
     return <LoadingTransactionContent />;
   }
 
@@ -110,13 +110,13 @@ const AssetTransferTransactionContent: FC<IProps> = ({
               : 'red.500'
           }
           atomicUnitAmount={amount}
-          decimals={asset.decimals}
+          decimals={standardAsset.decimals}
           displayUnit={true}
           displayUnitColor={subTextColor}
           fontSize="sm"
           icon={
             <AssetAvatar
-              asset={asset}
+              asset={standardAsset}
               fallbackIcon={
                 <AssetIcon
                   color={primaryButtonTextColor}
@@ -135,7 +135,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
               ? '+'
               : '-'
           }
-          unit={asset.unitName || undefined}
+          unit={standardAsset.unitName || undefined}
         />
       </PageItem>
 
@@ -313,13 +313,13 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           <PageItem fontSize="sm" label={t<string>('labels.assetId')}>
             <HStack spacing={0}>
               <Text color={subTextColor} fontSize="sm">
-                {asset.id}
+                {standardAsset.id}
               </Text>
               <CopyIconButton
                 ariaLabel="Copy asset ID"
                 copiedTooltipLabel={t<string>('captions.assetIdCopied')}
                 size="sm"
-                value={asset.id}
+                value={standardAsset.id}
               />
               {explorer && (
                 <OpenTabIconButton
@@ -327,7 +327,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+                  url={`${explorer.baseUrl}${explorer.assetPath}/${standardAsset.id}`}
                 />
               )}
             </HStack>

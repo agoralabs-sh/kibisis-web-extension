@@ -6,11 +6,11 @@ import {
 } from 'algosdk';
 
 // types
-import { IAsset } from '@extension/types';
+import { IStandardAsset } from '@extension/types';
 
 interface IOptions {
   amount: string;
-  asset: IAsset;
+  asset: IStandardAsset;
   fromAddress: string;
   note: string | null;
   suggestedParams: SuggestedParams;

@@ -24,7 +24,7 @@ import PageItem from '@extension/components/PageItem';
 import { TransactionTypeEnum } from '@extension/enums';
 
 // hooks
-import useAsset from '@extension/hooks/useAsset';
+import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -66,7 +66,7 @@ const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
   const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
-  const { asset, updating } = useAsset(transaction.assetId);
+  const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
@@ -88,7 +88,7 @@ const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
         <VStack spacing={2} w="full">
           {/*asset id*/}
           <PageItem fontSize="xs" label={t<string>('labels.assetId')}>
-            {!asset || updating ? (
+            {!standardAsset || updating ? (
               <Skeleton>
                 <Text color={subTextColor} fontSize="xs">
                   12345678
@@ -97,13 +97,13 @@ const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
             ) : (
               <HStack spacing={0}>
                 <Text color={subTextColor} fontSize="xs">
-                  {asset.id}
+                  {standardAsset.id}
                 </Text>
                 <CopyIconButton
                   ariaLabel="Copy asset ID"
                   copiedTooltipLabel={t<string>('captions.assetIdCopied')}
                   size="xs"
-                  value={asset.id}
+                  value={standardAsset.id}
                 />
                 {explorer && (
                   <OpenTabIconButton
@@ -111,7 +111,7 @@ const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+                    url={`${explorer.baseUrl}${explorer.assetPath}/${standardAsset.id}`}
                   />
                 )}
               </HStack>

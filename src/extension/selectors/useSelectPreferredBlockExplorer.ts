@@ -5,8 +5,9 @@ import { IExplorer, IMainRootState, INetwork } from '@extension/types';
 import { convertGenesisHashToHex } from '@extension/utils';
 
 /**
- * Gets the currently preferred block explorer from the settings.
- * @returns {IExplorer | null} the current preferred block explorer from settings.
+ * Gets the currently preferred block explorer from the settings. If the block explorer cannot be found, the default
+ * explorer is used (first index), or null.
+ * @returns {IExplorer | null} the current preferred block explorer from settings, or the default explorer, or null.
  */
 export default function useSelectPreferredBlockExplorer(): IExplorer | null {
   return useSelector<IMainRootState, IExplorer | null>((state) => {

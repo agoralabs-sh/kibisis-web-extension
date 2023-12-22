@@ -109,7 +109,7 @@ export default function parseTransactionType(
       // to test if this an opt-in:
       if (
         // if the sender does not hold the asset, and
-        !accountInformation?.assetHoldings.find(
+        !accountInformation?.standardAssetHoldings.find(
           (value) => value.id === String(encodedTransaction.xaid)
         ) &&
         // if there is no amount, or the amount is zero (any amount will be a transfer, albeit a failed transfer), and

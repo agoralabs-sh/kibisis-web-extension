@@ -5,6 +5,7 @@ import { StoreNameEnum } from '@extension/enums';
 
 // thunks
 import {
+  addArc200AssetHoldingThunk,
   fetchAccountsFromStorageThunk,
   removeAccountByIdThunk,
   saveNewAccountThunk,
@@ -14,24 +15,57 @@ import {
 } from './thunks';
 
 // types
-import {
-  IAccount,
-  IPendingActionMeta,
-  IRejectedActionMeta,
-} from '@extension/types';
-import {
-  IAccountsState,
-  IAccountUpdate,
-  IUpdateAccountsPayload,
-} from './types';
+import { IAccount } from '@extension/types';
+import { IAccountsState } from './types';
 
 // utils
 import { upsertItemsById } from '@extension/utils';
 import { getInitialState } from './utils';
-import { stat } from 'copy-webpack-plugin/types/utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
+    /** add arc200 asset holdings **/
+    builder.addCase(
+      addArc200AssetHoldingThunk.fulfilled,
+      (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
+        if (action.payload) {
+          state.items = state.items.map((value) =>
+            value.id === action.payload?.id ? action.payload : value
+          );
+        }
+
+        // remove updated account from the account update list
+        state.updatingAccounts = state.updatingAccounts.filter(
+          (value) => value.id !== action.payload?.id
+        );
+      }
+    );
+    builder.addCase(
+      addArc200AssetHoldingThunk.pending,
+      (state: IAccountsState, action) => {
+        state.updatingAccounts = [
+          // filter the unrelated updating account ids
+          ...(state.updatingAccounts = state.updatingAccounts.filter(
+            (value) => value.id !== action.meta.arg.accountId
+          )),
+          // re-add the account being updated
+          {
+            id: action.meta.arg.accountId,
+            information: true,
+            transactions: false,
+          },
+        ];
+      }
+    );
+    builder.addCase(
+      addArc200AssetHoldingThunk.rejected,
+      (state: IAccountsState, action) => {
+        // remove updated account from the account update list
+        state.updatingAccounts = state.updatingAccounts.filter(
+          (value) => value.id !== action.meta.arg.accountId
+        );
+      }
+    );
     /** fetch accounts from storage **/
     builder.addCase(
       fetchAccountsFromStorageThunk.fulfilled,

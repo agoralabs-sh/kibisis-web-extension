@@ -59,7 +59,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
@@ -72,11 +72,6 @@ const ApplicationTransactionContent: FC<IProps> = ({
         () => false
       )
     );
-  // misc
-  const explorer: IExplorer | null =
-    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
-    network.explorers[0] ||
-    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   // handlers
   const handleInnerTransactionsAccordionToggle =
     (accordionIndex: number) => (open: boolean) => {

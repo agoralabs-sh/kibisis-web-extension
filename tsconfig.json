@@ -29,7 +29,10 @@
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
-      "@extension/features/assets": ["src/extension/features/assets"],
+      "@extension/features/add-asset": ["src/extension/features/add-asset"],
+      "@extension/features/arc200-assets": [
+        "src/extension/features/arc200-assets"
+      ],
       "@extension/features/events": ["src/extension/features/events"],
       "@extension/features/messages": ["src/extension/features/messages"],
       "@extension/features/networks": ["src/extension/features/networks"],
@@ -42,6 +45,9 @@
       "@extension/features/send-assets": ["src/extension/features/send-assets"],
       "@extension/features/sessions": ["src/extension/features/sessions"],
       "@extension/features/settings": ["src/extension/features/settings"],
+      "@extension/features/standard-assets": [
+        "src/extension/features/standard-assets"
+      ],
       "@extension/features/system": ["src/extension/features/system"],
       "@extension/fonts/*": ["src/extension/fonts/*"],
       "@extension/hooks/*": ["src/extension/hooks/*"],

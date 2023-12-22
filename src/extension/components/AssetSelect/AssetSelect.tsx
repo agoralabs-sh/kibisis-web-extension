@@ -19,7 +19,7 @@ import { theme } from '@extension/theme';
 import {
   IAccount,
   IAccountInformation,
-  IAsset,
+  IStandardAsset,
   INetworkWithTransactionParams,
 } from '@extension/types';
 import { IOption } from './types';
@@ -32,11 +32,11 @@ import {
 
 interface IProps {
   account: IAccount;
-  assets: IAsset[];
+  assets: IStandardAsset[];
   includeNativeCurrency?: boolean;
   network: INetworkWithTransactionParams;
-  onAssetChange: (value: IAsset) => void;
-  value: IAsset;
+  onAssetChange: (value: IStandardAsset) => void;
+  value: IStandardAsset;
   width?: string | number;
 }
 
@@ -71,10 +71,10 @@ const AssetSelect: FC<IProps> = ({
     account.networkInformation[
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
     ] || null;
-  const selectableAssets: IAsset[] =
-    accountInformation?.assetHoldings.reduce<IAsset[]>(
+  const selectableAssets: IStandardAsset[] =
+    accountInformation?.standardAssetHoldings.reduce<IStandardAsset[]>(
       (acc, assetHolding) => {
-        const asset: IAsset | null =
+        const asset: IStandardAsset | null =
           assets.find((value) => value.id === assetHolding.id) || null;
 
         if (!asset) {

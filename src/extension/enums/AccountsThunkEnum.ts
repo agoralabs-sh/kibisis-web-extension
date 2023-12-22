@@ -1,4 +1,5 @@
 enum AccountsThunkEnum {
+  AddArc200AssetHolding = 'accounts/AddArc200AssetHolding',
   FetchAccountsFromStorage = 'accounts/fetchAccountsFromStorage',
   RemoveAccountById = 'accounts/removeAccountById',
   SaveNewAccount = 'accounts/saveNewAccount',

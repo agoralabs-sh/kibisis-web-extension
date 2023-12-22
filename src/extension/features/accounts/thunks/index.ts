@@ -1,3 +1,4 @@
+export { default as addArc200AssetHoldingThunk } from './addArc200AssetHoldingThunk';
 export { default as fetchAccountsFromStorageThunk } from './fetchAccountsFromStorageThunk';
 export { default as removeAccountByIdThunk } from './removeAccountByIdThunk';
 export { default as saveNewAccountThunk } from './saveNewAccountThunk';

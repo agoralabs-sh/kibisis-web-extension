@@ -36,8 +36,9 @@ import {
 
 // components
 import ActivityTab from '@extension/components/ActivityTab';
-import AccountAssetsTab from '@extension/components/AccountAssetsTab';
+import AddAssetModal from '@extension/components/AddAssetModal';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
+import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
@@ -355,7 +356,7 @@ const AccountPage: FC = () => {
               h="70dvh"
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
-              <AccountAssetsTab account={account} />
+              <AssetsTab account={account} />
 
               <AccountNftsTab />
 
@@ -443,13 +444,15 @@ const AccountPage: FC = () => {
   return (
     <>
       {account && (
-        <ShareAddressModal
-          address={AccountService.convertPublicKeyToAlgorandAddress(
-            account.publicKey
-          )}
-          isOpen={isShareAddressModalOpen}
-          onClose={onShareAddressModalClose}
-        />
+        <>
+          <ShareAddressModal
+            address={AccountService.convertPublicKeyToAlgorandAddress(
+              account.publicKey
+            )}
+            isOpen={isShareAddressModalOpen}
+            onClose={onShareAddressModalClose}
+          />
+        </>
       )}
       <VStack
         alignItems="center"

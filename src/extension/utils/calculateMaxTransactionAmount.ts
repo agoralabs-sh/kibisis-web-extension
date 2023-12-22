@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import {
   IAccount,
   IAccountInformation,
-  IAssetHolding,
+  IStandardAssetHolding,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
@@ -36,7 +36,7 @@ export default function calculateMaxTransactionAmount({
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
     ] || null;
   let amount: BigNumber;
-  let assetHolding: IAssetHolding | null;
+  let assetHolding: IStandardAssetHolding | null;
   let balance: BigNumber;
   let minBalance: BigNumber;
   let minFee: BigNumber;
@@ -48,8 +48,9 @@ export default function calculateMaxTransactionAmount({
   // if the asset id is not 0 it is an asa, use the balance of the asset
   if (assetId != '0') {
     assetHolding =
-      accountInformation.assetHoldings.find((value) => value.id === assetId) ||
-      null;
+      accountInformation.standardAssetHoldings.find(
+        (value) => value.id === assetId
+      ) || null;
 
     return new BigNumber(assetHolding?.amount || 0);
   }
