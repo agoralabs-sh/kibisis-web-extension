@@ -1,5 +1,6 @@
 import {
   Heading,
+  HStack,
   Input,
   InputGroup,
   InputRightElement,
@@ -21,6 +22,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@extension/components/Button';
 import IconButton from '@extension/components/IconButton';
 import AddAssetArc200AssetItem from './AddAssetArc200AssetItem';
+import AddAssetModalArc200SummaryContent from './AddAssetModalArc200SummaryContent';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -32,7 +34,13 @@ import { ErrorCodeEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // features
-import { clearAssets, queryByIdThunk } from '@extension/features/add-asset';
+import {
+  clearAssets,
+  IQueryByIdAsyncThunkConfig,
+  IQueryByIdResult,
+  queryByIdThunk,
+  setSelectedArc200Asset,
+} from '@extension/features/add-asset';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
@@ -45,6 +53,8 @@ import {
   useSelectAddAssetArc200Assets,
   useSelectAddAssetError,
   useSelectAddAssetFetching,
+  useSelectAddAssetSelectedArc200Asset,
+  useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -52,7 +62,13 @@ import {
 import { theme } from '@extension/theme';
 
 // types
-import { IAppThunkDispatch, IArc200Asset, INetwork } from '@extension/types';
+import {
+  IAppThunkDispatch,
+  IAppThunkDispatchReturn,
+  IArc200Asset,
+  IExplorer,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 
 interface IProps {
   isOpen: boolean;
@@ -63,17 +79,27 @@ const AddAssetModal: FC<IProps> = ({ isOpen, onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const error: BaseExtensionError | null = useSelectAddAssetError();
-  const fetching: boolean = useSelectAddAssetFetching();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const arc200Assets: IArc200Asset[] = useSelectAddAssetArc200Assets();
+  const error: BaseExtensionError | null = useSelectAddAssetError();
+  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const fetching: boolean = useSelectAddAssetFetching();
+  const selectedNetwork: INetworkWithTransactionParams | null =
+    useSelectSelectedNetwork();
+  const selectedArc200Asset: IArc200Asset | null =
+    useSelectAddAssetSelectedArc200Asset();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = usePrimaryColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   // state
   const [query, setQuery] = useState<string>('');
+  const [queryByIdDispatch, setQueryByIdDispatch] =
+    useState<IAppThunkDispatchReturn<
+      IQueryByIdAsyncThunkConfig,
+      IQueryByIdResult
+    > | null>(null);
   // handlers
+  const handleAddAssetClick = () => {};
   const handleCancelClick = () => onClose();
   const handleClearQuery = () => {
     setQuery('');
@@ -82,7 +108,12 @@ const AddAssetModal: FC<IProps> = ({ isOpen, onClose }: IProps) => {
   const handleKeyUp = () => {
     // if we have only numbers, we have an asset/app id
     if (new RegExp(/^\d+$/).test(query)) {
-      dispatch(queryByIdThunk(query));
+      // abort any previous request
+      if (queryByIdDispatch) {
+        queryByIdDispatch.abort();
+      }
+
+      setQueryByIdDispatch(dispatch(queryByIdThunk(query)));
 
       return;
     }
@@ -90,8 +121,25 @@ const AddAssetModal: FC<IProps> = ({ isOpen, onClose }: IProps) => {
   const handleOnQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
+  const handlePreviousClick = () => {
+    dispatch(setSelectedArc200Asset(null));
+  };
+  const handleSelectArc200AssetClick = (asset: IArc200Asset) =>
+    dispatch(setSelectedArc200Asset(asset));
   // renders
   const renderContent = () => {
+    if (selectedNetwork) {
+      if (selectedArc200Asset) {
+        return (
+          <AddAssetModalArc200SummaryContent
+            asset={selectedArc200Asset}
+            explorer={explorer}
+            network={selectedNetwork}
+          />
+        );
+      }
+    }
+
     return (
       <VStack flexGrow={1} spacing={DEFAULT_GAP / 2} w="full">
         <Text color={defaultTextColor} fontSize="sm" textAlign="left" w="full">
@@ -138,6 +186,7 @@ const AddAssetModal: FC<IProps> = ({ isOpen, onClose }: IProps) => {
                 asset={value}
                 key={`add-asset-modal-item-${index}`}
                 network={selectedNetwork}
+                onClick={handleSelectArc200AssetClick}
               />
             ))}
         </VStack>
@@ -145,6 +194,30 @@ const AddAssetModal: FC<IProps> = ({ isOpen, onClose }: IProps) => {
     );
   };
   const renderFooter = () => {
+    if (selectedArc200Asset) {
+      return (
+        <HStack spacing={DEFAULT_GAP - 2} w="full">
+          <Button
+            onClick={handlePreviousClick}
+            size="lg"
+            variant="outline"
+            w="full"
+          >
+            {t<string>('buttons.previous')}
+          </Button>
+
+          <Button
+            onClick={handleAddAssetClick}
+            size="lg"
+            variant="solid"
+            w="full"
+          >
+            {t<string>('buttons.addAsset')}
+          </Button>
+        </HStack>
+      );
+    }
+
     return (
       <Button onClick={handleCancelClick} size="lg" variant="outline" w="full">
         {t<string>('buttons.cancel')}

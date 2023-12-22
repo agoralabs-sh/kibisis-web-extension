@@ -1,23 +1,17 @@
-import {
-  Button,
-  ColorMode,
-  HStack,
-  Icon,
-  Tag,
-  TagLabel,
-  Text,
-  Tooltip,
-  VStack,
-} from '@chakra-ui/react';
+import { Button, HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoChevronForward } from 'react-icons/io5';
 
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
+import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 
 // constants
 import { DEFAULT_GAP, TAB_ITEM_HEIGHT } from '@extension/constants';
+
+// enums
+import { AssetTypeEnum } from '@extension/enums';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -25,25 +19,27 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// selectors
-import { useSelectColorMode } from '@extension/selectors';
-
 // types
 import { IArc200Asset, INetwork } from '@extension/types';
 
 interface IProps {
   asset: IArc200Asset;
   network: INetwork;
+  onClick: (asset: IArc200Asset) => void;
 }
 
-const AddAssetArc200AssetItem: FC<IProps> = ({ asset, network }: IProps) => {
-  // selectors
-  const colorMode: ColorMode = useSelectColorMode();
+const AddAssetArc200AssetItem: FC<IProps> = ({
+  asset,
+  network,
+  onClick,
+}: IProps) => {
   // hooks
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
+  // handlers
+  const handleOnClick = () => onClick(asset);
 
   return (
     <Tooltip aria-label="ARC200 asset" label={asset.name}>
@@ -55,6 +51,7 @@ const AddAssetArc200AssetItem: FC<IProps> = ({ asset, network }: IProps) => {
         fontSize="md"
         h={TAB_ITEM_HEIGHT}
         justifyContent="start"
+        onClick={handleOnClick}
         pl={3}
         pr={1}
         py={0}
@@ -118,13 +115,7 @@ const AddAssetArc200AssetItem: FC<IProps> = ({ asset, network }: IProps) => {
               {asset.id}
             </Text>
 
-            <Tag
-              colorScheme="green"
-              size="sm"
-              variant={colorMode === 'dark' ? 'solid' : 'subtle'}
-            >
-              <TagLabel>ARC200</TagLabel>
-            </Tag>
+            <AssetBadge type={AssetTypeEnum.Arc200} />
           </VStack>
         </HStack>
       </Button>

@@ -3,8 +3,6 @@ import {
   ColorMode,
   HStack,
   Icon,
-  Tag,
-  TagLabel,
   Text,
   Tooltip,
   VStack,
@@ -16,6 +14,7 @@ import { Link } from 'react-router-dom';
 
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
+import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 
 // constants
@@ -25,6 +24,9 @@ import {
   DEFAULT_GAP,
   TAB_ITEM_HEIGHT,
 } from '@extension/constants';
+
+// enums
+import { AssetTypeEnum } from '@extension/enums';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -150,13 +152,7 @@ const AssetTabArc200AssetItem: FC<IProps> = ({
               {formatCurrencyUnit(standardUnitAmount, arc200Asset.decimals)}
             </Text>
 
-            <Tag
-              colorScheme="green"
-              size="sm"
-              variant={colorMode === 'dark' ? 'solid' : 'subtle'}
-            >
-              <TagLabel>ARC200</TagLabel>
-            </Tag>
+            <AssetBadge type={AssetTypeEnum.Arc200} />
           </VStack>
         </HStack>
       </Button>

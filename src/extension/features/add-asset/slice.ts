@@ -49,9 +49,8 @@ const slice = createSlice({
         // if it is an abort error, ignore as it is a new request
         if (action.error.name !== 'AbortError') {
           state.error = action.payload;
+          state.fetching = false;
         }
-
-        state.fetching = false;
       }
     );
   },
@@ -81,7 +80,7 @@ const slice = createSlice({
     },
     setSelectedArc200Asset: (
       state: Draft<IAddAssetState>,
-      action: PayloadAction<IArc200Asset>
+      action: PayloadAction<IArc200Asset | null>
     ) => {
       state.selectedArc200Asset = action.payload;
     },

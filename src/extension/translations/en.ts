@@ -54,6 +54,7 @@ const translation: IResourceLanguage = {
     [`appOnComplete_${TransactionTypeEnum.ApplicationOptIn}`]: `This transaction will opt the sender's account into the application by allocating some local state.`,
     [`appOnComplete_${TransactionTypeEnum.ApplicationUpdate}`]:
       'This transaction will update the application, replacing the approval and clear programs. The application ID will not be changed.',
+    arc200ApplicationIdCopied: 'ARC200 application ID copied!',
     assetIdCopied: 'Asset ID copied!',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
