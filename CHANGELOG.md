@@ -1,3 +1,10 @@
+# [1.8.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0...v1.8.0-beta.1) (2023-12-22)
+
+
+### Features
+
+* add arc200 asset ([#63](https://github.com/agoralabs-sh/kibisis-web-extension/issues/63)) ([46a2dbd](https://github.com/agoralabs-sh/kibisis-web-extension/commit/46a2dbd57aa4d88b81ea71995a3e5b70a386ea94))
+
 # [1.7.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.6.0...v1.7.0) (2023-12-20)
 
 
