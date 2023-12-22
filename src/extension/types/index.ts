@@ -27,6 +27,7 @@ export type { default as IAlgorandTransactionParams } from './IAlgorandTransacti
 export type { default as IAppearanceSettings } from './IAppearanceSettings';
 export type { default as IAppProps } from './IAppProps';
 export type { default as IAppThunkDispatch } from './IAppThunkDispatch';
+export type { default as IAppThunkDispatchReturn } from './IAppThunkDispatchReturn';
 export type { default as IApplicationTransaction } from './IApplicationTransaction';
 export type { default as IApplicationTransactionTypes } from './IApplicationTransactionTypes';
 export type { default as IAppWindow } from './IAppWindow';

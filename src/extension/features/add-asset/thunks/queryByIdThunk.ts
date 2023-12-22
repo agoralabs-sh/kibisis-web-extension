@@ -27,7 +27,11 @@ import {
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
-import { IAssetsWithNextToken, IQueryByIdResult } from '../types';
+import {
+  IAssetsWithNextToken,
+  IQueryByIdAsyncThunkConfig,
+  IQueryByIdResult,
+} from '../types';
 
 // utils
 import { getAlgodClient, getIndexerClient } from '@common/utils';
@@ -38,16 +42,11 @@ import {
 } from '@extension/utils';
 import { searchAlgorandApplicationsWithDelay } from '../utils';
 
-interface AsyncThunkConfig {
-  state: IMainRootState;
-  rejectValue?: BaseExtensionError;
-}
-
 const queryByIdThunk: AsyncThunk<
   IQueryByIdResult, // return
   string, // args
-  AsyncThunkConfig
-> = createAsyncThunk<IQueryByIdResult, string, AsyncThunkConfig>(
+  IQueryByIdAsyncThunkConfig
+> = createAsyncThunk<IQueryByIdResult, string, IQueryByIdAsyncThunkConfig>(
   AddAssetThunkEnum.QueryById,
   async (query, { getState, rejectWithValue }) => {
     const currentArc200Assets: IAssetsWithNextToken<IArc200Asset> =

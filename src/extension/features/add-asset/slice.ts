@@ -46,7 +46,11 @@ const slice = createSlice({
           SerializedError
         >
       ) => {
-        state.error = action.payload;
+        // if it is an abort error, ignore as it is a new request
+        if (action.error.name !== 'AbortError') {
+          state.error = action.payload;
+        }
+
         state.fetching = false;
       }
     );
