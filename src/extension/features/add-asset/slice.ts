@@ -64,6 +64,7 @@ const slice = createSlice({
       };
     },
     reset: (state: Draft<IAddAssetState>) => {
+      state.accountId = null;
       state.arc200Assets = {
         items: [],
         next: null,
@@ -71,6 +72,12 @@ const slice = createSlice({
       state.error = null;
       state.fetching = false;
       state.selectedArc200Asset = null;
+    },
+    setAccountId: (
+      state: Draft<IAddAssetState>,
+      action: PayloadAction<string | null>
+    ) => {
+      state.accountId = action.payload;
     },
     setError: (
       state: Draft<IAddAssetState>,
@@ -88,5 +95,10 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { clearAssets, reset, setError, setSelectedArc200Asset } =
-  slice.actions;
+export const {
+  clearAssets,
+  reset,
+  setAccountId,
+  setError,
+  setSelectedArc200Asset,
+} = slice.actions;

@@ -139,6 +139,7 @@ const AssetPage: FC = () => {
           onClose={onShareAddressModalClose}
         />
       )}
+
       <PageHeader
         subTitle={
           account.name
@@ -149,6 +150,7 @@ const AssetPage: FC = () => {
           account.name || ellipseAddress(accountAddress, { end: 10, start: 10 })
         }
       />
+
       <VStack
         alignItems="center"
         justifyContent="flex-start"

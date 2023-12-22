@@ -103,11 +103,6 @@ const AccountPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const {
-    isOpen: isAddAssetModalOpen,
-    onClose: onAddAssetModalClose,
-    onOpen: onAddAssetModalOpen,
-  } = useDisclosure();
-  const {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
@@ -361,10 +356,7 @@ const AccountPage: FC = () => {
               h="70dvh"
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
-              <AssetsTab
-                account={account}
-                onAddAssetClick={onAddAssetModalOpen}
-              />
+              <AssetsTab account={account} />
 
               <AccountNftsTab />
 
@@ -459,10 +451,6 @@ const AccountPage: FC = () => {
             )}
             isOpen={isShareAddressModalOpen}
             onClose={onShareAddressModalClose}
-          />
-          <AddAssetModal
-            isOpen={isAddAssetModalOpen}
-            onClose={onAddAssetModalClose}
           />
         </>
       )}

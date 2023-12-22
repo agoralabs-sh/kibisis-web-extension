@@ -162,6 +162,7 @@ const translation: IResourceLanguage = {
   },
   headings: {
     addAsset: 'Add Asset',
+    addedAsset: 'Added Asset {{symbol}}!',
     allowMainNetConfirm: 'Allow MainNet Networks',
     authentication: 'Authentication',
     beta: 'Beta',

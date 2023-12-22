@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
 // components
+import AddAssetModal from '@extension/components/AddAssetModal';
 import ConfirmModal from '@extension/components/ConfirmModal';
 import EnableModal from '@extension/components/EnableModal';
 import ErrorModal from '@extension/components/ErrorModal';
@@ -13,6 +14,7 @@ import SignTxnsModal from '@extension/components/SignTxnsModal';
 import WalletConnectModal from '@extension/components/WalletConnectModal';
 
 // features
+import { setAccountId } from '@extension/features/add-asset';
 import {
   fetchAccountsFromStorageThunk,
   startPollingForAccountsThunk,
@@ -34,45 +36,32 @@ import {
   initializeWalletConnectThunk,
 } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
-import {
-  fetchStandardAssetsFromStorageThunk,
-  updateStandardAssetInformationThunk,
-} from '@extension/features/standard-assets';
+import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import { setConfirm, setError, setNavigate } from '@extension/features/system';
 
 // hooks
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
 import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
+import useOnNewAssets from '@extension/hooks/useOnNewAssets';
 import useNotifications from '@extension/hooks/useNotifications';
 
 // selectors
 import {
   useSelectAccounts,
-  useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
 // types
-import {
-  IAccount,
-  IAccountInformation,
-  IAppThunkDispatch,
-  IStandardAsset,
-  IStandardAssetHolding,
-  INetwork,
-} from '@extension/types';
-
-// utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import { IAccount, IAppThunkDispatch, INetwork } from '@extension/types';
 
 const Root: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
-  // hooks
+  // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // handlers
+  const handleAddAssetClose = () => dispatch(setAccountId(null));
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));
@@ -110,37 +99,7 @@ const Root: FC = () => {
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [selectedNetwork]);
-  // whenever the accounts are updated, check if any new assets exist in the account
-  useEffect(() => {
-    if (accounts.length > 0 && assets && selectedNetwork) {
-      accounts.forEach((account) => {
-        const encodedGenesisHash: string = convertGenesisHashToHex(
-          selectedNetwork.genesisHash
-        ).toUpperCase();
-        const accountInformation: IAccountInformation | null =
-          account.networkInformation[encodedGenesisHash] || null;
-        let newAssets: IStandardAssetHolding[];
-
-        if (accountInformation) {
-          // filter out any new assets
-          newAssets = accountInformation.standardAssetHoldings.filter(
-            (assetHolding) =>
-              !assets.some((value) => value.id === assetHolding.id)
-          );
-
-          // if we have any new assets, update the information
-          if (newAssets.length > 0) {
-            dispatch(
-              updateStandardAssetInformationThunk({
-                ids: newAssets.map((value) => value.id),
-                network: selectedNetwork,
-              })
-            );
-          }
-        }
-      });
-    }
-  }, [accounts]);
+  useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications
   useOnNetworkConnectivity(); // listen to network connectivity
   useOnMainAppMessage(); // handle incoming messages
@@ -152,6 +111,7 @@ const Root: FC = () => {
       <EnableModal onClose={handleEnableModalClose} />
       <SignTxnsModal onClose={handleSignTxnsModalClose} />
       <SignBytesModal onClose={handleSignBytesModalClose} />
+      <AddAssetModal onClose={handleAddAssetClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <WalletConnectModal onClose={handleWalletConnectModalClose} />
       <MainLayout>

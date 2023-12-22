@@ -6,6 +6,7 @@ import { IArc200Asset } from '@extension/types';
 import IAssetsWithNextToken from './IAssetsWithNextToken';
 
 interface IAddAssetState {
+  accountId: string | null;
   arc200Assets: IAssetsWithNextToken<IArc200Asset>;
   error: BaseExtensionError | null;
   fetching: boolean;

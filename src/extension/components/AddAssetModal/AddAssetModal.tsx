@@ -34,11 +34,13 @@ import { ErrorCodeEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // features
+import { addArc200AssetHoldingThunk } from '@extension/features/accounts';
 import {
   clearAssets,
   IQueryByIdAsyncThunkConfig,
   IQueryByIdResult,
   queryByIdThunk,
+  reset,
   setSelectedArc200Asset,
 } from '@extension/features/add-asset';
 import { create as createNotification } from '@extension/features/notifications';
@@ -50,6 +52,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 
 // selectors
 import {
+  useSelectAddAssetAccount,
   useSelectAddAssetArc200Assets,
   useSelectAddAssetError,
   useSelectAddAssetFetching,
@@ -63,6 +66,7 @@ import { theme } from '@extension/theme';
 
 // types
 import {
+  IAccount,
   IAppThunkDispatch,
   IAppThunkDispatchReturn,
   IArc200Asset,
@@ -71,14 +75,14 @@ import {
 } from '@extension/types';
 
 interface IProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
-const AddAssetModal: FC<IProps> = ({ isOpen, onClose }: IProps) => {
+const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
+  const account: IAccount | null = useSelectAddAssetAccount();
   const arc200Assets: IArc200Asset[] = useSelectAddAssetArc200Assets();
   const error: BaseExtensionError | null = useSelectAddAssetError();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
@@ -98,8 +102,51 @@ const AddAssetModal: FC<IProps> = ({ isOpen, onClose }: IProps) => {
       IQueryByIdAsyncThunkConfig,
       IQueryByIdResult
     > | null>(null);
+  // misc
+  const isOpen: boolean = !!account;
   // handlers
-  const handleAddAssetClick = () => {};
+  const handleAddAssetClick = async () => {
+    let updatedAccount: IAccount | null;
+
+    if (!selectedNetwork || !account || !selectedArc200Asset) {
+      return;
+    }
+
+    try {
+      updatedAccount = await dispatch(
+        addArc200AssetHoldingThunk({
+          accountId: account.id,
+          appId: selectedArc200Asset.id,
+          genesisHash: selectedNetwork.genesisHash,
+        })
+      ).unwrap();
+
+      if (updatedAccount && selectedArc200Asset) {
+        dispatch(
+          createNotification({
+            title: t<string>('headings.addedAsset', {
+              symbol: selectedArc200Asset.symbol,
+            }),
+            type: 'success',
+          })
+        );
+      }
+
+      // reset the modal to close it
+      dispatch(reset());
+    } catch (error) {
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
+    }
+  };
   const handleCancelClick = () => onClose();
   const handleClearQuery = () => {
     setQuery('');

@@ -2,6 +2,7 @@ import { HStack, Spacer, TabPanel, VStack } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAdd } from 'react-icons/io5';
+import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
@@ -12,6 +13,9 @@ import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
+
+// features
+import { setAccountId as setAddAssetAccountId } from '@extension/features/add-asset';
 
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
@@ -32,6 +36,7 @@ import {
   IStandardAsset,
   INetwork,
   IArc200Asset,
+  IAppThunkDispatch,
 } from '@extension/types';
 
 interface IAssetHolding {
@@ -41,11 +46,11 @@ interface IAssetHolding {
 }
 interface IProps {
   account: IAccount;
-  onAddAssetClick: () => void;
 }
 
-const AssetsTab: FC<IProps> = ({ account, onAddAssetClick }: IProps) => {
+const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
   const fetching: boolean = useSelectFetchingStandardAssets();
@@ -73,7 +78,7 @@ const AssetsTab: FC<IProps> = ({ account, onAddAssetClick }: IProps) => {
       ]
     : [];
   // handlers
-  const handleAddAssetClick = () => onAddAssetClick();
+  const handleAddAssetClick = () => dispatch(setAddAssetAccountId(account.id));
   // renders
   const renderContent = () => {
     let assetNodes: ReactNode[] = [];
