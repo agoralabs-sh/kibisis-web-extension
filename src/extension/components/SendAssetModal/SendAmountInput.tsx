@@ -10,9 +10,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactElement } from 'react';
+import numbro from 'numbro';
+import React, { FC, FocusEvent, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoInformationCircleOutline } from 'react-icons/io5';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -33,11 +37,7 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  convertToAtomicUnit,
-  convertToStandardUnit,
-  formatCurrencyUnit,
-} from '@common/utils';
+import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 import { convertGenesisHashToHex } from '@extension/utils';
 
 interface IProps {
@@ -86,18 +86,28 @@ const SendAmountInput: FC<IProps> = ({
       assetDecimals
     );
   // handlers
-  const handleMaximumAmountClick = () =>
-    onValueChange(maximumTransactionAmount);
-  const handleValueChange = (valueInStandardUnit: string) => {
+  const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
+    const blurValue: BigNumber = new BigNumber(event.target.value || '0');
+
+    // if the entered value is greater than the maximum allowed, use the max
+    if (blurValue.gt(maximumTransactionAmountInStandardUnit)) {
+      onValueChange(maximumTransactionAmountInStandardUnit.toString());
+
+      return;
+    }
+
+    // format the number to use an absolute value (no negatives), the maximum decimals for the asset and trim any zeroes
     onValueChange(
-      valueInStandardUnit?.length > 1
-        ? convertToAtomicUnit(
-            new BigNumber(valueInStandardUnit),
-            assetDecimals
-          ).toString()
-        : '0'
+      numbro(blurValue.absoluteValue().toString()).format({
+        mantissa: assetDecimals,
+        trimMantissa: true,
+      })
     );
   };
+  const handleMaximumAmountClick = () =>
+    onValueChange(maximumTransactionAmountInStandardUnit.toString());
+  const handleOnChange = (valueAsString: string | undefined) =>
+    onValueChange(valueAsString || '0');
   // renders
   const renderMaximumTransactionAmountLabel = () => {
     const maximumTransactionAmountLabel: ReactElement = (
@@ -108,7 +118,7 @@ const SendAmountInput: FC<IProps> = ({
         <HStack
           backgroundColor={textBackgroundColor}
           borderRadius={theme.radii['3xl']}
-          px={2}
+          px={DEFAULT_GAP / 3}
           py={1}
           spacing={1}
         >
@@ -191,25 +201,12 @@ const SendAmountInput: FC<IProps> = ({
         {/*input*/}
         <NumberInput
           colorScheme={primaryColorScheme}
-          defaultValue={0}
+          clampValueOnBlur={false}
           focusBorderColor={primaryColor}
-          max={maximumTransactionAmountInStandardUnit.toNumber()}
-          min={0}
-          onChange={handleValueChange}
-          precision={assetDecimals}
+          onBlur={handleOnBlur}
+          onChange={handleOnChange}
           size="md"
-          step={convertToStandardUnit(
-            new BigNumber(1),
-            assetDecimals
-          ).toNumber()}
-          value={
-            value
-              ? convertToStandardUnit(
-                  new BigNumber(value),
-                  assetDecimals
-                ).toString()
-              : undefined
-          }
+          value={value || undefined}
           w="full"
         >
           <NumberInputField textAlign="right" />

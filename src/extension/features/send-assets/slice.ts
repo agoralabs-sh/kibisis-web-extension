@@ -65,7 +65,7 @@ const slice = createSlice({
       state.selectedAsset = action.payload.selectedAsset;
     },
     reset: (state: Draft<ISendAssetsState>) => {
-      state.amount = '0';
+      state.amountInStandardUnits = '0';
       state.confirming = false;
       state.error = null;
       state.fromAddress = null;
@@ -78,7 +78,7 @@ const slice = createSlice({
       state: Draft<ISendAssetsState>,
       action: PayloadAction<string>
     ) => {
-      state.amount = action.payload;
+      state.amountInStandardUnits = action.payload;
     },
     setError: (
       state: Draft<ISendAssetsState>,

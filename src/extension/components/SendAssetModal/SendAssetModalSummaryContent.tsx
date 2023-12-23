@@ -29,9 +29,10 @@ import {
 
 // utils
 import { createIconFromDataUri } from '@extension/utils';
+import { convertToAtomicUnit } from '@common/utils';
 
 interface IProps {
-  amount: string;
+  amountInStandardUnits: string;
   asset: IStandardAsset;
   fromAccount: IAccount;
   network: INetworkWithTransactionParams;
@@ -40,7 +41,7 @@ interface IProps {
 }
 
 const SendAssetModalSummaryContent: FC<IProps> = ({
-  amount,
+  amountInStandardUnits,
   asset,
   fromAccount,
   network,
@@ -64,7 +65,10 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
         fontSize="sm"
         item={
           <AssetDisplay
-            atomicUnitAmount={new BigNumber(amount)}
+            atomicUnitAmount={convertToAtomicUnit(
+              new BigNumber(amountInStandardUnits),
+              asset.decimals
+            )}
             amountColor={subTextColor}
             decimals={asset.decimals}
             displayUnit={asset.id !== '0'}

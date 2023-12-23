@@ -30,7 +30,7 @@ export { default as useSelectSavingRegistration } from './useSelectSavingRegistr
 export { default as useSelectSavingSessions } from './useSelectSavingSessions';
 export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';
-export { default as useSelectSendingAssetAmount } from './useSelectSendingAssetAmount';
+export { default as useSelectSendingAssetAmountInStandardUnits } from './useSelectSendingAssetAmountInStandardUnits';
 export { default as useSelectSendingAssetConfirming } from './useSelectSendingAssetConfirming';
 export { default as useSelectSendingAssetError } from './useSelectSendingAssetError';
 export { default as useSelectSendingAssetFromAccount } from './useSelectSendingAssetFromAccount';

@@ -4,6 +4,7 @@ import numbro from 'numbro';
 /**
  * Formats a given unit to display on the frontend.
  * @param {BigNumber} input - the unit as a BigNumber.
+ * @param {decimals} decimals - the number of decimals for the currency.
  * @returns {string} the formatted unit.
  */
 export default function formatCurrencyUnit(

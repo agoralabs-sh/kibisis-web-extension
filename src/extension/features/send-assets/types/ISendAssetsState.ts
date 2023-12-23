@@ -5,7 +5,7 @@ import { BaseExtensionError } from '@extension/errors';
 import { IStandardAsset } from '@extension/types';
 
 /**
- * @property {string} amount - the amount to send. Default is "0".
+ * @property {string} amountInStandardUnits - the amount, in standard units, to send. Defaults to "0".
  * @property {boolean} confirming - confirming the transaction to the network.
  * @property {BaseExtensionError | null} error - if an error occurred.
  * @property {string | null} fromAddress - the address to send from.
@@ -15,7 +15,7 @@ import { IStandardAsset } from '@extension/types';
  * @property {string | null} transactionId - the ID of the confirmed transaction.
  */
 interface ISendAssetsState {
-  amount: string;
+  amountInStandardUnits: string;
   confirming: boolean;
   error: BaseExtensionError | null;
   fromAddress: string | null;
