@@ -1,3 +1,10 @@
+# [1.8.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.3...v1.8.0-beta.4) (2023-12-23)
+
+
+### Bug Fixes
+
+* when no address is active in the sidebar, use the first account from the accounts list ([#67](https://github.com/agoralabs-sh/kibisis-web-extension/issues/67)) ([25f9ed7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/25f9ed7dc1696cfb37947023d37c3aa4678e9de6))
+
 # [1.8.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.2...v1.8.0-beta.3) (2023-12-23)
 
 
