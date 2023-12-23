@@ -232,9 +232,7 @@ const SideBar: FC = () => {
       <SideBarActionItem
         icon={IoSendOutline}
         label={t<string>('labels.sendAsset', {
-          nativeCurrency: network?.nativeCurrency.code
-            ? `${network?.nativeCurrency.code}/`
-            : '',
+          nativeCurrency: network?.nativeCurrency.code,
         })}
         onClick={handleSendAssetClick}
       />
