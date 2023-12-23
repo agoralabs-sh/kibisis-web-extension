@@ -78,18 +78,24 @@ const AddressDisplay: FC<IProps> = ({
             h={getIconSize()}
             w={getIconSize()}
           />
-          <Text color={color || defaultTextColor} fontSize={fontSize}>
-            {account.name ||
-              ellipseAddress(
+          {account.name ? (
+            <Text
+              color={color || defaultTextColor}
+              fontSize={fontSize}
+              maxW={160}
+              noOfLines={1}
+            >
+              {account.name}
+            </Text>
+          ) : (
+            <Text color={color || defaultTextColor} fontSize={fontSize}>
+              {ellipseAddress(
                 AccountService.convertPublicKeyToAlgorandAddress(
                   account.publicKey
-                ),
-                {
-                  end: 10,
-                  start: 10,
-                }
+                )
               )}
-          </Text>
+            </Text>
+          )}
         </HStack>
       </Tooltip>
     );
@@ -98,10 +104,7 @@ const AddressDisplay: FC<IProps> = ({
   return (
     <Tooltip aria-label={ariaLabel} label={address}>
       <Text color={color || defaultTextColor} fontSize={fontSize}>
-        {ellipseAddress(address, {
-          end: 10,
-          start: 10,
-        })}
+        {ellipseAddress(address)}
       </Text>
     </Tooltip>
   );
