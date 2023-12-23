@@ -1,3 +1,10 @@
+# [1.8.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.2...v1.8.0-beta.3) (2023-12-23)
+
+
+### Bug Fixes
+
+* remove extra forward slash from sidebar send asset button tooltip ([#65](https://github.com/agoralabs-sh/kibisis-web-extension/issues/65)) ([4c30e29](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4c30e29b6a7e82e73392796efed0256faa6e9890))
+
 # [1.8.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.1...v1.8.0-beta.2) (2023-12-23)
 
 
