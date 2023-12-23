@@ -1,3 +1,10 @@
+# [1.8.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.4...v1.8.0-beta.5) (2023-12-23)
+
+
+### Bug Fixes
+
+* send asset number input allows for decimals ([#68](https://github.com/agoralabs-sh/kibisis-web-extension/issues/68)) ([59131c4](https://github.com/agoralabs-sh/kibisis-web-extension/commit/59131c4f79d92254ac470ff61a4f5c176d226919))
+
 # [1.8.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.3...v1.8.0-beta.4) (2023-12-23)
 
 
