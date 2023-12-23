@@ -1,3 +1,10 @@
+# [1.8.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.1...v1.8.0-beta.2) (2023-12-23)
+
+
+### Bug Fixes
+
+* unnamed address on transaction item correctly fits ([#64](https://github.com/agoralabs-sh/kibisis-web-extension/issues/64)) ([560f377](https://github.com/agoralabs-sh/kibisis-web-extension/commit/560f3774ad52cca1a0df76a17a33595574f04b9a))
+
 # [1.8.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0...v1.8.0-beta.1) (2023-12-22)
 
 
