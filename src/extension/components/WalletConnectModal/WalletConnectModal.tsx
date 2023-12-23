@@ -120,7 +120,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
     handleClose();
   };
-  // misc
+  // renders
   const renderContent = () => {
     let accountNodes: ReactNode[];
 

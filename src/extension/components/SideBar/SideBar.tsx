@@ -116,7 +116,11 @@ const SideBar: FC = () => {
     if (network) {
       dispatch(
         initializeSendAsset({
-          fromAddress: activeAccountAddress || null,
+          fromAddress:
+            activeAccountAddress ||
+            AccountService.convertPublicKeyToAlgorandAddress(
+              accounts[0].publicKey
+            ),
           selectedAsset: createNativeCurrencyAsset(network),
         })
       );
