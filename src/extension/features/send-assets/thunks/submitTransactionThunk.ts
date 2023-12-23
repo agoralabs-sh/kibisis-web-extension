@@ -37,9 +37,10 @@ import {
 } from '@extension/types';
 
 // utils
-import { getAlgodClient } from '@common/utils';
+import { convertToAtomicUnit, getAlgodClient } from '@common/utils';
 import { selectNetworkFromSettings } from '@extension/utils';
 import { createSendAssetTransaction } from '../utils';
+import BigNumber from 'bignumber.js';
 
 interface AsyncThunkConfig {
   state: IMainRootState;
@@ -53,7 +54,8 @@ const submitTransactionThunk: AsyncThunk<
 > = createAsyncThunk<string, string, AsyncThunkConfig>(
   SendAssetsThunkEnum.SubmitTransaction,
   async (password, { getState, rejectWithValue }) => {
-    const amount: string | null = getState().sendAssets.amount;
+    const amountInStandardUnits: string | null =
+      getState().sendAssets.amountInStandardUnits;
     const asset: IStandardAsset | null = getState().sendAssets.selectedAsset;
     const fromAddress: string | null = getState().sendAssets.fromAddress;
     const logger: ILogger = getState().system.logger;
@@ -74,7 +76,7 @@ const submitTransactionThunk: AsyncThunk<
     let transactionResponse: IAlgorandPendingTransactionResponse;
     let unsignedTransaction: Transaction;
 
-    if (!amount || !asset || !fromAddress || !toAddress) {
+    if (!amountInStandardUnits || !asset || !fromAddress || !toAddress) {
       logger.debug(
         `${SendAssetsThunkEnum.SubmitTransaction}: required fields not completed`
       );
@@ -157,7 +159,10 @@ const submitTransactionThunk: AsyncThunk<
     try {
       suggestedParams = await algodClient.getTransactionParams().do();
       unsignedTransaction = createSendAssetTransaction({
-        amount,
+        amount: convertToAtomicUnit(
+          new BigNumber(amountInStandardUnits),
+          asset.decimals
+        ).toString(), // convert to atomic units
         asset,
         fromAddress,
         note,

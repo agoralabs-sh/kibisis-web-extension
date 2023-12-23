@@ -61,7 +61,7 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import {
   useSelectAccounts,
   useSelectSelectedNetwork,
-  useSelectSendingAssetAmount,
+  useSelectSendingAssetAmountInStandardUnits,
   useSelectSendingAssetConfirming,
   useSelectSendingAssetError,
   useSelectSendingAssetFromAccount,
@@ -100,7 +100,8 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const amount: string = useSelectSendingAssetAmount();
+  const amountInStandardUnits: string =
+    useSelectSendingAssetAmountInStandardUnits();
   const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
   const confirming: boolean = useSelectSendingAssetConfirming();
   const error: BaseExtensionError | null = useSelectSendingAssetError();
@@ -209,7 +210,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       if (showSummary) {
         return (
           <SendAssetModalSummaryContent
-            amount={amount || '0'}
+            amountInStandardUnits={amountInStandardUnits}
             asset={selectedAsset}
             fromAccount={fromAccount}
             network={network}
@@ -228,7 +229,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             maximumTransactionAmount={maximumTransactionAmount}
             onValueChange={handleAmountChange}
             selectedAsset={selectedAsset}
-            value={amount}
+            value={amountInStandardUnits}
           />
 
           {/*select asset*/}
@@ -377,7 +378,10 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       setMaximumTransactionAmount(newMaximumTransactionAmount.toString());
 
       // if the amount exceeds the new maximum transaction amount, set the amount to the maximum transaction amount
-      if (amount && new BigNumber(amount).gt(newMaximumTransactionAmount)) {
+      if (
+        amountInStandardUnits &&
+        new BigNumber(amountInStandardUnits).gt(newMaximumTransactionAmount)
+      ) {
         dispatch(setAmount(newMaximumTransactionAmount.toString()));
       }
 
