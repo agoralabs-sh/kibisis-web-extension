@@ -21,7 +21,6 @@ import CopyIconButton from '@extension/components/CopyIconButton';
 import LoadingPage from '@extension/components/LoadingPage';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
-import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // constants
 import { ACCOUNTS_ROUTE } from '@extension/constants';
@@ -35,6 +34,9 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import useAssetPage from './hooks/useAssetPage';
+
+// modals
+import ShareAddressModal from '@extension/modals//ShareAddressModal';
 
 // selectors
 import {

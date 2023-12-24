@@ -2,10 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 // components
-import EnableModal from '@extension/components/EnableModal';
 import LoadingPage from '@extension/components/LoadingPage';
-import SignTxnsModal from '@extension/components/SignTxnsModal';
-import SignBytesModal from '@extension/components/SignBytesModal';
 
 // features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
@@ -18,6 +15,11 @@ import {
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettings } from '@extension/features/settings';
 import { closeCurrentWindowThunk } from '@extension/features/system';
+
+// modals
+import EnableModal from '@extension/modals//EnableModal';
+import SignTxnsModal from '@extension/modals/SignTxnsModal';
+import SignBytesModal from '@extension/modals/SignBytesModal';
 
 // selectors
 import { useSelectSelectedNetwork } from '@extension/selectors';

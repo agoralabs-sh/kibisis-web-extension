@@ -36,7 +36,6 @@ import {
 
 // components
 import ActivityTab from '@extension/components/ActivityTab';
-import AddAssetModal from '@extension/components/AddAssetModal';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
 import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
@@ -49,7 +48,6 @@ import NetworkSelect, {
 import NativeBalance, {
   NativeBalanceSkeleton,
 } from '@extension/components/NativeBalance';
-import ShareAddressModal from '@extension/components/ShareAddressModal';
 
 // constants
 import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
@@ -66,6 +64,9 @@ import { setConfirm } from '@extension/features/system';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+
+// modals
+import ShareAddressModal from '@extension/modals//ShareAddressModal';
 
 // selectors
 import {

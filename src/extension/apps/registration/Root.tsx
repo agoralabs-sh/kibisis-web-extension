@@ -3,12 +3,12 @@ import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
-// components
-import ErrorModal from '@extension/components/ErrorModal';
-
 // features
 import { setError, setNavigate } from '@extension/features/system';
 import { fetchSettings } from '@extension/features/settings';
+
+// modals
+import ErrorModal from '@extension/modals//ErrorModal';
 
 // types
 import { IAppThunkDispatch } from '@extension/types';
