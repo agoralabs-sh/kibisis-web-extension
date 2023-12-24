@@ -95,6 +95,7 @@ export default function createCommonConfig(): Configuration {
         ),
         ['@extension/fonts']: resolve(extensionPath, 'fonts'),
         ['@extension/hooks']: resolve(extensionPath, 'hooks'),
+        ['@extension/modals']: resolve(extensionPath, 'modals'),
         ['@extension/pages']: resolve(extensionPath, 'pages'),
         ['@extension/selectors']: resolve(extensionPath, 'selectors'),
         ['@extension/services']: resolve(extensionPath, 'services'),
