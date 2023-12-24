@@ -14,7 +14,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 
 // components
-import DocumentModal from '@extension/components/DocumentModal';
 import IconButton from '@extension/components/IconButton';
 import StrengthMeter from '@extension/components/StrengthMeter';
 
@@ -23,6 +22,9 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+
+// modals
+import DocumentModal from '@extension/modals//DocumentModal';
 
 // utils
 import { validate } from './utils';

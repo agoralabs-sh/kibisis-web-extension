@@ -17,7 +17,6 @@ import { useDispatch } from 'react-redux';
 // components
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
-import ManageSessionModal from '@extension/components/ManageSessionModal';
 import PageHeader from '@extension/components/PageHeader';
 import SettingsSessionItem from '@extension/components/SettingsSessionItem';
 
@@ -32,6 +31,9 @@ import {
 // hooks
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+
+// modals
+import ManageSessionModal from '@extension/modals/ManageSessionModal';
 
 // selectors
 import {

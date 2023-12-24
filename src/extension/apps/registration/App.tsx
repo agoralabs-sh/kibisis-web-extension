@@ -24,7 +24,9 @@ import { reducer as systemReducer } from '@extension/features/system';
 // pages
 import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
-import RegistrationAddAccountRouter from '@extension/pages/RegistrationAddAccountRouter';
+
+// routers
+import RegistrationAddAccountRouter from '@extension/routers/RegistrationAddAccountRouter';
 
 // types
 import { IAppProps, IRegistrationRootState } from '@extension/types';

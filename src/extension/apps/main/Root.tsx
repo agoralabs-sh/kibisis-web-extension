@@ -3,15 +3,7 @@ import { useDispatch } from 'react-redux';
 import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
 // components
-import AddAssetModal from '@extension/components/AddAssetModal';
-import ConfirmModal from '@extension/components/ConfirmModal';
-import EnableModal from '@extension/components/EnableModal';
-import ErrorModal from '@extension/components/ErrorModal';
 import MainLayout from '@extension/components/MainLayout';
-import SendAssetModal from '@extension/components/SendAssetModal';
-import SignBytesModal from '@extension/components/SignBytesModal';
-import SignTxnsModal from '@extension/components/SignTxnsModal';
-import WalletConnectModal from '@extension/components/WalletConnectModal';
 
 // features
 import { reset as resetAddAsset } from '@extension/features/add-asset';
@@ -44,6 +36,16 @@ import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
 import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
 import useOnNewAssets from '@extension/hooks/useOnNewAssets';
 import useNotifications from '@extension/hooks/useNotifications';
+
+// modals
+import AddAssetModal from '@extension/modals/AddAssetModal';
+import ConfirmModal from '@extension/modals/ConfirmModal';
+import EnableModal from '@extension/modals/EnableModal';
+import ErrorModal from '@extension/modals/ErrorModal';
+import SendAssetModal from '@extension/modals/SendAssetModal';
+import SignBytesModal from '@extension/modals/SignBytesModal';
+import SignTxnsModal from '@extension/modals/SignTxnsModal';
+import WalletConnectModal from '@extension/modals/WalletConnectModal';
 
 // selectors
 import {

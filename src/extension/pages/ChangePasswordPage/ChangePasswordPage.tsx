@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
-import ConfirmPasswordModal from '@extension/components/ConfirmPasswordModal';
 import CreatePasswordInput, {
   validate,
 } from '@extension/components/CreatePasswordInput';
@@ -25,6 +24,9 @@ import { create as createNotification } from '@extension/features/notifications'
 // hooks
 import useChangePassword from '@extension/hooks/useChangePassword';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+
+// modals
+import ConfirmPasswordModal from '@extension/modals//ConfirmPasswordModal';
 
 // types
 import { IAppThunkDispatch } from '@extension/types';

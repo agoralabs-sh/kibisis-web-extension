@@ -2,9 +2,6 @@ import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Route, Routes, useNavigate } from 'react-router-dom';
 
-// components
-import ConfirmPasswordModal from '@extension/components/ConfirmPasswordModal';
-
 // constants
 import {
   ACCOUNTS_ROUTE,
@@ -17,6 +14,9 @@ import {
   saveNewAccountThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
+
+// modals
+import ConfirmPasswordModal from '@extension/modals//ConfirmPasswordModal';
 
 // pages
 import AccountSetupPage from '@extension/pages/AccountSetupPage';
