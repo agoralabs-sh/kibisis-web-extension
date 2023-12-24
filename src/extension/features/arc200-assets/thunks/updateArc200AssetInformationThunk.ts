@@ -18,8 +18,10 @@ import {
 } from '../types';
 
 // utils
-import { upsertItemsById } from '@extension/utils';
-import { updateArc200AssetInformationById } from '../utils';
+import {
+  updateArc200AssetInformationById,
+  upsertItemsById,
+} from '@extension/utils';
 
 const updateArc200AssetInformationThunk: AsyncThunk<
   IUpdateArc200AssetInformationResult, // return

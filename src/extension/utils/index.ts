@@ -10,6 +10,7 @@ export { default as ellipseAddress } from './ellipseAddress';
 export { default as fetchArc200AssetInformationWithDelay } from './fetchArc200AssetInformationWithDelay';
 export { default as fetchAssetList } from './fetchAssetList';
 export { default as fetchAssetVerification } from './fetchAssetVerification';
+export { default as fetchStandardAssetInformationWithDelay } from './fetchStandardAssetInformationWithDelay';
 export { default as fetchWithDelay } from './fetchWithDelay';
 export { default as getAddressFromPrivateKey } from './getAddressFromPrivateKey';
 export { default as getAuthorizedAddressesForHost } from './getAuthorizedAddressesForHost';
@@ -27,5 +28,7 @@ export { default as mapStandardAssetFromAlgorandAsset } from './mapStandardAsset
 export { default as parseTransactionType } from './parseTransactionType';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';
 export { default as selectNetworkFromSettings } from './selectNetworkFromSettings';
+export { default as updateArc200AssetInformationById } from './updateArc200AssetInformationById';
+export { default as updateStandardAssetInformationById } from './updateStandardAssetInformationById';
 export { default as upsertItemsById } from './upsertItemsById';
 export { default as verifyTransactionGroupId } from './verifyTransactionGroupId';

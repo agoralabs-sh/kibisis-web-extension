@@ -8,6 +8,7 @@ import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import InfoIconTooltip from '@extension/components/InfoIconTooltip';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
@@ -25,19 +26,21 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
 import {
-  IArc200Asset,
   IExplorer,
   INetworkWithTransactionParams,
+  IStandardAsset,
 } from '@extension/types';
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
+import AssetDisplay from '@extension/components/AssetDisplay';
+import { createIconFromDataUri } from '@extension/utils';
 
 interface IProps {
-  asset: IArc200Asset;
+  asset: IStandardAsset;
   explorer: IExplorer | null;
   network: INetworkWithTransactionParams;
 }
 
-const AddAssetModalArc200SummaryContent: FC<IProps> = ({
+const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
   asset,
   explorer,
   network,
@@ -79,18 +82,12 @@ const AddAssetModalArc200SummaryContent: FC<IProps> = ({
           size="md"
         />
 
-        {/*symbol*/}
-        <Tooltip aria-label="ARC200 asset symbol" label={asset.symbol}>
-          <Text
-            color={defaultTextColor}
-            fontSize="md"
-            maxW={200}
-            noOfLines={1}
-            textAlign="center"
-          >
-            {asset.symbol}
+        {/*unit*/}
+        {asset.unitName && (
+          <Text color={defaultTextColor} fontSize="md" textAlign="center">
+            {asset.unitName}
           </Text>
-        </Tooltip>
+        )}
 
         <VStack
           alignItems="flex-start"
@@ -98,7 +95,7 @@ const AddAssetModalArc200SummaryContent: FC<IProps> = ({
           spacing={DEFAULT_GAP - 2}
           w="full"
         >
-          {/*application id*/}
+          {/*asset id*/}
           <PageItem fontSize="sm" label={t<string>('labels.applicationId')}>
             <HStack spacing={0}>
               <Text color={subTextColor} fontSize="sm">
@@ -127,17 +124,47 @@ const AddAssetModalArc200SummaryContent: FC<IProps> = ({
           </PageItem>
 
           {/*name*/}
-          <PageItem fontSize="sm" label={t<string>('labels.name')}>
-            <Tooltip aria-label="Asset full name" label={asset.name}>
-              <Text color={subTextColor} fontSize="sm" maxW={150} noOfLines={1}>
-                {asset.name}
-              </Text>
-            </Tooltip>
-          </PageItem>
+          {asset.name && (
+            <PageItem fontSize="sm" label={t<string>('labels.name')}>
+              <Tooltip aria-label="Asset full name" label={asset.name}>
+                <Text
+                  color={subTextColor}
+                  fontSize="sm"
+                  maxW={150}
+                  noOfLines={1}
+                >
+                  {asset.name}
+                </Text>
+              </Tooltip>
+            </PageItem>
+          )}
 
           {/*type*/}
           <PageItem fontSize="sm" label={t<string>('labels.type')}>
-            <AssetBadge type={AssetTypeEnum.Arc200} />
+            <AssetBadge type={AssetTypeEnum.Standard} />
+          </PageItem>
+
+          {/*fee*/}
+          <PageItem fontSize="sm" label={t<string>('labels.fee')}>
+            <HStack spacing={1}>
+              <AssetDisplay
+                atomicUnitAmount={new BigNumber(network.minFee)}
+                amountColor={subTextColor}
+                decimals={network.nativeCurrency.decimals}
+                fontSize="sm"
+                icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+                  color: subTextColor,
+                  h: 3,
+                  w: 3,
+                })}
+                unit={network.nativeCurrency.code}
+              />
+
+              <InfoIconTooltip
+                color={subTextColor}
+                label={t<string>('captions.optInFee')}
+              />
+            </HStack>
           </PageItem>
 
           <MoreInformationAccordion
@@ -160,14 +187,14 @@ const AddAssetModalArc200SummaryContent: FC<IProps> = ({
                 <Tooltip
                   aria-label="Asset amount with unrestricted decimals"
                   label={convertToStandardUnit(
-                    new BigNumber(asset.totalSupply),
+                    new BigNumber(asset.total),
                     asset.decimals
                   ).toString()}
                 >
                   <Text color={subTextColor} fontSize="sm">
                     {formatCurrencyUnit(
                       convertToStandardUnit(
-                        new BigNumber(asset.totalSupply),
+                        new BigNumber(asset.total),
                         asset.decimals
                       ),
                       asset.decimals
@@ -183,4 +210,4 @@ const AddAssetModalArc200SummaryContent: FC<IProps> = ({
   );
 };
 
-export default AddAssetModalArc200SummaryContent;
+export default AddAssetModalStandardAssetSummaryContent;

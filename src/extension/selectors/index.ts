@@ -8,6 +8,7 @@ export { default as useSelectAddAssetAccount } from './useSelectAddAssetAccount'
 export { default as useSelectAddAssetError } from './useSelectAddAssetError';
 export { default as useSelectAddAssetFetching } from './useSelectAddAssetFetching';
 export { default as useSelectAddAssetSelectedAsset } from './useSelectAddAssetSelectedAsset';
+export { default as useSelectAddAssetStandardAssets } from './useSelectAddAssetStandardAssets';
 export { default as useSelectArc200AssetsBySelectedNetwork } from './useSelectArc200AssetsBySelectedNetwork';
 export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConfirm } from './useSelectConfirm';

@@ -1,5 +1,5 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Algodv2, Indexer } from 'algosdk';
+import { Indexer } from 'algosdk';
 import { BigNumber } from 'bignumber.js';
 
 // constants
@@ -12,42 +12,35 @@ import {
 import { AddAssetThunkEnum } from '@extension/enums';
 
 // errors
-import {
-  BaseExtensionError,
-  NetworkNotSelectedError,
-  OfflineError,
-} from '@extension/errors';
+import { NetworkNotSelectedError, OfflineError } from '@extension/errors';
 
 // types
 import { ILogger } from '@common/types';
 import {
   IAlgorandSearchApplicationsResult,
   IArc200Asset,
-  IArc200AssetInformation,
-  IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
-import {
-  IAssetsWithNextToken,
-  IQueryByIdAsyncThunkConfig,
-  IQueryByIdResult,
-} from '../types';
+import { IAssetsWithNextToken, IQueryByIdAsyncThunkConfig } from '../types';
 
 // utils
-import { getAlgodClient, getIndexerClient } from '@common/utils';
+import { getIndexerClient } from '@common/utils';
 import {
-  fetchArc200AssetInformationWithDelay,
-  mapArc200AssetFromArc200AssetInformation,
   selectNetworkFromSettings,
+  updateArc200AssetInformationById,
 } from '@extension/utils';
 import { searchAlgorandApplicationsWithDelay } from '../utils';
 
-const queryByIdThunk: AsyncThunk<
-  IQueryByIdResult, // return
+const queryByArc200AssetIdThunk: AsyncThunk<
+  IAssetsWithNextToken<IArc200Asset>, // return
   string, // args
   IQueryByIdAsyncThunkConfig
-> = createAsyncThunk<IQueryByIdResult, string, IQueryByIdAsyncThunkConfig>(
-  AddAssetThunkEnum.QueryById,
+> = createAsyncThunk<
+  IAssetsWithNextToken<IArc200Asset>,
+  string,
+  IQueryByIdAsyncThunkConfig
+>(
+  AddAssetThunkEnum.QueryByArc200AssetId,
   async (query, { getState, rejectWithValue }) => {
     const currentArc200Assets: IAssetsWithNextToken<IArc200Asset> =
       getState().addAsset.arc200Assets;
@@ -56,36 +49,38 @@ const queryByIdThunk: AsyncThunk<
     const selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(getState().networks.items, getState().settings);
     let algorandSearchApplicationResult: IAlgorandSearchApplicationsResult;
-    let algodClient: Algodv2;
     let indexerClient: Indexer;
     let updatedArc200Assets: IArc200Asset[] = [];
 
     if (!online) {
-      logger.debug(`${AddAssetThunkEnum.QueryById}: extension offline`);
-
-      return rejectWithValue(
-        new OfflineError('attempted to send transaction, but extension offline')
+      logger.debug(
+        `${AddAssetThunkEnum.QueryByArc200AssetId}: extension offline`
       );
-    }
-
-    if (!selectedNetwork) {
-      logger.debug(`${AddAssetThunkEnum.QueryById}: no network selected`);
 
       return rejectWithValue(
-        new NetworkNotSelectedError(
-          'attempted to send transaction, but no network selected'
+        new OfflineError(
+          'attempted to query arc200 assets, but extension offline'
         )
       );
     }
 
-    algodClient = getAlgodClient(selectedNetwork, {
-      logger,
-    });
+    if (!selectedNetwork) {
+      logger.debug(
+        `${AddAssetThunkEnum.QueryByArc200AssetId}: no network selected`
+      );
+
+      return rejectWithValue(
+        new NetworkNotSelectedError(
+          'attempted to query arc200 assets, but no network selected'
+        )
+      );
+    }
+
     indexerClient = getIndexerClient(selectedNetwork, {
       logger,
     });
 
-    // if we have a next token, we are paginating
+    // if we have a next token, we are paginating arc200 assets
     if (currentArc200Assets.next) {
       updatedArc200Assets = currentArc200Assets.items;
     }
@@ -110,39 +105,32 @@ const queryByIdThunk: AsyncThunk<
             algorandSearchApplicationResult.applications[index].id as bigint
           )
         ).toString();
-        const arc200Asset: IArc200AssetInformation | null =
-          await fetchArc200AssetInformationWithDelay({
-            algodClient,
-            id: appId,
-            indexerClient,
+        const arc200Asset: IArc200Asset | null =
+          await updateArc200AssetInformationById(appId, {
             delay: index * NODE_REQUEST_DELAY,
+            logger,
+            network: selectedNetwork,
           });
 
         // if the app is an arc200 app, add it to the list
         if (arc200Asset) {
-          updatedArc200Assets.push(
-            mapArc200AssetFromArc200AssetInformation(
-              appId,
-              arc200Asset,
-              null,
-              false
-            )
-          );
+          updatedArc200Assets.push(arc200Asset);
         }
       }
 
+      // update the result
       return {
-        arc200Assets: {
-          items: updatedArc200Assets,
-          next: algorandSearchApplicationResult['next-token'] || null,
-        },
+        items: updatedArc200Assets,
+        next: algorandSearchApplicationResult['next-token'] || null,
       };
     } catch (error) {
-      logger.debug(`${AddAssetThunkEnum.QueryById}(): ${error.message}`);
+      logger.debug(
+        `${AddAssetThunkEnum.QueryByArc200AssetId}(): ${error.message}`
+      );
 
       return rejectWithValue(error);
     }
   }
 );
 
-export default queryByIdThunk;
+export default queryByArc200AssetIdThunk;

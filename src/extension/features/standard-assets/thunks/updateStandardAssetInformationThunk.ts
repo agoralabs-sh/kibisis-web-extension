@@ -18,8 +18,10 @@ import {
 } from '../types';
 
 // utils
-import { convertGenesisHashToHex, upsertItemsById } from '@extension/utils';
-import { updateStandardAssetInformationById } from '../utils';
+import {
+  updateStandardAssetInformationById,
+  upsertItemsById,
+} from '@extension/utils';
 
 const updateStandardAssetInformationThunk: AsyncThunk<
   IUpdateStandardAssetInformationResult, // return

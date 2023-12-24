@@ -11,6 +11,7 @@ interface IAddAssetState {
   error: BaseExtensionError | null;
   fetching: boolean;
   selectedAsset: IArc200Asset | IStandardAsset | null;
+  standardAssets: IAssetsWithNextToken<IStandardAsset>;
 }
 
 export default IAddAssetState;

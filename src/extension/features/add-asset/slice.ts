@@ -13,7 +13,10 @@ import { StoreNameEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // thunks
-import { queryByIdThunk } from './thunks';
+import {
+  queryByArc200AssetIdThunk,
+  queryByStandardAssetIdThunk,
+} from './thunks';
 
 // types
 import {
@@ -21,26 +24,67 @@ import {
   IRejectedActionMeta,
   IStandardAsset,
 } from '@extension/types';
-import { IAddAssetState, IQueryByIdResult } from './types';
+import { IAddAssetState, IAssetsWithNextToken } from './types';
 
 // utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** query by id **/
+    /** query by arc200 asset id **/
     builder.addCase(
-      queryByIdThunk.fulfilled,
-      (state: IAddAssetState, action: PayloadAction<IQueryByIdResult>) => {
-        state.arc200Assets = action.payload.arc200Assets;
+      queryByArc200AssetIdThunk.fulfilled,
+      (
+        state: IAddAssetState,
+        action: PayloadAction<IAssetsWithNextToken<IArc200Asset>>
+      ) => {
+        state.arc200Assets = action.payload;
         state.fetching = false;
       }
     );
-    builder.addCase(queryByIdThunk.pending, (state: IAddAssetState) => {
-      state.fetching = true;
-    });
     builder.addCase(
-      queryByIdThunk.rejected,
+      queryByArc200AssetIdThunk.pending,
+      (state: IAddAssetState) => {
+        state.fetching = true;
+      }
+    );
+    builder.addCase(
+      queryByArc200AssetIdThunk.rejected,
+      (
+        state: IAddAssetState,
+        action: PayloadAction<
+          BaseExtensionError,
+          string,
+          IRejectedActionMeta,
+          SerializedError
+        >
+      ) => {
+        // if it is an abort error, ignore as it is a new request
+        if (action.error.name !== 'AbortError') {
+          state.error = action.payload;
+          state.fetching = false;
+        }
+      }
+    );
+    /** query by standard asset id **/
+    builder.addCase(
+      queryByStandardAssetIdThunk.fulfilled,
+      (
+        state: IAddAssetState,
+        action: PayloadAction<IAssetsWithNextToken<IStandardAsset>>
+      ) => {
+        state.standardAssets = action.payload;
+        state.fetching = false;
+      }
+    );
+    builder.addCase(
+      queryByStandardAssetIdThunk.pending,
+      (state: IAddAssetState) => {
+        state.fetching = true;
+      }
+    );
+    builder.addCase(
+      queryByStandardAssetIdThunk.rejected,
       (
         state: IAddAssetState,
         action: PayloadAction<
@@ -66,6 +110,10 @@ const slice = createSlice({
         items: [],
         next: null,
       };
+      state.standardAssets = {
+        items: [],
+        next: null,
+      };
     },
     reset: (state: Draft<IAddAssetState>) => {
       state.accountId = null;
@@ -76,6 +124,10 @@ const slice = createSlice({
       state.error = null;
       state.fetching = false;
       state.selectedAsset = null;
+      state.standardAssets = {
+        items: [],
+        next: null,
+      };
     },
     setAccountId: (
       state: Draft<IAddAssetState>,

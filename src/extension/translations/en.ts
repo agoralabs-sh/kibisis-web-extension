@@ -112,6 +112,8 @@ const translation: IResourceLanguage = {
     offline: 'It looks like you are offline, some features may not work',
     openOn: 'Open on {{name}}',
     openUrl: 'Open URL in your browser',
+    optInFee:
+      'Standard assets require an "opt-in" fee. This is a transaction of "0" of the asset to your own account.',
     passwordScoreInfo:
       'To conform with our <2>Strong Password Policy</2>, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',

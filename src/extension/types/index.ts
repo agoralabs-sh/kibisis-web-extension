@@ -19,6 +19,7 @@ export type { default as IAlgorandKeyRegistrationTransaction } from './IAlgorand
 export type { default as IAlgorandPaymentTransaction } from './IAlgorandPaymentTransaction';
 export type { default as IAlgorandPendingTransactionResponse } from './IAlgorandPendingTransactionResponse';
 export type { default as IAlgorandSearchApplicationsResult } from './IAlgorandSearchApplicationsResult';
+export type { default as IAlgorandSearchAssetsResult } from './IAlgorandSearchAssetsResult';
 export type { default as IAlgorandStateSchema } from './IAlgorandStateSchema';
 export type { default as IAlgorandTealKeyValue } from './IAlgorandTealKeyValue';
 export type { default as IAlgorandTealValue } from './IAlgorandTealValue';

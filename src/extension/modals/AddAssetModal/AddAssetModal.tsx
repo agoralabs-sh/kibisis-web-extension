@@ -13,7 +13,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoCloseOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -21,8 +21,13 @@ import { useDispatch } from 'react-redux';
 // components
 import Button from '@extension/components/Button';
 import IconButton from '@extension/components/IconButton';
+import AddAssetModalArc200AssetSummaryContent from './AddAssetModalArc200AssetSummaryContent';
+import AddAssetModalStandardAssetSummaryContent from './AddAssetModalStandardAssetSummaryContent';
 import AddAssetArc200AssetItem from './AddAssetArc200AssetItem';
-import AddAssetModalArc200SummaryContent from './AddAssetModalArc200SummaryContent';
+import AddAssetStandardAssetItem from './AddAssetStandardAssetItem';
+import PasswordInput, {
+  usePassword,
+} from '@extension/components/PasswordInput';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -37,9 +42,10 @@ import { BaseExtensionError } from '@extension/errors';
 import { addArc200AssetHoldingThunk } from '@extension/features/accounts';
 import {
   clearAssets,
+  IAssetsWithNextToken,
   IQueryByIdAsyncThunkConfig,
-  IQueryByIdResult,
-  queryByIdThunk,
+  queryByArc200AssetIdThunk,
+  queryByStandardAssetIdThunk,
   setSelectedAsset,
 } from '@extension/features/add-asset';
 import { create as createNotification } from '@extension/features/notifications';
@@ -56,6 +62,7 @@ import {
   useSelectAddAssetError,
   useSelectAddAssetFetching,
   useSelectAddAssetSelectedAsset,
+  useSelectAddAssetStandardAssets,
   useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
@@ -91,18 +98,43 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     useSelectSelectedNetwork();
   const selectedAsset: IArc200Asset | IStandardAsset | null =
     useSelectAddAssetSelectedAsset();
+  const standardAssets: IStandardAsset[] = useSelectAddAssetStandardAssets();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
+  const {
+    error: passwordError,
+    onChange: onPasswordChange,
+    reset: resetPassword,
+    setError: setPasswordError,
+    validate: validatePassword,
+    value: password,
+  } = usePassword();
   const primaryColor: string = usePrimaryColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   // state
   const [query, setQuery] = useState<string>('');
-  const [queryByIdDispatch, setQueryByIdDispatch] =
+  const [queryByArc200AssetIdDispatch, setQueryByArc200AssetIdDispatch] =
     useState<IAppThunkDispatchReturn<
       IQueryByIdAsyncThunkConfig,
-      IQueryByIdResult
+      IAssetsWithNextToken<IArc200Asset>
+    > | null>(null);
+  const [queryByStandardAssetIdDispatch, setQueryByStandardAssetIdDispatch] =
+    useState<IAppThunkDispatchReturn<
+      IQueryByIdAsyncThunkConfig,
+      IAssetsWithNextToken<IStandardAsset>
     > | null>(null);
   // misc
+  const allAssets: (IArc200Asset | IStandardAsset)[] = [
+    ...arc200Assets,
+    ...standardAssets,
+  ]
+    .sort((a, b) => {
+      const aName: string = a.name?.toUpperCase() || '';
+      const bName: string = b.name?.toUpperCase() || '';
+
+      return aName < bName ? -1 : aName > bName ? 1 : 0;
+    }) // sort each alphabetically by name
+    .sort((a, b) => (a.verified === b.verified ? 0 : a.verified ? -1 : 1)); // then sort to bring the verified to the front
   const isOpen: boolean = !!account;
   // handlers
   const handleAddAssetClick = async () => {
@@ -156,18 +188,28 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handleClose = () => {
     setQuery('');
-    setQueryByIdDispatch(null);
+    setQueryByArc200AssetIdDispatch(null);
+    setQueryByStandardAssetIdDispatch(null);
     onClose();
   };
   const handleKeyUp = () => {
     // if we have only numbers, we have an asset/app id
     if (new RegExp(/^\d+$/).test(query)) {
-      // abort any previous request
-      if (queryByIdDispatch) {
-        queryByIdDispatch.abort();
+      // abort any previous requests, abort them
+      if (queryByArc200AssetIdDispatch) {
+        queryByArc200AssetIdDispatch.abort();
       }
 
-      setQueryByIdDispatch(dispatch(queryByIdThunk(query)));
+      if (queryByStandardAssetIdDispatch) {
+        queryByStandardAssetIdDispatch.abort();
+      }
+
+      setQueryByArc200AssetIdDispatch(
+        dispatch(queryByArc200AssetIdThunk(query))
+      );
+      setQueryByStandardAssetIdDispatch(
+        dispatch(queryByStandardAssetIdThunk(query))
+      );
 
       return;
     }
@@ -178,7 +220,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handlePreviousClick = () => {
     dispatch(setSelectedAsset(null));
   };
-  const handleSelectArc200AssetClick = (asset: IArc200Asset) =>
+  const handleSelectAssetClick = (asset: IArc200Asset | IStandardAsset) =>
     dispatch(setSelectedAsset(asset));
   // renders
   const renderContent = () => {
@@ -187,7 +229,15 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
         switch (selectedAsset.type) {
           case AssetTypeEnum.Arc200:
             return (
-              <AddAssetModalArc200SummaryContent
+              <AddAssetModalArc200AssetSummaryContent
+                asset={selectedAsset}
+                explorer={explorer}
+                network={selectedNetwork}
+              />
+            );
+          case AssetTypeEnum.Standard:
+            return (
+              <AddAssetModalStandardAssetSummaryContent
                 asset={selectedAsset}
                 explorer={explorer}
                 network={selectedNetwork}
@@ -240,21 +290,32 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
         <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
           {selectedNetwork &&
-            arc200Assets.map((value, index) => (
-              <AddAssetArc200AssetItem
-                asset={value}
-                key={`add-asset-modal-item-${index}`}
-                network={selectedNetwork}
-                onClick={handleSelectArc200AssetClick}
-              />
-            ))}
+            allAssets.map((value, index) =>
+              value.type === AssetTypeEnum.Standard ? (
+                <AddAssetStandardAssetItem
+                  asset={value}
+                  key={`add-asset-modal-item-${index}`}
+                  network={selectedNetwork}
+                  onClick={handleSelectAssetClick}
+                />
+              ) : (
+                <AddAssetArc200AssetItem
+                  asset={value}
+                  key={`add-asset-modal-item-${index}`}
+                  network={selectedNetwork}
+                  onClick={handleSelectAssetClick}
+                />
+              )
+            )}
         </VStack>
       </VStack>
     );
   };
   const renderFooter = () => {
+    let buttonNode: ReactNode;
+
     if (selectedAsset) {
-      return (
+      buttonNode = (
         <HStack spacing={DEFAULT_GAP - 2} w="full">
           <Button
             onClick={handlePreviousClick}
@@ -275,6 +336,24 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           </Button>
         </HStack>
       );
+
+      // for standard assets, we need a password to authorize the opt-in transaction
+      if (selectedAsset.type === AssetTypeEnum.Standard) {
+        return (
+          <VStack alignItems="flex-start" spacing={4} w="full">
+            <PasswordInput
+              error={passwordError}
+              hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
+              onChange={onPasswordChange}
+              value={password}
+            />
+
+            {buttonNode}
+          </VStack>
+        );
+      }
+
+      return buttonNode;
     }
 
     return (

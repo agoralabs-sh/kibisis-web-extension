@@ -11,5 +11,9 @@ export default function getInitialState(): IAddAssetState {
     error: null,
     fetching: false,
     selectedAsset: null,
+    standardAssets: {
+      items: [],
+      next: null,
+    },
   };
 }

@@ -11,12 +11,10 @@ import {
 
 // utils
 import { getAlgodClient } from '@common/utils';
-import {
-  fetchAssetList,
-  fetchAssetVerification,
-  mapStandardAssetFromAlgorandAsset,
-} from '@extension/utils';
+import fetchAssetList from './fetchAssetList';
+import fetchAssetVerification from './fetchAssetVerification';
 import fetchStandardAssetInformationWithDelay from './fetchStandardAssetInformationWithDelay';
+import mapStandardAssetFromAlgorandAsset from './mapStandardAssetFromAlgorandAsset';
 
 interface IOptions extends IBaseOptions {
   delay?: number;
