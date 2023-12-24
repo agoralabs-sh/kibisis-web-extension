@@ -7,7 +7,7 @@ export { default as useSelectAddAssetArc200Assets } from './useSelectAddAssetArc
 export { default as useSelectAddAssetAccount } from './useSelectAddAssetAccount';
 export { default as useSelectAddAssetError } from './useSelectAddAssetError';
 export { default as useSelectAddAssetFetching } from './useSelectAddAssetFetching';
-export { default as useSelectAddAssetSelectedArc200Asset } from './useSelectAddAssetSelectedArc200Asset';
+export { default as useSelectAddAssetSelectedAsset } from './useSelectAddAssetSelectedAsset';
 export { default as useSelectArc200AssetsBySelectedNetwork } from './useSelectArc200AssetsBySelectedNetwork';
 export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConfirm } from './useSelectConfirm';

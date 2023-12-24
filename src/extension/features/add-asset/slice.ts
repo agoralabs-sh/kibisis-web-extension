@@ -16,7 +16,11 @@ import { BaseExtensionError } from '@extension/errors';
 import { queryByIdThunk } from './thunks';
 
 // types
-import { IArc200Asset, IRejectedActionMeta } from '@extension/types';
+import {
+  IArc200Asset,
+  IRejectedActionMeta,
+  IStandardAsset,
+} from '@extension/types';
 import { IAddAssetState, IQueryByIdResult } from './types';
 
 // utils
@@ -71,7 +75,7 @@ const slice = createSlice({
       };
       state.error = null;
       state.fetching = false;
-      state.selectedArc200Asset = null;
+      state.selectedAsset = null;
     },
     setAccountId: (
       state: Draft<IAddAssetState>,
@@ -85,20 +89,15 @@ const slice = createSlice({
     ) => {
       state.error = action.payload;
     },
-    setSelectedArc200Asset: (
+    setSelectedAsset: (
       state: Draft<IAddAssetState>,
-      action: PayloadAction<IArc200Asset | null>
+      action: PayloadAction<IArc200Asset | IStandardAsset | null>
     ) => {
-      state.selectedArc200Asset = action.payload;
+      state.selectedAsset = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const {
-  clearAssets,
-  reset,
-  setAccountId,
-  setError,
-  setSelectedArc200Asset,
-} = slice.actions;
+export const { clearAssets, reset, setAccountId, setError, setSelectedAsset } =
+  slice.actions;

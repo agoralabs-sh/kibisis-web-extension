@@ -2,7 +2,7 @@
 import { BaseExtensionError } from '@extension/errors';
 
 // types
-import { IArc200Asset } from '@extension/types';
+import { IArc200Asset, IStandardAsset } from '@extension/types';
 import IAssetsWithNextToken from './IAssetsWithNextToken';
 
 interface IAddAssetState {
@@ -10,7 +10,7 @@ interface IAddAssetState {
   arc200Assets: IAssetsWithNextToken<IArc200Asset>;
   error: BaseExtensionError | null;
   fetching: boolean;
-  selectedArc200Asset: IArc200Asset | null;
+  selectedAsset: IArc200Asset | IStandardAsset | null;
 }
 
 export default IAddAssetState;

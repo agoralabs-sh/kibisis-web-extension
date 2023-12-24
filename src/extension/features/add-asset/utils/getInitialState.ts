@@ -10,6 +10,6 @@ export default function getInitialState(): IAddAssetState {
     },
     error: null,
     fetching: false,
-    selectedArc200Asset: null,
+    selectedAsset: null,
   };
 }

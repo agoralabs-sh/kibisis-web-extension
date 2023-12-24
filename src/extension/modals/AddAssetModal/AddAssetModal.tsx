@@ -28,7 +28,7 @@ import AddAssetModalArc200SummaryContent from './AddAssetModalArc200SummaryConte
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { ErrorCodeEnum } from '@extension/enums';
+import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 
 // errors
 import { BaseExtensionError } from '@extension/errors';
@@ -40,8 +40,7 @@ import {
   IQueryByIdAsyncThunkConfig,
   IQueryByIdResult,
   queryByIdThunk,
-  reset,
-  setSelectedArc200Asset,
+  setSelectedAsset,
 } from '@extension/features/add-asset';
 import { create as createNotification } from '@extension/features/notifications';
 
@@ -56,7 +55,7 @@ import {
   useSelectAddAssetArc200Assets,
   useSelectAddAssetError,
   useSelectAddAssetFetching,
-  useSelectAddAssetSelectedArc200Asset,
+  useSelectAddAssetSelectedAsset,
   useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
@@ -72,6 +71,7 @@ import {
   IArc200Asset,
   IExplorer,
   INetworkWithTransactionParams,
+  IStandardAsset,
 } from '@extension/types';
 
 interface IProps {
@@ -89,8 +89,8 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const fetching: boolean = useSelectAddAssetFetching();
   const selectedNetwork: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
-  const selectedArc200Asset: IArc200Asset | null =
-    useSelectAddAssetSelectedArc200Asset();
+  const selectedAsset: IArc200Asset | IStandardAsset | null =
+    useSelectAddAssetSelectedAsset();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = usePrimaryColor();
@@ -108,7 +108,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleAddAssetClick = async () => {
     let updatedAccount: IAccount | null;
 
-    if (!selectedNetwork || !account || !selectedArc200Asset) {
+    if (!selectedNetwork || !account || !selectedAsset) {
       return;
     }
 
@@ -116,16 +116,19 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       updatedAccount = await dispatch(
         addArc200AssetHoldingThunk({
           accountId: account.id,
-          appId: selectedArc200Asset.id,
+          appId: selectedAsset.id,
           genesisHash: selectedNetwork.genesisHash,
         })
       ).unwrap();
 
-      if (updatedAccount && selectedArc200Asset) {
+      if (updatedAccount && selectedAsset) {
         dispatch(
           createNotification({
             title: t<string>('headings.addedAsset', {
-              symbol: selectedArc200Asset.symbol,
+              symbol:
+                selectedAsset.type === AssetTypeEnum.Standard
+                  ? selectedAsset.unitName
+                  : selectedAsset.symbol,
             }),
             type: 'success',
           })
@@ -173,21 +176,26 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     setQuery(event.target.value);
   };
   const handlePreviousClick = () => {
-    dispatch(setSelectedArc200Asset(null));
+    dispatch(setSelectedAsset(null));
   };
   const handleSelectArc200AssetClick = (asset: IArc200Asset) =>
-    dispatch(setSelectedArc200Asset(asset));
+    dispatch(setSelectedAsset(asset));
   // renders
   const renderContent = () => {
     if (selectedNetwork) {
-      if (selectedArc200Asset) {
-        return (
-          <AddAssetModalArc200SummaryContent
-            asset={selectedArc200Asset}
-            explorer={explorer}
-            network={selectedNetwork}
-          />
-        );
+      if (selectedAsset) {
+        switch (selectedAsset.type) {
+          case AssetTypeEnum.Arc200:
+            return (
+              <AddAssetModalArc200SummaryContent
+                asset={selectedAsset}
+                explorer={explorer}
+                network={selectedNetwork}
+              />
+            );
+          default:
+            break;
+        }
       }
     }
 
@@ -245,7 +253,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
   const renderFooter = () => {
-    if (selectedArc200Asset) {
+    if (selectedAsset) {
       return (
         <HStack spacing={DEFAULT_GAP - 2} w="full">
           <Button

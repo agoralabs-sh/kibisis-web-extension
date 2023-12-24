@@ -1,4 +1,8 @@
-import { IStandardAsset, INetwork } from '@extension/types';
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
+// types
+import { INetwork, IStandardAsset } from '@extension/types';
 
 /**
  * Creates a "dummy" asset for the native currency of the supplied network. The native "dummy" assets will always have
@@ -24,6 +28,7 @@ export default function createNativeCurrencyAsset(
     nameBase64: null,
     reserveAddress: null,
     total: Number.POSITIVE_INFINITY.toString(),
+    type: AssetTypeEnum.Standard,
     unitName: network.nativeCurrency.code.toString(),
     unitNameBase64: null,
     url: null,
