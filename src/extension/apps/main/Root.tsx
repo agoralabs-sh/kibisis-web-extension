@@ -38,7 +38,7 @@ import useOnNewAssets from '@extension/hooks/useOnNewAssets';
 import useNotifications from '@extension/hooks/useNotifications';
 
 // modals
-import AddAssetModal from '@extension/modals//AddAssetModal';
+import AddAssetModal from '@extension/modals/AddAssetModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
 import ErrorModal from '@extension/modals/ErrorModal';

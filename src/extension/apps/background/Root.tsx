@@ -17,7 +17,7 @@ import { fetchSettings } from '@extension/features/settings';
 import { closeCurrentWindowThunk } from '@extension/features/system';
 
 // modals
-import EnableModal from '@extension/modals//EnableModal';
+import EnableModal from '@extension/modals/EnableModal';
 import SignTxnsModal from '@extension/modals/SignTxnsModal';
 import SignBytesModal from '@extension/modals/SignBytesModal';
 

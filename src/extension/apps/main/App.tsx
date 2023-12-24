@@ -32,10 +32,10 @@ import {
   setSideBar,
 } from '@extension/features/system';
 
-// pages
-import AccountRouter from '@extension/pages/AccountRouter';
-import AddAccountRouter from '@extension/pages/MainAddAccountRouter';
-import SettingsRouter from '@extension/pages/SettingsRouter';
+// routers
+import AccountRouter from '@extension/routers/AccountRouter';
+import AddAccountRouter from '@extension/routers/MainAddAccountRouter';
+import SettingsRouter from '@extension/routers/SettingsRouter';
 
 // types
 import { IAppProps, IAppThunkDispatch, IMainRootState } from '@extension/types';
