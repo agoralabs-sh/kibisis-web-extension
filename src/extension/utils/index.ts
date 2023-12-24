@@ -26,6 +26,7 @@ export { default as mapSessionFromEnableRequest } from './mapSessionFromEnableRe
 export { default as mapSessionFromWalletConnectSession } from './mapSessionFromWalletConnectSession';
 export { default as mapStandardAssetFromAlgorandAsset } from './mapStandardAssetFromAlgorandAsset';
 export { default as parseTransactionType } from './parseTransactionType';
+export { default as selectAssetsForNetwork } from './selectAssetsForNetwork';
 export { default as selectDefaultNetwork } from './selectDefaultNetwork';
 export { default as selectNetworkFromSettings } from './selectNetworkFromSettings';
 export { default as updateArc200AssetInformationById } from './updateArc200AssetInformationById';

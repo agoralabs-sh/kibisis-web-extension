@@ -17,15 +17,23 @@ import { NetworkNotSelectedError, OfflineError } from '@extension/errors';
 // types
 import { ILogger } from '@common/types';
 import {
+  IAccount,
   IAlgorandSearchApplicationsResult,
   IArc200Asset,
+  IArc200AssetHolding,
   INetworkWithTransactionParams,
 } from '@extension/types';
-import { IAssetsWithNextToken, IQueryByIdAsyncThunkConfig } from '../types';
+import {
+  IAssetsWithNextToken,
+  IQueryByIdPayload,
+  IQueryByIdAsyncThunkConfig,
+} from '../types';
 
 // utils
 import { getIndexerClient } from '@common/utils';
 import {
+  convertGenesisHashToHex,
+  selectAssetsForNetwork,
   selectNetworkFromSettings,
   updateArc200AssetInformationById,
 } from '@extension/utils';
@@ -33,15 +41,17 @@ import { searchAlgorandApplicationsWithDelay } from '../utils';
 
 const queryByArc200AssetIdThunk: AsyncThunk<
   IAssetsWithNextToken<IArc200Asset>, // return
-  string, // args
+  IQueryByIdPayload, // args
   IQueryByIdAsyncThunkConfig
 > = createAsyncThunk<
   IAssetsWithNextToken<IArc200Asset>,
-  string,
+  IQueryByIdPayload,
   IQueryByIdAsyncThunkConfig
 >(
   AddAssetThunkEnum.QueryByArc200AssetId,
-  async (query, { getState, rejectWithValue }) => {
+  async ({ accountId, query }, { getState, rejectWithValue }) => {
+    const account: IAccount | null =
+      getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentArc200Assets: IAssetsWithNextToken<IArc200Asset> =
       getState().addAsset.arc200Assets;
     const logger: ILogger = getState().system.logger;
@@ -49,6 +59,8 @@ const queryByArc200AssetIdThunk: AsyncThunk<
     const selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(getState().networks.items, getState().settings);
     let algorandSearchApplicationResult: IAlgorandSearchApplicationsResult;
+    let arc200AssetHoldings: IArc200AssetHolding[];
+    let arc200Assets: IArc200Asset[];
     let indexerClient: Indexer;
     let updatedArc200Assets: IArc200Asset[] = [];
 
@@ -64,6 +76,14 @@ const queryByArc200AssetIdThunk: AsyncThunk<
       );
     }
 
+    if (!account) {
+      logger.debug(
+        `${AddAssetThunkEnum.QueryByStandardAssetId}: no account found for "${accountId}"`
+      );
+
+      return currentArc200Assets;
+    }
+
     if (!selectedNetwork) {
       logger.debug(
         `${AddAssetThunkEnum.QueryByArc200AssetId}: no network selected`
@@ -76,6 +96,14 @@ const queryByArc200AssetIdThunk: AsyncThunk<
       );
     }
 
+    arc200Assets = selectAssetsForNetwork(
+      getState().arc200Assets.items,
+      selectedNetwork.genesisHash
+    );
+    arc200AssetHoldings =
+      account?.networkInformation[
+        convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
+      ].arc200AssetHoldings || [];
     indexerClient = getIndexerClient(selectedNetwork, {
       logger,
     });
@@ -90,10 +118,19 @@ const queryByArc200AssetIdThunk: AsyncThunk<
         await searchAlgorandApplicationsWithDelay({
           appId: query,
           client: indexerClient,
-          delay: 0,
+          delay: NODE_REQUEST_DELAY,
           limit: DEFAULT_TRANSACTION_INDEXER_LIMIT,
           next: currentArc200Assets.next,
         });
+
+      // filter out any assets the account already holds
+      algorandSearchApplicationResult.applications =
+        algorandSearchApplicationResult.applications.filter(
+          (algorandApplication) =>
+            !arc200AssetHoldings.find(
+              (value) => value.id === String(algorandApplication.id)
+            )
+        );
 
       for (
         let index = 0;
@@ -105,12 +142,17 @@ const queryByArc200AssetIdThunk: AsyncThunk<
             algorandSearchApplicationResult.applications[index].id as bigint
           )
         ).toString();
-        const arc200Asset: IArc200Asset | null =
-          await updateArc200AssetInformationById(appId, {
+        let arc200Asset: IArc200Asset | null =
+          arc200Assets.find((value) => value.id === appId) || null;
+
+        // if we don't have any info stored, get the asset information
+        if (!arc200Asset) {
+          arc200Asset = await updateArc200AssetInformationById(appId, {
             delay: index * NODE_REQUEST_DELAY,
             logger,
             network: selectedNetwork,
           });
+        }
 
         // if the app is an arc200 app, add it to the list
         if (arc200Asset) {
