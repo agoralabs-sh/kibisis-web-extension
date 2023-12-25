@@ -34,9 +34,6 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// selectors
-import { useSelectColorMode } from '@extension/selectors';
-
 // services
 import { AccountService } from '@extension/services';
 
@@ -59,8 +56,6 @@ const AssetTabStandardAssetItem: FC<IProps> = ({
   network,
   standardAsset,
 }: IProps) => {
-  // selectors
-  const colorMode: ColorMode = useSelectColorMode();
   // hooks
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();

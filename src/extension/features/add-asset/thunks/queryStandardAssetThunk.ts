@@ -18,6 +18,7 @@ import { NetworkNotSelectedError, OfflineError } from '@extension/errors';
 import { ILogger } from '@common/types';
 import {
   IAccount,
+  IAlgorandAsset,
   IAlgorandSearchAssetsResult,
   INetworkWithTransactionParams,
   IStandardAsset,
@@ -50,7 +51,10 @@ const queryStandardAssetThunk: AsyncThunk<
   IQueryByIdAsyncThunkConfig
 >(
   AddAssetThunkEnum.QueryStandardAsset,
-  async ({ accountId, assetId, nameOrUnit }, { getState, rejectWithValue }) => {
+  async (
+    { accountId, assetId, nameOrUnit, refresh = false },
+    { getState, rejectWithValue }
+  ) => {
     const account: IAccount | null =
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentStandardAssets: IAssetsWithNextToken<IStandardAsset> =
@@ -106,7 +110,7 @@ const queryStandardAssetThunk: AsyncThunk<
     });
 
     // if we have a next token, we are paginating the standard assets result
-    if (currentStandardAssets.next) {
+    if (!refresh && currentStandardAssets.next) {
       updatedStandardAssets = currentStandardAssets.items;
     }
 
@@ -140,7 +144,7 @@ const queryStandardAssetThunk: AsyncThunk<
         index++
       ) {
         const assetId: string = new BigNumber(
-          String(algorandSearchAssetsResult.assets[index].index as bigint)
+          String(algorandSearchAssetsResult.assets[index].index)
         ).toString();
         const verifiedStandardAsset: ITinyManAssetResponse | null =
           verifiedStandardAssets.find((value) => value.id === assetId) || null;

@@ -186,50 +186,48 @@ const AddAssetStandardAssetItem: FC<IProps> = ({
   };
 
   return (
-    <Tooltip aria-label="Standard asset" label={asset.name || asset.id}>
-      <Button
-        _hover={{
-          bg: buttonHoverBackgroundColor,
-        }}
-        borderRadius={0}
-        fontSize="md"
-        h={TAB_ITEM_HEIGHT}
-        justifyContent="start"
-        onClick={handleOnClick}
-        pl={DEFAULT_GAP / 2}
-        pr={1}
-        py={0}
-        rightIcon={
-          <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />
-        }
-        variant="ghost"
+    <Button
+      _hover={{
+        bg: buttonHoverBackgroundColor,
+      }}
+      borderRadius={0}
+      fontSize="md"
+      h={TAB_ITEM_HEIGHT}
+      justifyContent="start"
+      onClick={handleOnClick}
+      pl={DEFAULT_GAP / 2}
+      pr={1}
+      py={DEFAULT_GAP / 2}
+      rightIcon={
+        <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />
+      }
+      variant="ghost"
+      w="full"
+    >
+      <HStack
+        alignItems="center"
+        m={0}
+        p={0}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
-        <HStack
-          alignItems="center"
-          m={0}
-          p={0}
-          spacing={DEFAULT_GAP / 3}
-          w="full"
-        >
-          {/*icon*/}
-          <AssetAvatar
-            asset={asset}
-            fallbackIcon={
-              <AssetIcon
-                color={primaryButtonTextColor}
-                networkTheme={network.chakraTheme}
-                h={6}
-                w={6}
-              />
-            }
-            size="sm"
-          />
+        {/*icon*/}
+        <AssetAvatar
+          asset={asset}
+          fallbackIcon={
+            <AssetIcon
+              color={primaryButtonTextColor}
+              networkTheme={network.chakraTheme}
+              h={6}
+              w={6}
+            />
+          }
+          size="sm"
+        />
 
-          {renderContent()}
-        </HStack>
-      </Button>
-    </Tooltip>
+        {renderContent()}
+      </HStack>
+    </Button>
   );
 };
 

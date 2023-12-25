@@ -215,6 +215,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             queryArc200AssetThunk({
               accountId: account.id,
               applicationId: query,
+              refresh: true,
             })
           )
         );
@@ -224,6 +225,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
               accountId: account.id,
               assetId: query,
               nameOrUnit: null,
+              refresh: true,
             })
           )
         );
@@ -238,6 +240,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             accountId: account.id,
             assetId: null,
             nameOrUnit: query,
+            refresh: true,
           })
         )
       );

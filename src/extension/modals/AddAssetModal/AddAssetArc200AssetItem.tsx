@@ -54,7 +54,7 @@ const AddAssetArc200AssetItem: FC<IProps> = ({
         onClick={handleOnClick}
         pl={DEFAULT_GAP / 2}
         pr={1}
-        py={0}
+        py={DEFAULT_GAP / 2}
         rightIcon={
           <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />
         }

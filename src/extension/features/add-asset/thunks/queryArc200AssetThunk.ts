@@ -49,7 +49,10 @@ const queryArc200AssetThunk: AsyncThunk<
   IQueryByIdAsyncThunkConfig
 >(
   AddAssetThunkEnum.QueryArc200Asset,
-  async ({ accountId, applicationId }, { getState, rejectWithValue }) => {
+  async (
+    { accountId, applicationId, refresh = false },
+    { getState, rejectWithValue }
+  ) => {
     const account: IAccount | null =
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentArc200Assets: IAssetsWithNextToken<IArc200Asset> =
@@ -107,7 +110,7 @@ const queryArc200AssetThunk: AsyncThunk<
     });
 
     // if we have a next token, we are paginating arc200 assets
-    if (currentArc200Assets.next) {
+    if (!refresh && currentArc200Assets.next) {
       updatedArc200Assets = currentArc200Assets.items;
     }
 

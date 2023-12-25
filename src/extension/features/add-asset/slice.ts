@@ -33,7 +33,7 @@ import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** query by arc200 asset id **/
+    /** query arc200 asset **/
     builder.addCase(
       queryArc200AssetThunk.fulfilled,
       (
@@ -65,7 +65,7 @@ const slice = createSlice({
         }
       }
     );
-    /** query by standard asset id **/
+    /** query standard asset **/
     builder.addCase(
       queryStandardAssetThunk.fulfilled,
       (
