@@ -1,11 +1,10 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Indexer } from 'algosdk';
-import { BigNumber } from 'bignumber.js';
 
 // constants
 import {
-  DEFAULT_TRANSACTION_INDEXER_LIMIT,
   NODE_REQUEST_DELAY,
+  SEARCH_ASSET_INDEXER_LIMIT,
 } from '@extension/constants';
 
 // enums
@@ -64,6 +63,7 @@ const queryStandardAssetThunk: AsyncThunk<
     const selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(getState().networks.items, getState().settings);
     let algorandSearchAssetsResult: IAlgorandSearchAssetsResult;
+    let filteredAlgorandAssets: IAlgorandAsset[];
     let indexerClient: Indexer;
     let standardAssetHoldings: IStandardAssetHolding[];
     let verifiedStandardAssets: ITinyManAssetResponse[];
@@ -101,6 +101,11 @@ const queryStandardAssetThunk: AsyncThunk<
       );
     }
 
+    // if we are not refreshing and there is no longer a next token, we have come to the page end
+    if (!refresh && !currentStandardAssets.next) {
+      return currentStandardAssets;
+    }
+
     standardAssetHoldings =
       account?.networkInformation[
         convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
@@ -109,50 +114,44 @@ const queryStandardAssetThunk: AsyncThunk<
       logger,
     });
 
-    // if we have a next token, we are paginating the standard assets result
-    if (!refresh && currentStandardAssets.next) {
-      updatedStandardAssets = currentStandardAssets.items;
-    }
-
     try {
       algorandSearchAssetsResult = await searchAlgorandAssetsWithDelay({
         assetId,
         client: indexerClient,
         delay: NODE_REQUEST_DELAY,
-        limit: DEFAULT_TRANSACTION_INDEXER_LIMIT,
+        limit: SEARCH_ASSET_INDEXER_LIMIT,
         name: nameOrUnit,
         next: currentStandardAssets.next,
         unit: nameOrUnit,
       });
 
       // filter out any assets the account already holds
-      algorandSearchAssetsResult.assets =
-        algorandSearchAssetsResult.assets.filter(
-          (algorandAsset) =>
-            !standardAssetHoldings.find(
-              (value) => value.id === String(algorandAsset.index)
-            )
-        );
+      filteredAlgorandAssets = algorandSearchAssetsResult.assets.filter(
+        (algorandAsset) =>
+          !standardAssetHoldings.find(
+            (value) => value.id === String(algorandAsset.index)
+          )
+      );
       verifiedStandardAssets = await fetchVerifiedStandardAssetList({
         logger,
         network: selectedNetwork,
       });
 
       for (
-        let index = 0;
-        index < algorandSearchAssetsResult.assets.length;
+        let index: number = 0;
+        index < filteredAlgorandAssets.length;
         index++
       ) {
-        const assetId: string = new BigNumber(
-          String(algorandSearchAssetsResult.assets[index].index)
-        ).toString();
+        const asset: IAlgorandAsset = filteredAlgorandAssets[index];
         const verifiedStandardAsset: ITinyManAssetResponse | null =
-          verifiedStandardAssets.find((value) => value.id === assetId) || null;
+          verifiedStandardAssets.find(
+            (value) => value.id === String(asset.index)
+          ) || null;
 
         // add the asset to the results
         updatedStandardAssets.push(
           mapStandardAssetFromAlgorandAsset(
-            algorandSearchAssetsResult.assets[index],
+            asset,
             verifiedStandardAsset?.logo.svg || null,
             !!verifiedStandardAsset
           )
@@ -161,7 +160,10 @@ const queryStandardAssetThunk: AsyncThunk<
 
       // update the result
       return {
-        items: updatedStandardAssets,
+        // if we are refreshing, replace all the existing assets, otherwise append
+        items: refresh
+          ? updatedStandardAssets
+          : [...currentStandardAssets.items, ...updatedStandardAssets],
         next: algorandSearchAssetsResult['next-token'] || null,
       };
     } catch (error) {

@@ -59,6 +59,7 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
+      px={DEFAULT_GAP}
       spacing={DEFAULT_GAP - 2}
       w="full"
     >

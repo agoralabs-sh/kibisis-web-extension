@@ -18,6 +18,7 @@ export { default as injectScript } from './injectScript';
 export { default as isAccountKnown } from './isAccountKnown';
 export { default as isHexString } from './isHexString';
 export { default as isMnemonicValid } from './isMnemonicValid';
+export { default as isNumericString } from './isNumericString';
 export { default as makeStore } from './makeStore';
 export { default as mapArc200AssetFromArc200AssetInformation } from './mapArc200AssetFromArc200AssetInformation';
 export { default as mapAlgorandAccountInformationToAccount } from './mapAlgorandAccountInformationToAccount';

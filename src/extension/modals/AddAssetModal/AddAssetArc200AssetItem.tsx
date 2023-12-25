@@ -52,8 +52,7 @@ const AddAssetArc200AssetItem: FC<IProps> = ({
         h={TAB_ITEM_HEIGHT}
         justifyContent="start"
         onClick={handleOnClick}
-        pl={DEFAULT_GAP / 2}
-        pr={1}
+        px={DEFAULT_GAP / 2}
         py={DEFAULT_GAP / 2}
         rightIcon={
           <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />

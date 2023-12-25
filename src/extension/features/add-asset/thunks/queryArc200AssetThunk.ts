@@ -1,11 +1,10 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Indexer } from 'algosdk';
-import { BigNumber } from 'bignumber.js';
 
 // constants
 import {
-  DEFAULT_TRANSACTION_INDEXER_LIMIT,
   NODE_REQUEST_DELAY,
+  SEARCH_ASSET_INDEXER_LIMIT,
 } from '@extension/constants';
 
 // enums
@@ -18,6 +17,7 @@ import { NetworkNotSelectedError, OfflineError } from '@extension/errors';
 import { ILogger } from '@common/types';
 import {
   IAccount,
+  IAlgorandApplication,
   IAlgorandSearchApplicationsResult,
   IArc200Asset,
   IArc200AssetHolding,
@@ -64,6 +64,7 @@ const queryArc200AssetThunk: AsyncThunk<
     let algorandSearchApplicationResult: IAlgorandSearchApplicationsResult;
     let arc200AssetHoldings: IArc200AssetHolding[];
     let arc200Assets: IArc200Asset[];
+    let filteredAlgorandApplications: IAlgorandApplication[];
     let indexerClient: Indexer;
     let updatedArc200Assets: IArc200Asset[] = [];
 
@@ -97,6 +98,11 @@ const queryArc200AssetThunk: AsyncThunk<
       );
     }
 
+    // if we are not refreshing and there is no longer a next token, we have come to the page end
+    if (!refresh && !currentArc200Assets.next) {
+      return currentArc200Assets;
+    }
+
     arc200Assets = selectAssetsForNetwork(
       getState().arc200Assets.items,
       selectedNetwork.genesisHash
@@ -109,23 +115,18 @@ const queryArc200AssetThunk: AsyncThunk<
       logger,
     });
 
-    // if we have a next token, we are paginating arc200 assets
-    if (!refresh && currentArc200Assets.next) {
-      updatedArc200Assets = currentArc200Assets.items;
-    }
-
     try {
       algorandSearchApplicationResult =
         await searchAlgorandApplicationsWithDelay({
           applicationId,
           client: indexerClient,
           delay: NODE_REQUEST_DELAY,
-          limit: DEFAULT_TRANSACTION_INDEXER_LIMIT,
+          limit: SEARCH_ASSET_INDEXER_LIMIT,
           next: currentArc200Assets.next,
         });
 
       // filter out any assets the account already holds
-      algorandSearchApplicationResult.applications =
+      filteredAlgorandApplications =
         algorandSearchApplicationResult.applications.filter(
           (algorandApplication) =>
             !arc200AssetHoldings.find(
@@ -135,24 +136,25 @@ const queryArc200AssetThunk: AsyncThunk<
 
       for (
         let index = 0;
-        index < algorandSearchApplicationResult.applications.length;
+        index < filteredAlgorandApplications.length;
         index++
       ) {
-        const applicationId: string = new BigNumber(
-          String(
-            algorandSearchApplicationResult.applications[index].id as bigint
-          )
-        ).toString();
+        const application: IAlgorandApplication =
+          filteredAlgorandApplications[index];
         let arc200Asset: IArc200Asset | null =
-          arc200Assets.find((value) => value.id === applicationId) || null;
+          arc200Assets.find((value) => value.id === String(application.id)) ||
+          null;
 
         // if we don't have any info stored, get the asset information
         if (!arc200Asset) {
-          arc200Asset = await updateArc200AssetInformationById(applicationId, {
-            delay: index * NODE_REQUEST_DELAY,
-            logger,
-            network: selectedNetwork,
-          });
+          arc200Asset = await updateArc200AssetInformationById(
+            String(application.id),
+            {
+              delay: index * NODE_REQUEST_DELAY,
+              logger,
+              network: selectedNetwork,
+            }
+          );
         }
 
         // if the app is an arc200 app, add it to the list
@@ -163,7 +165,9 @@ const queryArc200AssetThunk: AsyncThunk<
 
       // update the result
       return {
-        items: updatedArc200Assets,
+        items: refresh
+          ? updatedArc200Assets
+          : [...currentArc200Assets.items, ...updatedArc200Assets],
         next: algorandSearchApplicationResult['next-token'] || null,
       };
     } catch (error) {

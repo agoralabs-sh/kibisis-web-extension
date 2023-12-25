@@ -13,7 +13,15 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  MutableRefObject,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoCloseOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -83,6 +91,9 @@ import {
   IStandardAsset,
 } from '@extension/types';
 
+// utils
+import { isNumericString } from '@extension/utils';
+
 interface IProps {
   onClose: () => void;
 }
@@ -90,6 +101,8 @@ interface IProps {
 const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const assetContainerRef: MutableRefObject<HTMLDivElement | null> =
+    useRef<HTMLDivElement | null>(null);
   // selectors
   const account: IAccount | null = useSelectAddAssetAccount();
   const arc200Assets: IArc200Asset[] = useSelectAddAssetArc200Assets();
@@ -204,7 +217,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       }
 
       // if we have only numbers, we have an asset/app id
-      if (new RegExp(/^\d+$/).test(query)) {
+      if (isNumericString(query)) {
         // abort the previous arc200 assets request
         if (queryArc200AssetDispatch) {
           queryArc200AssetDispatch.abort();
@@ -249,6 +262,34 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleOnQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
+  const handleOnScrollEnd = () => {
+    if (
+      account &&
+      assetContainerRef.current &&
+      assetContainerRef.current.scrollHeight -
+        (assetContainerRef.current.clientHeight +
+          assetContainerRef.current.scrollTop) ===
+        0
+    ) {
+      setQueryStandardAssetDispatch(
+        dispatch(
+          queryStandardAssetThunk({
+            accountId: account.id,
+            refresh: false,
+            ...(isNumericString(query)
+              ? {
+                  assetId: query,
+                  nameOrUnit: null,
+                }
+              : {
+                  assetId: null,
+                  nameOrUnit: query,
+                }),
+          })
+        )
+      );
+    }
+  };
   const handlePreviousClick = () => {
     dispatch(setSelectedAsset(null));
   };
@@ -283,44 +324,60 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     return (
       <VStack flexGrow={1} spacing={DEFAULT_GAP / 2} w="full">
-        <Text color={defaultTextColor} fontSize="sm" textAlign="left" w="full">
-          {t<string>('captions.addAsset')}
-        </Text>
-
-        <InputGroup w="full">
-          <Input
-            colorScheme={primaryColorScheme}
-            focusBorderColor={primaryColor}
-            onChange={handleOnQueryChange}
-            onKeyUp={handleKeyUp}
-            size="md"
-            type="text"
-            value={query}
+        <VStack px={DEFAULT_GAP} spacing={DEFAULT_GAP / 2} w="full">
+          <Text
+            color={defaultTextColor}
+            fontSize="sm"
+            textAlign="left"
             w="full"
-          />
+          >
+            {t<string>('captions.addAsset')}
+          </Text>
 
-          <InputRightElement>
-            {fetching && (
-              <Spinner
-                thickness="1px"
-                speed="0.65s"
-                color={defaultTextColor}
-                size="sm"
-              />
-            )}
-            {!fetching && query.length > 0 && (
-              <IconButton
-                aria-label="Clear query"
-                icon={IoCloseOutline}
-                onClick={handleClearQuery}
-                size="sm"
-                variant="ghost"
-              />
-            )}
-          </InputRightElement>
-        </InputGroup>
+          {/*search*/}
+          <InputGroup w="full">
+            <Input
+              colorScheme={primaryColorScheme}
+              focusBorderColor={primaryColor}
+              onChange={handleOnQueryChange}
+              onKeyUp={handleKeyUp}
+              size="md"
+              type="text"
+              value={query}
+              w="full"
+            />
 
-        <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
+            <InputRightElement>
+              {fetching && (
+                <Spinner
+                  thickness="1px"
+                  speed="0.65s"
+                  color={defaultTextColor}
+                  size="sm"
+                />
+              )}
+              {!fetching && query.length > 0 && (
+                <IconButton
+                  aria-label="Clear query"
+                  icon={IoCloseOutline}
+                  onClick={handleClearQuery}
+                  size="sm"
+                  variant="ghost"
+                />
+              )}
+            </InputRightElement>
+          </InputGroup>
+        </VStack>
+
+        {/*asset list*/}
+        <VStack
+          flexGrow={1}
+          onScroll={handleOnScrollEnd}
+          overflowY="scroll"
+          ref={assetContainerRef}
+          spacing={0}
+          w="full"
+        >
           {selectedNetwork &&
             allAssets.map((value, index) =>
               value.type === AssetTypeEnum.Standard ? (
@@ -440,7 +497,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           </Heading>
         </ModalHeader>
 
-        <ModalBody display="flex" px={DEFAULT_GAP}>
+        <ModalBody display="flex" px={0}>
           {renderContent()}
         </ModalBody>
 
