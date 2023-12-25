@@ -25,7 +25,7 @@ import {
 } from '@extension/types';
 import {
   IAssetsWithNextToken,
-  IQueryByIdPayload,
+  IQueryArc200AssetPayload,
   IQueryByIdAsyncThunkConfig,
 } from '../types';
 
@@ -39,17 +39,17 @@ import {
 } from '@extension/utils';
 import { searchAlgorandApplicationsWithDelay } from '../utils';
 
-const queryByArc200AssetIdThunk: AsyncThunk<
+const queryArc200AssetThunk: AsyncThunk<
   IAssetsWithNextToken<IArc200Asset>, // return
-  IQueryByIdPayload, // args
+  IQueryArc200AssetPayload, // args
   IQueryByIdAsyncThunkConfig
 > = createAsyncThunk<
   IAssetsWithNextToken<IArc200Asset>,
-  IQueryByIdPayload,
+  IQueryArc200AssetPayload,
   IQueryByIdAsyncThunkConfig
 >(
-  AddAssetThunkEnum.QueryByArc200AssetId,
-  async ({ accountId, query }, { getState, rejectWithValue }) => {
+  AddAssetThunkEnum.QueryArc200Asset,
+  async ({ accountId, applicationId }, { getState, rejectWithValue }) => {
     const account: IAccount | null =
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentArc200Assets: IAssetsWithNextToken<IArc200Asset> =
@@ -65,9 +65,7 @@ const queryByArc200AssetIdThunk: AsyncThunk<
     let updatedArc200Assets: IArc200Asset[] = [];
 
     if (!online) {
-      logger.debug(
-        `${AddAssetThunkEnum.QueryByArc200AssetId}: extension offline`
-      );
+      logger.debug(`${AddAssetThunkEnum.QueryArc200Asset}: extension offline`);
 
       return rejectWithValue(
         new OfflineError(
@@ -78,7 +76,7 @@ const queryByArc200AssetIdThunk: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${AddAssetThunkEnum.QueryByStandardAssetId}: no account found for "${accountId}"`
+        `${AddAssetThunkEnum.QueryStandardAsset}: no account found for "${accountId}"`
       );
 
       return currentArc200Assets;
@@ -86,7 +84,7 @@ const queryByArc200AssetIdThunk: AsyncThunk<
 
     if (!selectedNetwork) {
       logger.debug(
-        `${AddAssetThunkEnum.QueryByArc200AssetId}: no network selected`
+        `${AddAssetThunkEnum.QueryArc200Asset}: no network selected`
       );
 
       return rejectWithValue(
@@ -116,7 +114,7 @@ const queryByArc200AssetIdThunk: AsyncThunk<
     try {
       algorandSearchApplicationResult =
         await searchAlgorandApplicationsWithDelay({
-          appId: query,
+          applicationId,
           client: indexerClient,
           delay: NODE_REQUEST_DELAY,
           limit: DEFAULT_TRANSACTION_INDEXER_LIMIT,
@@ -137,17 +135,17 @@ const queryByArc200AssetIdThunk: AsyncThunk<
         index < algorandSearchApplicationResult.applications.length;
         index++
       ) {
-        const appId: string = new BigNumber(
+        const applicationId: string = new BigNumber(
           String(
             algorandSearchApplicationResult.applications[index].id as bigint
           )
         ).toString();
         let arc200Asset: IArc200Asset | null =
-          arc200Assets.find((value) => value.id === appId) || null;
+          arc200Assets.find((value) => value.id === applicationId) || null;
 
         // if we don't have any info stored, get the asset information
         if (!arc200Asset) {
-          arc200Asset = await updateArc200AssetInformationById(appId, {
+          arc200Asset = await updateArc200AssetInformationById(applicationId, {
             delay: index * NODE_REQUEST_DELAY,
             logger,
             network: selectedNetwork,
@@ -166,13 +164,11 @@ const queryByArc200AssetIdThunk: AsyncThunk<
         next: algorandSearchApplicationResult['next-token'] || null,
       };
     } catch (error) {
-      logger.debug(
-        `${AddAssetThunkEnum.QueryByArc200AssetId}(): ${error.message}`
-      );
+      logger.debug(`${AddAssetThunkEnum.QueryArc200Asset}(): ${error.message}`);
 
       return rejectWithValue(error);
     }
   }
 );
 
-export default queryByArc200AssetIdThunk;
+export default queryArc200AssetThunk;

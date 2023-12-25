@@ -13,10 +13,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // thunks
-import {
-  queryByArc200AssetIdThunk,
-  queryByStandardAssetIdThunk,
-} from './thunks';
+import { queryArc200AssetThunk, queryStandardAssetThunk } from './thunks';
 
 // types
 import {
@@ -24,7 +21,12 @@ import {
   IRejectedActionMeta,
   IStandardAsset,
 } from '@extension/types';
-import { IAddAssetState, IAssetsWithNextToken } from './types';
+import {
+  IAddAssetState,
+  IAssetsWithNextToken,
+  IQueryArc200AssetPayload,
+  IQueryStandardAssetPayload,
+} from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -33,7 +35,7 @@ const slice = createSlice({
   extraReducers: (builder) => {
     /** query by arc200 asset id **/
     builder.addCase(
-      queryByArc200AssetIdThunk.fulfilled,
+      queryArc200AssetThunk.fulfilled,
       (
         state: IAddAssetState,
         action: PayloadAction<IAssetsWithNextToken<IArc200Asset>>
@@ -42,20 +44,17 @@ const slice = createSlice({
         state.fetching = false;
       }
     );
+    builder.addCase(queryArc200AssetThunk.pending, (state: IAddAssetState) => {
+      state.fetching = true;
+    });
     builder.addCase(
-      queryByArc200AssetIdThunk.pending,
-      (state: IAddAssetState) => {
-        state.fetching = true;
-      }
-    );
-    builder.addCase(
-      queryByArc200AssetIdThunk.rejected,
+      queryArc200AssetThunk.rejected,
       (
         state: IAddAssetState,
         action: PayloadAction<
           BaseExtensionError,
           string,
-          IRejectedActionMeta,
+          IRejectedActionMeta<IQueryArc200AssetPayload>,
           SerializedError
         >
       ) => {
@@ -68,7 +67,7 @@ const slice = createSlice({
     );
     /** query by standard asset id **/
     builder.addCase(
-      queryByStandardAssetIdThunk.fulfilled,
+      queryStandardAssetThunk.fulfilled,
       (
         state: IAddAssetState,
         action: PayloadAction<IAssetsWithNextToken<IStandardAsset>>
@@ -78,19 +77,19 @@ const slice = createSlice({
       }
     );
     builder.addCase(
-      queryByStandardAssetIdThunk.pending,
+      queryStandardAssetThunk.pending,
       (state: IAddAssetState) => {
         state.fetching = true;
       }
     );
     builder.addCase(
-      queryByStandardAssetIdThunk.rejected,
+      queryStandardAssetThunk.rejected,
       (
         state: IAddAssetState,
         action: PayloadAction<
           BaseExtensionError,
           string,
-          IRejectedActionMeta,
+          IRejectedActionMeta<IQueryStandardAssetPayload>,
           SerializedError
         >
       ) => {

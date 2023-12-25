@@ -43,10 +43,11 @@ import { addArc200AssetHoldingThunk } from '@extension/features/accounts';
 import {
   clearAssets,
   IAssetsWithNextToken,
-  IQueryByIdPayload,
+  IQueryArc200AssetPayload,
   IQueryByIdAsyncThunkConfig,
-  queryByArc200AssetIdThunk,
-  queryByStandardAssetIdThunk,
+  IQueryStandardAssetPayload,
+  queryArc200AssetThunk,
+  queryStandardAssetThunk,
   setSelectedAsset,
 } from '@extension/features/add-asset';
 import { create as createNotification } from '@extension/features/notifications';
@@ -114,15 +115,15 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const primaryColorScheme: string = usePrimaryColorScheme();
   // state
   const [query, setQuery] = useState<string>('');
-  const [queryByArc200AssetIdDispatch, setQueryByArc200AssetIdDispatch] =
+  const [queryArc200AssetDispatch, setQueryArc200AssetDispatch] =
     useState<IAppThunkDispatchReturn<
-      IQueryByIdPayload,
+      IQueryArc200AssetPayload,
       IQueryByIdAsyncThunkConfig,
       IAssetsWithNextToken<IArc200Asset>
     > | null>(null);
-  const [queryByStandardAssetIdDispatch, setQueryByStandardAssetIdDispatch] =
+  const [queryStandardAssetDispatch, setQueryStandardAssetDispatch] =
     useState<IAppThunkDispatchReturn<
-      IQueryByIdPayload,
+      IQueryStandardAssetPayload,
       IQueryByIdAsyncThunkConfig,
       IAssetsWithNextToken<IStandardAsset>
     > | null>(null);
@@ -191,42 +192,55 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handleClose = () => {
     setQuery('');
-    setQueryByArc200AssetIdDispatch(null);
-    setQueryByStandardAssetIdDispatch(null);
+    setQueryArc200AssetDispatch(null);
+    setQueryStandardAssetDispatch(null);
     onClose();
   };
   const handleKeyUp = () => {
     if (account) {
+      // abort the previous standard assets request
+      if (queryStandardAssetDispatch) {
+        queryStandardAssetDispatch.abort();
+      }
+
       // if we have only numbers, we have an asset/app id
       if (new RegExp(/^\d+$/).test(query)) {
-        // abort any previous requests, abort them
-        if (queryByArc200AssetIdDispatch) {
-          queryByArc200AssetIdDispatch.abort();
+        // abort the previous arc200 assets request
+        if (queryArc200AssetDispatch) {
+          queryArc200AssetDispatch.abort();
         }
 
-        if (queryByStandardAssetIdDispatch) {
-          queryByStandardAssetIdDispatch.abort();
-        }
-
-        setQueryByArc200AssetIdDispatch(
+        setQueryArc200AssetDispatch(
           dispatch(
-            queryByArc200AssetIdThunk({
+            queryArc200AssetThunk({
               accountId: account.id,
-              query,
+              applicationId: query,
             })
           )
         );
-        setQueryByStandardAssetIdDispatch(
+        setQueryStandardAssetDispatch(
           dispatch(
-            queryByStandardAssetIdThunk({
+            queryStandardAssetThunk({
               accountId: account.id,
-              query,
+              assetId: query,
+              nameOrUnit: null,
             })
           )
         );
 
         return;
       }
+
+      // for alphanumeric strings, query the name/unit of the standard asset
+      setQueryStandardAssetDispatch(
+        dispatch(
+          queryStandardAssetThunk({
+            accountId: account.id,
+            assetId: null,
+            nameOrUnit: query,
+          })
+        )
+      );
     }
   };
   const handleOnQueryChange = (event: ChangeEvent<HTMLInputElement>) => {

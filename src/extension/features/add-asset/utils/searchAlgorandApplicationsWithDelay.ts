@@ -5,7 +5,7 @@ import SearchForApplications from 'algosdk/dist/types/client/v2/indexer/searchFo
 import { IAlgorandSearchApplicationsResult } from '@extension/types';
 
 interface IOptions {
-  appId: string;
+  applicationId: string;
   client: Indexer;
   delay: number;
   limit: number;
@@ -18,7 +18,7 @@ interface IOptions {
  * @returns {IAlgorandSearchApplicationsResult} applications from the node.
  */
 export default async function searchAlgorandApplicationsWithDelay({
-  appId,
+  applicationId,
   client,
   delay,
   limit,
@@ -32,7 +32,7 @@ export default async function searchAlgorandApplicationsWithDelay({
       try {
         requestBuilder = client
           .searchForApplications()
-          .index(parseInt(appId))
+          .index(parseInt(applicationId))
           .limit(limit);
 
         if (next) {

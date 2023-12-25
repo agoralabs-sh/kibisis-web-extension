@@ -1,6 +1,6 @@
 // types
 import IBaseActionMeta from './IBaseActionMeta';
 
-type IPendingActionMeta = IBaseActionMeta<'pending'>;
+type IPendingActionMeta<Arg> = IBaseActionMeta<Arg, 'pending'>;
 
 export default IPendingActionMeta;

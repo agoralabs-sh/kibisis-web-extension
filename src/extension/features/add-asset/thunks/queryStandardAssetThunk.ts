@@ -22,34 +22,35 @@ import {
   INetworkWithTransactionParams,
   IStandardAsset,
   IStandardAssetHolding,
+  ITinyManAssetResponse,
 } from '@extension/types';
 import {
   IAssetsWithNextToken,
-  IQueryByIdPayload,
   IQueryByIdAsyncThunkConfig,
+  IQueryStandardAssetPayload,
 } from '../types';
 
 // utils
 import { getIndexerClient } from '@common/utils';
 import {
   convertGenesisHashToHex,
-  selectAssetsForNetwork,
+  fetchVerifiedStandardAssetList,
+  mapStandardAssetFromAlgorandAsset,
   selectNetworkFromSettings,
-  updateStandardAssetInformationById,
 } from '@extension/utils';
 import { searchAlgorandAssetsWithDelay } from '../utils';
 
-const queryByStandardAssetIdThunk: AsyncThunk<
+const queryStandardAssetThunk: AsyncThunk<
   IAssetsWithNextToken<IStandardAsset>, // return
-  IQueryByIdPayload, // args
+  IQueryStandardAssetPayload, // args
   IQueryByIdAsyncThunkConfig
 > = createAsyncThunk<
   IAssetsWithNextToken<IStandardAsset>,
-  IQueryByIdPayload,
+  IQueryStandardAssetPayload,
   IQueryByIdAsyncThunkConfig
 >(
-  AddAssetThunkEnum.QueryByStandardAssetId,
-  async ({ accountId, query }, { getState, rejectWithValue }) => {
+  AddAssetThunkEnum.QueryStandardAsset,
+  async ({ accountId, assetId, nameOrUnit }, { getState, rejectWithValue }) => {
     const account: IAccount | null =
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentStandardAssets: IAssetsWithNextToken<IStandardAsset> =
@@ -59,15 +60,14 @@ const queryByStandardAssetIdThunk: AsyncThunk<
     const selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(getState().networks.items, getState().settings);
     let algorandSearchAssetsResult: IAlgorandSearchAssetsResult;
-    let encodedGenesisHash: string;
     let indexerClient: Indexer;
-    let standardAssets: IStandardAsset[];
     let standardAssetHoldings: IStandardAssetHolding[];
+    let verifiedStandardAssets: ITinyManAssetResponse[];
     let updatedStandardAssets: IStandardAsset[] = [];
 
     if (!online) {
       logger.debug(
-        `${AddAssetThunkEnum.QueryByStandardAssetId}: extension offline`
+        `${AddAssetThunkEnum.QueryStandardAsset}: extension offline`
       );
 
       return rejectWithValue(
@@ -79,7 +79,7 @@ const queryByStandardAssetIdThunk: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${AddAssetThunkEnum.QueryByStandardAssetId}: no account found for "${accountId}"`
+        `${AddAssetThunkEnum.QueryStandardAsset}: no account found for "${accountId}"`
       );
 
       return currentStandardAssets;
@@ -87,7 +87,7 @@ const queryByStandardAssetIdThunk: AsyncThunk<
 
     if (!selectedNetwork) {
       logger.debug(
-        `${AddAssetThunkEnum.QueryByStandardAssetId}: no network selected`
+        `${AddAssetThunkEnum.QueryStandardAsset}: no network selected`
       );
 
       return rejectWithValue(
@@ -97,10 +97,6 @@ const queryByStandardAssetIdThunk: AsyncThunk<
       );
     }
 
-    standardAssets = selectAssetsForNetwork(
-      getState().standardAssets.items,
-      selectedNetwork.genesisHash
-    );
     standardAssetHoldings =
       account?.networkInformation[
         convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
@@ -116,13 +112,13 @@ const queryByStandardAssetIdThunk: AsyncThunk<
 
     try {
       algorandSearchAssetsResult = await searchAlgorandAssetsWithDelay({
-        assetId: query,
+        assetId,
         client: indexerClient,
         delay: NODE_REQUEST_DELAY,
         limit: DEFAULT_TRANSACTION_INDEXER_LIMIT,
-        name: null,
+        name: nameOrUnit,
         next: currentStandardAssets.next,
-        unit: null,
+        unit: nameOrUnit,
       });
 
       // filter out any assets the account already holds
@@ -133,6 +129,10 @@ const queryByStandardAssetIdThunk: AsyncThunk<
               (value) => value.id === String(algorandAsset.index)
             )
         );
+      verifiedStandardAssets = await fetchVerifiedStandardAssetList({
+        logger,
+        network: selectedNetwork,
+      });
 
       for (
         let index = 0;
@@ -142,22 +142,17 @@ const queryByStandardAssetIdThunk: AsyncThunk<
         const assetId: string = new BigNumber(
           String(algorandSearchAssetsResult.assets[index].index as bigint)
         ).toString();
-        let standardAsset: IStandardAsset | null =
-          standardAssets.find((value) => value.id === assetId) || null;
+        const verifiedStandardAsset: ITinyManAssetResponse | null =
+          verifiedStandardAssets.find((value) => value.id === assetId) || null;
 
-        // if we don't have any info stored, get the asset information
-        if (!standardAsset) {
-          standardAsset = await updateStandardAssetInformationById(assetId, {
-            delay: index * NODE_REQUEST_DELAY,
-            logger,
-            network: selectedNetwork,
-          });
-        }
-
-        // if we have the asset information, add it to the list
-        if (standardAsset) {
-          updatedStandardAssets.push(standardAsset);
-        }
+        // add the asset to the results
+        updatedStandardAssets.push(
+          mapStandardAssetFromAlgorandAsset(
+            algorandSearchAssetsResult.assets[index],
+            verifiedStandardAsset?.logo.svg || null,
+            !!verifiedStandardAsset
+          )
+        );
       }
 
       // update the result
@@ -167,7 +162,7 @@ const queryByStandardAssetIdThunk: AsyncThunk<
       };
     } catch (error) {
       logger.debug(
-        `${AddAssetThunkEnum.QueryByStandardAssetId}(): ${error.message}`
+        `${AddAssetThunkEnum.QueryStandardAsset}(): ${error.message}`
       );
 
       return rejectWithValue(error);
@@ -175,4 +170,4 @@ const queryByStandardAssetIdThunk: AsyncThunk<
   }
 );
 
-export default queryByStandardAssetIdThunk;
+export default queryStandardAssetThunk;

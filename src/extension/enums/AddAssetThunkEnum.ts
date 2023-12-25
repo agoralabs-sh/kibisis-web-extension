@@ -1,6 +1,6 @@
 enum AddAssetThunkEnum {
-  QueryByArc200AssetId = 'addAsset/queryByArc200AssetId',
-  QueryByStandardAssetId = 'addAsset/queryByStandardAssetId',
+  QueryArc200Asset = 'addAsset/queryArc200Asset',
+  QueryStandardAsset = 'addAsset/queryStandardAsset',
 }
 
 export default AddAssetThunkEnum;

@@ -45,7 +45,7 @@ const slice = createSlice({
         action: PayloadAction<
           BaseExtensionError,
           string,
-          IRejectedActionMeta,
+          IRejectedActionMeta<string>,
           SerializedError
         >
       ) => {

@@ -1,2 +1,2 @@
-export { default as queryByArc200AssetIdThunk } from './queryByArc200AssetIdThunk';
-export { default as queryByStandardAssetIdThunk } from './queryByStandardAssetIdThunk';
+export { default as queryArc200AssetThunk } from './queryArc200AssetThunk';
+export { default as queryStandardAssetThunk } from './queryStandardAssetThunk';
