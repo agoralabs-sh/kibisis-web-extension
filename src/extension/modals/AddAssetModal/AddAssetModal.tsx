@@ -43,6 +43,7 @@ import { addArc200AssetHoldingThunk } from '@extension/features/accounts';
 import {
   clearAssets,
   IAssetsWithNextToken,
+  IQueryByIdPayload,
   IQueryByIdAsyncThunkConfig,
   queryByArc200AssetIdThunk,
   queryByStandardAssetIdThunk,
@@ -115,11 +116,13 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const [query, setQuery] = useState<string>('');
   const [queryByArc200AssetIdDispatch, setQueryByArc200AssetIdDispatch] =
     useState<IAppThunkDispatchReturn<
+      IQueryByIdPayload,
       IQueryByIdAsyncThunkConfig,
       IAssetsWithNextToken<IArc200Asset>
     > | null>(null);
   const [queryByStandardAssetIdDispatch, setQueryByStandardAssetIdDispatch] =
     useState<IAppThunkDispatchReturn<
+      IQueryByIdPayload,
       IQueryByIdAsyncThunkConfig,
       IAssetsWithNextToken<IStandardAsset>
     > | null>(null);
@@ -193,25 +196,37 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     onClose();
   };
   const handleKeyUp = () => {
-    // if we have only numbers, we have an asset/app id
-    if (new RegExp(/^\d+$/).test(query)) {
-      // abort any previous requests, abort them
-      if (queryByArc200AssetIdDispatch) {
-        queryByArc200AssetIdDispatch.abort();
+    if (account) {
+      // if we have only numbers, we have an asset/app id
+      if (new RegExp(/^\d+$/).test(query)) {
+        // abort any previous requests, abort them
+        if (queryByArc200AssetIdDispatch) {
+          queryByArc200AssetIdDispatch.abort();
+        }
+
+        if (queryByStandardAssetIdDispatch) {
+          queryByStandardAssetIdDispatch.abort();
+        }
+
+        setQueryByArc200AssetIdDispatch(
+          dispatch(
+            queryByArc200AssetIdThunk({
+              accountId: account.id,
+              query,
+            })
+          )
+        );
+        setQueryByStandardAssetIdDispatch(
+          dispatch(
+            queryByStandardAssetIdThunk({
+              accountId: account.id,
+              query,
+            })
+          )
+        );
+
+        return;
       }
-
-      if (queryByStandardAssetIdDispatch) {
-        queryByStandardAssetIdDispatch.abort();
-      }
-
-      setQueryByArc200AssetIdDispatch(
-        dispatch(queryByArc200AssetIdThunk(query))
-      );
-      setQueryByStandardAssetIdDispatch(
-        dispatch(queryByStandardAssetIdThunk(query))
-      );
-
-      return;
     }
   };
   const handleOnQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
