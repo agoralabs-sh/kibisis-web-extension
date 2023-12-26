@@ -16,6 +16,7 @@ import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
+import AssetBadge from '@extension/components/AssetBadge';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import LoadingPage from '@extension/components/LoadingPage';
@@ -23,7 +24,10 @@ import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
 
 // constants
-import { ACCOUNTS_ROUTE } from '@extension/constants';
+import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
+
+// enums
+import { AssetTypeEnum } from '@extension/enums';
 
 // features
 import { initializeSendAsset } from '@extension/features/send-assets';
@@ -57,6 +61,7 @@ import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
 // utils
 import { formatCurrencyUnit } from '@common/utils';
 import { ellipseAddress } from '@extension/utils';
+import numbro from 'numbro';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
@@ -78,7 +83,7 @@ const AssetPage: FC = () => {
     accountInformation,
     asset,
     assetHolding,
-    standardUnitAmount,
+    amountInStandardUnits,
   } = useAssetPage({
     address: address || null,
     assetId: assetId || null,
@@ -156,7 +161,7 @@ const AssetPage: FC = () => {
       <VStack
         alignItems="center"
         justifyContent="flex-start"
-        px={4}
+        px={DEFAULT_GAP - 2}
         spacing={4}
         w="full"
       >
@@ -166,7 +171,7 @@ const AssetPage: FC = () => {
           spacing={1}
           w="full"
         >
-          {/*asset icon*/}
+          {/*icon*/}
           <AssetAvatar
             asset={asset}
             fallbackIcon={
@@ -180,12 +185,45 @@ const AssetPage: FC = () => {
             size="md"
           />
 
-          {/*asset name*/}
+          <HStack
+            alignItems="center"
+            justifyContent="center"
+            spacing={2}
+            w="full"
+          >
+            {/*amount*/}
+            <Tooltip
+              aria-label="Asset amount with unrestricted decimals"
+              label={numbro(amountInStandardUnits.toString()).format({
+                mantissa: asset.decimals,
+                thousandSeparated: true,
+                trimMantissa: true,
+              })}
+            >
+              <Heading color={defaultTextColor} size="lg" textAlign="center">
+                {formatCurrencyUnit(amountInStandardUnits, asset.decimals)}
+              </Heading>
+            </Tooltip>
+
+            {/*symbol/unit*/}
+            {asset.type === AssetTypeEnum.Arc200 && (
+              <Text color={subTextColor} fontSize="md" textAlign="center">
+                {asset.symbol}
+              </Text>
+            )}
+            {asset.type === AssetTypeEnum.Standard && asset.unitName && (
+              <Text color={subTextColor} fontSize="md" textAlign="center">
+                {asset.unitName}
+              </Text>
+            )}
+          </HStack>
+
+          {/*name*/}
           {asset.name && (
             <Tooltip aria-label="Asset name" label={asset.name}>
               <Text
                 color={defaultTextColor}
-                fontSize="md"
+                fontSize="sm"
                 maxW={200}
                 noOfLines={1}
                 textAlign="center"
@@ -201,19 +239,14 @@ const AssetPage: FC = () => {
             spacing={2}
             w="full"
           >
-            {/*asset unit name*/}
-            {asset.unitName && (
-              <>
-                <Text color={subTextColor} fontSize="sm" textAlign="center">
-                  {asset.unitName}
-                </Text>
-                <Text color={subTextColor} fontSize="sm" textAlign="center">
-                  |
-                </Text>
-              </>
-            )}
+            {/*type*/}
+            <AssetBadge type={asset.type} />
 
-            {/*asset id*/}
+            <Text color={subTextColor} fontSize="sm" textAlign="center">
+              |
+            </Text>
+
+            {/*id*/}
             <HStack alignItems="center" justifyContent="center" spacing={0}>
               <Box
                 backgroundColor={textBackgroundColor}
@@ -244,16 +277,6 @@ const AssetPage: FC = () => {
               )}
             </HStack>
           </HStack>
-
-          {/*amount*/}
-          <Tooltip
-            aria-label="Asset amount with unrestricted decimals"
-            label={standardUnitAmount.toString()}
-          >
-            <Heading color={defaultTextColor} size="lg" textAlign="center">
-              {formatCurrencyUnit(standardUnitAmount, asset.decimals)}
-            </Heading>
-          </Tooltip>
         </VStack>
 
         {/*send/receive buttons*/}
