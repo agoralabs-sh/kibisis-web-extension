@@ -4,8 +4,8 @@ export { default as useSelectAccountInformationByAddress } from './useSelectAcco
 export { default as useSelectAccounts } from './useSelectAccounts';
 export { default as useSelectAccountTransactionsByAddress } from './useSelectAccountTransactionsByAddress';
 export { default as useSelectAddAssetArc200Assets } from './useSelectAddAssetArc200Assets';
+export { default as useSelectAddAssetConfirming } from './useSelectAddAssetConfirming';
 export { default as useSelectAddAssetAccount } from './useSelectAddAssetAccount';
-export { default as useSelectAddAssetError } from './useSelectAddAssetError';
 export { default as useSelectAddAssetFetching } from './useSelectAddAssetFetching';
 export { default as useSelectAddAssetSelectedAsset } from './useSelectAddAssetSelectedAsset';
 export { default as useSelectAddAssetStandardAssets } from './useSelectAddAssetStandardAssets';

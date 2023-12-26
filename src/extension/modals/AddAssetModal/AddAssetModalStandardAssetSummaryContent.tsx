@@ -1,5 +1,6 @@
 import { HStack, Text, Tooltip, useDisclosure, VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
+import numbro from 'numbro';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -51,6 +52,11 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
+  // misc
+  const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
+    new BigNumber(asset.total),
+    asset.decimals
+  );
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
@@ -97,17 +103,15 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
           w="full"
         >
           {/*asset id*/}
-          <PageItem fontSize="sm" label={t<string>('labels.applicationId')}>
+          <PageItem fontSize="sm" label={t<string>('labels.assetId')}>
             <HStack spacing={0}>
               <Text color={subTextColor} fontSize="sm">
                 {asset.id}
               </Text>
 
               <CopyIconButton
-                ariaLabel="Copy ARC200 application ID"
-                copiedTooltipLabel={t<string>(
-                  'captions.arc200ApplicationIdCopied'
-                )}
+                ariaLabel="Copy asset ID"
+                copiedTooltipLabel={t<string>('captions.assetIdCopied')}
                 size="sm"
                 value={asset.id}
               />
@@ -118,7 +122,7 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.applicationPath}/${asset.id}`}
+                  url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
                 />
               )}
             </HStack>
@@ -187,17 +191,15 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
               <PageItem fontSize="sm" label={t<string>('labels.totalSupply')}>
                 <Tooltip
                   aria-label="Asset amount with unrestricted decimals"
-                  label={convertToStandardUnit(
-                    new BigNumber(asset.total),
-                    asset.decimals
-                  ).toString()}
+                  label={numbro(totalSupplyInStandardUnits.toString()).format({
+                    mantissa: asset.decimals,
+                    thousandSeparated: true,
+                    trimMantissa: true,
+                  })}
                 >
                   <Text color={subTextColor} fontSize="sm">
                     {formatCurrencyUnit(
-                      convertToStandardUnit(
-                        new BigNumber(asset.total),
-                        asset.decimals
-                      ),
+                      totalSupplyInStandardUnits,
                       asset.decimals
                     )}
                   </Text>

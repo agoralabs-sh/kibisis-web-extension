@@ -13,7 +13,11 @@ import { StoreNameEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // thunks
-import { queryArc200AssetThunk, queryStandardAssetThunk } from './thunks';
+import {
+  addStandardAssetThunk,
+  queryArc200AssetThunk,
+  queryStandardAssetThunk,
+} from './thunks';
 
 // types
 import {
@@ -33,6 +37,19 @@ import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
+    /** add standard asset **/
+    builder.addCase(
+      addStandardAssetThunk.fulfilled,
+      (state: IAddAssetState, action: PayloadAction<string | null>) => {
+        state.confirming = false;
+      }
+    );
+    builder.addCase(addStandardAssetThunk.pending, (state: IAddAssetState) => {
+      state.confirming = true;
+    });
+    builder.addCase(addStandardAssetThunk.rejected, (state: IAddAssetState) => {
+      state.confirming = false;
+    });
     /** query arc200 asset **/
     builder.addCase(
       queryArc200AssetThunk.fulfilled,
@@ -60,7 +77,6 @@ const slice = createSlice({
       ) => {
         // if it is an abort error, ignore as it is a new request
         if (action.error.name !== 'AbortError') {
-          state.error = action.payload;
           state.fetching = false;
         }
       }
@@ -95,7 +111,6 @@ const slice = createSlice({
       ) => {
         // if it is an abort error, ignore as it is a new request
         if (action.error.name !== 'AbortError') {
-          state.error = action.payload;
           state.fetching = false;
         }
       }
@@ -120,7 +135,6 @@ const slice = createSlice({
         items: [],
         next: null,
       };
-      state.error = null;
       state.fetching = false;
       state.selectedAsset = null;
       state.standardAssets = {
@@ -134,12 +148,6 @@ const slice = createSlice({
     ) => {
       state.accountId = action.payload;
     },
-    setError: (
-      state: Draft<IAddAssetState>,
-      action: PayloadAction<BaseExtensionError | null>
-    ) => {
-      state.error = action.payload;
-    },
     setSelectedAsset: (
       state: Draft<IAddAssetState>,
       action: PayloadAction<IArc200Asset | IStandardAsset | null>
@@ -150,5 +158,5 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { clearAssets, reset, setAccountId, setError, setSelectedAsset } =
+export const { clearAssets, reset, setAccountId, setSelectedAsset } =
   slice.actions;
