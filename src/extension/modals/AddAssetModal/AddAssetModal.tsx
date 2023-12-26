@@ -148,13 +148,6 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     ...arc200Assets,
     ...standardAssets,
   ];
-  // .sort((a, b) => {
-  //   const aName: string = a.name?.toUpperCase() || '';
-  //   const bName: string = b.name?.toUpperCase() || '';
-  //
-  //   return aName < bName ? -1 : aName > bName ? 1 : 0;
-  // }) // sort each alphabetically by name
-  // .sort((a, b) => (a.verified === b.verified ? 0 : a.verified ? -1 : 1)); // then sort to bring the verified to the front
   const isOpen: boolean = !!account;
   // handlers
   const handleAddArc200AssetClick = async () => {
