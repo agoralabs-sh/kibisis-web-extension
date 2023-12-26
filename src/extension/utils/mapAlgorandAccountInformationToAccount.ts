@@ -1,5 +1,8 @@
 import { BigNumber } from 'bignumber.js';
 
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
 // types
 import {
   IAccountInformation,
@@ -24,6 +27,7 @@ export default function mapAlgorandAccountInformationToAccountInformation(
       amount: new BigNumber(String(value.amount as bigint)).toString(),
       id: new BigNumber(String(value['asset-id'] as bigint)).toString(),
       isFrozen: value['is-frozen'],
+      type: AssetTypeEnum.Standard,
     })),
     updatedAt: updatedAt || new Date().getTime(),
   };

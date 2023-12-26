@@ -8,6 +8,9 @@ import { networks } from '@extension/config';
 // constants
 import { ACCOUNTS_ITEM_KEY_PREFIX } from '@extension/constants';
 
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
 // services
 import StorageManager from './StorageManager';
 
@@ -221,7 +224,20 @@ export default class AccountService {
             ...acc,
             [encodedGenesisHash]: {
               ...AccountService.initializeDefaultAccountInformation(),
-              ...accountInformation,
+              ...(accountInformation && {
+                ...accountInformation,
+                arc200AssetHoldings: accountInformation.arc200AssetHoldings.map(
+                  (value) => ({
+                    ...value,
+                    type: AssetTypeEnum.Arc200,
+                  })
+                ),
+                standardAssetHoldings:
+                  accountInformation.standardAssetHoldings.map((value) => ({
+                    ...value,
+                    type: AssetTypeEnum.Standard,
+                  })),
+              }),
             },
           };
         },

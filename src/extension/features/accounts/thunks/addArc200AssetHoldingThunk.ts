@@ -7,7 +7,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 import { updateAccountInformation } from '@extension/features/accounts';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { AccountsThunkEnum, AssetTypeEnum } from '@extension/enums';
 
 // services
 import { AccountService } from '@extension/services';
@@ -107,6 +107,7 @@ const addArc200AssetHoldingThunk: AsyncThunk<
                 {
                   amount: '0',
                   id: appId,
+                  type: AssetTypeEnum.Arc200,
                 },
               ],
             },

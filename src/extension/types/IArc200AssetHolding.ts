@@ -1,10 +1,11 @@
-/**
- * @property {string} amount - the amount of the arc200 asset.
- * @property {string} id - the arc200 app ID.
- */
-interface IArc200AssetHolding {
-  amount: string;
-  id: string;
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
+// types
+import { IBaseAssetHolding } from '@extension/types';
+
+interface IArc200AssetHolding extends IBaseAssetHolding {
+  type: AssetTypeEnum.Arc200;
 }
 
 export default IArc200AssetHolding;
