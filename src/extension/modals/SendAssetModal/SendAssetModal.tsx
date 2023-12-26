@@ -6,7 +6,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner,
   Text,
   Textarea,
   VStack,
@@ -27,6 +26,7 @@ import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
 import SendAmountInput from './SendAmountInput';
+import SendAssetModalConfirmingContent from './SendAssetModalConfirmingContent';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
 import SendAssetModalSummaryContent from './SendAssetModalSummaryContent';
 
@@ -34,7 +34,7 @@ import SendAssetModalSummaryContent from './SendAssetModalSummaryContent';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { ErrorCodeEnum } from '@extension/enums';
+import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 
 // errors
 import { BaseExtensionError } from '@extension/errors';
@@ -43,13 +43,13 @@ import { BaseExtensionError } from '@extension/errors';
 import { updateAccountsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 import {
+  reset as resetSendAssets,
   setAmount,
   setError,
   setFromAddress,
   setNote,
   setSelectedAsset,
   setToAddress,
-  reset as resetSendAssets,
   submitTransactionThunk,
 } from '@extension/features/send-assets';
 
@@ -60,6 +60,7 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 // selectors
 import {
   useSelectAccounts,
+  useSelectArc200AssetsBySelectedNetwork,
   useSelectSelectedNetwork,
   useSelectSendingAssetAmountInStandardUnits,
   useSelectSendingAssetConfirming,
@@ -81,8 +82,9 @@ import { theme } from '@extension/theme';
 import {
   IAccount,
   IAppThunkDispatch,
-  IStandardAsset,
+  IArc200Asset,
   INetworkWithTransactionParams,
+  IStandardAsset,
 } from '@extension/types';
 
 // utils
@@ -100,16 +102,18 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
+  const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
   const amountInStandardUnits: string =
     useSelectSendingAssetAmountInStandardUnits();
-  const assets: IStandardAsset[] = useSelectStandardAssetsBySelectedNetwork();
+  const standardAssets: IStandardAsset[] =
+    useSelectStandardAssetsBySelectedNetwork();
   const confirming: boolean = useSelectSendingAssetConfirming();
   const error: BaseExtensionError | null = useSelectSendingAssetError();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
   const note: string | null = useSelectSendingAssetNote();
-  const selectedAsset: IStandardAsset | null =
+  const selectedAsset: IArc200Asset | IStandardAsset | null =
     useSelectSendingAssetSelectedAsset();
   const transactionId: string | null = useSelectSendingAssetTransactionId();
   // hooks
@@ -136,10 +140,21 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     useState<string>('0');
   const [showSummary, setShowSummary] = useState<boolean>(false);
   // misc
+  const allAssets: (IArc200Asset | IStandardAsset)[] = [
+    ...arc200Assets,
+    ...standardAssets,
+  ]
+    .sort((a, b) => {
+      const aName: string = a.name?.toUpperCase() || '';
+      const bName: string = b.name?.toUpperCase() || '';
+
+      return aName < bName ? -1 : aName > bName ? 1 : 0;
+    }) // sort each alphabetically by name
+    .sort((a, b) => (a.verified === b.verified ? 0 : a.verified ? -1 : 1)); // then sort to bring the verified to the front
   const isOpen: boolean = !!selectedAsset;
   // handlers
   const handleAmountChange = (value: string) => dispatch(setAmount(value));
-  const handleAssetChange = (value: IStandardAsset) =>
+  const handleAssetChange = (value: IArc200Asset | IStandardAsset) =>
     dispatch(setSelectedAsset(value));
   const handleCancelClick = () => onClose();
   const handleFromAccountChange = (account: IAccount) =>
@@ -178,32 +193,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // renders
   const renderContent = () => {
     if (confirming) {
-      return (
-        <VStack
-          alignItems="center"
-          flexGrow={1}
-          justifyContent="center"
-          spacing={DEFAULT_GAP / 2}
-          w="full"
-        >
-          <Spinner
-            color={primaryColor}
-            emptyColor={defaultTextColor}
-            size="xl"
-            speed="0.65s"
-            thickness="4px"
-          />
-
-          <Text
-            color={defaultTextColor}
-            fontSize="md"
-            textAlign="center"
-            w="full"
-          >
-            {t<string>('captions.confirmingTransaction')}
-          </Text>
-        </VStack>
-      );
+      return <SendAssetModalConfirmingContent />;
     }
 
     if (fromAccount && network && selectedAsset) {
@@ -246,7 +236,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
             <AssetSelect
               account={fromAccount}
-              assets={assets}
+              assets={allAssets}
               includeNativeCurrency={true}
               network={network}
               onAssetChange={handleAssetChange}
@@ -364,6 +354,34 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       </HStack>
     );
   };
+  const renderHeader = () => {
+    switch (selectedAsset?.type) {
+      case AssetTypeEnum.Arc200:
+        return (
+          <Heading color={defaultTextColor} size="md" textAlign="center">
+            {t<string>('headings.sendAsset', {
+              asset: selectedAsset.symbol,
+            })}
+          </Heading>
+        );
+      case AssetTypeEnum.Standard:
+        return (
+          <Heading color={defaultTextColor} size="md" textAlign="center">
+            {t<string>('headings.sendAsset', {
+              asset: selectedAsset?.unitName || 'Asset',
+            })}
+          </Heading>
+        );
+      default:
+        return (
+          <Heading color={defaultTextColor} size="md" textAlign="center">
+            {t<string>('headings.sendAsset', {
+              asset: 'Asset',
+            })}
+          </Heading>
+        );
+    }
+  };
 
   useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
@@ -468,11 +486,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
         borderBottomRadius={0}
       >
         <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
-          <Heading color={defaultTextColor} size="md" textAlign="center">
-            {t<string>('headings.sendAsset', {
-              asset: selectedAsset?.unitName || 'Asset',
-            })}
-          </Heading>
+          {renderHeader()}
         </ModalHeader>
 
         <ModalBody display="flex" px={DEFAULT_GAP}>

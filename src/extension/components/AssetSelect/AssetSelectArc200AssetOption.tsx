@@ -1,8 +1,9 @@
-import { HStack, Text, VStack } from '@chakra-ui/react';
-import React, { FC, ReactEventHandler, SyntheticEvent, useState } from 'react';
+import { HStack, Spacer, Text, VStack } from '@chakra-ui/react';
+import React, { FC, ReactEventHandler, useState } from 'react';
 
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
+import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 
 // constants
@@ -20,13 +21,10 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { theme } from '@extension/theme';
 
 // types
-import {
-  IStandardAsset,
-  INetworkWithTransactionParams,
-} from '@extension/types';
+import { IArc200Asset, INetworkWithTransactionParams } from '@extension/types';
 
 interface IProps {
-  asset: IStandardAsset;
+  asset: IArc200Asset;
   isSelected: boolean;
   onClick?: ReactEventHandler<HTMLDivElement>;
   network: INetworkWithTransactionParams;
@@ -69,83 +67,6 @@ const AssetSelectOption: FC<IProps> = ({
       setBackgroundColor('var(--chakra-colors-chakra-body-bg)');
     }
   };
-  // renders
-  const renderUnitName = () => {
-    if (asset.id === '0') {
-      return (
-        <Text color={formattedDefaultTextColor} flexGrow={1} fontSize="sm">
-          {asset.unitName}
-        </Text>
-      );
-    }
-
-    if (!asset.unitName) {
-      if (asset.name) {
-        return (
-          <VStack
-            alignItems="flex-start"
-            flexGrow={1}
-            justifyContent="space-between"
-            spacing={0}
-          >
-            <Text
-              color={formattedDefaultTextColor}
-              fontSize="sm"
-              maxW={175}
-              noOfLines={1}
-            >
-              {asset.name}
-            </Text>
-
-            <Text color={formattedSubTextColor} fontSize="xs">
-              {asset.id}
-            </Text>
-          </VStack>
-        );
-      }
-
-      return (
-        <Text color={formattedDefaultTextColor} flexGrow={1} fontSize="sm">
-          {asset.id}
-        </Text>
-      );
-    }
-
-    return (
-      <VStack
-        alignItems="flex-start"
-        flexGrow={1}
-        justifyContent="space-between"
-        spacing={0}
-      >
-        <HStack
-          alignItems="center"
-          justifyContent="space-between"
-          spacing={DEFAULT_GAP / 2}
-          w="full"
-        >
-          <Text color={formattedDefaultTextColor} fontSize="sm">
-            {asset.unitName}
-          </Text>
-
-          <Text color={formattedSubTextColor} fontSize="xs">
-            {asset.id}
-          </Text>
-        </HStack>
-
-        {asset.name && (
-          <Text
-            color={formattedSubTextColor}
-            fontSize="xs"
-            maxW={175}
-            noOfLines={1}
-          >
-            {asset.name}
-          </Text>
-        )}
-      </VStack>
-    );
-  };
 
   return (
     <HStack
@@ -175,8 +96,41 @@ const AssetSelectOption: FC<IProps> = ({
         size="xs"
       />
 
-      {/*name/unit*/}
-      {renderUnitName()}
+      {/*name/symbol*/}
+      <VStack
+        alignItems="flex-start"
+        justifyContent="space-between"
+        spacing={0}
+      >
+        <Text
+          color={formattedDefaultTextColor}
+          fontSize="sm"
+          maxW={175}
+          noOfLines={1}
+        >
+          {asset.name}
+        </Text>
+
+        <Text color={formattedSubTextColor} fontSize="xs">
+          {asset.symbol}
+        </Text>
+      </VStack>
+
+      <Spacer />
+
+      {/*id/type*/}
+      <VStack alignItems="flex-end" justifyContent="space-between" spacing={0}>
+        <AssetBadge type={asset.type} />
+
+        <Text
+          color={formattedSubTextColor}
+          fontSize="xs"
+          maxW={175}
+          noOfLines={1}
+        >
+          {asset.id}
+        </Text>
+      </VStack>
     </HStack>
   );
 };

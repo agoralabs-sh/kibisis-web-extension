@@ -3,11 +3,16 @@ import Select, { GroupBase, OptionProps, SingleValueProps } from 'react-select';
 import { FilterOptionOption } from 'react-select/dist/declarations/src/filters';
 
 // components
-import AssetSelectOption from './AssetSelectOption';
-import AssetSelectSingleValue from './AssetSelectSingleValue';
+import AssetSelectArc200AssetOption from './AssetSelectArc200AssetOption';
+import AssetSelectArc200AssetSingleValue from './AssetSelectArc200AssetSingleValue';
+import AssetSelectStandardAssetOption from './AssetSelectStandardAssetOption';
+import AssetSelectStandardAssetSingleValue from './AssetSelectStandardAssetSingleValue';
 
 // constants
 import { OPTION_HEIGHT } from './constants';
+
+// enums
+import { AssetTypeEnum } from '@extension/enums';
 
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
@@ -21,6 +26,7 @@ import {
   IAccountInformation,
   IStandardAsset,
   INetworkWithTransactionParams,
+  IArc200Asset,
 } from '@extension/types';
 import { IOption } from './types';
 
@@ -32,11 +38,11 @@ import {
 
 interface IProps {
   account: IAccount;
-  assets: IStandardAsset[];
+  assets: (IArc200Asset | IStandardAsset)[];
   includeNativeCurrency?: boolean;
   network: INetworkWithTransactionParams;
-  onAssetChange: (value: IStandardAsset) => void;
-  value: IStandardAsset;
+  onAssetChange: (value: IArc200Asset | IStandardAsset) => void;
+  value: IArc200Asset | IStandardAsset;
   width?: string | number;
 }
 
@@ -71,17 +77,36 @@ const AssetSelect: FC<IProps> = ({
     account.networkInformation[
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
     ] || null;
-  const selectableAssets: IStandardAsset[] =
-    accountInformation?.standardAssetHoldings.reduce<IStandardAsset[]>(
-      (acc, assetHolding) => {
-        const asset: IStandardAsset | null =
-          assets.find((value) => value.id === assetHolding.id) || null;
+  const selectableAssets: (IArc200Asset | IStandardAsset)[] =
+    assets.reduce<(IArc200Asset | IStandardAsset)[]>(
+      (acc, asset) => {
+        let selectedAsset: IArc200Asset | IStandardAsset | null;
 
-        if (!asset) {
+        // check if the asset exists in the asset holdings of the account; has it been "added"
+        switch (asset.type) {
+          case AssetTypeEnum.Arc200:
+            selectedAsset = !!accountInformation?.arc200AssetHoldings.find(
+              (value) => value.id === asset.id
+            )
+              ? asset
+              : null;
+            break;
+          case AssetTypeEnum.Standard:
+            selectedAsset = !!accountInformation?.standardAssetHoldings.find(
+              (value) => value.id === asset.id
+            )
+              ? asset
+              : null;
+            break;
+          default:
+            selectedAsset = null;
+        }
+
+        if (!selectedAsset) {
           return acc;
         }
 
-        return [...acc, asset];
+        return [...acc, selectedAsset];
       },
       includeNativeCurrency ? [createNativeCurrencyAsset(network)] : []
     ) || [];
@@ -91,11 +116,23 @@ const AssetSelect: FC<IProps> = ({
     { data }: FilterOptionOption<IOption>,
     inputValue: string
   ) => {
-    return !!(
-      data.asset.id.toUpperCase().includes(inputValue.toUpperCase()) ||
-      (data.asset.unitName &&
-        data.asset.unitName.toUpperCase().includes(inputValue.toUpperCase()))
-    );
+    switch (data.asset.type) {
+      case AssetTypeEnum.Arc200:
+        return (
+          data.asset.id.toUpperCase().includes(inputValue.toUpperCase()) ||
+          data.asset.symbol.toUpperCase().includes(inputValue.toUpperCase())
+        );
+      case AssetTypeEnum.Standard:
+        return !!(
+          data.asset.id.toUpperCase().includes(inputValue.toUpperCase()) ||
+          (data.asset.unitName &&
+            data.asset.unitName
+              .toUpperCase()
+              .includes(inputValue.toUpperCase()))
+        );
+      default:
+        return false;
+    }
   };
 
   return (
@@ -105,19 +142,52 @@ const AssetSelect: FC<IProps> = ({
           data,
           innerProps,
           isSelected,
-        }: OptionProps<IOption, false, GroupBase<IOption>>) => (
-          <AssetSelectOption
-            asset={data.asset}
-            isSelected={isSelected}
-            onClick={innerProps.onClick}
-            network={network}
-          />
-        ),
+        }: OptionProps<IOption, false, GroupBase<IOption>>) => {
+          switch (data.asset.type) {
+            case AssetTypeEnum.Arc200:
+              return (
+                <AssetSelectArc200AssetOption
+                  asset={data.asset}
+                  isSelected={isSelected}
+                  onClick={innerProps.onClick}
+                  network={network}
+                />
+              );
+            case AssetTypeEnum.Standard:
+              return (
+                <AssetSelectStandardAssetOption
+                  asset={data.asset}
+                  isSelected={isSelected}
+                  onClick={innerProps.onClick}
+                  network={network}
+                />
+              );
+            default:
+              return null;
+          }
+        },
         SingleValue: ({
           data,
-        }: SingleValueProps<IOption, false, GroupBase<IOption>>) => (
-          <AssetSelectSingleValue asset={data.asset} network={network} />
-        ),
+        }: SingleValueProps<IOption, false, GroupBase<IOption>>) => {
+          switch (data.asset.type) {
+            case AssetTypeEnum.Arc200:
+              return (
+                <AssetSelectArc200AssetSingleValue
+                  asset={data.asset}
+                  network={network}
+                />
+              );
+            case AssetTypeEnum.Standard:
+              return (
+                <AssetSelectStandardAssetSingleValue
+                  asset={data.asset}
+                  network={network}
+                />
+              );
+            default:
+              return null;
+          }
+        },
       }}
       filterOption={handleSearchFilter}
       onChange={handleAssetChange}

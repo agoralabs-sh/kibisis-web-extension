@@ -18,6 +18,9 @@ import { IoInformationCircleOutline } from 'react-icons/io5';
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -34,6 +37,7 @@ import {
   IAccount,
   IStandardAsset,
   INetworkWithTransactionParams,
+  IArc200Asset,
 } from '@extension/types';
 
 // utils
@@ -45,7 +49,7 @@ interface IProps {
   network: INetworkWithTransactionParams;
   maximumTransactionAmount: string;
   onValueChange: (value: string) => void;
-  selectedAsset: IStandardAsset;
+  selectedAsset: IArc200Asset | IStandardAsset;
   value: string | null;
 }
 
@@ -110,7 +114,21 @@ const SendAmountInput: FC<IProps> = ({
     onValueChange(valueAsString || '0');
   // renders
   const renderMaximumTransactionAmountLabel = () => {
-    const maximumTransactionAmountLabel: ReactElement = (
+    let symbol: string = '';
+    let maximumTransactionAmountLabel: ReactElement;
+
+    switch (selectedAsset.type) {
+      case AssetTypeEnum.Arc200:
+        symbol = selectedAsset.symbol;
+        break;
+      case AssetTypeEnum.Standard:
+        symbol = selectedAsset.unitName || '';
+        break;
+      default:
+        break;
+    }
+
+    maximumTransactionAmountLabel = (
       <Tooltip
         aria-label="Full maximum amount"
         label={maximumTransactionAmountInStandardUnit.toString()}
@@ -126,7 +144,7 @@ const SendAmountInput: FC<IProps> = ({
             {`${t<string>('labels.max')}: ${formatCurrencyUnit(
               maximumTransactionAmountInStandardUnit,
               selectedAsset.decimals
-            )} ${selectedAsset.unitName}`}
+            )} ${symbol}`}
           </Text>
         </HStack>
       </Tooltip>
