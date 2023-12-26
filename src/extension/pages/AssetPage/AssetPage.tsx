@@ -272,7 +272,11 @@ const AssetPage: FC = () => {
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+                  url={`${explorer.baseUrl}${
+                    asset.type === AssetTypeEnum.Standard
+                      ? explorer.assetPath
+                      : explorer.applicationPath
+                  }/${asset.id}`}
                 />
               )}
             </HStack>
