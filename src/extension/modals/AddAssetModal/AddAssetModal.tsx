@@ -67,6 +67,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectAddAssetAccount,
   useSelectAddAssetArc200Assets,
   useSelectAddAssetConfirming,
@@ -106,6 +107,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     useRef<HTMLDivElement | null>(null);
   // selectors
   const account: IAccount | null = useSelectAddAssetAccount();
+  const accounts: IAccount[] = useSelectAccounts();
   const arc200Assets: IArc200Asset[] = useSelectAddAssetArc200Assets();
   const confirming: boolean = useSelectAddAssetConfirming();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
@@ -403,6 +405,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
             return (
               <AddAssetModalStandardAssetSummaryContent
+                accounts={accounts}
                 asset={selectedAsset}
                 explorer={explorer}
                 network={selectedNetwork}

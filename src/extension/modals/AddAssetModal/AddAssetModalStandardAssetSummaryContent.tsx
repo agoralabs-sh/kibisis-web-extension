@@ -1,12 +1,21 @@
-import { HStack, Text, Tooltip, useDisclosure, VStack } from '@chakra-ui/react';
+import {
+  Code,
+  HStack,
+  Text,
+  Tooltip,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import numbro from 'numbro';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
+import AssetDisplay from '@extension/components/AssetDisplay';
 import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import InfoIconTooltip from '@extension/components/InfoIconTooltip';
@@ -27,21 +36,25 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
 import {
+  IAccount,
   IExplorer,
   INetworkWithTransactionParams,
   IStandardAsset,
 } from '@extension/types';
+
+// utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
-import AssetDisplay from '@extension/components/AssetDisplay';
-import { createIconFromDataUri } from '@extension/utils';
+import { createIconFromDataUri, isAccountKnown } from '@extension/utils';
 
 interface IProps {
+  accounts: IAccount[];
   asset: IStandardAsset;
   explorer: IExplorer | null;
   network: INetworkWithTransactionParams;
 }
 
 const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
+  accounts,
   asset,
   explorer,
   network,
@@ -128,6 +141,30 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
             </HStack>
           </PageItem>
 
+          {/*creator account*/}
+          <PageItem fontSize="sm" label={t<string>('labels.creatorAccount')}>
+            <HStack spacing={0}>
+              <AddressDisplay
+                address={asset.creator}
+                ariaLabel="Creator address"
+                color={subTextColor}
+                fontSize="sm"
+                network={network}
+              />
+
+              {/*open in explorer button*/}
+              {!isAccountKnown(accounts, asset.creator) && explorer && (
+                <OpenTabIconButton
+                  size="sm"
+                  tooltipLabel={t<string>('captions.openOn', {
+                    name: explorer.canonicalName,
+                  })}
+                  url={`${explorer.baseUrl}${explorer.accountPath}/${asset.creator}`}
+                />
+              )}
+            </HStack>
+          </PageItem>
+
           {/*name*/}
           {asset.name && (
             <PageItem fontSize="sm" label={t<string>('labels.name')}>
@@ -141,6 +178,28 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
                   {asset.name}
                 </Text>
               </Tooltip>
+            </PageItem>
+          )}
+
+          {/*url*/}
+          {asset.url && (
+            <PageItem fontSize="sm" label={t<string>('labels.url')}>
+              <HStack spacing={0}>
+                <Code
+                  borderRadius="md"
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  wordBreak="break-word"
+                >
+                  {asset.url}
+                </Code>
+
+                <OpenTabIconButton
+                  size="sm"
+                  tooltipLabel={t<string>('captions.openUrl')}
+                  url={asset.url}
+                />
+              </HStack>
             </PageItem>
           )}
 
@@ -205,6 +264,135 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
                   </Text>
                 </Tooltip>
               </PageItem>
+
+              {/*default frozen*/}
+              <PageItem fontSize="sm" label={t<string>('labels.defaultFrozen')}>
+                <Text color={subTextColor} fontSize="sm">
+                  {asset.defaultFrozen
+                    ? t<string>('labels.yes')
+                    : t<string>('labels.no')}
+                </Text>
+              </PageItem>
+
+              {/*clawback address*/}
+              {asset.clawbackAddress && (
+                <PageItem
+                  fontSize="sm"
+                  label={t<string>('labels.clawbackAccount')}
+                >
+                  <HStack spacing={0}>
+                    <AddressDisplay
+                      address={asset.clawbackAddress}
+                      ariaLabel="Clawback address"
+                      color={subTextColor}
+                      fontSize="sm"
+                      network={network}
+                    />
+
+                    {/*open in explorer button*/}
+                    {!isAccountKnown(accounts, asset.clawbackAddress) &&
+                      explorer && (
+                        <OpenTabIconButton
+                          size="sm"
+                          tooltipLabel={t<string>('captions.openOn', {
+                            name: explorer.canonicalName,
+                          })}
+                          url={`${explorer.baseUrl}${explorer.accountPath}/${asset.clawbackAddress}`}
+                        />
+                      )}
+                  </HStack>
+                </PageItem>
+              )}
+
+              {/*freeze address*/}
+              {asset.freezeAddress && (
+                <PageItem
+                  fontSize="sm"
+                  label={t<string>('labels.freezeAccount')}
+                >
+                  <HStack spacing={0}>
+                    <AddressDisplay
+                      address={asset.freezeAddress}
+                      ariaLabel="Freeze address"
+                      color={subTextColor}
+                      fontSize="sm"
+                      network={network}
+                    />
+
+                    {/*open in explorer button*/}
+                    {!isAccountKnown(accounts, asset.freezeAddress) &&
+                      explorer && (
+                        <OpenTabIconButton
+                          size="sm"
+                          tooltipLabel={t<string>('captions.openOn', {
+                            name: explorer.canonicalName,
+                          })}
+                          url={`${explorer.baseUrl}${explorer.accountPath}/${asset.freezeAddress}`}
+                        />
+                      )}
+                  </HStack>
+                </PageItem>
+              )}
+
+              {/*manager address*/}
+              {asset.managerAddress && (
+                <PageItem
+                  fontSize="sm"
+                  label={t<string>('labels.managerAccount')}
+                >
+                  <HStack spacing={0}>
+                    <AddressDisplay
+                      address={asset.managerAddress}
+                      ariaLabel="Manager address"
+                      color={subTextColor}
+                      fontSize="sm"
+                      network={network}
+                    />
+
+                    {/*open in explorer button*/}
+                    {!isAccountKnown(accounts, asset.managerAddress) &&
+                      explorer && (
+                        <OpenTabIconButton
+                          size="sm"
+                          tooltipLabel={t<string>('captions.openOn', {
+                            name: explorer.canonicalName,
+                          })}
+                          url={`${explorer.baseUrl}${explorer.accountPath}/${asset.managerAddress}`}
+                        />
+                      )}
+                  </HStack>
+                </PageItem>
+              )}
+
+              {/*reserve address*/}
+              {asset.reserveAddress && (
+                <PageItem
+                  fontSize="sm"
+                  label={t<string>('labels.reserveAccount')}
+                >
+                  <HStack spacing={0}>
+                    <AddressDisplay
+                      address={asset.reserveAddress}
+                      ariaLabel="Reserve address"
+                      color={subTextColor}
+                      fontSize="sm"
+                      network={network}
+                    />
+
+                    {/*open in explorer button*/}
+                    {!isAccountKnown(accounts, asset.reserveAddress) &&
+                      explorer && (
+                        <OpenTabIconButton
+                          size="sm"
+                          tooltipLabel={t<string>('captions.openOn', {
+                            name: explorer.canonicalName,
+                          })}
+                          url={`${explorer.baseUrl}${explorer.accountPath}/${asset.reserveAddress}`}
+                        />
+                      )}
+                  </HStack>
+                </PageItem>
+              )}
             </VStack>
           </MoreInformationAccordion>
         </VStack>
