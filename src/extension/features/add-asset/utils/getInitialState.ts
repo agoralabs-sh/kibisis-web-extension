@@ -8,8 +8,12 @@ export default function getInitialState(): IAddAssetState {
       items: [],
       next: null,
     },
-    error: null,
+    confirming: false,
     fetching: false,
-    selectedArc200Asset: null,
+    selectedAsset: null,
+    standardAssets: {
+      items: [],
+      next: null,
+    },
   };
 }

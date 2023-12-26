@@ -11,15 +11,22 @@ import { StandardAssetService } from '@extension/services';
 
 // types
 import { ILogger } from '@common/types';
-import { IMainRootState, IStandardAsset } from '@extension/types';
+import {
+  IMainRootState,
+  IStandardAsset,
+  ITinyManAssetResponse,
+} from '@extension/types';
 import {
   IUpdateStandardAssetInformationPayload,
   IUpdateStandardAssetInformationResult,
 } from '../types';
 
 // utils
-import { convertGenesisHashToHex, upsertItemsById } from '@extension/utils';
-import { updateStandardAssetInformationById } from '../utils';
+import {
+  fetchVerifiedStandardAssetList,
+  updateStandardAssetInformationById,
+  upsertItemsById,
+} from '@extension/utils';
 
 const updateStandardAssetInformationThunk: AsyncThunk<
   IUpdateStandardAssetInformationResult, // return
@@ -33,6 +40,11 @@ const updateStandardAssetInformationThunk: AsyncThunk<
   StandardAssetsThunkEnum.UpdateStandardAssetInformation,
   async ({ ids, network }, { getState }) => {
     const logger: ILogger = getState().system.logger;
+    const verifiedAssetList: ITinyManAssetResponse[] =
+      await fetchVerifiedStandardAssetList({
+        logger,
+        network,
+      });
     let asset: IStandardAsset | null;
     let currentAssets: IStandardAsset[];
     let id: string;
@@ -48,6 +60,7 @@ const updateStandardAssetInformationThunk: AsyncThunk<
           delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
           logger,
           network,
+          verifiedAssetList,
         });
 
         if (!asset) {

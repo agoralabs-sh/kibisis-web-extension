@@ -13,42 +13,104 @@ import { StoreNameEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // thunks
-import { queryByIdThunk } from './thunks';
+import {
+  addStandardAssetThunk,
+  queryArc200AssetThunk,
+  queryStandardAssetThunk,
+} from './thunks';
 
 // types
-import { IArc200Asset, IRejectedActionMeta } from '@extension/types';
-import { IAddAssetState, IQueryByIdResult } from './types';
+import {
+  IArc200Asset,
+  IRejectedActionMeta,
+  IStandardAsset,
+} from '@extension/types';
+import {
+  IAddAssetState,
+  IAssetsWithNextToken,
+  IQueryArc200AssetPayload,
+  IQueryStandardAssetPayload,
+} from './types';
 
 // utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** query by id **/
+    /** add standard asset **/
     builder.addCase(
-      queryByIdThunk.fulfilled,
-      (state: IAddAssetState, action: PayloadAction<IQueryByIdResult>) => {
-        state.arc200Assets = action.payload.arc200Assets;
+      addStandardAssetThunk.fulfilled,
+      (state: IAddAssetState, action: PayloadAction<string | null>) => {
+        state.confirming = false;
+      }
+    );
+    builder.addCase(addStandardAssetThunk.pending, (state: IAddAssetState) => {
+      state.confirming = true;
+    });
+    builder.addCase(addStandardAssetThunk.rejected, (state: IAddAssetState) => {
+      state.confirming = false;
+    });
+    /** query arc200 asset **/
+    builder.addCase(
+      queryArc200AssetThunk.fulfilled,
+      (
+        state: IAddAssetState,
+        action: PayloadAction<IAssetsWithNextToken<IArc200Asset>>
+      ) => {
+        state.arc200Assets = action.payload;
         state.fetching = false;
       }
     );
-    builder.addCase(queryByIdThunk.pending, (state: IAddAssetState) => {
+    builder.addCase(queryArc200AssetThunk.pending, (state: IAddAssetState) => {
       state.fetching = true;
     });
     builder.addCase(
-      queryByIdThunk.rejected,
+      queryArc200AssetThunk.rejected,
       (
         state: IAddAssetState,
         action: PayloadAction<
           BaseExtensionError,
           string,
-          IRejectedActionMeta,
+          IRejectedActionMeta<IQueryArc200AssetPayload>,
           SerializedError
         >
       ) => {
         // if it is an abort error, ignore as it is a new request
         if (action.error.name !== 'AbortError') {
-          state.error = action.payload;
+          state.fetching = false;
+        }
+      }
+    );
+    /** query standard asset **/
+    builder.addCase(
+      queryStandardAssetThunk.fulfilled,
+      (
+        state: IAddAssetState,
+        action: PayloadAction<IAssetsWithNextToken<IStandardAsset>>
+      ) => {
+        state.standardAssets = action.payload;
+        state.fetching = false;
+      }
+    );
+    builder.addCase(
+      queryStandardAssetThunk.pending,
+      (state: IAddAssetState) => {
+        state.fetching = true;
+      }
+    );
+    builder.addCase(
+      queryStandardAssetThunk.rejected,
+      (
+        state: IAddAssetState,
+        action: PayloadAction<
+          BaseExtensionError,
+          string,
+          IRejectedActionMeta<IQueryStandardAssetPayload>,
+          SerializedError
+        >
+      ) => {
+        // if it is an abort error, ignore as it is a new request
+        if (action.error.name !== 'AbortError') {
           state.fetching = false;
         }
       }
@@ -62,6 +124,10 @@ const slice = createSlice({
         items: [],
         next: null,
       };
+      state.standardAssets = {
+        items: [],
+        next: null,
+      };
     },
     reset: (state: Draft<IAddAssetState>) => {
       state.accountId = null;
@@ -69,9 +135,12 @@ const slice = createSlice({
         items: [],
         next: null,
       };
-      state.error = null;
       state.fetching = false;
-      state.selectedArc200Asset = null;
+      state.selectedAsset = null;
+      state.standardAssets = {
+        items: [],
+        next: null,
+      };
     },
     setAccountId: (
       state: Draft<IAddAssetState>,
@@ -79,26 +148,15 @@ const slice = createSlice({
     ) => {
       state.accountId = action.payload;
     },
-    setError: (
+    setSelectedAsset: (
       state: Draft<IAddAssetState>,
-      action: PayloadAction<BaseExtensionError | null>
+      action: PayloadAction<IArc200Asset | IStandardAsset | null>
     ) => {
-      state.error = action.payload;
-    },
-    setSelectedArc200Asset: (
-      state: Draft<IAddAssetState>,
-      action: PayloadAction<IArc200Asset | null>
-    ) => {
-      state.selectedArc200Asset = action.payload;
+      state.selectedAsset = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const {
-  clearAssets,
-  reset,
-  setAccountId,
-  setError,
-  setSelectedArc200Asset,
-} = slice.actions;
+export const { clearAssets, reset, setAccountId, setSelectedAsset } =
+  slice.actions;

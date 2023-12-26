@@ -37,7 +37,7 @@ interface IProps {
   network: INetworkWithTransactionParams;
 }
 
-const AddAssetModalArc200SummaryContent: FC<IProps> = ({
+const AddAssetModalArc200AssetSummaryContent: FC<IProps> = ({
   asset,
   explorer,
   network,
@@ -56,6 +56,7 @@ const AddAssetModalArc200SummaryContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
+      px={DEFAULT_GAP}
       spacing={DEFAULT_GAP - 2}
       w="full"
     >
@@ -183,4 +184,4 @@ const AddAssetModalArc200SummaryContent: FC<IProps> = ({
   );
 };
 
-export default AddAssetModalArc200SummaryContent;
+export default AddAssetModalArc200AssetSummaryContent;

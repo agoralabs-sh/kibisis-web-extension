@@ -1,6 +1,9 @@
 // constants
 import { STANDARD_ASSETS_KEY_PREFIX } from '@extension/constants';
 
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
 // services
 import StorageManager from './StorageManager';
 
@@ -19,6 +22,35 @@ export default class StandardAssetService {
   constructor({ logger }: IBaseOptions) {
     this.logger = logger || null;
     this.storageManager = new StorageManager();
+  }
+
+  /**
+   * public static functions
+   */
+
+  public static initializeDefaultStandardAsset(): IStandardAsset {
+    return {
+      clawbackAddress: null,
+      creator: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      decimals: 0,
+      defaultFrozen: false,
+      deleted: false,
+      freezeAddress: null,
+      iconUrl: null,
+      id: '0',
+      managerAddress: null,
+      metadataHash: null,
+      name: null,
+      nameBase64: null,
+      reserveAddress: null,
+      total: '0',
+      type: AssetTypeEnum.Standard,
+      unitName: null,
+      unitNameBase64: null,
+      url: null,
+      urlBase64: null,
+      verified: false,
+    };
   }
 
   /**
@@ -48,9 +80,18 @@ export default class StandardAssetService {
   public async getByGenesisHash(
     genesisHash: string
   ): Promise<IStandardAsset[]> {
-    return (
-      (await this.storageManager.getItem(this.createItemKey(genesisHash))) || []
+    const assets: IStandardAsset[] | null = await this.storageManager.getItem(
+      this.createItemKey(genesisHash)
     );
+
+    if (!assets) {
+      return [];
+    }
+
+    return assets.map((value) => ({
+      ...StandardAssetService.initializeDefaultStandardAsset(), // add any new properties
+      ...value,
+    }));
   }
 
   /**

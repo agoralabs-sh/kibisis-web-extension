@@ -1,7 +1,7 @@
 // types
 import IBaseActionMeta from './IBaseActionMeta';
 
-interface IRejectedActionMeta extends IBaseActionMeta<'rejected'> {
+interface IRejectedActionMeta<Arg> extends IBaseActionMeta<Arg, 'rejected'> {
   aborted: boolean;
   condition: boolean;
   rejectedWithValue: boolean;

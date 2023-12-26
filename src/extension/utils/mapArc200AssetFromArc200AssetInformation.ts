@@ -1,6 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 
 // types
+import { AssetTypeEnum } from '@extension/enums';
+
+// types
 import { IArc200Asset, IArc200AssetInformation } from '@extension/types';
 
 export default function mapArc200AssetFromArc200AssetInformation(
@@ -20,6 +23,7 @@ export default function mapArc200AssetFromArc200AssetInformation(
     totalSupply: new BigNumber(
       String(assetInformation.totalSupply as bigint)
     ).toString(),
+    type: AssetTypeEnum.Arc200,
     verified,
   };
 }

@@ -1,5 +1,8 @@
 import { BigNumber } from 'bignumber.js';
 
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
 // types
 import { IAlgorandAsset, IStandardAsset } from '@extension/types';
 
@@ -27,6 +30,7 @@ export default function mapStandardAssetFromAlgorandAsset(
     total: new BigNumber(
       String(algorandAsset.params.total as bigint)
     ).toString(),
+    type: AssetTypeEnum.Standard,
     unitName: algorandAsset.params['unit-name'] || null,
     unitNameBase64: algorandAsset.params['unit-name-b64'] || null,
     url: algorandAsset.params.url || null,

@@ -4,13 +4,13 @@ import {
   AsyncThunkRejectedActionCreator,
 } from '@reduxjs/toolkit/dist/createAsyncThunk';
 
-type IAppThunkDispatchReturn<Config, Result> = Promise<
-  | ReturnType<AsyncThunkFulfilledActionCreator<Result, string>>
-  | ReturnType<AsyncThunkRejectedActionCreator<string, Config>>
+type IAppThunkDispatchReturn<Arg, Config, Result> = Promise<
+  | ReturnType<AsyncThunkFulfilledActionCreator<Result, Arg, Config>>
+  | ReturnType<AsyncThunkRejectedActionCreator<Arg, Config>>
 > & {
   abort: (reason?: string) => void;
   requestId: string;
-  arg: string;
+  arg: Arg;
   unwrap: () => Promise<Result>;
 };
 

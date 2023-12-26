@@ -11,16 +11,13 @@ import {
 
 // utils
 import { getAlgodClient } from '@common/utils';
-import {
-  fetchAssetList,
-  fetchAssetVerification,
-  mapStandardAssetFromAlgorandAsset,
-} from '@extension/utils';
 import fetchStandardAssetInformationWithDelay from './fetchStandardAssetInformationWithDelay';
+import mapStandardAssetFromAlgorandAsset from './mapStandardAssetFromAlgorandAsset';
 
 interface IOptions extends IBaseOptions {
   delay?: number;
   network: INetwork;
+  verifiedAssetList: ITinyManAssetResponse[];
 }
 
 /**
@@ -31,24 +28,15 @@ interface IOptions extends IBaseOptions {
  */
 export default async function updateStandardAssetInformationById(
   id: string,
-  { delay = 0, logger, network }: IOptions
+  { delay = 0, logger, network, verifiedAssetList }: IOptions
 ): Promise<IStandardAsset | null> {
   let standardAssetInformation: IAlgorandAsset;
-  let standardAssetList: Record<string, ITinyManAssetResponse> | null = null;
   let client: Algodv2;
-  let verified: boolean;
-
-  // TODO: asset list only exists for algorand mainnet, move this url to config?
-  if (network.genesisHash === 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=') {
-    standardAssetList = await fetchAssetList({
-      logger,
-    });
-  }
+  let verifiedAsset: ITinyManAssetResponse | null;
 
   client = getAlgodClient(network, {
     logger,
   });
-  verified = false;
 
   try {
     standardAssetInformation = await fetchStandardAssetInformationWithDelay({
@@ -56,26 +44,12 @@ export default async function updateStandardAssetInformationById(
       delay,
       id,
     });
-
-    logger &&
-      logger.debug(
-        `${updateStandardAssetInformationById.name}: getting verified status for "${id}" on "${network.genesisId}"`
-      );
-
-    // TODO: asset list only exists for algorand mainnet, move this url to config?
-    if (
-      network.genesisHash === 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8='
-    ) {
-      verified = await fetchAssetVerification(id, {
-        delay,
-        logger,
-      });
-    }
+    verifiedAsset = verifiedAssetList.find((value) => value.id === id) || null;
 
     return mapStandardAssetFromAlgorandAsset(
       standardAssetInformation,
-      standardAssetList ? standardAssetList[id]?.logo.svg || null : null,
-      verified
+      verifiedAsset?.logo.svg || null,
+      !!verifiedAsset
     );
   } catch (error) {
     logger &&

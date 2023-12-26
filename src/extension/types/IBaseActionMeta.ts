@@ -1,7 +1,8 @@
 interface IBaseActionMeta<
+  Arg,
   RequestStatus = 'fulfilled' | 'pending' | 'rejected'
 > {
-  arg: string;
+  arg: Arg;
   requestId: string;
   requestStatus: RequestStatus;
 }

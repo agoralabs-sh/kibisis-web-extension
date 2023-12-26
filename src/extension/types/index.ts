@@ -19,6 +19,7 @@ export type { default as IAlgorandKeyRegistrationTransaction } from './IAlgorand
 export type { default as IAlgorandPaymentTransaction } from './IAlgorandPaymentTransaction';
 export type { default as IAlgorandPendingTransactionResponse } from './IAlgorandPendingTransactionResponse';
 export type { default as IAlgorandSearchApplicationsResult } from './IAlgorandSearchApplicationsResult';
+export type { default as IAlgorandSearchAssetsResult } from './IAlgorandSearchAssetsResult';
 export type { default as IAlgorandStateSchema } from './IAlgorandStateSchema';
 export type { default as IAlgorandTealKeyValue } from './IAlgorandTealKeyValue';
 export type { default as IAlgorandTealValue } from './IAlgorandTealValue';
@@ -42,6 +43,7 @@ export type { default as IAssetTransferTransaction } from './IAssetTransferTrans
 export type { default as IAssetUnfreezeTransaction } from './IAssetUnfreezeTransaction';
 export type { default as IBackgroundRootState } from './IBackgroundRootState';
 export type { default as IBaseActionMeta } from './IBaseActionMeta';
+export type { default as IBaseAsset } from './IBaseAsset';
 export type { default as IBaseAssetFreezeTransaction } from './IBaseAssetFreezeTransaction';
 export type { default as IBaseAsyncThunkConfig } from './IBaseAsyncThunkConfig';
 export type { default as IBaseRequest } from './IBaseRequest';

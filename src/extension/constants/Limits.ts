@@ -1,2 +1,3 @@
 export const DEFAULT_TRANSACTION_INDEXER_LIMIT: number = 20;
 export const UPPER_TRANSACTION_INDEXER_LIMIT: number = 100;
+export const SEARCH_ASSET_INDEXER_LIMIT: number = 100;

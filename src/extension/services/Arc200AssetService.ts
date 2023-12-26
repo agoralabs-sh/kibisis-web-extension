@@ -1,12 +1,15 @@
 // constants
 import { ARC200_ASSETS_KEY_PREFIX } from '@extension/constants';
 
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
 // services
 import StorageManager from './StorageManager';
 
 // types
 import { IBaseOptions, ILogger } from '@common/types';
-import { IArc200Asset, IStandardAsset } from '@extension/types';
+import { IArc200Asset } from '@extension/types';
 
 // utils
 import { convertGenesisHashToHex } from '@extension/utils';
@@ -19,6 +22,23 @@ export default class Arc200AssetService {
   constructor({ logger }: IBaseOptions) {
     this.logger = logger || null;
     this.storageManager = new StorageManager();
+  }
+
+  /**
+   * public static functions
+   */
+
+  public static initializeDefaultArc200Asset(): IArc200Asset {
+    return {
+      decimals: 0,
+      iconUrl: null,
+      id: '0',
+      name: 'Null',
+      symbol: 'NULL',
+      totalSupply: '0',
+      type: AssetTypeEnum.Arc200,
+      verified: false,
+    };
   }
 
   /**
@@ -46,9 +66,18 @@ export default class Arc200AssetService {
    * @returns {Promise<IArc200Asset[]>} the list of standard assets.
    */
   public async getByGenesisHash(genesisHash: string): Promise<IArc200Asset[]> {
-    return (
-      (await this.storageManager.getItem(this.createItemKey(genesisHash))) || []
+    const assets: IArc200Asset[] | null = await this.storageManager.getItem(
+      this.createItemKey(genesisHash)
     );
+
+    if (!assets) {
+      return [];
+    }
+
+    return assets.map((value) => ({
+      ...Arc200AssetService.initializeDefaultArc200Asset(), // add any new properties
+      ...value,
+    }));
   }
 
   /**
