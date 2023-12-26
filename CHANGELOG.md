@@ -1,3 +1,10 @@
+# [1.8.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.5...v1.8.0-beta.6) (2023-12-26)
+
+
+### Features
+
+* opt in to asa ([#70](https://github.com/agoralabs-sh/kibisis-web-extension/issues/70)) ([28a5d07](https://github.com/agoralabs-sh/kibisis-web-extension/commit/28a5d07b52bb005ae3b24ab37e4edb733ee53c5f))
+
 # [1.8.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.4...v1.8.0-beta.5) (2023-12-23)
 
 
