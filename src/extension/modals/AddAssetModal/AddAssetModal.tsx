@@ -295,7 +295,12 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     onClose();
   };
   const handleKeyUp = () => {
-    if (account && query.length > 0) {
+    // if the query is empty, clear assets
+    if (query.length <= 0) {
+      dispatch(clearAssets());
+    }
+
+    if (account) {
       // abort the previous standard assets request
       if (queryStandardAssetDispatch) {
         queryStandardAssetDispatch.abort();
