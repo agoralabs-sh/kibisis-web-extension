@@ -85,14 +85,14 @@ const AssetSelect: FC<IProps> = ({
         // check if the asset exists in the asset holdings of the account; has it been "added"
         switch (asset.type) {
           case AssetTypeEnum.Arc200:
-            selectedAsset = !!accountInformation?.arc200AssetHoldings.find(
+            selectedAsset = accountInformation?.arc200AssetHoldings.find(
               (value) => value.id === asset.id
             )
               ? asset
               : null;
             break;
           case AssetTypeEnum.Standard:
-            selectedAsset = !!accountInformation?.standardAssetHoldings.find(
+            selectedAsset = accountInformation?.standardAssetHoldings.find(
               (value) => value.id === asset.id
             )
               ? asset
