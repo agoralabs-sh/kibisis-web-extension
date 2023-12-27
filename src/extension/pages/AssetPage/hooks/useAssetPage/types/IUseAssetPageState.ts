@@ -4,6 +4,8 @@ import BigNumber from 'bignumber.js';
 import {
   IAccount,
   IAccountInformation,
+  IArc200Asset,
+  IArc200AssetHolding,
   IStandardAsset,
   IStandardAssetHolding,
 } from '@extension/types';
@@ -11,9 +13,9 @@ import {
 interface IUseAssetPageState {
   account: IAccount | null;
   accountInformation: IAccountInformation | null;
-  asset: IStandardAsset | null;
-  assetHolding: IStandardAssetHolding | null;
-  standardUnitAmount: BigNumber;
+  amountInStandardUnits: BigNumber;
+  asset: IArc200Asset | IStandardAsset | null;
+  assetHolding: IArc200AssetHolding | IStandardAssetHolding | null;
 }
 
 export default IUseAssetPageState;

@@ -1,12 +1,15 @@
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
+// types
+import { IBaseAssetHolding } from '@extension/types';
+
 /**
- * @property {string} amount - the amount of the standard asset.
- * @property {string} id - the standard asset ID.
  * @property {boolean} isFrozen - whether this standard asset is frozen.
  */
-interface IStandardAssetHolding {
-  amount: string;
-  id: string;
+interface IStandardAssetHolding extends IBaseAssetHolding {
   isFrozen: boolean;
+  type: AssetTypeEnum.Standard;
 }
 
 export default IStandardAssetHolding;

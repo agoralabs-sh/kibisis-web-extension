@@ -1,2 +1,2 @@
 export { default } from './AssetSelect';
-export { default as AssetSelectOption } from './AssetSelectOption';
+export { default as AssetSelectOption } from './AssetSelectStandardAssetOption';

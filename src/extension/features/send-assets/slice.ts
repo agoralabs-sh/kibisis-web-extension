@@ -1,13 +1,4 @@
-import {
-  createSlice,
-  Draft,
-  PayloadAction,
-  Reducer,
-  SerializedError,
-} from '@reduxjs/toolkit';
-
-// errors
-import { BaseExtensionError } from '@extension/errors';
+import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
@@ -16,7 +7,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { submitTransactionThunk } from './thunks';
 
 // types
-import { IStandardAsset, IRejectedActionMeta } from '@extension/types';
+import { IStandardAsset, IArc200Asset } from '@extension/types';
 import { IInitializeSendAssetPayload, ISendAssetsState } from './types';
 
 // utils
@@ -27,8 +18,7 @@ const slice = createSlice({
     /** submit transaction **/
     builder.addCase(
       submitTransactionThunk.fulfilled,
-      (state: ISendAssetsState, action: PayloadAction<string>) => {
-        state.transactionId = action.payload;
+      (state: ISendAssetsState) => {
         state.confirming = false;
       }
     );
@@ -40,16 +30,7 @@ const slice = createSlice({
     );
     builder.addCase(
       submitTransactionThunk.rejected,
-      (
-        state: ISendAssetsState,
-        action: PayloadAction<
-          BaseExtensionError,
-          string,
-          IRejectedActionMeta<string>,
-          SerializedError
-        >
-      ) => {
-        state.error = action.payload;
+      (state: ISendAssetsState) => {
         state.confirming = false;
       }
     );
@@ -67,24 +48,16 @@ const slice = createSlice({
     reset: (state: Draft<ISendAssetsState>) => {
       state.amountInStandardUnits = '0';
       state.confirming = false;
-      state.error = null;
       state.fromAddress = null;
       state.note = null;
       state.selectedAsset = null;
       state.toAddress = null;
-      state.transactionId = null;
     },
     setAmount: (
       state: Draft<ISendAssetsState>,
       action: PayloadAction<string>
     ) => {
       state.amountInStandardUnits = action.payload;
-    },
-    setError: (
-      state: Draft<ISendAssetsState>,
-      action: PayloadAction<BaseExtensionError | null>
-    ) => {
-      state.error = action.payload;
     },
     setFromAddress: (
       state: Draft<ISendAssetsState>,
@@ -100,7 +73,7 @@ const slice = createSlice({
     },
     setSelectedAsset: (
       state: Draft<ISendAssetsState>,
-      action: PayloadAction<IStandardAsset>
+      action: PayloadAction<IArc200Asset | IStandardAsset>
     ) => {
       state.selectedAsset = action.payload;
     },
@@ -118,7 +91,6 @@ export const {
   initializeSendAsset,
   reset,
   setAmount,
-  setError,
   setFromAddress,
   setNote,
   setSelectedAsset,

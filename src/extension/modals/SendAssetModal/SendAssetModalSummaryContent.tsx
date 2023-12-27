@@ -6,12 +6,16 @@ import { useTranslation } from 'react-i18next';
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
+import AssetBadge from '@extension/components/AssetBadge';
 import AssetDisplay from '@extension/components/AssetDisplay';
 import AssetIcon from '@extension/components/AssetIcon';
 import SendAssetSummaryItem from './SendAssetSummaryItem';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
+
+// enums
+import { AssetTypeEnum } from '@extension/enums';
 
 // hooks
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
@@ -23,8 +27,9 @@ import { AccountService } from '@extension/services';
 // types
 import {
   IAccount,
-  IStandardAsset,
+  IArc200Asset,
   INetworkWithTransactionParams,
+  IStandardAsset,
 } from '@extension/types';
 
 // utils
@@ -33,7 +38,7 @@ import { convertToAtomicUnit } from '@common/utils';
 
 interface IProps {
   amountInStandardUnits: string;
-  asset: IStandardAsset;
+  asset: IArc200Asset | IStandardAsset;
   fromAccount: IAccount;
   network: INetworkWithTransactionParams;
   note: string | null;
@@ -52,18 +57,39 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
   // hooks
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
-
-  return (
-    <VStack
-      alignItems="flex-start"
-      justifyContent="flex-start"
-      spacing={DEFAULT_GAP - 2}
-      w="full"
-    >
-      {/*amount/asset*/}
-      <SendAssetSummaryItem
-        fontSize="sm"
-        item={
+  // renders
+  const renderAssetDisplay = () => {
+    switch (asset.type) {
+      case AssetTypeEnum.Arc200:
+        return (
+          <AssetDisplay
+            atomicUnitAmount={convertToAtomicUnit(
+              new BigNumber(amountInStandardUnits),
+              asset.decimals
+            )}
+            amountColor={subTextColor}
+            decimals={asset.decimals}
+            displayUnit={true}
+            fontSize="sm"
+            icon={
+              <AssetAvatar
+                asset={asset}
+                fallbackIcon={
+                  <AssetIcon
+                    color={primaryButtonTextColor}
+                    networkTheme={network.chakraTheme}
+                    h={3}
+                    w={3}
+                  />
+                }
+                size="2xs"
+              />
+            }
+            unit={asset.symbol}
+          />
+        );
+      case AssetTypeEnum.Standard:
+        return (
           <AssetDisplay
             atomicUnitAmount={convertToAtomicUnit(
               new BigNumber(amountInStandardUnits),
@@ -97,7 +123,23 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
             }
             unit={asset.unitName || undefined}
           />
-        }
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <VStack
+      alignItems="flex-start"
+      justifyContent="flex-start"
+      spacing={DEFAULT_GAP - 2}
+      w="full"
+    >
+      {/*amount/asset*/}
+      <SendAssetSummaryItem
+        fontSize="sm"
+        item={renderAssetDisplay()}
         label={t<string>('labels.amount')}
       />
 
@@ -133,25 +175,34 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
         label={t<string>('labels.to')}
       />
 
-      {/*fee*/}
+      {/*type*/}
       <SendAssetSummaryItem
         fontSize="sm"
-        item={
-          <AssetDisplay
-            atomicUnitAmount={new BigNumber(network.minFee)}
-            amountColor={subTextColor}
-            decimals={network.nativeCurrency.decimals}
-            fontSize="sm"
-            icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
-              color: subTextColor,
-              h: 3,
-              w: 3,
-            })}
-            unit={network.nativeCurrency.code}
-          />
-        }
-        label={t<string>('labels.fee')}
+        item={<AssetBadge type={asset.type} />}
+        label={t<string>('labels.type')}
       />
+
+      {/*fee*/}
+      {asset.type === AssetTypeEnum.Standard && (
+        <SendAssetSummaryItem
+          fontSize="sm"
+          item={
+            <AssetDisplay
+              atomicUnitAmount={new BigNumber(network.minFee)}
+              amountColor={subTextColor}
+              decimals={network.nativeCurrency.decimals}
+              fontSize="sm"
+              icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+                color: subTextColor,
+                h: 3,
+                w: 3,
+              })}
+              unit={network.nativeCurrency.code}
+            />
+          }
+          label={t<string>('labels.fee')}
+        />
+      )}
 
       {/*note*/}
       {note && note.length > 0 && (

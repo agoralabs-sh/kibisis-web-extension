@@ -3,7 +3,6 @@ import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
 // hooks
-import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
@@ -13,7 +12,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { AccountService } from '@extension/services';
 
 // types
-import { IAccount, IAccountInformation } from '@extension/types';
+import { IAccount } from '@extension/types';
 
 // utils
 import { ellipseAddress } from '@extension/utils';
@@ -29,9 +28,6 @@ const AccountItem: FC<IProps> = ({
   subTextColor,
   textColor,
 }: IProps) => {
-  const accountInformation: IAccountInformation | null = useAccountInformation(
-    account.id
-  );
   const defaultSubTextColor: string = useSubTextColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();

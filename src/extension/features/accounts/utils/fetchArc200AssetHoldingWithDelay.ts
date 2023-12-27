@@ -1,6 +1,9 @@
 import { Algodv2 } from 'algosdk';
 import Arc200Contract from 'arc200js';
 
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
 // types
 import { IArc200AssetHolding } from '@extension/types';
 
@@ -42,6 +45,7 @@ export default async function fetchArc200AssetHoldingWithDelay({
         resolve({
           id: arc200AppId,
           amount,
+          type: AssetTypeEnum.Arc200,
         });
       } catch (error) {
         reject(error);
