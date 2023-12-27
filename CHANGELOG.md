@@ -1,3 +1,20 @@
+# [1.8.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0...v1.8.0) (2023-12-27)
+
+
+### Bug Fixes
+
+* remove extra forward slash from sidebar send asset button tooltip ([#65](https://github.com/agoralabs-sh/kibisis-web-extension/issues/65)) ([4c30e29](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4c30e29b6a7e82e73392796efed0256faa6e9890))
+* send asset number input allows for decimals ([#68](https://github.com/agoralabs-sh/kibisis-web-extension/issues/68)) ([59131c4](https://github.com/agoralabs-sh/kibisis-web-extension/commit/59131c4f79d92254ac470ff61a4f5c176d226919))
+* unnamed address on transaction item correctly fits ([#64](https://github.com/agoralabs-sh/kibisis-web-extension/issues/64)) ([560f377](https://github.com/agoralabs-sh/kibisis-web-extension/commit/560f3774ad52cca1a0df76a17a33595574f04b9a))
+* when no address is active in the sidebar, use the first account from the accounts list ([#67](https://github.com/agoralabs-sh/kibisis-web-extension/issues/67)) ([25f9ed7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/25f9ed7dc1696cfb37947023d37c3aa4678e9de6))
+
+
+### Features
+
+* add arc200 asset ([#63](https://github.com/agoralabs-sh/kibisis-web-extension/issues/63)) ([46a2dbd](https://github.com/agoralabs-sh/kibisis-web-extension/commit/46a2dbd57aa4d88b81ea71995a3e5b70a386ea94))
+* opt in to asa ([#70](https://github.com/agoralabs-sh/kibisis-web-extension/issues/70)) ([28a5d07](https://github.com/agoralabs-sh/kibisis-web-extension/commit/28a5d07b52bb005ae3b24ab37e4edb733ee53c5f))
+* send arc200 asset ([#71](https://github.com/agoralabs-sh/kibisis-web-extension/issues/71)) ([c481a8a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c481a8a25b60d3fca6165d362e5fcae892cde88d))
+
 # [1.8.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.6...v1.8.0-beta.7) (2023-12-27)
 
 
