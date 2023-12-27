@@ -18,11 +18,13 @@ const OpenTabIconButton: FC<IProps> = ({
   tooltipLabel,
   url,
 }: IProps) => {
+  // hooks
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
+  // handlers
   const handleOpenClick = () =>
     browser.tabs.create({
-      url,
+      url: encodeURI(url),
     });
 
   return (
