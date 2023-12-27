@@ -36,16 +36,12 @@ import { DEFAULT_GAP } from '@extension/constants';
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 
-// errors
-import { BaseExtensionError } from '@extension/errors';
-
 // features
 import { updateAccountsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 import {
   reset as resetSendAssets,
   setAmount,
-  setError,
   setFromAddress,
   setNote,
   setSelectedAsset,
@@ -64,11 +60,9 @@ import {
   useSelectSelectedNetwork,
   useSelectSendingAssetAmountInStandardUnits,
   useSelectSendingAssetConfirming,
-  useSelectSendingAssetError,
   useSelectSendingAssetFromAccount,
   useSelectSendingAssetNote,
   useSelectSendingAssetSelectedAsset,
-  useSelectSendingAssetTransactionId,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
@@ -108,14 +102,12 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
   const confirming: boolean = useSelectSendingAssetConfirming();
-  const error: BaseExtensionError | null = useSelectSendingAssetError();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
   const note: string | null = useSelectSendingAssetNote();
   const selectedAsset: IArc200Asset | IStandardAsset | null =
     useSelectSendingAssetSelectedAsset();
-  const transactionId: string | null = useSelectSendingAssetTransactionId();
   // hooks
   const {
     error: toAddressError,
@@ -156,7 +148,18 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleAmountChange = (value: string) => dispatch(setAmount(value));
   const handleAssetChange = (value: IArc200Asset | IStandardAsset) =>
     dispatch(setSelectedAsset(value));
-  const handleCancelClick = () => onClose();
+  const handleCancelClick = () => handleClose();
+  const handleClose = () => {
+    // reset modal store - should close modal
+    dispatch(resetSendAssets());
+
+    // reset modal input
+    setShowSummary(false);
+    resetToAddress();
+    resetPassword();
+
+    onClose();
+  };
   const handleFromAccountChange = (account: IAccount) =>
     dispatch(
       setFromAddress(
@@ -179,9 +182,73 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     setShowSummary(false);
   };
   const handleSendClick = async () => {
-    if (!validatePassword()) {
-      dispatch(setError(null));
-      dispatch(submitTransactionThunk(password));
+    let transactionId: string;
+    let toAccount: IAccount | null;
+
+    if (validatePassword() || !fromAccount || !network) {
+      return;
+    }
+
+    try {
+      transactionId = await dispatch(submitTransactionThunk(password)).unwrap();
+      toAccount =
+        accounts.find(
+          (value) =>
+            AccountService.convertPublicKeyToAlgorandAddress(
+              value.publicKey
+            ) === toAddress
+        ) || null;
+
+      // send a success transaction
+      dispatch(
+        createNotification({
+          description: t<string>('captions.transactionSendSuccessful', {
+            transactionId: ellipseAddress(transactionId, { end: 4, start: 4 }),
+          }),
+          title: t<string>('headings.transactionSuccessful'),
+          type: 'success',
+        })
+      );
+
+      // force update the account information as we spent fees and refresh all the new transactions
+      dispatch(
+        updateAccountsThunk({
+          accountIds: toAccount
+            ? [fromAccount.id, toAccount.id]
+            : [fromAccount.id],
+          forceInformationUpdate: true,
+          refreshTransactions: true,
+        })
+      );
+
+      // clean up
+      handleClose();
+    } catch (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.InvalidPasswordError:
+          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+          break;
+        case ErrorCodeEnum.OfflineError:
+          dispatch(
+            createNotification({
+              ephemeral: true,
+              title: t<string>('headings.offline'),
+              type: 'error',
+            })
+          );
+          break;
+        default:
+          dispatch(
+            createNotification({
+              description: `Please contact support with code "${error.code}" and describe what happened.`,
+              ephemeral: true,
+              title: t<string>('errors.titles.code'),
+              type: 'error',
+            })
+          );
+          break;
+      }
     }
   };
   const handleToAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -408,69 +475,6 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     setMaximumTransactionAmount('0');
   }, [fromAccount, network, selectedAsset]);
-  useEffect(() => {
-    if (transactionId) {
-      // send a success transaction
-      dispatch(
-        createNotification({
-          description: t<string>('captions.transactionSendSuccessful', {
-            transactionId: ellipseAddress(transactionId),
-          }),
-          title: t<string>('headings.transactionSuccessful'),
-          type: 'success',
-        })
-      );
-
-      // refresh the account transactions
-      if (fromAccount) {
-        // force update the account information as we spent fees and refresh all the new transactions
-        dispatch(
-          updateAccountsThunk({
-            accountIds: [fromAccount.id],
-            forceInformationUpdate: true,
-            refreshTransactions: true,
-          })
-        );
-      }
-
-      // reset modal store - should close modal
-      dispatch(resetSendAssets());
-
-      // reset modal input
-      setShowSummary(false);
-      resetToAddress();
-      resetPassword();
-    }
-  }, [transactionId]);
-  useEffect(() => {
-    if (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
-        case ErrorCodeEnum.OfflineError:
-          dispatch(
-            createNotification({
-              ephemeral: true,
-              title: t<string>('headings.offline'),
-              type: 'error',
-            })
-          );
-          break;
-        default:
-          dispatch(
-            createNotification({
-              description: `Please contact support with code "${error.code}" and describe what happened.`,
-              ephemeral: true,
-              title: t<string>('errors.titles.code'),
-              type: 'error',
-            })
-          );
-          break;
-      }
-    }
-  }, [error]);
 
   return (
     <Modal
