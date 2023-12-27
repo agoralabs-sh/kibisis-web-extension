@@ -456,7 +456,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     if (fromAccount && network && selectedAsset) {
       newMaximumTransactionAmount = calculateMaxTransactionAmount({
         account: fromAccount,
-        assetId: selectedAsset.id, // native currency should have an asset id of 0
+        asset: selectedAsset,
         network,
       });
 

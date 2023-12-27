@@ -28,8 +28,8 @@ import { AccountService } from '@extension/services';
 import {
   IAccount,
   IArc200Asset,
-  IStandardAsset,
   INetworkWithTransactionParams,
+  IStandardAsset,
 } from '@extension/types';
 
 // utils
@@ -183,24 +183,26 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       />
 
       {/*fee*/}
-      <SendAssetSummaryItem
-        fontSize="sm"
-        item={
-          <AssetDisplay
-            atomicUnitAmount={new BigNumber(network.minFee)}
-            amountColor={subTextColor}
-            decimals={network.nativeCurrency.decimals}
-            fontSize="sm"
-            icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
-              color: subTextColor,
-              h: 3,
-              w: 3,
-            })}
-            unit={network.nativeCurrency.code}
-          />
-        }
-        label={t<string>('labels.fee')}
-      />
+      {asset.type === AssetTypeEnum.Standard && (
+        <SendAssetSummaryItem
+          fontSize="sm"
+          item={
+            <AssetDisplay
+              atomicUnitAmount={new BigNumber(network.minFee)}
+              amountColor={subTextColor}
+              decimals={network.nativeCurrency.decimals}
+              fontSize="sm"
+              icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+                color: subTextColor,
+                h: 3,
+                w: 3,
+              })}
+              unit={network.nativeCurrency.code}
+            />
+          }
+          label={t<string>('labels.fee')}
+        />
+      )}
 
       {/*note*/}
       {note && note.length > 0 && (

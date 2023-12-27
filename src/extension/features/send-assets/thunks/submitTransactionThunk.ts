@@ -1,17 +1,10 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  Address,
-  Algodv2,
-  decodeAddress,
-  IntDecoding,
-  SuggestedParams,
-  Transaction,
-  waitForConfirmation,
-} from 'algosdk';
+import { Address, Algodv2, decodeAddress, SuggestedParams } from 'algosdk';
+import BigNumber from 'bignumber.js';
 import browser from 'webextension-polyfill';
 
 // enums
-import { SendAssetsThunkEnum } from '@extension/enums';
+import { AssetTypeEnum, SendAssetsThunkEnum } from '@extension/enums';
 
 // errors
 import {
@@ -30,17 +23,23 @@ import { AccountService, PrivateKeyService } from '@extension/services';
 import { ILogger } from '@common/types';
 import {
   IAccount,
-  IAlgorandPendingTransactionResponse,
   IStandardAsset,
   IMainRootState,
   INetworkWithTransactionParams,
+  IArc200Asset,
 } from '@extension/types';
 
 // utils
-import { convertToAtomicUnit, getAlgodClient } from '@common/utils';
+import {
+  convertToAtomicUnit,
+  getAlgodClient,
+  getIndexerClient,
+} from '@common/utils';
 import { selectNetworkFromSettings } from '@extension/utils';
-import { createSendAssetTransaction } from '../utils';
-import BigNumber from 'bignumber.js';
+import {
+  sendArc200AssetTransferTransaction,
+  sendStandardAssetTransferTransaction,
+} from '../utils';
 
 interface AsyncThunkConfig {
   state: IMainRootState;
@@ -56,25 +55,22 @@ const submitTransactionThunk: AsyncThunk<
   async (password, { getState, rejectWithValue }) => {
     const amountInStandardUnits: string | null =
       getState().sendAssets.amountInStandardUnits;
-    const asset: IStandardAsset | null = getState().sendAssets.selectedAsset;
+    const asset: IArc200Asset | IStandardAsset | null =
+      getState().sendAssets.selectedAsset;
     const fromAddress: string | null = getState().sendAssets.fromAddress;
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const online: boolean = getState().system.online;
-    const note: string | null = getState().sendAssets.note;
-    const selectedNetwork: INetworkWithTransactionParams | null =
+    const network: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(networks, getState().settings);
+    const note: string | null = getState().sendAssets.note;
     const toAddress: string | null = getState().sendAssets.toAddress;
     let fromAccount: IAccount | null;
     let algodClient: Algodv2;
     let decodedAddress: Address;
     let privateKey: Uint8Array | null;
     let privateKeyService: PrivateKeyService;
-    let sentRawTransaction: { txId: string };
-    let signedTransactionData: Uint8Array;
     let suggestedParams: SuggestedParams;
-    let transactionResponse: IAlgorandPendingTransactionResponse;
-    let unsignedTransaction: Transaction;
 
     if (!amountInStandardUnits || !asset || !fromAddress || !toAddress) {
       logger.debug(
@@ -113,7 +109,7 @@ const submitTransactionThunk: AsyncThunk<
       );
     }
 
-    if (!selectedNetwork) {
+    if (!network) {
       logger.debug(
         `${SendAssetsThunkEnum.SubmitTransaction}: no network selected`
       );
@@ -152,50 +148,47 @@ const submitTransactionThunk: AsyncThunk<
       return rejectWithValue(error);
     }
 
-    algodClient = getAlgodClient(selectedNetwork, {
+    algodClient = getAlgodClient(network, {
       logger,
     });
 
     try {
       suggestedParams = await algodClient.getTransactionParams().do();
-      unsignedTransaction = createSendAssetTransaction({
-        amount: convertToAtomicUnit(
-          new BigNumber(amountInStandardUnits),
-          asset.decimals
-        ).toString(), // convert to atomic units
-        asset,
-        fromAddress,
-        note,
-        suggestedParams,
-        toAddress,
-      });
-      signedTransactionData = unsignedTransaction.signTxn(privateKey);
 
-      logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}: sending transaction to the network`
-      );
-
-      sentRawTransaction = await algodClient
-        .sendRawTransaction(signedTransactionData)
-        .setIntDecoding(IntDecoding.BIGINT)
-        .do();
-
-      logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}: transaction "${sentRawTransaction.txId}" sent to the network, confirming`
-      );
-
-      transactionResponse = (await waitForConfirmation(
-        algodClient,
-        sentRawTransaction.txId,
-        4
-      )) as IAlgorandPendingTransactionResponse;
-
-      logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}: transaction "${sentRawTransaction.txId}" confirmed in round "${transactionResponse['confirmed-round']}"`
-      );
-
-      // on success, return the transaction id
-      return sentRawTransaction.txId;
+      switch (asset.type) {
+        case AssetTypeEnum.Arc200:
+          return await sendArc200AssetTransferTransaction({
+            algodClient,
+            amount: convertToAtomicUnit(
+              new BigNumber(amountInStandardUnits),
+              asset.decimals
+            ).toString(),
+            asset,
+            fromAddress,
+            indexerClient: getIndexerClient(network, { logger }),
+            logger,
+            note,
+            privateKey,
+            toAddress,
+          });
+        case AssetTypeEnum.Standard:
+          return sendStandardAssetTransferTransaction({
+            algodClient,
+            amount: convertToAtomicUnit(
+              new BigNumber(amountInStandardUnits),
+              asset.decimals
+            ).toString(), // convert to atomic units
+            asset,
+            fromAddress,
+            logger,
+            note,
+            privateKey,
+            suggestedParams,
+            toAddress,
+          });
+        default:
+          throw new Error('unknown asset');
+      }
     } catch (error) {
       logger.debug(
         `${SendAssetsThunkEnum.SubmitTransaction}(): ${error.message}`
