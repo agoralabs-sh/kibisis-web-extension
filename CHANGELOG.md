@@ -1,3 +1,10 @@
+# [1.8.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.6...v1.8.0-beta.7) (2023-12-27)
+
+
+### Features
+
+* send arc200 asset ([#71](https://github.com/agoralabs-sh/kibisis-web-extension/issues/71)) ([c481a8a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c481a8a25b60d3fca6165d362e5fcae892cde88d))
+
 # [1.8.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0-beta.5...v1.8.0-beta.6) (2023-12-26)
 
 
