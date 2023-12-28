@@ -6,16 +6,19 @@ import { useDispatch } from 'react-redux';
 // components
 import Button from '@extension/components/Button';
 import PageHeader from '@extension/components/PageHeader';
-import SettingsSelectItem from '@extension/components/SettingsSelectItem';
+import SettingsSelectItem, {
+  IOption,
+} from '@extension/components/SettingsSelectItem';
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
 // features
-import { setConfirm } from '@extension/features/system';
 import { sendFactoryResetThunk } from '@extension/features/messages';
 import { saveSettingsToStorage } from '@extension/features/settings';
+import { setConfirm } from '@extension/features/system';
 
 // selectors
 import {
+  useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
@@ -28,12 +31,23 @@ import {
   ISettings,
 } from '@extension/types';
 import { convertGenesisHashToHex } from '@extension/utils';
+import { DEFAULT_GAP } from '@extension/constants';
 
 const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // selectors
+  const preferredBlockExplorer: IExplorer | null =
+    useSelectPreferredBlockExplorer();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
+  // misc
+  const blockExplorerOptions: IOption<string>[] =
+    selectedNetwork?.explorers.map((value) => ({
+      label: value.canonicalName,
+      value: value.id,
+    })) || [];
+  // handlers
   const handleClearAllDataClick = () =>
     dispatch(
       setConfirm({
@@ -43,16 +57,13 @@ const GeneralSettingsPage: FC = () => {
         warningText: t<string>('captions.clearAllDataWarning'),
       })
     );
-  const handlePreferredBlockExplorerChange = (
-    event: ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handlePreferredBlockExplorerChange = (option: IOption<string>) => {
     let explorer: IExplorer | null;
 
     if (selectedNetwork) {
       explorer =
-        selectedNetwork?.explorers.find(
-          (value) => value.id === event.target.value
-        ) || null;
+        selectedNetwork.explorers.find((value) => value.id === option.value) ||
+        null;
 
       if (explorer) {
         dispatch(
@@ -75,31 +86,28 @@ const GeneralSettingsPage: FC = () => {
 
   return (
     <>
+      {/*header*/}
       <PageHeader title={t<string>('titles.page', { context: 'general' })} />
+
+      {/*content*/}
       <VStack spacing={4} w="full">
         {/* network */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.network')} />
 
           {/* preferred block explorer */}
-          {selectedNetwork && selectedNetwork.explorers.length > 0 && (
-            <SettingsSelectItem
-              description={t<string>('captions.preferredBlockExplorer')}
-              label={t<string>('labels.preferredBlockExplorer')}
-              onChange={handlePreferredBlockExplorerChange}
-              options={selectedNetwork.explorers.map((value) => ({
-                label: value.canonicalName,
-                value: value.id,
-              }))}
-              value={
-                settings.general.preferredBlockExplorerIds[
-                  convertGenesisHashToHex(
-                    selectedNetwork.genesisHash
-                  ).toUpperCase()
-                ] || selectedNetwork.explorers[0].id
-              }
-            />
-          )}
+          <SettingsSelectItem
+            description={t<string>('captions.preferredBlockExplorer')}
+            emptyOptionLabel={t<string>('captions.noBlockExplorersAvailable')}
+            label={t<string>('labels.preferredBlockExplorer')}
+            onChange={handlePreferredBlockExplorerChange}
+            options={blockExplorerOptions}
+            value={
+              blockExplorerOptions.find(
+                (value) => value.value === preferredBlockExplorer?.id
+              ) || blockExplorerOptions[0]
+            }
+          />
         </VStack>
 
         {/* danger zone */}
@@ -108,11 +116,12 @@ const GeneralSettingsPage: FC = () => {
             color="red.500"
             text={t<string>('headings.dangerZone')}
           />
+
           <Stack
             alignItems="center"
             justifyContent="center"
-            px={4}
-            py={4}
+            px={DEFAULT_GAP / 2}
+            py={DEFAULT_GAP / 2}
             w="full"
           >
             {/* clear all data */}
