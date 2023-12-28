@@ -76,7 +76,19 @@ const networks: INetwork[] = [
     ],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
-    explorers: [],
+    explorers: [
+      {
+        accountPath: '/account',
+        applicationPath: '/application',
+        assetPath: '/asset',
+        baseUrl: 'https://allo.info',
+        blockPath: '/block',
+        canonicalName: 'AlgoExplorer',
+        groupPath: '/tx/group',
+        id: 'allo',
+        transactionPath: '/tx',
+      },
+    ],
     feeSunkAddress:
       'Y76M3MSY6DKBRHBL7C3NNDXGS5IIMQVQVUAB6MP4XEMMGVF2QWNPL226CA',
     genesisId: 'mainnet-v1.0',
