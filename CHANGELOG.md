@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0...v1.8.1) (2023-12-28)
+
+
+### Bug Fixes
+
+* initializes new properties when fetching accounts from storage & removes properties when saving ([#77](https://github.com/agoralabs-sh/kibisis-web-extension/issues/77)) ([f4c6aea](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f4c6aea0e52edad8a46505ca49ac75295beb85e6))
+
 # [1.8.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.7.0...v1.8.0) (2023-12-27)
 
 
