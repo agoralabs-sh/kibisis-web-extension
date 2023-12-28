@@ -4,6 +4,7 @@ import {
   IoCogOutline,
   IoColorPaletteOutline,
   IoConstructOutline,
+  IoInformationCircleOutline,
   IoLinkOutline,
   IoShieldCheckmarkOutline,
 } from 'react-icons/io5';
@@ -14,6 +15,7 @@ import SettingsLinkItem from '@extension/components/SettingsLinkItem';
 
 // constants
 import {
+  ABOUT_ROUTE,
   ADVANCED_ROUTE,
   APPEARANCE_ROUTE,
   DEFAULT_GAP,
@@ -28,10 +30,11 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 const SettingsIndexPage: FC = () => {
   const { t } = useTranslation();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
 
   return (
-    <VStack flexGrow={1} pt={4} spacing={0} w="full">
+    <VStack flexGrow={1} pt={DEFAULT_GAP - 2} spacing={0} w="full">
       <Heading
         color={defaultTextColor}
         pb={DEFAULT_GAP - 2}
@@ -67,16 +70,11 @@ const SettingsIndexPage: FC = () => {
         label={t<string>('titles.page', { context: 'advanced' })}
         to={`${SETTINGS_ROUTE}${ADVANCED_ROUTE}`}
       />
-      <Spacer />
-      <Text
-        color={defaultTextColor}
-        fontSize="sm"
-        py={4}
-        textAlign="center"
-        w="full"
-      >
-        {`v${__VERSION__}`}
-      </Text>
+      <SettingsLinkItem
+        icon={IoInformationCircleOutline}
+        label={t<string>('titles.page', { context: 'about' })}
+        to={`${SETTINGS_ROUTE}${ABOUT_ROUTE}`}
+      />
     </VStack>
   );
 };

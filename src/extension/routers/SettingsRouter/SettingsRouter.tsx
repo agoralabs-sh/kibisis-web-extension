@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 
 // constants
 import {
+  ABOUT_ROUTE,
   ADVANCED_ROUTE,
   APPEARANCE_ROUTE,
   GENERAL_ROUTE,
@@ -11,12 +12,15 @@ import {
 } from '@extension/constants';
 
 // pages
+import AboutSettingsPage from '@extension/pages/AboutSettingsPage';
 import AdvancedSettingsPage from '@extension/pages/AdvancedSettingsPage';
 import AppearanceSettingsPage from '@extension/pages/AppearanceSettingsPage';
 import GeneralSettingsPage from '@extension/pages/GeneralSettingsPage';
 import SettingsIndexPage from '@extension/pages/SettingsIndexPage';
-import SecuritySettingsRouter from '@extension/pages/SecuritySettingsRouter';
 import SessionsSettingsPage from '@extension/pages/SessionsSettingsPage';
+
+// routers
+import SecuritySettingsRouter from '@extension/routers/SecuritySettingsRouter';
 
 const SettingsRouter: FC = () => (
   <Routes>
@@ -26,6 +30,7 @@ const SettingsRouter: FC = () => (
     <Route element={<AppearanceSettingsPage />} path={APPEARANCE_ROUTE} />
     <Route element={<SessionsSettingsPage />} path={SESSIONS_ROUTE} />
     <Route element={<AdvancedSettingsPage />} path={ADVANCED_ROUTE} />
+    <Route element={<AboutSettingsPage />} path={ABOUT_ROUTE} />
   </Routes>
 );
 
