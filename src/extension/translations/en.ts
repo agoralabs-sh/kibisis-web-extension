@@ -257,6 +257,7 @@ const translation: IResourceLanguage = {
     defaultFrozen: 'Default Frozen',
     did: 'DID',
     expirationDate: 'Expiration Date',
+    extensionId: 'Extension ID',
     fee: 'Fee',
     firstRound: 'First Round',
     freezeAccount: 'Freeze Account',
@@ -303,6 +304,7 @@ const translation: IResourceLanguage = {
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
     url: 'URL',
+    version: 'Version',
     voteKey: 'Participation Public Key',
     voteKeyDilution: 'Key Dilution',
     yes: 'Yes',
@@ -316,6 +318,7 @@ const translation: IResourceLanguage = {
   titles: {
     strongPasswordPolicy: 'Strong Password Policy',
     page: '',
+    page_about: 'About',
     page_accountSetup: 'Choose How To Add An Account',
     page_advanced: 'Advanced',
     page_appearance: 'Appearance',
