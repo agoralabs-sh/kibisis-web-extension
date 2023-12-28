@@ -15,8 +15,10 @@ import AdvancedSettingsPage from '@extension/pages/AdvancedSettingsPage';
 import AppearanceSettingsPage from '@extension/pages/AppearanceSettingsPage';
 import GeneralSettingsPage from '@extension/pages/GeneralSettingsPage';
 import SettingsIndexPage from '@extension/pages/SettingsIndexPage';
-import SecuritySettingsRouter from '@extension/pages/SecuritySettingsRouter';
 import SessionsSettingsPage from '@extension/pages/SessionsSettingsPage';
+
+// routers
+import SecuritySettingsRouter from '@extension/routers/SecuritySettingsRouter';
 
 const SettingsRouter: FC = () => (
   <Routes>
