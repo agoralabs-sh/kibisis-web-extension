@@ -2,7 +2,8 @@ name: "✨ Feature Request"
 description: Suggest an idea or feature for Kibisis
 title: "[Feature]: "
 labels: ["✨ feature"]
-assignees: []
+assignees:
+  - agoralabs-bot
 
 body:
   # welcome
