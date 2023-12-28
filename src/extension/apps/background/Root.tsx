@@ -13,8 +13,11 @@ import {
   setSignTxnsRequest,
 } from '@extension/features/events';
 import { fetchSessionsThunk } from '@extension/features/sessions';
-import { fetchSettings } from '@extension/features/settings';
+import { fetchSettingsFromStorage } from '@extension/features/settings';
 import { closeCurrentWindowThunk } from '@extension/features/system';
+
+// hooks
+import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
 
 // modals
 import EnableModal from '@extension/modals/EnableModal';
@@ -74,7 +77,7 @@ const Root: FC = () => {
       return;
     }
 
-    dispatch(fetchSettings());
+    dispatch(fetchSettingsFromStorage());
     dispatch(fetchSessionsThunk());
   }, []);
   // fetch accounts when the selected network has been found
@@ -88,6 +91,7 @@ const Root: FC = () => {
       dispatch(handleNewEventByIdThunk(eventId));
     }
   }, [eventId]);
+  useOnDebugLogging();
 
   return (
     <>

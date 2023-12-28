@@ -7,6 +7,7 @@ export default function getInitialState(): ISettingsState {
       allowBetaNet: false,
       allowDidTokenFormat: false,
       allowMainNet: false,
+      debugLogging: false,
     },
     appearance: {
       theme: 'light',

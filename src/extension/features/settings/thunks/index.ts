@@ -1,2 +1,2 @@
-export { default as fetchSettings } from './fetchSettings';
-export { default as setSettings } from './setSettings';
+export { default as fetchSettingsFromStorage } from './fetchSettingsFromStorage';
+export { default as saveSettingsToStorage } from './saveSettingsToStorage';

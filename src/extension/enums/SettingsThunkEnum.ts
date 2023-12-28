@@ -1,6 +1,6 @@
 enum SettingsThunkEnum {
-  FetchSettings = 'settings/fetchSettings',
-  SetSettings = 'settings/setSettings',
+  FetchSettingsFromStorage = 'settings/fetchSettingsFromStorage',
+  SaveSettingsToStorage = 'settings/saveSettingsToStorage',
 }
 
 export default SettingsThunkEnum;

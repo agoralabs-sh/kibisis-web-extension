@@ -5,7 +5,7 @@ import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
 // features
 import { setError, setNavigate } from '@extension/features/system';
-import { fetchSettings } from '@extension/features/settings';
+import { fetchSettingsFromStorage } from '@extension/features/settings';
 
 // modals
 import ErrorModal from '@extension/modals//ErrorModal';
@@ -22,7 +22,7 @@ const Root: FC = () => {
 
   useEffect(() => {
     dispatch(setNavigate(navigate));
-    dispatch(fetchSettings());
+    dispatch(fetchSettingsFromStorage());
   }, []);
 
   return (

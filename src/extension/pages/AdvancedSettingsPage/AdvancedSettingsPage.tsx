@@ -12,7 +12,7 @@ import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { setSettings } from '@extension/features/settings';
+import { saveSettingsToStorage } from '@extension/features/settings';
 import { setConfirm } from '@extension/features/system';
 
 // selectors
@@ -39,7 +39,7 @@ const AdvancedSettingsPage: FC = () => {
           description: t<string>('captions.allowMainNetConfirm'),
           onConfirm: () =>
             dispatch(
-              setSettings({
+              saveSettingsToStorage({
                 ...settings,
                 advanced: {
                   ...settings.advanced,
@@ -56,7 +56,7 @@ const AdvancedSettingsPage: FC = () => {
     }
 
     dispatch(
-      setSettings({
+      saveSettingsToStorage({
         ...settings,
         advanced: {
           ...settings.advanced,
@@ -69,7 +69,7 @@ const AdvancedSettingsPage: FC = () => {
     (key: keyof IAdvancedSettings) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       dispatch(
-        setSettings({
+        saveSettingsToStorage({
           ...settings,
           advanced: {
             ...settings.advanced,
@@ -83,6 +83,18 @@ const AdvancedSettingsPage: FC = () => {
     <>
       <PageHeader title={t<string>('titles.page', { context: 'advanced' })} />
       <VStack spacing={DEFAULT_GAP - 2} w="full">
+        {/*developer*/}
+        <VStack w="full">
+          <SettingsSubHeading text={t<string>('headings.developer')} />
+
+          <SettingsSwitchItem
+            checked={settings.advanced.debugLogging}
+            description={t<string>('captions.debugLogging')}
+            label={t<string>('labels.debugLogging')}
+            onChange={handleOnSwitchChange('debugLogging')}
+          />
+        </VStack>
+
         {/* beta */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.beta')} />

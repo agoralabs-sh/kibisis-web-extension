@@ -87,6 +87,8 @@ const translation: IResourceLanguage = {
     initializingWalletConnect:
       'Putting the final touches into your WalletConnect interface.',
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
+    debugLogging:
+      'Debugging information will be output to the extension console.',
     managerAddressDoesNotMatch:
       'This account does not have the authority to alter this asset. This transaction will likely fail.',
     maximumNativeCurrencyTransactionAmount:
@@ -273,6 +275,7 @@ const translation: IResourceLanguage = {
     issuer: 'Issuer',
     lastRound: 'Last Round',
     light: 'Light',
+    debugLogging: 'Debug Logging',
     nfts: 'NFTs',
     note: 'Note',
     noteOptional: 'Note (optional)',
