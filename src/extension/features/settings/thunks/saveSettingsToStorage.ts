@@ -1,19 +1,13 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
-// constants
-import {
-  SETTINGS_ADVANCED_KEY,
-  SETTINGS_APPEARANCE_KEY,
-  SETTINGS_GENERAL_KEY,
-} from '@extension/constants';
-
 // enums
 import { NetworkTypeEnum, SettingsThunkEnum } from '@extension/enums';
 
 // services
-import { StorageManager } from '@extension/services';
+import { SettingsService } from '@extension/services';
 
 // types
+import { ILogger } from '@common/types';
 import {
   IMainRootState,
   INetworkWithTransactionParams,
@@ -27,15 +21,18 @@ import {
   selectNetworkFromSettings,
 } from '@extension/utils';
 
-const setSettings: AsyncThunk<
+const saveSettingsToStorage: AsyncThunk<
   ISettings, // return
   ISettings, // args
   Record<string, never>
 > = createAsyncThunk<ISettings, ISettings, { state: IMainRootState }>(
-  SettingsThunkEnum.SetSettings,
+  SettingsThunkEnum.SaveSettingsToStorage,
   async (settings, { getState }) => {
-    const storageManager: StorageManager = new StorageManager();
+    const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
+    const settingsService: SettingsService = new SettingsService({
+      logger,
+    });
     let selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(networks, settings);
 
@@ -55,14 +52,8 @@ const setSettings: AsyncThunk<
       settings.general.selectedNetworkGenesisHash = selectedNetwork.genesisHash;
     }
 
-    await storageManager.setItems({
-      [SETTINGS_ADVANCED_KEY]: settings.advanced,
-      [SETTINGS_APPEARANCE_KEY]: settings.appearance,
-      [SETTINGS_GENERAL_KEY]: settings.general,
-    });
-
-    return settings;
+    return await settingsService.saveAll(settings);
   }
 );
 
-export default setSettings;
+export default saveSettingsToStorage;

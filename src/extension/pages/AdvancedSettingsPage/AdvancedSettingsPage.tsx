@@ -12,7 +12,7 @@ import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { setSettings } from '@extension/features/settings';
+import { saveSettingsToStorage } from '@extension/features/settings';
 import { setConfirm } from '@extension/features/system';
 
 // selectors
@@ -39,7 +39,7 @@ const AdvancedSettingsPage: FC = () => {
           description: t<string>('captions.allowMainNetConfirm'),
           onConfirm: () =>
             dispatch(
-              setSettings({
+              saveSettingsToStorage({
                 ...settings,
                 advanced: {
                   ...settings.advanced,
@@ -56,7 +56,7 @@ const AdvancedSettingsPage: FC = () => {
     }
 
     dispatch(
-      setSettings({
+      saveSettingsToStorage({
         ...settings,
         advanced: {
           ...settings.advanced,
@@ -69,7 +69,7 @@ const AdvancedSettingsPage: FC = () => {
     (key: keyof IAdvancedSettings) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       dispatch(
-        setSettings({
+        saveSettingsToStorage({
           ...settings,
           advanced: {
             ...settings.advanced,

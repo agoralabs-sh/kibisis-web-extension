@@ -12,7 +12,7 @@ import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 // features
 import { setConfirm } from '@extension/features/system';
 import { sendFactoryResetThunk } from '@extension/features/messages';
-import { setSettings } from '@extension/features/settings';
+import { saveSettingsToStorage } from '@extension/features/settings';
 
 // selectors
 import {
@@ -56,7 +56,7 @@ const GeneralSettingsPage: FC = () => {
 
       if (explorer) {
         dispatch(
-          setSettings({
+          saveSettingsToStorage({
             ...settings,
             general: {
               ...settings.general,

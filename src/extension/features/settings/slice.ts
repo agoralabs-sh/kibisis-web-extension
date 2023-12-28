@@ -1,10 +1,10 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
 // thunks
-import { fetchSettings, setSettings } from './thunks';
+import { fetchSettingsFromStorage, saveSettingsToStorage } from './thunks';
 
 // types
 import { ISettings } from '@extension/types';
@@ -15,43 +15,48 @@ import { getInitialState, mapSettingsToState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** Fetch settings **/
+    /** fetch settings from storage **/
     builder.addCase(
-      fetchSettings.fulfilled,
+      fetchSettingsFromStorage.fulfilled,
       (state: ISettingsState, action: PayloadAction<ISettings>) => {
         state.fetching = false;
 
         mapSettingsToState(state, action.payload);
       }
     );
-    builder.addCase(fetchSettings.pending, (state: ISettingsState) => {
-      state.fetching = true;
-    });
-    builder.addCase(fetchSettings.rejected, (state: ISettingsState) => {
-      state.fetching = false;
-    });
-    /** Set settings **/
     builder.addCase(
-      setSettings.fulfilled,
+      fetchSettingsFromStorage.pending,
+      (state: ISettingsState) => {
+        state.fetching = true;
+      }
+    );
+    builder.addCase(
+      fetchSettingsFromStorage.rejected,
+      (state: ISettingsState) => {
+        state.fetching = false;
+      }
+    );
+    /** save settings to storage **/
+    builder.addCase(
+      saveSettingsToStorage.fulfilled,
       (state: ISettingsState, action: PayloadAction<ISettings>) => {
         state.saving = false;
 
         mapSettingsToState(state, action.payload);
       }
     );
-    builder.addCase(setSettings.pending, (state: ISettingsState) => {
+    builder.addCase(saveSettingsToStorage.pending, (state: ISettingsState) => {
       state.saving = true;
     });
-    builder.addCase(setSettings.rejected, (state: ISettingsState) => {
+    builder.addCase(saveSettingsToStorage.rejected, (state: ISettingsState) => {
       state.saving = false;
     });
   },
   initialState: getInitialState(),
   name: StoreNameEnum.Settings,
   reducers: {
-    reset: (state: Draft<ISettingsState>) => {
-      state.fetching = false;
-      state.saving = false;
+    noop: () => {
+      return;
     },
   },
 });

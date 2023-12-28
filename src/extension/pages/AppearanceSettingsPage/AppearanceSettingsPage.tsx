@@ -8,7 +8,7 @@ import PageHeader from '@extension/components/PageHeader';
 import SettingsSelectItem from '@extension/components/SettingsSelectItem';
 
 // features
-import { setSettings } from '@extension/features/settings';
+import { saveSettingsToStorage } from '@extension/features/settings';
 
 // selectors
 import { useSelectSettings } from '@extension/selectors';
@@ -22,7 +22,7 @@ const AppearanceSettingsPage: FC = () => {
   const settings: ISettings = useSelectSettings();
   const handleThemeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     dispatch(
-      setSettings({
+      saveSettingsToStorage({
         ...settings,
         appearance: {
           ...settings.appearance,
