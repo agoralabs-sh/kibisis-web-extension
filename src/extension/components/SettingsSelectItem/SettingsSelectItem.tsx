@@ -24,6 +24,7 @@ export interface IOption<Value = unknown> {
 }
 interface IProps {
   description?: string;
+  emptyOptionLabel: string;
   label: string;
   onChange: (option: IOption) => void;
   options: IOption[];
@@ -33,6 +34,7 @@ interface IProps {
 
 const SettingsSelectItem: FC<IProps> = ({
   description,
+  emptyOptionLabel,
   label,
   onChange,
   options,
@@ -133,6 +135,27 @@ const SettingsSelectItem: FC<IProps> = ({
               </HStack>
             ),
           }}
+          noOptionsMessage={() => (
+            <HStack
+              alignItems="center"
+              justifyContent="flex-start"
+              m={0}
+              p={DEFAULT_GAP / 2}
+              position="absolute"
+              spacing={2}
+              w="full"
+            >
+              {/*label*/}
+              <Text
+                color={defaultTextColor}
+                fontSize="sm"
+                maxW={250}
+                noOfLines={1}
+              >
+                {emptyOptionLabel}
+              </Text>
+            </HStack>
+          )}
           onChange={handleOnChange}
           options={options}
           styles={{

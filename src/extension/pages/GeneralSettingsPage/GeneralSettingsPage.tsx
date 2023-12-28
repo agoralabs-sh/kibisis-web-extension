@@ -99,6 +99,7 @@ const GeneralSettingsPage: FC = () => {
           {selectedNetwork && selectedNetwork.explorers.length > 0 && (
             <SettingsSelectItem
               description={t<string>('captions.preferredBlockExplorer')}
+              emptyOptionLabel={t<string>('captions.noBlockExplorersAvailable')}
               label={t<string>('labels.preferredBlockExplorer')}
               onChange={handlePreferredBlockExplorerChange}
               options={blockExplorerOptions}

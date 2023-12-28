@@ -57,6 +57,7 @@ const AppearanceSettingsPage: FC = () => {
       <VStack spacing={4} w="full">
         <SettingsSelectItem
           description={t<string>('captions.changeTheme')}
+          emptyOptionLabel={t<string>('captions.noThemesAvailable')}
           label={t<string>('labels.theme')}
           onChange={handleThemeChange}
           options={themeOptions}

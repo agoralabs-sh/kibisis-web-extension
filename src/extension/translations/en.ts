@@ -112,7 +112,9 @@ const translation: IResourceLanguage = {
     noAccountsFound:
       'You can create a new account or import an existing account.',
     noAssetsFound: 'You have not added any assets. Try adding one now.',
+    noBlockExplorersAvailable: 'No block explorers available',
     noSessionsFound: 'Enabled dApps will appear here.',
+    noThemesAvailable: 'No themes available',
     offline: 'It looks like you are offline, some features may not work',
     openOn: 'Open on {{name}}',
     openUrl: 'Open URL in your browser',
