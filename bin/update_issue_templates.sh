@@ -29,7 +29,12 @@ function main {
     exit 1
   fi
 
-  printf "%b adding version '%s' to .github/ISSUE_TEMPLATE/bug_report_template.yml \n" "${INFO_PREFIX}" "${1}"
+  # check the input is not a beta release
+  if [[ "${1}" =~ ^[0-9]+\.[0-9]+\.[0-9]-beta+ ]]; then
+    printf "%b pre-release versions should not be added, skipping \n" "${INFO_PREFIX}"
+    exit 0
+  fi
+
   version_included=$(version="${1}" yq '(.body[]  | select(.id == "version") | .attributes.options) | contains([env(version)])' "${PWD}/.github/ISSUE_TEMPLATE/bug_report_template.yml")
 
   if ! "${version_included}"; then
