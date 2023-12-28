@@ -1,5 +1,6 @@
 import { HStack, Text, Tooltip, useDisclosure, VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
+import numbro from 'numbro';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -29,6 +30,8 @@ import {
   IExplorer,
   INetworkWithTransactionParams,
 } from '@extension/types';
+
+// utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 
 interface IProps {
@@ -48,6 +51,11 @@ const AddAssetModalArc200AssetSummaryContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
+  // misc
+  const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
+    new BigNumber(asset.totalSupply),
+    asset.decimals
+  );
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
@@ -160,10 +168,11 @@ const AddAssetModalArc200AssetSummaryContent: FC<IProps> = ({
               <PageItem fontSize="sm" label={t<string>('labels.totalSupply')}>
                 <Tooltip
                   aria-label="Asset amount with unrestricted decimals"
-                  label={convertToStandardUnit(
-                    new BigNumber(asset.totalSupply),
-                    asset.decimals
-                  ).toString()}
+                  label={numbro(totalSupplyInStandardUnits.toString()).format({
+                    mantissa: asset.decimals,
+                    thousandSeparated: true,
+                    trimMantissa: true,
+                  })}
                 >
                   <Text color={subTextColor} fontSize="sm">
                     {formatCurrencyUnit(
