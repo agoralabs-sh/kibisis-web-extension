@@ -1,3 +1,10 @@
+# [1.9.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.1...v1.9.0-beta.2) (2023-12-28)
+
+
+### Features
+
+* allow a toggle to turn on debug logging ([#84](https://github.com/agoralabs-sh/kibisis-web-extension/issues/84)) ([0f55a45](https://github.com/agoralabs-sh/kibisis-web-extension/commit/0f55a453d5ea6c2bfa86d58f3551f4e0036bd64f))
+
 # [1.9.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.1...v1.9.0-beta.1) (2023-12-28)
 
 
