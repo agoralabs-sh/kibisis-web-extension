@@ -1,3 +1,10 @@
+# [1.9.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.1...v1.9.0-beta.1) (2023-12-28)
+
+
+### Features
+
+* show about information in the settings ([#78](https://github.com/agoralabs-sh/kibisis-web-extension/issues/78)) ([d8029ab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/d8029ab9dd9efa9ee640c21a9ab09b8f025cb46b))
+
 ## [1.8.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.0...v1.8.1) (2023-12-28)
 
 
