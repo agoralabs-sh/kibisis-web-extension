@@ -1,3 +1,10 @@
+# [1.9.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.2...v1.9.0-beta.3) (2023-12-28)
+
+
+### Features
+
+* remove algoexplorer option from algorand ([#85](https://github.com/agoralabs-sh/kibisis-web-extension/issues/85)) ([b09d7d7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b09d7d7f348acbfbd4efe7ec0c0c3f1d038b87c3))
+
 # [1.9.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.1...v1.9.0-beta.2) (2023-12-28)
 
 
