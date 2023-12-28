@@ -76,19 +76,7 @@ const networks: INetwork[] = [
     ],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
-    explorers: [
-      {
-        accountPath: '/address',
-        applicationPath: '/application',
-        assetPath: '/asset',
-        baseUrl: 'https://algoexplorer.io',
-        blockPath: '/block',
-        canonicalName: 'AlgoExplorer',
-        groupPath: '/tx/group',
-        id: 'algoexplorer',
-        transactionPath: '/tx',
-      },
-    ],
+    explorers: [],
     feeSunkAddress:
       'Y76M3MSY6DKBRHBL7C3NNDXGS5IIMQVQVUAB6MP4XEMMGVF2QWNPL226CA',
     genesisId: 'mainnet-v1.0',
@@ -123,19 +111,7 @@ const networks: INetwork[] = [
     ],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
-    explorers: [
-      {
-        accountPath: '/address',
-        applicationPath: '/application',
-        assetPath: '/asset',
-        baseUrl: 'https://betanet.algoexplorer.io',
-        blockPath: '/block',
-        canonicalName: 'AlgoExplorer',
-        groupPath: '/tx/group',
-        id: 'algoexplorer',
-        transactionPath: '/tx',
-      },
-    ],
+    explorers: [],
     feeSunkAddress:
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
     genesisId: 'betanet-v1.0',
@@ -170,19 +146,7 @@ const networks: INetwork[] = [
     ],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
-    explorers: [
-      {
-        accountPath: '/address',
-        applicationPath: '/application',
-        assetPath: '/asset',
-        baseUrl: 'https://testnet.algoexplorer.io',
-        blockPath: '/block',
-        canonicalName: 'AlgoExplorer',
-        groupPath: '/tx/group',
-        id: 'algoexplorer',
-        transactionPath: '/tx',
-      },
-    ],
+    explorers: [],
     feeSunkAddress:
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
     genesisId: 'testnet-v1.0',

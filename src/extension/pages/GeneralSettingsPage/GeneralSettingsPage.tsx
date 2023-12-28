@@ -96,20 +96,18 @@ const GeneralSettingsPage: FC = () => {
           <SettingsSubHeading text={t<string>('headings.network')} />
 
           {/* preferred block explorer */}
-          {selectedNetwork && selectedNetwork.explorers.length > 0 && (
-            <SettingsSelectItem
-              description={t<string>('captions.preferredBlockExplorer')}
-              emptyOptionLabel={t<string>('captions.noBlockExplorersAvailable')}
-              label={t<string>('labels.preferredBlockExplorer')}
-              onChange={handlePreferredBlockExplorerChange}
-              options={blockExplorerOptions}
-              value={
-                blockExplorerOptions.find(
-                  (value) => value.value === preferredBlockExplorer?.id
-                ) || blockExplorerOptions[0]
-              }
-            />
-          )}
+          <SettingsSelectItem
+            description={t<string>('captions.preferredBlockExplorer')}
+            emptyOptionLabel={t<string>('captions.noBlockExplorersAvailable')}
+            label={t<string>('labels.preferredBlockExplorer')}
+            onChange={handlePreferredBlockExplorerChange}
+            options={blockExplorerOptions}
+            value={
+              blockExplorerOptions.find(
+                (value) => value.value === preferredBlockExplorer?.id
+              ) || blockExplorerOptions[0]
+            }
+          />
         </VStack>
 
         {/* danger zone */}

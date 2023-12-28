@@ -41,6 +41,7 @@ const SettingsSelectItem: FC<IProps> = ({
   value,
   width,
 }: IProps) => {
+  console.log(value);
   // hooks
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
@@ -94,6 +95,27 @@ const SettingsSelectItem: FC<IProps> = ({
       <Box minW="40%">
         <Select
           components={{
+            NoOptionsMessage: () => (
+              <HStack
+                alignItems="center"
+                justifyContent="flex-start"
+                m={0}
+                p={DEFAULT_GAP / 2}
+                position="absolute"
+                spacing={2}
+                w="full"
+              >
+                {/*label*/}
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  maxW={250}
+                  noOfLines={1}
+                >
+                  {emptyOptionLabel}
+                </Text>
+              </HStack>
+            ),
             Option: ({
               data,
               innerProps,
@@ -135,27 +157,6 @@ const SettingsSelectItem: FC<IProps> = ({
               </HStack>
             ),
           }}
-          noOptionsMessage={() => (
-            <HStack
-              alignItems="center"
-              justifyContent="flex-start"
-              m={0}
-              p={DEFAULT_GAP / 2}
-              position="absolute"
-              spacing={2}
-              w="full"
-            >
-              {/*label*/}
-              <Text
-                color={defaultTextColor}
-                fontSize="sm"
-                maxW={250}
-                noOfLines={1}
-              >
-                {emptyOptionLabel}
-              </Text>
-            </HStack>
-          )}
           onChange={handleOnChange}
           options={options}
           styles={{
@@ -189,7 +190,7 @@ const SettingsSelectItem: FC<IProps> = ({
               primary75: primaryColor75,
             },
           })}
-          value={value}
+          value={value || null}
         />
       </Box>
     </HStack>
