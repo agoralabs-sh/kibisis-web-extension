@@ -46,7 +46,7 @@ export default class SettingsService {
         allowBetaNet: false,
         allowDidTokenFormat: false,
         allowMainNet: false,
-        developerMode: false,
+        debugLogging: false,
       },
       appearance: {
         theme: 'light',
