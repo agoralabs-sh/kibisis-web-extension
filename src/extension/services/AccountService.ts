@@ -75,10 +75,17 @@ export default class AccountService {
     { networkInformation }: IAccount,
     { genesisHash }: INetwork
   ): IAccountInformation | null {
-    return (
-      networkInformation[convertGenesisHashToHex(genesisHash).toUpperCase()] ||
-      null
-    );
+    const accountInformation: IAccountInformation | null =
+      networkInformation[convertGenesisHashToHex(genesisHash).toUpperCase()];
+
+    if (!accountInformation) {
+      return null;
+    }
+
+    return {
+      ...AccountService.initializeDefaultAccountInformation(), // ensure any new items are initialized
+      ...accountInformation,
+    };
   }
 
   /**
@@ -117,7 +124,7 @@ export default class AccountService {
       networkInformation: networks.reduce<Record<string, IAccountInformation>>(
         (acc, { genesisHash }) => ({
           ...acc,
-          [convertGenesisHashToHex(genesisHash)]:
+          [convertGenesisHashToHex(genesisHash).toUpperCase()]:
             AccountService.initializeDefaultAccountInformation(),
         }),
         {}
@@ -127,7 +134,7 @@ export default class AccountService {
       >(
         (acc, { genesisHash }) => ({
           ...acc,
-          [convertGenesisHashToHex(genesisHash)]:
+          [convertGenesisHashToHex(genesisHash).toUpperCase()]:
             AccountService.initializeDefaultAccountTransactions(),
         }),
         {}
@@ -166,6 +173,76 @@ export default class AccountService {
    */
   private createAccountItemKey(id: string): string {
     return `${ACCOUNTS_ITEM_KEY_PREFIX}${id}`;
+  }
+
+  /**
+   * Sanitizes the account, only returning properties that are in the account object.
+   * @param {IAccount} account - the account object to sanitize.
+   * @returns {IAccount} the sanitized account object.
+   * @private
+   */
+  private sanitizeAccount(account: IAccount): IAccount {
+    return {
+      createdAt: account.createdAt,
+      id: account.id,
+      name: account.name,
+      networkInformation: Object.keys(account.networkInformation).reduce<
+        Record<string, IAccountInformation>
+      >(
+        (acc, value) => ({
+          [value]: this.sanitizeAccountInformation(
+            account.networkInformation[value]
+          ),
+        }),
+        {}
+      ),
+      networkTransactions: Object.keys(account.networkTransactions).reduce<
+        Record<string, IAccountTransactions>
+      >(
+        (acc, value) => ({
+          [value]: this.sanitizeAccountTransactions(
+            account.networkTransactions[value]
+          ),
+        }),
+        {}
+      ),
+      publicKey: account.publicKey,
+      updatedAt: account.updatedAt,
+    };
+  }
+
+  /**
+   * Sanitizes the account information, only returning properties that are in the account information object.
+   * @param {IAccountInformation} accountInformation - the account information object to sanitize.
+   * @returns {IAccountInformation} the sanitized account information object.
+   * @private
+   */
+  private sanitizeAccountInformation(
+    accountInformation: IAccountInformation
+  ): IAccountInformation {
+    return {
+      arc200AssetHoldings: accountInformation.arc200AssetHoldings,
+      atomicBalance: accountInformation.atomicBalance,
+      authAddress: accountInformation.authAddress,
+      minAtomicBalance: accountInformation.minAtomicBalance,
+      standardAssetHoldings: accountInformation.standardAssetHoldings,
+      updatedAt: accountInformation.updatedAt,
+    };
+  }
+
+  /**
+   * Sanitizes the account transactions, only returning properties that are in the account transactions object.
+   * @param {IAccountTransactions} accountTransactions - the account transactions object to sanitize.
+   * @returns {IAccountTransactions} the sanitized account transactions object.
+   * @private
+   */
+  private sanitizeAccountTransactions(
+    accountTransactions: IAccountTransactions
+  ): IAccountTransactions {
+    return {
+      next: accountTransactions.next,
+      transactions: accountTransactions.transactions,
+    };
   }
 
   /**
@@ -217,8 +294,10 @@ export default class AccountService {
         (acc, { genesisHash }) => {
           const encodedGenesisHash: string =
             convertGenesisHashToHex(genesisHash).toUpperCase();
-          const accountInformation: IAccountInformation | null =
-            account.networkInformation[encodedGenesisHash] || null;
+          const accountInformation: IAccountInformation = {
+            ...AccountService.initializeDefaultAccountInformation(), // initialize with any new values
+            ...account.networkInformation[encodedGenesisHash],
+          };
 
           return {
             ...acc,
@@ -248,8 +327,10 @@ export default class AccountService {
       >((acc, { genesisHash }) => {
         const encodedGenesisHash: string =
           convertGenesisHashToHex(genesisHash).toUpperCase();
-        const accountTransactions: IAccountTransactions | null =
-          account.networkTransactions[encodedGenesisHash] || null;
+        const accountTransactions: IAccountTransactions = {
+          ...AccountService.initializeDefaultAccountTransactions(), // initialize with any new values
+          ...account.networkTransactions[encodedGenesisHash],
+        };
 
         return {
           ...acc,
@@ -290,7 +371,7 @@ export default class AccountService {
         (acc, account) => ({
           ...acc,
           [this.createAccountItemKey(account.id)]: {
-            ...account,
+            ...this.sanitizeAccount(account),
             // only save transactions if explicitly allowed
             // TODO: cache the first 100
             ...(!saveTransactions && {
