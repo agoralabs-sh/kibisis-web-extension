@@ -32,6 +32,7 @@ import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standar
 import { setConfirm, setError, setNavigate } from '@extension/features/system';
 
 // hooks
+import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
 import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
 import useOnNewAssets from '@extension/hooks/useOnNewAssets';
@@ -101,6 +102,7 @@ const Root: FC = () => {
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [selectedNetwork]);
+  useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications
   useOnNetworkConnectivity(); // listen to network connectivity

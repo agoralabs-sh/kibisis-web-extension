@@ -12,6 +12,7 @@ export { default as useSelectAddAssetStandardAssets } from './useSelectAddAssetS
 export { default as useSelectArc200AssetsBySelectedNetwork } from './useSelectArc200AssetsBySelectedNetwork';
 export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConfirm } from './useSelectConfirm';
+export { default as useSelectDebugLogging } from './useSelectDebugLogging';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';
 export { default as useSelectError } from './useSelectError';
 export { default as useSelectFetchingAccounts } from './useSelectFetchingAccounts';

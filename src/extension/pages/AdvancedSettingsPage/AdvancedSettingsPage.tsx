@@ -83,6 +83,18 @@ const AdvancedSettingsPage: FC = () => {
     <>
       <PageHeader title={t<string>('titles.page', { context: 'advanced' })} />
       <VStack spacing={DEFAULT_GAP - 2} w="full">
+        {/*developer*/}
+        <VStack w="full">
+          <SettingsSubHeading text={t<string>('headings.developer')} />
+
+          <SettingsSwitchItem
+            checked={settings.advanced.debugLogging}
+            description={t<string>('captions.debugLogging')}
+            label={t<string>('labels.debugLogging')}
+            onChange={handleOnSwitchChange('debugLogging')}
+          />
+        </VStack>
+
         {/* beta */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.beta')} />

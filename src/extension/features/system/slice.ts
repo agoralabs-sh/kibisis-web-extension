@@ -8,6 +8,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // types
+import { ILogger } from '@common/types';
 import { ISystemState, IConfirm } from './types';
 
 // utils
@@ -29,6 +30,9 @@ const slice = createSlice({
     ) => {
       state.error = action.payload;
     },
+    setLogger: (state: Draft<ISystemState>, action: PayloadAction<ILogger>) => {
+      state.logger = action.payload;
+    },
     setNavigate: (
       state: Draft<ISystemState>,
       action: PayloadAction<NavigateFunction>
@@ -48,5 +52,11 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setConfirm, setError, setNavigate, setOnline, setSideBar } =
-  slice.actions;
+export const {
+  setConfirm,
+  setError,
+  setLogger,
+  setNavigate,
+  setOnline,
+  setSideBar,
+} = slice.actions;

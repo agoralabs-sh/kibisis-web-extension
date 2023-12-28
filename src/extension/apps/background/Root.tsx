@@ -16,6 +16,9 @@ import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorage } from '@extension/features/settings';
 import { closeCurrentWindowThunk } from '@extension/features/system';
 
+// hooks
+import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
+
 // modals
 import EnableModal from '@extension/modals/EnableModal';
 import SignTxnsModal from '@extension/modals/SignTxnsModal';
@@ -88,6 +91,7 @@ const Root: FC = () => {
       dispatch(handleNewEventByIdThunk(eventId));
     }
   }, [eventId]);
+  useOnDebugLogging();
 
   return (
     <>
