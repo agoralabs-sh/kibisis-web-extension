@@ -190,6 +190,7 @@ export default class AccountService {
         Record<string, IAccountInformation>
       >(
         (acc, value) => ({
+          ...acc,
           [value]: this.sanitizeAccountInformation(
             account.networkInformation[value]
           ),
@@ -200,6 +201,7 @@ export default class AccountService {
         Record<string, IAccountTransactions>
       >(
         (acc, value) => ({
+          ...acc,
           [value]: this.sanitizeAccountTransactions(
             account.networkTransactions[value]
           ),
