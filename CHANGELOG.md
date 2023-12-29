@@ -1,3 +1,10 @@
+# [1.9.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.3...v1.9.0-beta.4) (2023-12-29)
+
+
+### Bug Fixes
+
+* save all asset holdings to storage instead of the last network in the list ([#87](https://github.com/agoralabs-sh/kibisis-web-extension/issues/87)) ([666fba7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/666fba7674961ef3968433a4141dd271829b87a6))
+
 # [1.9.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.2...v1.9.0-beta.3) (2023-12-28)
 
 
