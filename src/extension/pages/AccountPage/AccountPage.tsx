@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
   IoCloudOfflineOutline,
+  IoCreateOutline,
   IoQrCodeOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
@@ -39,6 +40,7 @@ import ActivityTab from '@extension/components/ActivityTab';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
 import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import EditableAccountField from '@extension/components/EditableAccountField';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
@@ -253,23 +255,24 @@ const AccountPage: FC = () => {
 
             <HStack alignItems="center" w="full">
               {/*name/address*/}
-              {account.name ? (
-                <Tooltip aria-label="Name of account" label={account.name}>
-                  <Heading
-                    color={defaultTextColor}
-                    maxW={400}
-                    noOfLines={1}
-                    size="md"
-                    textAlign="left"
-                  >
-                    {account.name}
-                  </Heading>
-                </Tooltip>
-              ) : (
-                <Heading color={defaultTextColor} size="md" textAlign="left">
-                  {ellipseAddress(address)}
-                </Heading>
-              )}
+              {account.name && <EditableAccountField value={account.name} />}
+              {/*{account.name ? (*/}
+              {/*  <Tooltip aria-label="Name of account" label={account.name}>*/}
+              {/*    <Heading*/}
+              {/*      color={defaultTextColor}*/}
+              {/*      maxW={400}*/}
+              {/*      noOfLines={1}*/}
+              {/*      size="md"*/}
+              {/*      textAlign="left"*/}
+              {/*    >*/}
+              {/*      {account.name}*/}
+              {/*    </Heading>*/}
+              {/*  </Tooltip>*/}
+              {/*) : (*/}
+              {/*  <Heading color={defaultTextColor} size="md" textAlign="left">*/}
+              {/*    {ellipseAddress(address)}*/}
+              {/*  </Heading>*/}
+              {/*)}*/}
 
               <Spacer />
 
@@ -292,6 +295,17 @@ const AccountPage: FC = () => {
               </Tooltip>
 
               <Spacer />
+
+              {/*edit account name*/}
+              <Tooltip label={t<string>('labels.editAccountName')}>
+                <IconButton
+                  aria-label="Edit account name"
+                  icon={IoCreateOutline}
+                  onClick={onShareAddressModalOpen}
+                  size="sm"
+                  variant="ghost"
+                />
+              </Tooltip>
 
               {/*copy address*/}
               <CopyIconButton

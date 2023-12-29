@@ -260,6 +260,7 @@ const translation: IResourceLanguage = {
     default: 'Default',
     defaultFrozen: 'Default Frozen',
     did: 'DID',
+    editAccountName: 'Rename account',
     expirationDate: 'Expiration Date',
     extensionId: 'Extension ID',
     fee: 'Fee',
