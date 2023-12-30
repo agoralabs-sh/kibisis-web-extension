@@ -45,7 +45,7 @@ interface IProps {
   onSubmitChange: (value: string | null) => void;
 }
 
-const EditableAccountField: FC<IProps> = ({
+const EditableAccountNameField: FC<IProps> = ({
   address,
   name,
   isEditing,
@@ -177,4 +177,4 @@ const EditableAccountField: FC<IProps> = ({
   );
 };
 
-export default EditableAccountField;
+export default EditableAccountNameField;

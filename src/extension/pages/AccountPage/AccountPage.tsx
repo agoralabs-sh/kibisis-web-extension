@@ -40,7 +40,7 @@ import ActivityTab from '@extension/components/ActivityTab';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
 import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
-import EditableAccountField from '@extension/components/EditableAccountField';
+import EditableAccountNameField from '@extension/components/EditableAccountNameField';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
@@ -287,7 +287,7 @@ const AccountPage: FC = () => {
               w="full"
             >
               {/*name/address*/}
-              <EditableAccountField
+              <EditableAccountNameField
                 address={address}
                 isEditing={isEditing}
                 isLoading={savingAccounts}
