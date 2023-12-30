@@ -1,3 +1,10 @@
+# [1.9.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.5...v1.9.0-beta.6) (2023-12-30)
+
+
+### Features
+
+* bring the extension window to the forefront when the extension button is pressed ([#90](https://github.com/agoralabs-sh/kibisis-web-extension/issues/90)) ([c5e758f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c5e758f0be860167dac8c7029e8b870b0ca193ef))
+
 # [1.9.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.4...v1.9.0-beta.5) (2023-12-30)
 
 
