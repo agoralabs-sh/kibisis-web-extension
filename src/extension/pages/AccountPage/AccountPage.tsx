@@ -169,7 +169,7 @@ const AccountPage: FC = () => {
     );
   };
   const handleEditAccountNameCancel = () => setIsEditing(false);
-  const handleEditAccountNameClick = () => setIsEditing(true);
+  const handleEditAccountNameClick = () => setIsEditing(!isEditing);
   const handleEditAccountNameSubmit = (value: string | null) => {
     if (account) {
       dispatch(

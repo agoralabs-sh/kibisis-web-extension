@@ -4,12 +4,20 @@ import {
   HStack,
   Input,
   Skeleton,
-  Text,
   Tooltip,
+  useOutsideClick,
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  KeyboardEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoCheckmarkOutline, IoCloseOutline } from 'react-icons/io5';
 
@@ -46,6 +54,10 @@ const EditableAccountField: FC<IProps> = ({
   onSubmitChange,
 }: IProps) => {
   const { t } = useTranslation();
+  const containerRef: MutableRefObject<HTMLDivElement | null> =
+    useRef<HTMLDivElement | null>(null);
+  const inputRef: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
   // hooks
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
@@ -57,8 +69,24 @@ const EditableAccountField: FC<IProps> = ({
   const handleCancelClick = () => onCancel();
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) =>
     setValue(event.target.value);
+  const handleOnKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      onSubmitChange(value);
+    }
+  };
   const handleSubmitClick = () =>
     onSubmitChange(value && value.length > 0 ? value : null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+  // if clicking outside, cancel the edit
+  useOutsideClick({
+    ref: containerRef,
+    handler: onCancel,
+  });
 
   if (isLoading) {
     return (
@@ -95,13 +123,15 @@ const EditableAccountField: FC<IProps> = ({
   }
 
   return (
-    <VStack position="relative" w="full" zIndex={0}>
+    <VStack position="relative" ref={containerRef} w="full" zIndex={0}>
       {/*/input*/}
       <Input
         focusBorderColor={primaryColor}
         onChange={handleOnChange}
+        onKeyUp={handleOnKeyUp}
         p={DEFAULT_GAP / 3}
         placeholder={t<string>('placeholders.enterANameForYourAccount')}
+        ref={inputRef}
         size="md"
         type="text"
         value={value}
@@ -124,6 +154,7 @@ const EditableAccountField: FC<IProps> = ({
             icon={IoCheckmarkOutline}
             onClick={handleSubmitClick}
             size="sm"
+            type="submit"
             variant="ghost"
           />
         </Box>
