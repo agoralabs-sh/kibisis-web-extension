@@ -1,3 +1,10 @@
+# [1.9.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.4...v1.9.0-beta.5) (2023-12-30)
+
+
+### Features
+
+* rename account ([#88](https://github.com/agoralabs-sh/kibisis-web-extension/issues/88)) ([c6bae24](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c6bae247ad06a914069838629554dc8a334a3da5))
+
 # [1.9.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.3...v1.9.0-beta.4) (2023-12-29)
 
 
