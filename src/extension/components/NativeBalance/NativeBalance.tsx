@@ -46,11 +46,10 @@ const NativeBalance: FC<IProps> = ({
       <Tooltip
         aria-label="Minimum balance information"
         label={t<string>('captions.minimumBalance', {
-          amount: formatCurrencyUnit(
-            minumumStandardUnit,
-            nativeCurrency.decimals
-          ),
-          code: nativeCurrency.code.toLowerCase(),
+          amount: formatCurrencyUnit(minumumStandardUnit, {
+            decimals: nativeCurrency.decimals,
+          }),
+          code: nativeCurrency.code.toUpperCase(),
         })}
       >
         <span
@@ -65,7 +64,10 @@ const NativeBalance: FC<IProps> = ({
 
       <Tooltip
         aria-label="Full balance"
-        label={`${balanceStandardUnit.toString()} ${nativeCurrency.code.toUpperCase()}`}
+        label={`${formatCurrencyUnit(balanceStandardUnit, {
+          decimals: nativeCurrency.decimals,
+          thousandSeparatedOnly: true,
+        })} ${nativeCurrency.code.toUpperCase()}`}
       >
         <HStack
           backgroundColor={textBackgroundColor}
@@ -79,7 +81,9 @@ const NativeBalance: FC<IProps> = ({
           )}:`}</Text>
 
           <Text color={defaultTextColor} fontSize="sm">
-            {formatCurrencyUnit(balanceStandardUnit, nativeCurrency.decimals)}
+            {formatCurrencyUnit(balanceStandardUnit, {
+              decimals: nativeCurrency.decimals,
+            })}
           </Text>
 
           {createIconFromDataUri(nativeCurrency.iconUri, {

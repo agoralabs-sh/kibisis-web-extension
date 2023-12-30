@@ -46,7 +46,7 @@ const AssetDisplay: FC<IProps> = ({
         <Text color={amountColor || defaultTextColor} fontSize={fontSize}>
           {`${prefix || ''}${formatCurrencyUnit(
             convertToStandardUnit(atomicUnitAmount, decimals),
-            decimals
+            { decimals }
           )}`}
         </Text>
         {icon}

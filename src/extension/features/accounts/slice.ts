@@ -8,6 +8,7 @@ import {
   addArc200AssetHoldingThunk,
   fetchAccountsFromStorageThunk,
   removeAccountByIdThunk,
+  saveAccountNameThunk,
   saveNewAccountThunk,
   startPollingForAccountsThunk,
   stopPollingForAccountsThunk,
@@ -105,6 +106,25 @@ const slice = createSlice({
         state.saving = false;
       }
     );
+    /** save account name **/
+    builder.addCase(
+      saveAccountNameThunk.fulfilled,
+      (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
+        if (action.payload) {
+          state.items = upsertItemsById<IAccount>(state.items, [
+            action.payload,
+          ]);
+        }
+
+        state.saving = false;
+      }
+    );
+    builder.addCase(saveAccountNameThunk.pending, (state: IAccountsState) => {
+      state.saving = true;
+    });
+    builder.addCase(saveAccountNameThunk.rejected, (state: IAccountsState) => {
+      state.saving = false;
+    });
     /** save new account **/
     builder.addCase(
       saveNewAccountThunk.fulfilled,

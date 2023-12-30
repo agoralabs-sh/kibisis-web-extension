@@ -1,5 +1,4 @@
 import {
-  Heading,
   HStack,
   Icon,
   Skeleton,
@@ -13,14 +12,16 @@ import {
   TabPanels,
   Tabs,
   StackProps,
+  Heading,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
   IoCloudOfflineOutline,
+  IoCreateOutline,
   IoQrCodeOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
@@ -39,6 +40,7 @@ import ActivityTab from '@extension/components/ActivityTab';
 import AccountNftsTab from '@extension/components/AccountNftsTab';
 import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import EditableAccountNameField from '@extension/components/EditableAccountNameField';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
@@ -50,11 +52,17 @@ import NativeBalance, {
 } from '@extension/components/NativeBalance';
 
 // constants
-import { ADD_ACCOUNT_ROUTE, ACCOUNTS_ROUTE } from '@extension/constants';
+import {
+  ACCOUNT_PAGE_HEADER_ITEM_HEIGHT,
+  ADD_ACCOUNT_ROUTE,
+  ACCOUNTS_ROUTE,
+  DEFAULT_GAP,
+} from '@extension/constants';
 
 // features
 import {
   removeAccountByIdThunk,
+  saveAccountNameThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { saveSettingsToStorage } from '@extension/features/settings';
@@ -79,6 +87,7 @@ import {
   useSelectIsOnline,
   useSelectNetworks,
   useSelectPreferredBlockExplorer,
+  useSelectSavingAccounts,
   useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
@@ -126,17 +135,29 @@ const AccountPage: FC = () => {
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const savingAccounts: boolean = useSelectSavingAccounts();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
+  // state
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   // misc
   const accountTabId: number = parseInt(
     searchParams.get('accountTabId') || '0'
   );
   // handlers
+  const handleActivityScrollEnd = () => {
+    if (account && accountTransactions && accountTransactions.next) {
+      dispatch(
+        updateAccountsThunk({
+          accountIds: [account.id],
+        })
+      );
+    }
+  };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkSelect = (network: INetwork) => {
     dispatch(
@@ -148,6 +169,20 @@ const AccountPage: FC = () => {
         },
       })
     );
+  };
+  const handleEditAccountNameCancel = () => setIsEditing(false);
+  const handleEditAccountNameClick = () => setIsEditing(!isEditing);
+  const handleEditAccountNameSubmit = (value: string | null) => {
+    if (account) {
+      dispatch(
+        saveAccountNameThunk({
+          accountId: account.id,
+          name: value,
+        })
+      );
+    }
+
+    setIsEditing(false);
   };
   const handleRemoveAccountClick = () => {
     if (account) {
@@ -175,20 +210,11 @@ const AccountPage: FC = () => {
     setSearchParams({
       accountTabId: index.toString(),
     });
-  const handleActivityScrollEnd = () => {
-    if (account && accountTransactions && accountTransactions.next) {
-      dispatch(
-        updateAccountsThunk({
-          accountIds: [account.id],
-        })
-      );
-    }
-  };
   // renders
   const renderContent = () => {
     const headerContainerProps: StackProps = {
       alignItems: 'flex-start',
-      p: 4,
+      p: DEFAULT_GAP - 2,
       w: 'full',
     };
     let address: string;
@@ -197,12 +223,15 @@ const AccountPage: FC = () => {
       return (
         <VStack {...headerContainerProps}>
           <NetworkSelectSkeleton network={networks[0]} />
+
           <HStack alignItems="center" w="full">
-            {/*address*/}
+            {/*name/address*/}
             <Skeleton>
-              <Text color="gray.500" fontSize="xs">
-                {ellipseAddress(faker.random.alphaNumeric(58).toUpperCase())}
-              </Text>
+              <Skeleton>
+                <Heading color={defaultTextColor} size="md" textAlign="left">
+                  {faker.random.alphaNumeric(12).toUpperCase()}
+                </Heading>
+              </Skeleton>
             </Skeleton>
 
             <Spacer />
@@ -223,8 +252,8 @@ const AccountPage: FC = () => {
         <>
           {/*header*/}
           <VStack {...headerContainerProps}>
-            {/*network connectivity*/}
-            <HStack w="full">
+            {/*network connectivity & network selection*/}
+            <HStack h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT} w="full">
               {!online && (
                 <Tooltip
                   aria-label="Offline icon"
@@ -251,25 +280,21 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            <HStack alignItems="center" w="full">
+            {/*name/address and native currency balance*/}
+            <HStack
+              alignItems="center"
+              h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT}
+              w="full"
+            >
               {/*name/address*/}
-              {account.name ? (
-                <Tooltip aria-label="Name of account" label={account.name}>
-                  <Heading
-                    color={defaultTextColor}
-                    maxW={400}
-                    noOfLines={1}
-                    size="md"
-                    textAlign="left"
-                  >
-                    {account.name}
-                  </Heading>
-                </Tooltip>
-              ) : (
-                <Heading color={defaultTextColor} size="md" textAlign="left">
-                  {ellipseAddress(address)}
-                </Heading>
-              )}
+              <EditableAccountNameField
+                address={address}
+                isEditing={isEditing}
+                isLoading={savingAccounts}
+                name={account.name}
+                onCancel={handleEditAccountNameCancel}
+                onSubmitChange={handleEditAccountNameSubmit}
+              />
 
               <Spacer />
 
@@ -283,15 +308,31 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/*address and interactions*/}
-            <HStack alignItems="center" spacing={1} w="full">
+            {/*address & controls*/}
+            <HStack
+              alignItems="center"
+              h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT}
+              spacing={1}
+              w="full"
+            >
               <Tooltip label={address}>
                 <Text color={subTextColor} fontSize="xs">
-                  {ellipseAddress(address, { end: 10, start: 10 })}
+                  {ellipseAddress(address, { end: 5, start: 5 })}
                 </Text>
               </Tooltip>
 
               <Spacer />
+
+              {/*edit account name*/}
+              <Tooltip label={t<string>('labels.editAccountName')}>
+                <IconButton
+                  aria-label="Edit account name"
+                  icon={IoCreateOutline}
+                  onClick={handleEditAccountNameClick}
+                  size="sm"
+                  variant="ghost"
+                />
+              </Tooltip>
 
               {/*copy address*/}
               <CopyIconButton

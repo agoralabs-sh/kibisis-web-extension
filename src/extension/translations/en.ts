@@ -260,6 +260,7 @@ const translation: IResourceLanguage = {
     default: 'Default',
     defaultFrozen: 'Default Frozen',
     did: 'DID',
+    editAccountName: 'Rename account',
     expirationDate: 'Expiration Date',
     extensionId: 'Extension ID',
     fee: 'Fee',
@@ -316,6 +317,7 @@ const translation: IResourceLanguage = {
   },
   placeholders: {
     enterAddress: 'Enter address',
+    enterANameForYourAccount: 'Enter a name for your account',
     enterNote: 'Enter an optional note',
     enterPassword: 'Enter password',
     nameAccount: 'Enter a name for this account (optional)',

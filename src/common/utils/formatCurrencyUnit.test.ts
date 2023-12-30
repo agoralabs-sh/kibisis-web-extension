@@ -7,6 +7,7 @@ interface ITestParams {
   input: BigNumber;
   decimals?: number;
   expected: string;
+  thousandSeparatedOnly?: boolean;
 }
 
 describe('formatCurrencyUnit()', () => {
@@ -28,8 +29,30 @@ describe('formatCurrencyUnit()', () => {
       expected: '1b',
     },
     {
+      input: new BigNumber('1000000892.716271'),
+      expected: '1,000,000,892.72',
+      thousandSeparatedOnly: true,
+    },
+    {
+      input: new BigNumber('1000000892.716271'),
+      decimals: 4,
+      expected: '1,000,000,892.7163',
+      thousandSeparatedOnly: true,
+    },
+    {
       input: new BigNumber('5612290.716271'),
       expected: '5.61229m',
+    },
+    {
+      input: new BigNumber('5612290.716271'),
+      expected: '5,612,290.72',
+      thousandSeparatedOnly: true,
+    },
+    {
+      input: new BigNumber('5612290.716271'),
+      decimals: 6,
+      expected: '5,612,290.716271',
+      thousandSeparatedOnly: true,
     },
     {
       input: new BigNumber('999999.999999'),
@@ -103,8 +126,10 @@ describe('formatCurrencyUnit()', () => {
     },
   ])(
     `should format the unit of $input to $expected`,
-    ({ input, decimals, expected }: ITestParams) => {
-      expect(formatCurrencyUnit(input, decimals)).toBe(expected);
+    ({ input, decimals, expected, thousandSeparatedOnly }: ITestParams) => {
+      expect(
+        formatCurrencyUnit(input, { decimals, thousandSeparatedOnly })
+      ).toBe(expected);
     }
   );
 });

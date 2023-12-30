@@ -61,7 +61,6 @@ import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
 // utils
 import { formatCurrencyUnit } from '@common/utils';
 import { ellipseAddress } from '@extension/utils';
-import numbro from 'numbro';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
@@ -194,14 +193,15 @@ const AssetPage: FC = () => {
             {/*amount*/}
             <Tooltip
               aria-label="Asset amount with unrestricted decimals"
-              label={numbro(amountInStandardUnits.toString()).format({
-                mantissa: asset.decimals,
-                thousandSeparated: true,
-                trimMantissa: true,
+              label={formatCurrencyUnit(amountInStandardUnits, {
+                decimals: asset.decimals,
+                thousandSeparatedOnly: true,
               })}
             >
               <Heading color={defaultTextColor} size="lg" textAlign="center">
-                {formatCurrencyUnit(amountInStandardUnits, asset.decimals)}
+                {formatCurrencyUnit(amountInStandardUnits, {
+                  decimals: asset.decimals,
+                })}
               </Heading>
             </Tooltip>
 

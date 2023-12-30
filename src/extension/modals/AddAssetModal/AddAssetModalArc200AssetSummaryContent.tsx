@@ -1,6 +1,5 @@
 import { HStack, Text, Tooltip, useDisclosure, VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import numbro from 'numbro';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -168,10 +167,9 @@ const AddAssetModalArc200AssetSummaryContent: FC<IProps> = ({
               <PageItem fontSize="sm" label={t<string>('labels.totalSupply')}>
                 <Tooltip
                   aria-label="Asset amount with unrestricted decimals"
-                  label={numbro(totalSupplyInStandardUnits.toString()).format({
-                    mantissa: asset.decimals,
-                    thousandSeparated: true,
-                    trimMantissa: true,
+                  label={formatCurrencyUnit(totalSupplyInStandardUnits, {
+                    decimals: asset.decimals,
+                    thousandSeparatedOnly: true,
                   })}
                 >
                   <Text color={subTextColor} fontSize="sm">
@@ -180,7 +178,7 @@ const AddAssetModalArc200AssetSummaryContent: FC<IProps> = ({
                         new BigNumber(asset.totalSupply),
                         asset.decimals
                       ),
-                      asset.decimals
+                      { decimals: asset.decimals }
                     )}
                   </Text>
                 </Tooltip>

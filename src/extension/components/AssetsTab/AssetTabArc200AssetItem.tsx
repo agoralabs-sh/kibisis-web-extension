@@ -149,7 +149,9 @@ const AssetTabArc200AssetItem: FC<IProps> = ({
             spacing={DEFAULT_GAP / 3}
           >
             <Text color={defaultTextColor} fontSize="sm">
-              {formatCurrencyUnit(standardUnitAmount, arc200Asset.decimals)}
+              {formatCurrencyUnit(standardUnitAmount, {
+                decimals: arc200Asset.decimals,
+              })}
             </Text>
 
             <AssetBadge type={AssetTypeEnum.Arc200} />

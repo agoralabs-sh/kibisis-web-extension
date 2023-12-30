@@ -144,7 +144,9 @@ const AssetTabStandardAssetItem: FC<IProps> = ({
             spacing={DEFAULT_GAP / 3}
           >
             <Text color={defaultTextColor} fontSize="sm">
-              {formatCurrencyUnit(standardUnitAmount, standardAsset.decimals)}
+              {formatCurrencyUnit(standardUnitAmount, {
+                decimals: standardAsset.decimals,
+              })}
             </Text>
 
             <AssetBadge type={AssetTypeEnum.Standard} />
