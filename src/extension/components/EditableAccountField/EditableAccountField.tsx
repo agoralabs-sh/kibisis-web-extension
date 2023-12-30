@@ -82,6 +82,7 @@ const EditableAccountField: FC<IProps> = ({
       inputRef.current.focus();
     }
   }, [isEditing]);
+  useEffect(() => setValue(name || address), [name, address]);
   // if clicking outside, cancel the edit
   useOutsideClick({
     ref: containerRef,
