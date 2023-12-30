@@ -220,7 +220,9 @@ const AssetTransferTransactionContent: FC<IProps> = ({
               w="full"
             >
               <Heading color={defaultTextColor} size="lg" textAlign="center">
-                {formatCurrencyUnit(standardUnitAmount, asset.decimals)}
+                {formatCurrencyUnit(standardUnitAmount, {
+                  decimals: asset.decimals,
+                })}
               </Heading>
 
               {assetIcon}

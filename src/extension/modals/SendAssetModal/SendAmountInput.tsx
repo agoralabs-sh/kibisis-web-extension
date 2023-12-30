@@ -143,7 +143,7 @@ const SendAmountInput: FC<IProps> = ({
           <Text color={subTextColor} fontSize="xs" textAlign="right">
             {`${t<string>('labels.max')}: ${formatCurrencyUnit(
               maximumTransactionAmountInStandardUnit,
-              selectedAsset.decimals
+              { decimals: selectedAsset.decimals }
             )} ${symbol}`}
           </Text>
         </HStack>
@@ -163,21 +163,21 @@ const SendAmountInput: FC<IProps> = ({
                     balance,
                     network.nativeCurrency.decimals
                   ),
-                  network.nativeCurrency.decimals
+                  { decimals: network.nativeCurrency.decimals }
                 ),
                 minBalance: formatCurrencyUnit(
                   convertToStandardUnit(
                     minBalance,
                     network.nativeCurrency.decimals
                   ),
-                  network.nativeCurrency.decimals
+                  { decimals: network.nativeCurrency.decimals }
                 ),
                 minFee: formatCurrencyUnit(
                   convertToStandardUnit(
                     new BigNumber(network.minFee),
                     network.nativeCurrency.decimals
                   ),
-                  network.nativeCurrency.decimals
+                  { decimals: network.nativeCurrency.decimals }
                 ),
                 nativeCurrencyCode: network.nativeCurrency.code,
               }

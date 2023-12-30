@@ -1,5 +1,4 @@
 import {
-  Heading,
   HStack,
   Icon,
   Skeleton,
@@ -13,6 +12,7 @@ import {
   TabPanels,
   Tabs,
   StackProps,
+  Heading,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
@@ -69,6 +69,7 @@ import { saveSettingsToStorage } from '@extension/features/settings';
 import { setConfirm } from '@extension/features/system';
 
 // hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -138,6 +139,7 @@ const AccountPage: FC = () => {
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
   // hooks
+  const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   // state
@@ -221,12 +223,15 @@ const AccountPage: FC = () => {
       return (
         <VStack {...headerContainerProps}>
           <NetworkSelectSkeleton network={networks[0]} />
+
           <HStack alignItems="center" w="full">
-            {/*address*/}
+            {/*name/address*/}
             <Skeleton>
-              <Text color="gray.500" fontSize="xs">
-                {ellipseAddress(faker.random.alphaNumeric(58).toUpperCase())}
-              </Text>
+              <Skeleton>
+                <Heading color={defaultTextColor} size="md" textAlign="left">
+                  {faker.random.alphaNumeric(12).toUpperCase()}
+                </Heading>
+              </Skeleton>
             </Skeleton>
 
             <Spacer />
@@ -303,7 +308,7 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/*address and interactions*/}
+            {/*address & controls*/}
             <HStack
               alignItems="center"
               h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT}
@@ -312,7 +317,7 @@ const AccountPage: FC = () => {
             >
               <Tooltip label={address}>
                 <Text color={subTextColor} fontSize="xs">
-                  {ellipseAddress(address, { end: 10, start: 10 })}
+                  {ellipseAddress(address, { end: 5, start: 5 })}
                 </Text>
               </Tooltip>
 
