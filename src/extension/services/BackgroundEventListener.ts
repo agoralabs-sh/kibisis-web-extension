@@ -45,6 +45,7 @@ export default class BackgroundEventListener {
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
     let mainAppWindows: IAppWindow[];
     let mainWindow: Windows.Window;
+    let registrationAppWindows: IAppWindow[];
     let registrationWindow: Windows.Window;
 
     this.logger &&
@@ -56,14 +57,33 @@ export default class BackgroundEventListener {
     await this.appWindowManagerService.hydrateAppWindows();
 
     if (!isInitialized) {
+      registrationAppWindows = await this.appWindowManagerService.getByType(
+        AppTypeEnum.RegistrationApp
+      );
+
+      // if there is a registration app window open, bring it to focus
+      if (registrationAppWindows.length > 0) {
+        this.logger &&
+          this.logger.debug(
+            `${BackgroundEventListener.name}#${_functionName}(): no account detected and previous registration app window "${registrationAppWindows[0].windowId}" already open, bringing to focus`
+          );
+
+        await browser.windows.update(registrationAppWindows[0].windowId, {
+          focused: true,
+        });
+
+        return;
+      }
+
       this.logger &&
         this.logger.debug(
-          `${BackgroundEventListener.name}#${_functionName}(): no account detected, opening registration app`
+          `${BackgroundEventListener.name}#${_functionName}(): no account detected and no main app window open, creating an new one`
         );
 
       // remove everything from storage
       await this.storageManager.removeAll();
 
+      // if there is no registration app window up, we can open a new one
       registrationWindow = await browser.windows.create({
         height: DEFAULT_POPUP_HEIGHT,
         type: 'popup',
