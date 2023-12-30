@@ -4,5 +4,6 @@ export * from './Keys';
 export * from './Links';
 export * from './Limits';
 export * from './Routes';
+export * from './Styles';
 export * from './Urls';
 export * from './Validation';

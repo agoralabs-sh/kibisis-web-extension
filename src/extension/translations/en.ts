@@ -317,6 +317,7 @@ const translation: IResourceLanguage = {
   },
   placeholders: {
     enterAddress: 'Enter address',
+    enterANameForYourAccount: 'Enter a name for your account',
     enterNote: 'Enter an optional note',
     enterPassword: 'Enter password',
     nameAccount: 'Enter a name for this account (optional)',

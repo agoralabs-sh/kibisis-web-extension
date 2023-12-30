@@ -1,53 +1,147 @@
 import {
-  Editable,
-  EditableInput,
-  EditablePreview,
+  Box,
+  Heading,
   HStack,
   Input,
+  Skeleton,
+  Text,
   Tooltip,
+  VStack,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { faker } from '@faker-js/faker';
+import React, { ChangeEvent, FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { IoCheckmarkOutline, IoCloseOutline } from 'react-icons/io5';
 
 // components
-import EditableAccountControls from './EditableAccountControls';
+import IconButton from '@extension/components/IconButton';
+
+// constants
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
+
+// utils
+import { ellipseAddress } from '@extension/utils';
 
 interface IProps {
-  value: string;
+  address: string;
+  isEditing: boolean;
+  isLoading: boolean;
+  name: string | null;
+  onCancel: () => void;
+  onSubmitChange: (value: string | null) => void;
 }
 
-const EditableAccountField: FC<IProps> = ({ value }: IProps) => {
+const EditableAccountField: FC<IProps> = ({
+  address,
+  name,
+  isEditing,
+  isLoading,
+  onCancel,
+  onSubmitChange,
+}: IProps) => {
+  const { t } = useTranslation();
   // hooks
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
+  const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = usePrimaryColor();
+  const textBackgroundColor: string = useTextBackgroundColor();
+  // state
+  const [value, setValue] = useState<string>(name || address);
+  // handlers
+  const handleCancelClick = () => onCancel();
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setValue(event.target.value);
+  const handleSubmitClick = () =>
+    onSubmitChange(value && value.length > 0 ? value : null);
+
+  if (isLoading) {
+    return (
+      <Skeleton>
+        <Heading color={defaultTextColor} size="md" textAlign="left">
+          {faker.random.alphaNumeric(12).toUpperCase()}
+        </Heading>
+      </Skeleton>
+    );
+  }
+
+  if (!isEditing) {
+    if (name) {
+      return (
+        <Tooltip aria-label="Name of account" label={name}>
+          <Heading
+            color={defaultTextColor}
+            maxW={400}
+            noOfLines={1}
+            size="md"
+            textAlign="left"
+          >
+            {name}
+          </Heading>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <Heading color={defaultTextColor} size="md" textAlign="left">
+        {ellipseAddress(address, { end: 4, start: 4 })}
+      </Heading>
+    );
+  }
 
   return (
-    <Editable
-      fontSize="md"
-      isPreviewFocusable={true}
-      selectAllOnFocus={false}
-      textAlign="left"
-      value={value}
-    >
-      <Tooltip label="Click to edit" shouldWrapChildren={true}>
-        <EditablePreview
-          py={1}
-          px={1}
-          _hover={{
-            background: buttonHoverBackgroundColor,
-          }}
-        />
-      </Tooltip>
+    <VStack position="relative" w="full" zIndex={0}>
+      {/*/input*/}
+      <Input
+        focusBorderColor={primaryColor}
+        onChange={handleOnChange}
+        p={DEFAULT_GAP / 3}
+        placeholder={t<string>('placeholders.enterANameForYourAccount')}
+        size="md"
+        type="text"
+        value={value}
+      />
 
-      <HStack w="full">
-        {/*/inout*/}
-        <Input py={2} px={4} as={EditableInput} />
+      {/*controls*/}
+      <HStack
+        position="absolute"
+        right={0}
+        top="calc(100% + var(--chakra-space-2))"
+        zIndex={1}
+      >
+        {/*submit*/}
+        <Box bg={BODY_BACKGROUND_COLOR} boxShadow="lg">
+          <IconButton
+            _hover={{ backgroundColor: buttonHoverBackgroundColor }}
+            aria-label="Confirm rename account"
+            bg={textBackgroundColor}
+            boxShadow="lg"
+            icon={IoCheckmarkOutline}
+            onClick={handleSubmitClick}
+            size="sm"
+            variant="ghost"
+          />
+        </Box>
 
-        {/*controls*/}
-        <EditableAccountControls />
+        {/*cancel*/}
+        <Box bg={BODY_BACKGROUND_COLOR} boxShadow="lg">
+          <IconButton
+            _hover={{ backgroundColor: buttonHoverBackgroundColor }}
+            aria-label="Cancel rename account"
+            bg={textBackgroundColor}
+            icon={IoCloseOutline}
+            onClick={handleCancelClick}
+            size="sm"
+            variant="ghost"
+          />
+        </Box>
       </HStack>
-    </Editable>
+    </VStack>
   );
 };
 

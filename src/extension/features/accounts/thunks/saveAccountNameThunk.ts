@@ -26,9 +26,9 @@ const saveAccountNameThunk: AsyncThunk<
 >(
   AccountsThunkEnum.SaveAccountName,
   async ({ accountId, name }, { dispatch, getState }) => {
-    const account: IAccount | null =
-      getState().accounts.items.find((value) => value.id === accountId) || null;
     const logger: ILogger = getState().system.logger;
+    let account: IAccount | null =
+      getState().accounts.items.find((value) => value.id === accountId) || null;
     let accountService: AccountService;
 
     if (!account) {
@@ -47,7 +47,10 @@ const saveAccountNameThunk: AsyncThunk<
       }`
     );
 
-    account.name = name;
+    account = {
+      ...account,
+      name,
+    };
     accountService = new AccountService({
       logger,
     });
