@@ -83,7 +83,7 @@ const PaymentTransactionItemContent: FC<IProps> = ({
               ? '+'
               : '-'
           }
-          unit={network.nativeCurrency.code}
+          unit={network.nativeCurrency.symbol}
         />
 
         {/*completed date*/}

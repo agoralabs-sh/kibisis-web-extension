@@ -252,7 +252,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
           id: '0',
           isChecked: false,
           name: network.canonicalName,
-          symbol: network.nativeCurrency.code,
+          symbol: network.nativeCurrency.symbol,
         },
         ...account.assets.map((value) => ({
           ...value,

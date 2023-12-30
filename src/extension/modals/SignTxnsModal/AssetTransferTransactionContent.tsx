@@ -90,7 +90,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             w: 3,
           })}
           label={`${t<string>('labels.fee')}:`}
-          unit={network.nativeCurrency.code}
+          unit={network.nativeCurrency.symbol}
         />
 
         {/*asset id*/}

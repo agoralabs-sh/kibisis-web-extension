@@ -63,7 +63,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
-        unit={network.nativeCurrency.code}
+        unit={network.nativeCurrency.symbol}
       />
 
       {/* Type */}

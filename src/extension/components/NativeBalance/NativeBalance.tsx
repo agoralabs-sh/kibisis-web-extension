@@ -49,7 +49,7 @@ const NativeBalance: FC<IProps> = ({
           amount: formatCurrencyUnit(minumumStandardUnit, {
             decimals: nativeCurrency.decimals,
           }),
-          code: nativeCurrency.code.toUpperCase(),
+          code: nativeCurrency.symbol.toUpperCase(),
         })}
       >
         <span
@@ -67,7 +67,7 @@ const NativeBalance: FC<IProps> = ({
         label={`${formatCurrencyUnit(balanceStandardUnit, {
           decimals: nativeCurrency.decimals,
           thousandSeparatedOnly: true,
-        })} ${nativeCurrency.code.toUpperCase()}`}
+        })} ${nativeCurrency.symbol.toUpperCase()}`}
       >
         <HStack
           backgroundColor={textBackgroundColor}

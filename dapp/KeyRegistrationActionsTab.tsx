@@ -131,7 +131,7 @@ const KeyRegistrationActionsTab: FC<IProps> = ({
               ? `${convertToStandardUnit(
                   account.balance,
                   network.nativeCurrency.decimals
-                )} ${network.nativeCurrency.code}`
+                )} ${network.nativeCurrency.symbol}`
               : 'N/A'}
           </Text>
         </HStack>

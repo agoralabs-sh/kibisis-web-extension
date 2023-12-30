@@ -115,7 +115,7 @@ const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
                 ? '+'
                 : '-'
             }
-            unit={network.nativeCurrency.code}
+            unit={network.nativeCurrency.symbol}
           />
         </HStack>
         <AccordionIcon />

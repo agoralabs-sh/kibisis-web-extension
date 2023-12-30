@@ -81,7 +81,7 @@ const PaymentTransactionContent: FC<IProps> = ({
         icon={icon}
         isLoading={loading}
         label={`${t<string>('labels.balance')}:`}
-        unit={network.nativeCurrency.code}
+        unit={network.nativeCurrency.symbol}
       />
 
       {/*fee*/}
@@ -90,7 +90,7 @@ const PaymentTransactionContent: FC<IProps> = ({
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
-        unit={network.nativeCurrency.code}
+        unit={network.nativeCurrency.symbol}
       />
 
       {/*note*/}
@@ -131,7 +131,7 @@ const PaymentTransactionContent: FC<IProps> = ({
             decimals={network.nativeCurrency.decimals}
             icon={icon}
             label={`${t<string>('labels.amount')}:`}
-            unit={network.nativeCurrency.code}
+            unit={network.nativeCurrency.symbol}
           />
         </>
       ) : (
@@ -140,7 +140,7 @@ const PaymentTransactionContent: FC<IProps> = ({
           <Tooltip
             aria-label="Amount with unrestricted decimals"
             label={`${standardUnitAmount.toString()} ${
-              network.nativeCurrency.code
+              network.nativeCurrency.symbol
             }`}
           >
             <HStack
@@ -158,7 +158,7 @@ const PaymentTransactionContent: FC<IProps> = ({
               {icon}
 
               <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-                {network.nativeCurrency.code}
+                {network.nativeCurrency.symbol}
               </Text>
             </HStack>
           </Tooltip>

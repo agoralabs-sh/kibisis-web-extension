@@ -56,7 +56,7 @@ const networks: INetwork[] = [
       reference: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXu',
     },
     nativeCurrency: {
-      code: 'VOI',
+      symbol: 'VOI',
       decimals: 6,
       iconUri: voiIconUri,
       listingUri: voiListingUri,
@@ -106,7 +106,7 @@ const networks: INetwork[] = [
       reference: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73k',
     },
     nativeCurrency: {
-      code: 'ALGO',
+      symbol: 'ALGO',
       decimals: 6,
       iconUri: algorandIconUri,
       listingUri: algorandListingUri,
@@ -141,7 +141,7 @@ const networks: INetwork[] = [
       reference: 'mFgazF-2uRS1tMiL9dsj01hJGySEmPN2',
     },
     nativeCurrency: {
-      code: 'ALGO',
+      symbol: 'ALGO',
       decimals: 6,
       iconUri: algorandIconUri,
       listingUri: algorandListingUri,
@@ -176,7 +176,7 @@ const networks: INetwork[] = [
       reference: 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe',
     },
     nativeCurrency: {
-      code: 'ALGO',
+      symbol: 'ALGO',
       decimals: 6,
       iconUri: algorandIconUri,
       listingUri: algorandListingUri,

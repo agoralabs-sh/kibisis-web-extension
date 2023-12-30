@@ -141,7 +141,7 @@ const AssetDestroyTransactionContent: FC<IProps> = ({
             w: 3,
           })}
           prefix="-"
-          unit={network.nativeCurrency.code}
+          unit={network.nativeCurrency.symbol}
         />
       </PageItem>
 

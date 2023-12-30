@@ -179,7 +179,7 @@ const SendAmountInput: FC<IProps> = ({
                   ),
                   { decimals: network.nativeCurrency.decimals }
                 ),
-                nativeCurrencyCode: network.nativeCurrency.code,
+                nativeCurrencyCode: network.nativeCurrency.symbol,
               }
             )}
           >

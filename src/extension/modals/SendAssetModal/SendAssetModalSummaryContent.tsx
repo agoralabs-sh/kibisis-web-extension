@@ -197,7 +197,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
                 h: 3,
                 w: 3,
               })}
-              unit={network.nativeCurrency.code}
+              unit={network.nativeCurrency.symbol}
             />
           }
           label={t<string>('labels.fee')}

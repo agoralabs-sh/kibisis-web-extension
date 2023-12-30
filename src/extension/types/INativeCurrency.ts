@@ -1,8 +1,8 @@
 interface INativeCurrency {
-  code: string;
   decimals: number;
   iconUri: string;
   listingUri: string;
+  symbol: string;
 }
 
 export default INativeCurrency;

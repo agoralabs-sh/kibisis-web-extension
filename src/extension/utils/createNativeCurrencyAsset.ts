@@ -29,7 +29,7 @@ export default function createNativeCurrencyAsset(
     reserveAddress: null,
     total: Number.POSITIVE_INFINITY.toString(),
     type: AssetTypeEnum.Standard,
-    unitName: network.nativeCurrency.code.toString(),
+    unitName: network.nativeCurrency.symbol.toString(),
     unitNameBase64: null,
     url: null,
     urlBase64: null,
