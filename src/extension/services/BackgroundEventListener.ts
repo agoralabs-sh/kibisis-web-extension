@@ -47,13 +47,18 @@ export default class BackgroundEventListener {
     let mainWindow: Windows.Window;
     let registrationWindow: Windows.Window;
 
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundEventListener.name}#${_functionName}(): browser extension clicked`
+      );
+
     // remove any closed windows
     await this.appWindowManagerService.hydrateAppWindows();
 
     if (!isInitialized) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundEventListener.name}#${_functionName}(): no account detected, registering new account`
+          `${BackgroundEventListener.name}#${_functionName}(): no account detected, opening registration app`
         );
 
       // remove everything from storage
@@ -77,26 +82,38 @@ export default class BackgroundEventListener {
       AppTypeEnum.MainApp
     );
 
-    // if there is no main app window up, we can open the app
-    if (mainAppWindows.length <= 0) {
+    // if there is a main app window open, bring it to focus
+    if (mainAppWindows.length > 0) {
       this.logger &&
         this.logger.debug(
-          `${BackgroundEventListener.name}#${_functionName}(): previous account detected, opening main app`
+          `${BackgroundEventListener.name}#${_functionName}(): previous account detected and previous main app window "${mainAppWindows[0].windowId}" already open, bringing to focus`
         );
 
-      mainWindow = await browser.windows.create({
-        height: DEFAULT_POPUP_HEIGHT,
-        type: 'popup',
-        url: 'main-app.html',
-        width: DEFAULT_POPUP_WIDTH,
+      await browser.windows.update(mainAppWindows[0].windowId, {
+        focused: true,
       });
 
-      // save the main app window to storage
-      return await this.appWindowManagerService.saveByBrowserWindowAndType(
-        mainWindow,
-        AppTypeEnum.MainApp
-      );
+      return;
     }
+
+    this.logger &&
+      this.logger.debug(
+        `${BackgroundEventListener.name}#${_functionName}(): previous account detected and no main app window open, creating an new one`
+      );
+
+    // if there is no main app window up, we can open the app
+    mainWindow = await browser.windows.create({
+      height: DEFAULT_POPUP_HEIGHT,
+      type: 'popup',
+      url: 'main-app.html',
+      width: DEFAULT_POPUP_WIDTH,
+    });
+
+    // save the main app window to storage
+    await this.appWindowManagerService.saveByBrowserWindowAndType(
+      mainWindow,
+      AppTypeEnum.MainApp
+    );
   }
 
   public async onWindowRemove(windowId: number): Promise<void> {
