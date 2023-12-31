@@ -27,6 +27,8 @@ export { default as useSelectNetworkByGenesisHash } from './useSelectNetworkByGe
 export { default as useSelectNetworks } from './useSelectNetworks';
 export { default as useSelectNotShowingNotifications } from './useSelectNotShowingNotifications';
 export { default as useSelectPreferredBlockExplorer } from './useSelectPreferredBlockExplorer';
+export { default as useSelectRegistrationPassword } from './useSelectRegistrationPassword';
+export { default as useSelectRegistrationScore } from './useSelectRegistrationScore';
 export { default as useSelectSavingAccounts } from './useSelectSavingAccounts';
 export { default as useSelectSavingRegistration } from './useSelectSavingRegistration';
 export { default as useSelectSavingSessions } from './useSelectSavingSessions';
