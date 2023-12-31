@@ -38,7 +38,7 @@ import { IAppThunkDispatch } from '@extension/types';
 
 const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
-  const inputRef: MutableRefObject<HTMLInputElement | null> =
+  const createPasswordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   const navigate: NavigateFunction = useNavigate();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -72,8 +72,8 @@ const CreatePasswordPage: FC = () => {
 
   // focus on password input
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+    if (createPasswordInputRef.current) {
+      createPasswordInputRef.current.focus();
     }
   }, []);
 
@@ -106,7 +106,7 @@ const CreatePasswordPage: FC = () => {
           </VStack>
 
           <CreatePasswordInput
-            inputRef={inputRef}
+            inputRef={createPasswordInputRef}
             onChange={handlePasswordChange}
             onKeyUp={handleKeyUpCreatePasswordInput}
             score={score}
