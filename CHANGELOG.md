@@ -1,3 +1,10 @@
+# [1.9.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.6...v1.9.0-beta.7) (2024-01-02)
+
+
+### Features
+
+* pressing the enter key submits forms ([#94](https://github.com/agoralabs-sh/kibisis-web-extension/issues/94)) ([e8f599a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e8f599af2771baa7d714a8804b3e9aa036d02409))
+
 # [1.9.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.5...v1.9.0-beta.6) (2023-12-30)
 
 
