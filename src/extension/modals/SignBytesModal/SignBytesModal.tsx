@@ -127,8 +127,8 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     handleClose();
   };
   const handleClose = () => {
-    resetPassword();
     onClose();
+    resetPassword();
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
