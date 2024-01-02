@@ -7,13 +7,23 @@ import {
   ModalOverlay,
   VStack,
 } from '@chakra-ui/react';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  KeyboardEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
 
 // components
 import Button from '@extension/components/Button';
-import PasswordInput from '@extension/components/PasswordInput';
+import PasswordInput, {
+  usePassword,
+} from '@extension/components/PasswordInput';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -44,26 +54,38 @@ const ConfirmPasswordModal: FC<IProps> = ({
   onConfirm,
 }: IProps) => {
   const { t } = useTranslation();
+  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
+  // hooks
+  const {
+    error: passwordError,
+    onChange: onPasswordChange,
+    reset: resetPassword,
+    setError: setPasswordError,
+    validate: validatePassword,
+    value: password,
+  } = usePassword();
+  // selectors
   const logger: ILogger = useSelectLogger();
-  const [error, setError] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
+  // state
   const [valid, setValid] = useState<boolean>(false);
   const [verifying, setVerifying] = useState<boolean>(false);
-  const handleClose = () => {
-    setPassword(null);
-    onCancel();
+  // misc
+  const reset = () => {
+    resetPassword();
+    setValid(false);
+    setVerifying(false);
   };
+  // handlers
+  const handleCancelClick = () => handleClose();
   const handleConfirmClick = async () => {
     let isValid: boolean;
     let privateKeyService: PrivateKeyService;
 
-    if (!password) {
-      setError(t<string>('errors.inputs.required', { name: 'Password' }));
-
+    // check if the input is valid
+    if (validatePassword()) {
       return;
     }
-
-    setError(null);
 
     privateKeyService = new PrivateKeyService({
       logger,
@@ -77,22 +99,36 @@ const ConfirmPasswordModal: FC<IProps> = ({
     setVerifying(false);
 
     if (!isValid) {
-      setError(t<string>('errors.inputs.invalidPassword'));
+      setPasswordError(t<string>('errors.inputs.invalidPassword'));
     }
 
     setValid(isValid);
+
+    onConfirm(password);
+
+    // clean up
+    reset();
   };
-  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setError(null);
-    setPassword(event.target.value);
+  const handleClose = () => {
+    onCancel();
+
+    // clean up
+    reset();
+  };
+  const handleKeyUpPasswordInput = async (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      await handleConfirmClick();
+    }
   };
 
+  // set focus when opening
   useEffect(() => {
-    if (password && valid) {
-      setPassword(null);
-      onConfirm(password);
+    if (passwordInputRef.current) {
+      passwordInputRef.current.focus();
     }
-  }, [valid]);
+  }, []);
 
   return (
     <Modal
@@ -103,6 +139,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
       scrollBehavior="inside"
     >
       <ModalOverlay />
+
       <ModalContent
         alignSelf="flex-end"
         backgroundColor="var(--chakra-colors-chakra-body-bg)"
@@ -110,20 +147,30 @@ const ConfirmPasswordModal: FC<IProps> = ({
         borderBottomRadius={0}
         minH={0}
       >
+        {/*content*/}
         <ModalBody>
           <VStack w="full">
             <PasswordInput
               disabled={verifying}
-              error={error}
+              error={passwordError}
               hint={hint || t<string>('captions.mustEnterPasswordToConfirm')}
-              onChange={handlePasswordChange}
+              inputRef={passwordInputRef}
+              onChange={onPasswordChange}
+              onKeyUp={handleKeyUpPasswordInput}
               value={password || ''}
             />
           </VStack>
         </ModalBody>
+
+        {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
-            <Button onClick={handleClose} size="lg" variant="outline" w="full">
+            <Button
+              onClick={handleCancelClick}
+              size="lg"
+              variant="outline"
+              w="full"
+            >
               {t<string>('buttons.cancel')}
             </Button>
             <Button
