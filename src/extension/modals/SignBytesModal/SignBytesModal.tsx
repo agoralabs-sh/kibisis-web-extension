@@ -9,13 +9,17 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Skeleton,
-  SkeletonCircle,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { generateAccount } from 'algosdk';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, {
+  FC,
+  KeyboardEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -23,7 +27,10 @@ import { useDispatch } from 'react-redux';
 import AccountSelect from '@extension/components/AccountSelect';
 import AccountItem from '@extension/components/AccountItem';
 import Button from '@extension/components/Button';
-import PasswordInput from '@extension/components/PasswordInput';
+import PasswordInput, {
+  usePassword,
+} from '@extension/components/PasswordInput';
+import SignBytesContentSkeleton from './SignBytesContentSkeleton';
 import SignBytesJwtContent from './SignBytesJwtContent';
 
 // constants
@@ -70,7 +77,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { decodeJwt, ellipseAddress } from '@extension/utils';
+import { decodeJwt } from '@extension/utils';
 
 interface IProps {
   onClose: () => void;
@@ -78,6 +85,8 @@ interface IProps {
 
 const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
+  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
@@ -86,13 +95,19 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const fetching: boolean = useSelectFetchingAccounts();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
+  const {
+    error: passwordError,
+    onChange: onPasswordChange,
+    reset: resetPassword,
+    setError: setPasswordError,
+    validate: validatePassword,
+    value: password,
+  } = usePassword();
   const { encodedSignedBytes, error, signBytes } = useSignBytes();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   // state
   const [decodedJwt, setDecodedJwt] = useState<IDecodedJwt | null>(null);
-  const [password, setPassword] = useState<string>('');
-  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [selectedSigner, setSelectedSigner] = useState<IAccount | null>(null);
   const handleAccountSelect = (account: IAccount) => setSelectedSigner(account);
   const handleCancelClick = () => {
@@ -112,16 +127,18 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     handleClose();
   };
   const handleClose = () => {
-    setPassword('');
-    setPasswordError(null);
     onClose();
+    resetPassword();
   };
-  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPasswordError(null);
-    setPassword(event.target.value);
+  const handleKeyUpPasswordInput = async (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      await handleSignClick();
+    }
   };
   const handleSignClick = async () => {
-    if (!signBytesRequest || !selectedSigner) {
+    if (validatePassword() || !signBytesRequest || !selectedSigner) {
       return;
     }
 
@@ -135,31 +152,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const renderContent = () => {
     if (fetching || !signBytesRequest || !selectedSigner) {
-      return (
-        <VStack spacing={4} w="full">
-          <HStack py={4} spacing={4} w="full">
-            <SkeletonCircle size="12" />
-            <Skeleton flexGrow={1}>
-              <Text color={defaultTextColor} fontSize="md" textAlign="center">
-                {ellipseAddress(generateAccount().addr, {
-                  end: 10,
-                  start: 10,
-                })}
-              </Text>
-            </Skeleton>
-          </HStack>
-          {Array.from({ length: 3 }, (_, index) => (
-            <Skeleton key={`sign-bytes-modal-fetching-item-${index}`}>
-              <Text color={defaultTextColor} fontSize="md" textAlign="center">
-                {ellipseAddress(generateAccount().addr, {
-                  end: 10,
-                  start: 10,
-                })}
-              </Text>
-            </Skeleton>
-          ))}
-        </VStack>
-      );
+      return <SignBytesContentSkeleton />;
     }
 
     return (
@@ -218,6 +211,12 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
 
+  // focus when the modal is opened
+  useEffect(() => {
+    if (passwordInputRef.current) {
+      passwordInputRef.current.focus();
+    }
+  }, []);
   useEffect(() => {
     let account: IAccount | null = null;
 
@@ -295,25 +294,28 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          <VStack alignItems="center" spacing={5} w="full">
+          <VStack alignItems="center" spacing={4} w="full">
             <Avatar
               name={signBytesRequest?.appName || 'unknown'}
               src={signBytesRequest?.iconUrl || undefined}
             />
+
             <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
               <Heading color={defaultTextColor} size="md" textAlign="center">
                 {signBytesRequest?.appName || 'Unknown'}
               </Heading>
+
               <Box
                 backgroundColor={textBackgroundColor}
                 borderRadius={theme.radii['3xl']}
-                px={2}
+                px={DEFAULT_GAP / 3}
                 py={1}
               >
                 <Text color={defaultTextColor} fontSize="xs" textAlign="center">
                   {signBytesRequest?.host || 'unknown host'}
                 </Text>
               </Box>
+
               {signBytesRequest &&
                 (decodedJwt ? (
                   <Text color={subTextColor} fontSize="md" textAlign="center">
@@ -339,9 +341,12 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
                   ? 'captions.mustEnterPasswordToSignSecurityToken'
                   : 'captions.mustEnterPasswordToSign'
               )}
-              onChange={handlePasswordChange}
+              inputRef={passwordInputRef}
+              onChange={onPasswordChange}
+              onKeyUp={handleKeyUpPasswordInput}
               value={password}
             />
+
             <HStack spacing={4} w="full">
               <Button
                 onClick={handleCancelClick}
@@ -351,6 +356,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
               >
                 {t<string>('buttons.cancel')}
               </Button>
+
               <Button
                 onClick={handleSignClick}
                 size="lg"

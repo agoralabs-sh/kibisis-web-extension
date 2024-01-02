@@ -11,7 +11,15 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  KeyboardEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -93,6 +101,8 @@ interface IProps {
 
 const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
+  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
@@ -177,6 +187,13 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     dispatch(
       setNote(event.target.value.length > 0 ? event.target.value : null)
     );
+  const handleKeyUpPasswordInput = async (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      await handleSendClick();
+    }
+  };
   const handlePreviousClick = () => {
     resetPassword();
     setShowSummary(false);
@@ -378,6 +395,8 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             error={passwordError}
             hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
             onChange={onPasswordChange}
+            onKeyUp={handleKeyUpPasswordInput}
+            inputRef={passwordInputRef}
             value={password}
           />
 
@@ -450,6 +469,11 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     }
   };
 
+  useEffect(() => {
+    if (showSummary && passwordInputRef.current) {
+      passwordInputRef.current.focus();
+    }
+  }, [showSummary]);
   useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
 

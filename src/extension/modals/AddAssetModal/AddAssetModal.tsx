@@ -16,8 +16,10 @@ import {
 import React, {
   ChangeEvent,
   FC,
+  KeyboardEvent,
   MutableRefObject,
   ReactNode,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -29,6 +31,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@extension/components/Button';
 import IconButton from '@extension/components/IconButton';
 import AddAssetModalArc200AssetSummaryContent from './AddAssetModalArc200AssetSummaryContent';
+import AddAssetModalStandardAssetConfirmingContent from './AddAssetModalStandardAssetConfirmingContent';
 import AddAssetModalStandardAssetSummaryContent from './AddAssetModalStandardAssetSummaryContent';
 import AddAssetArc200AssetItem from './AddAssetArc200AssetItem';
 import AddAssetStandardAssetItem from './AddAssetStandardAssetItem';
@@ -94,7 +97,6 @@ import {
 
 // utils
 import { isNumericString } from '@extension/utils';
-import AddAssetModalStandardAssetConfirmingContent from '@extension/modals/AddAssetModal/AddAssetModalStandardAssetConfirmingContent';
 
 interface IProps {
   onClose: () => void;
@@ -102,6 +104,8 @@ interface IProps {
 
 const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
+  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const assetContainerRef: MutableRefObject<HTMLDivElement | null> =
     useRef<HTMLDivElement | null>(null);
@@ -342,6 +346,13 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       );
     }
   };
+  const handleKeyUpPasswordInput = async (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      await handleAddStandardAssetClick();
+    }
+  };
   const handleOnQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
@@ -519,7 +530,9 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             <PasswordInput
               error={passwordError}
               hint={t<string>('captions.mustEnterPasswordToAuthorizeOptIn')}
+              inputRef={passwordInputRef}
               onChange={onPasswordChange}
+              onKeyUp={handleKeyUpPasswordInput}
               value={password}
             />
 
@@ -561,6 +574,17 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       </Button>
     );
   };
+
+  // only standard assets will have the password submit
+  useEffect(() => {
+    if (
+      selectedAsset &&
+      selectedAsset.type === AssetTypeEnum.Standard &&
+      passwordInputRef.current
+    ) {
+      passwordInputRef.current.focus();
+    }
+  }, [selectedAsset]);
 
   return (
     <Modal

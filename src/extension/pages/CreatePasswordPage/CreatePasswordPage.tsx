@@ -1,8 +1,14 @@
 import { Text, VStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, {
+  FC,
+  KeyboardEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
@@ -21,25 +27,35 @@ import { setPassword } from '@extension/features/registration';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// selectors
+import {
+  useSelectRegistrationPassword,
+  useSelectRegistrationScore,
+} from '@extension/selectors';
+
 // types
-import { IAppThunkDispatch, IRegistrationRootState } from '@extension/types';
+import { IAppThunkDispatch } from '@extension/types';
 
 const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
+  const createPasswordInputRef: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
   const navigate: NavigateFunction = useNavigate();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   // selectors
-  const password: string | null = useSelector<
-    IRegistrationRootState,
-    string | null
-  >((state) => state.registration.password);
-  const score: number = useSelector<IRegistrationRootState, number>(
-    (state) => state.registration.score
-  );
+  const password: string | null = useSelectRegistrationPassword();
+  const score: number = useSelectRegistrationScore();
   // handlers
+  const handleKeyUpCreatePasswordInput = (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      handleNextClick();
+    }
+  };
   const handleNextClick = () => {
     if (!validate(password || '', score, t)) {
       navigate(ADD_ACCOUNT_ROUTE);
@@ -53,6 +69,13 @@ const CreatePasswordPage: FC = () => {
       })
     );
   };
+
+  // focus on password input
+  useEffect(() => {
+    if (createPasswordInputRef.current) {
+      createPasswordInputRef.current.focus();
+    }
+  }, []);
 
   return (
     <>
@@ -83,13 +106,21 @@ const CreatePasswordPage: FC = () => {
           </VStack>
 
           <CreatePasswordInput
+            inputRef={createPasswordInputRef}
             onChange={handlePasswordChange}
+            onKeyUp={handleKeyUpCreatePasswordInput}
             score={score}
             value={password || ''}
           />
         </VStack>
 
-        <Button onClick={handleNextClick} size="lg" variant="solid" w="full">
+        <Button
+          onClick={handleNextClick}
+          size="lg"
+          type="submit"
+          variant="solid"
+          w="full"
+        >
           {t<string>('buttons.next')}
         </Button>
       </VStack>

@@ -9,7 +9,13 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import zxcvbn from 'zxcvbn';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  KeyboardEvent,
+  MutableRefObject,
+  useState,
+} from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 
@@ -31,16 +37,20 @@ import { validate } from './utils';
 
 interface IProps {
   disabled?: boolean;
+  inputRef?: MutableRefObject<HTMLInputElement | null>;
   label?: string;
   onChange: (value: string, score: number) => void;
+  onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
   score: number;
   value: string;
 }
 
 const CreatePasswordInput: FC<IProps> = ({
   disabled,
+  inputRef,
   label,
   onChange,
+  onKeyUp,
   score,
   value,
 }: IProps) => {
@@ -55,7 +65,8 @@ const CreatePasswordInput: FC<IProps> = ({
   const [show, setShow] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(
     value.length > 0 ? validate(value, score, t) : null
-  );
+  ); // misc
+  const inputId: string = 'create-password-input';
   // handlers
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value: string = event.target.value;
@@ -80,9 +91,11 @@ const CreatePasswordInput: FC<IProps> = ({
       />
       <VStack>
         <HStack alignItems="flex-end" justifyContent="space-between" w="full">
+          {/*label*/}
           <Text
+            as={'label'}
             color={error ? 'red.300' : defaultTextColor}
-            fontSize="md"
+            htmlFor={inputId}
             textAlign="left"
           >
             {label || t<string>('labels.password')}
@@ -93,13 +106,18 @@ const CreatePasswordInput: FC<IProps> = ({
           </Text>
         </HStack>
 
+        {/*input*/}
         <InputGroup size="md">
           <Input
+            autoComplete="new-password"
             disabled={disabled}
             focusBorderColor={error ? 'red.300' : primaryColor}
+            id={inputId}
             isInvalid={!!error}
             onChange={handleOnChange}
+            onKeyUp={onKeyUp}
             placeholder={t<string>('placeholders.enterPassword')}
+            ref={inputRef}
             type={show ? 'text' : 'password'}
             value={value}
           />
@@ -116,6 +134,7 @@ const CreatePasswordInput: FC<IProps> = ({
           </InputRightElement>
         </InputGroup>
 
+        {/*strong password policy*/}
         <Text color={subTextColor} fontSize="xs" textAlign="left">
           <Trans i18nKey="captions.passwordScoreInfo">
             To conform with our{' '}

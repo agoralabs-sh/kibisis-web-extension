@@ -18,14 +18,24 @@ import {
 import { faker } from '@faker-js/faker';
 import { decode as decodeBase64 } from '@stablelib/base64';
 import { decodeUnsignedTransaction, Transaction } from 'algosdk';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  KeyboardEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
-import PasswordInput from '@extension/components/PasswordInput';
+import PasswordInput, {
+  usePassword,
+} from '@extension/components/PasswordInput';
 import SignTxnsModalContent from './SignTxnsModalContent';
 
 // constants
@@ -65,14 +75,25 @@ interface IProps {
 
 const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
+  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
+  const {
+    error: passwordError,
+    onChange: onPasswordChange,
+    reset: resetPassword,
+    setError: setPasswordError,
+    validate: validatePassword,
+    value: password,
+  } = usePassword();
   const { encodedSignedTransactions, error, signTransactions } = useSignTxns();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
+  // selectors
   const signTxnsRequest: ISignTxnsRequest | null = useSelectSignTxnsRequest();
-  const [password, setPassword] = useState<string>('');
-  const [passwordError, setPasswordError] = useState<string | null>(null);
+  // handlers
   const handleCancelClick = () => {
     if (signTxnsRequest) {
       dispatch(
@@ -90,23 +111,19 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     handleClose();
   };
   const handleClose = () => {
-    setPassword('');
-    setPasswordError(null);
     onClose();
+    resetPassword();
   };
-  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPasswordError(null);
-    setPassword(event.target.value);
+  const handleKeyUpPasswordInput = async (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      await handleSignClick();
+    }
   };
   const handleSignClick = async () => {
-    if (!signTxnsRequest) {
+    if (validatePassword() || !signTxnsRequest) {
       return;
-    }
-
-    if (password.length <= 0) {
-      return setPasswordError(
-        t<string>('errors.inputs.required', { name: 'Password' })
-      );
     }
 
     await signTransactions({
@@ -194,7 +211,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
         <Box
           backgroundColor={textBackgroundColor}
           borderRadius={theme.radii['3xl']}
-          px={2}
+          px={DEFAULT_GAP / 3}
           py={1}
         >
           <Text color={defaultTextColor} fontSize="xs" textAlign="center">
@@ -217,6 +234,12 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
 
+  // focus when the modal is opened
+  useEffect(() => {
+    if (passwordInputRef.current) {
+      passwordInputRef.current.focus();
+    }
+  }, []);
   useEffect(() => {
     // if the resultant signed transactions has been filled, we can send it back to the dapp
     if (
@@ -280,9 +303,12 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
             {renderHeader()}
           </VStack>
         </ModalHeader>
+
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+
         <ModalFooter p={DEFAULT_GAP}>
           <VStack alignItems="flex-start" spacing={4} w="full">
+            {/*password input*/}
             <PasswordInput
               error={passwordError}
               hint={
@@ -294,9 +320,13 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
                     )
                   : null
               }
-              onChange={handlePasswordChange}
+              inputRef={passwordInputRef}
+              onChange={onPasswordChange}
+              onKeyUp={handleKeyUpPasswordInput}
               value={password}
             />
+
+            {/*buttons*/}
             <HStack spacing={4} w="full">
               <Button
                 onClick={handleCancelClick}
