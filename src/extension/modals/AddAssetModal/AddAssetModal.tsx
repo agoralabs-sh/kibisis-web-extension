@@ -90,6 +90,7 @@ import {
   IAppThunkDispatch,
   IAppThunkDispatchReturn,
   IArc200Asset,
+  IAssetTypes,
   IExplorer,
   INetworkWithTransactionParams,
   IStandardAsset,
@@ -118,8 +119,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const fetching: boolean = useSelectAddAssetFetching();
   const selectedNetwork: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
-  const selectedAsset: IArc200Asset | IStandardAsset | null =
-    useSelectAddAssetSelectedAsset();
+  const selectedAsset: IAssetTypes | null = useSelectAddAssetSelectedAsset();
   const standardAssets: IStandardAsset[] = useSelectAddAssetStandardAssets();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
@@ -148,10 +148,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       IAssetsWithNextToken<IStandardAsset>
     > | null>(null);
   // misc
-  const allAssets: (IArc200Asset | IStandardAsset)[] = [
-    ...arc200Assets,
-    ...standardAssets,
-  ];
+  const allAssets: IAssetTypes[] = [...arc200Assets, ...standardAssets];
   const isOpen: boolean = !!account;
   // handlers
   const handleAddArc200AssetClick = async () => {
@@ -388,7 +385,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     dispatch(setSelectedAsset(null));
     resetPassword();
   };
-  const handleSelectAssetClick = (asset: IArc200Asset | IStandardAsset) =>
+  const handleSelectAssetClick = (asset: IAssetTypes) =>
     dispatch(setSelectedAsset(asset));
   // renders
   const renderContent = () => {

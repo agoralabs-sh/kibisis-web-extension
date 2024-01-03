@@ -71,7 +71,7 @@ const PaymentTransactionItemContent: FC<IProps> = ({
           }
           decimals={network.nativeCurrency.decimals}
           fontSize="sm"
-          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+          icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
             h: 3,
             w: 3,
@@ -83,7 +83,7 @@ const PaymentTransactionItemContent: FC<IProps> = ({
               ? '+'
               : '-'
           }
-          unit={network.nativeCurrency.code}
+          unit={network.nativeCurrency.symbol}
         />
 
         {/*completed date*/}

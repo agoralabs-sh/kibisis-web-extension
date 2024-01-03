@@ -1,8 +1,8 @@
-import { IArc200Asset, IStandardAsset } from '@extension/types';
+import { IAssetTypes, INativeCurrency } from '@extension/types';
 
 interface IInitializeSendAssetPayload {
   fromAddress: string | null;
-  selectedAsset: IArc200Asset | IStandardAsset;
+  selectedAsset: IAssetTypes | INativeCurrency;
 }
 
 export default IInitializeSendAssetPayload;

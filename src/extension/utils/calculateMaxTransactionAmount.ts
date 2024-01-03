@@ -7,10 +7,10 @@ import { AssetTypeEnum } from '@extension/enums';
 import {
   IAccount,
   IAccountInformation,
+  IAssetTypes,
+  INativeCurrency,
   IStandardAssetHolding,
   INetworkWithTransactionParams,
-  IArc200Asset,
-  IStandardAsset,
   IArc200AssetHolding,
 } from '@extension/types';
 
@@ -19,18 +19,16 @@ import convertGenesisHashToHex from './convertGenesisHashToHex';
 
 interface IOptions {
   account: IAccount;
-  asset: IArc200Asset | IStandardAsset;
+  asset: IAssetTypes | INativeCurrency;
   network: INetworkWithTransactionParams;
 }
 
 /**
  * Convenience function that calculates the maximum transaction amount.
- * - For ARC-200 and standard assets, when the asset ID is NOT "0", then the transaction amount for that asset is
- * calculated. Zero is returned if the
- * account does not hold any asset holding for the supplied asset.
- * - If the asset is a standard asset with an ID of "0", this will be the native currency and is
- * (the balance - min balance to keep account open - the minimum transaction fee). If the balance is calculated falls
- * below zero, zero is returned.
+ * - For ARC-200 and standard assets, then the transaction amount for that asset is
+ * calculated. Zero is returned if the account does not hold any asset holding for the supplied asset.
+ * - If the asset is native currency, it is (the balance - min balance to keep account open - the minimum transaction fee).
+ * If the balance is calculated falls below zero, zero is returned.
  * @param {IOptions} options - the account, assetId and network.
  * @returns {BigNumber} the maximum transaction amount for the given asset or the native currency.
  */
@@ -61,17 +59,7 @@ export default function calculateMaxTransactionAmount({
         ) || null;
 
       return new BigNumber(assetHolding?.amount || 0);
-    case AssetTypeEnum.Standard:
-      // if the asset id is not 0 it is an asa, use the balance of the asset
-      if (asset.id !== '0') {
-        assetHolding =
-          accountInformation.standardAssetHoldings.find(
-            (value) => value.id === asset.id
-          ) || null;
-
-        return new BigNumber(assetHolding?.amount || 0);
-      }
-
+    case AssetTypeEnum.Native:
       balance = new BigNumber(accountInformation.atomicBalance);
       minBalance = new BigNumber(accountInformation.minAtomicBalance);
       minFee = new BigNumber(network.minFee);
@@ -79,6 +67,13 @@ export default function calculateMaxTransactionAmount({
 
       // if the amount falls below zero, just return zero
       return amount.lt(new BigNumber(0)) ? new BigNumber(0) : amount;
+    case AssetTypeEnum.Standard:
+      assetHolding =
+        accountInformation.standardAssetHoldings.find(
+          (value) => value.id === asset.id
+        ) || null;
+
+      return new BigNumber(assetHolding?.amount || 0);
     default:
       return new BigNumber('0');
   }

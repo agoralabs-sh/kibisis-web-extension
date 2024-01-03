@@ -7,7 +7,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { submitTransactionThunk } from './thunks';
 
 // types
-import { IStandardAsset, IArc200Asset } from '@extension/types';
+import { IAssetTypes, INativeCurrency } from '@extension/types';
 import { IInitializeSendAssetPayload, ISendAssetsState } from './types';
 
 // utils
@@ -73,7 +73,7 @@ const slice = createSlice({
     },
     setSelectedAsset: (
       state: Draft<ISendAssetsState>,
-      action: PayloadAction<IArc200Asset | IStandardAsset>
+      action: PayloadAction<IAssetTypes | INativeCurrency>
     ) => {
       state.selectedAsset = action.payload;
     },

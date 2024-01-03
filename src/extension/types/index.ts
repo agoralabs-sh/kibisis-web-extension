@@ -40,6 +40,7 @@ export type { default as IAssetCreateTransaction } from './IAssetCreateTransacti
 export type { default as IAssetDestroyTransaction } from './IAssetDestroyTransaction';
 export type { default as IAssetFreezeTransaction } from './IAssetFreezeTransaction';
 export type { default as IAssetTransferTransaction } from './IAssetTransferTransaction';
+export type { default as IAssetTypes } from './IAssetTypes';
 export type { default as IAssetUnfreezeTransaction } from './IAssetUnfreezeTransaction';
 export type { default as IBackgroundRootState } from './IBackgroundRootState';
 export type { default as IBaseActionMeta } from './IBaseActionMeta';

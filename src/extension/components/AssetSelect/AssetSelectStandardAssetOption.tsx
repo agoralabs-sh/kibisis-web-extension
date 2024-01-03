@@ -1,11 +1,5 @@
 import { HStack, Spacer, Text, VStack } from '@chakra-ui/react';
-import React, {
-  FC,
-  ReactEventHandler,
-  ReactNode,
-  SyntheticEvent,
-  useState,
-} from 'react';
+import React, { FC, ReactEventHandler, ReactNode, useState } from 'react';
 
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
@@ -13,7 +7,7 @@ import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 import { OPTION_HEIGHT } from './constants';
 
 // hooks
@@ -56,7 +50,7 @@ const AssetSelectStandardAssetOption: FC<IProps> = ({
   const subTextColor: string = useSubTextColor();
   // state
   const [backgroundColor, setBackgroundColor] = useState<string>(
-    isSelected ? primaryColor : 'var(--chakra-colors-chakra-body-bg)'
+    isSelected ? primaryColor : BODY_BACKGROUND_COLOR
   );
   // misc
   const formattedDefaultTextColor: string = isSelected
@@ -73,22 +67,12 @@ const AssetSelectStandardAssetOption: FC<IProps> = ({
   };
   const handleMouseLeave = () => {
     if (!isSelected) {
-      setBackgroundColor('var(--chakra-colors-chakra-body-bg)');
+      setBackgroundColor(BODY_BACKGROUND_COLOR);
     }
   };
   // renders
   const renderContent = () => {
-    let idAndTypeNode: ReactNode;
-
-    if (asset.id === '0') {
-      return (
-        <Text color={formattedDefaultTextColor} flexGrow={1} fontSize="sm">
-          {asset.unitName}
-        </Text>
-      );
-    }
-
-    idAndTypeNode = (
+    const idAndTypeNode: ReactNode = (
       <VStack alignItems="flex-end" justifyContent="space-between" spacing={0}>
         <AssetBadge type={asset.type} />
 

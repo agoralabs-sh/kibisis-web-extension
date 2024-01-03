@@ -103,7 +103,7 @@ const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
             }
             decimals={network.nativeCurrency.decimals}
             fontSize={fontSize}
-            icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+            icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
               color: color || defaultTextColor,
               h: 3,
               w: 3,
@@ -115,7 +115,7 @@ const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
                 ? '+'
                 : '-'
             }
-            unit={network.nativeCurrency.code}
+            unit={network.nativeCurrency.symbol}
           />
         </HStack>
         <AccordionIcon />

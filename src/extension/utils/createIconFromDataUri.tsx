@@ -1,18 +1,18 @@
 import { Icon, IconProps } from '@chakra-ui/react';
 import { sanitize } from 'dompurify';
-import React, { ReactNode } from 'react';
+import React, { ReactElement } from 'react';
 
 /**
  * Creates a Chakra UI icon from a data URI svg string, base64 encoded or not.
  * @param {string} dataUri - the svg data URI to parse.
  * @param {IconProps} props - [optional] icon props to pass to the parsed icon.
- * @returns {ReactNode} the SVG data URI parsed as a Chakra UI icon or null if it failed to parse the data URI.
+ * @returns {ReactElement | null} the SVG data URI parsed as a Chakra UI icon or null if it failed to parse the data URI.
  * @see {@link https://chakra-ui.com/docs/components/icon#creating-your-custom-icons}
  */
 export default function createIconFromDataUri(
   dataUri: string,
   props?: IconProps
-): ReactNode {
+): ReactElement | null {
   let data: string | undefined;
   let document: Document;
   let parser: DOMParser;

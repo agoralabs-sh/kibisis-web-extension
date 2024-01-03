@@ -1,8 +1,7 @@
-import { IArc200Asset, IStandardAsset } from '@extension/types';
+import { IAssetTypes, INativeCurrency } from '@extension/types';
 
 interface IOption {
-  asset: IArc200Asset | IStandardAsset;
-  value: string;
+  value: IAssetTypes | INativeCurrency;
 }
 
 export default IOption;

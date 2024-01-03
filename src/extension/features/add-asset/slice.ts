@@ -22,6 +22,7 @@ import {
 // types
 import {
   IArc200Asset,
+  IAssetTypes,
   IRejectedActionMeta,
   IStandardAsset,
 } from '@extension/types';
@@ -150,7 +151,7 @@ const slice = createSlice({
     },
     setSelectedAsset: (
       state: Draft<IAddAssetState>,
-      action: PayloadAction<IArc200Asset | IStandardAsset | null>
+      action: PayloadAction<IAssetTypes | null>
     ) => {
       state.selectedAsset = action.payload;
     },

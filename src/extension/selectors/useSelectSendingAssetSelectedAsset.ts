@@ -1,13 +1,13 @@
 import { useSelector } from 'react-redux';
 
 // types
-import { IStandardAsset, IMainRootState, IArc200Asset } from '@extension/types';
+import { IAssetTypes, INativeCurrency, IMainRootState } from '@extension/types';
 
 export default function useSelectSendingAssetSelectedAsset():
-  | IArc200Asset
-  | IStandardAsset
+  | IAssetTypes
+  | INativeCurrency
   | null {
-  return useSelector<IMainRootState, IArc200Asset | IStandardAsset | null>(
+  return useSelector<IMainRootState, IAssetTypes | INativeCurrency | null>(
     (state) => state.sendAssets.selectedAsset
   );
 }

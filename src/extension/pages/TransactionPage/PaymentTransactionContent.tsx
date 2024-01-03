@@ -109,7 +109,7 @@ const PaymentTransactionContent: FC<IProps> = ({
           }
           decimals={network.nativeCurrency.decimals}
           fontSize="sm"
-          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+          icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
             h: 3,
             w: 3,
@@ -121,7 +121,7 @@ const PaymentTransactionContent: FC<IProps> = ({
               ? '+'
               : '-'
           }
-          unit={network.nativeCurrency.code}
+          unit={network.nativeCurrency.symbol}
         />
       </PageItem>
 
@@ -180,13 +180,13 @@ const PaymentTransactionContent: FC<IProps> = ({
           amountColor="red.500"
           decimals={network.nativeCurrency.decimals}
           fontSize="sm"
-          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+          icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
             h: 3,
             w: 3,
           })}
           prefix="-"
-          unit={network.nativeCurrency.code}
+          unit={network.nativeCurrency.symbol}
         />
       </PageItem>
 

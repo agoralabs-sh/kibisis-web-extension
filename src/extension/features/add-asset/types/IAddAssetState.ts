@@ -1,5 +1,5 @@
 // types
-import { IArc200Asset, IStandardAsset } from '@extension/types';
+import { IArc200Asset, IAssetTypes, IStandardAsset } from '@extension/types';
 import IAssetsWithNextToken from './IAssetsWithNextToken';
 
 interface IAddAssetState {
@@ -7,7 +7,7 @@ interface IAddAssetState {
   arc200Assets: IAssetsWithNextToken<IArc200Asset>;
   confirming: boolean;
   fetching: boolean;
-  selectedAsset: IArc200Asset | IStandardAsset | null;
+  selectedAsset: IAssetTypes | null;
   standardAssets: IAssetsWithNextToken<IStandardAsset>;
 }
 

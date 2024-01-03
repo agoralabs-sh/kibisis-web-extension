@@ -215,12 +215,12 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
                 amountColor={subTextColor}
                 decimals={network.nativeCurrency.decimals}
                 fontSize="sm"
-                icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+                icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
                   color: subTextColor,
                   h: 3,
                   w: 3,
                 })}
-                unit={network.nativeCurrency.code}
+                unit={network.nativeCurrency.symbol}
               />
 
               <InfoIconTooltip

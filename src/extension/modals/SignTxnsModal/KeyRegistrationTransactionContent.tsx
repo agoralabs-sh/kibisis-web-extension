@@ -42,7 +42,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const icon: ReactNode = createIconFromDataUri(
-    network.nativeCurrency.iconUri,
+    network.nativeCurrency.iconUrl,
     {
       color: subTextColor,
       h: 3,
@@ -64,7 +64,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
-        unit={network.nativeCurrency.code}
+        unit={network.nativeCurrency.symbol}
       />
 
       {transactionType === TransactionTypeEnum.KeyRegistrationOnline && (
