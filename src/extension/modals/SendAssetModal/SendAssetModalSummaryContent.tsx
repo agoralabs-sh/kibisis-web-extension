@@ -98,7 +98,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
             decimals={asset.decimals}
             displayUnit={false}
             fontSize="sm"
-            icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
+            icon={createIconFromDataUri(asset.iconUrl, {
               color: subTextColor,
               h: 3,
               w: 3,
@@ -112,7 +112,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
             atomicUnitAmount={atomicUnitAmount}
             amountColor={subTextColor}
             decimals={asset.decimals}
-            displayUnit={asset.id !== '0'}
+            displayUnit={true}
             fontSize="sm"
             icon={
               <AssetAvatar
