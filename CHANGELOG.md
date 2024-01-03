@@ -1,3 +1,10 @@
+# [1.9.0-beta.10](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.9...v1.9.0-beta.10) (2024-01-03)
+
+
+### Bug Fixes
+
+* styling issues with the edit account name buttons ([#100](https://github.com/agoralabs-sh/kibisis-web-extension/issues/100)) ([29eb65f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/29eb65faa742d6e608fadca70bf8b80362bdc438))
+
 # [1.9.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.8...v1.9.0-beta.9) (2024-01-03)
 
 
