@@ -127,7 +127,7 @@ const EditableAccountNameField: FC<IProps> = ({
   }
 
   return (
-    <VStack position="relative" ref={containerRef} w="full" zIndex={0}>
+    <VStack position="relative" ref={containerRef} w="full" zIndex={1}>
       {/*/input*/}
       <Input
         focusBorderColor={primaryColor}
@@ -146,7 +146,6 @@ const EditableAccountNameField: FC<IProps> = ({
         position="absolute"
         right={0}
         top="calc(100% + var(--chakra-space-2))"
-        zIndex={1}
       >
         {/*submit*/}
         <Box
