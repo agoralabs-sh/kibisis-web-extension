@@ -27,6 +27,16 @@ const AssetBadge: FC<IProps> = ({ size = 'sm', type }: IProps) => {
           <TagLabel>ARC200</TagLabel>
         </Tag>
       );
+    case AssetTypeEnum.Native:
+      return (
+        <Tag
+          colorScheme="primary"
+          size={size}
+          variant={colorMode === 'dark' ? 'solid' : 'subtle'}
+        >
+          <TagLabel>Native</TagLabel>
+        </Tag>
+      );
     case AssetTypeEnum.Standard:
     default:
       return (

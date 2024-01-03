@@ -1,6 +1,6 @@
 import {
   Algodv2,
-  makeAssetTransferTxnWithSuggestedParams,
+  makePaymentTxnWithSuggestedParams,
   SuggestedParams,
   Transaction,
   IntDecoding,
@@ -12,15 +12,11 @@ import { TRANSACTION_CONFIRMATION_ROUNDS } from '@extension/constants';
 
 // types
 import { IBaseOptions } from '@common/types';
-import {
-  IAlgorandPendingTransactionResponse,
-  IStandardAsset,
-} from '@extension/types';
+import { IAlgorandPendingTransactionResponse } from '@extension/types';
 
 interface IOptions extends IBaseOptions {
   algodClient: Algodv2;
   amount: string;
-  asset: IStandardAsset;
   fromAddress: string;
   note: string | null;
   privateKey: Uint8Array;
@@ -29,14 +25,13 @@ interface IOptions extends IBaseOptions {
 }
 
 /**
- * Convenience function that creates an asset transfer transaction.
+ * Convenience function that creates a payment transaction.
  * @param {IOptions} options - the fields needed to create a transaction
  * @returns {Transaction} an Algorand transaction ready to be signed.
  */
-export default async function sendStandardAssetTransferTransaction({
+export default async function sendPaymentTransaction({
   algodClient,
   amount,
-  asset,
   fromAddress,
   logger,
   note,
@@ -56,14 +51,12 @@ export default async function sendStandardAssetTransferTransaction({
     encodedNote = encoder.encode(note);
   }
 
-  unsignedTransaction = makeAssetTransferTxnWithSuggestedParams(
+  unsignedTransaction = makePaymentTxnWithSuggestedParams(
     fromAddress,
     toAddress,
-    undefined,
-    undefined,
     BigInt(amount),
+    undefined,
     encodedNote,
-    parseInt(asset.id),
     suggestedParams
   );
 
@@ -71,7 +64,7 @@ export default async function sendStandardAssetTransferTransaction({
 
   logger &&
     logger.debug(
-      `${sendStandardAssetTransferTransaction.name}: sending asset "${asset.type}" transfer transaction to network`
+      `${sendPaymentTransaction.name}: sending native currency (payment) transaction to network`
     );
 
   sentRawTransaction = await algodClient
@@ -81,7 +74,7 @@ export default async function sendStandardAssetTransferTransaction({
 
   logger &&
     logger.debug(
-      `${sendStandardAssetTransferTransaction.name}: transaction "${sentRawTransaction.txId}" sent to the network, confirming`
+      `${sendPaymentTransaction.name}: transaction "${sentRawTransaction.txId}" sent to the network, confirming`
     );
 
   transactionResponse = (await waitForConfirmation(
@@ -92,7 +85,7 @@ export default async function sendStandardAssetTransferTransaction({
 
   logger &&
     logger.debug(
-      `${sendStandardAssetTransferTransaction.name}: transaction "${sentRawTransaction.txId}" confirmed in round "${transactionResponse['confirmed-round']}"`
+      `${sendPaymentTransaction.name}: transaction "${sentRawTransaction.txId}" confirmed in round "${transactionResponse['confirmed-round']}"`
     );
 
   // on success, return the transaction id

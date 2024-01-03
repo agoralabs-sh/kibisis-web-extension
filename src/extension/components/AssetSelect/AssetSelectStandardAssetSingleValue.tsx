@@ -32,29 +32,6 @@ const AssetSelectStandardAssetSingleValue: FC<IProps> = ({
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  // renders
-  const renderContent = () => {
-    if (asset.id === '0') {
-      return (
-        <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
-          {asset.unitName}
-        </Text>
-      );
-    }
-
-    return (
-      <>
-        <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
-          {asset.unitName || asset.id}
-        </Text>
-
-        <Spacer />
-
-        {/*type*/}
-        <AssetBadge type={asset.type} />
-      </>
-    );
-  };
 
   return (
     <HStack
@@ -80,7 +57,15 @@ const AssetSelectStandardAssetSingleValue: FC<IProps> = ({
         size="xs"
       />
 
-      {renderContent()}
+      {/*unit/id*/}
+      <Text color={defaultTextColor} flexGrow={1} fontSize="sm">
+        {asset.unitName || asset.id}
+      </Text>
+
+      <Spacer />
+
+      {/*type*/}
+      <AssetBadge type={asset.type} />
     </HStack>
   );
 };

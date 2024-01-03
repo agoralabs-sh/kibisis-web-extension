@@ -27,9 +27,9 @@ import { AccountService } from '@extension/services';
 // types
 import {
   IAccount,
-  IArc200Asset,
+  IAssetTypes,
+  INativeCurrency,
   INetworkWithTransactionParams,
-  IStandardAsset,
 } from '@extension/types';
 
 // utils
@@ -38,7 +38,7 @@ import { convertToAtomicUnit } from '@common/utils';
 
 interface IProps {
   amountInStandardUnits: string;
-  asset: IArc200Asset | IStandardAsset;
+  asset: IAssetTypes | INativeCurrency;
   fromAccount: IAccount;
   network: INetworkWithTransactionParams;
   note: string | null;
@@ -57,16 +57,18 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
   // hooks
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
+  // misc
+  const atomicUnitAmount: BigNumber = convertToAtomicUnit(
+    new BigNumber(amountInStandardUnits),
+    asset.decimals
+  );
   // renders
   const renderAssetDisplay = () => {
     switch (asset.type) {
       case AssetTypeEnum.Arc200:
         return (
           <AssetDisplay
-            atomicUnitAmount={convertToAtomicUnit(
-              new BigNumber(amountInStandardUnits),
-              asset.decimals
-            )}
+            atomicUnitAmount={atomicUnitAmount}
             amountColor={subTextColor}
             decimals={asset.decimals}
             displayUnit={true}
@@ -88,38 +90,43 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
             unit={asset.symbol}
           />
         );
+      case AssetTypeEnum.Native:
+        return (
+          <AssetDisplay
+            atomicUnitAmount={atomicUnitAmount}
+            amountColor={subTextColor}
+            decimals={asset.decimals}
+            displayUnit={false}
+            fontSize="sm"
+            icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
+              color: subTextColor,
+              h: 3,
+              w: 3,
+            })}
+            unit={asset.symbol}
+          />
+        );
       case AssetTypeEnum.Standard:
         return (
           <AssetDisplay
-            atomicUnitAmount={convertToAtomicUnit(
-              new BigNumber(amountInStandardUnits),
-              asset.decimals
-            )}
+            atomicUnitAmount={atomicUnitAmount}
             amountColor={subTextColor}
             decimals={asset.decimals}
             displayUnit={asset.id !== '0'}
             fontSize="sm"
             icon={
-              asset.id === '0' ? (
-                createIconFromDataUri(network.nativeCurrency.iconUrl, {
-                  color: subTextColor,
-                  h: 3,
-                  w: 3,
-                })
-              ) : (
-                <AssetAvatar
-                  asset={asset}
-                  fallbackIcon={
-                    <AssetIcon
-                      color={primaryButtonTextColor}
-                      networkTheme={network.chakraTheme}
-                      h={3}
-                      w={3}
-                    />
-                  }
-                  size="2xs"
-                />
-              )
+              <AssetAvatar
+                asset={asset}
+                fallbackIcon={
+                  <AssetIcon
+                    color={primaryButtonTextColor}
+                    networkTheme={network.chakraTheme}
+                    h={3}
+                    w={3}
+                  />
+                }
+                size="2xs"
+              />
             }
             unit={asset.unitName || undefined}
           />
@@ -176,14 +183,16 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       />
 
       {/*type*/}
-      <SendAssetSummaryItem
-        fontSize="sm"
-        item={<AssetBadge type={asset.type} />}
-        label={t<string>('labels.type')}
-      />
+      {asset.type !== AssetTypeEnum.Native && (
+        <SendAssetSummaryItem
+          fontSize="sm"
+          item={<AssetBadge type={asset.type} />}
+          label={t<string>('labels.type')}
+        />
+      )}
 
       {/*fee*/}
-      {asset.type === AssetTypeEnum.Standard && (
+      {asset.type !== AssetTypeEnum.Arc200 && (
         <SendAssetSummaryItem
           fontSize="sm"
           item={

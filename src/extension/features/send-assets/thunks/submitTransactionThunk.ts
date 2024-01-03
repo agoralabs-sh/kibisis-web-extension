@@ -23,10 +23,10 @@ import { AccountService, PrivateKeyService } from '@extension/services';
 import { ILogger } from '@common/types';
 import {
   IAccount,
-  IStandardAsset,
+  IAssetTypes,
+  INativeCurrency,
   IMainRootState,
   INetworkWithTransactionParams,
-  IArc200Asset,
 } from '@extension/types';
 
 // utils
@@ -38,6 +38,7 @@ import {
 import { selectNetworkFromSettings } from '@extension/utils';
 import {
   sendArc200AssetTransferTransaction,
+  sendPaymentTransaction,
   sendStandardAssetTransferTransaction,
 } from '../utils';
 
@@ -55,7 +56,7 @@ const submitTransactionThunk: AsyncThunk<
   async (password, { getState, rejectWithValue }) => {
     const amountInStandardUnits: string | null =
       getState().sendAssets.amountInStandardUnits;
-    const asset: IArc200Asset | IStandardAsset | null =
+    const asset: IAssetTypes | INativeCurrency | null =
       getState().sendAssets.selectedAsset;
     const fromAddress: string | null = getState().sendAssets.fromAddress;
     const logger: ILogger = getState().system.logger;
@@ -65,6 +66,7 @@ const submitTransactionThunk: AsyncThunk<
       selectNetworkFromSettings(networks, getState().settings);
     const note: string | null = getState().sendAssets.note;
     const toAddress: string | null = getState().sendAssets.toAddress;
+    let amount: string;
     let fromAccount: IAccount | null;
     let algodClient: Algodv2;
     let decodedAddress: Address;
@@ -153,16 +155,17 @@ const submitTransactionThunk: AsyncThunk<
     });
 
     try {
+      amount = convertToAtomicUnit(
+        new BigNumber(amountInStandardUnits),
+        asset.decimals
+      ).toString(); // convert to atomic units
       suggestedParams = await algodClient.getTransactionParams().do();
 
       switch (asset.type) {
         case AssetTypeEnum.Arc200:
           return await sendArc200AssetTransferTransaction({
             algodClient,
-            amount: convertToAtomicUnit(
-              new BigNumber(amountInStandardUnits),
-              asset.decimals
-            ).toString(),
+            amount,
             asset,
             fromAddress,
             indexerClient: getIndexerClient(network, { logger }),
@@ -174,11 +177,19 @@ const submitTransactionThunk: AsyncThunk<
         case AssetTypeEnum.Standard:
           return sendStandardAssetTransferTransaction({
             algodClient,
-            amount: convertToAtomicUnit(
-              new BigNumber(amountInStandardUnits),
-              asset.decimals
-            ).toString(), // convert to atomic units
+            amount,
             asset,
+            fromAddress,
+            logger,
+            note,
+            privateKey,
+            suggestedParams,
+            toAddress,
+          });
+        case AssetTypeEnum.Native:
+          return sendPaymentTransaction({
+            algodClient,
+            amount,
             fromAddress,
             logger,
             note,

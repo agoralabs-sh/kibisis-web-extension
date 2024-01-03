@@ -2,15 +2,18 @@ import { Avatar, AvatarBadge, AvatarProps, Icon } from '@chakra-ui/react';
 import React, { FC, ReactElement } from 'react';
 import { IoCheckmarkOutline } from 'react-icons/io5';
 
+// enums
+import { AssetTypeEnum } from '@extension/enums';
+
 // hooks
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // types
-import { IArc200Asset, IStandardAsset } from '@extension/types';
+import { IAssetTypes, INativeCurrency } from '@extension/types';
 
 interface IProps extends AvatarProps {
-  asset: IArc200Asset | IStandardAsset;
-  fallbackIcon: ReactElement;
+  asset: IAssetTypes | INativeCurrency;
+  fallbackIcon?: ReactElement;
 }
 
 const AssetAvatar: FC<IProps> = ({
@@ -18,18 +21,35 @@ const AssetAvatar: FC<IProps> = ({
   fallbackIcon,
   ...avatarProps
 }: IProps) => {
+  // hooks
   const primaryColor: string = usePrimaryColor();
-  const props: AvatarProps = {
-    ...avatarProps,
-    ...(asset.iconUrl
-      ? {
-          src: asset.iconUrl,
-        }
-      : {
-          bg: primaryColor,
-          icon: fallbackIcon,
-        }),
-  };
+  // misc
+  let props: AvatarProps = avatarProps;
+
+  switch (asset.type) {
+    case AssetTypeEnum.Arc200:
+    case AssetTypeEnum.Standard:
+      props = {
+        ...props,
+        ...(asset.iconUrl
+          ? {
+              src: asset.iconUrl,
+            }
+          : {
+              bg: primaryColor,
+              icon: fallbackIcon,
+            }),
+      };
+      break;
+    case AssetTypeEnum.Native:
+      props = {
+        ...props,
+        src: asset.listingUri,
+      };
+      break;
+    default:
+      break;
+  }
 
   if (asset.verified) {
     return (

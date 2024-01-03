@@ -35,9 +35,9 @@ import { theme } from '@extension/theme';
 // types
 import {
   IAccount,
-  IStandardAsset,
+  IAssetTypes,
+  INativeCurrency,
   INetworkWithTransactionParams,
-  IArc200Asset,
 } from '@extension/types';
 
 // utils
@@ -49,7 +49,7 @@ interface IProps {
   network: INetworkWithTransactionParams;
   maximumTransactionAmount: string;
   onValueChange: (value: string) => void;
-  selectedAsset: IArc200Asset | IStandardAsset;
+  selectedAsset: IAssetTypes | INativeCurrency;
   value: string | null;
 }
 
@@ -75,10 +75,7 @@ const SendAmountInput: FC<IProps> = ({
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
     ]?.atomicBalance || 0
   );
-  const assetDecimals: number =
-    selectedAsset.id !== '0'
-      ? selectedAsset.decimals
-      : network.nativeCurrency.decimals;
+  const assetDecimals: number = selectedAsset.decimals;
   const minBalance: BigNumber = new BigNumber(
     account.networkInformation[
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
@@ -119,6 +116,7 @@ const SendAmountInput: FC<IProps> = ({
 
     switch (selectedAsset.type) {
       case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.Native:
         symbol = selectedAsset.symbol;
         break;
       case AssetTypeEnum.Standard:
@@ -150,7 +148,7 @@ const SendAmountInput: FC<IProps> = ({
       </Tooltip>
     );
 
-    if (selectedAsset.id === '0') {
+    if (selectedAsset.type === AssetTypeEnum.Native) {
       return (
         <HStack alignItems="center" justifyContent="center" spacing={1}>
           <Tooltip
@@ -159,27 +157,21 @@ const SendAmountInput: FC<IProps> = ({
               'captions.maximumNativeCurrencyTransactionAmount',
               {
                 balance: formatCurrencyUnit(
-                  convertToStandardUnit(
-                    balance,
-                    network.nativeCurrency.decimals
-                  ),
-                  { decimals: network.nativeCurrency.decimals }
+                  convertToStandardUnit(balance, selectedAsset.decimals),
+                  { decimals: selectedAsset.decimals }
                 ),
                 minBalance: formatCurrencyUnit(
-                  convertToStandardUnit(
-                    minBalance,
-                    network.nativeCurrency.decimals
-                  ),
-                  { decimals: network.nativeCurrency.decimals }
+                  convertToStandardUnit(minBalance, selectedAsset.decimals),
+                  { decimals: selectedAsset.decimals }
                 ),
                 minFee: formatCurrencyUnit(
                   convertToStandardUnit(
                     new BigNumber(network.minFee),
-                    network.nativeCurrency.decimals
+                    selectedAsset.decimals
                   ),
-                  { decimals: network.nativeCurrency.decimals }
+                  { decimals: selectedAsset.decimals }
                 ),
-                nativeCurrencyCode: network.nativeCurrency.symbol,
+                nativeCurrencyCode: selectedAsset.symbol,
               }
             )}
           >

@@ -64,9 +64,6 @@ import { AccountService } from '@extension/services';
 // types
 import { IAccount, IAppThunkDispatch, INetwork } from '@extension/types';
 
-// utils
-import { createNativeCurrencyAsset } from '@extension/utils';
-
 const SideBar: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -121,7 +118,7 @@ const SideBar: FC = () => {
             AccountService.convertPublicKeyToAlgorandAddress(
               accounts[0].publicKey
             ),
-          selectedAsset: createNativeCurrencyAsset(network),
+          selectedAsset: network.nativeCurrency, // use native currency
         })
       );
     }

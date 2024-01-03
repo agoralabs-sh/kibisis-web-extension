@@ -77,6 +77,8 @@ import {
   IAccount,
   IAppThunkDispatch,
   IArc200Asset,
+  IAssetTypes,
+  INativeCurrency,
   INetworkWithTransactionParams,
   IStandardAsset,
 } from '@extension/types';
@@ -106,7 +108,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
   const note: string | null = useSelectSendingAssetNote();
-  const selectedAsset: IArc200Asset | IStandardAsset | null =
+  const selectedAsset: IAssetTypes | INativeCurrency | null =
     useSelectSendingAssetSelectedAsset();
   // hooks
   const {
@@ -132,7 +134,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     useState<string>('0');
   const [showSummary, setShowSummary] = useState<boolean>(false);
   // misc
-  const allAssets: (IArc200Asset | IStandardAsset)[] = [
+  const allAssets: (IAssetTypes | INativeCurrency)[] = [
     ...arc200Assets,
     ...standardAssets,
   ]
@@ -146,7 +148,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const isOpen: boolean = !!selectedAsset;
   // handlers
   const handleAmountChange = (value: string) => dispatch(setAmount(value));
-  const handleAssetChange = (value: IArc200Asset | IStandardAsset) =>
+  const handleAssetChange = (value: IAssetTypes | INativeCurrency) =>
     dispatch(setSelectedAsset(value));
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
@@ -303,8 +305,10 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
             <AssetSelect
               account={fromAccount}
-              assets={allAssets}
-              includeNativeCurrency={true}
+              assets={[
+                network.nativeCurrency, // add the native currency to the front
+                ...allAssets,
+              ]}
               network={network}
               onAssetChange={handleAssetChange}
               value={selectedAsset}
@@ -424,6 +428,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const renderHeader = () => {
     switch (selectedAsset?.type) {
       case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.Native:
         return (
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {t<string>('headings.sendAsset', {
