@@ -11,6 +11,7 @@ function main {
   printf "%b as env input: ${2} \n" "${INFO_PREFIX}"
   printf "%b as env var env: ${CHROME_WEB_STORE_ID_AS_ENV} \n" "${INFO_PREFIX}"
   printf "%b as env var secrets: ${CHROME_WEB_STORE_ID_AS_SECRET} \n" "${INFO_PREFIX}"
+  printf "%b as env from GitHub: ${CHROME_WEB_STORE_ID} \n" "${INFO_PREFIX}"
 
   exit 0
 }
