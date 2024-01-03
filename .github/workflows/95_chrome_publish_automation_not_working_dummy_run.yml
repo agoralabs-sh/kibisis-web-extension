@@ -1,0 +1,23 @@
+name: "Publish To Chrome Web Store Dummy"
+
+on:
+  push:
+
+env:
+  asset_prefix: "kibisis-chrome"
+
+jobs:
+  deploy:
+    name: "Deploy"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "🚀 Publish"
+        env:
+          CHROME_WEB_STORE_ID: ${{ secrets.CHROME_WEB_STORE_ID }}
+        run: |
+          CHROME_WEB_STORE_ID_AS_ENV=${{ env.CHROME_WEB_STORE_ID }} \
+          CHROME_WEB_STORE_ID_AS_SECRET=${{ secrets.CHROME_WEB_STORE_ID }} \
+          ./bin/publish_to_chrome_dummy.sh ${{ secrets.CHROME_WEB_STORE_ID }} ${{ env.CHROME_WEB_STORE_ID }}
+
