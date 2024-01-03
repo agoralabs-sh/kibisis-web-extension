@@ -1,3 +1,10 @@
+# [1.9.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.8...v1.9.0-beta.9) (2024-01-03)
+
+
+### Features
+
+* remove the walletconnect scanning button from the sidebar ([#98](https://github.com/agoralabs-sh/kibisis-web-extension/issues/98)) ([dac1ce4](https://github.com/agoralabs-sh/kibisis-web-extension/commit/dac1ce4712c57efffe5274e12447d30859dda854))
+
 # [1.9.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.7...v1.9.0-beta.8) (2024-01-03)
 
 
