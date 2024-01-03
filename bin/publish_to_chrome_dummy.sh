@@ -7,6 +7,8 @@ source "${SCRIPT_DIR}/set_vars.sh"
 function main {
   set_vars
 
+  echo ${CHROME_WEB_STORE_ID}
+
   curl \
       -X POST \
       -s \
