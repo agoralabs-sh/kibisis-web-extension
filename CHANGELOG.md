@@ -1,3 +1,22 @@
+# [1.9.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.8.2...v1.9.0) (2024-01-03)
+
+
+### Bug Fixes
+
+* native assets showing as asa on send summary screen ([#97](https://github.com/agoralabs-sh/kibisis-web-extension/issues/97)) ([e958654](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e958654f05e6cfae65bbbc845f7a10c95b021c3b))
+* styling issues with the edit account name buttons ([#100](https://github.com/agoralabs-sh/kibisis-web-extension/issues/100)) ([29eb65f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/29eb65faa742d6e608fadca70bf8b80362bdc438))
+
+
+### Features
+
+* allow a toggle to turn on debug logging ([#84](https://github.com/agoralabs-sh/kibisis-web-extension/issues/84)) ([0f55a45](https://github.com/agoralabs-sh/kibisis-web-extension/commit/0f55a453d5ea6c2bfa86d58f3551f4e0036bd64f))
+* bring the extension window to the forefront when the extension button is pressed ([#90](https://github.com/agoralabs-sh/kibisis-web-extension/issues/90)) ([c5e758f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c5e758f0be860167dac8c7029e8b870b0ca193ef))
+* pressing the enter key submits forms ([#94](https://github.com/agoralabs-sh/kibisis-web-extension/issues/94)) ([e8f599a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e8f599af2771baa7d714a8804b3e9aa036d02409))
+* remove algoexplorer option from algorand ([#85](https://github.com/agoralabs-sh/kibisis-web-extension/issues/85)) ([b09d7d7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b09d7d7f348acbfbd4efe7ec0c0c3f1d038b87c3))
+* remove the walletconnect scanning button from the sidebar ([#98](https://github.com/agoralabs-sh/kibisis-web-extension/issues/98)) ([dac1ce4](https://github.com/agoralabs-sh/kibisis-web-extension/commit/dac1ce4712c57efffe5274e12447d30859dda854))
+* rename account ([#88](https://github.com/agoralabs-sh/kibisis-web-extension/issues/88)) ([c6bae24](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c6bae247ad06a914069838629554dc8a334a3da5))
+* show about information in the settings ([#78](https://github.com/agoralabs-sh/kibisis-web-extension/issues/78)) ([d8029ab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/d8029ab9dd9efa9ee640c21a9ab09b8f025cb46b))
+
 # [1.9.0-beta.10](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.9...v1.9.0-beta.10) (2024-01-03)
 
 
