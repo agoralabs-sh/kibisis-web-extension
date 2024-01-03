@@ -26,5 +26,5 @@ jobs:
           CHROME_WEB_STORE_API_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_SECRET }}
           CHROME_WEB_STORE_API_REFRESH_TOKEN: ${{ secrets.CHROME_WEB_STORE_API_REFRESH_TOKEN }}
         run: |
-          ./bin/publish_to_chrome.sh ${{ vars.CHROME_WEB_STORE_ID }} ${{ env.asset_prefix }}.zip
+          ./bin/publish_to_chrome_web_store.sh ${{ vars.CHROME_WEB_STORE_ID }} ${{ env.asset_prefix }}.zip
 

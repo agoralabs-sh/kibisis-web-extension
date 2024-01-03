@@ -53,10 +53,14 @@ export default class WebExtPlugin {
     ];
 
     switch (this.target) {
-      case 'chrome':
+      case TargetEnum.Chrome:
         targetFlag = '--target=chromium';
         break;
-      case 'firefox':
+      case TargetEnum.Edge:
+        throw new Error(
+          `target "${this.target}" not supported. use target "${TargetEnum.Firefox}" or "${TargetEnum.Chrome}"`
+        );
+      case TargetEnum.Firefox:
       default:
         break;
     }

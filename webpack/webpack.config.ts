@@ -18,6 +18,7 @@ import {
   CHROME_BUILD_PATH,
   DAPP_BUILD_PATH,
   DAPP_SRC_PATH,
+  EDGE_BUILD_PATH,
   FIREFOX_BUILD_PATH,
   SRC_PATH,
 } from './constants';
@@ -46,6 +47,7 @@ const configs: (
   let extensionPath: string;
   let fontLoaderRule: RuleSetRule;
   let handleBarsLoaderRule: RuleSetRule;
+  let manifestPaths: string[];
   let maxSize: number;
   let optimization: Record<string, unknown>;
   let output: Record<string, unknown>;
@@ -99,13 +101,29 @@ const configs: (
   };
 
   switch (target) {
-    case 'chrome':
+    case TargetEnum.Chrome:
       buildPath = CHROME_BUILD_PATH;
+      manifestPaths = [
+        resolve(SRC_PATH, 'manifest.common.json'),
+        resolve(SRC_PATH, `manifest.v3.json`),
+      ];
+      break;
+    case TargetEnum.Edge:
+      buildPath = EDGE_BUILD_PATH;
+      manifestPaths = [
+        resolve(SRC_PATH, 'manifest.common.json'),
+        resolve(SRC_PATH, `manifest.v3.json`),
+      ];
       break;
     // default to firefox
-    case 'firefox':
+    case TargetEnum.Firefox:
     default:
       buildPath = FIREFOX_BUILD_PATH;
+      manifestPaths = [
+        resolve(SRC_PATH, 'manifest.common.json'),
+        resolve(SRC_PATH, `manifest.v2.json`),
+        resolve(SRC_PATH, `manifest.firefox.json`),
+      ];
       break;
   }
 
@@ -203,13 +221,7 @@ const configs: (
         ...output,
         clean: true,
       },
-      plugins: [
-        definePlugin,
-        new ManifestBuilderPlugin(
-          resolve(SRC_PATH, 'manifest.common.json'),
-          resolve(SRC_PATH, `manifest.${target}.json`)
-        ),
-      ],
+      plugins: [definePlugin, new ManifestBuilderPlugin(...manifestPaths)],
     }),
 
     /**
@@ -281,7 +293,8 @@ const configs: (
           template: resolve(SRC_PATH, 'index.hbs'),
           title: APP_TITLE,
         }),
-        ...(environment === EnvironmentEnum.Development
+        ...(environment === EnvironmentEnum.Development &&
+        (target === TargetEnum.Chrome || target === TargetEnum.Firefox)
           ? [
               new WebExtPlugin({
                 buildPath,

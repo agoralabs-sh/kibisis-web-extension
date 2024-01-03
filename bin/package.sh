@@ -32,6 +32,9 @@ function main() {
   chrome)
     build_dir="${PWD}/.chrome_build"
     ;;
+  edge)
+    build_dir="${PWD}/.edge_build"
+    ;;
   firefox)
     build_dir="${PWD}/.firefox_build"
     ;;
