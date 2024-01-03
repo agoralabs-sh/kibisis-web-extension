@@ -21,9 +21,10 @@ jobs:
           github_token: ${{ secrets.WRITE_REPOS_TOKEN }}
       - name: "🚀 Publish"
         env:
+          # set in the Settings > Secrets and variables > Actions > Secrets
           CHROME_WEB_STORE_API_CLIENT_ID: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_ID }}
           CHROME_WEB_STORE_API_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_SECRET }}
           CHROME_WEB_STORE_API_REFRESH_TOKEN: ${{ secrets.CHROME_WEB_STORE_API_REFRESH_TOKEN }}
         run: |
-          ./bin/publish_to_chrome.sh ${{ secrets.CHROME_WEB_STORE_ID }} ${{ env.asset_prefix }}.zip
+          ./bin/publish_to_chrome.sh ${{ vars.CHROME_WEB_STORE_ID }} ${{ env.asset_prefix }}.zip
 
