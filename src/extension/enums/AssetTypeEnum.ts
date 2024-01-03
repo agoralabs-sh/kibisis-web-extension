@@ -1,5 +1,6 @@
 enum AssetTypeEnum {
   Arc200 = 'arc200',
+  Native = 'native',
   Standard = 'standard',
 }
 

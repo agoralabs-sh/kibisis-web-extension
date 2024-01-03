@@ -26,7 +26,7 @@ const ChainBadge: FC<IProps> = ({ network, size = 'sm' }: IProps) => {
       size={size}
       variant={colorMode === 'dark' ? 'solid' : 'outline'}
     >
-      {createIconFromDataUri(network.nativeCurrency.iconUri, {
+      {createIconFromDataUri(network.nativeCurrency.iconUrl, {
         color: network.chakraTheme,
         h: 3,
         mr: 2,

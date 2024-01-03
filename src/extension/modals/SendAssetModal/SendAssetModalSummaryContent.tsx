@@ -101,7 +101,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
             fontSize="sm"
             icon={
               asset.id === '0' ? (
-                createIconFromDataUri(network.nativeCurrency.iconUri, {
+                createIconFromDataUri(network.nativeCurrency.iconUrl, {
                   color: subTextColor,
                   h: 3,
                   w: 3,
@@ -192,7 +192,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
               amountColor={subTextColor}
               decimals={network.nativeCurrency.decimals}
               fontSize="sm"
-              icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+              icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
                 color: subTextColor,
                 h: 3,
                 w: 3,

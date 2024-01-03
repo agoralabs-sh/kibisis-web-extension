@@ -56,7 +56,7 @@ const PaymentTransactionContent: FC<IProps> = ({
     network.nativeCurrency.decimals
   );
   const icon: ReactNode = createIconFromDataUri(
-    network.nativeCurrency.iconUri,
+    network.nativeCurrency.iconUrl,
     {
       color: subTextColor,
       h: 3,

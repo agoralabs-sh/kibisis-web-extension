@@ -42,7 +42,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   const icon: ReactNode = createIconFromDataUri(
-    network.nativeCurrency.iconUri,
+    network.nativeCurrency.iconUrl,
     {
       color: subTextColor,
       h: 3,

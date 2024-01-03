@@ -135,7 +135,7 @@ const AssetDestroyTransactionContent: FC<IProps> = ({
           amountColor="red.500"
           decimals={network.nativeCurrency.decimals}
           fontSize="sm"
-          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+          icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
             h: 3,
             w: 3,

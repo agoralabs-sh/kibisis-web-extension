@@ -81,7 +81,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
         <SignTxnsAssetItem
           atomicUnitAmount={new BigNumber(String(transaction.fee))}
           decimals={network.nativeCurrency.decimals}
-          icon={createIconFromDataUri(network.nativeCurrency.iconUri, {
+          icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
             h: 3,
             w: 3,

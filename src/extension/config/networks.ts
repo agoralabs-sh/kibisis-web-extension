@@ -1,4 +1,4 @@
-import { NetworkTypeEnum } from '@extension/enums';
+import { AssetTypeEnum, NetworkTypeEnum } from '@extension/enums';
 
 // types
 import { INetwork } from '@extension/types';
@@ -56,10 +56,12 @@ const networks: INetwork[] = [
       reference: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXu',
     },
     nativeCurrency: {
-      symbol: 'VOI',
       decimals: 6,
-      iconUri: voiIconUri,
+      iconUrl: voiIconUri,
       listingUri: voiListingUri,
+      symbol: 'VOI',
+      type: AssetTypeEnum.Native,
+      verified: true,
     },
     type: NetworkTypeEnum.Test,
   },
@@ -106,10 +108,12 @@ const networks: INetwork[] = [
       reference: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73k',
     },
     nativeCurrency: {
-      symbol: 'ALGO',
       decimals: 6,
-      iconUri: algorandIconUri,
+      iconUrl: algorandIconUri,
       listingUri: algorandListingUri,
+      symbol: 'ALGO',
+      type: AssetTypeEnum.Native,
+      verified: true,
     },
     type: NetworkTypeEnum.Stable,
   },
@@ -141,10 +145,12 @@ const networks: INetwork[] = [
       reference: 'mFgazF-2uRS1tMiL9dsj01hJGySEmPN2',
     },
     nativeCurrency: {
-      symbol: 'ALGO',
       decimals: 6,
-      iconUri: algorandIconUri,
+      iconUrl: algorandIconUri,
       listingUri: algorandListingUri,
+      symbol: 'ALGO',
+      type: AssetTypeEnum.Native,
+      verified: true,
     },
     type: NetworkTypeEnum.Beta,
   },
@@ -176,10 +182,12 @@ const networks: INetwork[] = [
       reference: 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe',
     },
     nativeCurrency: {
-      symbol: 'ALGO',
       decimals: 6,
-      iconUri: algorandIconUri,
+      iconUrl: algorandIconUri,
       listingUri: algorandListingUri,
+      symbol: 'ALGO',
+      type: AssetTypeEnum.Native,
+      verified: true,
     },
     type: NetworkTypeEnum.Test,
   },

@@ -86,7 +86,7 @@ const NativeBalance: FC<IProps> = ({
             })}
           </Text>
 
-          {createIconFromDataUri(nativeCurrency.iconUri, {
+          {createIconFromDataUri(nativeCurrency.iconUrl, {
             color: 'black.500',
             h: 3,
             w: 3,
