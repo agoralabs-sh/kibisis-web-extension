@@ -21,6 +21,7 @@ import {
   IAccountInformation,
   IArc200Asset,
   IArc200AssetHolding,
+  IAssetTypes,
   IStandardAsset,
   IStandardAssetHolding,
   INetwork,
@@ -45,9 +46,7 @@ export default function useAssetPage({
   const [account, setAccount] = useState<IAccount | null>(null);
   const [accountInformation, setAccountInformation] =
     useState<IAccountInformation | null>(null);
-  const [asset, setAsset] = useState<IArc200Asset | IStandardAsset | null>(
-    null
-  );
+  const [asset, setAsset] = useState<IAssetTypes | null>(null);
   const [assetHolding, setAssetHolding] = useState<
     IArc200AssetHolding | IStandardAssetHolding | null
   >(null);
@@ -78,7 +77,7 @@ export default function useAssetPage({
   }, [address, accounts]);
   // 1b. when we have the asset id and the assets, get the asset
   useEffect(() => {
-    let selectedAsset: IArc200Asset | IStandardAsset | null;
+    let selectedAsset: IAssetTypes | null;
 
     if (assetId) {
       // first, find amongst the arc200 assets

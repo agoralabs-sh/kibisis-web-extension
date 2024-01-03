@@ -31,10 +31,9 @@ import { ILogger } from '@common/types';
 import {
   IAccount,
   IAlgorandPendingTransactionResponse,
-  IArc200Asset,
+  IAssetTypes,
   IBaseAsyncThunkConfig,
   INetworkWithTransactionParams,
-  IStandardAsset,
 } from '@extension/types';
 
 // utils
@@ -51,8 +50,7 @@ const addStandardAssetThunk: AsyncThunk<
     const accountId: string | null = getState().addAsset.accountId;
     const account: IAccount | null =
       getState().accounts.items.find((value) => value.id === accountId) || null;
-    const asset: IArc200Asset | IStandardAsset | null =
-      getState().addAsset.selectedAsset;
+    const asset: IAssetTypes | null = getState().addAsset.selectedAsset;
     const logger: ILogger = getState().system.logger;
     const online: boolean = getState().system.online;
     const selectedNetwork: INetworkWithTransactionParams | null =

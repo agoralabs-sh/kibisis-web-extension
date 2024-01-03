@@ -1,7 +1,7 @@
 // types
-import { IArc200Asset, IStandardAsset } from '@extension/types';
+import { IAssetTypes } from '@extension/types';
 
-interface IAssetsWithNextToken<Asset = IArc200Asset | IStandardAsset> {
+interface IAssetsWithNextToken<Asset = IAssetTypes> {
   items: Asset[];
   next: string | null;
 }
