@@ -33,6 +33,9 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
+// theme
+import { theme } from '@extension/theme';
+
 // utils
 import { ellipseAddress } from '@extension/utils';
 
@@ -124,7 +127,7 @@ const EditableAccountNameField: FC<IProps> = ({
   }
 
   return (
-    <VStack position="relative" ref={containerRef} w="full" zIndex={0}>
+    <VStack position="relative" ref={containerRef} w="full" zIndex={1}>
       {/*/input*/}
       <Input
         focusBorderColor={primaryColor}
@@ -143,15 +146,17 @@ const EditableAccountNameField: FC<IProps> = ({
         position="absolute"
         right={0}
         top="calc(100% + var(--chakra-space-2))"
-        zIndex={1}
       >
         {/*submit*/}
-        <Box bg={BODY_BACKGROUND_COLOR} boxShadow="lg">
+        <Box
+          bg={BODY_BACKGROUND_COLOR}
+          borderRadius={theme.radii['md']}
+          boxShadow="lg"
+        >
           <IconButton
             _hover={{ backgroundColor: buttonHoverBackgroundColor }}
             aria-label="Confirm rename account"
             bg={textBackgroundColor}
-            boxShadow="lg"
             icon={IoCheckmarkOutline}
             onClick={handleSubmitClick}
             size="sm"
@@ -161,7 +166,11 @@ const EditableAccountNameField: FC<IProps> = ({
         </Box>
 
         {/*cancel*/}
-        <Box bg={BODY_BACKGROUND_COLOR} boxShadow="lg">
+        <Box
+          bg={BODY_BACKGROUND_COLOR}
+          borderRadius={theme.radii['md']}
+          boxShadow="lg"
+        >
           <IconButton
             _hover={{ backgroundColor: buttonHoverBackgroundColor }}
             aria-label="Cancel rename account"
