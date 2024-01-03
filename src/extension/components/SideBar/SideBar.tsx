@@ -238,12 +238,13 @@ const SideBar: FC = () => {
         onClick={handleSendAssetClick}
       />
 
+      {/*TODO: disable until walletconnect is fully integrated*/}
       {/* connect dapp */}
-      <SideBarActionItem
-        icon={IoScanOutline}
-        label={t<string>('labels.connectWallet')}
-        onClick={handleConnectWalletClick}
-      />
+      {/*<SideBarActionItem*/}
+      {/*  icon={IoScanOutline}*/}
+      {/*  label={t<string>('labels.connectWallet')}*/}
+      {/*  onClick={handleConnectWalletClick}*/}
+      {/*/>*/}
 
       {/* add account */}
       <SideBarActionItem
