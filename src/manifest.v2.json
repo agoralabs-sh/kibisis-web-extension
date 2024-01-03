@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "permissions": ["<all_urls>", "downloads", "storage"],
+  "browser_action": {
+    "default_title": "Kibisis"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "web_accessible_resources": ["wallet-initializer.js"]
+}

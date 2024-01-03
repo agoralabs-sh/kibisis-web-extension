@@ -283,6 +283,7 @@ fabric.properties
 .chrome_build/
 .chrome_profile/
 .dapp/
+.edge_build/
 .firefox/
 .firefox_build/
 .firefox_profile/
