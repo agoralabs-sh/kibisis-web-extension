@@ -18,6 +18,7 @@ jobs:
           CHROME_WEB_STORE_API_CLIENT_ID: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_ID }}
           CHROME_WEB_STORE_API_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_SECRET }}
           CHROME_WEB_STORE_API_REFRESH_TOKEN: ${{ secrets.CHROME_WEB_STORE_API_REFRESH_TOKEN }}
+          CHROME_WEB_STORE_ID: ${{ vars.CHROME_WEB_STORE_ID }}
         run: |
           ./bin/publish_to_chrome_dummy.sh
 
