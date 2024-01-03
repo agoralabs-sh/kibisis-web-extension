@@ -7,9 +7,9 @@ source "${SCRIPT_DIR}/set_vars.sh"
 # Public: Gets an access token and uploads & publishes the package to the Chrome Web Store API.
 #
 # Required environment variables:
-# * $CHROME_WEB_STORE_API_CLIENT_ID - a client ID for the Chrome Web Store API.
+# * CHROME_WEB_STORE_API_CLIENT_ID - a client ID for the Chrome Web Store API.
 # * CHROME_WEB_STORE_API_CLIENT_SECRET - a client secret for the Chrome Web Store API.
-# * $CHROME_WEB_STORE_API_CLIENT_ID - a refresh token to get an access token for the Chrome Web Store API.
+# * CHROME_WEB_STORE_API_REFRESH_TOKEN - a refresh token to get an access token for the Chrome Web Store API.
 #
 # $1 - Chrome item ID.
 # $2 - path to zip build.
