@@ -15,9 +15,9 @@ jobs:
         uses: actions/checkout@v3
       - name: "🚀 Publish"
         env:
-          CHROME_WEB_STORE_ID: ${{ secrets.CHROME_WEB_STORE_ID }}
+          CHROME_WEB_STORE_API_CLIENT_ID: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_ID }}
+          CHROME_WEB_STORE_API_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_SECRET }}
+          CHROME_WEB_STORE_API_REFRESH_TOKEN: ${{ secrets.CHROME_WEB_STORE_API_REFRESH_TOKEN }}
         run: |
-          CHROME_WEB_STORE_ID_AS_ENV=${{ env.CHROME_WEB_STORE_ID }} \
-          CHROME_WEB_STORE_ID_AS_SECRET=${{ secrets.CHROME_WEB_STORE_ID }} \
-          ./bin/publish_to_chrome_dummy.sh ${{ secrets.CHROME_WEB_STORE_ID }} ${{ env.CHROME_WEB_STORE_ID }}
+          ./bin/publish_to_chrome_dummy.sh
 
