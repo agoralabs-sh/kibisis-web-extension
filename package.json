@@ -37,6 +37,7 @@
     "install:firefox": "./bin/install_firefox.sh",
     "lint": "eslint . --ext .ts --ext .tsx --ext .js",
     "package:chrome": "./bin/package.sh chrome",
+    "package:edge": "./bin/package.sh edge",
     "package:firefox": "./bin/package.sh firefox",
     "prepare": "husky install && ./bin/post_install.sh",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,ts,tsx}\"",
