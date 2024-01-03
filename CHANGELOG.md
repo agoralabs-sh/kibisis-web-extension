@@ -1,3 +1,10 @@
+# [1.9.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.7...v1.9.0-beta.8) (2024-01-03)
+
+
+### Bug Fixes
+
+* native assets showing as asa on send summary screen ([#97](https://github.com/agoralabs-sh/kibisis-web-extension/issues/97)) ([e958654](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e958654f05e6cfae65bbbc845f7a10c95b021c3b))
+
 # [1.9.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0-beta.6...v1.9.0-beta.7) (2024-01-02)
 
 
