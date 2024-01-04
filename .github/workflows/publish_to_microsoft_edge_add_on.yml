@@ -1,11 +1,11 @@
-name: "Publish To Chrome Web Store"
+name: "Publish To Microsoft Edge Add-ons"
 
 on:
   release:
     types: [released] # triggered on main branch releases
 
 env:
-  asset_prefix: "kibisis-chrome"
+  asset_prefix: "kibisis-edge"
 
 jobs:
   deploy:
@@ -22,9 +22,9 @@ jobs:
       - name: "🚀 Publish"
         env:
           # set in the Settings > Secrets and variables > Actions > Secrets
-          CHROME_WEB_STORE_API_CLIENT_ID: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_ID }}
-          CHROME_WEB_STORE_API_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_SECRET }}
-          CHROME_WEB_STORE_API_REFRESH_TOKEN: ${{ secrets.CHROME_WEB_STORE_API_REFRESH_TOKEN }}
+          MICROSOFT_EDGE_ADD_ONS_API_CLIENT_ID: ${{ secrets.MICROSOFT_EDGE_ADD_ONS_API_CLIENT_ID }}
+          MICROSOFT_EDGE_ADD_ONS_API_CLIENT_SECRET: ${{ secrets.MICROSOFT_EDGE_ADD_ONS_API_CLIENT_SECRET }}
+          MICROSOFT_EDGE_ADD_ONS_API_ACCESS_TOKEN_URL: ${{ secrets.MICROSOFT_EDGE_ADD_ONS_API_ACCESS_TOKEN_URL }}
         run: |
-          ./bin/publish_to_chrome_web_store.sh ${{ vars.CHROME_WEB_STORE_ITEM_ID }} ${{ env.asset_prefix }}.zip
+          ./bin/publish_to_microsoft_edge_add_ons.sh ${{ vars.MICROSOFT_EDGE_ADD_ON_PRODUCT_ID }} ${{ env.asset_prefix }}.zip
 
