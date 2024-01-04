@@ -1,14 +1,14 @@
 import browser from 'webextension-polyfill';
 
 // services
-import { ExternalMessageBroker } from '@extension/services';
+import ExternalMessageBroker from '@external/services/ExternalMessageBroker';
 
 // types
 import { ILogger } from '@common/types';
 
 // utils
 import { createLogger } from '@common/utils';
-import { injectScript } from '@extension/utils';
+import { injectScript } from '@external/utils';
 
 (() => {
   const logger: ILogger = createLogger(
