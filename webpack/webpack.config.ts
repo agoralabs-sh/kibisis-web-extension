@@ -158,21 +158,22 @@ const configs: (
               reuseExistingChunk: true,
               test: /[\\/]node_modules[\\/]lodash.mergewith[\\/]/,
             },
-            ['react-markdown']: {
+            ['react-dom']: {
               chunks: 'all',
               maxSize,
-              name: 'react-markdown',
+              name: 'react-dom',
               priority: 90,
               reuseExistingChunk: true,
-              test: /[\\/]node_modules[\\/](react-markdown|mdast-util-from-markdown|decode-named-character-reference)[\\/]/,
+              test: /[\\/]node_modules[\\/]react-dom[\\/]/,
             },
-            ['react']: {
+            // needs to be isolates as when this is bundled, it causes an UNSAFE_VAR_ASSIGNMENT warning in Firefox validation
+            ['react-focus-lock']: {
               chunks: 'all',
               maxSize,
-              name: 'react',
+              name: 'react-focus-lock',
               priority: 90,
               reuseExistingChunk: true,
-              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+              test: /[\\/]node_modules[\\/]react-focus-lock[\\/]/,
             },
             vendor: {
               chunks: 'all',
@@ -303,10 +304,6 @@ const configs: (
       plugins: [
         new CopyPlugin({
           patterns: [
-            {
-              from: resolve(SRC_PATH, 'documents'),
-              to: resolve(buildPath, 'documents'),
-            },
             {
               from: resolve(SRC_PATH, 'icons'),
               to: resolve(buildPath, 'icons'),
