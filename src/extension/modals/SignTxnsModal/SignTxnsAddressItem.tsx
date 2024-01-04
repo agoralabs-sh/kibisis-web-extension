@@ -20,7 +20,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, IExplorer, INetwork } from '@extension/types';

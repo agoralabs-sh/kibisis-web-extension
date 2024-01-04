@@ -12,8 +12,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { getIndexerClient } from '@common/utils';
-import { mapAlgorandTransactionToTransaction } from '@extension/utils';
+import getIndexerClient from '@common/utils/getIndexerClient';
+import mapAlgorandTransactionToTransaction from '@extension/utils/mapAlgorandTransactionToTransaction';
 import lookupAlgorandAccountTransactionsWithDelay from './lookupAlgorandAccountTransactionsWithDelay';
 import refreshTransactions from './refreshTransactions';
 

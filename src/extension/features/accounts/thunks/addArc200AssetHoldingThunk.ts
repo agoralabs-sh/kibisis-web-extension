@@ -10,7 +10,7 @@ import { updateAccountInformation } from '@extension/features/accounts';
 import { AccountsThunkEnum, AssetTypeEnum } from '@extension/enums';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { ILogger } from '@common/types';
@@ -23,7 +23,7 @@ import {
 import { IAddArc200AssetHoldingPayload } from '../types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const addArc200AssetHoldingThunk: AsyncThunk<
   IAccount | null, // return

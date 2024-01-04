@@ -41,7 +41,7 @@ import SettingsRouter from '@extension/routers/SettingsRouter';
 import { IAppProps, IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 // utils
-import { makeStore } from '@extension/utils';
+import makeStore from '@extension/utils/makeStore';
 
 const createRouter = (dispatch: IAppThunkDispatch) =>
   createHashRouter([

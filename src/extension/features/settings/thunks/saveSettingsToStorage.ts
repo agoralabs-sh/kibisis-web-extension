@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { NetworkTypeEnum, SettingsThunkEnum } from '@extension/enums';
 
 // services
-import { SettingsService } from '@extension/services';
+import SettingsService from '@extension/services/SettingsService';
 
 // types
 import { ILogger } from '@common/types';
@@ -15,11 +15,9 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  convertGenesisHashToHex,
-  selectDefaultNetwork,
-  selectNetworkFromSettings,
-} from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
 const saveSettingsToStorage: AsyncThunk<
   ISettings, // return

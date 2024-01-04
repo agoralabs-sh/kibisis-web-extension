@@ -12,13 +12,13 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, INetwork, IPaymentTransaction } from '@extension/types';
 
 // utils
-import { createIconFromDataUri } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 interface IProps {
   account: IAccount;

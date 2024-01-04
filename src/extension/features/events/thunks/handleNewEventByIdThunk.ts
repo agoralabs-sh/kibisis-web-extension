@@ -11,7 +11,7 @@ import {
 } from '../slice';
 
 // services
-import { EventQueueService } from '@extension/services';
+import EventQueueService from '@extension/services/EventQueueService';
 
 // types
 import { ILogger } from '@common/types';

@@ -2,10 +2,8 @@ import { useSelector } from 'react-redux';
 
 // types
 import { IStandardAsset, IMainRootState, INetwork } from '@extension/types';
-import {
-  convertGenesisHashToHex,
-  selectNetworkFromSettings,
-} from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
 /**
  * Selects all the standard assets for the selected network.

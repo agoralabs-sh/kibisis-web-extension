@@ -43,11 +43,9 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  createIconFromDataUri,
-  ellipseAddress,
-  isAccountKnown,
-} from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import ellipseAddress from '@extension/utils/ellipseAddress';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
 interface IProps {
   network: INetwork;

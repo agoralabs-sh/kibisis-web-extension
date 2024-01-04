@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 
 // types
 import { IExplorer, IMainRootState, INetwork } from '@extension/types';
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 /**
  * Gets the currently preferred block explorer from the settings. If the block explorer cannot be found, the default

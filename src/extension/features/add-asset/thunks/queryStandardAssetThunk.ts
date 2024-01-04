@@ -31,13 +31,11 @@ import {
 } from '../types';
 
 // utils
-import { getIndexerClient } from '@common/utils';
-import {
-  convertGenesisHashToHex,
-  fetchVerifiedStandardAssetList,
-  mapStandardAssetFromAlgorandAsset,
-  selectNetworkFromSettings,
-} from '@extension/utils';
+import getIndexerClient from '@common/utils/getIndexerClient';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import fetchVerifiedStandardAssetList from '@extension/utils/fetchVerifiedStandardAssetList';
+import mapStandardAssetFromAlgorandAsset from '@extension/utils/mapStandardAssetFromAlgorandAsset';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import { searchAlgorandAssetsWithDelay } from '../utils';
 
 const queryStandardAssetThunk: AsyncThunk<

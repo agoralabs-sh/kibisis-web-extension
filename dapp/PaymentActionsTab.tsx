@@ -43,7 +43,8 @@ import { IWindow } from '@external/types';
 import { IAccountInformation } from './types';
 
 // utils
-import { convertToAtomicUnit, convertToStandardUnit } from '@common/utils';
+import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import { createPaymentTransaction } from './utils';
 
 interface IProps {

@@ -22,7 +22,7 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import {
@@ -33,8 +33,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { createIconFromDataUri } from '@extension/utils';
-import { convertToAtomicUnit } from '@common/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 
 interface IProps {
   amountInStandardUnits: string;

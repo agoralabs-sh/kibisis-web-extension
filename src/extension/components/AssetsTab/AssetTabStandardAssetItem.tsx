@@ -35,13 +35,14 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, INetwork, IStandardAsset } from '@extension/types';
 
 // utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 
 interface IProps {
   account: IAccount;

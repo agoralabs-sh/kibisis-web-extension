@@ -4,14 +4,14 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { StandardAssetsThunkEnum } from '@extension/enums';
 
 // services
-import { StandardAssetService } from '@extension/services';
+import StandardAssetService from '@extension/services/StandardAssetService';
 
 // types
 import { ILogger } from '@common/types';
 import { IStandardAsset, IMainRootState, INetwork } from '@extension/types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const fetchStandardAssetsFromStorageThunk: AsyncThunk<
   Record<string, IStandardAsset[]>, // return

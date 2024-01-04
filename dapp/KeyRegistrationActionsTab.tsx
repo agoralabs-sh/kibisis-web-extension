@@ -37,7 +37,7 @@ import { IWindow } from '@external/types';
 import { IAccountInformation } from './types';
 
 // utils
-import { convertToStandardUnit } from '@common/utils';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import { createKeyRegistrationTransaction } from './utils';
 
 interface IProps {

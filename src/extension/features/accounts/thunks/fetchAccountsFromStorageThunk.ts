@@ -6,7 +6,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 import { AccountsThunkEnum } from '@extension/enums';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { ILogger } from '@common/types';
@@ -18,10 +18,8 @@ import {
 import { IFetchAccountsFromStoragePayload } from '../types';
 
 // utils
-import {
-  convertGenesisHashToHex,
-  selectNetworkFromSettings,
-} from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import { updateAccountInformation, updateAccountTransactions } from '../utils';
 
 const fetchAccountsFromStorageThunk: AsyncThunk<

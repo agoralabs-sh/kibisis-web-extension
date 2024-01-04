@@ -7,7 +7,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 import { StandardAssetsThunkEnum } from '@extension/enums';
 
 // services
-import { StandardAssetService } from '@extension/services';
+import StandardAssetService from '@extension/services/StandardAssetService';
 
 // types
 import { ILogger } from '@common/types';
@@ -22,11 +22,9 @@ import {
 } from '../types';
 
 // utils
-import {
-  fetchVerifiedStandardAssetList,
-  updateStandardAssetInformationById,
-  upsertItemsById,
-} from '@extension/utils';
+import fetchVerifiedStandardAssetList from '@extension/utils/fetchVerifiedStandardAssetList';
+import updateStandardAssetInformationById from '@extension/utils/updateStandardAssetInformationById';
+import upsertItemsById from '@extension/utils/upsertItemsById';
 
 const updateStandardAssetInformationThunk: AsyncThunk<
   IUpdateStandardAssetInformationResult, // return

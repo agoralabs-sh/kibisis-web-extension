@@ -26,7 +26,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 /**
  * Checks for changes in the accounts and gets new asset information if any new assets.

@@ -11,7 +11,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import { useSelectAccounts } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -20,7 +20,7 @@ import { theme } from '@extension/theme';
 import { IAccount, INetwork } from '@extension/types';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   address: string;

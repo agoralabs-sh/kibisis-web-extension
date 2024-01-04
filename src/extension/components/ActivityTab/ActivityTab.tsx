@@ -10,7 +10,7 @@ import TransactionItem, {
 } from '@extension/components/TransactionItem';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, ITransactions, INetwork } from '@extension/types';

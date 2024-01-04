@@ -42,8 +42,10 @@ import {
 } from '@extension/types';
 
 // utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
-import { createIconFromDataUri, isAccountKnown } from '@extension/utils';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
 interface IProps {
   accounts: IAccount[];

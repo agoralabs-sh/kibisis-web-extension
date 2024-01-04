@@ -32,8 +32,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { computeGroupId } from '@common/utils';
-import { parseTransactionType } from '@extension/utils';
+import computeGroupId from '@common/utils/computeGroupId';
+import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
   explorer: IExplorer;

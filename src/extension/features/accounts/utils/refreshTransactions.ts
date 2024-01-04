@@ -15,7 +15,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { mapAlgorandTransactionToTransaction } from '@extension/utils';
+import mapAlgorandTransactionToTransaction from '@extension/utils/mapAlgorandTransactionToTransaction';
 import lookupAlgorandAccountTransactionsWithDelay from './lookupAlgorandAccountTransactionsWithDelay';
 
 interface IOptions extends IBaseOptions {

@@ -17,7 +17,8 @@ import {
 } from '@extension/errors';
 
 // services
-import { AccountService, PrivateKeyService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import { ILogger } from '@common/types';
@@ -30,12 +31,10 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  convertToAtomicUnit,
-  getAlgodClient,
-  getIndexerClient,
-} from '@common/utils';
-import { selectNetworkFromSettings } from '@extension/utils';
+import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
+import getAlgodClient from '@common/utils/getAlgodClient';
+import getIndexerClient from '@common/utils/getIndexerClient';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import {
   sendArc200AssetTransferTransaction,
   sendPaymentTransaction,

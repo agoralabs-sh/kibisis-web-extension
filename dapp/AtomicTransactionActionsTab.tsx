@@ -59,11 +59,9 @@ import { IWindow } from '@external/types';
 import { IAccountInformation, IAssetInformation } from './types';
 
 // utils
-import {
-  convertToAtomicUnit,
-  convertToStandardUnit,
-  formatCurrencyUnit,
-} from '@common/utils';
+import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import {
   createAppCallTransaction,
   createAssetTransferTransaction,

@@ -1,14 +1,14 @@
 import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 
 // services
-import { KibisisWalletManager } from '@external/services';
+import KibisisWalletManager from '@external/services/KibisisWalletManager';
 
 // types
 import { ILogger } from '@common/types';
 import { IWindow } from '@external/types';
 
 // utils
-import { createLogger } from '@common/utils';
+import createLogger from '@common/utils/createLogger';
 
 (() => {
   const logger: ILogger = createLogger(

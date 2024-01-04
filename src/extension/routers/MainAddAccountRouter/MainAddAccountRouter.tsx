@@ -31,7 +31,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { ILogger } from '@common/types';
@@ -43,7 +43,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { getAddressFromPrivateKey } from '@extension/utils';
+import getAddressFromPrivateKey from '@extension/utils/getAddressFromPrivateKey';
 
 const MainAddAccountRouter: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();

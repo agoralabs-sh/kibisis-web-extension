@@ -35,7 +35,8 @@ import {
 import { ICondensedProps } from './types';
 
 // utils
-import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import parseTransactionType from '@extension/utils/parseTransactionType';
 import Warning from '@extension/components/Warning';
 
 interface IProps {

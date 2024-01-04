@@ -6,7 +6,7 @@ import { NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX } from '@extension/constants
 import { NetworksThunkEnum } from '@extension/enums';
 
 // services
-import { StorageManager } from '@extension/services';
+import StorageManager from '@extension/services/StorageManager';
 
 // types
 import { ILogger } from '@common/types';
@@ -17,10 +17,8 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  convertGenesisHashToHex,
-  selectNetworkFromSettings,
-} from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import { updateTransactionParams } from '../utils';
 
 const fetchTransactionParamsFromStorageThunk: AsyncThunk<

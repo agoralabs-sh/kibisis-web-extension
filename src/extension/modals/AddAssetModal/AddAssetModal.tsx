@@ -97,7 +97,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { isNumericString } from '@extension/utils';
+import isNumericString from '@extension/utils/isNumericString';
 
 interface IProps {
   onClose: () => void;

@@ -41,7 +41,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { isAccountKnown } from '@extension/utils';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
 interface IProps {
   color?: ResponsiveValue<CSS.Property.Color>;

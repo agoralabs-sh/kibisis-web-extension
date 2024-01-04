@@ -18,7 +18,7 @@ import {
 
 // utils
 import { getInitialState } from './utils';
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const slice = createSlice({
   extraReducers: (builder) => {

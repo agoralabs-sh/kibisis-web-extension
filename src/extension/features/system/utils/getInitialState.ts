@@ -1,5 +1,5 @@
 // utils
-import { createLogger } from '@common/utils';
+import createLogger from '@common/utils/createLogger';
 
 // types
 import { ISystemState } from '../types';

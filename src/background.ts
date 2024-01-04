@@ -1,18 +1,16 @@
 import browser, { Action, BrowserAction } from 'webextension-polyfill';
 
 // services
-import {
-  BackgroundEventListener,
-  BackgroundMessageHandler,
-  SettingsService,
-} from '@extension/services';
+import BackgroundEventListener from '@extension/services/BackgroundEventListener';
+import BackgroundMessageHandler from '@extension/services/BackgroundMessageHandler';
+import SettingsService from '@extension/services/SettingsService';
 
 // types
 import { ILogger } from '@common/types';
 import { ISettings } from '@extension/types';
 
 // utils
-import { createLogger } from '@common/utils';
+import createLogger from '@common/utils/createLogger';
 
 (async () => {
   const browserAction: Action.Static | BrowserAction.Static =

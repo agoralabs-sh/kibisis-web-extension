@@ -38,13 +38,14 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectColorMode } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, IArc200Asset, INetwork } from '@extension/types';
 
 // utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 
 interface IProps {
   account: IAccount;

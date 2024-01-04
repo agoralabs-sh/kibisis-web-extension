@@ -42,7 +42,7 @@ import { theme } from '@extension/theme';
 import { ISettings } from '@extension/types';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   address: string;

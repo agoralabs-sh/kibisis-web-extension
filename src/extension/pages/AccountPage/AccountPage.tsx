@@ -93,7 +93,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import {
@@ -107,7 +107,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();

@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 
 // types
 import { IAccount, IMainRootState } from '@extension/types';
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 /**
  * Gets the account associated with the address. If no address is supplied, the first account in the list is returned.

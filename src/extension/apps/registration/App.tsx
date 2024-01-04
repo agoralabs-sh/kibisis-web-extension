@@ -32,7 +32,7 @@ import RegistrationAddAccountRouter from '@extension/routers/RegistrationAddAcco
 import { IAppProps, IRegistrationRootState } from '@extension/types';
 
 // utils
-import { makeStore } from '@extension/utils';
+import makeStore from '@extension/utils/makeStore';
 
 const createRouter = () =>
   createHashRouter([

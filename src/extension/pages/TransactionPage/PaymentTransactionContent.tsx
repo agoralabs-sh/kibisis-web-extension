@@ -32,7 +32,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import {
@@ -43,7 +43,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { createIconFromDataUri, ellipseAddress } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   account: IAccount;

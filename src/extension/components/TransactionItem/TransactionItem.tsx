@@ -24,7 +24,7 @@ import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgr
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, INetwork, ITransactions } from '@extension/types';

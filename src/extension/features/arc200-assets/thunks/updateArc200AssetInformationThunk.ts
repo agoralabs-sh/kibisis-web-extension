@@ -7,7 +7,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 import { Arc200AssetsThunkEnum } from '@extension/enums';
 
 // services
-import { Arc200AssetService } from '@extension/services';
+import Arc200AssetService from '@extension/services/Arc200AssetService';
 
 // types
 import { ILogger } from '@common/types';
@@ -18,10 +18,8 @@ import {
 } from '../types';
 
 // utils
-import {
-  updateArc200AssetInformationById,
-  upsertItemsById,
-} from '@extension/utils';
+import updateArc200AssetInformationById from '@extension/utils/updateArc200AssetInformationById';
+import upsertItemsById from '@extension/utils/upsertItemsById';
 
 const updateArc200AssetInformationThunk: AsyncThunk<
   IUpdateArc200AssetInformationResult, // return

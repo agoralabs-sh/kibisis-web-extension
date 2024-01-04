@@ -50,7 +50,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -59,8 +59,8 @@ import { theme } from '@extension/theme';
 import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
 
 // utils
-import { formatCurrencyUnit } from '@common/utils';
-import { ellipseAddress } from '@extension/utils';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();

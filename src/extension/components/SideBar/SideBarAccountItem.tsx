@@ -24,13 +24,13 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount } from '@extension/types';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   account: IAccount;

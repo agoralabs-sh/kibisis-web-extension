@@ -4,14 +4,14 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Arc200AssetsThunkEnum } from '@extension/enums';
 
 // services
-import { Arc200AssetService } from '@extension/services';
+import Arc200AssetService from '@extension/services/Arc200AssetService';
 
 // types
 import { ILogger } from '@common/types';
 import { IArc200Asset, IMainRootState, INetwork } from '@extension/types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const fetchArc200AssetsFromStorageThunk: AsyncThunk<
   Record<string, IArc200Asset[]>, // return

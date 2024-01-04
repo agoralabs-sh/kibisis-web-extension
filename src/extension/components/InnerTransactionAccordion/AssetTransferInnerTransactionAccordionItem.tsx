@@ -34,7 +34,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import {
@@ -45,7 +45,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { isAccountKnown } from '@extension/utils';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
 interface IProps {
   account: IAccount;

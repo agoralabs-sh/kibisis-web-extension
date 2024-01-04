@@ -12,7 +12,7 @@ import React, { FC } from 'react';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 import { DEFAULT_GAP } from '@extension/constants';
 
 const SignBytesContentSkeleton: FC = () => {

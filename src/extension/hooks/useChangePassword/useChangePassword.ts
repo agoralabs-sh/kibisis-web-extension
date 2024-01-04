@@ -8,7 +8,7 @@ import { BaseExtensionError } from '@extension/errors';
 import { useSelectLogger } from '@extension/selectors';
 
 // services
-import { PrivateKeyService } from '@extension/services';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import { ILogger } from '@common/types';

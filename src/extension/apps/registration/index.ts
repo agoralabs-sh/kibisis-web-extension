@@ -4,6 +4,6 @@ import '@extension/styles/fonts.css';
 import App from './App';
 
 // utils
-import { bootstrapApp } from '@extension/utils';
+import bootstrapApp from '@extension/utils/bootstrapApp';
 
 window.onload = bootstrapApp(App);

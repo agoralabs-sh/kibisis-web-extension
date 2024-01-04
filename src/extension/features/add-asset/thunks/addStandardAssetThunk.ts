@@ -24,7 +24,8 @@ import {
 } from '@extension/errors';
 
 // services
-import { AccountService, PrivateKeyService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import { ILogger } from '@common/types';
@@ -37,8 +38,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { getAlgodClient } from '@common/utils';
-import { selectNetworkFromSettings } from '@extension/utils';
+import getAlgodClient from '@common/utils/getAlgodClient';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
 const addStandardAssetThunk: AsyncThunk<
   string | null, // return

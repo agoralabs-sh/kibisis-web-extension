@@ -19,7 +19,6 @@ import { theme } from '@extension/theme';
 
 // types
 import { INativeCurrency } from '@extension/types';
-import { createIconFromDataUri } from '@extension/utils';
 
 interface IProps {
   asset: INativeCurrency;

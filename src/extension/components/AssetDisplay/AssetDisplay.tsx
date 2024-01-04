@@ -7,7 +7,8 @@ import React, { FC, ReactNode } from 'react';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 
 interface IProps {
   amountColor?: ResponsiveValue<CSS.Property.Color>;
