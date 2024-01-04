@@ -65,7 +65,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { ellipseAddress, mapSessionFromEnableRequest } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
+import mapSessionFromEnableRequest from '@extension/utils/mapSessionFromEnableRequest';
 
 interface IProps {
   onClose: () => void;

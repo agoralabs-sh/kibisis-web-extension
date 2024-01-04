@@ -30,7 +30,7 @@ import { theme } from '@extension/theme';
 import { IAccount, IExplorer, INetwork } from '@extension/types';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps extends StackProps {
   ariaLabel?: string;

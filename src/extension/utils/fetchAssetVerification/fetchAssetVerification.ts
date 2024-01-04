@@ -6,7 +6,7 @@ import { IBaseOptions, ILogger } from '@common/types';
 import { INetwork, IVestigeFiAssetResponse } from '@extension/types';
 
 // utils
-import fetchWithDelay from './fetchWithDelay';
+import fetchWithDelay from '../fetchWithDelay';
 
 /**
  * @property {number} delay - [optional] the number of milliseconds to delay the fetch request. Defaults to 0.

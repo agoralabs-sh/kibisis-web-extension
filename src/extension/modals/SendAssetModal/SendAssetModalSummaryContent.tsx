@@ -33,7 +33,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { createIconFromDataUri } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 
 interface IProps {

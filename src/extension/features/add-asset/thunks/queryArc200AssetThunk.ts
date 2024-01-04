@@ -31,12 +31,10 @@ import {
 
 // utils
 import getIndexerClient from '@common/utils/getIndexerClient';
-import {
-  convertGenesisHashToHex,
-  selectAssetsForNetwork,
-  selectNetworkFromSettings,
-  updateArc200AssetInformationById,
-} from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import selectAssetsForNetwork from '@extension/utils/selectAssetsForNetwork';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
+import updateArc200AssetInformationById from '@extension/utils/updateArc200AssetInformationById';
 import { searchAlgorandApplicationsWithDelay } from '../utils';
 
 const queryArc200AssetThunk: AsyncThunk<

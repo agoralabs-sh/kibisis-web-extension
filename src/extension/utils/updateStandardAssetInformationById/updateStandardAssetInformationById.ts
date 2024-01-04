@@ -11,8 +11,8 @@ import {
 
 // utils
 import getAlgodClient from '@common/utils/getAlgodClient';
-import fetchStandardAssetInformationWithDelay from './fetchStandardAssetInformationWithDelay';
-import mapStandardAssetFromAlgorandAsset from './mapStandardAssetFromAlgorandAsset';
+import fetchStandardAssetInformationWithDelay from '../fetchStandardAssetInformationWithDelay';
+import mapStandardAssetFromAlgorandAsset from '../mapStandardAssetFromAlgorandAsset';
 
 interface IOptions extends IBaseOptions {
   delay?: number;

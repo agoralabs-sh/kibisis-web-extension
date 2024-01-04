@@ -30,7 +30,7 @@ import AccountService from '@extension/services/AccountService';
 import { IAccount } from '@extension/types';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   account: IAccount;

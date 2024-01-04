@@ -14,7 +14,7 @@ import {
 
 // utils
 import getAlgodClient from '@common/utils/getAlgodClient';
-import { mapAlgorandAccountInformationToAccount } from '@extension/utils';
+import mapAlgorandAccountInformationToAccount from '@extension/utils/mapAlgorandAccountInformationToAccount';
 import algorandAccountInformationWithDelay from './algorandAccountInformationWithDelay';
 import fetchArc200AssetHoldingWithDelay from './fetchArc200AssetHoldingWithDelay';
 

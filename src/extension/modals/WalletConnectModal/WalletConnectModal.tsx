@@ -55,7 +55,7 @@ import { theme } from '@extension/theme';
 import { IAccount, INetwork } from '@extension/types';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   onClose: () => void;

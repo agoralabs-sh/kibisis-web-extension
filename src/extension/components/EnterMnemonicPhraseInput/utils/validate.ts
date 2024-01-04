@@ -1,7 +1,7 @@
 import { TFunction } from 'i18next';
 
 // utils
-import { isMnemonicValid } from '@extension/utils';
+import isMnemonicValid from '@extension/utils/isMnemonicValid';
 
 export default function validate(
   phrases: string[],

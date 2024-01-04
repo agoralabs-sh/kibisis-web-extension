@@ -16,7 +16,7 @@ import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgr
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 import { generateAccount } from 'algosdk';
 
 const SideBarSkeletonAccountItem: FC = () => {

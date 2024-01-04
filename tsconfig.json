@@ -60,7 +60,7 @@
       "@extension/theme": ["src/extension/theme"],
       "@extension/translations": ["src/extension/translations"],
       "@extension/types": ["src/extension/types"],
-      "@extension/utils": ["src/extension/utils"],
+      "@extension/utils/*": ["src/extension/utils/*"],
       "@external/constants": ["src/external/constants"],
       "@external/services/*": ["src/external/services/*"],
       "@external/types": ["src/external/types"],

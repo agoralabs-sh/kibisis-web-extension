@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 // components
 import AssetDisplay from '@extension/components/AssetDisplay';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import InnerTransactionAccordion from '@extension/components/InnerTransactionAccordion';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
@@ -42,8 +43,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { createIconFromDataUri, ellipseAddress } from '@extension/utils';
-import InnerTransactionAccordion from '@extension/components/InnerTransactionAccordion';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   account: IAccount;

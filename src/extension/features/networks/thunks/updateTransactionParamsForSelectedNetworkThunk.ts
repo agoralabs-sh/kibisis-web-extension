@@ -17,10 +17,8 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  convertGenesisHashToHex,
-  selectNetworkFromSettings,
-} from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import { updateTransactionParams } from '@extension/features/networks';
 
 const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<

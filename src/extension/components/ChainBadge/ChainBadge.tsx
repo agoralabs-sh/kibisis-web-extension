@@ -4,14 +4,14 @@ import React, { FC } from 'react';
 // enums
 import { NetworkTypeEnum } from '@extension/enums';
 
+// selectors
+import { useSelectColorMode } from '@extension/selectors';
+
 // types
 import { INetwork } from '@extension/types';
 
 // utils
-import { createIconFromDataUri } from '@extension/utils';
-
-// selectors
-import { useSelectColorMode } from '@extension/selectors';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 interface IProps {
   network: INetwork;

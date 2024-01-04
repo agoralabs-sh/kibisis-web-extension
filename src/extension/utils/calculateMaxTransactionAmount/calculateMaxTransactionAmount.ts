@@ -15,7 +15,7 @@ import {
 } from '@extension/types';
 
 // utils
-import convertGenesisHashToHex from './convertGenesisHashToHex';
+import convertGenesisHashToHex from '../convertGenesisHashToHex';
 
 interface IOptions {
   account: IAccount;

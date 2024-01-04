@@ -18,7 +18,7 @@ import AccountService from '@extension/services/AccountService';
 import { IAccount, INetwork, IPaymentTransaction } from '@extension/types';
 
 // utils
-import { createIconFromDataUri } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 interface IProps {
   account: IAccount;

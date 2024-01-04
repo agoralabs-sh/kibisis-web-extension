@@ -22,7 +22,7 @@ import { reducer as systemReducer } from '@extension/features/system';
 import { IAppProps, IBackgroundRootState } from '@extension/types';
 
 // utils
-import { makeStore } from '@extension/utils';
+import makeStore from '@extension/utils/makeStore';
 
 const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IBackgroundRootState> = makeStore<IBackgroundRootState>(

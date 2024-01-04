@@ -2,7 +2,7 @@
 import { IArc200Asset, IStandardAsset } from '@extension/types';
 
 // utils
-import convertGenesisHashToHex from './convertGenesisHashToHex';
+import convertGenesisHashToHex from '../convertGenesisHashToHex';
 
 /**
  * Convenience function that gets a list of the assets for a network.

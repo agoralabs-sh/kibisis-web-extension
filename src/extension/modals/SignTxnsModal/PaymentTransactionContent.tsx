@@ -17,6 +17,9 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// services
+import AccountService from '@extension/services/AccountService';
+
 // types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
@@ -24,8 +27,8 @@ import { ICondensedProps } from './types';
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
-import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
-import AccountService from '@extension/services/AccountService';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
   condensed?: ICondensedProps;

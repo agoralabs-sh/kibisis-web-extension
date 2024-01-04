@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { IStandardAsset, IMainRootState } from '@extension/types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 /**
  * Selects all the standard assets for a given genesis hash.

@@ -34,7 +34,7 @@ import {
 import { IOption } from './types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 interface IProps {
   account: IAccount;

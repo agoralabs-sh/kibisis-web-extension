@@ -31,7 +31,7 @@ import { useSelectSelectedNetwork } from '@extension/selectors';
 import { IAppThunkDispatch, INetwork } from '@extension/types';
 
 // utils
-import { decodeURLSearchParam } from '@extension/utils';
+import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
 
 enum ModalTypeEnum {
   Enable,

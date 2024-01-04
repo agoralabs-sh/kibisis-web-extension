@@ -10,7 +10,7 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const TransactionItemSkeleton: FC = () => {
   const { t } = useTranslation();

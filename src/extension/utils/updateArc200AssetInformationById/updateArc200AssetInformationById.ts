@@ -9,8 +9,8 @@ import {
 // utils
 import getAlgodClient from '@common/utils/getAlgodClient';
 import getIndexerClient from '@common/utils/getIndexerClient';
-import fetchArc200AssetInformationWithDelay from './fetchArc200AssetInformationWithDelay';
-import mapArc200AssetFromArc200AssetInformation from './mapArc200AssetFromArc200AssetInformation';
+import fetchArc200AssetInformationWithDelay from '../fetchArc200AssetInformationWithDelay';
+import mapArc200AssetFromArc200AssetInformation from '../mapArc200AssetFromArc200AssetInformation';
 
 interface IOptions extends IBaseOptions {
   delay?: number;

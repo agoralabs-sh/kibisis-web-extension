@@ -32,7 +32,8 @@ import { ICondensedProps } from './types';
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
-import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
   asset: IStandardAsset | null;

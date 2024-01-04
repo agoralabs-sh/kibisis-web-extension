@@ -20,7 +20,7 @@ import { IAccount } from '@extension/types';
 import { IAccountsState } from './types';
 
 // utils
-import { upsertItemsById } from '@extension/utils';
+import upsertItemsById from '@extension/utils/upsertItemsById';
 import { getInitialState } from './utils';
 
 const slice = createSlice({

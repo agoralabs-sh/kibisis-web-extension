@@ -37,7 +37,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import { theme } from '@extension/theme';
 
 // utils
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   address: string;

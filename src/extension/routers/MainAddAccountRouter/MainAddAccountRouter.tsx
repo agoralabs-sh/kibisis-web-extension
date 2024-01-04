@@ -43,7 +43,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { getAddressFromPrivateKey } from '@extension/utils';
+import getAddressFromPrivateKey from '@extension/utils/getAddressFromPrivateKey';
 
 const MainAddAccountRouter: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();

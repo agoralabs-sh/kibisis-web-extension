@@ -46,11 +46,9 @@ import {
 import { ICondensedProps } from './types';
 
 // utils
-import {
-  convertGenesisHashToHex,
-  createIconFromDataUri,
-  parseTransactionType,
-} from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
   asset: IStandardAsset | null;

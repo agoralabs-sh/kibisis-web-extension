@@ -23,7 +23,7 @@ import {
 import { IAddArc200AssetHoldingPayload } from '../types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const addArc200AssetHoldingThunk: AsyncThunk<
   IAccount | null, // return

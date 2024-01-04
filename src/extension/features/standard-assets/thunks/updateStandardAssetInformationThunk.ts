@@ -22,11 +22,9 @@ import {
 } from '../types';
 
 // utils
-import {
-  fetchVerifiedStandardAssetList,
-  updateStandardAssetInformationById,
-  upsertItemsById,
-} from '@extension/utils';
+import fetchVerifiedStandardAssetList from '@extension/utils/fetchVerifiedStandardAssetList';
+import updateStandardAssetInformationById from '@extension/utils/updateStandardAssetInformationById';
+import upsertItemsById from '@extension/utils/upsertItemsById';
 
 const updateStandardAssetInformationThunk: AsyncThunk<
   IUpdateStandardAssetInformationResult, // return

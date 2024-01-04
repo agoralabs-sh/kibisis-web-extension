@@ -60,7 +60,7 @@ import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
 
 // utils
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
-import { ellipseAddress } from '@extension/utils';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();

@@ -39,7 +39,7 @@ import {
 
 // utils
 import getAlgodClient from '@common/utils/getAlgodClient';
-import { selectNetworkFromSettings } from '@extension/utils';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
 const addStandardAssetThunk: AsyncThunk<
   string | null, // return

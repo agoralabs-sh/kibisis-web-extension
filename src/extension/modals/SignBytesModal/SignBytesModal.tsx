@@ -77,7 +77,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { decodeJwt } from '@extension/utils';
+import decodeJwt from '@extension/utils/decodeJwt';
 
 interface IProps {
   onClose: () => void;

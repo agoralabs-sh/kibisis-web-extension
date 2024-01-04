@@ -22,7 +22,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { selectDefaultNetwork } from '@extension/utils';
+import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
 export default class SettingsService {
   // private variables

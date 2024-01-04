@@ -11,7 +11,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
-import { createIconFromDataUri } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 // theme
 import { theme } from '@extension/theme';

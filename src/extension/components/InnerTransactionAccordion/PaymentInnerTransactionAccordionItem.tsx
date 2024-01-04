@@ -42,7 +42,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { createIconFromDataUri, isAccountKnown } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
 interface IProps {
   account: IAccount;

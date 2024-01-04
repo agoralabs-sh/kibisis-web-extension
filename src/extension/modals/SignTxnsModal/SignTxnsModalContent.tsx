@@ -31,6 +31,9 @@ import {
   useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
 
+// services
+import AccountService from '@extension/services/AccountService';
+
 // types
 import { ILogger } from '@common/types';
 import {
@@ -43,11 +46,8 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  convertGenesisHashToHex,
-  parseTransactionType,
-} from '@extension/utils';
-import AccountService from '@extension/services/AccountService';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
   network: INetwork;

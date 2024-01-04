@@ -15,11 +15,9 @@ import {
 } from '@extension/types';
 
 // utils
-import {
-  convertGenesisHashToHex,
-  selectDefaultNetwork,
-  selectNetworkFromSettings,
-} from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
 const saveSettingsToStorage: AsyncThunk<
   ISettings, // return

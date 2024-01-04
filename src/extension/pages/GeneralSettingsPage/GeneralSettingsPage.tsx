@@ -30,7 +30,7 @@ import {
   INetwork,
   ISettings,
 } from '@extension/types';
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import { DEFAULT_GAP } from '@extension/constants';
 
 const GeneralSettingsPage: FC = () => {

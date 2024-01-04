@@ -11,7 +11,7 @@ import { ILogger } from '@common/types';
 import { IArc200Asset, IMainRootState, INetwork } from '@extension/types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const fetchArc200AssetsFromStorageThunk: AsyncThunk<
   Record<string, IArc200Asset[]>, // return

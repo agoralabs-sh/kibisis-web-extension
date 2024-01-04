@@ -63,11 +63,9 @@ import {
 
 // utils
 import computeGroupId from '@common/utils/computeGroupId';
-import {
-  getAuthorizedAddressesForHost,
-  selectDefaultNetwork,
-  verifyTransactionGroupId,
-} from '@extension/utils';
+import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
+import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
+import verifyTransactionGroupId from '@extension/utils/verifyTransactionGroupId';
 
 export default class BackgroundMessageHandler {
   // private variables

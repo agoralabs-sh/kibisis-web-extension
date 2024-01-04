@@ -17,7 +17,7 @@ import { IAppThunkDispatch, INetwork } from '@extension/types';
 import { IUseWalletConnectState } from './types';
 
 // utils
-import { mapSessionFromWalletConnectSession } from '@extension/utils';
+import mapSessionFromWalletConnectSession from '@extension/utils/mapSessionFromWalletConnectSession';
 import { createSessionNamespaces } from './utils';
 
 export default function useWalletConnect(

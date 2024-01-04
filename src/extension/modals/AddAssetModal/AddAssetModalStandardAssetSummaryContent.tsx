@@ -44,7 +44,8 @@ import {
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
-import { createIconFromDataUri, isAccountKnown } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
 interface IProps {
   accounts: IAccount[];

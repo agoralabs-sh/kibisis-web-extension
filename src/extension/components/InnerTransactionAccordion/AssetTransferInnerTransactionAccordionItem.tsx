@@ -45,7 +45,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { isAccountKnown } from '@extension/utils';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
 interface IProps {
   account: IAccount;

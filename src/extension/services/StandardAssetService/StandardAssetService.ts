@@ -12,7 +12,7 @@ import { IBaseOptions, ILogger } from '@common/types';
 import { IStandardAsset } from '@extension/types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 export default class StandardAssetService {
   // private variables

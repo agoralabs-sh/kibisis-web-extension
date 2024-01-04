@@ -11,7 +11,7 @@ import { ILogger } from '@common/types';
 import { IStandardAsset, IMainRootState, INetwork } from '@extension/types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const fetchStandardAssetsFromStorageThunk: AsyncThunk<
   Record<string, IStandardAsset[]>, // return

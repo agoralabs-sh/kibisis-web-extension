@@ -26,7 +26,8 @@ import { IAccount, INetwork } from '@extension/types';
 import { ICondensedProps } from './types';
 
 // utils
-import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
   condensed?: ICondensedProps;

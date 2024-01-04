@@ -25,7 +25,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { convertGenesisHashToHex } from '@extension/utils';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 export interface ISaveAccountsOptions {
   saveTransactions?: boolean;

@@ -34,7 +34,7 @@ import {
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import getAlgodClient from '@common/utils/getAlgodClient';
 import getIndexerClient from '@common/utils/getIndexerClient';
-import { selectNetworkFromSettings } from '@extension/utils';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import {
   sendArc200AssetTransferTransaction,
   sendPaymentTransaction,
