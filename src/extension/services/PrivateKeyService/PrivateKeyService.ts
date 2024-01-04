@@ -19,7 +19,7 @@ import {
 } from '@extension/errors';
 
 // services
-import StorageManager from './StorageManager';
+import StorageManager from '../StorageManager';
 
 // types
 import { IBaseOptions, ILogger } from '@common/types';

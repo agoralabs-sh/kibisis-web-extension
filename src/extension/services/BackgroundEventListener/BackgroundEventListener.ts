@@ -10,9 +10,9 @@ import {
 import { AppTypeEnum } from '@extension/enums';
 
 // services
-import AppWindowManagerService from './AppWindowManagerService';
-import PrivateKeyService from './PrivateKeyService';
-import StorageManager from './StorageManager';
+import AppWindowManagerService from '../AppWindowManagerService';
+import PrivateKeyService from '../PrivateKeyService';
+import StorageManager from '../StorageManager';
 
 // types
 import { IBaseOptions, ILogger } from '@common/types';

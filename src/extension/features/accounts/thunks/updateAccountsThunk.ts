@@ -7,7 +7,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 import { AccountsThunkEnum } from '@extension/enums';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { ILogger } from '@common/types';

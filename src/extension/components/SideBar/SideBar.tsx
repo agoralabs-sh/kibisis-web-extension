@@ -59,7 +59,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, IAppThunkDispatch, INetwork } from '@extension/types';

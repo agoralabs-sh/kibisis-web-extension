@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { AccountsThunkEnum } from '@extension/enums';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { ILogger } from '@common/types';

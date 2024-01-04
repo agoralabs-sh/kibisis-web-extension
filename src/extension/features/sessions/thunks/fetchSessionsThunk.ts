@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { SessionsThunkEnum } from '@extension/enums';
 
 // services
-import { SessionService } from '@extension/services';
+import SessionService from '@extension/services/SessionService';
 
 // types
 import { ILogger } from '@common/types';

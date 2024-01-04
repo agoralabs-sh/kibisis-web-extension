@@ -4,7 +4,7 @@ import {
   IAccountInformation,
   INetworkWithTransactionParams,
 } from '@extension/types';
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // selectors
 import useSelectAccountByAddress from './useSelectAccountByAddress';

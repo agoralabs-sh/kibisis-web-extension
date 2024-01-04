@@ -12,7 +12,7 @@ import { ACCOUNTS_ITEM_KEY_PREFIX } from '@extension/constants';
 import { AssetTypeEnum } from '@extension/enums';
 
 // services
-import StorageManager from './StorageManager';
+import StorageManager from '../StorageManager';
 
 // types
 import { IBaseOptions, ILogger } from '@common/types';

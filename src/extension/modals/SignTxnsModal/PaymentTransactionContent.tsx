@@ -24,7 +24,7 @@ import { ICondensedProps } from './types';
 // utils
 import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 interface IProps {
   condensed?: ICondensedProps;

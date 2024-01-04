@@ -7,7 +7,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 import { StandardAssetsThunkEnum } from '@extension/enums';
 
 // services
-import { StandardAssetService } from '@extension/services';
+import StandardAssetService from '@extension/services/StandardAssetService';
 
 // types
 import { ILogger } from '@common/types';

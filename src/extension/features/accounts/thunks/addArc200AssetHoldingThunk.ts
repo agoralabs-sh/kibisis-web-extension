@@ -10,7 +10,7 @@ import { updateAccountInformation } from '@extension/features/accounts';
 import { AccountsThunkEnum, AssetTypeEnum } from '@extension/enums';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { ILogger } from '@common/types';

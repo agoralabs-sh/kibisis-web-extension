@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { Arc200AssetsThunkEnum } from '@extension/enums';
 
 // services
-import { Arc200AssetService } from '@extension/services';
+import Arc200AssetService from '@extension/services/Arc200AssetService';
 
 // types
 import { ILogger } from '@common/types';

@@ -11,7 +11,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import { useSelectAccounts } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // theme
 import { theme } from '@extension/theme';

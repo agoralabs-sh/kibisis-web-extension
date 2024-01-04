@@ -31,7 +31,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { ILogger } from '@common/types';

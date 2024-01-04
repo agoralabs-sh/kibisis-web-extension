@@ -7,7 +7,7 @@ import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 import { SessionsThunkEnum } from '@extension/enums';
 
 // services
-import { StorageManager } from '@extension/services';
+import StorageManager from '@extension/services/StorageManager';
 
 // types
 import { ILogger } from '@common/types';

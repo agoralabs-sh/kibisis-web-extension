@@ -7,7 +7,7 @@ import { initReactI18next } from 'react-i18next';
 import { SETTINGS_APPEARANCE_KEY } from '@extension/constants';
 
 // services
-import { StorageManager } from '@extension/services';
+import StorageManager from '@extension/services/StorageManager';
 
 // translations
 import { en } from '@extension/translations';

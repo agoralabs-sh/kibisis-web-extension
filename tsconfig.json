@@ -55,7 +55,7 @@
       "@extension/pages/*": ["src/extension/pages/*"],
       "@extension/routers/*": ["src/extension/routers/*"],
       "@extension/selectors": ["src/extension/selectors"],
-      "@extension/services": ["src/extension/services"],
+      "@extension/services/*": ["src/extension/services/*"],
       "@extension/styles/*": ["src/external/styles/*"],
       "@extension/theme": ["src/extension/theme"],
       "@extension/translations": ["src/extension/translations"],

@@ -1,20 +1,20 @@
 // constants
-import { STANDARD_ASSETS_KEY_PREFIX } from '@extension/constants';
+import { ARC200_ASSETS_KEY_PREFIX } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
 
 // services
-import StorageManager from './StorageManager';
+import StorageManager from '../StorageManager';
 
 // types
 import { IBaseOptions, ILogger } from '@common/types';
-import { IStandardAsset } from '@extension/types';
+import { IArc200Asset } from '@extension/types';
 
 // utils
 import { convertGenesisHashToHex } from '@extension/utils';
 
-export default class StandardAssetService {
+export default class Arc200AssetService {
   // private variables
   private readonly logger: ILogger | null;
   private readonly storageManager: StorageManager;
@@ -28,27 +28,15 @@ export default class StandardAssetService {
    * public static functions
    */
 
-  public static initializeDefaultStandardAsset(): IStandardAsset {
+  public static initializeDefaultArc200Asset(): IArc200Asset {
     return {
-      clawbackAddress: null,
-      creator: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       decimals: 0,
-      defaultFrozen: false,
-      deleted: false,
-      freezeAddress: null,
       iconUrl: null,
       id: '0',
-      managerAddress: null,
-      metadataHash: null,
-      name: null,
-      nameBase64: null,
-      reserveAddress: null,
-      total: '0',
-      type: AssetTypeEnum.Standard,
-      unitName: null,
-      unitNameBase64: null,
-      url: null,
-      urlBase64: null,
+      name: 'Null',
+      symbol: 'NULL',
+      totalSupply: '0',
+      type: AssetTypeEnum.Arc200,
       verified: false,
     };
   }
@@ -60,10 +48,10 @@ export default class StandardAssetService {
   /**
    * Convenience function that simply creates an item key by hex encoding the genesis hash.
    * @param {string} genesisHash - the genesis hash to use to index.
-   * @returns {string} the asset item key.
+   * @returns {string} the arc200 asset item key.
    */
   private createItemKey(genesisHash: string): string {
-    return `${STANDARD_ASSETS_KEY_PREFIX}${convertGenesisHashToHex(
+    return `${ARC200_ASSETS_KEY_PREFIX}${convertGenesisHashToHex(
       genesisHash
     ).toUpperCase()}`;
   }
@@ -73,14 +61,12 @@ export default class StandardAssetService {
    */
 
   /**
-   * Gets the standard assets for a given genesis hash.
+   * Gets the ARC200 assets for a given genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
-   * @returns {Promise<IStandardAsset[]>} the list of standard assets.
+   * @returns {Promise<IArc200Asset[]>} the list of standard assets.
    */
-  public async getByGenesisHash(
-    genesisHash: string
-  ): Promise<IStandardAsset[]> {
-    const assets: IStandardAsset[] | null = await this.storageManager.getItem(
+  public async getByGenesisHash(genesisHash: string): Promise<IArc200Asset[]> {
+    const assets: IArc200Asset[] | null = await this.storageManager.getItem(
       this.createItemKey(genesisHash)
     );
 
@@ -89,13 +75,13 @@ export default class StandardAssetService {
     }
 
     return assets.map((value) => ({
-      ...StandardAssetService.initializeDefaultStandardAsset(), // add any new properties
+      ...Arc200AssetService.initializeDefaultArc200Asset(), // add any new properties
       ...value,
     }));
   }
 
   /**
-   * Removes all the standard assets by the network's genesis hash.
+   * Removes all the ARC200 assets by the network's genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
    */
   public async removeByGenesisHash(genesisHash: string): Promise<void> {
@@ -103,15 +89,15 @@ export default class StandardAssetService {
   }
 
   /**
-   * Saves standard assets to storage by the network's genesis hash.
+   * Saves ARC200 assets to storage by the network's genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
-   * @param {IStandardAsset[]} assets - the standard assets to save to storage.
-   * @returns {IStandardAsset[]} the saved standard assets.
+   * @param {IArc200Asset[]} assets - the ARC200 assets to save to storage.
+   * @returns {IArc200Asset[]} the saved ARC200 assets.
    */
   public async saveByGenesisHash(
     genesisHash: string,
-    assets: IStandardAsset[]
-  ): Promise<IStandardAsset[]> {
+    assets: IArc200Asset[]
+  ): Promise<IArc200Asset[]> {
     await this.storageManager.setItems({
       [this.createItemKey(genesisHash)]: assets,
     });

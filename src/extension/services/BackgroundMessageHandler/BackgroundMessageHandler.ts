@@ -42,12 +42,12 @@ import {
 } from '@common/messages';
 
 // services
-import AccountService from './AccountService';
-import AppWindowManagerService from './AppWindowManagerService';
-import EventQueueService from './EventQueueService';
-import PrivateKeyService from './PrivateKeyService';
-import SessionService from './SessionService';
-import StorageManager from './StorageManager';
+import AccountService from '../AccountService';
+import AppWindowManagerService from '../AppWindowManagerService';
+import EventQueueService from '../EventQueueService';
+import PrivateKeyService from '../PrivateKeyService';
+import SessionService from '../SessionService';
+import StorageManager from '../StorageManager';
 
 // types
 import { IBaseOptions, ILogger, IResponseMessages } from '@common/types';

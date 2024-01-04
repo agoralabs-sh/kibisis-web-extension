@@ -35,7 +35,7 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, INetwork, IStandardAsset } from '@extension/types';

@@ -1,5 +1,5 @@
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount } from '@extension/types';

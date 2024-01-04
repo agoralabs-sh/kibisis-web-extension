@@ -13,7 +13,7 @@ import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import {

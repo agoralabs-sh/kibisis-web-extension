@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import useSelectAccounts from './useSelectAccounts';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, IMainRootState } from '@extension/types';

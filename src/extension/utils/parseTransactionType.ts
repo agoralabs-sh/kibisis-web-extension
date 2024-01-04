@@ -5,7 +5,7 @@ import { EncodedTransaction, OnApplicationComplete } from 'algosdk';
 import { TransactionTypeEnum } from '@extension/enums';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';

@@ -7,7 +7,7 @@ import { NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX } from '@extension/constants
 import { NetworksThunkEnum } from '@extension/enums';
 
 // services
-import { StorageManager } from '@extension/services';
+import StorageManager from '@extension/services/StorageManager';
 
 // types
 import { ILogger } from '@common/types';

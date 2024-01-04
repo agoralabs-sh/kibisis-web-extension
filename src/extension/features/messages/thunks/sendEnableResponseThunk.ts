@@ -13,7 +13,7 @@ import { removeEventByIdThunk } from '@extension/features/events';
 import { EnableResponseMessage } from '@common/messages';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { ILogger } from '@common/types';

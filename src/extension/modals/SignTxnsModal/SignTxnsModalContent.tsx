@@ -47,7 +47,7 @@ import {
   convertGenesisHashToHex,
   parseTransactionType,
 } from '@extension/utils';
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 interface IProps {
   network: INetwork;

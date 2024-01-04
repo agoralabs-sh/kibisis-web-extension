@@ -38,7 +38,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectColorMode } from '@extension/selectors';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // types
 import { IAccount, IArc200Asset, INetwork } from '@extension/types';

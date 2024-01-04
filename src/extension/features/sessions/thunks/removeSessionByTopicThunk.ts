@@ -6,7 +6,7 @@ import { getSdkError } from '@walletconnect/utils';
 import { SessionsThunkEnum } from '@extension/enums';
 
 // services
-import { SessionService } from '@extension/services';
+import SessionService from '@extension/services/SessionService';
 
 // types
 import { ILogger } from '@common/types';

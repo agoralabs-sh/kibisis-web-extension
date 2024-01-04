@@ -20,7 +20,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // services
-import { AccountService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
 
 // theme
 import { theme } from '@extension/theme';

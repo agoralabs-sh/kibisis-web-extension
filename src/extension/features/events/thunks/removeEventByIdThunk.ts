@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { EventsThunkEnum } from '@extension/enums';
 
 // services
-import { EventQueueService } from '@extension/services';
+import EventQueueService from '@extension/services/EventQueueService';
 
 // types
 import { ILogger } from '@common/types';

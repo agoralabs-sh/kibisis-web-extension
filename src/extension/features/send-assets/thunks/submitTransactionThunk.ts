@@ -17,7 +17,8 @@ import {
 } from '@extension/errors';
 
 // services
-import { AccountService, PrivateKeyService } from '@extension/services';
+import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import { ILogger } from '@common/types';

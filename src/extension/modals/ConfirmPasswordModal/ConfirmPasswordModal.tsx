@@ -32,7 +32,7 @@ import { DEFAULT_GAP } from '@extension/constants';
 import { useSelectLogger } from '@extension/selectors';
 
 // services
-import { PrivateKeyService } from '@extension/services';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // theme
 import { theme } from '@extension/theme';

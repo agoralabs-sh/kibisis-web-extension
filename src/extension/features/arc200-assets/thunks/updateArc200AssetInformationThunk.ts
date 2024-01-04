@@ -7,7 +7,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 import { Arc200AssetsThunkEnum } from '@extension/enums';
 
 // services
-import { Arc200AssetService } from '@extension/services';
+import Arc200AssetService from '@extension/services/Arc200AssetService';
 
 // types
 import { ILogger } from '@common/types';
