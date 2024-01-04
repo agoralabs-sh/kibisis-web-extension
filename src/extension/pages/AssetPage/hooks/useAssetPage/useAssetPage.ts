@@ -29,7 +29,7 @@ import {
 import { IUseAssetPageOptions, IUseAssetPageState } from './types';
 
 // utils
-import { convertToStandardUnit } from '@common/utils';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 
 export default function useAssetPage({
   address,

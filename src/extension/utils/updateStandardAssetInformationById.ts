@@ -10,7 +10,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { getAlgodClient } from '@common/utils';
+import getAlgodClient from '@common/utils/getAlgodClient';
 import fetchStandardAssetInformationWithDelay from './fetchStandardAssetInformationWithDelay';
 import mapStandardAssetFromAlgorandAsset from './mapStandardAssetFromAlgorandAsset';
 

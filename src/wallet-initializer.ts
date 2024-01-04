@@ -8,7 +8,7 @@ import { ILogger } from '@common/types';
 import { IWindow } from '@external/types';
 
 // utils
-import { createLogger } from '@common/utils';
+import createLogger from '@common/utils/createLogger';
 
 (() => {
   const logger: ILogger = createLogger(

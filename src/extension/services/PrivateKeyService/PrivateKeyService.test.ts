@@ -9,7 +9,7 @@ import PrivateKeyService from './PrivateKeyService';
 import type { ILogger } from '@common/types';
 
 // utils
-import { createLogger } from '@common/utils';
+import createLogger from '@common/utils/createLogger';
 
 describe(PrivateKeyService.name, () => {
   let account: Account;

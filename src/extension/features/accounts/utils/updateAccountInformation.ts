@@ -13,7 +13,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { getAlgodClient } from '@common/utils';
+import getAlgodClient from '@common/utils/getAlgodClient';
 import { mapAlgorandAccountInformationToAccount } from '@extension/utils';
 import algorandAccountInformationWithDelay from './algorandAccountInformationWithDelay';
 import fetchArc200AssetHoldingWithDelay from './fetchArc200AssetHoldingWithDelay';

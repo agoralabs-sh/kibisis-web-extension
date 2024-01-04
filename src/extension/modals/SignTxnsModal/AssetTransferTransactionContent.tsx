@@ -30,7 +30,8 @@ import {
 import { ICondensedProps } from './types';
 
 // utils
-import { convertToStandardUnit, formatCurrencyUnit } from '@common/utils';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import { createIconFromDataUri, parseTransactionType } from '@extension/utils';
 
 interface IProps {

@@ -62,7 +62,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { computeGroupId } from '@common/utils';
+import computeGroupId from '@common/utils/computeGroupId';
 import {
   getAuthorizedAddressesForHost,
   selectDefaultNetwork,

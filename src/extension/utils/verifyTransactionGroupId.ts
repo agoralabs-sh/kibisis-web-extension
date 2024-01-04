@@ -2,7 +2,7 @@ import { Transaction } from 'algosdk';
 import { encode as encodeBase64 } from '@stablelib/base64';
 
 // utils
-import { computeGroupId } from '@common/utils';
+import computeGroupId from '@common/utils/computeGroupId';
 
 /**
  * Verifies that a group of transactions has valid assigned group IDs. Each group ID must match each other and they

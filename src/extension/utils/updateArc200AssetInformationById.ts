@@ -7,7 +7,8 @@ import {
 } from '@extension/types';
 
 // utils
-import { getAlgodClient, getIndexerClient } from '@common/utils';
+import getAlgodClient from '@common/utils/getAlgodClient';
+import getIndexerClient from '@common/utils/getIndexerClient';
 import fetchArc200AssetInformationWithDelay from './fetchArc200AssetInformationWithDelay';
 import mapArc200AssetFromArc200AssetInformation from './mapArc200AssetFromArc200AssetInformation';
 

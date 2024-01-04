@@ -10,7 +10,7 @@ import { ILogger } from '@common/types';
 import { ISettings } from '@extension/types';
 
 // utils
-import { createLogger } from '@common/utils';
+import createLogger from '@common/utils/createLogger';
 
 (async () => {
   const browserAction: Action.Static | BrowserAction.Static =

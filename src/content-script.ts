@@ -7,7 +7,7 @@ import ExternalMessageBroker from '@external/services/ExternalMessageBroker';
 import { ILogger } from '@common/types';
 
 // utils
-import { createLogger } from '@common/utils';
+import createLogger from '@common/utils/createLogger';
 import injectScript from '@external/utils/injectScript';
 
 (() => {

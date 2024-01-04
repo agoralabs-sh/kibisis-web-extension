@@ -31,7 +31,7 @@ import {
 } from '../types';
 
 // utils
-import { getIndexerClient } from '@common/utils';
+import getIndexerClient from '@common/utils/getIndexerClient';
 import {
   convertGenesisHashToHex,
   fetchVerifiedStandardAssetList,

@@ -59,7 +59,7 @@ import { theme } from '@extension/theme';
 import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
 
 // utils
-import { formatCurrencyUnit } from '@common/utils';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import { ellipseAddress } from '@extension/utils';
 
 const AssetPage: FC = () => {

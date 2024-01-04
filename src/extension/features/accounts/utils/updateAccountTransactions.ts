@@ -12,7 +12,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { getIndexerClient } from '@common/utils';
+import getIndexerClient from '@common/utils/getIndexerClient';
 import { mapAlgorandTransactionToTransaction } from '@extension/utils';
 import lookupAlgorandAccountTransactionsWithDelay from './lookupAlgorandAccountTransactionsWithDelay';
 import refreshTransactions from './refreshTransactions';

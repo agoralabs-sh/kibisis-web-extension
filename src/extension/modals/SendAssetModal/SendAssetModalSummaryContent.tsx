@@ -34,7 +34,7 @@ import {
 
 // utils
 import { createIconFromDataUri } from '@extension/utils';
-import { convertToAtomicUnit } from '@common/utils';
+import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 
 interface IProps {
   amountInStandardUnits: string;

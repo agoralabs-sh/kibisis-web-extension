@@ -44,7 +44,7 @@ import type {
 } from '@common/types';
 
 // utils
-import { mapSerializableErrors } from '@common/utils';
+import mapSerializableErrors from '@common/utils/mapSerializableErrors';
 
 type IResults = IBaseSignBytesResponsePayload | IEnableResult | ISignTxnsResult;
 

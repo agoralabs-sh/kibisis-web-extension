@@ -10,7 +10,7 @@ import {
 } from '@extension/types';
 
 // utils
-import { getRandomNode } from '@common/utils';
+import getRandomNode from '@common/utils/getRandomNode';
 
 /**
  * Fetches the transaction params for a give network.

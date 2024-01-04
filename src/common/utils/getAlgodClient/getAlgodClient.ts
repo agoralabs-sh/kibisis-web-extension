@@ -5,7 +5,7 @@ import { IBaseOptions } from '@common/types';
 import { INetwork, INode } from '@extension/types';
 
 // utils
-import getRandomNode from './getRandomNode';
+import getRandomNode from '../getRandomNode';
 
 /**
  * Gets a random algod node from the given network.
