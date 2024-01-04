@@ -133,10 +133,52 @@ const configs: (
       optimization = {
         splitChunks: {
           cacheGroups: {
+            default: false,
+            ['dompurify']: {
+              chunks: 'all',
+              maxSize,
+              name: 'dompurify',
+              priority: 90,
+              reuseExistingChunk: true,
+              test: /[\\/]node_modules[\\/]dompurify[\\/]/,
+            },
+            ['lodash.isequal']: {
+              chunks: 'all',
+              maxSize,
+              name: 'lodash.isequal',
+              priority: 90,
+              reuseExistingChunk: true,
+              test: /[\\/]node_modules[\\/]lodash.isequal[\\/]/,
+            },
+            ['lodash.mergewith']: {
+              chunks: 'all',
+              maxSize,
+              name: 'lodash.mergewith',
+              priority: 90,
+              reuseExistingChunk: true,
+              test: /[\\/]node_modules[\\/]lodash.mergewith[\\/]/,
+            },
+            ['react-markdown']: {
+              chunks: 'all',
+              maxSize,
+              name: 'react-markdown',
+              priority: 90,
+              reuseExistingChunk: true,
+              test: /[\\/]node_modules[\\/](react-markdown|mdast-util-from-markdown|decode-named-character-reference)[\\/]/,
+            },
+            ['react']: {
+              chunks: 'all',
+              maxSize,
+              name: 'react',
+              priority: 90,
+              reuseExistingChunk: true,
+              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            },
             vendor: {
               chunks: 'all',
               maxSize,
               name: 'vendor',
+              priority: 10,
               reuseExistingChunk: true,
               test: /[\\/]node_modules[\\/]/,
             },
