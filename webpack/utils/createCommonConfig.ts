@@ -14,6 +14,7 @@ export default function createCommonConfig(): Configuration {
   const externalPath: string = resolve(SRC_PATH, 'external');
 
   return {
+    node: false,
     resolve: {
       alias: {
         // common
