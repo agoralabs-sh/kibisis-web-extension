@@ -4,19 +4,19 @@ SCRIPT_DIR=$(dirname "${0}")
 
 source "${SCRIPT_DIR}/set_vars.sh"
 
-# Public: Gets an access token and uploads & publishes the package to the Chrome Web Store API.
+# Public: Gets an access token and uploads & publishes the package to the Chrome Web Store.
 #
 # Required environment variables:
 # * CHROME_WEB_STORE_API_CLIENT_ID - a client ID for the Chrome Web Store API.
 # * CHROME_WEB_STORE_API_CLIENT_SECRET - a client secret for the Chrome Web Store API.
 # * CHROME_WEB_STORE_API_REFRESH_TOKEN - a refresh token to get an access token for the Chrome Web Store API.
 #
-# $1 - Chrome item ID.
+# $1 - chrome item id.
 # $2 - path to zip build.
 #
 # Examples
 #
-#   ./bin/publish_to_chrome.sh "/path/to/file.zip"
+#   ./bin/publish_to_chrome_web_store.sh "${CHROME_WEB_STORE_ITEM_ID}" "/path/to/file.zip"
 #
 # Returns exit code 0 if successful, or 1 the zip file does not exist, the item id is missing, or if the required
 # environment variables are missing.
@@ -29,17 +29,17 @@ function main {
   set_vars
 
   if [ -z "${1}" ]; then
-    printf "%b no item id provided, use: ./bin/publish_to_chrome.sh [item_id] [path_to_zip] \n" "${ERROR_PREFIX}"
+    printf "%b no item id provided, use: ./bin/publish_to_chrome_web_store.sh [item_id] [path_to_zip] \n" "${ERROR_PREFIX}"
     exit 1
   fi
 
   if [ -z "${2}" ]; then
-    printf "%b no zip path specified, use: ./bin/publish_to_chrome.sh [item_id] [path_to_zip] \n" "${ERROR_PREFIX}"
+    printf "%b no zip path specified, use: ./bin/publish_to_chrome_web_store.sh [item_id] [path_to_zip] \n" "${ERROR_PREFIX}"
     exit 1
   fi
 
   if [ ! -f "${2}" ]; then
-    printf "%b zip file not found at ${1} \n" "${ERROR_PREFIX}"
+    printf "%b zip file not found at ${2} \n" "${ERROR_PREFIX}"
     exit 1
   fi
 
