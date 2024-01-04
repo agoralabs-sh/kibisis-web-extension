@@ -51,8 +51,10 @@ body:
       label: What browser are you seeing the problem on?
       multiple: true
       options:
-        - Firefox
+        - Brave
         - Chrome
+        - Edge
+        - Firefox
     validations:
       required: true
   # description
