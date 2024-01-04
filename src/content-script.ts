@@ -20,9 +20,9 @@ import injectScript from '@external/utils/injectScript';
     });
 
   // inject the web resources into the web page to initialize the window.algorand object
-  injectScript(browser.runtime.getURL('wallet-initializer.js'));
+  injectScript(browser.runtime.getURL('legacy-provider.js'));
 
-  // listen to incoming webpage messages (messages coming from the injected wallet-initializer.js script in the webpage)
+  // listen to incoming webpage messages (messages coming from the injected legacy-provider.js script in the webpage)
   window.addEventListener(
     'message',
     externalMessageBroker.onRequestMessage.bind(externalMessageBroker)

@@ -1,7 +1,7 @@
 import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 
 // services
-import KibisisWalletManager from '@external/services/KibisisWalletManager';
+import LegacyProvider from '@external/services/LegacyProvider';
 
 // types
 import { ILogger } from '@common/types';
@@ -15,7 +15,7 @@ import createLogger from '@common/utils/createLogger';
     __ENV__ === 'development' ? 'debug' : 'error'
   );
   const script: string = 'kibisis';
-  let walletManager: KibisisWalletManager;
+  let legacyProvider: LegacyProvider;
 
   // check for the algorand provider, if it doesn't exist, overwrite it
   if (
@@ -27,12 +27,12 @@ import createLogger from '@common/utils/createLogger';
     (window as IWindow).algorand = new AlgorandProvider();
   }
 
-  walletManager = new KibisisWalletManager({
+  legacyProvider = new LegacyProvider({
     logger,
   });
 
   // add the wallet manager
-  (window as IWindow).algorand?.addWallet(walletManager, {
+  (window as IWindow).algorand?.addWallet(legacyProvider, {
     replace: true,
   });
 })();

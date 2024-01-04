@@ -48,7 +48,7 @@ import mapSerializableErrors from '@common/utils/mapSerializableErrors';
 
 type IResults = IBaseSignBytesResponsePayload | IEnableResult | ISignTxnsResult;
 
-export default class KibisisWalletManager extends BaseWalletManager {
+export default class LegacyProvider extends BaseWalletManager {
   private readonly logger: ILogger | null;
 
   constructor({ logger }: IBaseOptions) {
@@ -169,7 +169,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
 
       this.logger &&
         this.logger.debug(
-          `${KibisisWalletManager.name}#${_functionName}(): handling event "${message.type}"`
+          `${LegacyProvider.name}#${_functionName}(): handling event "${message.type}"`
         );
 
       eventListener = (event: MessageEvent<IResponseMessages>) => {
@@ -183,7 +183,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
 
         this.logger &&
           this.logger.debug(
-            `${KibisisWalletManager.name}#${_functionName}(): handling response event "${event.data.type}"`
+            `${LegacyProvider.name}#${_functionName}(): handling response event "${event.data.type}"`
           );
 
         // clear the timer, we can handle it from here
@@ -224,7 +224,7 @@ export default class KibisisWalletManager extends BaseWalletManager {
       timer = window.setTimeout(() => {
         this.logger &&
           this.logger.debug(
-            `${KibisisWalletManager.name}#${_functionName}(): event "${message.type}" timed out`
+            `${LegacyProvider.name}#${_functionName}(): event "${message.type}" timed out`
           );
 
         window.removeEventListener('message', eventListener);

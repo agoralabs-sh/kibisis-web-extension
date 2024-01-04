@@ -249,7 +249,7 @@ const configs: (
       entry: {
         ['background']: resolve(SRC_PATH, 'background.ts'),
         ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
-        ['wallet-initializer']: resolve(SRC_PATH, 'wallet-initializer.ts'),
+        ['legacy-provider']: resolve(SRC_PATH, 'legacy-provider.ts'),
       },
       mode: environment,
       module: {

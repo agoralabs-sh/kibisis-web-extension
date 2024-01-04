@@ -10,7 +10,7 @@
   "web_accessible_resources": [
     {
       "matches": ["*://*/*"],
-      "resources": ["wallet-initializer.js"]
+      "resources": ["legacy-provider.js"]
     }
   ]
 }
