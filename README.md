@@ -27,11 +27,17 @@
 </p>
 
 <p align="center">
-  <a href="https://addons.mozilla.org/en-GB/firefox/addon/kibisis" target="_blank">
-    <img src="https://img.shields.io/amo/v/kibisis?logo=firefox" alt="Mozilla add-on" />
-  </a>
   <a href="https://chromewebstore.google.com/detail/kibisis/hcgejekffjilpgbommjoklpneekbkajb" target="_blank">
-    <img alt="Chrome Web Store Version" src="https://img.shields.io/chrome-web-store/v/hcgejekffjilpgbommjoklpneekbkajb?logo=googlechrome">
+    <img alt="Chrome Web Store Version" src="https://img.shields.io/chrome-web-store/v/hcgejekffjilpgbommjoklpneekbkajb?logo=googlechrome&logoColor=%23FFCE44&color=%23FFCE44">
+  </a>
+
+  <a href="https://microsoftedge.microsoft.com/addons/detail/kibisis/bajncpocmkioafbijldokfbjajelkbmc" target="_blank">
+    <img alt="Microsoft Edge Add-on Version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbajncpocmkioafbijldokfbjajelkbmc%3Fhl%3Den-GB%26gl%3DGB&query=%24.version&prefix=v&logo=microsoftedge&logoColor=%230078D7&label=microsoft%20edge%20add-on&color=%230078D7" />
+  </a>
+
+  <a href="https://addons.mozilla.org/en-GB/firefox/addon/kibisis" target="_blank">
+    <img alt="Mozilla Add-on Version" src="https://img.shields.io/amo/v/kibisis?logo=firefox&logoColor=%23FF7139&color=%23FF7139
+" />
   </a>
 </p>
 
