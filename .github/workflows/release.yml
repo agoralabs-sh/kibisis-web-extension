@@ -38,6 +38,7 @@ jobs:
       - name: "📝 Create .env file"
         uses: ./.github/actions/create-env-file
         with:
+          provider_id: ${{ vars.PROVIDER_ID }}
           walletconnect_project_id: ${{ secrets.PRODUCTION_WALLETCONNECT_PROJECT_ID }}
       - name: "🔖 Release"
         env:
