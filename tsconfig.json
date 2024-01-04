@@ -64,7 +64,7 @@
       "@external/constants": ["src/external/constants"],
       "@external/services/*": ["src/external/services/*"],
       "@external/types": ["src/external/types"],
-      "@external/utils": ["src/external/utils"]
+      "@external/utils/*": ["src/external/utils/*"]
     },
     "removeComments": false,
     "resolveJsonModule": true,

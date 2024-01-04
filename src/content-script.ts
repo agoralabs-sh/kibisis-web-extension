@@ -8,7 +8,7 @@ import { ILogger } from '@common/types';
 
 // utils
 import { createLogger } from '@common/utils';
-import { injectScript } from '@external/utils';
+import injectScript from '@external/utils/injectScript';
 
 (() => {
   const logger: ILogger = createLogger(
