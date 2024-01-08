@@ -34,11 +34,11 @@ import { theme } from '@extension/theme';
 // types
 import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
-import { IAccountInformation } from './types';
+import { IAccountInformation } from '../../types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
-import { createKeyRegistrationTransaction } from './utils';
+import { createKeyRegistrationTransaction } from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;

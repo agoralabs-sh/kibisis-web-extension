@@ -39,11 +39,11 @@ import { theme } from '@extension/theme';
 // types
 import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
-import { IAccountInformation } from './types';
+import { IAccountInformation } from '../../types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
-import { createAppCallTransaction } from './utils';
+import { createAppCallTransaction } from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;

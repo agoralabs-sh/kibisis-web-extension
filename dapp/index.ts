@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
 // components
-import App from './App';
+import App from './components/App/App';
 
 async function onLoad(): Promise<void> {
   const rootElement: HTMLElement | null = document.getElementById('root');

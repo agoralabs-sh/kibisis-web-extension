@@ -27,10 +27,10 @@ import { theme } from '@extension/theme';
 
 // types
 import { IWindow } from '@external/types';
-import { IAccountInformation } from './types';
+import { IAccountInformation } from '../../types';
 
 // utils
-import { isValidJwt } from './utils';
+import { isValidJwt } from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;

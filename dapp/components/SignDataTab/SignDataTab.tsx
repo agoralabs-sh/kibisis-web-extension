@@ -23,7 +23,7 @@ import { theme } from '@extension/theme';
 
 // types
 import { IWindow } from '@external/types';
-import { IAccountInformation } from './types';
+import { IAccountInformation } from '../../types';
 
 interface IProps {
   account: IAccountInformation | null;

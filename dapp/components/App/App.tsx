@@ -40,13 +40,13 @@ import WalletConnectIcon from '@extension/components/WalletConnectIcon';
 import { networks } from '@extension/config';
 
 // tabs
-import ApplicationActionsTab from './ApplicationActionsTab';
-import AssetActionsTab from './AssetActionsTab';
-import AtomicTransactionActionsTab from './AtomicTransactionActionsTab';
-import KeyRegistrationActionsTab from './KeyRegistrationActionsTab';
-import PaymentActionsTab from './PaymentActionsTab';
-import SignDataTab from './SignDataTab';
-import SignJwtTab from './SignJwtTab';
+import ApplicationActionsTab from '../ApplicationActionsTab';
+import AssetActionsTab from '../AssetActionsTab';
+import AtomicTransactionActionsTab from '../AtomicTransactionActionsTab';
+import KeyRegistrationActionsTab from '../KeyRegistrationActionsTab';
+import PaymentActionsTab from '../PaymentActionsTab';
+import SignDataTab from '../SignDataTab';
+import SignJwtTab from '../SignJwtTab';
 
 // theme
 import { theme } from '@extension/theme';
@@ -54,10 +54,10 @@ import { theme } from '@extension/theme';
 // types
 import { IWindow } from '@external/types';
 import { INetwork } from '@extension/types';
-import { IAccountInformation } from './types';
+import { IAccountInformation } from '../../types';
 
 // utils
-import { getAccountInformation } from './utils';
+import { getAccountInformation } from '../../utils';
 
 const App: FC = () => {
   const toast: CreateToastFnReturn = useToast({

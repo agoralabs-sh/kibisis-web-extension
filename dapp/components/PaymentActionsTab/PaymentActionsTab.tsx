@@ -40,12 +40,12 @@ import { theme } from '@extension/theme';
 // types
 import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
-import { IAccountInformation } from './types';
+import { IAccountInformation } from '../../types';
 
 // utils
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
-import { createPaymentTransaction } from './utils';
+import { createPaymentTransaction } from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;

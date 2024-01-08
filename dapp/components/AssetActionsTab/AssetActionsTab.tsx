@@ -48,7 +48,7 @@ import { theme } from '@extension/theme';
 // types
 import { INetwork } from '@extension/types';
 import { IWindow } from '@external/types';
-import { IAccountInformation, IAssetInformation } from './types';
+import { IAccountInformation, IAssetInformation } from '../../types';
 
 // utils
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
@@ -59,7 +59,7 @@ import {
   createAssetDestroyTransaction,
   createAssetFreezeTransaction,
   createAssetTransferTransaction,
-} from './utils';
+} from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;
