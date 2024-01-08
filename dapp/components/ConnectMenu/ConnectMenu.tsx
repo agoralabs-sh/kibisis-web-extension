@@ -20,6 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import React, { FC } from 'react';
+import { useWallet } from '@txnlab/use-wallet';
 import { SessionTypes } from '@walletconnect/types';
 import { useConnect } from '@web3modal/sign-react';
 
@@ -72,6 +73,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
       },
     },
   });
+  const { providers } = useWallet();
   // misc
   const algorandTestNetGenesisHash: string =
     'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=';
@@ -134,7 +136,9 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
         });
       }
     };
-  const handleConnectViaUseWallet = () => async () => {};
+  const handleConnectViaUseWallet = (genesisHash: string) => async () => {
+    console.log(providers);
+  };
   const handleWalletConnect = async () => {
     const data: SessionTypes.Struct = await connect();
 
@@ -147,6 +151,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
       <TagLabel>TestNet</TagLabel>
     </Tag>
   );
+
   return (
     <Menu>
       <MenuButton
@@ -189,7 +194,9 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
         <MenuDivider />
 
         <MenuGroup title="@txnlab/use-wallet">
-          <MenuItem>
+          <MenuItem
+            onClick={handleConnectViaUseWallet(algorandTestNetGenesisHash)}
+          >
             <HStack alignItems="center" w="full">
               <Text size="sm">Connect to Algorand</Text>
 
@@ -197,7 +204,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
             </HStack>
           </MenuItem>
 
-          <MenuItem>
+          <MenuItem onClick={handleConnectViaUseWallet(voiTestNetGenesisHash)}>
             <HStack alignItems="center" w="full">
               <Text size="sm">Connect to Voi</Text>
 
