@@ -19,11 +19,11 @@ import {
   PROVIDER_ID,
   SupportedProviders,
   useInitializeProviders,
+  WalletClient,
   WalletProvider,
 } from '@txnlab/use-wallet';
 import { Web3ModalSign } from '@web3modal/sign-react';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
-import algosdk from 'algosdk';
 
 // components
 import ApplicationActionsTab from '../ApplicationActionsTab';
@@ -66,8 +66,7 @@ const App: FC = () => {
         clientOptions: {
           name: 'Kibisis',
           icon: ICON_URI,
-          getProvider: ({ algod, algosdkStatic }) =>
-            new CustomUseWalletProvider(algosdkStatic ?? algosdk, algod),
+          getProvider: () => new CustomUseWalletProvider(),
         },
       },
     ],
@@ -91,7 +90,7 @@ const App: FC = () => {
       setSelectedAccount(account);
     }
   };
-  const onConnectProvider = ({
+  const handleConnectProvider = ({
     accounts,
     connectionType,
     network,
@@ -100,7 +99,7 @@ const App: FC = () => {
     setConnectionType(connectionType);
     setSelectedNetwork(network);
   };
-  const onResetProvider = () => {
+  const handleResetProvider = () => {
     setEnabledAccounts([]);
     setConnectionType(null);
     setSelectedNetwork(null);
@@ -153,8 +152,8 @@ const App: FC = () => {
 
                 {/*connect menu*/}
                 <ConnectMenu
-                  onConnect={onConnectProvider}
-                  onReset={onResetProvider}
+                  onConnect={handleConnectProvider}
+                  onReset={handleResetProvider}
                 />
               </HStack>
 

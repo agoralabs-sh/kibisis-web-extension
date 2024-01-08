@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import React, { FC } from 'react';
-import { useWallet } from '@txnlab/use-wallet';
+import { Provider, PROVIDER_ID, useWallet } from '@txnlab/use-wallet';
 import { SessionTypes } from '@walletconnect/types';
 import { useConnect } from '@web3modal/sign-react';
 
@@ -73,7 +73,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
       },
     },
   });
-  const { providers } = useWallet();
+  const { providers, clients } = useWallet();
   // misc
   const algorandTestNetGenesisHash: string =
     'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=';
@@ -137,7 +137,29 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
       }
     };
   const handleConnectViaUseWallet = (genesisHash: string) => async () => {
-    console.log(providers);
+    const provider: Provider | null =
+      providers?.find((value) => value.metadata.id === PROVIDER_ID.CUSTOM) ||
+      null;
+
+    if (!provider) {
+      toast({
+        status: 'error',
+        title: `Use Wallet Provider Not Initialized`,
+      });
+
+      return;
+    }
+
+    // set the genesis hash
+    (
+      provider as Provider & {
+        providerProxy: {
+          setGenesisHash: (genesisHash: string) => void;
+        };
+      }
+    ).providerProxy.setGenesisHash(genesisHash);
+
+    await provider.connect();
   };
   const handleWalletConnect = async () => {
     const data: SessionTypes.Struct = await connect();

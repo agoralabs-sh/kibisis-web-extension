@@ -10,8 +10,17 @@ import {
   PROVIDER_ID,
   Wallet,
 } from '@txnlab/use-wallet';
-import type algoSdk from 'algosdk';
+import {
+  Algodv2,
+  decodeObj,
+  decodeSignedTransaction,
+  decodeUnsignedTransaction,
+  encodeAddress,
+} from 'algosdk';
 import { v4 as uuid } from 'uuid';
+
+// config
+import { networks } from '@extension/config';
 
 // constants
 import {
@@ -49,7 +58,7 @@ import {
   IArc0013SignTxnsResult,
   ILogger,
 } from '@common/types';
-import { IAlgorandAccountInformation } from '@extension/types';
+import { IAlgorandAccountInformation, INetwork } from '@extension/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';
@@ -63,15 +72,12 @@ export interface SendRequestWithTimeoutOptions<Params> {
 }
 
 export default class CustomUseWalletProvider implements CustomProvider {
-  private readonly algod: algoSdk.Algodv2 | null;
-  private readonly algoSdk: typeof algoSdk;
-  private genesisHash: string;
+  private algod: Algodv2 | null = null;
+  public genesisHash: string | null = null;
   private methods: Arc0013ProviderMethodEnum[];
   private readonly logger: ILogger;
 
-  constructor(_algoSdk: typeof algoSdk, algod?: algoSdk.Algodv2) {
-    this.algod = algod || null;
-    this.algoSdk = _algoSdk;
+  constructor() {
     this.logger = createLogger('debug');
   }
 
@@ -141,15 +147,23 @@ export default class CustomUseWalletProvider implements CustomProvider {
    */
 
   private async enable(): Promise<IArc0013Account[]> {
+    const _functionName: string = '_functionName';
     const method: Arc0013ProviderMethodEnum = Arc0013ProviderMethodEnum.Enable;
     let result: IArc0013EnableResult | null;
 
     this.logger.debug(
-      `${CustomUseWalletProvider.name}#${this.enable.name}(): check if "${method}" is supported on "${this.genesisHash}"`
+      `${CustomUseWalletProvider.name}#${_functionName}(): check if "${method}" is supported on "${this.genesisHash}"`
     );
 
     // check the method is supported
     this.validateMethod(method);
+
+    if (!this.genesisHash) {
+      throw new SerializableArc0013UnknownError(
+        `no genesis hash set`,
+        __PROVIDER_ID__
+      );
+    }
 
     result =
       (await CustomUseWalletProvider.sendRequestWithTimeout<
@@ -190,14 +204,22 @@ export default class CustomUseWalletProvider implements CustomProvider {
   }
 
   private async refreshSupportedMethods(): Promise<void> {
+    const _functionName: string = 'signTxns';
     const method: Arc0013ProviderMethodEnum =
       Arc0013ProviderMethodEnum.GetProviders;
     let networkConfiguration: IArc0013NetworkConfiguration | null;
     let result: IArc0013GetProvidersResult | null;
 
     this.logger.debug(
-      `${CustomUseWalletProvider.name}#${this.refreshSupportedMethods.name}(): refreshing supported methods`
+      `${CustomUseWalletProvider.name}#${_functionName}(): refreshing supported methods`
     );
+
+    if (!this.genesisHash) {
+      throw new SerializableArc0013UnknownError(
+        `no genesis hash set`,
+        __PROVIDER_ID__
+      );
+    }
 
     result =
       (await CustomUseWalletProvider.sendRequestWithTimeout<
@@ -245,16 +267,24 @@ export default class CustomUseWalletProvider implements CustomProvider {
   }
 
   private async signTxns(txns: IArc0013SignTxns[]): Promise<(string | null)[]> {
+    const _functionName: string = 'signTxns';
     const method: Arc0013ProviderMethodEnum =
       Arc0013ProviderMethodEnum.SignTxns;
     let result: IArc0013SignTxnsResult | null;
 
     this.logger.debug(
-      `${CustomUseWalletProvider.name}#${this.signTxns.name}(): check if "${method}" is supported on "${this.genesisHash}"`
+      `${CustomUseWalletProvider.name}#${_functionName}(): check if "${method}" is supported on "${this.genesisHash}"`
     );
 
     // check the method is supported
     this.validateMethod(method);
+
+    if (!this.genesisHash) {
+      throw new SerializableArc0013UnknownError(
+        `no genesis hash set`,
+        __PROVIDER_ID__
+      );
+    }
 
     result =
       (await CustomUseWalletProvider.sendRequestWithTimeout<
@@ -320,7 +350,27 @@ export default class CustomUseWalletProvider implements CustomProvider {
   }
 
   public setGenesisHash(genesisHash: string): void {
+    const _functionName: string = 'setGenesisHash';
+    const network: INetwork | null =
+      networks.find((value) => value.genesisHash === genesisHash) || null;
+
+    if (!network) {
+      this.logger.debug(
+        `${CustomUseWalletProvider.name}#${_functionName}(): unknown network for ${genesisHash}`
+      );
+
+      return;
+    }
+
     this.genesisHash = genesisHash;
+
+    if (network.algods[0]) {
+      this.algod = new Algodv2(
+        '',
+        network.algods[0].url,
+        network.algods[0].port
+      );
+    }
   }
 
   public async signTransactions(
@@ -337,12 +387,10 @@ export default class CustomUseWalletProvider implements CustomProvider {
     txns = await Promise.all(
       transactions.map<Promise<IArc0013SignTxns>>(async (value, index) => {
         const decodedTxn: DecodedTransaction | DecodedSignedTransaction =
-          this.algoSdk.decodeObj(value) as
-            | DecodedTransaction
-            | DecodedSignedTransaction;
+          decodeObj(value) as DecodedTransaction | DecodedSignedTransaction;
         const isSigned: boolean = !!(decodedTxn as DecodedSignedTransaction)
           .txn;
-        const sender: string = this.algoSdk.encodeAddress(
+        const sender: string = encodeAddress(
           isSigned
             ? (decodedTxn as DecodedSignedTransaction).txn.snd
             : (decodedTxn as DecodedTransaction).snd
@@ -358,9 +406,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
         // if the transaction is signed, instruct the provider not to sign
         if (isSigned) {
           return {
-            txn: encodeBase64(
-              this.algoSdk.decodeSignedTransaction(value).txn.toByte()
-            ),
+            txn: encodeBase64(decodeSignedTransaction(value).txn.toByte()),
             signers: [],
           };
         }
@@ -372,18 +418,14 @@ export default class CustomUseWalletProvider implements CustomProvider {
           connectedAccounts.includes(sender)
         ) {
           return {
-            txn: encodeBase64(
-              this.algoSdk.decodeUnsignedTransaction(value).toByte()
-            ),
+            txn: encodeBase64(decodeUnsignedTransaction(value).toByte()),
             ...(authAddr && { authAddr }),
           };
         }
 
         // if the transaction is not signed, not instructed to sign or the sender is not authorized, instruct the provider not to sign
         return {
-          txn: encodeBase64(
-            this.algoSdk.decodeUnsignedTransaction(value).toByte()
-          ),
+          txn: encodeBase64(decodeUnsignedTransaction(value).toByte()),
           signers: [],
         };
       })
