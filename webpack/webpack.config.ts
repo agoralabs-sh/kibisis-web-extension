@@ -394,6 +394,12 @@ const configs: (
         pathinfo: false,
       },
       plugins: [
+        new DefinePlugin({
+          __PROVIDER_ID__: JSON.stringify(process.env.PROVIDER_ID),
+          __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
+            process.env.WALLET_CONNECT_PROJECT_ID
+          ),
+        }),
         new HtmlWebpackPlugin({
           chunks: ['main'],
           favicon: resolve(DAPP_SRC_PATH, 'favicon.png'),

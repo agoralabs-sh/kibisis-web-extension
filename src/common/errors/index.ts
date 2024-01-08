@@ -1,4 +1,9 @@
+export { default as BaseSerializableArc0013Error } from './BaseSerializableArc0013Error';
 export { default as BaseSerializableError } from './BaseSerializableError';
+export { default as SerializableArc0013MethodNotSupportedError } from './SerializableArc0013MethodNotSupportedError';
+export { default as SerializableArc0013MethodTimedOutError } from './SerializableArc0013MethodTimedOutError';
+export { default as SerializableArc0013NetworkNotSupportedError } from './SerializableArc0013NetworkNotSupportedError';
+export { default as SerializableArc0013UnknownError } from './SerializableArc0013UnknownError';
 export { default as SerializableInvalidGroupIdError } from './SerializableInvalidGroupIdError';
 export { default as SerializableInvalidInputError } from './SerializableInvalidInputError';
 export { default as SerializableNetworkNotSupportedError } from './SerializableNetworkNotSupportedError';

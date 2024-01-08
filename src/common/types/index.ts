@@ -1,3 +1,14 @@
+export type { default as IArc0013Account } from './IArc0013Account';
+export type { default as IArc0013EnableParams } from './IArc0013EnableParams';
+export type { default as IArc0013EnableResult } from './IArc0013EnableResult';
+export type { default as IArc0013GetProvidersParams } from './IArc0013GetProvidersParams';
+export type { default as IArc0013GetProvidersResult } from './IArc0013GetProvidersResult';
+export type { default as IArc0013NetworkConfiguration } from './IArc0013NetworkConfiguration';
+export type { default as IArc0013RequestMessageSchema } from './IArc0013RequestMessageSchema';
+export type { default as IArc0013ResponseMessageSchema } from './IArc0013ResponseMessageSchema';
+export type { default as IArc0013SignTxns } from './IArc0013SignTxns';
+export type { default as IArc0013SignTxnsParams } from './IArc0013SignTxnsParams';
+export type { default as IArc0013SignTxnsResult } from './IArc0013SignTxnsResult';
 export type { default as IBaseOptions } from './IBaseOptions';
 export type { default as IBaseRequestPayload } from './IBaseRequestPayload';
 export type { default as IBaseSignBytesRequestPayload } from './IBaseSignBytesRequestPayload';

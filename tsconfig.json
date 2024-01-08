@@ -18,6 +18,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "paths": {
+      "@common/constants": ["src/common/constants"],
       "@common/enums": ["src/common/enums"],
       "@common/errors": ["src/common/errors"],
       "@common/messages": ["src/common/messages"],
