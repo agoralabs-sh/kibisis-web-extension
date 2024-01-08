@@ -3,7 +3,7 @@ import { Algodv2, IntDecoding } from 'algosdk';
 // types
 import { IAlgorandAccountInformation } from '@extension/types';
 
-interface IOptions {
+export interface IOptions {
   address: string;
   client: Algodv2;
   delay: number;
