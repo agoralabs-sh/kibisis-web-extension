@@ -11,11 +11,17 @@ import {
   IResponseMessages,
 } from '@common/types';
 
+interface IOptions extends IBaseOptions {
+  channel: BroadcastChannel;
+}
+
 export default class ExternalMessageBroker {
   // private variables
+  private readonly channel: BroadcastChannel;
   private readonly logger: ILogger | null;
 
-  constructor({ logger }: IBaseOptions) {
+  constructor({ channel, logger }: IOptions) {
+    this.channel = channel;
     this.logger = logger || null;
   }
 
@@ -42,7 +48,9 @@ export default class ExternalMessageBroker {
     }
   }
 
-  public async onRequestMessage(
+  public async onRequestMessage(message: MessageEvent): Promise<void> {}
+
+  public async onLegacyRequestMessage(
     message: MessageEvent<IRequestMessages>
   ): Promise<void> {
     const _functionName: string = 'onRequestMessage';
