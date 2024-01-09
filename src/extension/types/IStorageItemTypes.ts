@@ -5,7 +5,7 @@ import IAppearanceSettings from './IAppearanceSettings';
 import IAppWindow from './IAppWindow';
 import IArc200Asset from './IArc200Asset';
 import IGeneralSettings from './IGeneralSettings';
-import IEvent from './IEvent';
+import IClientEvent from './IClientEvent';
 import IPasswordTag from './IPasswordTag';
 import IPrivateKey from './IPrivateKey';
 import ISession from './ISession';
@@ -19,7 +19,7 @@ type IStorageItemTypes =
   | IAppWindow
   | IArc200Asset[]
   | IGeneralSettings
-  | IEvent[]
+  | IClientEvent[]
   | IPasswordTag
   | IPrivateKey
   | ISession

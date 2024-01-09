@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
-import { EventTypeEnum, EventsThunkEnum } from '@extension/enums';
+import { ClientEventTypeEnum, EventsThunkEnum } from '@extension/enums';
 
 // features
 import {
@@ -16,7 +16,7 @@ import EventQueueService from '@extension/services/EventQueueService';
 // types
 import { ILogger } from '@common/types';
 import {
-  IEvent,
+  IClientEvent,
   IEnableEventPayload,
   IMainRootState,
   ISignBytesEventPayload,
@@ -34,7 +34,7 @@ const handleNewEventByIdThunk: AsyncThunk<
     const eventQueueService: EventQueueService = new EventQueueService({
       logger,
     });
-    const event: IEvent | null = await eventQueueService.getById(eventId);
+    const event: IClientEvent | null = await eventQueueService.getById(eventId);
 
     if (!event) {
       logger.debug(
@@ -45,51 +45,61 @@ const handleNewEventByIdThunk: AsyncThunk<
     }
 
     switch (event.type) {
-      case EventTypeEnum.Enable:
+      case ClientEventTypeEnum.Enable:
         dispatch(
           setEnableRequest({
-            appName: (event as IEvent<IEnableEventPayload>).payload.appName,
+            appName: (event as IClientEvent<IEnableEventPayload>).payload
+              .appName,
             authorizedAddresses: [], // no addresses have been selected
-            description: (event as IEvent<IEnableEventPayload>).payload
+            description: (event as IClientEvent<IEnableEventPayload>).payload
               .description,
-            host: (event as IEvent<IEnableEventPayload>).payload.host,
-            iconUrl: (event as IEvent<IEnableEventPayload>).payload.iconUrl,
-            network: (event as IEvent<IEnableEventPayload>).payload.network,
+            host: (event as IClientEvent<IEnableEventPayload>).payload.host,
+            iconUrl: (event as IClientEvent<IEnableEventPayload>).payload
+              .iconUrl,
+            network: (event as IClientEvent<IEnableEventPayload>).payload
+              .network,
             requestEventId: event.id,
             tabId: event.originTabId,
           })
         );
 
         break;
-      case EventTypeEnum.SignBytes:
+      case ClientEventTypeEnum.SignBytes:
         dispatch(
           setSignBytesRequest({
-            appName: (event as IEvent<ISignBytesEventPayload>).payload.appName,
-            authorizedAddresses: (event as IEvent<ISignBytesEventPayload>)
+            appName: (event as IClientEvent<ISignBytesEventPayload>).payload
+              .appName,
+            authorizedAddresses: (event as IClientEvent<ISignBytesEventPayload>)
               .payload.authorizedAddresses,
-            encodedData: (event as IEvent<ISignBytesEventPayload>).payload
+            encodedData: (event as IClientEvent<ISignBytesEventPayload>).payload
               .encodedData,
-            host: (event as IEvent<ISignBytesEventPayload>).payload.host,
-            iconUrl: (event as IEvent<ISignBytesEventPayload>).payload.iconUrl,
-            signer: (event as IEvent<ISignBytesEventPayload>).payload.signer,
+            host: (event as IClientEvent<ISignBytesEventPayload>).payload.host,
+            iconUrl: (event as IClientEvent<ISignBytesEventPayload>).payload
+              .iconUrl,
+            signer: (event as IClientEvent<ISignBytesEventPayload>).payload
+              .signer,
             requestEventId: event.id,
             tabId: event.originTabId,
           })
         );
 
         break;
-      case EventTypeEnum.SignTxns:
+      case ClientEventTypeEnum.SignTxns:
         dispatch(
           setSignTxnsRequest({
-            appName: (event as IEvent<ISignTxnsEventPayload>).payload.appName,
-            authorizedAddresses: (event as IEvent<ISignTxnsEventPayload>)
+            appName: (event as IClientEvent<ISignTxnsEventPayload>).payload
+              .appName,
+            authorizedAddresses: (event as IClientEvent<ISignTxnsEventPayload>)
               .payload.authorizedAddresses,
-            host: (event as IEvent<ISignTxnsEventPayload>).payload.host,
-            iconUrl: (event as IEvent<ISignTxnsEventPayload>).payload.iconUrl,
-            network: (event as IEvent<ISignTxnsEventPayload>).payload.network,
+            host: (event as IClientEvent<ISignTxnsEventPayload>).payload.host,
+            iconUrl: (event as IClientEvent<ISignTxnsEventPayload>).payload
+              .iconUrl,
+            network: (event as IClientEvent<ISignTxnsEventPayload>).payload
+              .network,
             requestEventId: event.id,
             tabId: event.originTabId,
-            transactions: (event as IEvent<ISignTxnsEventPayload>).payload.txns,
+            transactions: (event as IClientEvent<ISignTxnsEventPayload>).payload
+              .txns,
           })
         );
 

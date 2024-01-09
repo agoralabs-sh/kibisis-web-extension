@@ -1,8 +1,8 @@
 // types
-import { IBaseRequestPayload } from '@common/types';
+import { IClientInformation } from '@common/types';
 import INetwork from './INetwork';
 
-interface IEnableEventPayload extends IBaseRequestPayload {
+interface IEnableEventPayload extends IClientInformation {
   network: INetwork;
 }
 

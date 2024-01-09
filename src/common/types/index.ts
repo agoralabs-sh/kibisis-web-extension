@@ -12,8 +12,8 @@ export type { default as IArc0013SignBytesResult } from './IArc0013SignBytesResu
 export type { default as IArc0013SignTxnsParams } from './IArc0013SignTxnsParams';
 export type { default as IArc0013SignTxnsResult } from './IArc0013SignTxnsResult';
 export type { default as IBaseOptions } from './IBaseOptions';
-export type { default as IBaseRequestPayload } from './IBaseRequestPayload';
 export type { default as IBaseSignBytesRequestPayload } from './IBaseSignBytesRequestPayload';
 export type { default as IBaseSignBytesResponsePayload } from './IBaseSignBytesResponsePayload';
+export type { default as IClientInformation } from './IClientInformation';
 export type { default as ILogger } from './ILogger';
 export type { default as ILogLevel } from './ILogLevel';

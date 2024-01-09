@@ -5,11 +5,11 @@
  * @property {string} host - used in the identity of the dApp. This is taken from the host of the dApp.
  * @property {string | null} iconUrl - the icon of the dApp. This is extracted from the dApp's favicon.
  */
-interface IBaseRequestPayload {
+interface IClientInformation {
   appName: string;
   description: string | null;
   host: string;
   iconUrl: string | null;
 }
 
-export default IBaseRequestPayload;
+export default IClientInformation;

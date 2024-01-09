@@ -5,7 +5,7 @@ import { Arc0013ErrorCodeEnum } from '@common/enums';
 import BaseSerializableArc0013Error from './BaseSerializableArc0013Error';
 
 interface IData {
-  signer: string;
+  signer: string | null;
 }
 
 export default class SerializableArc0013UnauthorizedSignerError extends BaseSerializableArc0013Error {
@@ -14,7 +14,7 @@ export default class SerializableArc0013UnauthorizedSignerError extends BaseSeri
   public readonly data: IData;
   public readonly name: string = 'UnauthorizedSignerError';
 
-  constructor(signer: string, providerId: string, message?: string) {
+  constructor(signer: string | null, providerId: string, message?: string) {
     super(message || `unauthorized signer "${signer}"`, providerId);
 
     this.data = {

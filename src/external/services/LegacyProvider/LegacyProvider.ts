@@ -64,7 +64,6 @@ import type {
   IArc0013SignTxnsParams,
   IArc0013SignTxnsResult,
   IBaseOptions,
-  IBaseRequestPayload,
   ILogger,
 } from '@common/types';
 
@@ -82,98 +81,6 @@ export default class LegacyProvider extends BaseWalletManager {
   /**
    * private functions
    */
-
-  /**
-   * Convenience function that constructs the base request properties.
-   * * appName - uses the content of the "application-name" meta tag, if this doesn't exist, it falls back to the document title.
-   * * description - uses the content of the "description" meta tag, if it exists.
-   * * host - uses host of the web page.
-   * * iconUrl - uses the favicon of the web page.
-   * @returns {IBaseRequestPayload} the base extension payload properties.
-   * @private
-   */
-  private createBaseRequestPayload(): IBaseRequestPayload {
-    return {
-      appName:
-        document
-          .querySelector('meta[name="application-name"]')
-          ?.getAttribute('content') || document.title,
-      description:
-        document
-          .querySelector('meta[name="description"]')
-          ?.getAttribute('content') || null,
-      host: `${window.location.protocol}//${window.location.host}`,
-      iconUrl: this.extractFaviconUrl(),
-    };
-  }
-
-  /**
-   * Utility function to extract the favicon URL.
-   * @returns {string} the favicon URL or null if no favicon is found.
-   * @see {@link https://stackoverflow.com/a/16844961}
-   * @private
-   */
-  private extractFaviconUrl(): string | null {
-    const links: HTMLCollectionOf<HTMLElementTagNameMap['link']> =
-      document.getElementsByTagName('link');
-    const iconUrls: string[] = [];
-
-    for (const link of Array.from(links)) {
-      const rel: string | null = link.getAttribute('rel');
-      let href: string | null;
-      let origin: string;
-
-      // if the link is not an icon; a favicon, ignore
-      if (!rel || !rel.toLowerCase().includes('icon')) {
-        continue;
-      }
-
-      href = link.getAttribute('href');
-
-      // if there is no href attribute there is no url
-      if (!href) {
-        continue;
-      }
-
-      // if it is an absolute url, just use it
-      if (
-        href.toLowerCase().indexOf('https:') === 0 ||
-        href.toLowerCase().indexOf('http:') === 0
-      ) {
-        iconUrls.push(href);
-
-        continue;
-      }
-
-      // if is an absolute url without a protocol,add the protocol
-      if (href.toLowerCase().indexOf('//') === 0) {
-        iconUrls.push(`${window.location.protocol}${href}`);
-
-        continue;
-      }
-
-      // whats left is relative urls
-      origin = `${window.location.protocol}//${window.location.host}`;
-
-      // if there is no forward slash prepended, the favicon is relative to the page
-      if (href.indexOf('/') === -1) {
-        href = window.location.pathname
-          .split('/')
-          .map((value, index, array) =>
-            !href || index < array.length - 1 ? value : href
-          ) // replace the current path with the href
-          .join('/');
-      }
-
-      iconUrls.push(`${origin}${href}`);
-    }
-
-    return (
-      iconUrls.find((value) => value.match(/\.(jpg|jpeg|png|gif)$/i)) || // favour image files over ico
-      iconUrls[0] ||
-      null
-    );
-  }
 
   private async handleEvent<Params, Result>(
     method: Arc0013ProviderMethodEnum,
