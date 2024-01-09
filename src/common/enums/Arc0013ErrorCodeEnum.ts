@@ -7,6 +7,7 @@ enum Arc0013ErrorCodeEnum {
   UnauthorizedSignerError = 4100,
   InvalidInputError = 4200,
   InvalidGroupIdError = 4201,
+  FailedToPostSomeTransactionsError = 4300,
 }
 
 export default Arc0013ErrorCodeEnum;

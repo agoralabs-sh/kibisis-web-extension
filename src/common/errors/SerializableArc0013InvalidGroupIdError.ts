@@ -1,16 +1,28 @@
-import { ErrorCodeEnum } from '@agoralabs-sh/algorand-provider';
+// enums
+import { Arc0013ErrorCodeEnum } from '@common/enums';
 
 // errors
-import BaseSerializableError from './BaseSerializableError';
+import BaseSerializableArc0013Error from './BaseSerializableArc0013Error';
 
-export default class SerializableInvalidGroupIdError extends BaseSerializableError {
-  public readonly code: ErrorCodeEnum = ErrorCodeEnum.InvalidGroupIdError;
+interface IData {
+  computedGroupId: string;
+}
+
+export default class SerializableArc0013InvalidGroupIdError extends BaseSerializableArc0013Error {
+  public readonly code: Arc0013ErrorCodeEnum =
+    Arc0013ErrorCodeEnum.InvalidGroupIdError;
+  public readonly data: IData;
   public readonly name: string = 'InvalidGroupIdError';
 
-  constructor(computedGroupId: string, message?: string) {
+  constructor(computedGroupId: string, providerId: string, message?: string) {
     super(
       message ||
-        `computed group id "${computedGroupId}" does not match the assigned id of one or more transactions`
+        `computed group id "${computedGroupId}" does not match the assigned id of one or more transactions`,
+      providerId
     );
+
+    this.data = {
+      computedGroupId,
+    };
   }
 }

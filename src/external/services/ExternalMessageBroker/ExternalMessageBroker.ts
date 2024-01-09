@@ -1,10 +1,14 @@
 import browser from 'webextension-polyfill';
 
 // enums
-import { MessageTypeEnum } from '@common/enums';
+import { Arc0013MessageReferenceEnum, MessageTypeEnum } from '@common/enums';
+
+// messages
+import { BaseArc0013RequestMessage } from '@common/messages';
 
 // types
-import {
+import type {
+  IArc0013ParamTypes,
   IBaseOptions,
   ILogger,
   IRequestMessages,
@@ -29,6 +33,19 @@ export default class ExternalMessageBroker {
    * public functions
    */
 
+  public async onArc0013RequestMessage(
+    message: MessageEvent<BaseArc0013RequestMessage<IArc0013ParamTypes>>
+  ): Promise<void> {
+    const _functionName: string = 'onArc0013RequestMessage';
+
+    switch (message.data.reference) {
+      case Arc0013MessageReferenceEnum.GetProvidersRequest:
+        break;
+      default:
+        break;
+    }
+  }
+
   public onResponseMessage(message: IResponseMessages): void {
     const _functionName: string = 'onResponseMessage';
 
@@ -48,12 +65,10 @@ export default class ExternalMessageBroker {
     }
   }
 
-  public async onRequestMessage(message: MessageEvent): Promise<void> {}
-
   public async onLegacyRequestMessage(
     message: MessageEvent<IRequestMessages>
   ): Promise<void> {
-    const _functionName: string = 'onRequestMessage';
+    const _functionName: string = 'onLegacyRequestMessage';
 
     if (message.source !== window || !message.data) {
       return;
