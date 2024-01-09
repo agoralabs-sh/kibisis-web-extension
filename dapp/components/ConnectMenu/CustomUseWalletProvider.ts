@@ -30,10 +30,7 @@ import {
 } from '@common/constants';
 
 // enums
-import {
-  Arc0013MessageReferenceEnum,
-  Arc0013ProviderMethodEnum,
-} from '@common/enums';
+import { Arc0013ProviderMethodEnum } from '@common/enums';
 
 // errors
 import {
@@ -43,6 +40,15 @@ import {
   SerializableArc0013UnknownError,
 } from '@common/errors';
 
+// messages
+import {
+  Arc0013EnableRequestMessage,
+  Arc0013GetProvidersRequestMessage,
+  Arc0013SignTxnsRequestMessage,
+  BaseArc0013RequestMessage,
+  BaseArc0013ResponseMessage,
+} from '@common/messages';
+
 // types
 import {
   IArc0013Account,
@@ -51,9 +57,7 @@ import {
   IArc0013GetProvidersParams,
   IArc0013GetProvidersResult,
   IArc0013NetworkConfiguration,
-  IArc0013RequestMessageSchema,
-  IArc0013ResponseMessageSchema,
-  IArc0013SignTxns,
+  IArc0001SignTxns,
   IArc0013SignTxnsParams,
   IArc0013SignTxnsResult,
   ILogger,
@@ -66,8 +70,7 @@ import algorandAccountInformationWithDelay from '@extension/utils/algorandAccoun
 
 export interface SendRequestWithTimeoutOptions<Params> {
   method: Arc0013ProviderMethodEnum;
-  params: Params;
-  reference: Arc0013MessageReferenceEnum;
+  message: BaseArc0013RequestMessage<Params>;
   timeout?: number;
 }
 
@@ -87,11 +90,10 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
   private static async sendRequestWithTimeout<Params, Result>({
     method,
-    params,
+    message,
     timeout,
-    reference,
-  }: SendRequestWithTimeoutOptions<Params>): Promise<Result | undefined> {
-    return new Promise<Result | undefined>((resolve, reject) => {
+  }: SendRequestWithTimeoutOptions<Params>): Promise<Result | null> {
+    return new Promise<Result | null>((resolve, reject) => {
       const channel = new BroadcastChannel(ARC_0013_CHANNEL_NAME);
       const requestId = uuid();
       // eslint-disable-next-line prefer-const
@@ -99,7 +101,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
       // listen to responses
       channel.onmessage = (
-        message: MessageEvent<IArc0013ResponseMessageSchema<Result>>
+        message: MessageEvent<BaseArc0013ResponseMessage<Result>>
       ) => {
         // if the response's request id does not match the intended request, just ignore
         if (message.data.requestId !== requestId) {
@@ -111,14 +113,17 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
         // if there is an error, reject
         if (message.data.error) {
-          return reject(message.data.error);
+          reject(message.data.error);
+
+          // close the channel, we are done here
+          return channel.close();
         }
 
         // return the result
         resolve(message.data.result);
 
         // close the channel, we are done here
-        channel.close();
+        return channel.close();
       };
 
       timer = window.setTimeout(() => {
@@ -134,11 +139,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
       }, timeout || ARC_0013_DEFAULT_REQUEST_TIMEOUT);
 
       // broadcast the request
-      channel.postMessage({
-        id: requestId,
-        params,
-        reference,
-      } as IArc0013RequestMessageSchema<Params>);
+      channel.postMessage(message);
     });
   }
 
@@ -170,12 +171,11 @@ export default class CustomUseWalletProvider implements CustomProvider {
         IArc0013EnableParams,
         IArc0013EnableResult
       >({
-        method,
-        params: {
+        message: new Arc0013EnableRequestMessage({
           genesisHash: this.genesisHash,
           providerId: __PROVIDER_ID__,
-        },
-        reference: Arc0013MessageReferenceEnum.EnableRequest,
+        }),
+        method,
       })) || null;
 
     // check for a result
@@ -204,7 +204,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
   }
 
   private async refreshSupportedMethods(): Promise<void> {
-    const _functionName: string = 'signTxns';
+    const _functionName: string = 'refreshSupportedMethods';
     const method: Arc0013ProviderMethodEnum =
       Arc0013ProviderMethodEnum.GetProviders;
     let networkConfiguration: IArc0013NetworkConfiguration | null;
@@ -226,11 +226,10 @@ export default class CustomUseWalletProvider implements CustomProvider {
         IArc0013GetProvidersParams,
         IArc0013GetProvidersResult
       >({
-        method,
-        params: {
+        message: new Arc0013GetProvidersRequestMessage({
           providerId: __PROVIDER_ID__,
-        },
-        reference: Arc0013MessageReferenceEnum.GetProvidersRequest,
+        }),
+        method,
         timeout: ARC_0013_LOWER_REQUEST_TIMEOUT,
       })) || null;
 
@@ -266,7 +265,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
     this.methods = networkConfiguration.methods;
   }
 
-  private async signTxns(txns: IArc0013SignTxns[]): Promise<(string | null)[]> {
+  private async signTxns(txns: IArc0001SignTxns[]): Promise<(string | null)[]> {
     const _functionName: string = 'signTxns';
     const method: Arc0013ProviderMethodEnum =
       Arc0013ProviderMethodEnum.SignTxns;
@@ -279,25 +278,16 @@ export default class CustomUseWalletProvider implements CustomProvider {
     // check the method is supported
     this.validateMethod(method);
 
-    if (!this.genesisHash) {
-      throw new SerializableArc0013UnknownError(
-        `no genesis hash set`,
-        __PROVIDER_ID__
-      );
-    }
-
     result =
       (await CustomUseWalletProvider.sendRequestWithTimeout<
         IArc0013SignTxnsParams,
         IArc0013SignTxnsResult
       >({
-        method,
-        params: {
-          genesisHash: this.genesisHash,
+        message: new Arc0013SignTxnsRequestMessage({
           providerId: __PROVIDER_ID__,
           txns,
-        },
-        reference: Arc0013MessageReferenceEnum.SignTxnsRequest,
+        }),
+        method,
       })) || null;
 
     // check for a result
@@ -335,7 +325,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
       ...metadata,
       accounts: accounts.map(({ address, name }) => ({
         address,
-        name,
+        name: name || '',
         providerId: PROVIDER_ID.CUSTOM,
       })),
     };
@@ -380,12 +370,12 @@ export default class CustomUseWalletProvider implements CustomProvider {
     returnGroup?: boolean | undefined
   ): Promise<Uint8Array[]> {
     let result: (string | null)[];
-    let txns: IArc0013SignTxns[];
+    let txns: IArc0001SignTxns[];
 
     await this.refreshSupportedMethods(); // refresh the supported methods
 
     txns = await Promise.all(
-      transactions.map<Promise<IArc0013SignTxns>>(async (value, index) => {
+      transactions.map<Promise<IArc0001SignTxns>>(async (value, index) => {
         const decodedTxn: DecodedTransaction | DecodedSignedTransaction =
           decodeObj(value) as DecodedTransaction | DecodedSignedTransaction;
         const isSigned: boolean = !!(decodedTxn as DecodedSignedTransaction)

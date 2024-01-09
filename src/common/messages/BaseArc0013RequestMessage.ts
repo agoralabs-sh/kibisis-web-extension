@@ -2,11 +2,11 @@
 import { Arc0013MessageReferenceEnum } from '@common/enums';
 
 // messages
-import BaseArc0013Message from './BaseArc0013Message';
+import BaseMessage from './BaseMessage';
 
 export default class BaseArc0013RequestMessage<
   Params
-> extends BaseArc0013Message {
+> extends BaseMessage<Arc0013MessageReferenceEnum> {
   public readonly params: Params | null;
 
   constructor(reference: Arc0013MessageReferenceEnum, params: Params | null) {

@@ -46,8 +46,8 @@ import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
 import {
-  SerializableOperationCanceledError,
-  SerializableUnknownError,
+  SerializableLegacyOperationCanceledError,
+  SerializableLegacyUnknownError,
 } from '@common/errors';
 
 // features
@@ -98,7 +98,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     if (signTxnsRequest) {
       dispatch(
         sendSignTxnsResponseThunk({
-          error: new SerializableOperationCanceledError(
+          error: new SerializableLegacyOperationCanceledError(
             `user dismissed sign transaction modal`
           ),
           eventId: signTxnsRequest.requestEventId,
@@ -272,7 +272,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           if (signTxnsRequest) {
             dispatch(
               sendSignTxnsResponseThunk({
-                error: new SerializableUnknownError(error.message),
+                error: new SerializableLegacyUnknownError(error.message),
                 eventId: signTxnsRequest.requestEventId,
                 signedTransactions: null,
                 tabId: signTxnsRequest.tabId,

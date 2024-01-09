@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import browser from 'webextension-polyfill';
 
 // enums
-import { MessageTypeEnum } from '@common/enums';
+import { InternalMessageReferenceEnum } from '@common/enums';
 
 // features
 import { handleNewEventByIdThunk } from '@extension/features/events';
@@ -25,11 +25,11 @@ export default function useOnMainAppMessage(): void {
   const logger: ILogger = useSelectLogger();
   const handleMessage = async (message: IMessages) => {
     logger.debug(
-      `${useOnMainAppMessage.name}#${handleMessage.name}(): message "${message.type}" received`
+      `${useOnMainAppMessage.name}#${handleMessage.name}(): message "${message.reference}" received`
     );
 
-    switch (message.type) {
-      case MessageTypeEnum.EventAdded:
+    switch (message.reference) {
+      case InternalMessageReferenceEnum.EventAdded:
         dispatch(handleNewEventByIdThunk(message.payload.eventId));
 
         break;

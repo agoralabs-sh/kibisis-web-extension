@@ -29,7 +29,7 @@ import SessionRequestHeader, {
 import { DEFAULT_GAP } from '@extension/constants';
 
 // errors
-import { SerializableOperationCanceledError } from '@common/errors';
+import { SerializableLegacyOperationCanceledError } from '@common/errors';
 
 // features
 import { setEnableRequest } from '@extension/features/events';
@@ -89,7 +89,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     if (enableRequest) {
       dispatch(
         sendEnableResponseThunk({
-          error: new SerializableOperationCanceledError(
+          error: new SerializableLegacyOperationCanceledError(
             `user dismissed connect modal`
           ),
           eventId: enableRequest.requestEventId,

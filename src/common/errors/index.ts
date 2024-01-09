@@ -1,5 +1,4 @@
 export { default as BaseSerializableArc0013Error } from './BaseSerializableArc0013Error';
-export { default as BaseSerializableError } from './BaseSerializableError';
 export { default as SerializableArc0013FailedToPostSomeTransactionsError } from './SerializableArc0013FailedToPostSomeTransactionsError';
 export { default as SerializableArc0013InvalidGroupIdError } from './SerializableArc0013InvalidGroupIdError';
 export { default as SerializableArc0013InvalidInputError } from './SerializableArc0013InvalidInputError';
@@ -7,10 +6,5 @@ export { default as SerializableArc0013MethodCanceledError } from './Serializabl
 export { default as SerializableArc0013MethodNotSupportedError } from './SerializableArc0013MethodNotSupportedError';
 export { default as SerializableArc0013MethodTimedOutError } from './SerializableArc0013MethodTimedOutError';
 export { default as SerializableArc0013NetworkNotSupportedError } from './SerializableArc0013NetworkNotSupportedError';
+export { default as SerializableArc0013UnauthorizedSignerError } from './SerializableArc0013UnauthorizedSignerError';
 export { default as SerializableArc0013UnknownError } from './SerializableArc0013UnknownError';
-export { default as SerializableInvalidGroupIdError } from './SerializableInvalidGroupIdError';
-export { default as SerializableInvalidInputError } from './SerializableInvalidInputError';
-export { default as SerializableNetworkNotSupportedError } from './SerializableNetworkNotSupportedError';
-export { default as SerializableOperationCanceledError } from './SerializableOperationCanceledError';
-export { default as SerializableUnauthorizedSignerError } from './SerializableUnauthorizedSignerError';
-export { default as SerializableUnknownError } from './SerializableUnknownError';

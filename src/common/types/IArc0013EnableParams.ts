@@ -1,5 +1,5 @@
 interface IArc0013EnableParams {
-  genesisHash: string;
+  genesisHash: string | null;
   providerId: string;
 }
 

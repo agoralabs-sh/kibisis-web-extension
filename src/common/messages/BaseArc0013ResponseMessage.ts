@@ -5,11 +5,11 @@ import { Arc0013MessageReferenceEnum } from '@common/enums';
 import { BaseSerializableArc0013Error } from '@common/errors';
 
 // messages
-import BaseArc0013Message from './BaseArc0013Message';
+import BaseMessage from './BaseMessage';
 
 export default class BaseArc0013ResponseMessage<
   Result
-> extends BaseArc0013Message {
+> extends BaseMessage<Arc0013MessageReferenceEnum> {
   public readonly error: BaseSerializableArc0013Error | null;
   public readonly requestId: string;
   public readonly result: Result | null;

@@ -18,15 +18,15 @@ import {
 } from '@extension/constants';
 
 // enums
-import { MessageTypeEnum } from '@common/enums';
+import { InternalMessageReferenceEnum } from '@common/enums';
 import { AppTypeEnum, EventTypeEnum } from '@extension/enums';
 
 // errors
 import {
-  SerializableInvalidGroupIdError,
-  SerializableInvalidInputError,
-  SerializableNetworkNotSupportedError,
-  SerializableUnauthorizedSignerError,
+  SerializableLegacyInvalidGroupIdError,
+  SerializableLegacyInvalidInputError,
+  SerializableLegacyNetworkNotSupportedError,
+  SerializableLegacyUnauthorizedSignerError,
 } from '@common/errors';
 
 // messages
@@ -175,7 +175,7 @@ export default class BackgroundMessageHandler {
         return await this.sendResponse(
           new EnableResponseMessage(
             null,
-            new SerializableNetworkNotSupportedError(genesisHash)
+            new SerializableLegacyNetworkNotSupportedError(genesisHash)
           ),
           originTabId
         );
@@ -343,7 +343,7 @@ export default class BackgroundMessageHandler {
       return await this.sendResponse(
         new SignBytesResponseMessage(
           null,
-          new SerializableUnauthorizedSignerError( // TODO: use a more relevant error
+          new SerializableLegacyUnauthorizedSignerError( // TODO: use a more relevant error
             '',
             'app has not been authorized'
           )
@@ -371,7 +371,7 @@ export default class BackgroundMessageHandler {
       return await this.sendResponse(
         new SignBytesResponseMessage(
           null,
-          new SerializableUnauthorizedSignerError(payload.signer)
+          new SerializableLegacyUnauthorizedSignerError(payload.signer)
         ),
         originTabId
       );
@@ -419,7 +419,7 @@ export default class BackgroundMessageHandler {
       return await this.sendResponse(
         new SignTxnsResponseMessage(
           null,
-          new SerializableInvalidInputError(errorMessage)
+          new SerializableLegacyInvalidInputError(errorMessage)
         ),
         originTabId
       );
@@ -443,7 +443,7 @@ export default class BackgroundMessageHandler {
       return await this.sendResponse(
         new SignTxnsResponseMessage(
           null,
-          new SerializableInvalidGroupIdError(
+          new SerializableLegacyInvalidGroupIdError(
             encodedComputedGroupId,
             errorMessage
           )
@@ -478,7 +478,7 @@ export default class BackgroundMessageHandler {
       return await this.sendResponse(
         new SignTxnsResponseMessage(
           null,
-          new SerializableInvalidInputError(errorMessage)
+          new SerializableLegacyInvalidInputError(errorMessage)
         ),
         originTabId
       );
@@ -498,7 +498,7 @@ export default class BackgroundMessageHandler {
       return await this.sendResponse(
         new SignTxnsResponseMessage(
           null,
-          new SerializableNetworkNotSupportedError(genesisHash)
+          new SerializableLegacyNetworkNotSupportedError(genesisHash)
         ),
         originTabId
       );
@@ -520,7 +520,7 @@ export default class BackgroundMessageHandler {
       return await this.sendResponse(
         new SignTxnsResponseMessage(
           null,
-          new SerializableUnauthorizedSignerError( // TODO: use a more relevant error
+          new SerializableLegacyUnauthorizedSignerError( // TODO: use a more relevant error
             '',
             'app has not been authorized'
           )
@@ -615,7 +615,7 @@ export default class BackgroundMessageHandler {
 
     this.logger &&
       this.logger.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): sending "${message.type}" to the web page`
+        `${BackgroundMessageHandler.name}#${_functionName}(): sending "${message.reference}" to the web page`
       );
 
     // send the response to the web page, via the content script
@@ -634,30 +634,36 @@ export default class BackgroundMessageHandler {
 
     this.logger &&
       this.logger.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.type}" received`
+        `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.reference}" received`
       );
 
-    switch (message.type) {
-      case MessageTypeEnum.EnableRequest:
-      case MessageTypeEnum.SignBytesRequest:
-      case MessageTypeEnum.SignTxnsRequest:
+    switch (message.reference) {
+      case InternalMessageReferenceEnum.EnableRequest:
+      case InternalMessageReferenceEnum.SignBytesRequest:
+      case InternalMessageReferenceEnum.SignTxnsRequest:
         // handle only if there is an origin tab from the sender
         if (sender.tab?.id) {
-          if (message.type === MessageTypeEnum.EnableRequest) {
+          if (
+            message.reference === InternalMessageReferenceEnum.EnableRequest
+          ) {
             return await this.handleEnableRequestMessage(
               message as EnableRequestMessage,
               sender.tab.id
             );
           }
 
-          if (message.type === MessageTypeEnum.SignBytesRequest) {
+          if (
+            message.reference === InternalMessageReferenceEnum.SignBytesRequest
+          ) {
             return await this.handleSignBytesRequestMessage(
               message as SignBytesRequestMessage,
               sender.tab.id
             );
           }
 
-          if (message.type === MessageTypeEnum.SignTxnsRequest) {
+          if (
+            message.reference === InternalMessageReferenceEnum.SignTxnsRequest
+          ) {
             return await this.handleSignTxnsRequestMessage(
               message as SignTxnsRequestMessage,
               sender.tab.id
@@ -667,13 +673,13 @@ export default class BackgroundMessageHandler {
 
         this.logger &&
           this.logger.debug(
-            `${BackgroundMessageHandler.name}#${_functionName}(): unknown sender for message "${message.type}", ignoring`
+            `${BackgroundMessageHandler.name}#${_functionName}(): unknown sender for message "${message.reference}", ignoring`
           );
 
         break;
-      case MessageTypeEnum.FactoryReset:
+      case InternalMessageReferenceEnum.FactoryReset:
         return await this.handleFactoryResetMessage();
-      case MessageTypeEnum.RegistrationCompleted:
+      case InternalMessageReferenceEnum.RegistrationCompleted:
         return await this.handleRegistrationCompletedMessage();
       default:
         break;

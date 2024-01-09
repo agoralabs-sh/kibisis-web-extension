@@ -1,8 +1,7 @@
 // types
-import IArc0001SignTxns from './IArc0013SignTxns';
+import IArc0001SignTxns from './IArc0001SignTxns';
 
 interface IArc0013SignTxnsParams {
-  genesisHash: string;
   providerId: string;
   txns: IArc0001SignTxns[];
 }

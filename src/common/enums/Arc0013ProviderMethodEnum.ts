@@ -3,8 +3,8 @@ enum Arc0013ProviderMethodEnum {
   GetProviders = 'getProviders',
   PostTxns = 'postTxns',
   SignAndPostTxns = 'signAndPostTxns',
-  SignBytes = 'SignBytes',
-  SignTxns = 'SignTxns',
+  SignBytes = 'signBytes',
+  SignTxns = 'signTxns',
 }
 
 export default Arc0013ProviderMethodEnum;

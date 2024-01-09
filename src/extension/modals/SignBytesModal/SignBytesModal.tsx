@@ -41,8 +41,8 @@ import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
 import {
-  SerializableOperationCanceledError,
-  SerializableUnknownError,
+  SerializableLegacyOperationCanceledError,
+  SerializableLegacyUnknownError,
 } from '@common/errors';
 
 // features
@@ -115,7 +115,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
       dispatch(
         sendSignBytesResponseThunk({
           encodedSignature: null,
-          error: new SerializableOperationCanceledError(
+          error: new SerializableLegacyOperationCanceledError(
             `user dismissed sign bytes modal`
           ),
           eventId: signBytesRequest.requestEventId,
@@ -268,7 +268,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
             dispatch(
               sendSignBytesResponseThunk({
                 encodedSignature: null,
-                error: new SerializableUnknownError(error.message),
+                error: new SerializableLegacyUnknownError(error.message),
                 eventId: signBytesRequest.requestEventId,
                 tabId: signBytesRequest.tabId,
               })

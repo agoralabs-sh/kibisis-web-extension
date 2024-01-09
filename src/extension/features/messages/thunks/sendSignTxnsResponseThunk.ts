@@ -2,7 +2,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
 // enums
-import { MessageTypeEnum } from '@common/enums';
+import { InternalMessageReferenceEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // features
@@ -33,7 +33,7 @@ const sendTxnsBytesResponseThunk: AsyncThunk<
     const logger: ILogger = getState().system.logger;
 
     logger.debug(
-      `${MessagesThunkEnum.SendSignTxnsResponse}: sending "${MessageTypeEnum.SignTxnsResponse}" message to content script`
+      `${MessagesThunkEnum.SendSignTxnsResponse}: sending "${InternalMessageReferenceEnum.SignTxnsResponse}" message to content script`
     );
 
     // send the error the webpage (via the content script)

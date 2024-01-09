@@ -29,18 +29,12 @@ import injectScript from '@external/utils/injectScript';
 
   // listen to incoming extension messages (from the background script / popup)
   browser.runtime.onMessage.addListener(
-    externalMessageBroker.onResponseMessage.bind(externalMessageBroker)
+    externalMessageBroker.onArc0013ResponseMessage.bind(externalMessageBroker)
   );
 
   /**
    * deprecated - this is using algorand-provider, but will be phased out in favour of the broadcastchannel api
    */
-
-  // listen to incoming webpage messages (messages coming from the injected legacy-provider.js script in the webpage)
-  window.addEventListener(
-    'message',
-    externalMessageBroker.onLegacyRequestMessage.bind(externalMessageBroker)
-  );
 
   // inject the web resources into the web page to initialize the window.algorand object
   injectScript(browser.runtime.getURL('legacy-provider.js'));

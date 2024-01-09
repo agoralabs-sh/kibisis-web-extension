@@ -8,22 +8,22 @@ import {
 
 // errors
 import {
-  BaseSerializableError,
-  SerializableNetworkNotSupportedError,
+  BaseSerializableLegacyError,
+  SerializableLegacyNetworkNotSupportedError,
 } from '@common/errors';
 
 /**
  * Utility function that maps the serialized errors to @agoralabs-sh/algorand-provider errors.
- * @param {BaseSerializableError} error - the serialized error.
+ * @param {BaseSerializableLegacyError} error - the serialized error.
  * @returns {BaseError} the serialized error as an @agoralabs-sh/algorand-provider error.
  */
 export default function mapSerializableErrors(
-  error: BaseSerializableError
+  error: BaseSerializableLegacyError
 ): BaseError {
   switch (error.code) {
     case ErrorCodeEnum.NetworkNotSupportedError:
       return new NetworkNotSupportedError(
-        (error as SerializableNetworkNotSupportedError).genesisHash,
+        (error as SerializableLegacyNetworkNotSupportedError).genesisHash,
         error.message
       );
     case ErrorCodeEnum.OperationCanceledError:
