@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
-import { ClientEventTypeEnum, EventsThunkEnum } from '@extension/enums';
+import { EventTypeEnum, EventsThunkEnum } from '@extension/enums';
 
 // features
 import {
@@ -10,17 +10,23 @@ import {
   setSignTxnsRequest,
 } from '../slice';
 
+// messages
+import {
+  Arc0013EnableRequestMessage,
+  Arc0013SignBytesRequestMessage,
+  Arc0013SignTxnsRequestMessage,
+} from '@common/messages';
+
 // services
 import EventQueueService from '@extension/services/EventQueueService';
 
 // types
 import { ILogger } from '@common/types';
 import {
-  IClientEvent,
-  IEnableEventPayload,
+  IClientEventPayload,
+  IEvent,
   IMainRootState,
-  ISignBytesEventPayload,
-  ISignTxnsEventPayload,
+  ISession,
 } from '@extension/types';
 
 const handleNewEventByIdThunk: AsyncThunk<
@@ -31,10 +37,12 @@ const handleNewEventByIdThunk: AsyncThunk<
   EventsThunkEnum.HandleNewEventById,
   async (eventId, { dispatch, getState }) => {
     const logger: ILogger = getState().system.logger;
+    const sessions: ISession[] = getState().sessions.items;
     const eventQueueService: EventQueueService = new EventQueueService({
       logger,
     });
-    const event: IClientEvent | null = await eventQueueService.getById(eventId);
+    const event: IEvent<IClientEventPayload> | null =
+      await eventQueueService.getById(eventId);
 
     if (!event) {
       logger.debug(
@@ -45,61 +53,38 @@ const handleNewEventByIdThunk: AsyncThunk<
     }
 
     switch (event.type) {
-      case ClientEventTypeEnum.Enable:
+      case EventTypeEnum.EnableRequest:
         dispatch(
           setEnableRequest({
-            appName: (event as IClientEvent<IEnableEventPayload>).payload
-              .appName,
-            authorizedAddresses: [], // no addresses have been selected
-            description: (event as IClientEvent<IEnableEventPayload>).payload
-              .description,
-            host: (event as IClientEvent<IEnableEventPayload>).payload.host,
-            iconUrl: (event as IClientEvent<IEnableEventPayload>).payload
-              .iconUrl,
-            network: (event as IClientEvent<IEnableEventPayload>).payload
-              .network,
-            requestEventId: event.id,
-            tabId: event.originTabId,
+            clientInfo: event.payload.clientInfo,
+            eventId: event.id,
+            originMessage: event.payload
+              .originMessage as Arc0013EnableRequestMessage,
+            originTabId: event.payload.originTabId,
           })
         );
 
         break;
-      case ClientEventTypeEnum.SignBytes:
+      case EventTypeEnum.SignBytesRequest:
         dispatch(
           setSignBytesRequest({
-            appName: (event as IClientEvent<ISignBytesEventPayload>).payload
-              .appName,
-            authorizedAddresses: (event as IClientEvent<ISignBytesEventPayload>)
-              .payload.authorizedAddresses,
-            encodedData: (event as IClientEvent<ISignBytesEventPayload>).payload
-              .encodedData,
-            host: (event as IClientEvent<ISignBytesEventPayload>).payload.host,
-            iconUrl: (event as IClientEvent<ISignBytesEventPayload>).payload
-              .iconUrl,
-            signer: (event as IClientEvent<ISignBytesEventPayload>).payload
-              .signer,
-            requestEventId: event.id,
-            tabId: event.originTabId,
+            clientInfo: event.payload.clientInfo,
+            eventId: event.id,
+            originMessage: event.payload
+              .originMessage as Arc0013SignBytesRequestMessage,
+            originTabId: event.payload.originTabId,
           })
         );
 
         break;
-      case ClientEventTypeEnum.SignTxns:
+      case EventTypeEnum.SignTxnsRequest:
         dispatch(
           setSignTxnsRequest({
-            appName: (event as IClientEvent<ISignTxnsEventPayload>).payload
-              .appName,
-            authorizedAddresses: (event as IClientEvent<ISignTxnsEventPayload>)
-              .payload.authorizedAddresses,
-            host: (event as IClientEvent<ISignTxnsEventPayload>).payload.host,
-            iconUrl: (event as IClientEvent<ISignTxnsEventPayload>).payload
-              .iconUrl,
-            network: (event as IClientEvent<ISignTxnsEventPayload>).payload
-              .network,
-            requestEventId: event.id,
-            tabId: event.originTabId,
-            transactions: (event as IClientEvent<ISignTxnsEventPayload>).payload
-              .txns,
+            clientInfo: event.payload.clientInfo,
+            eventId: event.id,
+            originMessage: event.payload
+              .originMessage as Arc0013SignTxnsRequestMessage,
+            originTabId: event.payload.originTabId,
           })
         );
 

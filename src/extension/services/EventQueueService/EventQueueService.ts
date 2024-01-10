@@ -6,7 +6,7 @@ import StorageManager from '../StorageManager';
 
 // types
 import { IBaseOptions, ILogger } from '@common/types';
-import { IClientEvent } from '@extension/types';
+import { IEvent } from '@extension/types';
 
 export default class EventQueueService {
   // private variables
@@ -24,22 +24,22 @@ export default class EventQueueService {
 
   /**
    * Gets all the events.
-   * @returns {Promise<IClientEvent[]>} all the events.
+   * @returns {Promise<IEvent[]>} all the events.
    */
-  public async getAll(): Promise<IClientEvent[]> {
+  public async getAll(): Promise<IEvent[]> {
     const items: Record<string, unknown> =
       await this.storageManager.getAllItems();
 
-    return (items[EVENT_QUEUE_ITEM_KEY] as IClientEvent[]) || [];
+    return (items[EVENT_QUEUE_ITEM_KEY] as IEvent[]) || [];
   }
 
   /**
    * Gets the event for a given ID.
    * @param {string} id - the event ID.
-   * @returns {Promise<IClientEvent | null>} the event or null.
+   * @returns {Promise<IEvent | null>} the event or null.
    */
-  public async getById(id: string): Promise<IClientEvent | null> {
-    const events: IClientEvent[] = await this.getAll();
+  public async getById(id: string): Promise<IEvent | null> {
+    const events: IEvent[] = await this.getAll();
 
     return events.find((value) => value.id === id) || null;
   }
@@ -49,7 +49,7 @@ export default class EventQueueService {
    * @param {string} id - the event ID.
    */
   public async removeById(id: string): Promise<void> {
-    const messages: IClientEvent[] = await this.getAll();
+    const messages: IEvent[] = await this.getAll();
 
     await this.storageManager.setItems({
       [EVENT_QUEUE_ITEM_KEY]: messages.filter((value) => value.id !== id),
@@ -58,12 +58,12 @@ export default class EventQueueService {
 
   /**
    * Saves an event to the event queue. If an event with the same ID exists, it will replace it.
-   * @param {IClientEvent} event - the event to add or replace.
-   * @returns {IClientEvent} the message that was added to the queue.
+   * @param {IEvent} event - the event to add or replace.
+   * @returns {IEvent} the message that was added to the queue.
    */
-  public async save(event: IClientEvent): Promise<IClientEvent> {
+  public async save(event: IEvent): Promise<IEvent> {
     let existingIndex: number;
-    let events: IClientEvent[];
+    let events: IEvent[];
 
     events = await this.getAll();
     existingIndex = events.findIndex((value) => value.id === event.id);

@@ -205,7 +205,8 @@ export default class LegacyProvider extends BaseWalletManager {
         );
       case Arc0013ErrorCodeEnum.UnauthorizedSignerError:
         return new UnauthorizedSignerError(
-          (error as SerializableArc0013UnauthorizedSignerError).data.signer,
+          (error as SerializableArc0013UnauthorizedSignerError).data.signer ||
+            '',
           error.message
         );
       default:

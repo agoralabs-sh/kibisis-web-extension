@@ -3,7 +3,7 @@ export { default as AddAssetThunkEnum } from './AddAssetThunkEnum';
 export { default as AppTypeEnum } from './AppTypeEnum';
 export { default as Arc200AssetsThunkEnum } from './Arc200AssetsThunkEnum';
 export { default as AssetTypeEnum } from './AssetTypeEnum';
-export { default as ClientEventTypeEnum } from './ClientEventTypeEnum';
+export { default as EventTypeEnum } from './EventTypeEnum';
 export { default as ErrorCodeEnum } from './ErrorCodeEnum';
 export { default as EventsThunkEnum } from './EventsThunkEnum';
 export { default as MessagesThunkEnum } from './MessagesThunkEnum';

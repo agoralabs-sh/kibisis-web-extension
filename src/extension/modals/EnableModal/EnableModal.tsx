@@ -14,7 +14,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
-import React, { ChangeEvent, FC, ReactNode } from 'react';
+import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -28,11 +28,13 @@ import SessionRequestHeader, {
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// enums
+import { Arc0013ProviderMethodEnum } from '@common/enums';
+
 // errors
-import { SerializableLegacyOperationCanceledError } from '@common/errors';
+import { SerializableArc0013MethodCanceledError } from '@common/errors';
 
 // features
-import { setEnableRequest } from '@extension/features/events';
 import { sendEnableResponseThunk } from '@extension/features/messages';
 import { setSessionThunk } from '@extension/features/sessions';
 
@@ -41,11 +43,15 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// messages
+import { Arc0013EnableRequestMessage } from '@common/messages';
+
 // selectors
 import {
   useSelectAccounts,
   useSelectEnableRequest,
   useSelectFetchingAccounts,
+  useSelectNetworks,
   useSelectSavingSessions,
 } from '@extension/selectors';
 
@@ -58,15 +64,16 @@ import { theme } from '@extension/theme';
 // types
 import {
   IAccount,
-  IAccountInformation,
   IAppThunkDispatch,
-  IEnableRequest,
+  IClientRequest,
+  INetwork,
   ISession,
 } from '@extension/types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import mapSessionFromEnableRequest from '@extension/utils/mapSessionFromEnableRequest';
+import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
 interface IProps {
   onClose: () => void;
@@ -77,24 +84,32 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const enableRequest: IEnableRequest | null = useSelectEnableRequest();
+  const enableRequest: IClientRequest<Arc0013EnableRequestMessage> | null =
+    useSelectEnableRequest();
   const fetching: boolean = useSelectFetchingAccounts();
+  const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
+  // state
+  const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
+  const [network, setNetwork] = useState<INetwork | null>(null);
   // handlers
   const handleCancelClick = () => {
     if (enableRequest) {
       dispatch(
         sendEnableResponseThunk({
-          error: new SerializableLegacyOperationCanceledError(
+          error: new SerializableArc0013MethodCanceledError(
+            Arc0013ProviderMethodEnum.Enable,
+            __PROVIDER_ID__,
             `user dismissed connect modal`
           ),
-          eventId: enableRequest.requestEventId,
+          eventId: enableRequest.eventId,
+          originMessage: enableRequest.originMessage,
+          originTabId: enableRequest.originTabId,
           session: null,
-          tabId: enableRequest.tabId,
         })
       );
     }
@@ -104,20 +119,25 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleConnectClick = () => {
     let session: ISession;
 
-    if (!enableRequest || enableRequest.authorizedAddresses.length <= 0) {
+    if (!enableRequest || !network || authorizedAddresses.length <= 0) {
       return;
     }
 
-    session = mapSessionFromEnableRequest(enableRequest);
+    session = mapSessionFromEnableRequest({
+      authorizedAddresses,
+      clientInfo: enableRequest.clientInfo,
+      network,
+    });
 
     // save the session, send an enable response and remove the connect request
     dispatch(setSessionThunk(session));
     dispatch(
       sendEnableResponseThunk({
         error: null,
-        eventId: enableRequest.requestEventId,
+        eventId: enableRequest.eventId,
+        originMessage: enableRequest.originMessage,
+        originTabId: enableRequest.originTabId,
         session,
-        tabId: enableRequest.tabId,
       })
     );
 
@@ -130,31 +150,16 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       }
 
       if (event.target.checked) {
-        if (
-          !enableRequest.authorizedAddresses.find((value) => value === address)
-        ) {
-          dispatch(
-            setEnableRequest({
-              ...enableRequest,
-              authorizedAddresses: [
-                ...enableRequest.authorizedAddresses,
-                address,
-              ],
-            })
-          );
+        if (!authorizedAddresses.find((value) => value === address)) {
+          setAuthorizedAddresses([...authorizedAddresses, address]);
         }
 
         return;
       }
 
       // remove if unchecked
-      dispatch(
-        setEnableRequest({
-          ...enableRequest,
-          authorizedAddresses: enableRequest.authorizedAddresses.filter(
-            (value) => value !== address
-          ),
-        })
+      setAuthorizedAddresses(
+        authorizedAddresses.filter((value) => value !== address)
       );
     };
   const renderContent = () => {
@@ -228,9 +233,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
             <Checkbox
               colorScheme={primaryColorScheme}
               isChecked={
-                !!enableRequest?.authorizedAddresses?.find(
-                  (value) => value === address
-                )
+                !!authorizedAddresses?.find((value) => value === address)
               }
               onChange={handleOnAccountCheckChange(address)}
             />
@@ -252,6 +255,19 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
 
+  useEffect(() => {
+    if (enableRequest) {
+      // find the selected network, or use the default one
+      setNetwork(
+        networks.find(
+          (value) =>
+            value.genesisHash ===
+            enableRequest.originMessage.params?.genesisHash
+        ) || selectDefaultNetwork(networks)
+      );
+    }
+  }, [enableRequest]);
+
   return (
     <Modal
       isOpen={!!enableRequest}
@@ -269,11 +285,11 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
           {enableRequest ? (
             <SessionRequestHeader
               caption={t<string>('captions.enableRequest')}
-              description={enableRequest.description || undefined}
-              host={enableRequest.host}
-              iconUrl={enableRequest.iconUrl || undefined}
-              name={enableRequest.appName}
-              network={enableRequest.network}
+              description={enableRequest.clientInfo.description || undefined}
+              host={enableRequest.clientInfo.host}
+              iconUrl={enableRequest.clientInfo.iconUrl || undefined}
+              name={enableRequest.clientInfo.appName}
+              network={network || undefined}
             />
           ) : (
             <SessionRequestHeaderSkeleton />

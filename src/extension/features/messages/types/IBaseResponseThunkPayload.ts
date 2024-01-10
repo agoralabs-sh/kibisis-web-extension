@@ -1,10 +1,10 @@
 // errors
-import { BaseSerializableLegacyError } from '@common/errors';
+import { BaseSerializableArc0013Error } from '@common/errors';
 
 interface IBaseResponseThunkPayload {
-  error: BaseSerializableLegacyError | null;
+  error: BaseSerializableArc0013Error | null;
   eventId: string;
-  tabId: number;
+  originTabId: number;
 }
 
 export default IBaseResponseThunkPayload;

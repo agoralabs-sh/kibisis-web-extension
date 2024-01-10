@@ -8,18 +8,12 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Skeleton,
-  SkeletonCircle,
-  Tag,
-  TagLabel,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { faker } from '@faker-js/faker';
 import { decode as decodeBase64 } from '@stablelib/base64';
 import { decodeUnsignedTransaction, Transaction } from 'algosdk';
 import React, {
-  ChangeEvent,
   FC,
   KeyboardEvent,
   MutableRefObject,
@@ -36,38 +30,59 @@ import ChainBadge from '@extension/components/ChainBadge';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
+import SignTxnsHeaderSkeleton from './SignTxnsHeaderSkeleton';
 import SignTxnsModalContent from './SignTxnsModalContent';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
+import { Arc0013ProviderMethodEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
 import {
-  SerializableLegacyOperationCanceledError,
-  SerializableLegacyUnknownError,
+  SerializableArc0013InvalidInputError,
+  SerializableArc0013MethodCanceledError,
 } from '@common/errors';
 
 // features
-import { setError } from '@extension/features/system';
 import { sendSignTxnsResponseThunk } from '@extension/features/messages';
+import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSignTxns from '@extension/hooks/useSignTxns';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
+// messages
+import { Arc0013SignTxnsRequestMessage } from '@common/messages';
+
 // selectors
-import { useSelectSignTxnsRequest } from '@extension/selectors';
+import {
+  useSelectLogger,
+  useSelectNetworks,
+  useSelectSignTxnsRequest,
+} from '@extension/selectors';
+
+// services
+import AccountService from '@extension/services/AccountService';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import { IAppThunkDispatch, ISignTxnsRequest } from '@extension/types';
+import { ILogger } from '@common/types';
+import {
+  IAccount,
+  IAppThunkDispatch,
+  IClientRequest,
+  INetwork,
+} from '@extension/types';
+
+// utils
+import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
+import signTxns from '@extension/utils/signTxns';
 
 interface IProps {
   onClose: () => void;
@@ -88,22 +103,30 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const { encodedSignedTransactions, error, signTransactions } = useSignTxns();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   // selectors
-  const signTxnsRequest: ISignTxnsRequest | null = useSelectSignTxnsRequest();
+  const logger: ILogger = useSelectLogger();
+  const networks: INetwork[] = useSelectNetworks();
+  const signTxnsRequest: IClientRequest<Arc0013SignTxnsRequestMessage> | null =
+    useSelectSignTxnsRequest();
+  // state
+  const [network, setNetwork] = useState<INetwork | null>(null);
+  const [authorizedAccounts, setAuthorizedAccounts] = useState<IAccount[]>([]);
   // handlers
   const handleCancelClick = () => {
     if (signTxnsRequest) {
       dispatch(
         sendSignTxnsResponseThunk({
-          error: new SerializableLegacyOperationCanceledError(
+          error: new SerializableArc0013MethodCanceledError(
+            Arc0013ProviderMethodEnum.SignTxns,
+            __PROVIDER_ID__,
             `user dismissed sign transaction modal`
           ),
-          eventId: signTxnsRequest.requestEventId,
-          signedTransactions: null,
-          tabId: signTxnsRequest.tabId,
+          eventId: signTxnsRequest.eventId,
+          originMessage: signTxnsRequest.originMessage,
+          originTabId: signTxnsRequest.originTabId,
+          stxns: null,
         })
       );
     }
@@ -122,68 +145,78 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     }
   };
   const handleSignClick = async () => {
-    if (validatePassword() || !signTxnsRequest) {
+    let stxns: (string | null)[];
+
+    if (
+      validatePassword() ||
+      !signTxnsRequest ||
+      !signTxnsRequest.originMessage.params
+    ) {
       return;
     }
 
-    await signTransactions({
-      authorizedAddresses: signTxnsRequest.authorizedAddresses,
-      password,
-      transactions: signTxnsRequest.transactions,
-    });
+    try {
+      stxns = await signTxns({
+        authorizedSigners: authorizedAccounts.map((value) =>
+          AccountService.convertPublicKeyToAlgorandAddress(value.publicKey)
+        ),
+        logger,
+        password,
+        txns: signTxnsRequest.originMessage.params.txns,
+      });
+
+      dispatch(
+        sendSignTxnsResponseThunk({
+          error: null,
+          eventId: signTxnsRequest.eventId,
+          originMessage: signTxnsRequest.originMessage,
+          originTabId: signTxnsRequest.originTabId,
+          stxns,
+        })
+      );
+
+      handleClose();
+    } catch (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.InvalidPasswordError:
+          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+          break;
+        default:
+          dispatch(
+            createNotification({
+              description: `Please contact support with code "${error.code}" and describe what happened.`,
+              ephemeral: true,
+              title: t<string>('errors.titles.code'),
+              type: 'error',
+            })
+          );
+
+          break;
+      }
+    }
   };
   const renderContent = () => {
     let decodedTransactions: Transaction[];
 
-    if (!signTxnsRequest) {
+    if (!signTxnsRequest || !signTxnsRequest.originMessage.params || !network) {
       return <VStack spacing={4} w="full"></VStack>;
     }
 
-    decodedTransactions = signTxnsRequest.transactions.map((value) =>
-      decodeUnsignedTransaction(decodeBase64(value.txn))
+    decodedTransactions = signTxnsRequest.originMessage.params.txns.map(
+      (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
     );
 
     return (
       <SignTxnsModalContent
-        network={signTxnsRequest.network}
+        network={network}
         transactions={decodedTransactions}
       />
     );
   };
   const renderHeader = () => {
-    if (!signTxnsRequest) {
-      return (
-        <>
-          <HStack
-            alignItems="center"
-            justifyContent="center"
-            spacing={4}
-            w="full"
-          >
-            <SkeletonCircle size="10" />
-            <Skeleton>
-              <Heading size="md" textAlign="center">
-                {faker.commerce.productName()}
-              </Heading>
-            </Skeleton>
-          </HStack>
-          <Skeleton>
-            <Text fontSize="xs" textAlign="center">
-              {faker.internet.domainName()}
-            </Text>
-          </Skeleton>
-          <Skeleton>
-            <Text fontSize="xs" textAlign="center">
-              {faker.random.words(8)}
-            </Text>
-          </Skeleton>
-          <Skeleton>
-            <Tag size="sm">
-              <TagLabel>{faker.internet.domainName()}</TagLabel>
-            </Tag>
-          </Skeleton>
-        </>
-      );
+    if (!signTxnsRequest || !signTxnsRequest.originMessage.params || !network) {
+      return <SignTxnsHeaderSkeleton />;
     }
 
     return (
@@ -196,14 +229,14 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
         >
           {/*app icon*/}
           <Avatar
-            name={signTxnsRequest.appName}
+            name={signTxnsRequest.clientInfo.appName}
             size="sm"
-            src={signTxnsRequest.iconUrl || undefined}
+            src={signTxnsRequest.clientInfo.iconUrl || undefined}
           />
 
           {/*app name*/}
           <Heading color={defaultTextColor} size="md" textAlign="center">
-            {signTxnsRequest.appName}
+            {signTxnsRequest.clientInfo.appName}
           </Heading>
         </HStack>
 
@@ -215,17 +248,17 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           py={1}
         >
           <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-            {signTxnsRequest.host}
+            {signTxnsRequest.clientInfo.host}
           </Text>
         </Box>
 
         {/*network*/}
-        <ChainBadge network={signTxnsRequest.network} />
+        <ChainBadge network={network} />
 
         {/*caption*/}
         <Text color={subTextColor} fontSize="md" textAlign="center">
           {t<string>(
-            signTxnsRequest.transactions.length > 1
+            signTxnsRequest.originMessage.params.txns.length > 1
               ? 'captions.signTransactionsRequest'
               : 'captions.signTransactionRequest'
           )}
@@ -241,49 +274,38 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     }
   }, []);
   useEffect(() => {
-    // if the resultant signed transactions has been filled, we can send it back to the dapp
-    if (
-      signTxnsRequest &&
-      encodedSignedTransactions.length === signTxnsRequest.transactions.length
-    ) {
-      dispatch(
-        sendSignTxnsResponseThunk({
-          error: null,
-          eventId: signTxnsRequest.requestEventId,
-          signedTransactions: encodedSignedTransactions,
-          tabId: signTxnsRequest.tabId,
-        })
-      );
+    let genesisHash: string | null;
 
-      handleClose();
-    }
-  }, [encodedSignedTransactions]);
-  useEffect(() => {
-    if (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+    if (signTxnsRequest && signTxnsRequest.originMessage.params) {
+      genesisHash = extractGenesisHashFromAtomicTransactions({
+        logger,
+        txns: signTxnsRequest.originMessage.params.txns,
+      });
 
-          break;
-        default:
-          dispatch(setError(error));
-          handleClose();
+      // if there is network, the input is invalid
+      if (!genesisHash) {
+        dispatch(
+          sendSignTxnsResponseThunk({
+            error: new SerializableArc0013InvalidInputError(
+              __PROVIDER_ID__,
+              `the transaction group is not atomic, they are bound for multiple networks`
+            ),
+            eventId: signTxnsRequest.eventId,
+            originMessage: signTxnsRequest.originMessage,
+            originTabId: signTxnsRequest.originTabId,
+            stxns: null,
+          })
+        );
 
-          if (signTxnsRequest) {
-            dispatch(
-              sendSignTxnsResponseThunk({
-                error: new SerializableLegacyUnknownError(error.message),
-                eventId: signTxnsRequest.requestEventId,
-                signedTransactions: null,
-                tabId: signTxnsRequest.tabId,
-              })
-            );
-          }
-
-          break;
+        handleClose();
       }
+
+      // update the network
+      setNetwork(
+        networks.find((value) => value.genesisHash === genesisHash) || null
+      );
     }
-  }, [error]);
+  }, [signTxnsRequest]);
 
   return (
     <Modal
@@ -312,9 +334,9 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
             <PasswordInput
               error={passwordError}
               hint={
-                signTxnsRequest
+                signTxnsRequest && signTxnsRequest.originMessage.params
                   ? t<string>(
-                      signTxnsRequest.transactions.length > 1
+                      signTxnsRequest.originMessage.params.txns.length > 1
                         ? 'captions.mustEnterPasswordToSignTransactions'
                         : 'captions.mustEnterPasswordToSignTransaction'
                     )

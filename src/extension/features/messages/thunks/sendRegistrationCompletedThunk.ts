@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // messages
-import { RegistrationCompletedMessage } from '@common/messages';
+import { InternalRegistrationCompletedMessage } from '@common/messages';
 
 // types
 import { IMainRootState } from '@extension/types';
@@ -18,7 +18,9 @@ const sendRegistrationCompletedThunk: AsyncThunk<
   MessagesThunkEnum.SendRegistrationCompleted,
   async () => {
     // send the message
-    await browser.runtime.sendMessage(new RegistrationCompletedMessage());
+    await browser.runtime.sendMessage(
+      new InternalRegistrationCompletedMessage()
+    );
   }
 );
 

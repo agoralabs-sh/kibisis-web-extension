@@ -9,7 +9,7 @@ import { InternalMessageReferenceEnum } from '@common/enums';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 
 // messages
-import { EventAddedMessage } from '@common/messages';
+import { InternalEventAddedMessage } from '@common/messages';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
@@ -18,7 +18,7 @@ import { useSelectLogger } from '@extension/selectors';
 import { ILogger } from '@common/types';
 import { IAppThunkDispatch } from '@extension/types';
 
-type IMessages = EventAddedMessage;
+type IMessages = InternalEventAddedMessage;
 
 export default function useOnMainAppMessage(): void {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();

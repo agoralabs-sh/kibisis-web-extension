@@ -37,28 +37,30 @@ import SignBytesJwtContent from './SignBytesJwtContent';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
+import { Arc0013ProviderMethodEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
-import {
-  SerializableLegacyOperationCanceledError,
-  SerializableLegacyUnknownError,
-} from '@common/errors';
+import { SerializableArc0013MethodCanceledError } from '@common/errors';
 
 // features
-import { setError } from '@extension/features/system';
 import { sendSignBytesResponseThunk } from '@extension/features/messages';
+import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSignBytes from '@extension/hooks/useSignBytes';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
+
+// messages
+import { Arc0013SignBytesRequestMessage } from '@common/messages';
 
 // selectors
 import {
   useSelectAccounts,
   useSelectFetchingAccounts,
+  useSelectLogger,
+  useSelectSessions,
   useSelectSignBytesRequest,
 } from '@extension/selectors';
 
@@ -69,15 +71,19 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
+import { ILogger } from '@common/types';
 import {
   IAccount,
   IAppThunkDispatch,
+  IClientRequest,
   IDecodedJwt,
-  ISignBytesRequest,
+  ISession,
 } from '@extension/types';
 
 // utils
 import decodeJwt from '@extension/utils/decodeJwt';
+import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
+import signBytes from '@extension/utils/signBytes';
 
 interface IProps {
   onClose: () => void;
@@ -90,9 +96,11 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const signBytesRequest: ISignBytesRequest | null =
-    useSelectSignBytesRequest();
   const fetching: boolean = useSelectFetchingAccounts();
+  const logger: ILogger = useSelectLogger();
+  const sessions: ISession[] = useSelectSessions();
+  const signBytesRequest: IClientRequest<Arc0013SignBytesRequestMessage> | null =
+    useSelectSignBytesRequest();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const {
@@ -103,23 +111,28 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const { encodedSignedBytes, error, signBytes } = useSignBytes();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   // state
+  const [authorizedAccounts, setAuthorizedAccounts] = useState<IAccount[]>([]);
   const [decodedJwt, setDecodedJwt] = useState<IDecodedJwt | null>(null);
   const [selectedSigner, setSelectedSigner] = useState<IAccount | null>(null);
+  // handlers
   const handleAccountSelect = (account: IAccount) => setSelectedSigner(account);
   const handleCancelClick = () => {
     if (signBytesRequest) {
       dispatch(
         sendSignBytesResponseThunk({
-          encodedSignature: null,
-          error: new SerializableLegacyOperationCanceledError(
+          error: new SerializableArc0013MethodCanceledError(
+            Arc0013ProviderMethodEnum.SignBytes,
+            __PROVIDER_ID__,
             `user dismissed sign bytes modal`
           ),
-          eventId: signBytesRequest.requestEventId,
-          tabId: signBytesRequest.tabId,
+          eventId: signBytesRequest.eventId,
+          originMessage: signBytesRequest.originMessage,
+          originTabId: signBytesRequest.originTabId,
+          signature: null,
+          signer: null,
         })
       );
     }
@@ -138,17 +151,61 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     }
   };
   const handleSignClick = async () => {
-    if (validatePassword() || !signBytesRequest || !selectedSigner) {
+    let signature: string;
+    let signer: string;
+
+    if (
+      validatePassword() ||
+      !signBytesRequest ||
+      !signBytesRequest.originMessage.params?.data ||
+      !selectedSigner
+    ) {
       return;
     }
 
-    await signBytes({
-      encodedData: signBytesRequest.encodedData,
-      password,
-      signer: AccountService.convertPublicKeyToAlgorandAddress(
-        selectedSigner.publicKey
-      ),
-    });
+    signer = AccountService.convertPublicKeyToAlgorandAddress(
+      selectedSigner.publicKey
+    );
+
+    try {
+      signature = await signBytes({
+        encodedData: signBytesRequest.originMessage.params.data,
+        logger,
+        password,
+        signer,
+      });
+
+      dispatch(
+        sendSignBytesResponseThunk({
+          error: null,
+          eventId: signBytesRequest.eventId,
+          originMessage: signBytesRequest.originMessage,
+          originTabId: signBytesRequest.originTabId,
+          signature,
+          signer,
+        })
+      );
+
+      handleClose();
+    } catch (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.InvalidPasswordError:
+          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+          break;
+        default:
+          dispatch(
+            createNotification({
+              description: `Please contact support with code "${error.code}" and describe what happened.`,
+              ephemeral: true,
+              title: t<string>('errors.titles.code'),
+              type: 'error',
+            })
+          );
+
+          break;
+      }
+    }
   };
   const renderContent = () => {
     if (fetching || !signBytesRequest || !selectedSigner) {
@@ -159,7 +216,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
       <VStack spacing={4} w="full">
         {/*account select*/}
         <VStack spacing={2} w="full">
-          {signBytesRequest.signer ? (
+          {signBytesRequest.originMessage.params?.signer ? (
             <>
               <Text textAlign="left" w="full">{`${t<string>(
                 'labels.addressToSign'
@@ -172,15 +229,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
                 'labels.authorizedAddresses'
               )}:`}</Text>
               <AccountSelect
-                accounts={accounts.filter((account) =>
-                  signBytesRequest.authorizedAddresses.some(
-                    (value) =>
-                      value ===
-                      AccountService.convertPublicKeyToAlgorandAddress(
-                        account.publicKey
-                      )
-                  )
-                )}
+                accounts={authorizedAccounts}
                 onSelect={handleAccountSelect}
                 value={selectedSigner}
               />
@@ -188,11 +237,11 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
           )}
         </VStack>
 
-        {/* Data display */}
+        {/*data display*/}
         {decodedJwt ? (
           <SignBytesJwtContent
             decodedJwt={decodedJwt}
-            host={signBytesRequest.host}
+            host={signBytesRequest.clientInfo.host}
             signer={selectedSigner}
           />
         ) : (
@@ -200,9 +249,9 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
             <Text textAlign="left" w="full">{`${t<string>(
               'labels.message'
             )}:`}</Text>
-            {signBytesRequest && (
+            {signBytesRequest.originMessage.params && (
               <Code borderRadius="md" w="full">
-                {window.atob(signBytesRequest.encodedData)}
+                {window.atob(signBytesRequest.originMessage.params.data)}
               </Code>
             )}
           </VStack>
@@ -217,68 +266,43 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
       passwordInputRef.current.focus();
     }
   }, []);
+  // when we have accounts, sessions and the request, update the authored accounts and get the signer, if it exists and is authorized
   useEffect(() => {
-    let account: IAccount | null = null;
+    let _authorizedAccounts: IAccount[];
+    let authorizedAddresses: string[];
+    let signerAccount: IAccount | null = null;
 
-    if (accounts.length >= 0 && !selectedSigner) {
-      if (signBytesRequest?.signer) {
-        account =
-          accounts.find(
-            (value) =>
-              AccountService.convertPublicKeyToAlgorandAddress(
-                value.publicKey
-              ) === signBytesRequest.signer
-          ) || null;
-      }
+    if (accounts.length >= 0 && sessions.length > 0 && signBytesRequest) {
+      authorizedAddresses = getAuthorizedAddressesForHost(
+        signBytesRequest.clientInfo.host,
+        sessions
+      );
+      _authorizedAccounts = accounts.filter((account) =>
+        authorizedAddresses.some(
+          (value) =>
+            value ===
+            AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+        )
+      );
+      signerAccount =
+        _authorizedAccounts.find(
+          (value) =>
+            AccountService.convertPublicKeyToAlgorandAddress(
+              value.publicKey
+            ) === signBytesRequest?.originMessage.params?.signer
+        ) || null;
 
-      setSelectedSigner(account || accounts[0]);
+      setAuthorizedAccounts(_authorizedAccounts);
+      setSelectedSigner(signerAccount || _authorizedAccounts[0]);
     }
-  }, [accounts, signBytesRequest]);
+  }, [accounts, sessions, signBytesRequest]);
   useEffect(() => {
-    if (signBytesRequest) {
-      setDecodedJwt(decodeJwt(window.atob(signBytesRequest.encodedData)));
+    if (signBytesRequest && signBytesRequest.originMessage.params) {
+      setDecodedJwt(
+        decodeJwt(window.atob(signBytesRequest.originMessage.params.data))
+      );
     }
   }, [signBytesRequest]);
-  useEffect(() => {
-    if (encodedSignedBytes && signBytesRequest) {
-      dispatch(
-        sendSignBytesResponseThunk({
-          encodedSignature: encodedSignedBytes,
-          error: null,
-          eventId: signBytesRequest.requestEventId,
-          tabId: signBytesRequest.tabId,
-        })
-      );
-
-      handleClose();
-    }
-  }, [encodedSignedBytes]);
-  useEffect(() => {
-    if (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
-        default:
-          dispatch(setError(error));
-          handleClose();
-
-          if (signBytesRequest) {
-            dispatch(
-              sendSignBytesResponseThunk({
-                encodedSignature: null,
-                error: new SerializableLegacyUnknownError(error.message),
-                eventId: signBytesRequest.requestEventId,
-                tabId: signBytesRequest.tabId,
-              })
-            );
-          }
-
-          break;
-      }
-    }
-  }, [error]);
 
   return (
     <Modal
@@ -294,30 +318,38 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          <VStack alignItems="center" spacing={4} w="full">
-            <Avatar
-              name={signBytesRequest?.appName || 'unknown'}
-              src={signBytesRequest?.iconUrl || undefined}
-            />
+          {signBytesRequest && (
+            <VStack alignItems="center" spacing={4} w="full">
+              <Avatar
+                name={signBytesRequest.clientInfo.appName || 'unknown'}
+                src={signBytesRequest.clientInfo.iconUrl || undefined}
+              />
 
-            <VStack alignItems="center" justifyContent="flex-start" spacing={2}>
-              <Heading color={defaultTextColor} size="md" textAlign="center">
-                {signBytesRequest?.appName || 'Unknown'}
-              </Heading>
-
-              <Box
-                backgroundColor={textBackgroundColor}
-                borderRadius={theme.radii['3xl']}
-                px={DEFAULT_GAP / 3}
-                py={1}
+              <VStack
+                alignItems="center"
+                justifyContent="flex-start"
+                spacing={2}
               >
-                <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-                  {signBytesRequest?.host || 'unknown host'}
-                </Text>
-              </Box>
+                <Heading color={defaultTextColor} size="md" textAlign="center">
+                  {signBytesRequest.clientInfo.appName || 'Unknown'}
+                </Heading>
 
-              {signBytesRequest &&
-                (decodedJwt ? (
+                <Box
+                  backgroundColor={textBackgroundColor}
+                  borderRadius={theme.radii['3xl']}
+                  px={DEFAULT_GAP / 3}
+                  py={1}
+                >
+                  <Text
+                    color={defaultTextColor}
+                    fontSize="xs"
+                    textAlign="center"
+                  >
+                    {signBytesRequest.clientInfo.host || 'unknown host'}
+                  </Text>
+                </Box>
+
+                {decodedJwt ? (
                   <Text color={subTextColor} fontSize="md" textAlign="center">
                     {t<string>('captions.signJwtRequest')}
                   </Text>
@@ -325,9 +357,10 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
                   <Text color={subTextColor} fontSize="md" textAlign="center">
                     {t<string>('captions.signMessageRequest')}
                   </Text>
-                ))}
+                )}
+              </VStack>
             </VStack>
-          </VStack>
+          )}
         </ModalHeader>
 
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>

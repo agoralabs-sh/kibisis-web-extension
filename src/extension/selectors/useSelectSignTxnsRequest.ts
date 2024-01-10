@@ -1,14 +1,18 @@
 import { useSelector } from 'react-redux';
 
+// messages
+import { Arc0013SignTxnsRequestMessage } from '@common/messages';
+
 // types
-import { IMainRootState, ISignTxnsRequest } from '@extension/types';
+import { IClientRequest, IMainRootState } from '@extension/types';
 
 /**
  * Selects the current sign transaction request, or null if none exists.
- * @returns {ISignBytesRequest | null} the current sign transaction request or null if it does not exist.
+ * @returns {IClientRequest<Arc0013SignTxnsRequestMessage> | null} the current sign transaction request or null if it does not exist.
  */
-export default function useSelectSignTxnsRequest(): ISignTxnsRequest | null {
-  return useSelector<IMainRootState, ISignTxnsRequest | null>(
-    (state) => state.events.signTxnsRequest
-  );
+export default function useSelectSignTxnsRequest(): IClientRequest<Arc0013SignTxnsRequestMessage> | null {
+  return useSelector<
+    IMainRootState,
+    IClientRequest<Arc0013SignTxnsRequestMessage> | null
+  >((state) => state.events.signTxnsRequest);
 }

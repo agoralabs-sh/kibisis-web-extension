@@ -24,7 +24,7 @@ import {
   Arc0013ProviderMethodEnum,
   InternalMessageReferenceEnum,
 } from '@common/enums';
-import { AppTypeEnum, ClientEventTypeEnum } from '@extension/enums';
+import { AppTypeEnum, EventTypeEnum } from '@extension/enums';
 
 // errors
 import {
@@ -61,6 +61,7 @@ import StorageManager from '../StorageManager';
 // types
 import type {
   IArc0013ParamTypes,
+  IArc0013ResultTypes,
   IBaseOptions,
   IClientInformation,
   ILogger,
@@ -68,7 +69,8 @@ import type {
 import type {
   IAccount,
   IAppWindow,
-  IClientEvent,
+  IClientEventPayload,
+  IEvent,
   IGeneralSettings,
   IInternalRequestMessage,
   INetwork,
@@ -78,6 +80,7 @@ import type {
 
 // utils
 import computeGroupId from '@common/utils/computeGroupId';
+import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import verifyTransactionGroupId from '@extension/utils/verifyTransactionGroupId';
 
@@ -265,11 +268,13 @@ export default class BackgroundMessageHandler {
     }
 
     return await this.sendExtensionEvent({
-      clientInfo,
       id: uuid(),
-      message,
-      originTabId,
-      type: ClientEventTypeEnum.Enable,
+      payload: {
+        clientInfo,
+        originMessage: message,
+        originTabId,
+      },
+      type: EventTypeEnum.EnableRequest,
     });
   }
 
@@ -426,11 +431,13 @@ export default class BackgroundMessageHandler {
     }
 
     return await this.sendExtensionEvent({
-      clientInfo,
       id: uuid(),
-      message,
-      originTabId,
-      type: ClientEventTypeEnum.SignBytes,
+      payload: {
+        clientInfo,
+        originMessage: message,
+        originTabId,
+      },
+      type: EventTypeEnum.SignBytesRequest,
     });
   }
 
@@ -444,8 +451,7 @@ export default class BackgroundMessageHandler {
     let encodedComputedGroupId: string;
     let errorMessage: string;
     let filteredSessions: ISession[];
-    let genesisHashes: string[];
-    let genesisHash: string;
+    let genesisHash: string | null;
     let network: INetwork | null;
 
     if (!message.params) {
@@ -464,7 +470,7 @@ export default class BackgroundMessageHandler {
 
     // attempt to decode the transactions
     try {
-      decodedUnsignedTransactions = message.params?.txns.map((value) =>
+      decodedUnsignedTransactions = message.params.txns.map((value) =>
         decodeUnsignedTransaction(decodeBase64(value.txn))
       );
     } catch (error) {
@@ -518,22 +524,13 @@ export default class BackgroundMessageHandler {
       );
     }
 
-    genesisHashes = decodedUnsignedTransactions.reduce<string[]>(
-      (acc, transaction) => {
-        const genesisHash: string = encodeBase64(transaction.genesisHash);
+    genesisHash = extractGenesisHashFromAtomicTransactions({
+      logger: this.logger || undefined,
+      txns: message.params.txns,
+    });
 
-        return acc.some((value) => value === genesisHash)
-          ? acc
-          : [...acc, genesisHash];
-      },
-      []
-    );
-
-    // there should only be one genesis hash
-    if (genesisHashes.length > 1) {
-      errorMessage = `the transaction group is not atomic, they are bound for multiple networks: [${genesisHashes.join(
-        ','
-      )}]`;
+    if (!genesisHash) {
+      errorMessage = `the transaction group is not atomic, they are bound for multiple networks`;
 
       this.logger &&
         this.logger.debug(
@@ -554,7 +551,6 @@ export default class BackgroundMessageHandler {
       );
     }
 
-    genesisHash = genesisHashes[0];
     network =
       networks.find((value) => value.genesisHash === genesisHash) || null;
 
@@ -580,7 +576,7 @@ export default class BackgroundMessageHandler {
 
     filteredSessions = await this.fetchSessions(
       (value) =>
-        value.host === clientInfo.host && value.genesisHash === genesisHashes[0]
+        value.host === clientInfo.host && value.genesisHash === genesisHash
     );
 
     // if the app has not been enabled
@@ -606,15 +602,19 @@ export default class BackgroundMessageHandler {
     }
 
     return await this.sendExtensionEvent({
-      clientInfo,
       id: uuid(),
-      message,
-      originTabId,
-      type: ClientEventTypeEnum.SignTxns,
+      payload: {
+        clientInfo,
+        originMessage: message,
+        originTabId,
+      },
+      type: EventTypeEnum.SignTxnsRequest,
     });
   }
 
-  private async sendExtensionEvent(event: IClientEvent): Promise<void> {
+  private async sendExtensionEvent(
+    event: IEvent<IClientEventPayload>
+  ): Promise<void> {
     const _functionName: string = 'sendExtensionEvent';
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
     const mainAppWindows: IAppWindow[] =
@@ -673,7 +673,7 @@ export default class BackgroundMessageHandler {
   }
 
   private async sendResponse(
-    message: BaseArc0013ResponseMessage<any>,
+    message: BaseArc0013ResponseMessage<IArc0013ResultTypes>,
     originTabId: number
   ): Promise<void> {
     const _functionName: string = 'sendResponse';
