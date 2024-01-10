@@ -21,12 +21,11 @@ import { IAppThunkDispatch } from '@extension/types';
 type IMessages = InternalEventAddedMessage;
 
 export default function useOnMainAppMessage(): void {
+  const _functionName: string = 'useOnMainAppMessage';
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const logger: ILogger = useSelectLogger();
   const handleMessage = async (message: IMessages) => {
-    logger.debug(
-      `${useOnMainAppMessage.name}#${handleMessage.name}(): message "${message.reference}" received`
-    );
+    logger.debug(`${_functionName}(): message "${message.reference}" received`);
 
     switch (message.reference) {
       case InternalMessageReferenceEnum.EventAdded:

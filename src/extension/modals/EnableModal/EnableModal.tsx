@@ -114,6 +114,11 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       );
     }
 
+    handleClose();
+  };
+  const handleClose = () => {
+    setAuthorizedAddresses([]);
+    setNetwork(null);
     onClose();
   };
   const handleConnectClick = () => {
@@ -141,7 +146,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       })
     );
 
-    onClose();
+    handleClose();
   };
   const handleOnAccountCheckChange =
     (address: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -272,7 +277,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     <Modal
       isOpen={!!enableRequest}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >

@@ -101,11 +101,7 @@ export default class LegacyProvider extends BaseWalletManager {
       channel.onmessage = (
         event: MessageEvent<BaseArc0013ResponseMessage<Result>>
       ) => {
-        if (
-          event.source !== window ||
-          !event.data ||
-          event.data.requestId !== message.id
-        ) {
+        if (!event.data || event.data.requestId !== message.id) {
           return;
         }
 

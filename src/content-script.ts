@@ -25,7 +25,9 @@ import injectScript from '@external/utils/injectScript';
     });
 
   // listen to broadcast messages from the webpage
-  channel.onmessage = externalMessageBroker.onArc0013RequestMessage;
+  channel.onmessage = externalMessageBroker.onArc0013RequestMessage.bind(
+    externalMessageBroker
+  );
 
   // listen to incoming extension messages (from the background script / popup)
   browser.runtime.onMessage.addListener(
