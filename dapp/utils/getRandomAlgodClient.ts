@@ -4,15 +4,16 @@ import { Algodv2 } from 'algosdk';
 import { INetwork, INode } from '@extension/types';
 
 /**
- * Gets an initialized algod client that is NOT PureStake, because PureStake do not allow localhost :*(
+ * Gets an initialized algod client.
  * @param {INetwork} network - the network to get the nodes from.
- * @returns {Algodv2} an initialized algod client that is not PureStake.
+ * @returns {Algodv2} an initialized algod client.
  */
-export default function getNotPureStakeAlgodClient(network: INetwork): Algodv2 {
-  let node: INode | null = null;
+export default function getAlgodClient(network: INetwork): Algodv2 {
+  const node: INode | null =
+    network.algods[Math.floor(Math.random() * network.algods.length)];
 
-  while (!node || node.canonicalName === 'PureStake') {
-    node = network.algods[Math.floor(Math.random() * network.algods.length)];
+  if (!node) {
+    throw new Error(`no node found for network "${network.genesisId}"`);
   }
 
   return new Algodv2('', node.url, node.port);

@@ -10,7 +10,7 @@ import {
 import { INetwork } from '@extension/types';
 
 // utils
-import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
+import getRandomAlgodClient from './getRandomAlgodClient';
 
 interface IOptions {
   assetId: string;
@@ -25,7 +25,7 @@ export default async function createAssetConfigTransaction({
   network,
   note,
 }: IOptions): Promise<Transaction> {
-  const client: Algodv2 = getNotPureStakeAlgodClient(network);
+  const client: Algodv2 = getRandomAlgodClient(network);
   const suggestedParams: SuggestedParams = await client
     .getTransactionParams()
     .do();

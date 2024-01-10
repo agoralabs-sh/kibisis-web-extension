@@ -11,13 +11,13 @@ import {
 import { IAccountInformation, IAssetInformation } from '../types';
 
 // utils
-import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
+import getRandomAlgodClient from './getRandomAlgodClient';
 
 export default async function getAccountInformation(
   account: IWalletAccount,
   network: INetwork
 ): Promise<IAccountInformation> {
-  const client: Algodv2 = getNotPureStakeAlgodClient(network);
+  const client: Algodv2 = getRandomAlgodClient(network);
   const accountInformation: IAlgorandAccountInformation = (await client
     .accountInformation(account.address)
     .setIntDecoding(IntDecoding.BIGINT)

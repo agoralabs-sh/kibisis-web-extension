@@ -19,7 +19,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Provider, PROVIDER_ID, useWallet } from '@txnlab/use-wallet';
 import { SessionTypes } from '@walletconnect/types';
 import { useConnect } from '@web3modal/sign-react';
@@ -73,7 +73,11 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
       },
     },
   });
-  const { providers, clients } = useWallet();
+  const { connectedAccounts, providers } = useWallet();
+  // state
+  const [useWalletNetwork, setUseWalletNetwork] = useState<INetwork | null>(
+    null
+  );
   // misc
   const algorandTestNetGenesisHash: string =
     'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=';
@@ -140,11 +144,25 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
     const provider: Provider | null =
       providers?.find((value) => value.metadata.id === PROVIDER_ID.CUSTOM) ||
       null;
+    let network: INetwork | null;
 
     if (!provider) {
       toast({
         status: 'error',
         title: `Use Wallet Provider Not Initialized`,
+      });
+
+      return;
+    }
+
+    network =
+      networks.find((value) => value.genesisHash === genesisHash) || null;
+
+    if (!network) {
+      toast({
+        description: genesisHash,
+        status: 'error',
+        title: `Unknown Network`,
       });
 
       return;
@@ -157,7 +175,15 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
           setGenesisHash: (genesisHash: string) => void;
         };
       }
-    ).providerProxy.setGenesisHash(genesisHash);
+    ).providerProxy.setGenesisHash(network.genesisHash);
+
+    if (provider.isConnected) {
+      setUseWalletNetwork(null);
+
+      await provider.disconnect();
+    }
+
+    setUseWalletNetwork(network);
 
     await provider.connect();
   };
@@ -166,13 +192,33 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
 
     console.log(data);
   };
-  const handleReset = () => onReset();
+  const handleReset = async () => {
+    setUseWalletNetwork(null);
+    onReset();
+  };
   // renders
   const renderNetworkTag = () => (
     <Tag colorScheme="yellow" size="sm" variant="subtle">
       <TagLabel>TestNet</TagLabel>
     </Tag>
   );
+
+  useEffect(() => {
+    if (useWalletNetwork) {
+      (async () => {
+        onConnect({
+          accounts: await Promise.all(
+            connectedAccounts.map<Promise<IAccountInformation>>(
+              ({ address, name }) =>
+                getAccountInformation({ address, name }, useWalletNetwork)
+            )
+          ),
+          connectionType: ConnectionTypeEnum.UseWallet,
+          network: useWalletNetwork,
+        });
+      })();
+    }
+  }, [connectedAccounts]);
 
   return (
     <Menu>

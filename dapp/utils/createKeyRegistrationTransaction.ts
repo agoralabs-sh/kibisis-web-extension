@@ -9,7 +9,7 @@ import {
 import { INetwork } from '@extension/types';
 
 // utils
-import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
+import getRandomAlgodClient from './getRandomAlgodClient';
 
 interface IOptions {
   from: string;
@@ -24,7 +24,7 @@ export default async function createKeyRegistrationTransaction({
   note: rawNote,
   online,
 }: IOptions): Promise<Transaction> {
-  const client: Algodv2 = getNotPureStakeAlgodClient(network);
+  const client: Algodv2 = getRandomAlgodClient(network);
   const note: Uint8Array | undefined = rawNote
     ? new TextEncoder().encode(rawNote)
     : undefined;

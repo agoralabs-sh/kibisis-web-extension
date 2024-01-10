@@ -95,16 +95,15 @@ export default class CustomUseWalletProvider implements CustomProvider {
   }: SendRequestWithTimeoutOptions<Params>): Promise<Result | null> {
     return new Promise<Result | null>((resolve, reject) => {
       const channel = new BroadcastChannel(ARC_0013_CHANNEL_NAME);
-      const requestId = uuid();
       // eslint-disable-next-line prefer-const
       let timer: number;
 
       // listen to responses
       channel.onmessage = (
-        message: MessageEvent<BaseArc0013ResponseMessage<Result>>
+        event: MessageEvent<BaseArc0013ResponseMessage<Result>>
       ) => {
         // if the response's request id does not match the intended request, just ignore
-        if (message.data.requestId !== requestId) {
+        if (!event.data || event.data.requestId !== message.id) {
           return;
         }
 
@@ -112,15 +111,15 @@ export default class CustomUseWalletProvider implements CustomProvider {
         window.clearTimeout(timer);
 
         // if there is an error, reject
-        if (message.data.error) {
-          reject(message.data.error);
+        if (event.data.error) {
+          reject(event.data.error);
 
           // close the channel, we are done here
           return channel.close();
         }
 
         // return the result
-        resolve(message.data.result);
+        resolve(event.data.result);
 
         // close the channel, we are done here
         return channel.close();
@@ -148,7 +147,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
    */
 
   private async enable(): Promise<IArc0013Account[]> {
-    const _functionName: string = '_functionName';
+    const _functionName: string = 'enable';
     const method: Arc0013ProviderMethodEnum = Arc0013ProviderMethodEnum.Enable;
     let result: IArc0013EnableResult | null;
 
@@ -185,6 +184,14 @@ export default class CustomUseWalletProvider implements CustomProvider {
         __PROVIDER_ID__
       );
     }
+
+    this.logger.debug(
+      `${
+        CustomUseWalletProvider.name
+      }#${_functionName}(): accounts [${result.accounts
+        .map((value) => value.address)
+        .join(',')}] enabled on network "${result.genesisId}"`
+    );
 
     return result.accounts;
   }
@@ -254,11 +261,11 @@ export default class CustomUseWalletProvider implements CustomProvider {
     }
 
     this.logger.debug(
-      `${CustomUseWalletProvider.name}#${
-        this.refreshSupportedMethods.name
-      }(): methods [${networkConfiguration.methods.join(',')}] found for "${
-        networkConfiguration.genesisId
-      }"`
+      `${
+        CustomUseWalletProvider.name
+      }#${_functionName}(): methods [${networkConfiguration.methods.join(
+        ','
+      )}] found for "${networkConfiguration.genesisId}"`
     );
 
     // update the methods
