@@ -13,9 +13,6 @@ enum ErrorCodeEnum {
 
   // connection
   OfflineError = 3000,
-
-  // transaction
-  FailedToSendTransactionError = 4000,
 }
 
 export default ErrorCodeEnum;

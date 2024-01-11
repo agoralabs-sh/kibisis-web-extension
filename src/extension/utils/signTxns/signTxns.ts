@@ -11,6 +11,7 @@ import {
 import browser from 'webextension-polyfill';
 
 // errors
+import { SerializableArc0013UnauthorizedSignerError } from '@common/errors';
 import {
   DecryptionError,
   InvalidPasswordError,
@@ -80,10 +81,20 @@ export default async function signTxns({
 
       // if no authorized address matches the signer, we cannot sign
       if (!authorizedSigners.some((value) => value === signer)) {
+        // if there is no signed transaction, we have been instructed to sign, so error
+        if (!txn.stxn) {
+          throw new SerializableArc0013UnauthorizedSignerError(
+            signer,
+            __PROVIDER_ID__,
+            `signer "${signer}" not authorized to sign transaction "${unsignedTransaction.txID()}"`
+          );
+        }
+
         logger?.debug(
           `${_functionName}(): from address "${signer}" has not been authorized to sign transaction, skipping`
         );
 
+        // this is a signed transaction, so ignore
         return null;
       }
 

@@ -37,7 +37,7 @@ import SignTxnsModalContent from './SignTxnsModalContent';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { Arc0013ProviderMethodEnum } from '@common/enums';
+import { Arc0013ErrorCodeEnum, Arc0013ProviderMethodEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
@@ -188,6 +188,16 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           setPasswordError(t<string>('errors.inputs.invalidPassword'));
 
           break;
+        case Arc0013ErrorCodeEnum.UnauthorizedSignerError:
+          dispatch(
+            sendSignTxnsResponseThunk({
+              error,
+              eventId: signTxnsRequest.eventId,
+              originMessage: signTxnsRequest.originMessage,
+              originTabId: signTxnsRequest.originTabId,
+              stxns: null,
+            })
+          );
         default:
           dispatch(
             createNotification({
