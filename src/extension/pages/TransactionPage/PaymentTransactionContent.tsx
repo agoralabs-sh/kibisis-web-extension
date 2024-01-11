@@ -238,8 +238,8 @@ const PaymentTransactionContent: FC<IProps> = ({
                   </Text>
                 </Tooltip>
                 <CopyIconButton
-                  ariaLabel="Copy transaction ID"
-                  copiedTooltipLabel={t<string>('captions.transactionIdCopied')}
+                  ariaLabel={t<string>('labels.copyTransactionId')}
+                  tooltipLabel={t<string>('labels.copyTransactionId')}
                   size="sm"
                   value={transaction.id}
                 />
@@ -276,8 +276,8 @@ const PaymentTransactionContent: FC<IProps> = ({
                   </Text>
                 </Tooltip>
                 <CopyIconButton
-                  ariaLabel="Copy group ID"
-                  copiedTooltipLabel={t<string>('captions.groupIdCopied')}
+                  ariaLabel={t<string>('labels.copyGroupId')}
+                  tooltipLabel={t<string>('labels.copyGroupId')}
                   size="sm"
                   value={transaction.groupId}
                 />

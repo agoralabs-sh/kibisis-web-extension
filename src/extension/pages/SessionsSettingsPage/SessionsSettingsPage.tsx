@@ -143,7 +143,7 @@ const SessionsSettingsPage: FC = () => {
 
     return (
       <>
-        {/* Empty state */}
+        {/*empty state*/}
         <Spacer />
         <EmptyState
           description={t<string>('captions.noSessionsFound')}

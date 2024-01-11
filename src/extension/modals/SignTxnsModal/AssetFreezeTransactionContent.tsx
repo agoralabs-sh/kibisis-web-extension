@@ -270,11 +270,14 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
           label={`${t<string>('labels.id')}:`}
           value={asset.id}
         />
+
         <CopyIconButton
-          ariaLabel={`Copy ${asset.id}`}
+          ariaLabel={t<string>('labels.copyValue', { value: asset.id })}
+          tooltipLabel={t<string>('labels.copyValue', { value: asset.id })}
           size="xs"
           value={asset.id}
         />
+
         {explorer && (
           <OpenTabIconButton
             size="xs"

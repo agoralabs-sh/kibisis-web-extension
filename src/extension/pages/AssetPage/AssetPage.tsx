@@ -9,7 +9,11 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoArrowDownOutline, IoArrowUpOutline } from 'react-icons/io5';
+import {
+  IoArrowDownOutline,
+  IoArrowUpOutline,
+  IoTrashOutline,
+} from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
@@ -19,6 +23,7 @@ import AssetIcon from '@extension/components/AssetIcon';
 import AssetBadge from '@extension/components/AssetBadge';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import IconButton from '@extension/components/IconButton';
 import LoadingPage from '@extension/components/LoadingPage';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
@@ -30,7 +35,9 @@ import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
 import { AssetTypeEnum } from '@extension/enums';
 
 // features
+import { removeArc200AssetHoldingThunk } from '@extension/features/accounts';
 import { initializeSendAsset } from '@extension/features/send-assets';
+import { setConfirm } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -106,6 +113,42 @@ const AssetPage: FC = () => {
         })
       );
     }
+  };
+  const handleRemoveAssetClick = () => {
+    if (
+      !account ||
+      !asset ||
+      !selectedNetwork ||
+      asset.type !== AssetTypeEnum.Arc200
+    ) {
+      return;
+    }
+
+    dispatch(
+      setConfirm({
+        description: t<string>('captions.removeAssetConfirm', {
+          symbol: asset.symbol,
+        }),
+        onConfirm: () => {
+          // remove the asset
+          dispatch(
+            removeArc200AssetHoldingThunk({
+              accountId: account.id,
+              appId: asset.id,
+              genesisHash: selectedNetwork.genesisHash,
+            })
+          );
+
+          // navigate to the accounts page
+          navigate(ACCOUNTS_ROUTE, {
+            replace: true,
+          });
+        },
+        title: t<string>('headings.removeAssetConfirm', {
+          symbol: asset.symbol,
+        }),
+      })
+    );
   };
   const reset = () =>
     navigate(ACCOUNTS_ROUTE, {
@@ -218,20 +261,30 @@ const AssetPage: FC = () => {
             )}
           </HStack>
 
-          {/*name*/}
-          {asset.name && (
-            <Tooltip aria-label="Asset name" label={asset.name}>
-              <Text
-                color={defaultTextColor}
-                fontSize="sm"
-                maxW={200}
-                noOfLines={1}
-                textAlign="center"
-              >
-                {asset.name}
-              </Text>
-            </Tooltip>
-          )}
+          <HStack
+            alignItems="center"
+            justifyContent="center"
+            spacing={2}
+            w="full"
+          >
+            {/*name*/}
+            {asset.name && (
+              <Tooltip aria-label="Asset name" label={asset.name}>
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  maxW={200}
+                  noOfLines={1}
+                  textAlign="center"
+                >
+                  {asset.name}
+                </Text>
+              </Tooltip>
+            )}
+
+            {/*type*/}
+            <AssetBadge type={asset.type} />
+          </HStack>
 
           <HStack
             alignItems="center"
@@ -239,19 +292,12 @@ const AssetPage: FC = () => {
             spacing={2}
             w="full"
           >
-            {/*type*/}
-            <AssetBadge type={asset.type} />
-
-            <Text color={subTextColor} fontSize="sm" textAlign="center">
-              |
-            </Text>
-
-            {/*id*/}
             <HStack alignItems="center" justifyContent="center" spacing={0}>
+              {/*id*/}
               <Box
                 backgroundColor={textBackgroundColor}
                 borderRadius={theme.radii['3xl']}
-                px={2}
+                px={DEFAULT_GAP / 3}
                 py={1}
               >
                 <Text color={subTextColor} fontSize="sm">
@@ -261,8 +307,16 @@ const AssetPage: FC = () => {
 
               {/*copy asset*/}
               <CopyIconButton
-                ariaLabel="Copy asset ID"
-                copiedTooltipLabel={t<string>('captions.assetIdCopied')}
+                ariaLabel={
+                  asset.type === AssetTypeEnum.Standard
+                    ? t<string>('labels.copyAssetId')
+                    : t<string>('captions.copyApplicationId')
+                }
+                tooltipLabel={
+                  asset.type === AssetTypeEnum.Standard
+                    ? t<string>('labels.copyAssetId')
+                    : t<string>('captions.copyApplicationId')
+                }
                 value={asset.id}
               />
 
@@ -278,6 +332,19 @@ const AssetPage: FC = () => {
                       : explorer.applicationPath
                   }/${asset.id}`}
                 />
+              )}
+
+              {/*remove asset*/}
+              {asset.type === AssetTypeEnum.Arc200 && (
+                <Tooltip label={t<string>('labels.removeAsset')}>
+                  <IconButton
+                    aria-label="Remove Asset"
+                    icon={IoTrashOutline}
+                    onClick={handleRemoveAssetClick}
+                    size="sm"
+                    variant="ghost"
+                  />
+                </Tooltip>
               )}
             </HStack>
           </HStack>

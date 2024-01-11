@@ -124,8 +124,8 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
               </Text>
 
               <CopyIconButton
-                ariaLabel="Copy asset ID"
-                copiedTooltipLabel={t<string>('captions.assetIdCopied')}
+                ariaLabel={t<string>('labels.copyAssetId')}
+                tooltipLabel={t<string>('labels.copyAssetId')}
                 size="sm"
                 value={asset.id}
               />
