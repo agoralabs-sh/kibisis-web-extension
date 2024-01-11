@@ -1,3 +1,10 @@
+# [1.10.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0-beta.2...v1.10.0-beta.3) (2024-01-11)
+
+
+### Features
+
+* add pera explorer to algorand mainnet and testnet ([#116](https://github.com/agoralabs-sh/kibisis-web-extension/issues/116)) ([1bae6c5](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1bae6c59287e57d6601e0d782872e077b501ed2d))
+
 # [1.10.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0-beta.1...v1.10.0-beta.2) (2024-01-11)
 
 
