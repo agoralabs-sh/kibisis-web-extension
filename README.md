@@ -142,7 +142,6 @@ $ yarn start:<chrome|firefox>
 |---------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `<all_urls>`  | 2        | When the extension attempts to scan the QR code of a WalletConnect dapp, the [`tabs.captureVisibleTab()`][capture-visible-tab-api] function is used.                           |
 | `activeTab`   | 3        | As above, the extension requires access to the [`tabs.captureVisibleTab()`][capture-visible-tab-api].                                                                          |
-| `downloads`   | 2 and 3  | Documents, such as the Strong Password Policy, can be viewed in app, or can optionally be downloaded directly from the extension using [`downloads.download()`][download-api]. |
 | `storage`     | 2 and 3  | The [storage][storage-api] API is used to maintain the state of the extension. It saves encrypted private keys, settings and the lists of AVM assets.                          |
 
 <sup>[Back to top ^][table-of-contents]</sup>
