@@ -1,3 +1,10 @@
+# [1.10.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0-beta.1...v1.10.0-beta.2) (2024-01-11)
+
+
+### Features
+
+* add support for use wallet ([#114](https://github.com/agoralabs-sh/kibisis-web-extension/issues/114)) ([637162c](https://github.com/agoralabs-sh/kibisis-web-extension/commit/637162c11eaf9060006c5616e77edfb6a01f22d7))
+
 # [1.10.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0...v1.10.0-beta.1) (2024-01-04)
 
 
