@@ -9,14 +9,14 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 interface IProps {
   ariaLabel: string;
-  copiedTooltipLabel?: string;
+  tooltipLabel?: string;
   size?: string;
   value: string;
 }
 
 const CopyIconButton: FC<IProps> = ({
   ariaLabel,
-  copiedTooltipLabel,
+  tooltipLabel,
   size = 'sm',
   value,
 }: IProps) => {
@@ -30,8 +30,7 @@ const CopyIconButton: FC<IProps> = ({
     <Tooltip
       arrowSize={15}
       hasArrow={true}
-      isOpen={hasCopied}
-      label={copiedTooltipLabel || t<string>('captions.copied')}
+      label={tooltipLabel || ariaLabel}
       placement="bottom"
     >
       <IconButton

@@ -8,6 +8,7 @@ import {
   addArc200AssetHoldingThunk,
   fetchAccountsFromStorageThunk,
   removeAccountByIdThunk,
+  removeArc200AssetHoldingThunk,
   saveAccountNameThunk,
   saveNewAccountThunk,
   startPollingForAccountsThunk,
@@ -104,6 +105,48 @@ const slice = createSlice({
       removeAccountByIdThunk.rejected,
       (state: IAccountsState) => {
         state.saving = false;
+      }
+    );
+    /** remove arc200 asset holdings **/
+    builder.addCase(
+      removeArc200AssetHoldingThunk.fulfilled,
+      (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
+        if (action.payload) {
+          state.items = state.items.map((value) =>
+            value.id === action.payload?.id ? action.payload : value
+          );
+        }
+
+        // remove updated account from the account update list
+        state.updatingAccounts = state.updatingAccounts.filter(
+          (value) => value.id !== action.payload?.id
+        );
+      }
+    );
+    builder.addCase(
+      removeArc200AssetHoldingThunk.pending,
+      (state: IAccountsState, action) => {
+        state.updatingAccounts = [
+          // filter the unrelated updating account ids
+          ...(state.updatingAccounts = state.updatingAccounts.filter(
+            (value) => value.id !== action.meta.arg.accountId
+          )),
+          // re-add the account being updated
+          {
+            id: action.meta.arg.accountId,
+            information: true,
+            transactions: false,
+          },
+        ];
+      }
+    );
+    builder.addCase(
+      removeArc200AssetHoldingThunk.rejected,
+      (state: IAccountsState, action) => {
+        // remove updated account from the account update list
+        state.updatingAccounts = state.updatingAccounts.filter(
+          (value) => value.id !== action.meta.arg.accountId
+        );
       }
     );
     /** save account name **/

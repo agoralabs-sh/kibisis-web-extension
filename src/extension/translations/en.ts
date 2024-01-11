@@ -34,7 +34,6 @@ const translation: IResourceLanguage = {
   captions: {
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
-    addressCopied: 'Address copied!',
     addressDoesNotMatch: 'This address does not match the signer',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
@@ -54,8 +53,6 @@ const translation: IResourceLanguage = {
     [`appOnComplete_${TransactionTypeEnum.ApplicationOptIn}`]: `This transaction will opt the sender's account into the application by allocating some local state.`,
     [`appOnComplete_${TransactionTypeEnum.ApplicationUpdate}`]:
       'This transaction will update the application, replacing the approval and clear programs. The application ID will not be changed.',
-    arc200ApplicationIdCopied: 'ARC200 application ID copied!',
-    assetIdCopied: 'Asset ID copied!',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
     changePassword1: 'Enter your new password.',
@@ -73,6 +70,7 @@ const translation: IResourceLanguage = {
     createPassword1: `First, let's create a new password to secure this device.`,
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
+    defaultConfirm: 'Are you sure?',
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
     enableRequest:
@@ -129,6 +127,8 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Are you sure you want to remove all sessions?',
     removeAllAccountsWarning:
       'Removing all accounts will also remove this session',
+    removeAssetConfirm:
+      'Are you sure you want to remove {{symbol}}? You can re-add it back to your asset holdings again.',
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
@@ -179,6 +179,7 @@ const translation: IResourceLanguage = {
     beta: 'Beta',
     clearAllData: 'Clear All Data',
     comingSoon: 'Coming Soon!',
+    confirm: 'Confirm',
     createNewAccount: 'Create A New Account',
     dangerZone: 'Danger Zone',
     developer: 'Developer',
@@ -197,6 +198,7 @@ const translation: IResourceLanguage = {
     offline: 'Offline',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
+    removeAssetConfirm: 'Remove {{symbol}}',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
@@ -251,8 +253,14 @@ const translation: IResourceLanguage = {
     balance: 'Balance',
     clawbackAccount: 'Clawback Account',
     connectWallet: 'Connect Wallet',
+    copyAddress: 'Copy Address',
+    copyApplicationId: 'Copy Application ID',
+    copyAssetId: 'Copy Asset ID',
+    copyGroupId: 'Copy Group ID',
     copySeedPhraseConfirm:
       'I confirm I have copied my seed phrase to a secure place.',
+    copyTransactionId: 'Copy Transaction ID',
+    copyValue: 'Copy {{value}}',
     creatorAccount: 'Creator Account',
     dark: 'Dark',
     date: 'Date',
@@ -293,6 +301,7 @@ const translation: IResourceLanguage = {
     password: 'Password',
     preferredBlockExplorer: 'Preferred Block Explorer',
     removeAccount: 'Remove Account',
+    removeAsset: 'Remove Asset',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
     seedPhrase: 'Seed Phrase',

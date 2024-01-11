@@ -18,7 +18,7 @@ import Button from '@extension/components/Button';
 import Warning from '@extension/components/Warning';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
 import { IConfirm } from '@extension/features/system';
@@ -38,9 +38,12 @@ interface IProps {
 
 const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
-  const confirm: IConfirm | null = useSelectConfirm();
-  const defaultTextColor: string = useDefaultTextColor();
   const initialRef: RefObject<HTMLButtonElement> | undefined = createRef();
+  // hooks
+  const confirm: IConfirm | null = useSelectConfirm();
+  // selectors
+  const defaultTextColor: string = useDefaultTextColor();
+  // handlers
   const handleCancelClick = () => {
     if (confirm?.onCancel) {
       confirm.onCancel();
@@ -68,28 +71,34 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
       <ModalOverlay />
       <ModalContent
         alignSelf="flex-end"
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        backgroundColor={BODY_BACKGROUND_COLOR}
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
         minH="0dvh"
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} size="md" textAlign="center">
-            {confirm?.title || 'Confirm'}
+            {confirm?.title || t<string>('headings.confirm')}
           </Heading>
         </ModalHeader>
+
         <ModalBody>
           <VStack spacing={4} w="full">
-            <Text color={defaultTextColor} fontSize="md" textAlign="left">
-              {confirm?.description || 'Are you sure?'}
+            {/*description*/}
+            <Text color={defaultTextColor} fontSize="sm" textAlign="left">
+              {confirm?.description || t<string>('captions.defaultConfirm')}
             </Text>
+
+            {/*warning text*/}
             {confirm?.warningText && (
               <Warning message={confirm.warningText} size="sm" />
             )}
           </VStack>
         </ModalBody>
+
         <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={4} w="full">
+            {/*cancel*/}
             <Button
               onClick={handleCancelClick}
               ref={initialRef}
@@ -99,6 +108,8 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
             >
               {t<string>('buttons.cancel')}
             </Button>
+
+            {/*confirm*/}
             <Button
               onClick={handleConfirmClick}
               size="lg"

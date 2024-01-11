@@ -336,8 +336,8 @@ const AccountPage: FC = () => {
 
               {/*copy address*/}
               <CopyIconButton
-                ariaLabel="Copy address"
-                copiedTooltipLabel={t<string>('captions.addressCopied')}
+                ariaLabel={t<string>('labels.copyAddress')}
+                tooltipLabel={t<string>('labels.copyAddress')}
                 value={address}
               />
 

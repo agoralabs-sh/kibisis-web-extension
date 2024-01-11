@@ -136,11 +136,18 @@ const ApplicationTransactionContent: FC<IProps> = ({
             label={`${t<string>('labels.id')}:`}
             value={transaction.appIndex.toString()}
           />
+
           <CopyIconButton
-            ariaLabel={`Copy ${transaction.appIndex}`}
+            ariaLabel={t<string>('labels.copyValue', {
+              value: transaction.appIndex,
+            })}
+            tooltipLabel={t<string>('labels.copyValue', {
+              value: transaction.appIndex,
+            })}
             size="xs"
             value={transaction.appIndex.toString()}
           />
+
           {explorer && (
             <OpenTabIconButton
               size="xs"

@@ -85,8 +85,8 @@ const AssetDestroyTransactionContent: FC<IProps> = ({
             {transaction.assetId}
           </Text>
           <CopyIconButton
-            ariaLabel="Copy asset ID"
-            copiedTooltipLabel={t<string>('captions.assetIdCopied')}
+            ariaLabel={t<string>('labels.copyAssetId')}
+            tooltipLabel={t<string>('labels.copyAssetId')}
             size="sm"
             value={transaction.assetId}
           />
@@ -190,8 +190,8 @@ const AssetDestroyTransactionContent: FC<IProps> = ({
                   </Text>
                 </Tooltip>
                 <CopyIconButton
-                  ariaLabel="Copy transaction ID"
-                  copiedTooltipLabel={t<string>('captions.transactionIdCopied')}
+                  ariaLabel={t<string>('labels.copyTransactionId')}
+                  tooltipLabel={t<string>('labels.copyTransactionId')}
                   size="sm"
                   value={transaction.id}
                 />
@@ -228,8 +228,8 @@ const AssetDestroyTransactionContent: FC<IProps> = ({
                   </Text>
                 </Tooltip>
                 <CopyIconButton
-                  ariaLabel="Copy group ID"
-                  copiedTooltipLabel={t<string>('captions.groupIdCopied')}
+                  ariaLabel={t<string>('labels.copyGroupId')}
+                  tooltipLabel={t<string>('labels.copyGroupId')}
                   size="sm"
                   value={transaction.groupId}
                 />

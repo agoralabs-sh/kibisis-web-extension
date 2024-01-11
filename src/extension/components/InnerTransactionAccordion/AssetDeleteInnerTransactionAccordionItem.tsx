@@ -86,8 +86,8 @@ const AssetDeleteInnerTransactionAccordionItem: FC<IProps> = ({
                 {transaction.assetId}
               </Text>
               <CopyIconButton
-                ariaLabel="Copy asset ID"
-                copiedTooltipLabel={t<string>('captions.assetIdCopied')}
+                ariaLabel={t<string>('labels.copyAssetId')}
+                tooltipLabel={t<string>('labels.copyAssetId')}
                 size="xs"
                 value={transaction.assetId}
               />

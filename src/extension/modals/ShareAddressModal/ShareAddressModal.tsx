@@ -164,8 +164,8 @@ const ShareAddressModal: FC<IProps> = ({
                 </Tooltip>
               </Box>
               <CopyIconButton
-                ariaLabel="Copy address"
-                copiedTooltipLabel={t<string>('captions.addressCopied')}
+                ariaLabel={t<string>('labels.copyAddress')}
+                tooltipLabel={t<string>('labels.copyAddress')}
                 value={getFormatFromIndex(pillIndex, address)}
               />
             </HStack>
