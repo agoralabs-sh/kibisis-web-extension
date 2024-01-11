@@ -60,8 +60,10 @@ import { Arc0013SignTxnsRequestMessage } from '@common/messages';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectLogger,
   useSelectNetworks,
+  useSelectSessions,
   useSelectSignTxnsRequest,
 } from '@extension/selectors';
 
@@ -78,9 +80,11 @@ import {
   IAppThunkDispatch,
   IClientRequest,
   INetwork,
+  ISession,
 } from '@extension/types';
 
 // utils
+import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
 import signTxns from '@extension/utils/signTxns';
 
@@ -106,8 +110,10 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
   // selectors
+  const accounts: IAccount[] = useSelectAccounts();
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
+  const sessions: ISession[] = useSelectSessions();
   const signTxnsRequest: IClientRequest<Arc0013SignTxnsRequestMessage> | null =
     useSelectSignTxnsRequest();
   // state
@@ -274,38 +280,64 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     }
   }, []);
   useEffect(() => {
+    let authorizedAddresses: string[];
+    let filteredSessions: ISession[];
     let genesisHash: string | null;
 
     if (signTxnsRequest && signTxnsRequest.originMessage.params) {
-      genesisHash = extractGenesisHashFromAtomicTransactions({
-        logger,
-        txns: signTxnsRequest.originMessage.params.txns,
-      });
+      if (signTxnsRequest.originMessage.params) {
+        genesisHash = extractGenesisHashFromAtomicTransactions({
+          logger,
+          txns: signTxnsRequest.originMessage.params.txns,
+        });
 
-      // if there is network, the input is invalid
-      if (!genesisHash) {
-        dispatch(
-          sendSignTxnsResponseThunk({
-            error: new SerializableArc0013InvalidInputError(
-              __PROVIDER_ID__,
-              `the transaction group is not atomic, they are bound for multiple networks`
-            ),
-            eventId: signTxnsRequest.eventId,
-            originMessage: signTxnsRequest.originMessage,
-            originTabId: signTxnsRequest.originTabId,
-            stxns: null,
-          })
+        // if there is network, the input is invalid
+        if (!genesisHash) {
+          dispatch(
+            sendSignTxnsResponseThunk({
+              error: new SerializableArc0013InvalidInputError(
+                __PROVIDER_ID__,
+                `the transaction group is not atomic, they are bound for multiple networks`
+              ),
+              eventId: signTxnsRequest.eventId,
+              originMessage: signTxnsRequest.originMessage,
+              originTabId: signTxnsRequest.originTabId,
+              stxns: null,
+            })
+          );
+
+          return handleClose();
+        }
+
+        // update the network
+        setNetwork(
+          networks.find((value) => value.genesisHash === genesisHash) || null
         );
-
-        handleClose();
       }
 
-      // update the network
-      setNetwork(
-        networks.find((value) => value.genesisHash === genesisHash) || null
+      // filter sessions by genesis hash
+      filteredSessions = sessions.filter(
+        (value) => value.genesisHash === genesisHash
+      );
+      authorizedAddresses = getAuthorizedAddressesForHost(
+        signTxnsRequest.clientInfo.host,
+        filteredSessions
+      );
+
+      // set the authorized accounts
+      setAuthorizedAccounts(
+        accounts.filter((account) =>
+          authorizedAddresses.some(
+            (value) =>
+              value ===
+              AccountService.convertPublicKeyToAlgorandAddress(
+                account.publicKey
+              )
+          )
+        )
       );
     }
-  }, [signTxnsRequest]);
+  }, [accounts, networks, sessions, signTxnsRequest]);
 
   return (
     <Modal
