@@ -3,6 +3,9 @@ name: "Create Env File"
 description: "Creates an .env file"
 
 inputs:
+  provider_id:
+    description: "The provider ID used for connections to dapps"
+    required: true
   walletconnect_project_id:
     description: "WalletConnect project ID"
     required: true
@@ -13,5 +16,6 @@ runs:
     - name: "📝 Create .env file"
       run: |
         rm -f .env
+        echo "PROVIDER_ID=${{ inputs.provider_id }}" >> .env
         echo "WALLET_CONNECT_PROJECT_ID=${{ inputs.walletconnect_project_id }}" >> .env
       shell: bash

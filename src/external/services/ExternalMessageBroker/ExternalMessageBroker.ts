@@ -1,67 +1,179 @@
 import browser from 'webextension-polyfill';
 
 // enums
-import { MessageTypeEnum } from '@common/enums';
+import { Arc0013MessageReferenceEnum } from '@common/enums';
+
+// messages
+import {
+  BaseArc0013RequestMessage,
+  BaseArc0013ResponseMessage,
+} from '@common/messages';
 
 // types
-import {
+import type {
+  IArc0013ParamTypes,
+  IArc0013ResultTypes,
   IBaseOptions,
+  IClientInformation,
   ILogger,
-  IRequestMessages,
-  IResponseMessages,
 } from '@common/types';
+
+interface IOptions extends IBaseOptions {
+  channel: BroadcastChannel;
+}
 
 export default class ExternalMessageBroker {
   // private variables
+  private readonly channel: BroadcastChannel;
   private readonly logger: ILogger | null;
 
-  constructor({ logger }: IBaseOptions) {
+  constructor({ channel, logger }: IOptions) {
+    this.channel = channel;
     this.logger = logger || null;
+  }
+
+  /**
+   * private functions
+   */
+
+  /**
+   * Convenience function create the client information content for the webpage.
+   * * appName - uses the content of the "application-name" meta tag, if this doesn't exist, it falls back to the document title.
+   * * description - uses the content of the "description" meta tag, if it exists.
+   * * host - uses host of the web page.
+   * * iconUrl - uses the favicon of the web page.
+   * @returns {IClientInformation} the client information.
+   * @private
+   */
+  private createClientInformation(): IClientInformation {
+    return {
+      appName:
+        document
+          .querySelector('meta[name="application-name"]')
+          ?.getAttribute('content') || document.title,
+      description:
+        document
+          .querySelector('meta[name="description"]')
+          ?.getAttribute('content') || null,
+      host: `${window.location.protocol}//${window.location.host}`,
+      iconUrl: this.extractFaviconUrl(),
+    };
+  }
+
+  /**
+   * Utility function to extract the favicon URL.
+   * @returns {string} the favicon URL or null if no favicon is found.
+   * @see {@link https://stackoverflow.com/a/16844961}
+   * @private
+   */
+  private extractFaviconUrl(): string | null {
+    const links: HTMLCollectionOf<HTMLElementTagNameMap['link']> =
+      document.getElementsByTagName('link');
+    const iconUrls: string[] = [];
+
+    for (const link of Array.from(links)) {
+      const rel: string | null = link.getAttribute('rel');
+      let href: string | null;
+      let origin: string;
+
+      // if the link is not an icon; a favicon, ignore
+      if (!rel || !rel.toLowerCase().includes('icon')) {
+        continue;
+      }
+
+      href = link.getAttribute('href');
+
+      // if there is no href attribute there is no url
+      if (!href) {
+        continue;
+      }
+
+      // if it is an absolute url, just use it
+      if (
+        href.toLowerCase().indexOf('https:') === 0 ||
+        href.toLowerCase().indexOf('http:') === 0
+      ) {
+        iconUrls.push(href);
+
+        continue;
+      }
+
+      // if is an absolute url without a protocol,add the protocol
+      if (href.toLowerCase().indexOf('//') === 0) {
+        iconUrls.push(`${window.location.protocol}${href}`);
+
+        continue;
+      }
+
+      // whats left is relative urls
+      origin = `${window.location.protocol}//${window.location.host}`;
+
+      // if there is no forward slash prepended, the favicon is relative to the page
+      if (href.indexOf('/') === -1) {
+        href = window.location.pathname
+          .split('/')
+          .map((value, index, array) =>
+            !href || index < array.length - 1 ? value : href
+          ) // replace the current path with the href
+          .join('/');
+      }
+
+      iconUrls.push(`${origin}${href}`);
+    }
+
+    return (
+      iconUrls.find((value) => value.match(/\.(jpg|jpeg|png|gif)$/i)) || // favour image files over ico
+      iconUrls[0] ||
+      null
+    );
   }
 
   /**
    * public functions
    */
 
-  public onResponseMessage(message: IResponseMessages): void {
-    const _functionName: string = 'onResponseMessage';
+  public async onArc0013RequestMessage(
+    message: MessageEvent<BaseArc0013RequestMessage<IArc0013ParamTypes>>
+  ): Promise<void> {
+    const _functionName: string = 'onArc0013RequestMessage';
 
-    switch (message.type) {
-      case MessageTypeEnum.EnableResponse:
-      case MessageTypeEnum.SignBytesResponse:
-      case MessageTypeEnum.SignTxnsResponse:
+    switch (message.data.reference) {
+      case Arc0013MessageReferenceEnum.EnableRequest:
+      case Arc0013MessageReferenceEnum.GetProvidersRequest:
+      case Arc0013MessageReferenceEnum.SignBytesRequest:
+      case Arc0013MessageReferenceEnum.SignTxnsRequest:
         this.logger &&
           this.logger.debug(
-            `${ExternalMessageBroker.name}#${_functionName}(): response message "${message.type}" received`
+            `${ExternalMessageBroker.name}#${_functionName}(): request message "${message.data.reference}" received`
           );
 
-        // send the response to the web page
-        return window.postMessage(message);
+        // send the message to the main app (popup) or the background service
+        return await browser.runtime.sendMessage({
+          clientInfo: this.createClientInformation(),
+          data: message.data,
+        });
       default:
         break;
     }
   }
 
-  public async onRequestMessage(
-    message: MessageEvent<IRequestMessages>
-  ): Promise<void> {
-    const _functionName: string = 'onRequestMessage';
+  public onArc0013ResponseMessage(
+    message: BaseArc0013ResponseMessage<IArc0013ResultTypes>
+  ): void {
+    const _functionName: string = 'onArc0013ResponseMessage';
 
-    if (message.source !== window || !message.data) {
-      return;
-    }
-
-    switch (message.data.type) {
-      case MessageTypeEnum.EnableRequest:
-      case MessageTypeEnum.SignBytesRequest:
-      case MessageTypeEnum.SignTxnsRequest:
+    switch (message.reference) {
+      case Arc0013MessageReferenceEnum.EnableResponse:
+      case Arc0013MessageReferenceEnum.GetProvidersResponse:
+      case Arc0013MessageReferenceEnum.SignBytesResponse:
+      case Arc0013MessageReferenceEnum.SignTxnsResponse:
         this.logger &&
           this.logger.debug(
-            `${ExternalMessageBroker.name}#${_functionName}(): request message "${message.data.type}" received`
+            `${ExternalMessageBroker.name}#${_functionName}(): response message "${message.reference}" received`
           );
 
-        // send the message to the main app (popup) or the background service
-        return await browser.runtime.sendMessage(message.data);
+        // broadcast the response to the webpage
+        return this.channel.postMessage(message);
       default:
         break;
     }

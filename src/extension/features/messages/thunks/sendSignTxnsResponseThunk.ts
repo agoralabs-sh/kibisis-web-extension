@@ -2,45 +2,49 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
 // enums
-import { MessageTypeEnum } from '@common/enums';
+import { Arc0013MessageReferenceEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // features
 import { removeEventByIdThunk } from '@extension/features/events';
 
 // messages
-import { SignTxnsResponseMessage } from '@common/messages';
+import {
+  Arc0013SignTxnsRequestMessage,
+  Arc0013SignTxnsResponseMessage,
+} from '@common/messages';
 
 // types
 import { ILogger } from '@common/types';
-import { IMainRootState } from '@extension/types';
+import { IBaseAsyncThunkConfig } from '@extension/types';
 import { IBaseResponseThunkPayload } from '../types';
 
 interface IPayload extends IBaseResponseThunkPayload {
-  signedTransactions: (string | null)[] | null;
+  originMessage: Arc0013SignTxnsRequestMessage;
+  stxns: (string | null)[] | null;
 }
 
 const sendTxnsBytesResponseThunk: AsyncThunk<
   void, // return
   IPayload, // args
-  Record<string, never>
-> = createAsyncThunk<void, IPayload, { state: IMainRootState }>(
+  IBaseAsyncThunkConfig
+> = createAsyncThunk<void, IPayload, IBaseAsyncThunkConfig>(
   MessagesThunkEnum.SendSignTxnsResponse,
   async (
-    { error, eventId, signedTransactions: stxns, tabId },
+    { error, eventId, originMessage, originTabId, stxns },
     { dispatch, getState }
   ) => {
     const logger: ILogger = getState().system.logger;
 
     logger.debug(
-      `${MessagesThunkEnum.SendSignTxnsResponse}: sending "${MessageTypeEnum.SignTxnsResponse}" message to content script`
+      `${MessagesThunkEnum.SendSignTxnsResponse}: sending "${Arc0013MessageReferenceEnum.SignTxnsResponse}" message to content script`
     );
 
     // send the error the webpage (via the content script)
     if (error) {
       await browser.tabs.sendMessage(
-        tabId,
-        new SignTxnsResponseMessage(null, error)
+        originTabId,
+        new Arc0013SignTxnsResponseMessage(originMessage.id, error, null)
       );
 
       // remove the event
@@ -52,13 +56,11 @@ const sendTxnsBytesResponseThunk: AsyncThunk<
     // if there is signed transactions, send them back to the webpage (via the content script)
     if (stxns) {
       await browser.tabs.sendMessage(
-        tabId,
-        new SignTxnsResponseMessage(
-          {
-            stxns,
-          },
-          null
-        )
+        originTabId,
+        new Arc0013SignTxnsResponseMessage(originMessage.id, null, {
+          providerId: __PROVIDER_ID__,
+          stxns,
+        })
       );
     }
 

@@ -1,1 +1,1 @@
-export const WALLET_ID: string = 'kibisis';
+export const LEGACY_WALLET_ID: string = 'kibisis';

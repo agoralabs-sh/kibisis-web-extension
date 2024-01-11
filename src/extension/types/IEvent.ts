@@ -2,15 +2,10 @@
 import { EventTypeEnum } from '@extension/enums';
 
 // types
-import IEnableEventPayload from './IEnableEventPayload';
-import ISignBytesEventPayload from './ISignBytesEventPayload';
-import ISignTxnsEventPayload from './ISignTxnsEventPayload';
+import IClientEventPayload from './IClientEventPayload';
 
-interface IEvent<
-  Payload = IEnableEventPayload | ISignBytesEventPayload | ISignTxnsEventPayload
-> {
+interface IEvent<Payload = IClientEventPayload> {
   id: string;
-  originTabId: number;
   payload: Payload;
   type: EventTypeEnum;
 }

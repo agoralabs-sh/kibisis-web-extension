@@ -10,7 +10,7 @@ import BigNumber from 'bignumber.js';
 import { INetwork } from '@extension/types';
 
 // utils
-import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
+import getRandomAlgodClient from './getRandomAlgodClient';
 
 interface IOptions {
   amount: BigNumber;
@@ -27,7 +27,7 @@ export default async function createPaymentTransaction({
   note,
   to,
 }: IOptions): Promise<Transaction> {
-  const client: Algodv2 = getNotPureStakeAlgodClient(network);
+  const client: Algodv2 = getRandomAlgodClient(network);
   const suggestedParams: SuggestedParams = await client
     .getTransactionParams()
     .do();

@@ -14,8 +14,8 @@ import {
 
 // utils
 import getAlgodClient from '@common/utils/getAlgodClient';
+import algorandAccountInformationWithDelay from '@extension/utils/algorandAccountInformationWithDelay';
 import mapAlgorandAccountInformationToAccount from '@extension/utils/mapAlgorandAccountInformationToAccount';
-import algorandAccountInformationWithDelay from './algorandAccountInformationWithDelay';
 import fetchArc200AssetHoldingWithDelay from './fetchArc200AssetHoldingWithDelay';
 
 interface IOptions extends IBaseOptions {

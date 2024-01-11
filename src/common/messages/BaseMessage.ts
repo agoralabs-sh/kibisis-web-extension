@@ -1,14 +1,11 @@
 import { v4 as uuid } from 'uuid';
 
-// enums
-import { MessageTypeEnum } from '@common/enums';
-
-export default class BaseMessage {
+export default class BaseMessage<Reference> {
   public readonly id: string;
-  public readonly type: MessageTypeEnum;
+  public readonly reference: Reference;
 
-  constructor(type: MessageTypeEnum) {
+  constructor(reference: Reference) {
     this.id = uuid();
-    this.type = type;
+    this.reference = reference;
   }
 }

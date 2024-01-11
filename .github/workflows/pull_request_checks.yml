@@ -45,6 +45,7 @@ jobs:
       - name: "📝 Create .env file"
         uses: ./.github/actions/create-env-file
         with:
+          provider_id: ${{ vars.PROVIDER_ID }}
           walletconnect_project_id: ${{ secrets.DEVELOPMENT_WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
         run: yarn build:chrome
@@ -68,6 +69,7 @@ jobs:
       - name: "📝 Create .env file"
         uses: ./.github/actions/create-env-file
         with:
+          provider_id: ${{ vars.PROVIDER_ID }}
           walletconnect_project_id: ${{ secrets.DEVELOPMENT_WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
         run: yarn build:edge
@@ -91,6 +93,7 @@ jobs:
       - name: "📝 Create .env file"
         uses: ./.github/actions/create-env-file
         with:
+          provider_id: ${{ vars.PROVIDER_ID }}
           walletconnect_project_id: ${{ secrets.DEVELOPMENT_WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
         run: yarn build:firefox

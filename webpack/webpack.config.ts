@@ -62,6 +62,7 @@ const configs: (
   definePlugin = new DefinePlugin({
     __APP_TITLE__: JSON.stringify(APP_TITLE),
     __ENV__: JSON.stringify(environment),
+    __PROVIDER_ID__: JSON.stringify(process.env.PROVIDER_ID),
     __TARGET__: JSON.stringify(target),
     __VERSION__: JSON.stringify(version),
     __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
@@ -248,7 +249,7 @@ const configs: (
       entry: {
         ['background']: resolve(SRC_PATH, 'background.ts'),
         ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
-        ['wallet-initializer']: resolve(SRC_PATH, 'wallet-initializer.ts'),
+        ['legacy-provider']: resolve(SRC_PATH, 'legacy-provider.ts'),
       },
       mode: environment,
       module: {
@@ -393,6 +394,12 @@ const configs: (
         pathinfo: false,
       },
       plugins: [
+        new DefinePlugin({
+          __PROVIDER_ID__: JSON.stringify(process.env.PROVIDER_ID),
+          __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
+            process.env.WALLET_CONNECT_PROJECT_ID
+          ),
+        }),
         new HtmlWebpackPlugin({
           chunks: ['main'],
           favicon: resolve(DAPP_SRC_PATH, 'favicon.png'),

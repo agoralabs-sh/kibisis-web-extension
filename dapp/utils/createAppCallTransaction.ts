@@ -23,7 +23,7 @@ import { TransactionTypeEnum } from '@extension/enums';
 import { INetwork } from '@extension/types';
 
 // utils
-import getNotPureStakeAlgodClient from './getNotPureStakeAlgodClient';
+import getRandomAlgodClient from './getRandomAlgodClient';
 
 interface IOptions {
   from: string;
@@ -41,7 +41,7 @@ export default async function createAppCallTransaction({
   const appArgs: Uint8Array[] = [Uint8Array.from([0]), Uint8Array.from([0, 1])];
   const encodedApprovalProgram: string = 'BIEBMgkxABIxGYEED01D';
   const encodedClearProgram: string = 'BIEB';
-  const client: Algodv2 = getNotPureStakeAlgodClient(network);
+  const client: Algodv2 = getRandomAlgodClient(network);
   const encoder: TextEncoder = new TextEncoder();
   const suggestedParams: SuggestedParams = await client
     .getTransactionParams()

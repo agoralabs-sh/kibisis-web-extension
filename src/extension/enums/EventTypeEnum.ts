@@ -1,7 +1,7 @@
 enum EventTypeEnum {
-  Enable = 'event.enable',
-  SignBytes = 'event.sign_bytes',
-  SignTxns = 'event.sign_txns',
+  EnableRequest = 'event:enable_request',
+  SignBytesRequest = 'event:sign_bytes_request',
+  SignTxnsRequest = 'event.sign_txns_request',
 }
 
 export default EventTypeEnum;
