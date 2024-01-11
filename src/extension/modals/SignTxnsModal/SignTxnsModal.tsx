@@ -198,6 +198,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
               stxns: null,
             })
           );
+          break;
         default:
           dispatch(
             createNotification({
