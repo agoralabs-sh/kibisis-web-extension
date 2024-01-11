@@ -1,8 +1,4 @@
 import {
-  encode as encodeBase64,
-  decode as decodeBase64,
-} from '@stablelib/base64';
-import {
   CustomProvider,
   DecodedSignedTransaction,
   DecodedTransaction,
@@ -145,6 +141,14 @@ export default class CustomUseWalletProvider implements CustomProvider {
   /**
    * private functions
    */
+
+  private convertBytesToBase64(bytes: Uint8Array): string {
+    return Buffer.from(bytes).toString('base64');
+  }
+
+  private convertBase64ToBytes(input: string): Uint8Array {
+    return Buffer.from(input, 'base64');
+  }
 
   private async enable(): Promise<IArc0013Account[]> {
     const _functionName: string = 'enable';
@@ -403,7 +407,9 @@ export default class CustomUseWalletProvider implements CustomProvider {
         // if the transaction is signed, instruct the provider not to sign
         if (isSigned) {
           return {
-            txn: encodeBase64(decodeSignedTransaction(value).txn.toByte()),
+            txn: this.convertBytesToBase64(
+              decodeSignedTransaction(value).txn.toByte()
+            ),
             signers: [],
           };
         }
@@ -415,14 +421,18 @@ export default class CustomUseWalletProvider implements CustomProvider {
           connectedAccounts.includes(sender)
         ) {
           return {
-            txn: encodeBase64(decodeUnsignedTransaction(value).toByte()),
+            txn: this.convertBytesToBase64(
+              decodeUnsignedTransaction(value).toByte()
+            ),
             ...(authAddr && { authAddr }),
           };
         }
 
         // if the transaction is not signed, not instructed to sign or the sender is not authorized, instruct the provider not to sign
         return {
-          txn: encodeBase64(decodeUnsignedTransaction(value).toByte()),
+          txn: this.convertBytesToBase64(
+            decodeUnsignedTransaction(value).toByte()
+          ),
           signers: [],
         };
       })
@@ -432,7 +442,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
     // null values indicate transactions that were not signed by the provider, as defined in ARC-0001, see https://arc.algorand.foundation/ARCs/arc-0001#semantic-and-security-requirements
     return result.reduce<Uint8Array[]>((acc, value, index) => {
       if (value) {
-        return [...acc, decodeBase64(value)];
+        return [...acc, this.convertBase64ToBytes(value)];
       }
 
       // if the group wants to be returned, get the transaction from the input

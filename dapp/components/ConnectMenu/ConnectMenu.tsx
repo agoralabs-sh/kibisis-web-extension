@@ -43,7 +43,7 @@ import { getAccountInformation } from '../../utils';
 
 export interface IConnectResult {
   accounts: IAccountInformation[];
-  connectionType: ConnectionTypeEnum;
+  connectionType: ConnectionTypeEnum | null;
   network: INetwork;
 }
 

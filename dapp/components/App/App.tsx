@@ -197,8 +197,8 @@ const App: FC = () => {
                 <TabPanels>
                   <PaymentActionsTab
                     account={selectedAccount}
+                    connectionType={connectionType}
                     network={selectedNetwork}
-                    toast={toast}
                   />
 
                   <AssetActionsTab
