@@ -1,3 +1,10 @@
+# [1.10.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0-beta.3...v1.10.0-beta.4) (2024-01-11)
+
+
+### Features
+
+* add button to asset page to remove arc-200 asset ([#117](https://github.com/agoralabs-sh/kibisis-web-extension/issues/117)) ([db81bd6](https://github.com/agoralabs-sh/kibisis-web-extension/commit/db81bd6561cc3b51512ccdcd0f01220f5466baf4))
+
 # [1.10.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0-beta.2...v1.10.0-beta.3) (2024-01-11)
 
 
