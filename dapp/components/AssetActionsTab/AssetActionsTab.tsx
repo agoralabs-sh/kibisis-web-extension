@@ -1,9 +1,4 @@
-import {
-  AlgorandProvider,
-  BaseError,
-  IBaseResult,
-  ISignTxnsResult,
-} from '@agoralabs-sh/algorand-provider';
+import { BaseError } from '@agoralabs-sh/algorand-provider';
 import {
   Button,
   Code,
@@ -23,12 +18,12 @@ import {
   Stack,
   TabPanel,
   Text,
+  useToast,
+  UseToastOptions,
   VStack,
 } from '@chakra-ui/react';
-import {
-  decode as decodeBase64,
-  encode as encodeBase64,
-} from '@stablelib/base64';
+import { useWallet } from '@txnlab/use-wallet';
+import { decode as decodeBase64 } from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
 import {
   decodeSignedTransaction,
@@ -39,35 +34,51 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
+// components
+import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
+
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
+import { ConnectionTypeEnum } from '../../enums';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
 import { INetwork } from '@extension/types';
-import { IWindow } from '@external/types';
 import { IAccountInformation, IAssetInformation } from '../../types';
 
 // utils
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import {
+  algorandProviderSignTxns,
   createAssetConfigTransaction,
   createAssetCreateTransaction,
   createAssetDestroyTransaction,
   createAssetFreezeTransaction,
   createAssetTransferTransaction,
+  useWalletSignTxns,
 } from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;
+  connectionType: ConnectionTypeEnum | null;
   network: INetwork | null;
-  toast: CreateToastFnReturn;
 }
 
-const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
+const AssetActionsTab: FC<IProps> = ({
+  account,
+  connectionType,
+  network,
+}: IProps) => {
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
+  const { signTransactions } = useWallet();
+  // states
   const [amount, setAmount] = useState<BigNumber>(new BigNumber('0'));
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
@@ -75,6 +86,7 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   const [selectedAsset, setSelectedAsset] = useState<IAssetInformation | null>(
     null
   );
+  // handlers
   const handleAmountChange = (valueAsString: string) =>
     setAmount(new BigNumber(valueAsString));
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
@@ -90,12 +102,11 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
   };
   const handleSignTransactionClick =
     (type: TransactionTypeEnum) => async () => {
-      const algorand: AlgorandProvider | undefined = (window as IWindow)
-        .algorand;
-      let result: IBaseResult & ISignTxnsResult;
+      let result: (string | null)[] | null = null;
+      let toastErrorOptions: UseToastOptions;
       let unsignedTransaction: Transaction | null = null;
 
-      if (!account || !network) {
+      if (!account || !connectionType || !network) {
         toast({
           description: 'You must first enable the dApp with the wallet.',
           status: 'error',
@@ -105,26 +116,17 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
         return;
       }
 
-      if (!algorand) {
-        toast({
-          description:
-            'Algorand Provider has been intialized; there is no supported wallet.',
-          status: 'error',
-          title: 'window.algorand Not Found!',
-        });
-
-        return;
-      }
+      toastErrorOptions = {
+        description: 'Select an asset from the list.',
+        status: 'error',
+        title: 'No Asset Selected!',
+      };
 
       try {
         switch (type) {
           case TransactionTypeEnum.AssetConfig:
             if (!selectedAsset) {
-              toast({
-                description: 'Select an asset from the list.',
-                status: 'error',
-                title: 'No Asset Selected!',
-              });
+              toast(toastErrorOptions);
 
               return;
             }
@@ -147,11 +149,7 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
             break;
           case TransactionTypeEnum.AssetDestroy:
             if (!selectedAsset) {
-              toast({
-                description: 'Select an asset from the list.',
-                status: 'error',
-                title: 'No Asset Selected!',
-              });
+              toast(toastErrorOptions);
 
               return;
             }
@@ -166,11 +164,7 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
             break;
           case TransactionTypeEnum.AssetFreeze:
             if (!selectedAsset) {
-              toast({
-                description: 'Select an asset from the list.',
-                status: 'error',
-                title: 'No Asset Selected!',
-              });
+              toast(toastErrorOptions);
 
               return;
             }
@@ -187,11 +181,7 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
             break;
           case TransactionTypeEnum.AssetTransfer:
             if (!selectedAsset) {
-              toast({
-                description: 'Select an asset from the list.',
-                status: 'error',
-                title: 'No Asset Selected!',
-              });
+              toast(toastErrorOptions);
 
               return;
             }
@@ -208,11 +198,7 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
             break;
           case TransactionTypeEnum.AssetUnfreeze:
             if (!selectedAsset) {
-              toast({
-                description: 'Select an asset from the list.',
-                status: 'error',
-                title: 'No Asset Selected!',
-              });
+              toast(toastErrorOptions);
 
               return;
             }
@@ -241,23 +227,43 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
           return;
         }
 
-        result = await algorand.signTxns({
-          txns: [
-            {
-              txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
-            },
-          ],
-        });
+        switch (connectionType) {
+          case ConnectionTypeEnum.AlgorandProvider:
+            result = await algorandProviderSignTxns([unsignedTransaction]);
 
-        toast({
-          description: `Successfully signed transaction for wallet "${result.id}".`,
-          status: 'success',
-          title: 'Transaction Signed!',
-        });
+            if (!result) {
+              toast({
+                description:
+                  'Algorand Provider has been intialized; there is no supported wallet.',
+                status: 'error',
+                title: 'window.algorand Not Found!',
+              });
 
-        if (result.stxns[0]) {
+              return;
+            }
+
+            break;
+          case ConnectionTypeEnum.UseWallet:
+            result = await useWalletSignTxns(
+              signTransactions,
+              [0],
+              [encodeUnsignedTransaction(unsignedTransaction)]
+            );
+
+            break;
+          default:
+            break;
+        }
+
+        if (result && result[0]) {
+          toast({
+            description: `Successfully signed payment transaction for provider "${connectionType}".`,
+            status: 'success',
+            title: 'Payment Transaction Signed!',
+          });
+
           setSignedTransaction(
-            decodeSignedTransaction(decodeBase64(result.stxns[0]))
+            decodeSignedTransaction(decodeBase64(result[0]))
           );
         }
       } catch (error) {
@@ -279,17 +285,15 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
     setSelectedAsset(newSelectedAsset);
     setAmount(amount.gt(maximumAmount) ? maximumAmount : amount);
   };
-
-  useEffect(() => {
-    if (account && !selectedAsset) {
-      setSelectedAsset(account.assets[0] || null);
+  // renders
+  const renderContent = () => {
+    if (!connectionType) {
+      return <ConnectionNotInitializedContent />;
     }
-  }, [account]);
 
-  return (
-    <TabPanel w="full">
+    return (
       <VStack justifyContent="center" spacing={8} w="full">
-        {/*Amount*/}
+        {/*amount*/}
         <HStack w="full">
           <Text size="md" textAlign="left">
             Amount:
@@ -319,7 +323,7 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
           </NumberInput>
         </HStack>
 
-        {/*Note*/}
+        {/*note*/}
         <HStack w="full">
           <Text size="md" textAlign="left">
             Note:
@@ -327,7 +331,7 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
           <Input onChange={handleNoteChange} value={note} />
         </HStack>
 
-        {/*Assets*/}
+        {/*assets*/}
         <Text size="md" textAlign="left" w="full">
           Assets:
         </Text>
@@ -367,7 +371,7 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
           </VStack>
         )}
 
-        {/*Signed transaction data*/}
+        {/*signed transaction data*/}
         <VStack spacing={3} w="full">
           <HStack spacing={2} w="full">
             <Text>Signed transaction:</Text>
@@ -436,8 +440,16 @@ const AssetActionsTab: FC<IProps> = ({ account, network, toast }: IProps) => {
           ))}
         </Grid>
       </VStack>
-    </TabPanel>
-  );
+    );
+  };
+
+  useEffect(() => {
+    if (account && !selectedAsset) {
+      setSelectedAsset(account.assets[0] || null);
+    }
+  }, [account]);
+
+  return <TabPanel w="full">{renderContent()}</TabPanel>;
 };
 
 export default AssetActionsTab;

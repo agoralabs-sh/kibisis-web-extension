@@ -13,7 +13,6 @@ import {
   decodeUnsignedTransaction,
   encodeAddress,
 } from 'algosdk';
-import { v4 as uuid } from 'uuid';
 
 // config
 import { networks } from '@extension/config';

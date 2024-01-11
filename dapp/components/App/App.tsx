@@ -1,14 +1,12 @@
 import {
   Center,
   ChakraProvider,
-  CreateToastFnReturn,
   Flex,
   Heading,
   Tab,
   TabList,
   Tabs,
   TabPanels,
-  useToast,
   VStack,
   HStack,
   Text,
@@ -53,11 +51,6 @@ import { INetwork } from '@extension/types';
 import { IAccountInformation } from '../../types';
 
 const App: FC = () => {
-  const toast: CreateToastFnReturn = useToast({
-    duration: 3000,
-    isClosable: true,
-    position: 'top',
-  });
   const providers: SupportedProviders | null = useInitializeProviders({
     providers: [
       {
@@ -203,31 +196,37 @@ const App: FC = () => {
 
                   <AssetActionsTab
                     account={selectedAccount}
+                    connectionType={connectionType}
                     network={selectedNetwork}
-                    toast={toast}
                   />
 
                   <AtomicTransactionActionsTab
                     account={selectedAccount}
+                    connectionType={connectionType}
                     network={selectedNetwork}
-                    toast={toast}
                   />
 
                   <ApplicationActionsTab
                     account={selectedAccount}
+                    connectionType={connectionType}
                     network={selectedNetwork}
-                    toast={toast}
                   />
 
                   <KeyRegistrationActionsTab
                     account={selectedAccount}
+                    connectionType={connectionType}
                     network={selectedNetwork}
-                    toast={toast}
                   />
 
-                  <SignDataTab account={selectedAccount} toast={toast} />
+                  <SignDataTab
+                    account={selectedAccount}
+                    connectionType={connectionType}
+                  />
 
-                  <SignJwtTab account={selectedAccount} toast={toast} />
+                  <SignJwtTab
+                    account={selectedAccount}
+                    connectionType={connectionType}
+                  />
                 </TabPanels>
               </Tabs>
             </VStack>

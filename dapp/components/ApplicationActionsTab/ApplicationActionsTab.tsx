@@ -1,9 +1,4 @@
-import {
-  AlgorandProvider,
-  BaseError,
-  IBaseResult,
-  ISignTxnsResult,
-} from '@agoralabs-sh/algorand-provider';
+import { BaseError } from '@agoralabs-sh/algorand-provider';
 import {
   Button,
   Code,
@@ -15,12 +10,11 @@ import {
   Spacer,
   TabPanel,
   Text,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
-import {
-  decode as decodeBase64,
-  encode as encodeBase64,
-} from '@stablelib/base64';
+import { useWallet } from '@txnlab/use-wallet';
+import { decode as decodeBase64 } from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
 import {
   decodeSignedTransaction,
@@ -30,60 +24,62 @@ import {
 } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
+// components
+import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
+
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
+import { ConnectionTypeEnum } from '../../enums';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
 import { INetwork } from '@extension/types';
-import { IWindow } from '@external/types';
 import { IAccountInformation } from '../../types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
-import { createAppCallTransaction } from '../../utils';
+import {
+  algorandProviderSignTxns,
+  createAppCallTransaction,
+  useWalletSignTxns,
+} from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;
+  connectionType: ConnectionTypeEnum | null;
   network: INetwork | null;
-  toast: CreateToastFnReturn;
 }
 
 const ApplicationActionsTab: FC<IProps> = ({
   account,
+  connectionType,
   network,
-  toast,
 }: IProps) => {
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
+  const { signTransactions } = useWallet();
+  // states
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
   const [note, setNote] = useState<string>('');
+  // handlers
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
   const handleSignTransactionClick =
     (type: TransactionTypeEnum) => async () => {
-      const algorand: AlgorandProvider | undefined = (window as IWindow)
-        .algorand;
-      let result: IBaseResult & ISignTxnsResult;
+      let result: (string | null)[] | null = null;
       let unsignedTransaction: Transaction | null = null;
 
-      if (!account || !network) {
+      if (!account || !connectionType || !network) {
         toast({
           description: 'You must first enable the dApp with the wallet.',
           status: 'error',
           title: 'No Account Not Found!',
-        });
-
-        return;
-      }
-
-      if (!algorand) {
-        toast({
-          description:
-            'Algorand Provider has been intialized; there is no supported wallet.',
-          status: 'error',
-          title: 'window.algorand Not Found!',
         });
 
         return;
@@ -106,23 +102,43 @@ const ApplicationActionsTab: FC<IProps> = ({
           return;
         }
 
-        result = await algorand.signTxns({
-          txns: [
-            {
-              txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
-            },
-          ],
-        });
+        switch (connectionType) {
+          case ConnectionTypeEnum.AlgorandProvider:
+            result = await algorandProviderSignTxns([unsignedTransaction]);
 
-        toast({
-          description: `Successfully signed transaction for wallet "${result.id}".`,
-          status: 'success',
-          title: 'Transaction Signed!',
-        });
+            if (!result) {
+              toast({
+                description:
+                  'Algorand Provider has been intialized; there is no supported wallet.',
+                status: 'error',
+                title: 'window.algorand Not Found!',
+              });
 
-        if (result.stxns[0]) {
+              return;
+            }
+
+            break;
+          case ConnectionTypeEnum.UseWallet:
+            result = await useWalletSignTxns(
+              signTransactions,
+              [0],
+              [encodeUnsignedTransaction(unsignedTransaction)]
+            );
+
+            break;
+          default:
+            break;
+        }
+
+        if (result && result[0]) {
+          toast({
+            description: `Successfully signed payment transaction for provider "${connectionType}".`,
+            status: 'success',
+            title: 'Payment Transaction Signed!',
+          });
+
           setSignedTransaction(
-            decodeSignedTransaction(decodeBase64(result.stxns[0]))
+            decodeSignedTransaction(decodeBase64(result[0]))
           );
         }
       } catch (error) {
@@ -133,9 +149,13 @@ const ApplicationActionsTab: FC<IProps> = ({
         });
       }
     };
+  // renders
+  const renderContent = () => {
+    if (!connectionType) {
+      return <ConnectionNotInitializedContent />;
+    }
 
-  return (
-    <TabPanel w="full">
+    return (
       <VStack justifyContent="center" spacing={8} w="full">
         {/*balance*/}
         <HStack spacing={2} w="full">
@@ -227,8 +247,10 @@ const ApplicationActionsTab: FC<IProps> = ({
           ))}
         </Grid>
       </VStack>
-    </TabPanel>
-  );
+    );
+  };
+
+  return <TabPanel w="full">{renderContent()}</TabPanel>;
 };
 
 export default ApplicationActionsTab;

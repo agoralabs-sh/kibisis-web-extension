@@ -8,11 +8,13 @@ import {
   Button,
   Code,
   CreateToastFnReturn,
+  Grid,
   HStack,
   Icon,
   TabPanel,
   Text,
   Textarea,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64Url } from '@stablelib/base64';
@@ -21,6 +23,13 @@ import { verifyBytes } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from 'react-icons/io5';
 import { v4 as uuid } from 'uuid';
+
+// components
+import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
+import ConnectionNotSupportedContent from '../ConnectionNotSupportedContent';
+
+// enums
+import { ConnectionTypeEnum } from '../../enums';
 
 // theme
 import { theme } from '@extension/theme';
@@ -34,7 +43,7 @@ import { isValidJwt } from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;
-  toast: CreateToastFnReturn;
+  connectionType: ConnectionTypeEnum | null;
 }
 
 function createSignatureToSign(header: string, payload: string): Uint8Array {
@@ -51,11 +60,19 @@ function createSignatureToSign(header: string, payload: string): Uint8Array {
   );
 }
 
-const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
+const SignJwtTab: FC<IProps> = ({ account, connectionType }: IProps) => {
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
+  // states
   const [header, setHeader] = useState<string | null>(null);
   const [payload, setPayload] = useState<string | null>(null);
   const [signedData, setSignedData] = useState<Uint8Array | null>(null);
+  // misc
   const encoder: TextEncoder = new TextEncoder();
+  // handlers
   const handleClearClick = () => {
     setHeader('');
     setPayload('');
@@ -196,11 +213,19 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
   "sub": "${account.address}"
 }`);
   };
+  // renders
+  const renderContent = () => {
+    if (!connectionType) {
+      return <ConnectionNotInitializedContent />;
+    }
 
-  return (
-    <TabPanel w="full">
+    if (connectionType === ConnectionTypeEnum.UseWallet) {
+      return <ConnectionNotSupportedContent connectionType={connectionType} />;
+    }
+
+    return (
       <VStack justifyContent="center" spacing={8} w="full">
-        {/* Header */}
+        {/*header*/}
         <VStack alignItems="flex-start" spacing={2} w="full">
           <Text>Header:</Text>
           <Textarea
@@ -252,7 +277,8 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
             )}
           </HStack>
         </VStack>
-        {/* Valid */}
+
+        {/*valid*/}
         <HStack spacing={2}>
           <Text>Is JWT Valid:</Text>
           {isValidJwt(header, payload) ? (
@@ -261,7 +287,8 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
             <Icon as={IoCloseCircleSharp} color="red.500" size="md" />
           )}
         </HStack>
-        {/* Signed data */}
+
+        {/*signed data*/}
         <HStack spacing={2} w="full">
           <Text>Encoded signed data (hex):</Text>
           {signedData && (
@@ -270,8 +297,9 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
             </Code>
           )}
         </HStack>
-        {/* CTAs */}
-        <VStack justifyContent="center" spacing={3} w="full">
+
+        {/*ctas*/}
+        <Grid gap={2} templateColumns="repeat(2, 1fr)" w="full">
           <Button
             borderRadius={theme.radii['3xl']}
             colorScheme="primaryLight"
@@ -281,6 +309,7 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
           >
             Use JWT Preset
           </Button>
+
           <Button
             borderRadius={theme.radii['3xl']}
             colorScheme="primaryLight"
@@ -290,6 +319,7 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
           >
             Sign JWT
           </Button>
+
           <Button
             borderRadius={theme.radii['3xl']}
             colorScheme="primaryLight"
@@ -299,6 +329,7 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
           >
             Sign JWT Without Signer
           </Button>
+
           <Button
             borderRadius={theme.radii['3xl']}
             colorScheme="primaryLight"
@@ -309,6 +340,7 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
           >
             Verify Signed JWT
           </Button>
+
           <Button
             borderRadius={theme.radii['3xl']}
             colorScheme="primaryLight"
@@ -319,10 +351,12 @@ const SignJwtTab: FC<IProps> = ({ account, toast }: IProps) => {
           >
             Clear
           </Button>
-        </VStack>
+        </Grid>
       </VStack>
-    </TabPanel>
-  );
+    );
+  };
+
+  return <TabPanel w="full">{renderContent()}</TabPanel>;
 };
 
 export default SignJwtTab;

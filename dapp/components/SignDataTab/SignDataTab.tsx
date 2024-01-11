@@ -8,15 +8,24 @@ import {
   Button,
   Code,
   CreateToastFnReturn,
+  Grid,
   HStack,
   TabPanel,
   Text,
   Textarea,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
 import { encode as encodeHex } from '@stablelib/hex';
 import { verifyBytes } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
+
+// components
+import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
+import ConnectionNotSupportedContent from '../ConnectionNotSupportedContent';
+
+// enums
+import { ConnectionTypeEnum } from '../../enums';
 
 // theme
 import { theme } from '@extension/theme';
@@ -27,13 +36,21 @@ import { IAccountInformation } from '../../types';
 
 interface IProps {
   account: IAccountInformation | null;
-  toast: CreateToastFnReturn;
+  connectionType: ConnectionTypeEnum | null;
 }
 
-const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
+const SignDataTab: FC<IProps> = ({ account, connectionType }: IProps) => {
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
+  // states
   const [dataToSign, setDataToSign] = useState<string | null>(null);
   const [signedData, setSignedData] = useState<Uint8Array | null>(null);
+  // misc
   const encoder: TextEncoder = new TextEncoder();
+  // handlers
   const handleClearClick = () => {
     setDataToSign('');
     setSignedData(null);
@@ -134,15 +151,25 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
       title: 'Signed Data is Valid!',
     });
   };
+  // renders
+  const renderContent = () => {
+    if (!connectionType) {
+      return <ConnectionNotInitializedContent />;
+    }
 
-  return (
-    <TabPanel w="full">
+    if (connectionType === ConnectionTypeEnum.UseWallet) {
+      return <ConnectionNotSupportedContent connectionType={connectionType} />;
+    }
+
+    return (
       <VStack justifyContent="center" spacing={8} w="full">
         <Textarea
           onChange={handleTextareaOnChange}
           placeholder="Add data to be signed"
           value={dataToSign || ''}
         />
+
+        {/*encoded data*/}
         <HStack spacing={2} w="full">
           <Text>Encoded signed data (hex):</Text>
           {signedData && (
@@ -151,7 +178,9 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
             </Code>
           )}
         </HStack>
-        <VStack justifyContent="center" spacing={3} w="full">
+
+        {/*ctas*/}
+        <Grid gap={2} templateColumns="repeat(2, 1fr)" w="full">
           <Button
             borderRadius={theme.radii['3xl']}
             colorScheme="primaryLight"
@@ -190,10 +219,12 @@ const SignDataTab: FC<IProps> = ({ account, toast }: IProps) => {
           >
             Clear
           </Button>
-        </VStack>
+        </Grid>
       </VStack>
-    </TabPanel>
-  );
+    );
+  };
+
+  return <TabPanel w="full">{renderContent()}</TabPanel>;
 };
 
 export default SignDataTab;

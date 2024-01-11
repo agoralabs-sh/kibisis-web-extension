@@ -1,9 +1,4 @@
-import {
-  AlgorandProvider,
-  BaseError,
-  IBaseResult,
-  ISignTxnsResult,
-} from '@agoralabs-sh/algorand-provider';
+import { BaseError } from '@agoralabs-sh/algorand-provider';
 import {
   Button,
   Code,
@@ -13,12 +8,11 @@ import {
   Spacer,
   TabPanel,
   Text,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
-import {
-  decode as decodeBase64,
-  encode as encodeBase64,
-} from '@stablelib/base64';
+import { decode as decodeBase64 } from '@stablelib/base64';
+import { useWallet } from '@txnlab/use-wallet';
 import { encode as encodeHex } from '@stablelib/hex';
 import {
   decodeSignedTransaction,
@@ -28,55 +22,58 @@ import {
 } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
+// components
+import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
+
+// enums
+import { ConnectionTypeEnum } from '../../enums';
+
 // theme
 import { theme } from '@extension/theme';
 
 // types
 import { INetwork } from '@extension/types';
-import { IWindow } from '@external/types';
 import { IAccountInformation } from '../../types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
-import { createKeyRegistrationTransaction } from '../../utils';
+import {
+  algorandProviderSignTxns,
+  createKeyRegistrationTransaction,
+  useWalletSignTxns,
+} from '../../utils';
 
 interface IProps {
   account: IAccountInformation | null;
+  connectionType: ConnectionTypeEnum | null;
   network: INetwork | null;
-  toast: CreateToastFnReturn;
 }
 
 const KeyRegistrationActionsTab: FC<IProps> = ({
   account,
+  connectionType,
   network,
-  toast,
 }: IProps) => {
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
+  const { signTransactions } = useWallet();
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
   const [note, setNote] = useState<string>('');
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
   const handleSignTransactionClick = (online: boolean) => async () => {
-    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
-    let result: IBaseResult & ISignTxnsResult;
+    let result: (string | null)[] | null = null;
     let unsignedTransaction: Transaction | null = null;
 
-    if (!account || !network) {
+    if (!account || !connectionType || !network) {
       toast({
         description: 'You must first enable the dApp with the wallet.',
         status: 'error',
         title: 'No Account Not Found!',
-      });
-
-      return;
-    }
-
-    if (!algorand) {
-      toast({
-        description:
-          'Algorand Provider has been intialized; there is no supported wallet.',
-        status: 'error',
-        title: 'window.algorand Not Found!',
       });
 
       return;
@@ -89,24 +86,42 @@ const KeyRegistrationActionsTab: FC<IProps> = ({
         note: note.length > 0 ? note : null,
         online,
       });
-      result = await algorand.signTxns({
-        txns: [
-          {
-            txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
-          },
-        ],
-      });
+      switch (connectionType) {
+        case ConnectionTypeEnum.AlgorandProvider:
+          result = await algorandProviderSignTxns([unsignedTransaction]);
 
-      toast({
-        description: `Successfully signed transaction for wallet "${result.id}".`,
-        status: 'success',
-        title: 'Transaction Signed!',
-      });
+          if (!result) {
+            toast({
+              description:
+                'Algorand Provider has been intialized; there is no supported wallet.',
+              status: 'error',
+              title: 'window.algorand Not Found!',
+            });
 
-      if (result.stxns[0]) {
-        setSignedTransaction(
-          decodeSignedTransaction(decodeBase64(result.stxns[0]))
-        );
+            return;
+          }
+
+          break;
+        case ConnectionTypeEnum.UseWallet:
+          result = await useWalletSignTxns(
+            signTransactions,
+            [0],
+            [encodeUnsignedTransaction(unsignedTransaction)]
+          );
+
+          break;
+        default:
+          break;
+      }
+
+      if (result && result[0]) {
+        toast({
+          description: `Successfully signed payment transaction for provider "${connectionType}".`,
+          status: 'success',
+          title: 'Payment Transaction Signed!',
+        });
+
+        setSignedTransaction(decodeSignedTransaction(decodeBase64(result[0])));
       }
     } catch (error) {
       toast({
@@ -116,11 +131,15 @@ const KeyRegistrationActionsTab: FC<IProps> = ({
       });
     }
   };
+  // renders
+  const renderContent = () => {
+    if (!connectionType) {
+      return <ConnectionNotInitializedContent />;
+    }
 
-  return (
-    <TabPanel w="full">
+    return (
       <VStack justifyContent="center" spacing={8} w="full">
-        {/*Balance*/}
+        {/*balance*/}
         <HStack spacing={2} w="full">
           <Text size="md" textAlign="left">
             Balance:
@@ -136,7 +155,7 @@ const KeyRegistrationActionsTab: FC<IProps> = ({
           </Text>
         </HStack>
 
-        {/*Note*/}
+        {/*note*/}
         <HStack w="full">
           <Text size="md" textAlign="left">
             Note:
@@ -144,7 +163,7 @@ const KeyRegistrationActionsTab: FC<IProps> = ({
           <Input onChange={handleNoteChange} value={note} />
         </HStack>
 
-        {/*Signed transaction data*/}
+        {/*signed transaction data*/}
         <VStack spacing={3} w="full">
           <HStack spacing={2} w="full">
             <Text>Signed transaction:</Text>
@@ -162,7 +181,7 @@ const KeyRegistrationActionsTab: FC<IProps> = ({
           </HStack>
         </VStack>
 
-        {/*Sign transaction button*/}
+        {/*sign transaction button*/}
         <VStack spacing={2} w="full">
           <Button
             borderRadius={theme.radii['3xl']}
@@ -182,8 +201,10 @@ const KeyRegistrationActionsTab: FC<IProps> = ({
           </Button>
         </VStack>
       </VStack>
-    </TabPanel>
-  );
+    );
+  };
+
+  return <TabPanel w="full">{renderContent()}</TabPanel>;
 };
 
 export default KeyRegistrationActionsTab;

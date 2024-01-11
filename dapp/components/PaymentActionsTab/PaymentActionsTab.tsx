@@ -28,6 +28,9 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { ChangeEvent, FC, useState } from 'react';
 
+// components
+import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
+
 // enums
 import { ConnectionTypeEnum } from '../../enums';
 
@@ -142,9 +145,13 @@ const SignTxnTab: FC<IProps> = ({
       });
     }
   };
+  // renders
+  const renderContent = () => {
+    if (!connectionType) {
+      return <ConnectionNotInitializedContent />;
+    }
 
-  return (
-    <TabPanel w="full">
+    return (
       <VStack justifyContent="center" spacing={8} w="full">
         {/*balance*/}
         <HStack spacing={2} w="full">
@@ -229,8 +236,10 @@ const SignTxnTab: FC<IProps> = ({
           Send Payment Transaction
         </Button>
       </VStack>
-    </TabPanel>
-  );
+    );
+  };
+
+  return <TabPanel w="full">{renderContent()}</TabPanel>;
 };
 
 export default SignTxnTab;
