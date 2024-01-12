@@ -1,5 +1,6 @@
 import { getInput, info } from '@actions/core';
 import axios from 'axios';
+import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // utils
@@ -15,7 +16,7 @@ import { generateJwtToken, handleError, publish, uploadZipFile } from './utils.m
     jwtToken = generateJwtToken(process.env.JWT_ISSUER, process.env.JWT_SECRET);
 
     info('jwt token generated');
-    info(`uploading zip file from: ${process.env.ZIP_PATH}`);
+    info(`uploading zip file from: ${readdirSync(process.cwd()).join(',')}`);
     info(`uploading zip file from: ${resolve(process.cwd(), process.env.ZIP_PATH)}`);
 
     info(await axios.get(`https://addons.mozilla.org/api/v5/addons/addon/${process.env.ADD_ON_ID}/`, { Authorization: `JWT ${jwtToken}` }))
