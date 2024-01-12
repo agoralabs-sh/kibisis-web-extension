@@ -5,29 +5,25 @@ import axios from 'axios';
 import { generateJwtToken, handleError, publish, uploadZipFile } from './utils.mjs';
 
 (async () => {
-  const id = getInput('addon_id', { required: true });
-  const zipPath = getInput('zip_path', { required: true });
-  const jwtIssuer = getInput('jwt_issuer', { required: true });
-  const jwtSecret = getInput('jwt_secret', { required: true });
   let jwtToken;
   let uploadId;
 
   try {
     info('generating jwt token...');
 
-    jwtToken = generateJwtToken(jwtIssuer, jwtSecret);
+    jwtToken = generateJwtToken(process.env.JWT_ISSUER, process.env.JWT_SECRET);
 
     info('jwt token generated');
-    info(`uploading zip file from: ${zipPath}`);
+    info(`uploading zip file from: ${process.env.ZIP_PATH}`);
 
-    info(await axios.get(`https://addons.mozilla.org/api/v5/addons/addon/${id}/`, { Authorization: `JWT ${jwtToken}` }))
+    info(await axios.get(`https://addons.mozilla.org/api/v5/addons/addon/${process.env.ADD_ON_ID}/`, { Authorization: `JWT ${jwtToken}` }))
 
-    // uploadId = await uploadZipFile(zipPath, jwtToken);
+    // uploadId = await uploadZipFile(process.env.ZIP_PATH, jwtToken);
     //
     // info(`successfully uploaded zip file: ${uploadId}`);
-    // info(`publishing add-on: ${id}`);
+    // info(`publishing add-on: ${process.env.ADD_ON_ID}`);
     //
-    // await publish(id, uploadId, jwtToken);
+    // await publish(process.env.ADD_ON_ID, uploadId, jwtToken);
     //
     // info(`successfully published add-on: ${uploadId}`);
   } catch (error) {
