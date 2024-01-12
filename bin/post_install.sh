@@ -26,7 +26,7 @@ function main() {
   if [[ -f "${chrome_dir}/chrome" ]]; then
     printf "%b chrome already installed \n" "${INFO_PREFIX}"
   else
-    "${SCRIPT_DIR}"/chrome_install.sh
+    "${SCRIPT_DIR}"/install_chrome.sh
   fi
 
   firefox_dir="${PWD}/.firefox"
@@ -35,7 +35,7 @@ function main() {
   if [[ -f "${firefox_dir}/firefox" ]]; then
     printf "%b firefox already installed \n" "${INFO_PREFIX}"
   else
-    "${SCRIPT_DIR}"/firefox_install.sh
+    "${SCRIPT_DIR}"/install_firefox.sh
   fi
 
   # copy .env, if it doesn't exist
