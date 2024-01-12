@@ -1,3 +1,13 @@
+# [1.10.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0...v1.10.0) (2024-01-12)
+
+
+### Features
+
+* add button to asset page to remove arc-200 asset ([#117](https://github.com/agoralabs-sh/kibisis-web-extension/issues/117)) ([db81bd6](https://github.com/agoralabs-sh/kibisis-web-extension/commit/db81bd6561cc3b51512ccdcd0f01220f5466baf4))
+* add pera explorer to algorand mainnet and testnet ([#116](https://github.com/agoralabs-sh/kibisis-web-extension/issues/116)) ([1bae6c5](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1bae6c59287e57d6601e0d782872e077b501ed2d))
+* add support for use wallet ([#114](https://github.com/agoralabs-sh/kibisis-web-extension/issues/114)) ([637162c](https://github.com/agoralabs-sh/kibisis-web-extension/commit/637162c11eaf9060006c5616e77edfb6a01f22d7))
+* move strong password policy as link to website ([#107](https://github.com/agoralabs-sh/kibisis-web-extension/issues/107)) ([9c4432e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/9c4432ec154a0061977654409ab2648538a61b35))
+
 # [1.10.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0-beta.3...v1.10.0-beta.4) (2024-01-11)
 
 
