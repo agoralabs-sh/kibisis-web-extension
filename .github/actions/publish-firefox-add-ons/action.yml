@@ -24,7 +24,7 @@ runs:
       with:
         node-version: 'lts/*'
     - name: "📦 Install"
-      run: yarn install
+      run: yarn --cwd ./.github/actions/publish-firefox-add-ons/ install
       shell: bash
     - name: "🚀 Upload and Publish to Firefox Add-ons"
       run: node ./.github/actions/publish-firefox-add-ons/index.mjs
