@@ -1,0 +1,31 @@
+name: "Publish Firefox Add-ons"
+
+description: "GitHub action for publishing extension to Firefox Add-ons"
+
+inputs:
+    addon_id:
+      description: "Add-on's ID."
+      required: true
+    zip_path:
+      description: "Path to the add-on zip file."
+      required: true
+    jwt_issuer:
+      description: "Firefox Addons JWT issuer."
+      required: true
+    jwt_secret:
+      description: "Firefox Addons JWT secret."
+      required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🔧 Setup"
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+    - name: "📦 Install"
+      run: yarn install
+      shell: bash
+    - name: "🚀 Upload and Publish to Firefox Add-ons"
+      run: node index.js
+      shell: bash
