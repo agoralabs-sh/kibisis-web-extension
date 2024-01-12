@@ -6,14 +6,14 @@ inputs:
     addon_id:
       description: "Add-on's ID."
       required: true
-    zip_path:
-      description: "Path to the add-on zip file."
-      required: true
     jwt_issuer:
       description: "Firefox Addons JWT issuer."
       required: true
     jwt_secret:
       description: "Firefox Addons JWT secret."
+      required: true
+    zip_file_name:
+      description: "Name of the downloaded zip file."
       required: true
 
 runs:
@@ -29,8 +29,8 @@ runs:
     - name: "🚀 Upload and Publish to Firefox Add-ons"
       env:
         ADD_ON_ID: ${{ inputs.addon_id }}
-        ZIP_PATH: ${{ inputs.zip_path }}
         JWT_ISSUER: ${{ inputs.jwt_issuer }}
         JWT_SECRET: ${{ inputs.jwt_secret }}
+        ZIP_FILE_NAME: ${{ inputs.zip_file_name }}
       run: node ./.github/actions/publish-firefox-add-ons/index.mjs
       shell: bash

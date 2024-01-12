@@ -1,7 +1,8 @@
 name: "Publish"
 
 on:
-  push:
+  release:
+    types: [released] # triggered on main branch releases
 
 jobs:
   install:
@@ -19,6 +20,6 @@ jobs:
         uses: ./.github/actions/publish-firefox-add-ons
         with:
           addon_id: ${{ vars.FIREFOX_ADD_ONS_ID }}
-          zip_path: kibisis-firefox.zip
           jwt_issuer: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_ISSUER }}
           jwt_secret: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_SECRET }}
+          zip_file_name: kibisis-firefox.zip
