@@ -12,9 +12,9 @@ import {
 
 // messages
 import {
-  Arc0013EnableRequestMessage,
-  Arc0013SignBytesRequestMessage,
-  Arc0013SignTxnsRequestMessage,
+  Arc0027EnableRequestMessage,
+  Arc0027SignBytesRequestMessage,
+  Arc0027SignTxnsRequestMessage,
 } from '@common/messages';
 
 // services
@@ -59,7 +59,7 @@ const handleNewEventByIdThunk: AsyncThunk<
             clientInfo: event.payload.clientInfo,
             eventId: event.id,
             originMessage: event.payload
-              .originMessage as Arc0013EnableRequestMessage,
+              .originMessage as Arc0027EnableRequestMessage,
             originTabId: event.payload.originTabId,
           })
         );
@@ -71,7 +71,7 @@ const handleNewEventByIdThunk: AsyncThunk<
             clientInfo: event.payload.clientInfo,
             eventId: event.id,
             originMessage: event.payload
-              .originMessage as Arc0013SignBytesRequestMessage,
+              .originMessage as Arc0027SignBytesRequestMessage,
             originTabId: event.payload.originTabId,
           })
         );
@@ -83,7 +83,7 @@ const handleNewEventByIdThunk: AsyncThunk<
             clientInfo: event.payload.clientInfo,
             eventId: event.id,
             originMessage: event.payload
-              .originMessage as Arc0013SignTxnsRequestMessage,
+              .originMessage as Arc0027SignTxnsRequestMessage,
             originTabId: event.payload.originTabId,
           })
         );

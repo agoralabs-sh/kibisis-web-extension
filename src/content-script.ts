@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 
 // constants
-import { ARC_0013_CHANNEL_NAME } from '@common/constants';
+import { ARC_0027_CHANNEL_NAME } from '@common/constants';
 
 // services
 import ExternalMessageBroker from '@external/services/ExternalMessageBroker';
@@ -14,7 +14,7 @@ import createLogger from '@common/utils/createLogger';
 import injectScript from '@external/utils/injectScript';
 
 (() => {
-  const channel: BroadcastChannel = new BroadcastChannel(ARC_0013_CHANNEL_NAME);
+  const channel: BroadcastChannel = new BroadcastChannel(ARC_0027_CHANNEL_NAME);
   const logger: ILogger = createLogger(
     __ENV__ === 'development' ? 'debug' : 'error'
   );
@@ -25,13 +25,13 @@ import injectScript from '@external/utils/injectScript';
     });
 
   // listen to broadcast messages from the webpage
-  channel.onmessage = externalMessageBroker.onArc0013RequestMessage.bind(
+  channel.onmessage = externalMessageBroker.onArc0027RequestMessage.bind(
     externalMessageBroker
   );
 
   // listen to incoming extension messages (from the background script / popup)
   browser.runtime.onMessage.addListener(
-    externalMessageBroker.onArc0013ResponseMessage.bind(externalMessageBroker)
+    externalMessageBroker.onArc0027ResponseMessage.bind(externalMessageBroker)
   );
 
   /**

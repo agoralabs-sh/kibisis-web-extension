@@ -37,13 +37,13 @@ import SignTxnsModalContent from './SignTxnsModalContent';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { Arc0013ErrorCodeEnum, Arc0013ProviderMethodEnum } from '@common/enums';
+import { Arc0027ErrorCodeEnum, Arc0027ProviderMethodEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
 import {
-  SerializableArc0013InvalidInputError,
-  SerializableArc0013MethodCanceledError,
+  SerializableArc0027InvalidInputError,
+  SerializableArc0027MethodCanceledError,
 } from '@common/errors';
 
 // features
@@ -56,7 +56,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // messages
-import { Arc0013SignTxnsRequestMessage } from '@common/messages';
+import { Arc0027SignTxnsRequestMessage } from '@common/messages';
 
 // selectors
 import {
@@ -114,7 +114,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
   const sessions: ISession[] = useSelectSessions();
-  const signTxnsRequest: IClientRequest<Arc0013SignTxnsRequestMessage> | null =
+  const signTxnsRequest: IClientRequest<Arc0027SignTxnsRequestMessage> | null =
     useSelectSignTxnsRequest();
   // state
   const [network, setNetwork] = useState<INetwork | null>(null);
@@ -124,8 +124,8 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     if (signTxnsRequest) {
       dispatch(
         sendSignTxnsResponseThunk({
-          error: new SerializableArc0013MethodCanceledError(
-            Arc0013ProviderMethodEnum.SignTxns,
+          error: new SerializableArc0027MethodCanceledError(
+            Arc0027ProviderMethodEnum.SignTxns,
             __PROVIDER_ID__,
             `user dismissed sign transaction modal`
           ),
@@ -188,7 +188,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           setPasswordError(t<string>('errors.inputs.invalidPassword'));
 
           break;
-        case Arc0013ErrorCodeEnum.UnauthorizedSignerError:
+        case Arc0027ErrorCodeEnum.UnauthorizedSignerError:
           dispatch(
             sendSignTxnsResponseThunk({
               error,
@@ -306,7 +306,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
         if (!genesisHash) {
           dispatch(
             sendSignTxnsResponseThunk({
-              error: new SerializableArc0013InvalidInputError(
+              error: new SerializableArc0027InvalidInputError(
                 __PROVIDER_ID__,
                 `the transaction group is not atomic, they are bound for multiple networks`
               ),
