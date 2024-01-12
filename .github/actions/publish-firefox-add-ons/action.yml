@@ -27,5 +27,5 @@ runs:
       run: yarn install
       shell: bash
     - name: "🚀 Upload and Publish to Firefox Add-ons"
-      run: node index.mjs
+      run: node ./.github/actions/publish-firefox-add-ons/index.mjs
       shell: bash
