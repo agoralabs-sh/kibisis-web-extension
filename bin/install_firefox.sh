@@ -55,8 +55,12 @@ function main() {
   printf "%b unzipping firefox archive... \n" "${INFO_PREFIX}"
   tar xf "${tmp_dir}/firefox.tar.bz2" -C "${tmp_dir}"
 
+  printf "%b deleting previous firefox installation at '%b'... \n" "${INFO_PREFIX}" "${firefox_dir}"
+  rm -rf "${firefox_dir}"
+
+  printf "%b moving new installation '%b'... \n" "${INFO_PREFIX}" "${firefox_dir}"
   mkdir -p "${firefox_dir}"
-  cp -r "${tmp_dir}/firefox/." "${firefox_dir}"
+  cp -R "${tmp_dir}/firefox/." "${firefox_dir}"
 
   # clean up
   rm -rf "${tmp_dir}"

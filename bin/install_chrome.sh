@@ -58,8 +58,12 @@ function main() {
   printf "%b unzipping chrome archive... \n" "${INFO_PREFIX}"
   unzip -oq "${tmp_dir}/chrome.zip" -d "${tmp_dir}"
 
+  printf "%b deleting previous chrome installation at '%b'... \n" "${INFO_PREFIX}" "${chrome_dir}"
+  rm -rf "${chrome_dir}"
+
+  printf "%b moving new installation '%b'... \n" "${INFO_PREFIX}" "${chrome_dir}"
   mkdir -p "${chrome_dir}"
-  cp -r "${tmp_dir}/chrome-${os_param}/." "${chrome_dir}"
+  cp -R "${tmp_dir}/chrome-${os_param}/." "${chrome_dir}"
 
   # clean up
   rm -rf "${tmp_dir}"
