@@ -20,32 +20,32 @@ import {
 
 // enums
 import {
-  Arc0013MessageReferenceEnum,
-  Arc0013ProviderMethodEnum,
+  Arc0027MessageReferenceEnum,
+  Arc0027ProviderMethodEnum,
   InternalMessageReferenceEnum,
 } from '@common/enums';
 import { AppTypeEnum, EventTypeEnum } from '@extension/enums';
 
 // errors
 import {
-  SerializableArc0013InvalidGroupIdError,
-  SerializableArc0013InvalidInputError,
-  SerializableArc0013NetworkNotSupportedError,
-  SerializableArc0013UnauthorizedSignerError,
+  SerializableArc0027InvalidGroupIdError,
+  SerializableArc0027InvalidInputError,
+  SerializableArc0027NetworkNotSupportedError,
+  SerializableArc0027UnauthorizedSignerError,
 } from '@common/errors';
 
 // messages
 import {
-  Arc0013EnableRequestMessage,
-  Arc0013EnableResponseMessage,
-  Arc0013GetProvidersRequestMessage,
-  Arc0013GetProvidersResponseMessage,
-  Arc0013SignBytesRequestMessage,
-  Arc0013SignBytesResponseMessage,
-  Arc0013SignTxnsRequestMessage,
-  Arc0013SignTxnsResponseMessage,
-  BaseArc0013RequestMessage,
-  BaseArc0013ResponseMessage,
+  Arc0027EnableRequestMessage,
+  Arc0027EnableResponseMessage,
+  Arc0027GetProvidersRequestMessage,
+  Arc0027GetProvidersResponseMessage,
+  Arc0027SignBytesRequestMessage,
+  Arc0027SignBytesResponseMessage,
+  Arc0027SignTxnsRequestMessage,
+  Arc0027SignTxnsResponseMessage,
+  BaseArc0027RequestMessage,
+  BaseArc0027ResponseMessage,
   BaseInternalMessage,
   InternalEventAddedMessage,
 } from '@common/messages';
@@ -60,8 +60,8 @@ import StorageManager from '../StorageManager';
 
 // types
 import type {
-  IArc0013ParamTypes,
-  IArc0013ResultTypes,
+  IArc0027ParamTypes,
+  IArc0027ResultTypes,
   IBaseOptions,
   IClientInformation,
   ILogger,
@@ -165,7 +165,7 @@ export default class BackgroundMessageHandler {
 
   private async handleEnableRequestMessage(
     clientInfo: IClientInformation,
-    message: Arc0013EnableRequestMessage,
+    message: Arc0027EnableRequestMessage,
     originTabId: number
   ): Promise<void> {
     const _functionName: string = 'handleEnableRequestMessage';
@@ -192,9 +192,9 @@ export default class BackgroundMessageHandler {
 
         // send the response to the web page (via the content script)
         return await this.sendResponse(
-          new Arc0013EnableResponseMessage(
+          new Arc0027EnableResponseMessage(
             message.id,
-            new SerializableArc0013NetworkNotSupportedError(
+            new SerializableArc0027NetworkNotSupportedError(
               message.params.genesisHash,
               __PROVIDER_ID__
             ),
@@ -235,7 +235,7 @@ export default class BackgroundMessageHandler {
 
         // send the response to the web page (via the content script)
         return await this.sendResponse(
-          new Arc0013EnableResponseMessage(message.id, null, {
+          new Arc0027EnableResponseMessage(message.id, null, {
             accounts: session.authorizedAddresses.map<IWalletAccount>(
               (address) => {
                 const account: IAccount | null =
@@ -307,11 +307,11 @@ export default class BackgroundMessageHandler {
   }
 
   private async handleGetProvidersMessage(
-    message: Arc0013GetProvidersRequestMessage,
+    message: Arc0027GetProvidersRequestMessage,
     originTabId: number
   ): Promise<void> {
     return await this.sendResponse(
-      new Arc0013GetProvidersResponseMessage(message.id, null, {
+      new Arc0027GetProvidersResponseMessage(message.id, null, {
         host: HOST,
         icon: ICON_URI,
         name: __APP_TITLE__,
@@ -319,9 +319,9 @@ export default class BackgroundMessageHandler {
           genesisHash,
           genesisId,
           methods: [
-            Arc0013ProviderMethodEnum.Enable,
-            Arc0013ProviderMethodEnum.SignBytes,
-            Arc0013ProviderMethodEnum.SignTxns,
+            Arc0027ProviderMethodEnum.Enable,
+            Arc0027ProviderMethodEnum.SignBytes,
+            Arc0027ProviderMethodEnum.SignTxns,
           ],
         })),
         providerId: __PROVIDER_ID__,
@@ -369,7 +369,7 @@ export default class BackgroundMessageHandler {
 
   private async handleSignBytesRequestMessage(
     clientInfo: IClientInformation,
-    message: Arc0013SignBytesRequestMessage,
+    message: Arc0027SignBytesRequestMessage,
     originTabId: number
   ): Promise<void> {
     const _functionName: string = 'handleSignBytesRequestMessage';
@@ -387,9 +387,9 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new Arc0013SignBytesResponseMessage(
+        new Arc0027SignBytesResponseMessage(
           message.id,
-          new SerializableArc0013UnauthorizedSignerError(
+          new SerializableArc0027UnauthorizedSignerError(
             message.params?.signer || null,
             __PROVIDER_ID__,
             `"${clientInfo.appName}" has not been authorized`
@@ -417,9 +417,9 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new Arc0013SignBytesResponseMessage(
+        new Arc0027SignBytesResponseMessage(
           message.id,
-          new SerializableArc0013UnauthorizedSignerError(
+          new SerializableArc0027UnauthorizedSignerError(
             message.params?.signer || null,
             __PROVIDER_ID__,
             `"${message.params?.signer}" has not been authorized`
@@ -443,7 +443,7 @@ export default class BackgroundMessageHandler {
 
   private async handleSignTxnsRequestMessage(
     clientInfo: IClientInformation,
-    message: Arc0013SignTxnsRequestMessage,
+    message: Arc0027SignTxnsRequestMessage,
     originTabId: number
   ): Promise<void> {
     const _functionName: string = 'handleSignTxnsRequestMessage';
@@ -456,9 +456,9 @@ export default class BackgroundMessageHandler {
 
     if (!message.params) {
       return await this.sendResponse(
-        new Arc0013SignTxnsResponseMessage(
+        new Arc0027SignTxnsResponseMessage(
           message.id,
-          new SerializableArc0013InvalidInputError(
+          new SerializableArc0027InvalidInputError(
             __PROVIDER_ID__,
             `no transactions supplied`
           ),
@@ -483,9 +483,9 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new Arc0013SignTxnsResponseMessage(
+        new Arc0027SignTxnsResponseMessage(
           message.id,
-          new SerializableArc0013InvalidInputError(
+          new SerializableArc0027InvalidInputError(
             __PROVIDER_ID__,
             errorMessage
           ),
@@ -511,9 +511,9 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new Arc0013SignTxnsResponseMessage(
+        new Arc0027SignTxnsResponseMessage(
           message.id,
-          new SerializableArc0013InvalidGroupIdError(
+          new SerializableArc0027InvalidGroupIdError(
             encodedComputedGroupId,
             __PROVIDER_ID__,
             errorMessage
@@ -539,9 +539,9 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page
       return await this.sendResponse(
-        new Arc0013SignTxnsResponseMessage(
+        new Arc0027SignTxnsResponseMessage(
           message.id,
-          new SerializableArc0013InvalidInputError(
+          new SerializableArc0027InvalidInputError(
             __PROVIDER_ID__,
             errorMessage
           ),
@@ -562,9 +562,9 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new Arc0013SignTxnsResponseMessage(
+        new Arc0027SignTxnsResponseMessage(
           message.id,
-          new SerializableArc0013NetworkNotSupportedError(
+          new SerializableArc0027NetworkNotSupportedError(
             genesisHash,
             __PROVIDER_ID__
           ),
@@ -588,9 +588,9 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page
       return await this.sendResponse(
-        new Arc0013SignTxnsResponseMessage(
+        new Arc0027SignTxnsResponseMessage(
           message.id,
-          new SerializableArc0013UnauthorizedSignerError(
+          new SerializableArc0027UnauthorizedSignerError(
             null,
             __PROVIDER_ID__,
             `"${clientInfo.appName}" has not been authorized`
@@ -673,7 +673,7 @@ export default class BackgroundMessageHandler {
   }
 
   private async sendResponse(
-    message: BaseArc0013ResponseMessage<IArc0013ResultTypes>,
+    message: BaseArc0027ResponseMessage<IArc0027ResultTypes>,
     originTabId: number
   ): Promise<void> {
     const _functionName: string = 'sendResponse';
@@ -687,12 +687,12 @@ export default class BackgroundMessageHandler {
     return await browser.tabs.sendMessage(originTabId, message);
   }
 
-  private async onArc0013RequestMessage(
-    message: BaseArc0013RequestMessage<IArc0013ParamTypes>,
+  private async onArc0027RequestMessage(
+    message: BaseArc0027RequestMessage<IArc0027ParamTypes>,
     clientInfo: IClientInformation,
     originTabId?: number
   ): Promise<void> {
-    const _functionName: string = 'onArc0013RequestMessage';
+    const _functionName: string = 'onArc0027RequestMessage';
 
     this.logger &&
       this.logger.debug(
@@ -709,27 +709,27 @@ export default class BackgroundMessageHandler {
     }
 
     switch (message.reference) {
-      case Arc0013MessageReferenceEnum.EnableRequest:
+      case Arc0027MessageReferenceEnum.EnableRequest:
         return await this.handleEnableRequestMessage(
           clientInfo,
-          message as Arc0013EnableRequestMessage,
+          message as Arc0027EnableRequestMessage,
           originTabId
         );
-      case Arc0013MessageReferenceEnum.GetProvidersRequest:
+      case Arc0027MessageReferenceEnum.GetProvidersRequest:
         return await this.handleGetProvidersMessage(
-          message as Arc0013GetProvidersRequestMessage,
+          message as Arc0027GetProvidersRequestMessage,
           originTabId
         );
-      case Arc0013MessageReferenceEnum.SignBytesRequest:
+      case Arc0027MessageReferenceEnum.SignBytesRequest:
         return await this.handleSignBytesRequestMessage(
           clientInfo,
-          message as Arc0013SignBytesRequestMessage,
+          message as Arc0027SignBytesRequestMessage,
           originTabId
         );
-      case Arc0013MessageReferenceEnum.SignTxnsRequest:
+      case Arc0027MessageReferenceEnum.SignTxnsRequest:
         return await this.handleSignTxnsRequestMessage(
           clientInfo,
-          message as Arc0013SignTxnsRequestMessage,
+          message as Arc0027SignTxnsRequestMessage,
           originTabId
         );
       default:
@@ -766,7 +766,7 @@ export default class BackgroundMessageHandler {
       return await this.onInternalMessage(message as BaseInternalMessage);
     }
 
-    return await this.onArc0013RequestMessage(
+    return await this.onArc0027RequestMessage(
       (message as IInternalRequestMessage).data,
       (message as IInternalRequestMessage).clientInfo,
       sender.tab?.id

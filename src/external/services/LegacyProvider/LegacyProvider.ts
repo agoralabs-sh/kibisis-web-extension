@@ -25,44 +25,44 @@ import {
 
 // constants
 import {
-  ARC_0013_CHANNEL_NAME,
-  ARC_0013_DEFAULT_REQUEST_TIMEOUT,
-  ARC_0013_UPPER_REQUEST_TIMEOUT,
+  ARC_0027_CHANNEL_NAME,
+  ARC_0027_DEFAULT_REQUEST_TIMEOUT,
+  ARC_0027_UPPER_REQUEST_TIMEOUT,
 } from '@common/constants';
 import { LEGACY_WALLET_ID } from '@external/constants';
 
 // enums
-import { Arc0013ErrorCodeEnum, Arc0013ProviderMethodEnum } from '@common/enums';
+import { Arc0027ErrorCodeEnum, Arc0027ProviderMethodEnum } from '@common/enums';
 
 // errors
 import {
-  BaseSerializableArc0013Error,
-  SerializableArc0013FailedToPostSomeTransactionsError,
-  SerializableArc0013InvalidGroupIdError,
-  SerializableArc0013MethodNotSupportedError,
-  SerializableArc0013MethodTimedOutError,
-  SerializableArc0013NetworkNotSupportedError,
-  SerializableArc0013UnauthorizedSignerError,
-  SerializableArc0013UnknownError,
+  BaseSerializableArc0027Error,
+  SerializableArc0027FailedToPostSomeTransactionsError,
+  SerializableArc0027InvalidGroupIdError,
+  SerializableArc0027MethodNotSupportedError,
+  SerializableArc0027MethodTimedOutError,
+  SerializableArc0027NetworkNotSupportedError,
+  SerializableArc0027UnauthorizedSignerError,
+  SerializableArc0027UnknownError,
 } from '@common/errors';
 
 // messages
 import {
-  Arc0013EnableRequestMessage,
-  Arc0013SignBytesRequestMessage,
-  Arc0013SignTxnsRequestMessage,
-  BaseArc0013RequestMessage,
-  BaseArc0013ResponseMessage,
+  Arc0027EnableRequestMessage,
+  Arc0027SignBytesRequestMessage,
+  Arc0027SignTxnsRequestMessage,
+  BaseArc0027RequestMessage,
+  BaseArc0027ResponseMessage,
 } from '@common/messages';
 
 // types
 import type {
-  IArc0013EnableParams,
-  IArc0013EnableResult,
-  IArc0013SignBytesParams,
-  IArc0013SignBytesResult,
-  IArc0013SignTxnsParams,
-  IArc0013SignTxnsResult,
+  IArc0027EnableParams,
+  IArc0027EnableResult,
+  IArc0027SignBytesParams,
+  IArc0027SignBytesResult,
+  IArc0027SignTxnsParams,
+  IArc0027SignTxnsResult,
   IBaseOptions,
   ILogger,
 } from '@common/types';
@@ -83,14 +83,14 @@ export default class LegacyProvider extends BaseWalletManager {
    */
 
   private async handleEvent<Params, Result>(
-    method: Arc0013ProviderMethodEnum,
-    message: BaseArc0013RequestMessage<Params>,
+    method: Arc0027ProviderMethodEnum,
+    message: BaseArc0027RequestMessage<Params>,
     timeout?: number
   ): Promise<Result> {
     const _functionName: string = 'handleEvent';
 
     return new Promise<Result>((resolve, reject) => {
-      const channel = new BroadcastChannel(ARC_0013_CHANNEL_NAME);
+      const channel = new BroadcastChannel(ARC_0027_CHANNEL_NAME);
       let timer: number;
 
       this.logger &&
@@ -99,7 +99,7 @@ export default class LegacyProvider extends BaseWalletManager {
         );
 
       channel.onmessage = (
-        event: MessageEvent<BaseArc0013ResponseMessage<Result>>
+        event: MessageEvent<BaseArc0027ResponseMessage<Result>>
       ) => {
         if (!event.data || event.data.requestId !== message.id) {
           return;
@@ -123,7 +123,7 @@ export default class LegacyProvider extends BaseWalletManager {
 
         if (!event.data.result) {
           reject(
-            new SerializableArc0013UnknownError(
+            new SerializableArc0027UnknownError(
               'no result was returned from the provider and no error was thrown',
               __PROVIDER_ID__
             )
@@ -151,57 +151,57 @@ export default class LegacyProvider extends BaseWalletManager {
           );
 
         reject(
-          new SerializableArc0013MethodTimedOutError(
+          new SerializableArc0027MethodTimedOutError(
             method,
             __PROVIDER_ID__,
             `no response from wallet for "${message.reference}"`
           )
         );
-      }, timeout || ARC_0013_DEFAULT_REQUEST_TIMEOUT);
+      }, timeout || ARC_0027_DEFAULT_REQUEST_TIMEOUT);
 
       // send the event
       channel.postMessage(message);
     });
   }
 
-  private static mapArc0013ErrorToLegacyError(
-    error: BaseSerializableArc0013Error
+  private static mapArc0027ErrorToLegacyError(
+    error: BaseSerializableArc0027Error
   ): BaseError {
     switch (error.code) {
-      case Arc0013ErrorCodeEnum.FailedToPostSomeTransactionsError:
+      case Arc0027ErrorCodeEnum.FailedToPostSomeTransactionsError:
         return new FailedToPostSomeTransactionsError(
           (
-            error as SerializableArc0013FailedToPostSomeTransactionsError
+            error as SerializableArc0027FailedToPostSomeTransactionsError
           ).data.successTxnIDs,
           error.message
         );
-      case Arc0013ErrorCodeEnum.InvalidGroupIdError:
+      case Arc0027ErrorCodeEnum.InvalidGroupIdError:
         return new InvalidGroupIdError(
           (
-            error as SerializableArc0013InvalidGroupIdError
+            error as SerializableArc0027InvalidGroupIdError
           ).data.computedGroupId,
           error.message
         );
-      case Arc0013ErrorCodeEnum.InvalidInputError:
+      case Arc0027ErrorCodeEnum.InvalidInputError:
         return new InvalidInputError(error.message);
-      case Arc0013ErrorCodeEnum.MethodCanceledError:
-      case Arc0013ErrorCodeEnum.MethodTimedOutError:
+      case Arc0027ErrorCodeEnum.MethodCanceledError:
+      case Arc0027ErrorCodeEnum.MethodTimedOutError:
         return new OperationCanceledError(error.message);
-      case Arc0013ErrorCodeEnum.MethodNotSupportedError:
+      case Arc0027ErrorCodeEnum.MethodNotSupportedError:
         return new WalletOperationNotSupportedError(
-          (error as SerializableArc0013MethodNotSupportedError).data.method,
+          (error as SerializableArc0027MethodNotSupportedError).data.method,
           error.message
         );
-      case Arc0013ErrorCodeEnum.NetworkNotSupportedError:
+      case Arc0027ErrorCodeEnum.NetworkNotSupportedError:
         return new NetworkNotSupportedError(
           (
-            error as SerializableArc0013NetworkNotSupportedError
+            error as SerializableArc0027NetworkNotSupportedError
           ).data.genesisHash,
           error.message
         );
-      case Arc0013ErrorCodeEnum.UnauthorizedSignerError:
+      case Arc0027ErrorCodeEnum.UnauthorizedSignerError:
         return new UnauthorizedSignerError(
-          (error as SerializableArc0013UnauthorizedSignerError).data.signer ||
+          (error as SerializableArc0027UnauthorizedSignerError).data.signer ||
             '',
           error.message
         );
@@ -215,15 +215,15 @@ export default class LegacyProvider extends BaseWalletManager {
    */
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
-    let result: IArc0013EnableResult;
+    let result: IArc0027EnableResult;
 
     try {
       result = await this.handleEvent<
-        IArc0013EnableParams,
-        IArc0013EnableResult
+        IArc0027EnableParams,
+        IArc0027EnableResult
       >(
-        Arc0013ProviderMethodEnum.Enable,
-        new Arc0013EnableRequestMessage({
+        Arc0027ProviderMethodEnum.Enable,
+        new Arc0027EnableRequestMessage({
           providerId: __PROVIDER_ID__,
           genesisHash: options?.genesisHash || null,
         })
@@ -239,7 +239,7 @@ export default class LegacyProvider extends BaseWalletManager {
         sessionId: result.sessionId,
       };
     } catch (error) {
-      throw LegacyProvider.mapArc0013ErrorToLegacyError(error);
+      throw LegacyProvider.mapArc0027ErrorToLegacyError(error);
     }
   }
 
@@ -251,51 +251,51 @@ export default class LegacyProvider extends BaseWalletManager {
     data,
     signer,
   }: ISignBytesOptions): Promise<ISignBytesResult> {
-    let result: IArc0013SignBytesResult;
+    let result: IArc0027SignBytesResult;
 
     try {
       result = await this.handleEvent<
-        IArc0013SignBytesParams,
-        IArc0013SignBytesResult
+        IArc0027SignBytesParams,
+        IArc0027SignBytesResult
       >(
-        Arc0013ProviderMethodEnum.SignTxns,
-        new Arc0013SignBytesRequestMessage({
+        Arc0027ProviderMethodEnum.SignTxns,
+        new Arc0027SignBytesRequestMessage({
           data: encodeBase64(data),
           providerId: __PROVIDER_ID__,
           signer,
         }),
-        ARC_0013_UPPER_REQUEST_TIMEOUT
+        ARC_0027_UPPER_REQUEST_TIMEOUT
       );
 
       return {
         signature: decodeBase64(result.signature),
       };
     } catch (error) {
-      throw LegacyProvider.mapArc0013ErrorToLegacyError(error);
+      throw LegacyProvider.mapArc0027ErrorToLegacyError(error);
     }
   }
 
   public async signTxns({ txns }: ISignTxnsOptions): Promise<ISignTxnsResult> {
-    let result: IArc0013SignTxnsResult;
+    let result: IArc0027SignTxnsResult;
 
     try {
       result = await this.handleEvent<
-        IArc0013SignTxnsParams,
-        IArc0013SignTxnsResult
+        IArc0027SignTxnsParams,
+        IArc0027SignTxnsResult
       >(
-        Arc0013ProviderMethodEnum.SignBytes,
-        new Arc0013SignTxnsRequestMessage({
+        Arc0027ProviderMethodEnum.SignBytes,
+        new Arc0027SignTxnsRequestMessage({
           providerId: __PROVIDER_ID__,
           txns,
         }),
-        ARC_0013_UPPER_REQUEST_TIMEOUT
+        ARC_0027_UPPER_REQUEST_TIMEOUT
       );
 
       return {
         stxns: result.stxns,
       };
     } catch (error) {
-      throw LegacyProvider.mapArc0013ErrorToLegacyError(error);
+      throw LegacyProvider.mapArc0027ErrorToLegacyError(error);
     }
   }
 }

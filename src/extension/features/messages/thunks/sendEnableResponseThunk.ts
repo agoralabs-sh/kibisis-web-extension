@@ -3,7 +3,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
 // enums
-import { Arc0013MessageReferenceEnum } from '@common/enums';
+import { Arc0027MessageReferenceEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // features
@@ -11,8 +11,8 @@ import { removeEventByIdThunk } from '@extension/features/events';
 
 // messages
 import {
-  Arc0013EnableRequestMessage,
-  Arc0013EnableResponseMessage,
+  Arc0027EnableRequestMessage,
+  Arc0027EnableResponseMessage,
 } from '@common/messages';
 
 // services
@@ -24,7 +24,7 @@ import { IAccount, IBaseAsyncThunkConfig, ISession } from '@extension/types';
 import { IBaseResponseThunkPayload } from '../types';
 
 interface IPayload extends IBaseResponseThunkPayload {
-  originMessage: Arc0013EnableRequestMessage;
+  originMessage: Arc0027EnableRequestMessage;
   session: ISession | null;
 }
 
@@ -42,14 +42,14 @@ const sendEnableResponseThunk: AsyncThunk<
     const logger: ILogger = getState().system.logger;
 
     logger.debug(
-      `${MessagesThunkEnum.SendEnableResponse}: sending "${Arc0013MessageReferenceEnum.EnableResponse}" message to the content script`
+      `${MessagesThunkEnum.SendEnableResponse}: sending "${Arc0027MessageReferenceEnum.EnableResponse}" message to the content script`
     );
 
     // send the error the webpage (via the content script)
     if (error) {
       await browser.tabs.sendMessage(
         originTabId,
-        new Arc0013EnableResponseMessage(originMessage.id, error, null)
+        new Arc0027EnableResponseMessage(originMessage.id, error, null)
       );
 
       // remove the event
@@ -62,7 +62,7 @@ const sendEnableResponseThunk: AsyncThunk<
     if (session) {
       await browser.tabs.sendMessage(
         originTabId,
-        new Arc0013EnableResponseMessage(originMessage.id, null, {
+        new Arc0027EnableResponseMessage(originMessage.id, null, {
           accounts: session.authorizedAddresses.map<IWalletAccount>(
             (address) => {
               const account: IAccount | null =

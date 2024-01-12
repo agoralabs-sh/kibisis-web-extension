@@ -19,42 +19,42 @@ import { networks } from '@extension/config';
 
 // constants
 import {
-  ARC_0013_CHANNEL_NAME,
-  ARC_0013_DEFAULT_REQUEST_TIMEOUT,
-  ARC_0013_LOWER_REQUEST_TIMEOUT,
+  ARC_0027_CHANNEL_NAME,
+  ARC_0027_DEFAULT_REQUEST_TIMEOUT,
+  ARC_0027_LOWER_REQUEST_TIMEOUT,
 } from '@common/constants';
 
 // enums
-import { Arc0013ProviderMethodEnum } from '@common/enums';
+import { Arc0027ProviderMethodEnum } from '@common/enums';
 
 // errors
 import {
-  SerializableArc0013MethodNotSupportedError,
-  SerializableArc0013MethodTimedOutError,
-  SerializableArc0013NetworkNotSupportedError,
-  SerializableArc0013UnknownError,
+  SerializableArc0027MethodNotSupportedError,
+  SerializableArc0027MethodTimedOutError,
+  SerializableArc0027NetworkNotSupportedError,
+  SerializableArc0027UnknownError,
 } from '@common/errors';
 
 // messages
 import {
-  Arc0013EnableRequestMessage,
-  Arc0013GetProvidersRequestMessage,
-  Arc0013SignTxnsRequestMessage,
-  BaseArc0013RequestMessage,
-  BaseArc0013ResponseMessage,
+  Arc0027EnableRequestMessage,
+  Arc0027GetProvidersRequestMessage,
+  Arc0027SignTxnsRequestMessage,
+  BaseArc0027RequestMessage,
+  BaseArc0027ResponseMessage,
 } from '@common/messages';
 
 // types
 import {
-  IArc0013Account,
-  IArc0013EnableParams,
-  IArc0013EnableResult,
-  IArc0013GetProvidersParams,
-  IArc0013GetProvidersResult,
-  IArc0013NetworkConfiguration,
+  IArc0027Account,
+  IArc0027EnableParams,
+  IArc0027EnableResult,
+  IArc0027GetProvidersParams,
+  IArc0027GetProvidersResult,
+  IArc0027NetworkConfiguration,
   IArc0001SignTxns,
-  IArc0013SignTxnsParams,
-  IArc0013SignTxnsResult,
+  IArc0027SignTxnsParams,
+  IArc0027SignTxnsResult,
   ILogger,
 } from '@common/types';
 import { IAlgorandAccountInformation, INetwork } from '@extension/types';
@@ -64,15 +64,15 @@ import createLogger from '@common/utils/createLogger';
 import algorandAccountInformationWithDelay from '@extension/utils/algorandAccountInformationWithDelay';
 
 export interface SendRequestWithTimeoutOptions<Params> {
-  method: Arc0013ProviderMethodEnum;
-  message: BaseArc0013RequestMessage<Params>;
+  method: Arc0027ProviderMethodEnum;
+  message: BaseArc0027RequestMessage<Params>;
   timeout?: number;
 }
 
 export default class CustomUseWalletProvider implements CustomProvider {
   private algod: Algodv2 | null = null;
   public genesisHash: string | null = null;
-  private methods: Arc0013ProviderMethodEnum[];
+  private methods: Arc0027ProviderMethodEnum[];
   private readonly logger: ILogger;
 
   constructor() {
@@ -89,13 +89,13 @@ export default class CustomUseWalletProvider implements CustomProvider {
     timeout,
   }: SendRequestWithTimeoutOptions<Params>): Promise<Result | null> {
     return new Promise<Result | null>((resolve, reject) => {
-      const channel = new BroadcastChannel(ARC_0013_CHANNEL_NAME);
+      const channel = new BroadcastChannel(ARC_0027_CHANNEL_NAME);
       // eslint-disable-next-line prefer-const
       let timer: number;
 
       // listen to responses
       channel.onmessage = (
-        event: MessageEvent<BaseArc0013ResponseMessage<Result>>
+        event: MessageEvent<BaseArc0027ResponseMessage<Result>>
       ) => {
         // if the response's request id does not match the intended request, just ignore
         if (!event.data || event.data.requestId !== message.id) {
@@ -125,12 +125,12 @@ export default class CustomUseWalletProvider implements CustomProvider {
         channel.close();
 
         reject(
-          new SerializableArc0013MethodTimedOutError(
+          new SerializableArc0027MethodTimedOutError(
             method,
             `no response from provider "${__PROVIDER_ID__}"`
           )
         );
-      }, timeout || ARC_0013_DEFAULT_REQUEST_TIMEOUT);
+      }, timeout || ARC_0027_DEFAULT_REQUEST_TIMEOUT);
 
       // broadcast the request
       channel.postMessage(message);
@@ -149,10 +149,10 @@ export default class CustomUseWalletProvider implements CustomProvider {
     return Buffer.from(input, 'base64');
   }
 
-  private async enable(): Promise<IArc0013Account[]> {
+  private async enable(): Promise<IArc0027Account[]> {
     const _functionName: string = 'enable';
-    const method: Arc0013ProviderMethodEnum = Arc0013ProviderMethodEnum.Enable;
-    let result: IArc0013EnableResult | null;
+    const method: Arc0027ProviderMethodEnum = Arc0027ProviderMethodEnum.Enable;
+    let result: IArc0027EnableResult | null;
 
     this.logger.debug(
       `${CustomUseWalletProvider.name}#${_functionName}(): check if "${method}" is supported on "${this.genesisHash}"`
@@ -162,7 +162,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
     this.validateMethod(method);
 
     if (!this.genesisHash) {
-      throw new SerializableArc0013UnknownError(
+      throw new SerializableArc0027UnknownError(
         `no genesis hash set`,
         __PROVIDER_ID__
       );
@@ -170,10 +170,10 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
     result =
       (await CustomUseWalletProvider.sendRequestWithTimeout<
-        IArc0013EnableParams,
-        IArc0013EnableResult
+        IArc0027EnableParams,
+        IArc0027EnableResult
       >({
-        message: new Arc0013EnableRequestMessage({
+        message: new Arc0027EnableRequestMessage({
           genesisHash: this.genesisHash,
           providerId: __PROVIDER_ID__,
         }),
@@ -182,7 +182,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
     // check for a result
     if (!result) {
-      throw new SerializableArc0013UnknownError(
+      throw new SerializableArc0027UnknownError(
         `received response, but "${method}" request details were empty`,
         __PROVIDER_ID__
       );
@@ -215,17 +215,17 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
   private async refreshSupportedMethods(): Promise<void> {
     const _functionName: string = 'refreshSupportedMethods';
-    const method: Arc0013ProviderMethodEnum =
-      Arc0013ProviderMethodEnum.GetProviders;
-    let networkConfiguration: IArc0013NetworkConfiguration | null;
-    let result: IArc0013GetProvidersResult | null;
+    const method: Arc0027ProviderMethodEnum =
+      Arc0027ProviderMethodEnum.GetProviders;
+    let networkConfiguration: IArc0027NetworkConfiguration | null;
+    let result: IArc0027GetProvidersResult | null;
 
     this.logger.debug(
       `${CustomUseWalletProvider.name}#${_functionName}(): refreshing supported methods`
     );
 
     if (!this.genesisHash) {
-      throw new SerializableArc0013UnknownError(
+      throw new SerializableArc0027UnknownError(
         `no genesis hash set`,
         __PROVIDER_ID__
       );
@@ -233,19 +233,19 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
     result =
       (await CustomUseWalletProvider.sendRequestWithTimeout<
-        IArc0013GetProvidersParams,
-        IArc0013GetProvidersResult
+        IArc0027GetProvidersParams,
+        IArc0027GetProvidersResult
       >({
-        message: new Arc0013GetProvidersRequestMessage({
+        message: new Arc0027GetProvidersRequestMessage({
           providerId: __PROVIDER_ID__,
         }),
         method,
-        timeout: ARC_0013_LOWER_REQUEST_TIMEOUT,
+        timeout: ARC_0027_LOWER_REQUEST_TIMEOUT,
       })) || null;
 
     // check for a result
     if (!result) {
-      throw new SerializableArc0013UnknownError(
+      throw new SerializableArc0027UnknownError(
         `received response, but "${method}" request details were empty`,
         __PROVIDER_ID__
       );
@@ -257,7 +257,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
     // check if the network is supported
     if (!networkConfiguration) {
-      throw new SerializableArc0013NetworkNotSupportedError(
+      throw new SerializableArc0027NetworkNotSupportedError(
         this.genesisHash,
         __PROVIDER_ID__
       );
@@ -277,9 +277,9 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
   private async signTxns(txns: IArc0001SignTxns[]): Promise<(string | null)[]> {
     const _functionName: string = 'signTxns';
-    const method: Arc0013ProviderMethodEnum =
-      Arc0013ProviderMethodEnum.SignTxns;
-    let result: IArc0013SignTxnsResult | null;
+    const method: Arc0027ProviderMethodEnum =
+      Arc0027ProviderMethodEnum.SignTxns;
+    let result: IArc0027SignTxnsResult | null;
 
     this.logger.debug(
       `${CustomUseWalletProvider.name}#${_functionName}(): check if "${method}" is supported on "${this.genesisHash}"`
@@ -290,10 +290,10 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
     result =
       (await CustomUseWalletProvider.sendRequestWithTimeout<
-        IArc0013SignTxnsParams,
-        IArc0013SignTxnsResult
+        IArc0027SignTxnsParams,
+        IArc0027SignTxnsResult
       >({
-        message: new Arc0013SignTxnsRequestMessage({
+        message: new Arc0027SignTxnsRequestMessage({
           providerId: __PROVIDER_ID__,
           txns,
         }),
@@ -302,7 +302,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
 
     // check for a result
     if (!result) {
-      throw new SerializableArc0013UnknownError(
+      throw new SerializableArc0027UnknownError(
         `received response, but "${method}" request details were empty`,
         __PROVIDER_ID__
       );
@@ -311,9 +311,9 @@ export default class CustomUseWalletProvider implements CustomProvider {
     return result.stxns;
   }
 
-  private validateMethod(method: Arc0013ProviderMethodEnum): void {
+  private validateMethod(method: Arc0027ProviderMethodEnum): void {
     if (!this.methods.includes(method)) {
-      throw new SerializableArc0013MethodNotSupportedError(
+      throw new SerializableArc0027MethodNotSupportedError(
         method,
         __PROVIDER_ID__
       );
@@ -325,7 +325,7 @@ export default class CustomUseWalletProvider implements CustomProvider {
    */
 
   public async connect(metadata: Metadata): Promise<Wallet> {
-    let accounts: IArc0013Account[];
+    let accounts: IArc0027Account[];
 
     await this.refreshSupportedMethods(); // refresh the supported methods
 

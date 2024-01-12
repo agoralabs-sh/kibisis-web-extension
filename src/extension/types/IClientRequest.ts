@@ -1,11 +1,11 @@
 // messages
-import { BaseArc0013RequestMessage } from '@common/messages';
+import { BaseArc0027RequestMessage } from '@common/messages';
 
 // types
-import { IArc0013ParamTypes, IClientInformation } from '@common/types';
+import { IArc0027ParamTypes, IClientInformation } from '@common/types';
 
 interface IClientRequest<
-  OriginMessage = BaseArc0013RequestMessage<IArc0013ParamTypes>
+  OriginMessage = BaseArc0027RequestMessage<IArc0027ParamTypes>
 > {
   clientInfo: IClientInformation;
   eventId: string;
