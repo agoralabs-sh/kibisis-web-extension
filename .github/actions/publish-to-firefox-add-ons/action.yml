@@ -24,7 +24,7 @@ runs:
       with:
         node-version: 'lts/*'
     - name: "📦 Install"
-      run: yarn --cwd ./.github/actions/publish-firefox-add-ons/ install
+      run: yarn --cwd ./.github/actions/publish-to-firefox-add-ons/ install
       shell: bash
     - name: "🚀 Upload and Publish to Firefox Add-ons"
       env:
@@ -32,5 +32,5 @@ runs:
         JWT_ISSUER: ${{ inputs.jwt_issuer }}
         JWT_SECRET: ${{ inputs.jwt_secret }}
         ZIP_FILE_NAME: ${{ inputs.zip_file_name }}
-      run: node ./.github/actions/publish-firefox-add-ons/index.mjs
+      run: node ./.github/actions/publish-to-firefox-add-ons/index.mjs
       shell: bash
