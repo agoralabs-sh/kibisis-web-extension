@@ -36,8 +36,7 @@
   </a>
 
   <a href="https://addons.mozilla.org/en-GB/firefox/addon/kibisis" target="_blank">
-    <img alt="Mozilla Add-on Version" src="https://img.shields.io/amo/v/kibisis?logo=firefox&logoColor=%23FF7139&color=%23FF7139
-" />
+    <img alt="Mozilla Add-on Version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Faddons.mozilla.org%2Fapi%2Fv5%2Faddons%2Faddon%2Fkibisis%2F&query=%24.current_version.version&logo=firefox&logoColor=%23FF7139&label=firefox%20add-on&color=%23FF7139" />
   </a>
 </p>
 
@@ -75,12 +74,6 @@ Coming soon...
 ## 🪄 2. Usage
 
 Refer to the [documentation](https://kibis.is/overview) for information on how to use Kibisis.
-
-<sup>[Back to top ^][table-of-contents]</sup>
-
-### 2.2 API
-
-Coming soon...
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -131,9 +124,9 @@ yarn install:chrome
 1. Simply run:
 ```shell
 yarn install:firefox
+```
 
 > ️ **NOTE:** the binary will be installed to `.firefox/`.
-```
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -144,7 +137,7 @@ yarn install:firefox
 $ yarn start:<chrome|firefox>
 ```
 
-> ⚠️ **NOTE:** this command will bundle the TypeScript source code and extension assets into the `.build/` directory and depending on your intended target (you can choose '`chrome`' or '`firefox`') the corresponding browser will start up with the unpacked extension as a temporary extension.
+> ⚠️ **NOTE:** this command will bundle the TypeScript source code and extension assets into the `.<chrome|firefox>_build/` directory and depending on your intended target (you can choose '`chrome`' or '`firefox`') the corresponding browser will start up with the unpacked extension as a temporary extension.
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -155,10 +148,12 @@ $ yarn start:<chrome|firefox>
 | Command                | Description                                                                                                                                                                                            |
 |------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `yarn build:chrome`    | Bundles the source code and Chrome specific assets into the `.chrome_build/` directory.                                                                                                                |
+| `yarn build:edge`      | Bundles the source code and Microsoft Edge specific assets into the `.edge_build/` directory.                                                                                                          |
 | `yarn build:firefox`   | Bundles the source code and Firefox specific assets into the `.firefox_build/` directory.                                                                                                              |
 | `yarn install:chrome`  | Installs/updates the latest version of Chrome For Testing browser to the project root. This removes the existing version if it exists.                                                                 |
 | `yarn install:firefox` | Installs/updates the latest version of Firefox Developer Edition browser to the project root. This removes the existing version if it exists.                                                          |
 | `yarn package:chrome`  | Packages the contents of the `.chrome_build/` directory into a `kibisis-chrome-{version}.zip` file, ready for submission.                                                                              |
+| `yarn package:edge`    | Packages the contents of the `.edge_build/` directory into a `kibisis-edge-{version}.zip` file, ready for submission.                                                                                  |
 | `yarn package:firefox` | Packages the contents of the `.firefox_build/` directory into a `kibisis-firefox-{version}.zip` file, ready for submission.                                                                            |
 | `yarn prettier`        | Runs `prettier` with the same configuration that is run on the pre-commit hooks.                                                                                                                       |
 | `yarn start:chrome`    | Bundles the source code & the add-on assets, starts the local Chrome For Testing Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension. |
