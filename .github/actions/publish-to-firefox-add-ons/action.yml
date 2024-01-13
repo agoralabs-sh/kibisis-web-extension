@@ -1,6 +1,6 @@
-name: "Publish Firefox Add-ons"
+name: "Publish To Firefox Add-ons"
 
-description: "GitHub action for publishing extension to Firefox Add-ons"
+description: "GitHub action for publishing the extension to Firefox Add-ons"
 
 inputs:
     addon_id:

@@ -17,7 +17,7 @@ jobs:
           asset_prefix: "kibisis-firefox"
           github_token: ${{ secrets.WRITE_REPOS_TOKEN }}
       - name: "🚀 Publish"
-        uses: ./.github/actions/publish-firefox-add-ons
+        uses: ./.github/actions/publish-to-firefox-add-ons
         with:
           addon_id: ${{ vars.FIREFOX_ADD_ONS_ID }}
           jwt_issuer: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_ISSUER }}

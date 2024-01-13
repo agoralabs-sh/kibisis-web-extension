@@ -1,5 +1,5 @@
 {
-  "name": "publish-firefox-add-on",
+  "name": "publish-to-firefox-add-ons",
   "version": "1.0.0",
   "dependencies": {
     "@actions/core": "^1.10.1",
