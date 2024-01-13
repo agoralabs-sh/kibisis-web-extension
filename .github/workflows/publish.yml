@@ -1,0 +1,25 @@
+name: "Publish"
+
+on:
+  release:
+    types: [released] # triggered on main branch releases
+
+jobs:
+  install:
+    name: "Publish To Firefox Add-ons"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v3
+      - name: "📥 Download Latest Release Asset"
+        uses: ./.github/actions/download-latest-release-asset
+        with:
+          asset_prefix: "kibisis-firefox"
+          github_token: ${{ secrets.WRITE_REPOS_TOKEN }}
+      - name: "🚀 Publish"
+        uses: ./.github/actions/publish-firefox-add-ons
+        with:
+          addon_id: ${{ vars.FIREFOX_ADD_ONS_ID }}
+          jwt_issuer: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_ISSUER }}
+          jwt_secret: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_SECRET }}
+          zip_file_name: kibisis-firefox.zip
