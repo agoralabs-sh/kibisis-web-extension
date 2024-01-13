@@ -28,6 +28,7 @@ jobs:
     name: "Release"
     needs: [install]
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
@@ -39,7 +40,7 @@ jobs:
         uses: ./.github/actions/create-env-file
         with:
           provider_id: ${{ vars.PROVIDER_ID }}
-          walletconnect_project_id: ${{ secrets.PRODUCTION_WALLETCONNECT_PROJECT_ID }}
+          walletconnect_project_id: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
       - name: "🔖 Release"
         env:
           # appears on the release commits

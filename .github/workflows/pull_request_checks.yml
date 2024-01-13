@@ -37,6 +37,7 @@ jobs:
     name: "Build Chrome"
     needs: install
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
@@ -46,7 +47,7 @@ jobs:
         uses: ./.github/actions/create-env-file
         with:
           provider_id: ${{ vars.PROVIDER_ID }}
-          walletconnect_project_id: ${{ secrets.DEVELOPMENT_WALLETCONNECT_PROJECT_ID }}
+          walletconnect_project_id: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
         run: yarn build:chrome
       - name: "🗜️ Zip build"
@@ -61,6 +62,7 @@ jobs:
     name: "Build Edge"
     needs: install
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
@@ -70,7 +72,7 @@ jobs:
         uses: ./.github/actions/create-env-file
         with:
           provider_id: ${{ vars.PROVIDER_ID }}
-          walletconnect_project_id: ${{ secrets.DEVELOPMENT_WALLETCONNECT_PROJECT_ID }}
+          walletconnect_project_id: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
         run: yarn build:edge
       - name: "🗜️ Zip build"
@@ -85,6 +87,7 @@ jobs:
     name: "Build Firefox"
     needs: install
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - name: "🛎 Checkout"
         uses: actions/checkout@v3
@@ -94,7 +97,7 @@ jobs:
         uses: ./.github/actions/create-env-file
         with:
           provider_id: ${{ vars.PROVIDER_ID }}
-          walletconnect_project_id: ${{ secrets.DEVELOPMENT_WALLETCONNECT_PROJECT_ID }}
+          walletconnect_project_id: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
       - name: "🏗️ Build"
         run: yarn build:firefox
       - name: "🗜️ Zip build"
