@@ -5,3 +5,4 @@ export const NETWORK_TRANSACTION_PARAMS_REFRESH_INTERVAL: number = 1800000; // 3
 export const NETWORK_TRANSACTION_PARAMS_ANTIQUATED_TIMEOUT: number = 900000; // 15 minutes in milliseconds
 export const NETWORK_CONNECTIVITY_CHECK_INTERVAL: number = 30000; // 30 seconds in milliseconds
 export const NODE_REQUEST_DELAY: number = 100; // in milliseconds
+export const QR_CODE_SCAN_INTERVAL: number = 3000; // 3 seconds in milliseconds

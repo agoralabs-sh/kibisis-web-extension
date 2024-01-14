@@ -29,12 +29,12 @@ import WalletConnectBannerIcon from '@extension/components/WalletConnectBannerIc
 import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
+import useCaptureQrCode from '@extension/hooks/useCaptureQrCode';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useWalletConnect from '@extension/hooks/useWalletConnect';
-import useCaptureQrCode from './hooks/useCaptureQrCode';
 
 // selectors
 import {
@@ -70,7 +70,8 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const network: INetwork | null = useSelectSelectedNetwork();
   const isOpen: boolean = useSelectWalletConnectModalOpen();
   // hooks
-  const { captureAction, scanning, url } = useCaptureQrCode();
+  const { scanning, startScanningAction, stopScanningAction, url } =
+    useCaptureQrCode();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
@@ -96,6 +97,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
+    stopScanningAction();
     setAuthorizedAddresses([]);
     onClose();
   };
@@ -343,7 +345,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
   useEffect(() => {
     if (isOpen) {
-      captureAction();
+      startScanningAction();
     }
   }, [isOpen]);
 

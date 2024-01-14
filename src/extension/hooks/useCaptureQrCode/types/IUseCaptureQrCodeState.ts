@@ -1,6 +1,7 @@
 interface IUseCaptureQrCodeState {
-  captureAction: () => void;
   scanning: boolean;
+  startScanningAction: () => void;
+  stopScanningAction: () => void;
   url: string | null;
 }
 
