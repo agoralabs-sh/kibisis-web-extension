@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+// constants
+import { QR_CODE_SCAN_INTERVAL } from '@extension/constants';
+
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
@@ -11,50 +14,59 @@ import { IUseCaptureQrCodeState } from './types';
 import { captureQrCode } from './utils';
 
 export default function useCaptureQrCode(): IUseCaptureQrCodeState {
+  // selectors
   const logger: ILogger = useSelectLogger();
+  // states
+  const [intervalId, setIntervalId] = useState<number | null>(null);
   const [scanning, setScanning] = useState<boolean>(false);
   const [url, setUrl] = useState<string | null>(null);
-  const captureAction: () => void = () => {
+  // misc
+  const captureAction: () => Promise<void> = async () => {
     let capturedUrl: string;
-    let intervalId: number;
 
+    try {
+      capturedUrl = await captureQrCode();
+
+      setUrl(capturedUrl);
+
+      return stopScanningAction();
+    } catch (error) {
+      logger.debug(error.message);
+    }
+  };
+  const startScanningAction: () => void = () => {
     setScanning(true);
 
     (async () => {
-      try {
-        capturedUrl = await captureQrCode();
+      await captureAction();
 
-        setUrl(capturedUrl);
-        setScanning(false);
+      // add a three-second interval that attempts to capture a qr code on the screen
+      setIntervalId(
+        window.setInterval(async () => {
+          if (url) {
+            return stopScanningAction();
+          }
 
-        return;
-      } catch (error) {
-        logger.debug(error.message);
-      }
-
-      // add a one second interval that attempts to capture a qr code on the screen
-      intervalId = window.setInterval(async () => {
-        if (capturedUrl) {
-          window.clearInterval(intervalId);
-
-          return;
-        }
-
-        try {
-          capturedUrl = await captureQrCode();
-
-          setUrl(capturedUrl);
-          setScanning(false);
-        } catch (error) {
-          logger.debug(error.message);
-        }
-      }, 3000);
+          // attempt to capture the qr code
+          await captureAction();
+        }, QR_CODE_SCAN_INTERVAL)
+      );
     })();
+  };
+  const stopScanningAction: () => void = () => {
+    if (intervalId) {
+      window.clearInterval(intervalId);
+
+      setIntervalId(null);
+    }
+
+    setScanning(false);
   };
 
   return {
-    captureAction,
     scanning,
+    startScanningAction,
+    stopScanningAction,
     url,
   };
 }

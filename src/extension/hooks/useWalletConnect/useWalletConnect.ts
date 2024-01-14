@@ -23,6 +23,7 @@ import { createSessionNamespaces } from './utils';
 export default function useWalletConnect(
   uri: string | null
 ): IUseWalletConnectState {
+  const _functionName: string = 'useWalletConnect';
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const logger: ILogger = useSelectLogger();
@@ -42,7 +43,7 @@ export default function useWalletConnect(
 
     if (web3Wallet && sessionProposal) {
       logger.debug(
-        `${useWalletConnect.name}#${handleSessionProposal.name}(): approving session proposal "${sessionProposal.id}"`
+        `${_functionName}(): approving session proposal "${sessionProposal.id}"`
       );
 
       session = await web3Wallet.approveSession({
@@ -74,7 +75,7 @@ export default function useWalletConnect(
     proposal: Web3WalletTypes.SessionProposal
   ) => void = (proposal: Web3WalletTypes.SessionProposal) => {
     logger.debug(
-      `${useWalletConnect.name}#${handleSessionProposal.name}(): received session proposal "${proposal.id}"`
+      `${_functionName}(): received session proposal "${proposal.id}"`
     );
 
     setSessionProposal(proposal);
@@ -83,7 +84,7 @@ export default function useWalletConnect(
   const rejectSessionProposalAction: () => Promise<void> = async () => {
     if (web3Wallet && sessionProposal) {
       logger.debug(
-        `${useWalletConnect.name}#${rejectSessionProposalAction.name}(): rejecting session proposal "${sessionProposal.id}"`
+        `${_functionName}(): rejecting session proposal "${sessionProposal.id}"`
       );
 
       await web3Wallet.rejectSession({
