@@ -1,0 +1,40 @@
+name: "Publish To Chrome Web Store"
+
+description: "GitHub action for publishing the extension to the Chrome Web Store"
+
+inputs:
+    item_id:
+      description: "The Chrome Web Store item ID."
+      required: true
+    client_id:
+      description: "Client ID of the OAuth app to access the Chrome Web Store API."
+      required: true
+    client_secret:
+      description: "Client secret of the OAuth app to access the Chrome Web Store API."
+      required: true
+    refresh_token:
+      description: "Refresh token get a new access token."
+      required: true
+    zip_file_name:
+      description: "Name of the downloaded zip file."
+      required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🔧 Setup"
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+    - name: "📦 Install"
+      run: yarn --cwd ./.github/actions/publish-to-chrome-web-store/ install
+      shell: bash
+    - name: "🚀 Upload and Publish to the Chrome Web Store"
+      env:
+        ITEM_ID: ${{ inputs.item_id }}
+        CLIENT_ID: ${{ inputs.client_id }}
+        CLIENT_SECRET: ${{ inputs.client_secret }}
+        REFRESH_TOKEN: ${{ inputs.refresh_token }}
+        ZIP_FILE_NAME: ${{ inputs.zip_file_name }}
+      run: yarn --cwd ./.github/actions/publish-to-chrome-web-store/ start
+      shell: bash

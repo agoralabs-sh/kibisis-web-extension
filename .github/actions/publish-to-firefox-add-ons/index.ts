@@ -70,7 +70,7 @@ import { createJwt, handleError, publish, uploadZipFile } from './utils';
 
     await publish(process.env.ADD_ON_ID, uploadUuid, jwt);
 
-    info(`successfully published add-on "${process.env.PRODUCT_ID}"`);
+    info(`successfully published add-on "${process.env.ADD_ON_ID}"`);
   } catch (error) {
     handleError(error);
   }
