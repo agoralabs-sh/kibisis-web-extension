@@ -1,0 +1,40 @@
+name: "Publish To Microsoft Edge Add-ons"
+
+description: "GitHub action for publishing the extension to Microsoft Edge Add-ons"
+
+inputs:
+    access_token_url:
+      description: "The Microsoft Edge Add-ons API access token URL."
+      required: true
+    client_id:
+      description: "The Microsoft Edge Add-ons API client ID."
+      required: true
+    client_secret:
+      description: "The Microsoft Edge Add-ons API client secret."
+      required: true
+    product_id:
+      description: "The Microsoft Edge Add-on product ID."
+      required: true
+    zip_file_name:
+      description: "Name of the downloaded zip file."
+      required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🔧 Setup"
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+    - name: "📦 Install"
+      run: yarn --cwd ./.github/actions/publish-to-microsoft-edge-add-ons/ install
+      shell: bash
+    - name: "🚀 Upload and Publish to Microsoft Edge Add-ons"
+      env:
+        ACCESS_TOKEN_URL: ${{ inputs.access_token_url }}
+        CLIENT_ID: ${{ inputs.client_id }}
+        CLIENT_SECRET: ${{ inputs.client_secret }}
+        PRODUCT_ID: ${{ inputs.product_id }}
+        ZIP_FILE_NAME: ${{ inputs.zip_file_name }}
+      run: yarn --cwd ./.github/actions/publish-to-microsoft-edge-add-ons/ start
+      shell: bash
