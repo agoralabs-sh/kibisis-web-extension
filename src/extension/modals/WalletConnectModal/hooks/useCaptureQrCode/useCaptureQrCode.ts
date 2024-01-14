@@ -14,6 +14,7 @@ import { IUseCaptureQrCodeState } from './types';
 import { captureQrCode } from './utils';
 
 export default function useCaptureQrCode(): IUseCaptureQrCodeState {
+  const _functionName: string = 'useCaptureQrCode';
   // selectors
   const logger: ILogger = useSelectLogger();
   // states
@@ -31,7 +32,7 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
 
       return stopScanningAction();
     } catch (error) {
-      logger.debug(error.message);
+      logger.debug(`${_functionName}(): ${error.message}`);
     }
   };
   const startScanningAction: () => void = () => {
