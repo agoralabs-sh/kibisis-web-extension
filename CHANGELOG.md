@@ -1,3 +1,10 @@
+## [1.10.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0...v1.10.1-beta.1) (2024-01-14)
+
+
+### Bug Fixes
+
+* scanning for qr code in walletconnect runs forever once initiated ([#127](https://github.com/agoralabs-sh/kibisis-web-extension/issues/127)) ([ff60541](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ff6054168add9e858c9036923d4c09349f000982))
+
 # [1.10.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.9.0...v1.10.0) (2024-01-12)
 
 
