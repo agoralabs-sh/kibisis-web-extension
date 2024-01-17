@@ -1,3 +1,10 @@
+## [1.10.1-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1-beta.3...v1.10.1-beta.4) (2024-01-17)
+
+
+### Bug Fixes
+
+* mainnet checked state correctly passed to settings update ([#134](https://github.com/agoralabs-sh/kibisis-web-extension/issues/134)) ([490a573](https://github.com/agoralabs-sh/kibisis-web-extension/commit/490a5731426c2f56aaf7fb838fcbfac9a72376a5))
+
 ## [1.10.1-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1-beta.2...v1.10.1-beta.3) (2024-01-17)
 
 
