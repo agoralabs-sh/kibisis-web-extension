@@ -15,7 +15,6 @@ import { HOST, ICON_URI } from '@common/constants';
 import {
   DEFAULT_POPUP_HEIGHT,
   DEFAULT_POPUP_WIDTH,
-  SETTINGS_GENERAL_KEY,
 } from '@extension/constants';
 
 // enums
@@ -56,6 +55,7 @@ import AppWindowManagerService from '../AppWindowManagerService';
 import EventQueueService from '../EventQueueService';
 import PrivateKeyService from '../PrivateKeyService';
 import SessionService from '../SessionService';
+import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
 
 // types
@@ -71,17 +71,17 @@ import type {
   IAppWindow,
   IClientEventPayload,
   IEvent,
-  IGeneralSettings,
   IInternalRequestMessage,
   INetwork,
   ISession,
-  IStorageItemTypes,
 } from '@extension/types';
 
 // utils
 import computeGroupId from '@common/utils/computeGroupId';
 import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
+import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
+import isNetworkSupported from '@extension/utils/isNetworkSupported';
 import verifyTransactionGroupId from '@extension/utils/verifyTransactionGroupId';
 
 export default class BackgroundMessageHandler {
@@ -92,6 +92,7 @@ export default class BackgroundMessageHandler {
   private readonly eventQueueService: EventQueueService;
   private readonly privateKeyService: PrivateKeyService;
   private readonly sessionService: SessionService;
+  private readonly settingsService: SettingsService;
   private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
@@ -112,31 +113,15 @@ export default class BackgroundMessageHandler {
     this.sessionService = new SessionService({
       logger,
     });
+    this.settingsService = new SettingsService({
+      logger,
+    });
     this.storageManager = new StorageManager();
   }
 
   /**
    * private functions
    */
-
-  /**
-   * Convenience function that gets the selected network from storage.
-   * @returns {Promise<INetwork | null>} the network or null if no network has been stored.
-   * @private
-   */
-  private async fetchSelectedNetwork(): Promise<INetwork | null> {
-    const storageItems: Record<string, IStorageItemTypes | unknown> =
-      await this.storageManager.getAllItems();
-    const generalSettings: IGeneralSettings =
-      (storageItems[SETTINGS_GENERAL_KEY] as IGeneralSettings) || null;
-
-    return (
-      networks.find(
-        (value) =>
-          value.genesisHash === generalSettings?.selectedNetworkGenesisHash
-      ) || null
-    );
-  }
 
   /**
    * Convenience function that fetches all the sessions from storage and filters them based on a predicate, if it is
@@ -170,7 +155,6 @@ export default class BackgroundMessageHandler {
   ): Promise<void> {
     const _functionName: string = 'handleEnableRequestMessage';
     let accounts: IAccount[];
-    let network: INetwork | null = await this.fetchSelectedNetwork(); // get the selected network from storage
     let session: ISession | null;
     let sessionFilterPredicate: ((value: ISession) => boolean) | undefined;
     let sessionNetwork: INetwork | null;
@@ -178,17 +162,15 @@ export default class BackgroundMessageHandler {
 
     // get the network if a genesis hash is present
     if (message.params?.genesisHash) {
-      network =
-        networks.find(
-          (value) => value.genesisHash === message.params?.genesisHash
-        ) || null;
-
-      // if there is no network for the genesis hash, it isn't supported
-      if (!network) {
-        this.logger &&
-          this.logger.debug(
-            `${BackgroundMessageHandler.name}#${_functionName}(): genesis hash "${message.params.genesisHash}" is not supported`
-          );
+      if (
+        !(await isNetworkSupported(
+          message.params.genesisHash,
+          this.settingsService
+        ))
+      ) {
+        this.logger?.debug(
+          `${BackgroundMessageHandler.name}#${_functionName}(): genesis hash "${message.params.genesisHash}" is not supported`
+        );
 
         // send the response to the web page (via the content script)
         return await this.sendResponse(
@@ -226,10 +208,9 @@ export default class BackgroundMessageHandler {
           usedAt: new Date().getTime(),
         };
 
-        this.logger &&
-          this.logger.debug(
-            `${BackgroundMessageHandler.name}#${_functionName}(): found session "${session.id}" updating`
-          );
+        this.logger?.debug(
+          `${BackgroundMessageHandler.name}#${_functionName}(): found session "${session.id}" updating`
+        );
 
         session = await this.sessionService.save(session);
 
@@ -310,12 +291,16 @@ export default class BackgroundMessageHandler {
     message: Arc0027GetProvidersRequestMessage,
     originTabId: number
   ): Promise<void> {
+    const supportedNetworks: INetwork[] = await fetchSupportedNetworks(
+      this.settingsService
+    );
+
     return await this.sendResponse(
       new Arc0027GetProvidersResponseMessage(message.id, null, {
         host: HOST,
         icon: ICON_URI,
         name: __APP_TITLE__,
-        networks: networks.map(({ genesisHash, genesisId }) => ({
+        networks: supportedNetworks.map(({ genesisHash, genesisId }) => ({
           genesisHash,
           genesisId,
           methods: [
@@ -380,10 +365,9 @@ export default class BackgroundMessageHandler {
 
     // if the app has not been enabled
     if (filteredSessions.length <= 0) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): no sessions found for sign bytes request`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): no sessions found for sign bytes request`
+      );
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
@@ -410,10 +394,9 @@ export default class BackgroundMessageHandler {
       message.params?.signer &&
       !authorizedAddresses.find((value) => value === message.params?.signer)
     ) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): signer "${message.params?.signer}" is not authorized`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): signer "${message.params?.signer}" is not authorized`
+      );
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
@@ -453,6 +436,7 @@ export default class BackgroundMessageHandler {
     let filteredSessions: ISession[];
     let genesisHash: string | null;
     let network: INetwork | null;
+    let supportedNetworks: INetwork[];
 
     if (!message.params) {
       return await this.sendResponse(
@@ -476,10 +460,9 @@ export default class BackgroundMessageHandler {
     } catch (error) {
       errorMessage = `failed to decode transactions: ${error.message}`;
 
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
+      );
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
@@ -504,10 +487,9 @@ export default class BackgroundMessageHandler {
         (value) => `"${value.group ? encodeBase64(value.group) : 'undefined'}"`
       )}]`;
 
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
+      );
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
@@ -532,10 +514,9 @@ export default class BackgroundMessageHandler {
     if (!genesisHash) {
       errorMessage = `the transaction group is not atomic, they are bound for multiple networks`;
 
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
+      );
 
       // send the response to the web page
       return await this.sendResponse(
@@ -551,14 +532,15 @@ export default class BackgroundMessageHandler {
       );
     }
 
+    supportedNetworks = await fetchSupportedNetworks(this.settingsService);
     network =
-      networks.find((value) => value.genesisHash === genesisHash) || null;
+      supportedNetworks.find((value) => value.genesisHash === genesisHash) ||
+      null;
 
     if (!network) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): genesis hash "${genesisHash}" is not supported`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): genesis hash "${genesisHash}" is not supported`
+      );
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
@@ -581,10 +563,9 @@ export default class BackgroundMessageHandler {
 
     // if the app has not been enabled
     if (filteredSessions.length <= 0) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): no sessions found for sign txns request`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): no sessions found for sign txns request`
+      );
 
       // send the response to the web page
       return await this.sendResponse(
@@ -630,30 +611,27 @@ export default class BackgroundMessageHandler {
     // remove any closed windows
     await this.appWindowManagerService.hydrateAppWindows();
 
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): saving event "${event.type}" to event queue`
-      );
+    this.logger?.debug(
+      `${BackgroundMessageHandler.name}#${_functionName}(): saving event "${event.type}" to event queue`
+    );
 
     // save event to the queue
     await this.eventQueueService.save(event);
 
     // if a main app is open, post that a new event has been added to the queue
     if (mainAppWindows.length > 0) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): main app window open, posting that event "${event.id}" has been added to the queue`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): main app window open, posting that event "${event.id}" has been added to the queue`
+      );
 
       return await browser.runtime.sendMessage(
         new InternalEventAddedMessage(event.id)
       );
     }
 
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): main app window not open, opening background app window for "${event.type}" event`
-      );
+    this.logger?.debug(
+      `${BackgroundMessageHandler.name}#${_functionName}(): main app window not open, opening background app window for "${event.type}" event`
+    );
 
     searchParams = new URLSearchParams({
       eventId: encodeURIComponent(event.id), // add the event id to the url search params, so the app knows which event to use
@@ -678,10 +656,9 @@ export default class BackgroundMessageHandler {
   ): Promise<void> {
     const _functionName: string = 'sendResponse';
 
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): sending "${message.reference}" to the web page`
-      );
+    this.logger?.debug(
+      `${BackgroundMessageHandler.name}#${_functionName}(): sending "${message.reference}" to the web page`
+    );
 
     // send the response to the web page, via the content script
     return await browser.tabs.sendMessage(originTabId, message);
@@ -694,16 +671,14 @@ export default class BackgroundMessageHandler {
   ): Promise<void> {
     const _functionName: string = 'onArc0027RequestMessage';
 
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.reference}" received`
-      );
+    this.logger?.debug(
+      `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.reference}" received`
+    );
 
     if (!originTabId) {
-      this.logger &&
-        this.logger.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): unknown sender for message "${message.reference}", ignoring`
-        );
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}(): unknown sender for message "${message.reference}", ignoring`
+      );
 
       return;
     }
@@ -740,10 +715,9 @@ export default class BackgroundMessageHandler {
   private async onInternalMessage(message: BaseInternalMessage): Promise<void> {
     const _functionName: string = 'onInternalMessage';
 
-    this.logger &&
-      this.logger.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.reference}" received`
-      );
+    this.logger?.debug(
+      `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.reference}" received`
+    );
 
     switch (message.reference) {
       case InternalMessageReferenceEnum.FactoryReset:
