@@ -142,10 +142,9 @@ export default class ExternalMessageBroker {
       case Arc0027MessageReferenceEnum.GetProvidersRequest:
       case Arc0027MessageReferenceEnum.SignBytesRequest:
       case Arc0027MessageReferenceEnum.SignTxnsRequest:
-        this.logger &&
-          this.logger.debug(
-            `${ExternalMessageBroker.name}#${_functionName}(): request message "${message.data.reference}" received`
-          );
+        this.logger?.debug(
+          `${ExternalMessageBroker.name}#${_functionName}(): request message "${message.data.reference}" received`
+        );
 
         // send the message to the main app (popup) or the background service
         return await browser.runtime.sendMessage({
@@ -167,10 +166,9 @@ export default class ExternalMessageBroker {
       case Arc0027MessageReferenceEnum.GetProvidersResponse:
       case Arc0027MessageReferenceEnum.SignBytesResponse:
       case Arc0027MessageReferenceEnum.SignTxnsResponse:
-        this.logger &&
-          this.logger.debug(
-            `${ExternalMessageBroker.name}#${_functionName}(): response message "${message.reference}" received`
-          );
+        this.logger?.debug(
+          `${ExternalMessageBroker.name}#${_functionName}(): response message "${message.reference}" received`
+        );
 
         // broadcast the response to the webpage
         return this.channel.postMessage(message);
