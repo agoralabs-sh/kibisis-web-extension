@@ -1,3 +1,10 @@
+## [1.10.1-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1-beta.1...v1.10.1-beta.2) (2024-01-17)
+
+
+### Bug Fixes
+
+* replace arc0013 references with correct arc0027 ([#130](https://github.com/agoralabs-sh/kibisis-web-extension/issues/130)) ([8450512](https://github.com/agoralabs-sh/kibisis-web-extension/commit/8450512708969ebbdb1bea17315dabfa427b42fd))
+
 ## [1.10.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0...v1.10.1-beta.1) (2024-01-14)
 
 
