@@ -1,3 +1,10 @@
+## [1.10.1-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1-beta.4...v1.10.1-beta.5) (2024-01-17)
+
+
+### Bug Fixes
+
+* correct references to copy application id tooltip label ([#135](https://github.com/agoralabs-sh/kibisis-web-extension/issues/135)) ([27a15f6](https://github.com/agoralabs-sh/kibisis-web-extension/commit/27a15f677888aaafdc59b309fea7c49c60be8286))
+
 ## [1.10.1-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1-beta.3...v1.10.1-beta.4) (2024-01-17)
 
 
