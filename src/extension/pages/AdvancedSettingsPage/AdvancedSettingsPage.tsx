@@ -32,8 +32,10 @@ const AdvancedSettingsPage: FC = () => {
   const settings: ISettings = useSelectSettings();
   // handlers
   const handleMainNetSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const allowMainNet: boolean = event.target.checked;
+
     // if the switch is being enabled, get the user to confirmation
-    if (event.target.checked) {
+    if (allowMainNet) {
       dispatch(
         setConfirm({
           description: t<string>('captions.allowMainNetConfirm'),
@@ -43,7 +45,7 @@ const AdvancedSettingsPage: FC = () => {
                 ...settings,
                 advanced: {
                   ...settings.advanced,
-                  allowMainNet: event.target.checked,
+                  allowMainNet,
                 },
               })
             ),

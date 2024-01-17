@@ -41,7 +41,6 @@ const SettingsSelectItem: FC<IProps> = ({
   value,
   width,
 }: IProps) => {
-  console.log(value);
   // hooks
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
