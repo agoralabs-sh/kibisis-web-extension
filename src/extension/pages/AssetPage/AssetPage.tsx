@@ -310,12 +310,12 @@ const AssetPage: FC = () => {
                 ariaLabel={
                   asset.type === AssetTypeEnum.Standard
                     ? t<string>('labels.copyAssetId')
-                    : t<string>('captions.copyApplicationId')
+                    : t<string>('labels.copyApplicationId')
                 }
                 tooltipLabel={
                   asset.type === AssetTypeEnum.Standard
                     ? t<string>('labels.copyAssetId')
-                    : t<string>('captions.copyApplicationId')
+                    : t<string>('labels.copyApplicationId')
                 }
                 value={asset.id}
               />
