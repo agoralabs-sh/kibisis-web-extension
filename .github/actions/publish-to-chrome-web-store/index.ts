@@ -59,7 +59,7 @@ import {
     zipPath = process.env.ZIP_FILE_NAME;
     zipFileStats = await stat(zipPath);
 
-    debug(JSON.stringify(zipFileStats));
+    info(JSON.stringify(zipFileStats));
 
     // check if the file exists
     if (!zipFileStats.isFile()) {
