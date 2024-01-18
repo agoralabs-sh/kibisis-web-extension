@@ -1,4 +1,4 @@
-import { info, setFailed } from '@actions/core';
+import { debug, info, setFailed } from '@actions/core';
 import { Stats } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -53,8 +53,13 @@ import {
   }
 
   try {
-    zipPath = resolve(process.cwd(), process.env.ZIP_FILE_NAME);
+    debug(process.cwd());
+    debug(resolve(process.env.ZIP_FILE_NAME));
+
+    zipPath = process.env.ZIP_FILE_NAME;
     zipFileStats = await stat(zipPath);
+
+    debug(JSON.stringify(zipFileStats));
 
     // check if the file exists
     if (!zipFileStats.isFile()) {
@@ -77,12 +82,12 @@ import {
       `uploading add-on "${process.env.ITEM_ID}" with zip file "${zipPath}"`
     );
 
-    await uploadZipFile(zipPath, process.env.ITEM_ID, accessToken);
+    // await uploadZipFile(zipPath, process.env.ITEM_ID, accessToken);
 
     info(`successfully uploaded zip file to item "${process.env.ITEM_ID}"`);
     info(`publishing extension: ${process.env.ITEM_ID}`);
 
-    await publish(process.env.ITEM_ID, accessToken);
+    // await publish(process.env.ITEM_ID, accessToken);
 
     info(`successfully published extension "${process.env.ITEM_ID}"`);
   } catch (error) {
