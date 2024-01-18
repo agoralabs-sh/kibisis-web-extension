@@ -36,7 +36,5 @@ runs:
         CLIENT_SECRET: ${{ inputs.client_secret }}
         REFRESH_TOKEN: ${{ inputs.refresh_token }}
         ZIP_FILE_NAME: ${{ inputs.zip_file_name }}
-      run: |
-        ls -a
-        yarn --cwd ./.github/actions/publish-to-chrome-web-store/ start
+      run: yarn --cwd ./.github/actions/publish-to-chrome-web-store/ start
       shell: bash
