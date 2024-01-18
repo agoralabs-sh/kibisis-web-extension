@@ -1,5 +1,4 @@
 import { info, setFailed } from '@actions/core';
-import { context } from '@actions/github';
 import { Stats } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -53,14 +52,15 @@ import {
     process.exit(ErrorCodeEnum.InvalidInputError);
   }
 
+  if (!process.env.GITHUB_WORKSPACE) {
+    setFailed(`environment variable "GITHUB_WORKSPACE" not defined`);
+
+    process.exit(ErrorCodeEnum.UnknownError);
+  }
+
   try {
-    info(JSON.stringify(context));
-    info(JSON.stringify(process.env.GITHUB_WORKSPACE));
-
-    zipPath = process.env.ZIP_FILE_NAME;
+    zipPath = resolve(process.env.GITHUB_WORKSPACE, process.env.ZIP_FILE_NAME);
     zipFileStats = await stat(zipPath);
-
-    info(JSON.stringify(zipFileStats));
 
     // check if the file exists
     if (!zipFileStats.isFile()) {
