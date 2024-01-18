@@ -1,3 +1,14 @@
+## [1.10.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0...v1.10.1) (2024-01-18)
+
+
+### Bug Fixes
+
+* correct references to copy application id tooltip label ([#135](https://github.com/agoralabs-sh/kibisis-web-extension/issues/135)) ([27a15f6](https://github.com/agoralabs-sh/kibisis-web-extension/commit/27a15f677888aaafdc59b309fea7c49c60be8286))
+* mainnet checked state correctly passed to settings update ([#134](https://github.com/agoralabs-sh/kibisis-web-extension/issues/134)) ([490a573](https://github.com/agoralabs-sh/kibisis-web-extension/commit/490a5731426c2f56aaf7fb838fcbfac9a72376a5))
+* replace arc0013 references with correct arc0027 ([#130](https://github.com/agoralabs-sh/kibisis-web-extension/issues/130)) ([8450512](https://github.com/agoralabs-sh/kibisis-web-extension/commit/8450512708969ebbdb1bea17315dabfa427b42fd))
+* scanning for qr code in walletconnect runs forever once initiated ([#127](https://github.com/agoralabs-sh/kibisis-web-extension/issues/127)) ([ff60541](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ff6054168add9e858c9036923d4c09349f000982))
+* use settings to filter supported networks ([#133](https://github.com/agoralabs-sh/kibisis-web-extension/issues/133)) ([ca2bb0e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ca2bb0e37a38b1b9a3b5c5140fad88554b90c504))
+
 ## [1.10.1-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1-beta.4...v1.10.1-beta.5) (2024-01-17)
 
 
