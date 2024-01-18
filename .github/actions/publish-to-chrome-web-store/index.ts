@@ -1,4 +1,5 @@
-import { debug, info, setFailed } from '@actions/core';
+import { info, setFailed } from '@actions/core';
+import { context } from '@actions/github';
 import { Stats } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -53,8 +54,8 @@ import {
   }
 
   try {
-    info(process.cwd());
-    info(resolve(process.env.ZIP_FILE_NAME));
+    info(JSON.stringify(context));
+    info(JSON.stringify(process.env.GITHUB_WORKSPACE));
 
     zipPath = process.env.ZIP_FILE_NAME;
     zipFileStats = await stat(zipPath);
