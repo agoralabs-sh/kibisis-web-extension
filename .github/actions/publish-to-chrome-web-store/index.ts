@@ -53,8 +53,8 @@ import {
   }
 
   try {
-    debug(process.cwd());
-    debug(resolve(process.env.ZIP_FILE_NAME));
+    info(process.cwd());
+    info(resolve(process.env.ZIP_FILE_NAME));
 
     zipPath = process.env.ZIP_FILE_NAME;
     zipFileStats = await stat(zipPath);
