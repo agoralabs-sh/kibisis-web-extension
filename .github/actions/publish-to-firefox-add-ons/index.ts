@@ -1,4 +1,5 @@
 import { info, setFailed } from '@actions/core';
+import styles from 'ansi-styles';
 import { Stats } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -13,6 +14,7 @@ import { ActionError } from './errors';
 import { createJwt, handleError, publish, uploadZipFile } from './utils';
 
 (async () => {
+  const infoPrefix: string = `${styles.yellow.open}[INFO]${styles.yellow.close}`;
   let jwt: string;
   let uploadUuid: string;
   let zipPath: string;
@@ -42,8 +44,14 @@ import { createJwt, handleError, publish, uploadZipFile } from './utils';
     process.exit(ErrorCodeEnum.InvalidInputError);
   }
 
+  if (!process.env.GITHUB_WORKSPACE) {
+    setFailed(`environment variable "GITHUB_WORKSPACE" not defined`);
+
+    process.exit(ErrorCodeEnum.UnknownError);
+  }
+
   try {
-    zipPath = resolve(process.cwd(), process.env.ZIP_FILE_NAME);
+    zipPath = resolve(process.env.GITHUB_WORKSPACE, process.env.ZIP_FILE_NAME);
     zipFileStats = await stat(zipPath);
 
     // check if the file exists
@@ -54,23 +62,27 @@ import { createJwt, handleError, publish, uploadZipFile } from './utils';
       );
     }
 
-    info('creating jwt...');
+    info(`${infoPrefix} creating jwt...`);
 
-    jwt = await createJwt(process.env.JWT_ISSUER, process.env.JWT_SECRET);
+    jwt = createJwt(process.env.JWT_ISSUER, process.env.JWT_SECRET);
 
-    info('jwt created');
+    info(`${infoPrefix} jwt created`);
     info(
-      `uploading add-on "${process.env.PRODUCT_ID}" with zip file "${zipPath}"`
+      `${infoPrefix} uploading add-on "${process.env.PRODUCT_ID}" with zip file "${zipPath}"`
     );
 
     uploadUuid = await uploadZipFile(zipPath, jwt);
 
-    info(`successfully uploaded zip file with uuid "${uploadUuid}"`);
-    info(`publishing add-on: ${process.env.ADD_ON_ID}`);
+    info(
+      `${infoPrefix} successfully uploaded zip file with uuid "${uploadUuid}"`
+    );
+    info(`${infoPrefix} publishing add-on: ${process.env.ADD_ON_ID}`);
 
     await publish(process.env.ADD_ON_ID, uploadUuid, jwt);
 
-    info(`successfully published add-on "${process.env.ADD_ON_ID}"`);
+    info(
+      `${infoPrefix} successfully published add-on "${process.env.ADD_ON_ID}"`
+    );
   } catch (error) {
     handleError(error);
   }

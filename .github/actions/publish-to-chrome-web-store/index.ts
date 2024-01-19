@@ -1,4 +1,5 @@
 import { info, setFailed } from '@actions/core';
+import styles from 'ansi-styles';
 import { Stats } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -18,6 +19,7 @@ import {
 } from './utils';
 
 (async () => {
+  const infoPrefix: string = `${styles.yellow.open}[INFO]${styles.yellow.close}`;
   let accessToken: string;
   let zipPath: string;
   let zipFileStats: Stats;
@@ -52,8 +54,14 @@ import {
     process.exit(ErrorCodeEnum.InvalidInputError);
   }
 
+  if (!process.env.GITHUB_WORKSPACE) {
+    setFailed(`environment variable "GITHUB_WORKSPACE" not defined`);
+
+    process.exit(ErrorCodeEnum.UnknownError);
+  }
+
   try {
-    zipPath = resolve(process.cwd(), process.env.ZIP_FILE_NAME);
+    zipPath = resolve(process.env.GITHUB_WORKSPACE, process.env.ZIP_FILE_NAME);
     zipFileStats = await stat(zipPath);
 
     // check if the file exists
@@ -64,7 +72,7 @@ import {
       );
     }
 
-    info('creating access token...');
+    info(`${infoPrefix} creating access token...`);
 
     accessToken = await createAccessToken(
       process.env.CLIENT_ID,
@@ -72,19 +80,23 @@ import {
       process.env.REFRESH_TOKEN
     );
 
-    info('access token created');
+    info(`${infoPrefix} access token created`);
     info(
-      `uploading add-on "${process.env.ITEM_ID}" with zip file "${zipPath}"`
+      `${infoPrefix} uploading add-on "${process.env.ITEM_ID}" with zip file "${zipPath}"`
     );
 
     await uploadZipFile(zipPath, process.env.ITEM_ID, accessToken);
 
-    info(`successfully uploaded zip file to item "${process.env.ITEM_ID}"`);
-    info(`publishing extension: ${process.env.ITEM_ID}`);
+    info(
+      `${infoPrefix} successfully uploaded zip file to item "${process.env.ITEM_ID}"`
+    );
+    info(`${infoPrefix} publishing extension: ${process.env.ITEM_ID}`);
 
     await publish(process.env.ITEM_ID, accessToken);
 
-    info(`successfully published extension "${process.env.ITEM_ID}"`);
+    info(
+      `${infoPrefix} successfully published extension "${process.env.ITEM_ID}"`
+    );
   } catch (error) {
     handleError(error);
   }
