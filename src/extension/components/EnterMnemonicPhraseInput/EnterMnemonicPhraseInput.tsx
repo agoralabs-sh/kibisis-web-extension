@@ -53,11 +53,16 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
   };
   const handleOnPaste = (event: ClipboardEvent<HTMLInputElement>) => {
     let newPhrases: string[];
+    let text: string = event.clipboardData.getData('text');
 
     event.preventDefault();
 
+    text = text.replaceAll(',', ' '); // replace commas with whitespace
+
     // split the phrases by whitespace
-    newPhrases = event.clipboardData.getData('text').split(' ');
+    newPhrases = text
+      .replace(/\s+/g, ' ') // only allow a single whitespace between each word
+      .split(' '); // split by single whitespace
 
     onChange(phrases.map((value, index) => newPhrases[index] || value));
   };
