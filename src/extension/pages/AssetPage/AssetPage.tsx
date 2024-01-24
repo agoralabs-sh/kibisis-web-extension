@@ -126,7 +126,7 @@ const AssetPage: FC = () => {
 
     dispatch(
       setConfirm({
-        description: t<string>('captions.removeAssetConfirm', {
+        description: t<string>('captions.hideAssetConfirm', {
           symbol: asset.symbol,
         }),
         onConfirm: () => {
@@ -144,7 +144,7 @@ const AssetPage: FC = () => {
             replace: true,
           });
         },
-        title: t<string>('headings.removeAssetConfirm', {
+        title: t<string>('headings.hideAssetConfirm', {
           symbol: asset.symbol,
         }),
       })
@@ -336,7 +336,7 @@ const AssetPage: FC = () => {
 
               {/*remove asset*/}
               {asset.type === AssetTypeEnum.Arc200 && (
-                <Tooltip label={t<string>('labels.removeAsset')}>
+                <Tooltip label={t<string>('labels.hideAsset')}>
                   <IconButton
                     aria-label="Hide Asset"
                     icon={IoTrashOutline}
