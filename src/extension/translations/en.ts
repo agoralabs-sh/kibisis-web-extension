@@ -27,6 +27,7 @@ const translation: IResourceLanguage = {
     receive: 'Receive',
     reject: 'Reject',
     removeAllSessions: 'Remove All Sessions',
+    reset: 'Reset',
     save: 'Save',
     send: 'Send',
     sign: 'Sign',
