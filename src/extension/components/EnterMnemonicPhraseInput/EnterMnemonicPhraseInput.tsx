@@ -1,10 +1,13 @@
 import {
+  Box,
+  Button,
   Grid,
   GridItem,
   HStack,
   Input,
   InputGroup,
   InputLeftElement,
+  Spacer,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -18,9 +21,13 @@ import React, {
 import { useTranslation } from 'react-i18next';
 
 // hooks
+import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+
+// utils
+import { isPhrasesEmpty } from './utils';
 
 interface IProps {
   disabled?: boolean;
@@ -36,10 +43,14 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
   phrases,
 }: IProps) => {
   const { t } = useTranslation();
+  // hooks
+  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = usePrimaryColor();
   const subTextColor: string = useSubTextColor();
+  // states
   const [currentFocusIndex, setCurrentFocusIndex] = useState<number>(0);
+  // handlers
   const handleOnChange =
     (phrasesIndex: number) => (event: ChangeEvent<HTMLInputElement>) => {
       onChange(
@@ -66,17 +77,42 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
 
     onChange(phrases.map((value, index) => newPhrases[index] || value));
   };
+  const handleResetClick = () => onChange(phrases.map(() => ''));
 
   return (
     <VStack>
-      <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-        <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
-          {t<string>('labels.seedPhrase')}
-        </Text>
-        <Text color="red.300" fontSize="xs" textAlign="right">
-          {error}
-        </Text>
+      <HStack alignItems="center" minH="2rem" spacing={2} w="full">
+        {/*label*/}
+        <HStack alignItems="flex-end" justifyContent="space-between" w="full">
+          <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
+            {t<string>('labels.seedPhrase')}
+          </Text>
+
+          <Text color="red.300" fontSize="xs" textAlign="right">
+            {error}
+          </Text>
+        </HStack>
+
+        <Spacer />
+
+        {/*reset button*/}
+        {!isPhrasesEmpty(phrases) && (
+          <Button
+            _hover={{
+              bg: buttonHoverBackgroundColor,
+            }}
+            aria-label="Reset the phrases"
+            borderRadius={0}
+            onClick={handleResetClick}
+            size="sm"
+            variant="ghost"
+          >
+            {t<string>('buttons.reset')}
+          </Button>
+        )}
       </HStack>
+
+      {/*inputs*/}
       <Grid gap={2} templateColumns="repeat(3, 1fr)" w="full">
         {phrases.map((value, index, array) => {
           const input: ReactNode = (
@@ -90,6 +126,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
                   {index + 1}
                 </Text>
               </InputLeftElement>
+
               <Input
                 autoFocus={currentFocusIndex === index}
                 disabled={disabled}
