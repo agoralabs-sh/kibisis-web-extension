@@ -1,3 +1,10 @@
+## [1.10.2-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1...v1.10.2-beta.1) (2024-01-24)
+
+
+### Bug Fixes
+
+* allow for comma separated seed phrases ([#142](https://github.com/agoralabs-sh/kibisis-web-extension/issues/142)) ([8fe314e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/8fe314e7c6849dddb2dd9b3c5532c711667b4add))
+
 ## [1.10.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.0...v1.10.1) (2024-01-18)
 
 
