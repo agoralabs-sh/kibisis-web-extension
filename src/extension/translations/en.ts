@@ -80,6 +80,8 @@ const translation: IResourceLanguage = {
     freezeManagerAddressDoesNotMatch:
       'This account does not have the authority to freeze/unfreeze this asset. This transaction will likely fail.',
     groupIdCopied: 'Group ID copied!',
+    hideAssetConfirm:
+      'Are you sure you want to hide {{symbol}}? You can re-add it back to your asset holdings again.',
     importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
     importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
     importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
@@ -128,8 +130,6 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Are you sure you want to remove all sessions?',
     removeAllAccountsWarning:
       'Removing all accounts will also remove this session',
-    removeAssetConfirm:
-      'Are you sure you want to remove {{symbol}}? You can re-add it back to your asset holdings again.',
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
@@ -186,6 +186,7 @@ const translation: IResourceLanguage = {
     developer: 'Developer',
     enterYourSeedPhrase: 'Enter your seed phrase',
     generateSeedPhrase: 'Generate seed phrase',
+    hideAssetConfirm: 'Hide {{symbol}}',
     importExistingAccount: 'Import An Existing Account',
     importExistingAccountComplete: 'Almost There...',
     importRekeyedAccount: 'Import A Rekeyed Account',
@@ -199,7 +200,6 @@ const translation: IResourceLanguage = {
     offline: 'Offline',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
-    removeAssetConfirm: 'Remove {{symbol}}',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
@@ -280,6 +280,7 @@ const translation: IResourceLanguage = {
     frozenAccountBalance: 'Frozen Account Balance',
     from: 'From',
     groupId: 'Group ID',
+    hideAsset: 'Hide Asset',
     id: 'ID',
     information: 'Information',
     innerTransactions: 'Inner Transactions',
@@ -302,7 +303,6 @@ const translation: IResourceLanguage = {
     password: 'Password',
     preferredBlockExplorer: 'Preferred Block Explorer',
     removeAccount: 'Remove Account',
-    removeAsset: 'Remove Asset',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
     seedPhrase: 'Seed Phrase',
