@@ -338,7 +338,7 @@ const AssetPage: FC = () => {
               {asset.type === AssetTypeEnum.Arc200 && (
                 <Tooltip label={t<string>('labels.removeAsset')}>
                   <IconButton
-                    aria-label="Remove Asset"
+                    aria-label="Hide Asset"
                     icon={IoTrashOutline}
                     onClick={handleRemoveAssetClick}
                     size="sm"

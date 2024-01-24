@@ -128,7 +128,7 @@ const translation: IResourceLanguage = {
     removeAllAccountsWarning:
       'Removing all accounts will also remove this session',
     removeAssetConfirm:
-      'Are you sure you want to remove {{symbol}}? You can re-add it back to your asset holdings again.',
+      'Are you sure you want to hide {{symbol}}? You can re-add it back to your asset holdings again.',
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
@@ -198,7 +198,7 @@ const translation: IResourceLanguage = {
     offline: 'Offline',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
-    removeAssetConfirm: 'Remove {{symbol}}',
+    removeAssetConfirm: 'Hide {{symbol}}',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
@@ -301,7 +301,7 @@ const translation: IResourceLanguage = {
     password: 'Password',
     preferredBlockExplorer: 'Preferred Block Explorer',
     removeAccount: 'Remove Account',
-    removeAsset: 'Remove Asset',
+    removeAsset: 'Hide Asset',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
     seedPhrase: 'Seed Phrase',
