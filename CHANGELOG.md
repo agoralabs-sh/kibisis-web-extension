@@ -1,3 +1,10 @@
+## [1.10.2-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.2-beta.1...v1.10.2-beta.2) (2024-01-24)
+
+
+### Bug Fixes
+
+* change label for "remove asset" to "hide asset" ([#140](https://github.com/agoralabs-sh/kibisis-web-extension/issues/140)) ([9a46c7d](https://github.com/agoralabs-sh/kibisis-web-extension/commit/9a46c7d5fec7462267869e9b2e34d3bab1c36328))
+
 ## [1.10.2-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1...v1.10.2-beta.1) (2024-01-24)
 
 
