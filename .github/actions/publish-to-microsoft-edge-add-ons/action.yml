@@ -23,9 +23,9 @@ runs:
   using: "composite"
   steps:
     - name: "🔧 Setup"
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 'lts/*'
+        node-version: 20.9.0
     - name: "📦 Install"
       run: yarn --cwd ./.github/actions/publish-to-microsoft-edge-add-ons/ install
       shell: bash
