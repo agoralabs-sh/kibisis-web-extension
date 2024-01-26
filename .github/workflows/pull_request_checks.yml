@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
 
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "👕 Lint"
@@ -40,7 +40,7 @@ jobs:
     environment: development
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "📝 Create .env file"
@@ -65,7 +65,7 @@ jobs:
     environment: development
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "📝 Create .env file"
@@ -90,7 +90,7 @@ jobs:
     environment: development
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "📝 Create .env file"
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "🧪 Test"
@@ -130,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "📥 Download build"

@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
 
@@ -31,7 +31,7 @@ jobs:
     environment: production
     steps:
       - name: "🛎 Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "📦 Install yq"
         uses: ./.github/actions/install-yq
       - name: "🔧 Setup"
