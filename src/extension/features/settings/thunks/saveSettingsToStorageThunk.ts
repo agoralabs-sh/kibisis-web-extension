@@ -19,7 +19,7 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
-const saveSettingsToStorage: AsyncThunk<
+const saveSettingsToStorageThunk: AsyncThunk<
   ISettings, // return
   ISettings, // args
   Record<string, never>
@@ -55,4 +55,4 @@ const saveSettingsToStorage: AsyncThunk<
   }
 );
 
-export default saveSettingsToStorage;
+export default saveSettingsToStorageThunk;

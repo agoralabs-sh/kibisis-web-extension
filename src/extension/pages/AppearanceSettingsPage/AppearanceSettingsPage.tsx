@@ -11,7 +11,7 @@ import SettingsSelectItem, {
 } from '@extension/components/SettingsSelectItem';
 
 // features
-import { saveSettingsToStorage } from '@extension/features/settings';
+import { saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // selectors
 import { useSelectSettings } from '@extension/selectors';
@@ -40,7 +40,7 @@ const AppearanceSettingsPage: FC = () => {
   // handlers
   const handleThemeChange = (option: IOption<ColorMode>) => {
     dispatch(
-      saveSettingsToStorage({
+      saveSettingsToStorageThunk({
         ...settings,
         appearance: {
           ...settings.appearance,

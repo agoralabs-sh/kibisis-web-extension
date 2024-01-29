@@ -27,7 +27,7 @@ import {
   fetchSessionsThunk,
   initializeWalletConnectThunk,
 } from '@extension/features/sessions';
-import { fetchSettingsFromStorage } from '@extension/features/settings';
+import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import { setConfirm, setError, setNavigate } from '@extension/features/system';
 
@@ -77,7 +77,7 @@ const Root: FC = () => {
   // 1. fetched required data from storage
   useEffect(() => {
     dispatch(setNavigate(navigate));
-    dispatch(fetchSettingsFromStorage());
+    dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchArc200AssetsFromStorageThunk());

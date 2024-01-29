@@ -4,7 +4,10 @@ import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '@extension/enums';
 
 // thunks
-import { fetchSettingsFromStorage, saveSettingsToStorage } from './thunks';
+import {
+  fetchSettingsFromStorageThunk,
+  saveSettingsToStorageThunk,
+} from './thunks';
 
 // types
 import { ISettings } from '@extension/types';
@@ -17,7 +20,7 @@ const slice = createSlice({
   extraReducers: (builder) => {
     /** fetch settings from storage **/
     builder.addCase(
-      fetchSettingsFromStorage.fulfilled,
+      fetchSettingsFromStorageThunk.fulfilled,
       (state: ISettingsState, action: PayloadAction<ISettings>) => {
         state.fetching = false;
 
@@ -25,32 +28,38 @@ const slice = createSlice({
       }
     );
     builder.addCase(
-      fetchSettingsFromStorage.pending,
+      fetchSettingsFromStorageThunk.pending,
       (state: ISettingsState) => {
         state.fetching = true;
       }
     );
     builder.addCase(
-      fetchSettingsFromStorage.rejected,
+      fetchSettingsFromStorageThunk.rejected,
       (state: ISettingsState) => {
         state.fetching = false;
       }
     );
     /** save settings to storage **/
     builder.addCase(
-      saveSettingsToStorage.fulfilled,
+      saveSettingsToStorageThunk.fulfilled,
       (state: ISettingsState, action: PayloadAction<ISettings>) => {
         state.saving = false;
 
         mapSettingsToState(state, action.payload);
       }
     );
-    builder.addCase(saveSettingsToStorage.pending, (state: ISettingsState) => {
-      state.saving = true;
-    });
-    builder.addCase(saveSettingsToStorage.rejected, (state: ISettingsState) => {
-      state.saving = false;
-    });
+    builder.addCase(
+      saveSettingsToStorageThunk.pending,
+      (state: ISettingsState) => {
+        state.saving = true;
+      }
+    );
+    builder.addCase(
+      saveSettingsToStorageThunk.rejected,
+      (state: ISettingsState) => {
+        state.saving = false;
+      }
+    );
   },
   initialState: getInitialState(),
   name: StoreNameEnum.Settings,

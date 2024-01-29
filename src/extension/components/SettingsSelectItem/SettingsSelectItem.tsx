@@ -7,7 +7,11 @@ import Select, { GroupBase, OptionProps, SingleValueProps } from 'react-select';
 import SettingsSelectItemOption from './SettingsSelectItemOption';
 
 // constants
-import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
+import {
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+  SETTINGS_ITEM_HEIGHT,
+} from '@extension/constants';
 
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
@@ -24,6 +28,7 @@ export interface IOption<Value = unknown> {
 }
 interface IProps {
   description?: string;
+  disabled?: boolean;
   emptyOptionLabel: string;
   label: string;
   onChange: (option: IOption) => void;
@@ -34,6 +39,7 @@ interface IProps {
 
 const SettingsSelectItem: FC<IProps> = ({
   description,
+  disabled,
   emptyOptionLabel,
   label,
   onChange,
@@ -42,6 +48,10 @@ const SettingsSelectItem: FC<IProps> = ({
   width,
 }: IProps) => {
   // hooks
+  const disabledBackgroundColor: string = useColorModeValue(
+    theme.colors.gray['300'],
+    theme.colors.whiteAlpha['300']
+  );
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
@@ -91,7 +101,7 @@ const SettingsSelectItem: FC<IProps> = ({
       </VStack>
 
       {/*select*/}
-      <Box minW="40%">
+      <Box minW="50%">
         <Select
           components={{
             NoOptionsMessage: () => (
@@ -156,18 +166,21 @@ const SettingsSelectItem: FC<IProps> = ({
               </HStack>
             ),
           }}
+          isDisabled={disabled}
           onChange={handleOnChange}
           options={options}
           styles={{
             container: (baseStyles) => ({
               ...baseStyles,
-              backgroundColor: 'var(--chakra-colors-chakra-body-bg)',
+              backgroundColor: BODY_BACKGROUND_COLOR,
               width: width || '100%',
             }),
             control: (baseStyles, state) => ({
               ...baseStyles,
-              backgroundColor: 'var(--chakra-colors-chakra-body-bg)',
-              cursor: 'pointer',
+              backgroundColor: disabled
+                ? disabledBackgroundColor
+                : BODY_BACKGROUND_COLOR,
+              cursor: disabled ? 'not-allowed' : 'pointer',
               height: '100%',
             }),
             indicatorSeparator: (baseStyles) => ({
@@ -176,7 +189,7 @@ const SettingsSelectItem: FC<IProps> = ({
             }),
             menu: (baseStyles) => ({
               ...baseStyles,
-              backgroundColor: 'var(--chakra-colors-chakra-body-bg)',
+              backgroundColor: BODY_BACKGROUND_COLOR,
             }),
           }}
           theme={(value) => ({
