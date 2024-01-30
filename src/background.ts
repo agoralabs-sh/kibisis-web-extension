@@ -47,4 +47,7 @@ import createLogger from '@common/utils/createLogger';
   browser.windows.onRemoved.addListener(
     backgroundEventListener.onWindowRemove.bind(backgroundEventListener)
   );
+  browser.tabs.onUpdated.addListener(
+    backgroundEventListener.onTabUpdated.bind(backgroundEventListener)
+  );
 })();

@@ -40,6 +40,9 @@
       "@extension/features/notifications": [
         "src/extension/features/notifications"
       ],
+      "@extension/features/password-lock": [
+        "src/extension/features/password-lock"
+      ],
       "@extension/features/registration": [
         "src/extension/features/registration"
       ],

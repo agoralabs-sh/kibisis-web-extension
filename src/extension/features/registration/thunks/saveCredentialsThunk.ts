@@ -54,7 +54,9 @@ const saveCredentialsThunk: AsyncThunk<
     if (!password) {
       inputError = new MalformedDataError('no password found');
 
-      logger.error(`${saveCredentialsThunk.name}: ${inputError.message}`);
+      logger.error(
+        `${RegisterThunkEnum.SaveCredentials}: ${inputError.message}`
+      );
 
       navigate && navigate(CREATE_PASSWORD_ROUTE);
 
@@ -62,7 +64,9 @@ const saveCredentialsThunk: AsyncThunk<
     }
 
     try {
-      logger.debug(`${saveCredentialsThunk.name}: inferring public key`);
+      logger.debug(
+        `${RegisterThunkEnum.SaveCredentials}: inferring public key`
+      );
 
       encodedPublicKey = encodeHex(
         sign.keyPair.fromSecretKey(privateKey).publicKey
@@ -73,7 +77,7 @@ const saveCredentialsThunk: AsyncThunk<
       });
 
       logger.debug(
-        `${saveCredentialsThunk.name}: saving private key "${encodedPublicKey}" to storage`
+        `${RegisterThunkEnum.SaveCredentials}: saving private key "${encodedPublicKey}" to storage`
       );
 
       // reset any previous credentials, set the password and the account
@@ -85,7 +89,7 @@ const saveCredentialsThunk: AsyncThunk<
         password
       );
     } catch (error) {
-      logger.error(`${saveCredentialsThunk.name}: ${error.message}`);
+      logger.error(`${RegisterThunkEnum.SaveCredentials}: ${error.message}`);
 
       dispatch(setError(error));
 
@@ -93,7 +97,7 @@ const saveCredentialsThunk: AsyncThunk<
     }
 
     logger.debug(
-      `${saveCredentialsThunk.name}: successfully saved credentials`
+      `${RegisterThunkEnum.SaveCredentials}: successfully saved credentials`
     );
 
     account = AccountService.initializeDefaultAccount({
@@ -113,7 +117,7 @@ const saveCredentialsThunk: AsyncThunk<
     await accountService.saveAccounts([account]);
 
     logger.debug(
-      `${saveCredentialsThunk.name}: saved account for "${encodedPublicKey}" to storage`
+      `${RegisterThunkEnum.SaveCredentials}: saved account for "${encodedPublicKey}" to storage`
     );
 
     // send a message that registration has been completed

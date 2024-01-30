@@ -74,7 +74,7 @@ const Root: FC = () => {
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
 
-  // 1. fetched required data from storage
+  // 1. fetch settings then fetch the data
   useEffect(() => {
     dispatch(setNavigate(navigate));
     dispatch(fetchSettingsFromStorageThunk());

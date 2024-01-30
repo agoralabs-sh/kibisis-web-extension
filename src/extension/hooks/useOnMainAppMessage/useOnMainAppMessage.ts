@@ -7,18 +7,22 @@ import { InternalMessageReferenceEnum } from '@common/enums';
 
 // features
 import { handleNewEventByIdThunk } from '@extension/features/events';
+import { setPassword } from '@extension/features/password-lock';
 
 // messages
-import { InternalEventAddedMessage } from '@common/messages';
+import {
+  InternalEventAddedMessage,
+  InternalPasswordLockUpdatedMessage,
+} from '@common/messages';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
 // types
-import { ILogger } from '@common/types';
-import { IAppThunkDispatch } from '@extension/types';
+import type { ILogger } from '@common/types';
+import type { IAppThunkDispatch } from '@extension/types';
 
-type IMessages = InternalEventAddedMessage;
+type IMessages = InternalEventAddedMessage | InternalPasswordLockUpdatedMessage;
 
 export default function useOnMainAppMessage(): void {
   const _functionName: string = 'useOnMainAppMessage';
@@ -29,7 +33,19 @@ export default function useOnMainAppMessage(): void {
 
     switch (message.reference) {
       case InternalMessageReferenceEnum.EventAdded:
-        dispatch(handleNewEventByIdThunk(message.payload.eventId));
+        dispatch(
+          handleNewEventByIdThunk(
+            (message as InternalEventAddedMessage).payload.eventId
+          )
+        );
+
+        break;
+      case InternalMessageReferenceEnum.PasswordLockUpdated:
+        dispatch(
+          setPassword(
+            (message as InternalPasswordLockUpdatedMessage).payload.password
+          )
+        );
 
         break;
       default:

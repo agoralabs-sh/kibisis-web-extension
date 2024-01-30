@@ -65,6 +65,11 @@ export default function createCommonConfig(): Configuration {
           'features',
           'notifications'
         ),
+        ['@extension/features/password-lock']: resolve(
+          extensionPath,
+          'features',
+          'password-lock'
+        ),
         ['@extension/features/registration']: resolve(
           extensionPath,
           'features',

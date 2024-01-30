@@ -109,6 +109,7 @@ const translation: IResourceLanguage = {
       'Enter your password to sign these transactions.',
     mustEnterPasswordToSendTransaction:
       'You must enter your password to send transaction.',
+    mustEnterPasswordToUnlock: 'You must enter your password to unlock.',
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
@@ -123,6 +124,7 @@ const translation: IResourceLanguage = {
     openUrl: 'Open URL in your browser',
     optInFee:
       'Standard assets require an "opt-in" fee. This is a transaction of the asset with a "0" amount sent to yourself.',
+    passwordLockDescription: 'Please re-enter your password to unlock.',
     passwordScoreInfo:
       'To conform with our <2>Strong Password Policy</2>, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',
@@ -200,6 +202,7 @@ const translation: IResourceLanguage = {
     noTransactionsFound: 'No transactions found',
     noSessionsFound: 'No sessions found',
     offline: 'Offline',
+    passwordLock: 'Welcome back',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     sendAsset: 'Send {{asset}}',
@@ -357,6 +360,7 @@ const translation: IResourceLanguage = {
     page_general: 'General',
     page_importExistingAccount: 'Import An Existing Account',
     page_importRekeyedAccount: 'Import A Rekeyed Account',
+    page_passwordLock: 'Enter Your Password',
     page_security: 'Security',
     page_sessions: 'Sessions',
     page_settings: 'Settings',

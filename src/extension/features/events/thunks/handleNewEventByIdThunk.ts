@@ -22,12 +22,7 @@ import EventQueueService from '@extension/services/EventQueueService';
 
 // types
 import { ILogger } from '@common/types';
-import {
-  IClientEventPayload,
-  IEvent,
-  IMainRootState,
-  ISession,
-} from '@extension/types';
+import { IClientEventPayload, IEvent, IMainRootState } from '@extension/types';
 
 const handleNewEventByIdThunk: AsyncThunk<
   void, // return
@@ -37,7 +32,6 @@ const handleNewEventByIdThunk: AsyncThunk<
   EventsThunkEnum.HandleNewEventById,
   async (eventId, { dispatch, getState }) => {
     const logger: ILogger = getState().system.logger;
-    const sessions: ISession[] = getState().sessions.items;
     const eventQueueService: EventQueueService = new EventQueueService({
       logger,
     });
