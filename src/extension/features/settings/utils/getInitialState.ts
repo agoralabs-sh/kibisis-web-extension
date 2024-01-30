@@ -1,5 +1,5 @@
 // constants
-import { PASSWORD_DURATION_NORMAL } from '@extension/constants';
+import { PASSWORD_LOCK_DURATION_NORMAL } from '@extension/constants';
 
 // types
 import { ISettingsState } from '../types';
@@ -22,7 +22,7 @@ export default function getInitialState(): ISettingsState {
     },
     saving: false,
     security: {
-      passwordLockTimeoutDuration: PASSWORD_DURATION_NORMAL,
+      passwordLockTimeoutDuration: PASSWORD_LOCK_DURATION_NORMAL,
       enablePasswordLock: false,
     },
   };
