@@ -4,6 +4,7 @@ export const ARC200_ASSETS_KEY_PREFIX: string = 'arc200_assets_';
 export const EVENT_QUEUE_ITEM_KEY: string = 'event_queue';
 export const NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX: string =
   'network_transaction_params_';
+export const PASSWORD_LOCK_ITEM_KEY: string = 'password_lock';
 export const PASSWORD_TAG_ITEM_KEY: string = 'password_tag';
 export const PRIVATE_KEY_ITEM_KEY_PREFIX: string = 'private_key_';
 export const SETTINGS_ADVANCED_KEY: string = 'settings_advanced';

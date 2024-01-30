@@ -96,27 +96,33 @@ export default class BackgroundMessageHandler {
   private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
-    this.logger = logger || null;
+    const storageManager: StorageManager = new StorageManager();
+
     this.accountService = new AccountService({
       logger,
     });
+
     this.appWindowManagerService = new AppWindowManagerService({
       logger,
+      storageManager,
     });
     this.eventQueueService = new EventQueueService({
       logger,
     });
+    this.logger = logger || null;
     this.privateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
+      storageManager,
     });
     this.sessionService = new SessionService({
       logger,
     });
     this.settingsService = new SettingsService({
       logger,
+      storageManager,
     });
-    this.storageManager = new StorageManager();
+    this.storageManager = storageManager;
   }
 
   /**

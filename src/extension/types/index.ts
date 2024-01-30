@@ -70,6 +70,7 @@ export type { default as INetworkWithTransactionParams } from './INetworkWithTra
 export type { default as INode } from './INode';
 export type { default as INotification } from './INotification';
 export type { default as INotificationType } from './INotificationType';
+export type { default as IPasswordLock } from './IPasswordLock';
 export type { default as IPasswordTag } from './IPasswordTag';
 export type { default as IPaymentTransaction } from './IPaymentTransaction';
 export type { default as IPendingActionMeta } from './IPendingActionMeta';
