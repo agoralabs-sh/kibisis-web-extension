@@ -3,7 +3,7 @@ import { networks } from '@extension/config';
 
 // constants
 import {
-  PASSWORD_DURATION_NORMAL,
+  PASSWORD_LOCK_DURATION_NORMAL,
   SETTINGS_ADVANCED_KEY,
   SETTINGS_APPEARANCE_KEY,
   SETTINGS_GENERAL_KEY,
@@ -14,8 +14,8 @@ import {
 import StorageManager from '../StorageManager';
 
 // types
-import { IBaseOptions, ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAdvancedSettings,
   IAppearanceSettings,
   IGeneralSettings,
@@ -23,6 +23,7 @@ import {
   ISecuritySettings,
   ISettings,
 } from '@extension/types';
+import type { ICreateOptions } from './types';
 
 // utils
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
@@ -32,9 +33,9 @@ export default class SettingsService {
   private readonly logger: ILogger | null;
   private readonly storageManager: StorageManager;
 
-  constructor({ logger }: IBaseOptions) {
+  constructor({ logger, storageManager }: ICreateOptions) {
     this.logger = logger || null;
-    this.storageManager = new StorageManager();
+    this.storageManager = storageManager || new StorageManager();
   }
 
   /**
@@ -59,7 +60,7 @@ export default class SettingsService {
         selectedNetworkGenesisHash: defaultNetwork.genesisHash,
       },
       security: {
-        passwordLockTimeoutDuration: PASSWORD_DURATION_NORMAL,
+        passwordLockTimeoutDuration: PASSWORD_LOCK_DURATION_NORMAL,
         enablePasswordLock: false,
       },
     };
@@ -103,7 +104,6 @@ export default class SettingsService {
               ...(storageItems[SETTINGS_GENERAL_KEY] as IGeneralSettings),
             },
           };
-
         case SETTINGS_SECURITY_KEY:
           return {
             ...acc,

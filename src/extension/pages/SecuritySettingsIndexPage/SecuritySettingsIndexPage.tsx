@@ -16,12 +16,12 @@ import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 // constants
 import {
   CHANGE_PASSWORD_ROUTE,
-  PASSWORD_DURATION_HIGH,
-  PASSWORD_DURATION_HIGHER,
-  PASSWORD_DURATION_HIGHEST,
-  PASSWORD_DURATION_LOW,
-  PASSWORD_DURATION_LOWEST,
-  PASSWORD_DURATION_NORMAL,
+  PASSWORD_LOCK_DURATION_HIGH,
+  PASSWORD_LOCK_DURATION_HIGHER,
+  PASSWORD_LOCK_DURATION_HIGHEST,
+  PASSWORD_LOCK_DURATION_LOW,
+  PASSWORD_LOCK_DURATION_LOWEST,
+  PASSWORD_LOCK_DURATION_NORMAL,
   SECURITY_ROUTE,
   SETTINGS_ROUTE,
 } from '@extension/constants';
@@ -44,39 +44,39 @@ const SecuritySettingsIndexPage: FC = () => {
   const durationOptions: IOption<number>[] = [
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_DURATION_LOWEST,
+        context: PASSWORD_LOCK_DURATION_LOWEST,
       }),
-      value: PASSWORD_DURATION_LOWEST,
+      value: PASSWORD_LOCK_DURATION_LOWEST,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_DURATION_LOW,
+        context: PASSWORD_LOCK_DURATION_LOW,
       }),
-      value: PASSWORD_DURATION_LOW,
+      value: PASSWORD_LOCK_DURATION_LOW,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_DURATION_NORMAL,
+        context: PASSWORD_LOCK_DURATION_NORMAL,
       }),
-      value: PASSWORD_DURATION_NORMAL,
+      value: PASSWORD_LOCK_DURATION_NORMAL,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_DURATION_HIGH,
+        context: PASSWORD_LOCK_DURATION_HIGH,
       }),
-      value: PASSWORD_DURATION_HIGH,
+      value: PASSWORD_LOCK_DURATION_HIGH,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_DURATION_HIGHER,
+        context: PASSWORD_LOCK_DURATION_HIGHER,
       }),
-      value: PASSWORD_DURATION_HIGHER,
+      value: PASSWORD_LOCK_DURATION_HIGHER,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_DURATION_HIGHEST,
+        context: PASSWORD_LOCK_DURATION_HIGHEST,
       }),
-      value: PASSWORD_DURATION_HIGHEST,
+      value: PASSWORD_LOCK_DURATION_HIGHEST,
     },
     {
       label: t<string>('labels.passwordLockDuration'), // never
@@ -124,6 +124,7 @@ const SecuritySettingsIndexPage: FC = () => {
           onChange={handleEnablePasswordLockSwitchChange}
         />
 
+        {/*password lock duration*/}
         <SettingsSelectItem
           disabled={!settings.security.enablePasswordLock}
           emptyOptionLabel={t<string>('placeholders.pleaseSelect')}
@@ -136,9 +137,9 @@ const SecuritySettingsIndexPage: FC = () => {
                 value.value === settings.security.passwordLockTimeoutDuration
             ) || {
               label: t<string>('labels.passwordLockDuration', {
-                context: PASSWORD_DURATION_NORMAL,
+                context: PASSWORD_LOCK_DURATION_NORMAL,
               }),
-              value: PASSWORD_DURATION_NORMAL,
+              value: PASSWORD_LOCK_DURATION_NORMAL,
             }
           }
         />
