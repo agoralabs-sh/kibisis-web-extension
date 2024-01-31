@@ -337,13 +337,21 @@ export default class BackgroundMessageHandler {
   private async handlePasswordLockEnabledMessage(): Promise<void> {
     const _functionName: string = 'handlePasswordLockEnabledMessage';
     const settings: ISettings = await this.settingsService.getAll();
-    const alarm: Alarms.Alarm | null =
-      await this.passwordLockService.createAlarm(
-        settings.security.passwordLockTimeoutDuration
-      );
+    let alarm: Alarms.Alarm | null;
+
+    this.logger?.debug(`${_functionName}: password lock enabled`);
+
+    // if the duration is set to 0 (interpreted as "Never") no alarm is needed
+    if (settings.security.passwordLockTimeoutDuration <= 0) {
+      return;
+    }
+
+    alarm = await this.passwordLockService.createAlarm(
+      settings.security.passwordLockTimeoutDuration
+    );
 
     this.logger?.debug(
-      `${_functionName}: password lock enabled and expires in ${alarm?.scheduledTime} minute(s)`
+      `${_functionName}: password lock expires in ${alarm?.scheduledTime} millisecond(s)`
     );
   }
 

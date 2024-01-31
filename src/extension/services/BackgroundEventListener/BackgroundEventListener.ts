@@ -209,8 +209,15 @@ export default class BackgroundEventListener {
     if (mainWindowTab && mainWindowTab.id === tabId) {
       settings = await this.settingsService.getAll();
 
-      // restart the alarm based on the password lock timeout, if the password lock is enabled
       if (settings.security.enablePasswordLock) {
+        // clear the alarm if the password lock is 0 (never)
+        if (settings.security.passwordLockTimeoutDuration <= 0) {
+          await this.passwordLockService.clearAlarm();
+
+          return;
+        }
+
+        // restart the lock with the timeout
         await this.passwordLockService.restartAlarm(
           settings.security.passwordLockTimeoutDuration
         );
