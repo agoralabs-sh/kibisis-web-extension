@@ -1,7 +1,11 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import browser from 'webextension-polyfill';
 
 // enums
 import { NetworkTypeEnum, SettingsThunkEnum } from '@extension/enums';
+
+// messages
+import { InternalPasswordLockDisabledMessage } from '@common/messages';
 
 // services
 import SettingsService from '@extension/services/SettingsService';
@@ -9,7 +13,7 @@ import SettingsService from '@extension/services/SettingsService';
 // types
 import { ILogger } from '@common/types';
 import {
-  IMainRootState,
+  IBaseAsyncThunkConfig,
   INetworkWithTransactionParams,
   ISettings,
 } from '@extension/types';
@@ -22,18 +26,18 @@ import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSetting
 const saveSettingsToStorageThunk: AsyncThunk<
   ISettings, // return
   ISettings, // args
-  Record<string, never>
-> = createAsyncThunk<ISettings, ISettings, { state: IMainRootState }>(
+  IBaseAsyncThunkConfig
+> = createAsyncThunk<ISettings, ISettings, IBaseAsyncThunkConfig>(
   SettingsThunkEnum.SaveSettingsToStorage,
   async (settings, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
+    const previousSettings: ISettings = getState().settings;
     const settingsService: SettingsService = new SettingsService({
       logger,
     });
     let selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(networks, settings);
-    console.log(settings.advanced);
 
     // if the beta/main-net has been disallowed and the selected network is one of the disallowed, set it to a test one
     if (
@@ -49,6 +53,16 @@ const saveSettingsToStorageThunk: AsyncThunk<
         convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
       ] = selectedNetwork.explorers[0]?.id || null;
       settings.general.selectedNetworkGenesisHash = selectedNetwork.genesisHash;
+    }
+
+    // if the password lock is being disabled, remove the alarm
+    if (
+      previousSettings.security.enablePasswordLock &&
+      !settings.security.enablePasswordLock
+    ) {
+      await browser.runtime.sendMessage(
+        new InternalPasswordLockDisabledMessage()
+      );
     }
 
     return await settingsService.saveAll(settings);

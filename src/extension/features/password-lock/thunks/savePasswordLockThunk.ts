@@ -1,14 +1,13 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
-// constants
-import { PASSWORD_LOCK_ALARM } from '@extension/constants';
-
 // enums
 import { PasswordLockThunkEnum } from '@extension/enums';
 
+// messages
+import { InternalPasswordLockEnabledMessage } from '@common/messages';
+
 // types
-import { ILogger } from '@common/types';
 import { IBaseAsyncThunkConfig } from '@extension/types';
 
 const savePasswordLockThunk: AsyncThunk<
@@ -17,20 +16,8 @@ const savePasswordLockThunk: AsyncThunk<
   IBaseAsyncThunkConfig
 > = createAsyncThunk<string, string, IBaseAsyncThunkConfig>(
   PasswordLockThunkEnum.SavePasswordLock,
-  async (password, { getState }) => {
-    const logger: ILogger = getState().system.logger;
-    const timeout: number =
-      getState().settings.security.passwordLockTimeoutDuration;
-    const delayInMinutes: number = timeout * 60000; // convert the milliseconds to minutes
-
-    // create an alarm
-    browser.alarms.create(PASSWORD_LOCK_ALARM, {
-      delayInMinutes,
-    });
-
-    logger.debug(
-      `${PasswordLockThunkEnum.SavePasswordLock}: add new alarm to expire in "${delayInMinutes}" minutes(s)`
-    );
+  async (password) => {
+    await browser.runtime.sendMessage(new InternalPasswordLockEnabledMessage());
 
     return password;
   }

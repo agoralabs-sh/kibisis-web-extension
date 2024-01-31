@@ -5,7 +5,7 @@ import {
 } from '@stablelib/base64';
 import { decodeUnsignedTransaction, Transaction } from 'algosdk';
 import { v4 as uuid } from 'uuid';
-import browser, { Runtime, Windows } from 'webextension-polyfill';
+import browser, { Alarms, Runtime, Windows } from 'webextension-polyfill';
 
 // config
 import { networks } from '@extension/config';
@@ -53,6 +53,7 @@ import {
 import AccountService from '../AccountService';
 import AppWindowManagerService from '../AppWindowManagerService';
 import EventQueueService from '../EventQueueService';
+import PasswordLockService from '../PasswordLockService';
 import PrivateKeyService from '../PrivateKeyService';
 import SessionService from '../SessionService';
 import SettingsService from '../SettingsService';
@@ -74,6 +75,7 @@ import type {
   IInternalRequestMessage,
   INetwork,
   ISession,
+  ISettings,
 } from '@extension/types';
 
 // utils
@@ -90,6 +92,7 @@ export default class BackgroundMessageHandler {
   private readonly appWindowManagerService: AppWindowManagerService;
   private readonly logger: ILogger | null;
   private readonly eventQueueService: EventQueueService;
+  private readonly passwordLockService: PasswordLockService;
   private readonly privateKeyService: PrivateKeyService;
   private readonly sessionService: SessionService;
   private readonly settingsService: SettingsService;
@@ -101,7 +104,6 @@ export default class BackgroundMessageHandler {
     this.accountService = new AccountService({
       logger,
     });
-
     this.appWindowManagerService = new AppWindowManagerService({
       logger,
       storageManager,
@@ -110,6 +112,9 @@ export default class BackgroundMessageHandler {
       logger,
     });
     this.logger = logger || null;
+    this.passwordLockService = new PasswordLockService({
+      logger,
+    });
     this.privateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
@@ -318,6 +323,27 @@ export default class BackgroundMessageHandler {
         providerId: __PROVIDER_ID__,
       }),
       originTabId
+    );
+  }
+
+  private async handlePasswordLockDisabledMessage(): Promise<void> {
+    const _functionName: string = 'handlePasswordLockDisabledMessage';
+
+    await this.passwordLockService.clearAlarm();
+
+    this.logger?.debug(`${_functionName}: password lock disabled`);
+  }
+
+  private async handlePasswordLockEnabledMessage(): Promise<void> {
+    const _functionName: string = 'handlePasswordLockEnabledMessage';
+    const settings: ISettings = await this.settingsService.getAll();
+    const alarm: Alarms.Alarm | null =
+      await this.passwordLockService.createAlarm(
+        settings.security.passwordLockTimeoutDuration
+      );
+
+    this.logger?.debug(
+      `${_functionName}: password lock enabled and expires in ${alarm?.scheduledTime} minute(s)`
     );
   }
 
@@ -728,12 +754,17 @@ export default class BackgroundMessageHandler {
     switch (message.reference) {
       case InternalMessageReferenceEnum.FactoryReset:
         return await this.handleFactoryResetMessage();
+      case InternalMessageReferenceEnum.PasswordLockDisabled:
+        return this.handlePasswordLockDisabledMessage();
+      case InternalMessageReferenceEnum.PasswordLockEnabled:
+        return this.handlePasswordLockEnabledMessage();
       case InternalMessageReferenceEnum.RegistrationCompleted:
         return await this.handleRegistrationCompletedMessage();
       default:
         break;
     }
   }
+
   /**
    * public functions
    */

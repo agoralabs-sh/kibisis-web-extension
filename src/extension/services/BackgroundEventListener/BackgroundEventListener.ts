@@ -11,10 +11,11 @@ import {
 import { AppTypeEnum } from '@extension/enums';
 
 // messages
-import { InternalPasswordLockUpdatedMessage } from '@common/messages';
+import { InternalPasswordLockTimeoutMessage } from '@common/messages';
 
 // services
 import AppWindowManagerService from '../AppWindowManagerService';
+import PasswordLockService from '../PasswordLockService';
 import PrivateKeyService from '../PrivateKeyService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
@@ -26,6 +27,7 @@ import type { IAppWindow, ISettings } from '@extension/types';
 export default class BackgroundEventListener {
   private readonly appWindowManagerService: AppWindowManagerService;
   private readonly logger: ILogger | null;
+  private readonly passwordLockService: PasswordLockService;
   private readonly privateKeyService: PrivateKeyService;
   private readonly settingsService: SettingsService;
   private readonly storageManager: StorageManager;
@@ -38,6 +40,9 @@ export default class BackgroundEventListener {
       storageManager,
     });
     this.logger = logger || null;
+    this.passwordLockService = new PasswordLockService({
+      logger,
+    });
     this.privateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
@@ -54,19 +59,31 @@ export default class BackgroundEventListener {
    * private functions
    */
 
-  /**
-   * Restarts the password lock alarm with the new
-   * @param timeout
-   * @private
-   */
-  private async restartPasswordLockAlarm(timeout: number): Promise<void> {
-    // clear the previous alarm and password lock
-    await browser.alarms.clear(PASSWORD_LOCK_ALARM);
+  private async getMainWindow(
+    includeTabs: boolean = false
+  ): Promise<Windows.Window | null> {
+    const mainAppWindows: IAppWindow[] =
+      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
 
-    // create a new alarm
-    browser.alarms.create(PASSWORD_LOCK_ALARM, {
-      delayInMinutes: timeout * 60000, // convert the milliseconds to minutes
-    });
+    if (mainAppWindows.length <= 0) {
+      return null;
+    }
+
+    return (
+      (await browser.windows.get(mainAppWindows[0].windowId, {
+        populate: includeTabs,
+      })) || null
+    );
+  }
+
+  private async getMainWindowTab(): Promise<Tabs.Tab | null> {
+    const mainWindow: Windows.Window | null = await this.getMainWindow(true);
+
+    if (!mainWindow) {
+      return null;
+    }
+
+    return mainWindow.tabs?.[0] ?? null;
   }
 
   /**
@@ -84,7 +101,7 @@ export default class BackgroundEventListener {
       case PASSWORD_LOCK_ALARM:
         // send a message to the popups to remove password from store
         await browser.runtime.sendMessage(
-          new InternalPasswordLockUpdatedMessage(null)
+          new InternalPasswordLockTimeoutMessage()
         );
 
         break;
@@ -185,32 +202,18 @@ export default class BackgroundEventListener {
   }
 
   public async onTabUpdated(tabId: number): Promise<void> {
-    const mainAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
-    let mainWindow: Windows.Window | null;
-    let mainWindowTab: Tabs.Tab | null;
+    const mainWindowTab: Tabs.Tab | null = await this.getMainWindowTab();
     let settings: ISettings;
 
     // check if the updated tab is the main app window
-    if (mainAppWindows.length > 0) {
-      mainWindow =
-        (await browser.windows.get(mainAppWindows[0].windowId, {
-          populate: true,
-        })) || null;
+    if (mainWindowTab && mainWindowTab.id === tabId) {
+      settings = await this.settingsService.getAll();
 
-      if (mainWindow) {
-        mainWindowTab = mainWindow.tabs ? mainWindow.tabs[0] : null;
-
-        if (mainWindowTab && mainWindowTab.id === tabId) {
-          settings = await this.settingsService.getAll();
-
-          // restart the alarm based on the password lock timeout, if the password lock is enabled
-          if (settings.security.enablePasswordLock) {
-            await this.restartPasswordLockAlarm(
-              settings.security.passwordLockTimeoutDuration
-            );
-          }
-        }
+      // restart the alarm based on the password lock timeout, if the password lock is enabled
+      if (settings.security.enablePasswordLock) {
+        await this.passwordLockService.restartAlarm(
+          settings.security.passwordLockTimeoutDuration
+        );
       }
     }
   }

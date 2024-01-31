@@ -12,7 +12,7 @@ import { setPassword } from '@extension/features/password-lock';
 // messages
 import {
   InternalEventAddedMessage,
-  InternalPasswordLockUpdatedMessage,
+  InternalPasswordLockTimeoutMessage,
 } from '@common/messages';
 
 // selectors
@@ -22,7 +22,7 @@ import { useSelectLogger } from '@extension/selectors';
 import type { ILogger } from '@common/types';
 import type { IAppThunkDispatch } from '@extension/types';
 
-type IMessages = InternalEventAddedMessage | InternalPasswordLockUpdatedMessage;
+type IMessages = InternalEventAddedMessage | InternalPasswordLockTimeoutMessage;
 
 export default function useOnMainAppMessage(): void {
   const _functionName: string = 'useOnMainAppMessage';
@@ -40,12 +40,9 @@ export default function useOnMainAppMessage(): void {
         );
 
         break;
-      case InternalMessageReferenceEnum.PasswordLockUpdated:
-        dispatch(
-          setPassword(
-            (message as InternalPasswordLockUpdatedMessage).payload.password
-          )
-        );
+      case InternalMessageReferenceEnum.PasswordLockTimeout:
+        // remove the password
+        dispatch(setPassword(null));
 
         break;
       default:

@@ -5,6 +5,9 @@ import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 // components
 import MainLayout from '@extension/components/MainLayout';
 
+// constants
+import { PASSWORD_LOCK_ROUTE } from '@extension/constants';
+
 // features
 import { reset as resetAddAsset } from '@extension/features/add-asset';
 import {
@@ -51,6 +54,7 @@ import WalletConnectModal from '@extension/modals/WalletConnectModal';
 // selectors
 import {
   useSelectAccounts,
+  useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -62,6 +66,7 @@ const Root: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
+  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // handlers
   const handleAddAssetClose = () => dispatch(resetAddAsset());
@@ -102,6 +107,11 @@ const Root: FC = () => {
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [selectedNetwork]);
+  useEffect(() => {
+    if (!passwordLockPassword) {
+      navigate(PASSWORD_LOCK_ROUTE);
+    }
+  }, [passwordLockPassword]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications
