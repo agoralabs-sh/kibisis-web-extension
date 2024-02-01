@@ -1,3 +1,10 @@
+# [1.11.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.2-beta.2...v1.11.0-beta.1) (2024-02-01)
+
+
+### Features
+
+* add settings option to allow users to use a password lock ([#150](https://github.com/agoralabs-sh/kibisis-web-extension/issues/150)) ([fd87b77](https://github.com/agoralabs-sh/kibisis-web-extension/commit/fd87b779694828a354f99ef037df335812e27adf))
+
 ## [1.10.2-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.2-beta.1...v1.10.2-beta.2) (2024-01-24)
 
 
