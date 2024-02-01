@@ -44,7 +44,13 @@ import createLogger from '@common/utils/createLogger';
   browserAction.onClicked.addListener(
     backgroundEventListener.onExtensionClick.bind(backgroundEventListener)
   );
+  browser.alarms.onAlarm.addListener(
+    backgroundEventListener.onAlarm.bind(backgroundEventListener)
+  );
   browser.windows.onRemoved.addListener(
     backgroundEventListener.onWindowRemove.bind(backgroundEventListener)
+  );
+  browser.tabs.onUpdated.addListener(
+    backgroundEventListener.onTabUpdated.bind(backgroundEventListener)
   );
 })();

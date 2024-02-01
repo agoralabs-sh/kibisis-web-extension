@@ -3,23 +3,27 @@ import { networks } from '@extension/config';
 
 // constants
 import {
+  PASSWORD_LOCK_DURATION_NORMAL,
   SETTINGS_ADVANCED_KEY,
   SETTINGS_APPEARANCE_KEY,
   SETTINGS_GENERAL_KEY,
+  SETTINGS_SECURITY_KEY,
 } from '@extension/constants';
 
 // services
 import StorageManager from '../StorageManager';
 
 // types
-import { IBaseOptions, ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAdvancedSettings,
   IAppearanceSettings,
   IGeneralSettings,
   INetwork,
+  ISecuritySettings,
   ISettings,
 } from '@extension/types';
+import type { ICreateOptions } from './types';
 
 // utils
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
@@ -29,9 +33,9 @@ export default class SettingsService {
   private readonly logger: ILogger | null;
   private readonly storageManager: StorageManager;
 
-  constructor({ logger }: IBaseOptions) {
+  constructor({ logger, storageManager }: ICreateOptions) {
     this.logger = logger || null;
-    this.storageManager = new StorageManager();
+    this.storageManager = storageManager || new StorageManager();
   }
 
   /**
@@ -54,6 +58,10 @@ export default class SettingsService {
       general: {
         preferredBlockExplorerIds: {},
         selectedNetworkGenesisHash: defaultNetwork.genesisHash,
+      },
+      security: {
+        passwordLockTimeoutDuration: PASSWORD_LOCK_DURATION_NORMAL,
+        enablePasswordLock: false,
       },
     };
   }
@@ -96,6 +104,14 @@ export default class SettingsService {
               ...(storageItems[SETTINGS_GENERAL_KEY] as IGeneralSettings),
             },
           };
+        case SETTINGS_SECURITY_KEY:
+          return {
+            ...acc,
+            security: {
+              ...acc.security,
+              ...(storageItems[SETTINGS_SECURITY_KEY] as ISecuritySettings),
+            },
+          };
         default:
           return acc;
       }
@@ -112,6 +128,7 @@ export default class SettingsService {
       [SETTINGS_ADVANCED_KEY]: settings.advanced,
       [SETTINGS_APPEARANCE_KEY]: settings.appearance,
       [SETTINGS_GENERAL_KEY]: settings.general,
+      [SETTINGS_SECURITY_KEY]: settings.security,
     });
 
     return settings;

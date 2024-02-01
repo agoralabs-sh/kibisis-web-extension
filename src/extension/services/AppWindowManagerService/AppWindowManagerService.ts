@@ -10,8 +10,9 @@ import { AppTypeEnum } from '@extension/enums';
 import StorageManager from '../StorageManager';
 
 // types
-import { IBaseOptions, ILogger } from '@common/types';
-import { IAppWindow } from '@extension/types';
+import type { ILogger } from '@common/types';
+import type { IAppWindow } from '@extension/types';
+import type { ICreateOptions } from './types';
 
 /**
  * Manages app windows in storage.
@@ -22,9 +23,9 @@ export default class AppWindowManagerService {
   private readonly logger: ILogger | null;
   private readonly storageManager: StorageManager;
 
-  constructor({ logger }: IBaseOptions) {
+  constructor({ logger, storageManager }: ICreateOptions) {
     this.logger = logger || null;
-    this.storageManager = new StorageManager();
+    this.storageManager = storageManager || new StorageManager();
   }
 
   /**

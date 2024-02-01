@@ -10,7 +10,7 @@ import SettingsService from '@extension/services/SettingsService';
 import { ILogger } from '@common/types';
 import { IMainRootState, ISettings } from '@extension/types';
 
-const fetchSettingsFromStorage: AsyncThunk<
+const fetchSettingsFromStorageThunk: AsyncThunk<
   ISettings, // return
   undefined, // args
   Record<string, never>
@@ -26,4 +26,4 @@ const fetchSettingsFromStorage: AsyncThunk<
   }
 );
 
-export default fetchSettingsFromStorage;
+export default fetchSettingsFromStorageThunk;

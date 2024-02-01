@@ -6,6 +6,7 @@ enum StoreNameEnum {
   Messages = 'messages',
   Networks = 'networks',
   Notifications = 'notifications',
+  PasswordLock = 'password-lock',
   Register = 'register',
   SendAssets = 'send-assets',
   Sessions = 'sessions',

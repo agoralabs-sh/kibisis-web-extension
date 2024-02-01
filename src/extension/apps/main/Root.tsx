@@ -5,6 +5,9 @@ import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 // components
 import MainLayout from '@extension/components/MainLayout';
 
+// constants
+import { PASSWORD_LOCK_ROUTE } from '@extension/constants';
+
 // features
 import { reset as resetAddAsset } from '@extension/features/add-asset';
 import {
@@ -27,7 +30,7 @@ import {
   fetchSessionsThunk,
   initializeWalletConnectThunk,
 } from '@extension/features/sessions';
-import { fetchSettingsFromStorage } from '@extension/features/settings';
+import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import { setConfirm, setError, setNavigate } from '@extension/features/system';
 
@@ -51,6 +54,7 @@ import WalletConnectModal from '@extension/modals/WalletConnectModal';
 // selectors
 import {
   useSelectAccounts,
+  useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -62,6 +66,7 @@ const Root: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
+  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // handlers
   const handleAddAssetClose = () => dispatch(resetAddAsset());
@@ -74,10 +79,10 @@ const Root: FC = () => {
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
 
-  // 1. fetched required data from storage
+  // 1. fetch settings then fetch the data
   useEffect(() => {
     dispatch(setNavigate(navigate));
-    dispatch(fetchSettingsFromStorage());
+    dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchArc200AssetsFromStorageThunk());
@@ -102,6 +107,11 @@ const Root: FC = () => {
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [selectedNetwork]);
+  useEffect(() => {
+    if (!passwordLockPassword) {
+      navigate(PASSWORD_LOCK_ROUTE);
+    }
+  }, [passwordLockPassword]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications

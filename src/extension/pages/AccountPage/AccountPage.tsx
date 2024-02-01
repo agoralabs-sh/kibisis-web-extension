@@ -65,7 +65,7 @@ import {
   saveAccountNameThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
-import { saveSettingsToStorage } from '@extension/features/settings';
+import { saveSettingsToStorageThunk } from '@extension/features/settings';
 import { setConfirm } from '@extension/features/system';
 
 // hooks
@@ -161,7 +161,7 @@ const AccountPage: FC = () => {
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleNetworkSelect = (network: INetwork) => {
     dispatch(
-      saveSettingsToStorage({
+      saveSettingsToStorageThunk({
         ...settings,
         general: {
           ...settings.general,

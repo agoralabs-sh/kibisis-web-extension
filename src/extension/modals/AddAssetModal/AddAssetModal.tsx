@@ -77,15 +77,19 @@ import {
   useSelectAddAssetFetching,
   useSelectAddAssetSelectedAsset,
   useSelectAddAssetStandardAssets,
+  useSelectLogger,
+  useSelectPasswordLockPassword,
   useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
+  useSelectSettings,
 } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAppThunkDispatch,
   IAppThunkDispatchReturn,
@@ -93,6 +97,7 @@ import {
   IAssetTypes,
   IExplorer,
   INetworkWithTransactionParams,
+  ISettings,
   IStandardAsset,
 } from '@extension/types';
 
@@ -117,9 +122,12 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const confirming: boolean = useSelectAddAssetConfirming();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const fetching: boolean = useSelectAddAssetFetching();
+  const logger: ILogger = useSelectLogger();
+  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const selectedNetwork: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
   const selectedAsset: IAssetTypes | null = useSelectAddAssetSelectedAsset();
+  const settings: ISettings = useSelectSettings();
   const standardAssets: IStandardAsset[] = useSelectAddAssetStandardAssets();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
@@ -209,10 +217,11 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     }
   };
   const handleAddStandardAssetClick = async () => {
+    const _functionName: string = 'handleAddStandardAssetClick';
+    let _password: string | null;
     let transactionId: string | null;
 
     if (
-      validatePassword() ||
       !selectedNetwork ||
       !account ||
       !selectedAsset ||
@@ -221,8 +230,32 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       return;
     }
 
+    // if there is no password lock
+    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
+      // validate the password input
+      if (validatePassword()) {
+        logger.debug(
+          `${AddAssetModal.name}#${_functionName}: password not valid`
+        );
+
+        return;
+      }
+    }
+
+    _password = settings.security.enablePasswordLock
+      ? passwordLockPassword
+      : password;
+
+    if (!_password) {
+      logger.debug(
+        `${AddAssetModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
+      );
+
+      return;
+    }
+
     try {
-      transactionId = await dispatch(addStandardAssetThunk(password)).unwrap();
+      transactionId = await dispatch(addStandardAssetThunk(_password)).unwrap();
 
       if (transactionId) {
         dispatch(
@@ -524,14 +557,16 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       if (selectedAsset.type === AssetTypeEnum.Standard) {
         return (
           <VStack alignItems="flex-start" spacing={4} w="full">
-            <PasswordInput
-              error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToAuthorizeOptIn')}
-              inputRef={passwordInputRef}
-              onChange={onPasswordChange}
-              onKeyUp={handleKeyUpPasswordInput}
-              value={password}
-            />
+            {!settings.security.enablePasswordLock && !passwordLockPassword && (
+              <PasswordInput
+                error={passwordError}
+                hint={t<string>('captions.mustEnterPasswordToAuthorizeOptIn')}
+                inputRef={passwordInputRef}
+                onChange={onPasswordChange}
+                onKeyUp={handleKeyUpPasswordInput}
+                value={password}
+              />
+            )}
 
             <HStack spacing={DEFAULT_GAP - 2} w="full">
               {previousButtonNode}

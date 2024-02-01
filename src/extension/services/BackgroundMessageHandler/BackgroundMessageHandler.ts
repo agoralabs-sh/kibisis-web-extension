@@ -5,7 +5,7 @@ import {
 } from '@stablelib/base64';
 import { decodeUnsignedTransaction, Transaction } from 'algosdk';
 import { v4 as uuid } from 'uuid';
-import browser, { Runtime, Windows } from 'webextension-polyfill';
+import browser, { Alarms, Runtime, Windows } from 'webextension-polyfill';
 
 // config
 import { networks } from '@extension/config';
@@ -53,6 +53,7 @@ import {
 import AccountService from '../AccountService';
 import AppWindowManagerService from '../AppWindowManagerService';
 import EventQueueService from '../EventQueueService';
+import PasswordLockService from '../PasswordLockService';
 import PrivateKeyService from '../PrivateKeyService';
 import SessionService from '../SessionService';
 import SettingsService from '../SettingsService';
@@ -74,6 +75,7 @@ import type {
   IInternalRequestMessage,
   INetwork,
   ISession,
+  ISettings,
 } from '@extension/types';
 
 // utils
@@ -90,33 +92,42 @@ export default class BackgroundMessageHandler {
   private readonly appWindowManagerService: AppWindowManagerService;
   private readonly logger: ILogger | null;
   private readonly eventQueueService: EventQueueService;
+  private readonly passwordLockService: PasswordLockService;
   private readonly privateKeyService: PrivateKeyService;
   private readonly sessionService: SessionService;
   private readonly settingsService: SettingsService;
   private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
-    this.logger = logger || null;
+    const storageManager: StorageManager = new StorageManager();
+
     this.accountService = new AccountService({
       logger,
     });
     this.appWindowManagerService = new AppWindowManagerService({
       logger,
+      storageManager,
     });
     this.eventQueueService = new EventQueueService({
+      logger,
+    });
+    this.logger = logger || null;
+    this.passwordLockService = new PasswordLockService({
       logger,
     });
     this.privateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
+      storageManager,
     });
     this.sessionService = new SessionService({
       logger,
     });
     this.settingsService = new SettingsService({
       logger,
+      storageManager,
     });
-    this.storageManager = new StorageManager();
+    this.storageManager = storageManager;
   }
 
   /**
@@ -312,6 +323,35 @@ export default class BackgroundMessageHandler {
         providerId: __PROVIDER_ID__,
       }),
       originTabId
+    );
+  }
+
+  private async handlePasswordLockDisabledMessage(): Promise<void> {
+    const _functionName: string = 'handlePasswordLockDisabledMessage';
+
+    await this.passwordLockService.clearAlarm();
+
+    this.logger?.debug(`${_functionName}: password lock disabled`);
+  }
+
+  private async handlePasswordLockEnabledMessage(): Promise<void> {
+    const _functionName: string = 'handlePasswordLockEnabledMessage';
+    const settings: ISettings = await this.settingsService.getAll();
+    let alarm: Alarms.Alarm | null;
+
+    this.logger?.debug(`${_functionName}: password lock enabled`);
+
+    // if the duration is set to 0 (interpreted as "never") no alarm is needed
+    if (settings.security.passwordLockTimeoutDuration <= 0) {
+      return;
+    }
+
+    alarm = await this.passwordLockService.createAlarm(
+      settings.security.passwordLockTimeoutDuration
+    );
+
+    this.logger?.debug(
+      `${_functionName}: password lock expires in ${alarm?.scheduledTime} millisecond(s)`
     );
   }
 
@@ -722,12 +762,17 @@ export default class BackgroundMessageHandler {
     switch (message.reference) {
       case InternalMessageReferenceEnum.FactoryReset:
         return await this.handleFactoryResetMessage();
+      case InternalMessageReferenceEnum.PasswordLockDisabled:
+        return this.handlePasswordLockDisabledMessage();
+      case InternalMessageReferenceEnum.PasswordLockEnabled:
+        return this.handlePasswordLockEnabledMessage();
       case InternalMessageReferenceEnum.RegistrationCompleted:
         return await this.handleRegistrationCompletedMessage();
       default:
         break;
     }
   }
+
   /**
    * public functions
    */

@@ -13,4 +13,7 @@ export { default as BaseInternalMessage } from './BaseInternalMessage';
 export { default as BaseMessage } from './BaseMessage';
 export { default as InternalEventAddedMessage } from './InternalEventAddedMessage';
 export { default as InternalFactoryResetMessage } from './InternalFactoryResetMessage';
+export { default as InternalPasswordLockDisabledMessage } from './InternalPasswordLockDisabledMessage';
+export { default as InternalPasswordLockEnabledMessage } from './InternalPasswordLockEnabledMessage';
+export { default as InternalPasswordLockTimeoutMessage } from './InternalPasswordLockTimeoutMessage';
 export { default as InternalRegistrationCompletedMessage } from './InternalRegistrationCompletedMessage';

@@ -23,4 +23,8 @@ export default function mapSettingsToState(
     ...state.general,
     ...settings.general,
   };
+  state.security = {
+    ...state.security,
+    ...settings.security,
+  };
 }

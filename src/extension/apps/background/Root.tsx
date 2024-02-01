@@ -13,7 +13,7 @@ import {
   setSignTxnsRequest,
 } from '@extension/features/events';
 import { fetchSessionsThunk } from '@extension/features/sessions';
-import { fetchSettingsFromStorage } from '@extension/features/settings';
+import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { closeCurrentWindowThunk } from '@extension/features/system';
 
 // hooks
@@ -77,7 +77,7 @@ const Root: FC = () => {
       return;
     }
 
-    dispatch(fetchSettingsFromStorage());
+    dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
   }, []);
   // fetch accounts when the selected network has been found

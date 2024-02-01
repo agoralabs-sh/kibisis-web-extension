@@ -74,6 +74,8 @@ const translation: IResourceLanguage = {
     defaultConfirm: 'Are you sure?',
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
+    enablePasswordLock:
+      'Passwords will only need to be entered due to inactivity.',
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     enterSeedPhrase: `Add your seed phrase to import your account.`,
@@ -107,6 +109,7 @@ const translation: IResourceLanguage = {
       'Enter your password to sign these transactions.',
     mustEnterPasswordToSendTransaction:
       'You must enter your password to send transaction.',
+    mustEnterPasswordToUnlock: 'You must enter your password to unlock.',
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
@@ -121,6 +124,7 @@ const translation: IResourceLanguage = {
     openUrl: 'Open URL in your browser',
     optInFee:
       'Standard assets require an "opt-in" fee. This is a transaction of the asset with a "0" amount sent to yourself.',
+    passwordLockDescription: 'Please re-enter your password to unlock.',
     passwordScoreInfo:
       'To conform with our <2>Strong Password Policy</2>, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',
@@ -198,6 +202,7 @@ const translation: IResourceLanguage = {
     noTransactionsFound: 'No transactions found',
     noSessionsFound: 'No sessions found',
     offline: 'Offline',
+    passwordLock: 'Welcome back',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     sendAsset: 'Send {{asset}}',
@@ -270,6 +275,7 @@ const translation: IResourceLanguage = {
     defaultFrozen: 'Default Frozen',
     did: 'DID',
     editAccountName: 'Rename account',
+    enablePasswordLock: 'Enable password lock?',
     expirationDate: 'Expiration Date',
     extensionId: 'Extension ID',
     fee: 'Fee',
@@ -301,6 +307,14 @@ const translation: IResourceLanguage = {
     newPassword: 'New Password',
     no: 'No',
     password: 'Password',
+    passwordLockDuration: 'Never',
+    passwordLockDuration_60000: '1 minute',
+    passwordLockDuration_120000: '2 minutes',
+    passwordLockDuration_300000: '5 minutes',
+    passwordLockDuration_600000: '10 minutes',
+    passwordLockDuration_900000: '15 minutes',
+    passwordLockDuration_1800000: '30 minutes',
+    passwordLockTimeout: 'Password lock timeout',
     preferredBlockExplorer: 'Preferred Block Explorer',
     removeAccount: 'Remove Account',
     removeSession: 'Remove Session',
@@ -331,6 +345,7 @@ const translation: IResourceLanguage = {
     enterNote: 'Enter an optional note',
     enterPassword: 'Enter password',
     nameAccount: 'Enter a name for this account (optional)',
+    pleaseSelect: 'Please select...',
   },
   titles: {
     strongPasswordPolicy: 'Strong Password Policy',
@@ -345,6 +360,7 @@ const translation: IResourceLanguage = {
     page_general: 'General',
     page_importExistingAccount: 'Import An Existing Account',
     page_importRekeyedAccount: 'Import A Rekeyed Account',
+    page_passwordLock: 'Enter Your Password',
     page_security: 'Security',
     page_sessions: 'Sessions',
     page_settings: 'Settings',
