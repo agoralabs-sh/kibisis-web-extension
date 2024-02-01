@@ -27,19 +27,22 @@ import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPag
 import {
   useSelectAccounts,
   useSelectLogger,
+  useSelectPasswordLockPassword,
   useSelectSavingAccounts,
+  useSelectSettings,
 } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAddAccountCompleteFunction,
   IAddAccountCompleteResult,
   IAppThunkDispatch,
+  ISettings,
 } from '@extension/types';
 
 // utils
@@ -48,19 +51,39 @@ import getAddressFromPrivateKey from '@extension/utils/getAddressFromPrivateKey'
 const MainAddAccountRouter: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
-  const logger: ILogger = useSelectLogger();
   const accounts: IAccount[] = useSelectAccounts();
+  // selectors
+  const logger: ILogger = useSelectLogger();
+  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const saving: boolean = useSelectSavingAccounts();
+  const settings: ISettings = useSelectSettings();
+  // states
   const [addAccountResult, setAddAccountResult] =
     useState<IAddAccountCompleteResult | null>(null);
+  // handlers
   const handleOnAddAccountComplete: IAddAccountCompleteFunction = ({
     name,
     privateKey,
-  }: IAddAccountCompleteResult) =>
+  }: IAddAccountCompleteResult) => {
+    // if the password lock is enabled and the password is active, just submit the result
+    if (settings.security.enablePasswordLock && passwordLockPassword) {
+      dispatch(
+        saveNewAccountThunk({
+          name,
+          password: passwordLockPassword,
+          privateKey,
+        })
+      );
+
+      return;
+    }
+
+    // set the result to state, in order for the password confirm modal to handle the encryption
     setAddAccountResult({
       name,
       privateKey,
     });
+  };
   const handleOnConfirmPasswordModalClose = () => setAddAccountResult(null);
   const handleOnConfirmPasswordModalConfirm = (password: string) => {
     if (addAccountResult) {
@@ -115,6 +138,7 @@ const MainAddAccountRouter: FC = () => {
         onCancel={handleOnConfirmPasswordModalClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
+
       <Routes>
         <Route element={<AccountSetupPage />} path="/" />
         <Route
@@ -126,6 +150,7 @@ const MainAddAccountRouter: FC = () => {
           }
           path={CREATE_NEW_ACCOUNT_ROUTE}
         />
+
         <Route
           element={
             <ImportExistingAccountPage

@@ -65,6 +65,8 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import {
   useSelectAccounts,
   useSelectArc200AssetsBySelectedNetwork,
+  useSelectLogger,
+  useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
   useSelectSendingAssetAmountInStandardUnits,
   useSelectSendingAssetConfirming,
@@ -72,6 +74,7 @@ import {
   useSelectSendingAssetNote,
   useSelectSendingAssetSelectedAsset,
   useSelectStandardAssetsBySelectedNetwork,
+  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -81,13 +84,15 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAppThunkDispatch,
   IArc200Asset,
   IAssetTypes,
   INativeCurrency,
   INetworkWithTransactionParams,
+  ISettings,
   IStandardAsset,
 } from '@extension/types';
 
@@ -113,11 +118,14 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     useSelectStandardAssetsBySelectedNetwork();
   const confirming: boolean = useSelectSendingAssetConfirming();
   const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
+  const logger: ILogger = useSelectLogger();
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
   const note: string | null = useSelectSendingAssetNote();
+  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const selectedAsset: IAssetTypes | INativeCurrency | null =
     useSelectSendingAssetSelectedAsset();
+  const settings: ISettings = useSelectSettings();
   // hooks
   const {
     error: toAddressError,
@@ -199,15 +207,43 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     setShowSummary(false);
   };
   const handleSendClick = async () => {
+    const _functionName: string = 'handleSendClick';
+    let _password: string | null;
     let transactionId: string;
     let toAccount: IAccount | null;
 
-    if (validatePassword() || !fromAccount || !network) {
+    if (!fromAccount || !network) {
+      return;
+    }
+
+    // if there is no password lock
+    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
+      // validate the password input
+      if (validatePassword()) {
+        logger.debug(
+          `${SendAssetModal.name}#${_functionName}: password not valid`
+        );
+
+        return;
+      }
+    }
+
+    _password = settings.security.enablePasswordLock
+      ? passwordLockPassword
+      : password;
+
+    if (!_password) {
+      logger.debug(
+        `${SendAssetModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
+      );
+
       return;
     }
 
     try {
-      transactionId = await dispatch(submitTransactionThunk(password)).unwrap();
+      transactionId = await dispatch(
+        submitTransactionThunk(_password)
+      ).unwrap();
       toAccount =
         accounts.find(
           (value) =>
@@ -393,14 +429,16 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     if (showSummary) {
       return (
         <VStack alignItems="flex-start" spacing={4} w="full">
-          <PasswordInput
-            error={passwordError}
-            hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
-            onChange={onPasswordChange}
-            onKeyUp={handleKeyUpPasswordInput}
-            inputRef={passwordInputRef}
-            value={password}
-          />
+          {!settings.security.enablePasswordLock && !passwordLockPassword && (
+            <PasswordInput
+              error={passwordError}
+              hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
+              onChange={onPasswordChange}
+              onKeyUp={handleKeyUpPasswordInput}
+              inputRef={passwordInputRef}
+              value={password}
+            />
+          )}
 
           <HStack spacing={4} w="full">
             <Button

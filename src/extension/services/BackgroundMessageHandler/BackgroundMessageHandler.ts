@@ -341,7 +341,7 @@ export default class BackgroundMessageHandler {
 
     this.logger?.debug(`${_functionName}: password lock enabled`);
 
-    // if the duration is set to 0 (interpreted as "Never") no alarm is needed
+    // if the duration is set to 0 (interpreted as "never") no alarm is needed
     if (settings.security.passwordLockTimeoutDuration <= 0) {
       return;
     }
