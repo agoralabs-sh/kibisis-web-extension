@@ -45,6 +45,7 @@ const AccountItem: FC<IProps> = ({
           size="sm"
         />
       </Center>
+
       {account.name ? (
         <VStack
           alignItems="flex-start"

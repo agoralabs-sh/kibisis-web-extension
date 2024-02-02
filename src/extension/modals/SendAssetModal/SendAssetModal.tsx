@@ -304,11 +304,9 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       }
     }
   };
-  const handleToAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
-    dispatch(
-      setToAddress(event.target.value.length > 0 ? event.target.value : null)
-    );
-    onToAddressChange(event);
+  const handleToAddressChange = (value: string) => {
+    dispatch(setToAddress(value.length > 0 ? value : null));
+    onToAddressChange(value);
   };
   // renders
   const renderContent = () => {
@@ -387,6 +385,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
           {/*to address*/}
           <AddressInput
+            accounts={accounts}
             error={toAddressError}
             label={t<string>('labels.to')}
             onBlur={onToAddressBlur}
