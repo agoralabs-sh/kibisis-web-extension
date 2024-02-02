@@ -321,6 +321,7 @@ const translation: IResourceLanguage = {
     reserveAccount: 'Reserve Account',
     seedPhrase: 'Seed Phrase',
     selectionKey: 'VRF Public Key',
+    selectWalletAccount: 'Select wallet account',
     sendAsset: 'Send {{nativeCurrency}}/Asset',
     settings: 'Settings',
     shareAddress: 'Share Address',

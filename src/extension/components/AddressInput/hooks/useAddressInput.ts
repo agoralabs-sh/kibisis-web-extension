@@ -15,9 +15,9 @@ export default function useAddressInput(): IUseAddressInputState {
   // actions
   const onBlur = (event: FocusEvent<HTMLInputElement>) =>
     setError(validateAddress(event.target.value, t));
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onChange = (value: string) => {
     setError(null);
-    setValue(event.target.value);
+    setValue(value);
   };
   const reset: () => void = () => {
     setError(null);
