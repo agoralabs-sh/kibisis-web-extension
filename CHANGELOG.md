@@ -1,3 +1,10 @@
+# [1.11.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.1...v1.11.0-beta.2) (2024-02-02)
+
+
+### Features
+
+* add select account button to the address input ([#151](https://github.com/agoralabs-sh/kibisis-web-extension/issues/151)) ([c99e815](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c99e8151c775bb9fef97bbbaba251bf713d912af))
+
 # [1.11.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.2-beta.2...v1.11.0-beta.1) (2024-02-01)
 
 
