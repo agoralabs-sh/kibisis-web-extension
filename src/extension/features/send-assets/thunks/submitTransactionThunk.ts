@@ -53,8 +53,10 @@ const submitTransactionThunk: AsyncThunk<
 > = createAsyncThunk<string, string, AsyncThunkConfig>(
   SendAssetsThunkEnum.SubmitTransaction,
   async (password, { getState, rejectWithValue }) => {
-    const amountInStandardUnits: string | null =
-      getState().sendAssets.amountInStandardUnits;
+    const amountInStandardUnits: string =
+      getState().sendAssets.amountInStandardUnits.length > 0
+        ? getState().sendAssets.amountInStandardUnits
+        : '0';
     const asset: IAssetTypes | INativeCurrency | null =
       getState().sendAssets.selectedAsset;
     const fromAddress: string | null = getState().sendAssets.fromAddress;
@@ -73,7 +75,7 @@ const submitTransactionThunk: AsyncThunk<
     let privateKeyService: PrivateKeyService;
     let suggestedParams: SuggestedParams;
 
-    if (!amountInStandardUnits || !asset || !fromAddress || !toAddress) {
+    if (!asset || !fromAddress || !toAddress) {
       logger.debug(
         `${SendAssetsThunkEnum.SubmitTransaction}: required fields not completed`
       );
