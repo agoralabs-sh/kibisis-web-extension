@@ -106,10 +106,16 @@ const SendAmountInput: FC<IProps> = ({
       })
     );
   };
+  const handleOnChange = (valueAsString: string | undefined) =>
+    onValueChange(valueAsString || '');
+  const handleOnFocus = (event: FocusEvent<HTMLInputElement>) => {
+    // remove the padded zero
+    if (event.target.value === '0') {
+      onValueChange('');
+    }
+  };
   const handleMaximumAmountClick = () =>
     onValueChange(maximumTransactionAmountInStandardUnit.toString());
-  const handleOnChange = (valueAsString: string | undefined) =>
-    onValueChange(valueAsString || '0');
   // renders
   const renderMaximumTransactionAmountLabel = () => {
     let symbol: string = '';
@@ -216,7 +222,8 @@ const SendAmountInput: FC<IProps> = ({
           focusBorderColor={primaryColor}
           onBlur={handleOnBlur}
           onChange={handleOnChange}
-          size="md"
+          onFocus={handleOnFocus}
+          size="lg"
           value={value || undefined}
           w="full"
         >
