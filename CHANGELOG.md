@@ -1,3 +1,10 @@
+# [1.11.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.3...v1.11.0-beta.4) (2024-02-03)
+
+
+### Features
+
+* remove zero when focusing on the send asset input ([#153](https://github.com/agoralabs-sh/kibisis-web-extension/issues/153)) ([32a3ad4](https://github.com/agoralabs-sh/kibisis-web-extension/commit/32a3ad4400890625dee6457f50553c1d25b7d408))
+
 # [1.11.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.2...v1.11.0-beta.3) (2024-02-03)
 
 
