@@ -4,8 +4,8 @@ import { InternalMessageReferenceEnum } from '@common/enums';
 // messages
 import BaseInternalMessage from './BaseInternalMessage';
 
-export default class InternalPasswordLockEnabledMessage extends BaseInternalMessage {
+export default class InternalPasswordLockClearMessage extends BaseInternalMessage {
   constructor() {
-    super(InternalMessageReferenceEnum.PasswordLockEnabled);
+    super(InternalMessageReferenceEnum.PasswordLockClear);
   }
 }

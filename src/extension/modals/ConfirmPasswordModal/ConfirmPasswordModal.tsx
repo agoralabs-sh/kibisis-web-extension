@@ -26,7 +26,7 @@ import PasswordInput, {
 } from '@extension/components/PasswordInput';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
@@ -68,12 +68,10 @@ const ConfirmPasswordModal: FC<IProps> = ({
   // selectors
   const logger: ILogger = useSelectLogger();
   // state
-  const [valid, setValid] = useState<boolean>(false);
   const [verifying, setVerifying] = useState<boolean>(false);
   // misc
   const reset = () => {
     resetPassword();
-    setValid(false);
     setVerifying(false);
   };
   // handlers
@@ -100,9 +98,9 @@ const ConfirmPasswordModal: FC<IProps> = ({
 
     if (!isValid) {
       setPasswordError(t<string>('errors.inputs.invalidPassword'));
-    }
 
-    setValid(isValid);
+      return;
+    }
 
     onConfirm(password);
 
@@ -142,7 +140,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
 
       <ModalContent
         alignSelf="flex-end"
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        backgroundColor={BODY_BACKGROUND_COLOR}
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
         minH={0}
@@ -173,6 +171,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
             >
               {t<string>('buttons.cancel')}
             </Button>
+
             <Button
               isLoading={verifying}
               onClick={handleConfirmClick}

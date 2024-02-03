@@ -326,32 +326,13 @@ export default class BackgroundMessageHandler {
     );
   }
 
-  private async handlePasswordLockDisabledMessage(): Promise<void> {
-    const _functionName: string = 'handlePasswordLockDisabledMessage';
+  private async handlePasswordLockClearMessage(): Promise<void> {
+    const _functionName: string = 'handlePasswordLockClearMessage';
 
     await this.passwordLockService.clearAlarm();
 
-    this.logger?.debug(`${_functionName}: password lock disabled`);
-  }
-
-  private async handlePasswordLockEnabledMessage(): Promise<void> {
-    const _functionName: string = 'handlePasswordLockEnabledMessage';
-    const settings: ISettings = await this.settingsService.getAll();
-    let alarm: Alarms.Alarm | null;
-
-    this.logger?.debug(`${_functionName}: password lock enabled`);
-
-    // if the duration is set to 0 (interpreted as "never") no alarm is needed
-    if (settings.security.passwordLockTimeoutDuration <= 0) {
-      return;
-    }
-
-    alarm = await this.passwordLockService.createAlarm(
-      settings.security.passwordLockTimeoutDuration
-    );
-
     this.logger?.debug(
-      `${_functionName}: password lock expires in ${alarm?.scheduledTime} millisecond(s)`
+      `${BackgroundMessageHandler.name}#${_functionName}: password lock cleared`
     );
   }
 
@@ -762,10 +743,8 @@ export default class BackgroundMessageHandler {
     switch (message.reference) {
       case InternalMessageReferenceEnum.FactoryReset:
         return await this.handleFactoryResetMessage();
-      case InternalMessageReferenceEnum.PasswordLockDisabled:
-        return this.handlePasswordLockDisabledMessage();
-      case InternalMessageReferenceEnum.PasswordLockEnabled:
-        return this.handlePasswordLockEnabledMessage();
+      case InternalMessageReferenceEnum.PasswordLockClear:
+        return this.handlePasswordLockClearMessage();
       case InternalMessageReferenceEnum.RegistrationCompleted:
         return await this.handleRegistrationCompletedMessage();
       default:

@@ -26,7 +26,7 @@ import useChangePassword from '@extension/hooks/useChangePassword';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
-import ConfirmPasswordModal from '@extension/modals//ConfirmPasswordModal';
+import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // types
 import { IAppThunkDispatch } from '@extension/types';

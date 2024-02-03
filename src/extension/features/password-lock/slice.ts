@@ -17,7 +17,7 @@ const slice = createSlice({
     /** Save credentials **/
     builder.addCase(
       savePasswordLockThunk.fulfilled,
-      (state: IPasswordLockState, action: PayloadAction<string>) => {
+      (state: IPasswordLockState, action: PayloadAction<string | null>) => {
         state.password = action.payload;
         state.saving = false;
       }

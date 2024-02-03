@@ -101,7 +101,7 @@ const PasswordLockPage: FC = () => {
       return;
     }
 
-    // save the password and create an alarm
+    // save the password lock password and clear any alarms
     dispatch(savePasswordLockThunk(password));
   };
 

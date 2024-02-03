@@ -1,18 +1,14 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import browser from 'webextension-polyfill';
 
 // enums
 import { NetworkTypeEnum, SettingsThunkEnum } from '@extension/enums';
-
-// messages
-import { InternalPasswordLockDisabledMessage } from '@common/messages';
 
 // services
 import SettingsService from '@extension/services/SettingsService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IBaseAsyncThunkConfig,
   INetworkWithTransactionParams,
   ISettings,
@@ -29,10 +25,9 @@ const saveSettingsToStorageThunk: AsyncThunk<
   IBaseAsyncThunkConfig
 > = createAsyncThunk<ISettings, ISettings, IBaseAsyncThunkConfig>(
   SettingsThunkEnum.SaveSettingsToStorage,
-  async (settings, { getState }) => {
+  async (settings, { dispatch, getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const previousSettings: ISettings = getState().settings;
     const settingsService: SettingsService = new SettingsService({
       logger,
     });
@@ -53,16 +48,6 @@ const saveSettingsToStorageThunk: AsyncThunk<
         convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
       ] = selectedNetwork.explorers[0]?.id || null;
       settings.general.selectedNetworkGenesisHash = selectedNetwork.genesisHash;
-    }
-
-    // if the password lock is being disabled, remove the alarm
-    if (
-      previousSettings.security.enablePasswordLock &&
-      !settings.security.enablePasswordLock
-    ) {
-      await browser.runtime.sendMessage(
-        new InternalPasswordLockDisabledMessage()
-      );
     }
 
     return await settingsService.saveAll(settings);
