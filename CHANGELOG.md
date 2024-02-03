@@ -1,3 +1,10 @@
+# [1.11.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.2...v1.11.0-beta.3) (2024-02-03)
+
+
+### Bug Fixes
+
+* password lock always locks ([#152](https://github.com/agoralabs-sh/kibisis-web-extension/issues/152)) ([f877cdb](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f877cdb3f5069f8d06a644f77c63e7c742a33df8))
+
 # [1.11.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.1...v1.11.0-beta.2) (2024-02-02)
 
 
