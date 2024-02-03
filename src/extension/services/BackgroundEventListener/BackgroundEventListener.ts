@@ -201,27 +201,42 @@ export default class BackgroundEventListener {
     );
   }
 
-  public async onTabUpdated(tabId: number): Promise<void> {
-    const mainWindowTab: Tabs.Tab | null = await this.getMainWindowTab();
+  public async onFocusChanged(windowId: number): Promise<void> {
+    const _functionName: string = 'onFocusChanged';
+    const mainWindow: Windows.Window | null = await this.getMainWindow();
     let settings: ISettings;
 
-    // check if the updated tab is the main app window
-    if (mainWindowTab && mainWindowTab.id === tabId) {
+    if (mainWindow) {
+      if (windowId === mainWindow.id) {
+        this.logger?.debug(
+          `${BackgroundEventListener.name}#${_functionName}: main window has focus`
+        );
+
+        // clear the password lock alarm
+        await this.passwordLockService.clearAlarm();
+
+        return;
+      }
+
+      this.logger?.debug(
+        `${BackgroundEventListener.name}#${_functionName}: main window has lost focus`
+      );
+
       settings = await this.settingsService.getAll();
 
-      if (settings.security.enablePasswordLock) {
-        // clear the alarm if the password lock is 0 (never)
-        if (settings.security.passwordLockTimeoutDuration <= 0) {
-          await this.passwordLockService.clearAlarm();
-
-          return;
-        }
-
-        // restart the lock with the timeout
+      // restart the alarm if the password enable lock is on and the duration is not set to 0 ("never")
+      if (
+        settings.security.enablePasswordLock &&
+        settings.security.passwordLockTimeoutDuration > 0
+      ) {
         await this.passwordLockService.restartAlarm(
           settings.security.passwordLockTimeoutDuration
         );
+
+        return;
       }
+
+      return;
     }
   }
 

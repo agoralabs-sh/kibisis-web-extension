@@ -47,10 +47,10 @@ import createLogger from '@common/utils/createLogger';
   browser.alarms.onAlarm.addListener(
     backgroundEventListener.onAlarm.bind(backgroundEventListener)
   );
+  browser.windows.onFocusChanged.addListener(
+    backgroundEventListener.onFocusChanged.bind(backgroundEventListener)
+  );
   browser.windows.onRemoved.addListener(
     backgroundEventListener.onWindowRemove.bind(backgroundEventListener)
-  );
-  browser.tabs.onUpdated.addListener(
-    backgroundEventListener.onTabUpdated.bind(backgroundEventListener)
   );
 })();

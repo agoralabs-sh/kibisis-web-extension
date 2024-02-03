@@ -27,15 +27,30 @@ export default class PasswordLockService {
    */
 
   public async clearAlarm(): Promise<void> {
+    const _functionName: string = 'clearAlarm';
+
+    this.logger?.debug(
+      `${PasswordLockService.name}#${_functionName}: clearing password lock alarm`
+    );
+
     await browser.alarms.clear(PASSWORD_LOCK_ALARM);
   }
 
   public async createAlarm(
     timeoutInMilliseconds: number
   ): Promise<Alarms.Alarm | null> {
+    const _functionName: string = 'createAlarm';
+    const delayInMinutes: number = this.convertMillisecondsToMinutes(
+      timeoutInMilliseconds
+    );
+
+    this.logger?.debug(
+      `${PasswordLockService.name}#${_functionName}: creating password lock alarm to expire in ${delayInMinutes} minute(s)`
+    );
+
     // create a new alarm
     browser.alarms.create(PASSWORD_LOCK_ALARM, {
-      delayInMinutes: this.convertMillisecondsToMinutes(timeoutInMilliseconds),
+      delayInMinutes,
     });
 
     return (await browser.alarms.get(PASSWORD_LOCK_ALARM)) || null;
@@ -44,8 +59,18 @@ export default class PasswordLockService {
   public async restartAlarm(
     timeoutInMilliseconds: number
   ): Promise<Alarms.Alarm | null> {
+    const _functionName: string = 'restartAlarm';
+
     // clear the previous alarm
     await this.clearAlarm();
+
+    this.logger?.debug(
+      `${
+        PasswordLockService.name
+      }#${_functionName}: restarting password lock alarm to expire in ${this.convertMillisecondsToMinutes(
+        timeoutInMilliseconds
+      )} minute(s)`
+    );
 
     // create a new alarm
     return await this.createAlarm(timeoutInMilliseconds);
