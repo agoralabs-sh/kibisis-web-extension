@@ -2,7 +2,7 @@ enum InternalMessageReferenceEnum {
   // messages sent from the extension internally within the extension
   FactoryReset = 'internal:factory_reset',
   EventAdded = 'internal:event_added',
-  PasswordLockEnabled = 'internal:password_lock_enabled',
+  PasswordLockCleared = 'internal:password_lock_cleared',
   PasswordLockDisabled = 'internal:password_lock_disabled',
   PasswordLockTimeout = 'internal:password_lock_timeout',
   RegistrationCompleted = 'internal:registration_completed',

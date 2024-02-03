@@ -23,7 +23,7 @@ import PasswordInput, {
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { setPassword } from '@extension/features/password-lock';
+import { savePasswordLockThunk } from '@extension/features/password-lock';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -101,8 +101,8 @@ const PasswordLockPage: FC = () => {
       return;
     }
 
-    // save the password
-    dispatch(setPassword(password));
+    // save the password lock password and clear any alarms
+    dispatch(savePasswordLockThunk(password));
   };
 
   // focus on password input

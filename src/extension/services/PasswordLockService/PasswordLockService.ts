@@ -53,9 +53,12 @@ export default class PasswordLockService {
       delayInMinutes,
     });
 
-    return (await browser.alarms.get(PASSWORD_LOCK_ALARM)) || null;
+    return await this.getAlarm();
   }
 
+  public async getAlarm(): Promise<Alarms.Alarm | null> {
+    return (await browser.alarms.get(PASSWORD_LOCK_ALARM)) || null;
+  }
   public async restartAlarm(
     timeoutInMilliseconds: number
   ): Promise<Alarms.Alarm | null> {

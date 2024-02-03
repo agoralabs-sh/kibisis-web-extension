@@ -25,7 +25,10 @@ import type { IBaseOptions, ILogger } from '@common/types';
 import type { IAppWindow, ISettings } from '@extension/types';
 
 export default class BackgroundEventListener {
+  // private variables
   private readonly appWindowManagerService: AppWindowManagerService;
+  private isClearingPasswordLockAlarm: boolean;
+  private isRestartingPasswordLockAlarm: boolean;
   private readonly logger: ILogger | null;
   private readonly passwordLockService: PasswordLockService;
   private readonly privateKeyService: PrivateKeyService;
@@ -39,6 +42,8 @@ export default class BackgroundEventListener {
       logger,
       storageManager,
     });
+    this.isClearingPasswordLockAlarm = false;
+    this.isRestartingPasswordLockAlarm = false;
     this.logger = logger || null;
     this.passwordLockService = new PasswordLockService({
       logger,
@@ -204,34 +209,48 @@ export default class BackgroundEventListener {
   public async onFocusChanged(windowId: number): Promise<void> {
     const _functionName: string = 'onFocusChanged';
     const mainWindow: Windows.Window | null = await this.getMainWindow();
+    let passwordLockAlarm: Alarms.Alarm | null;
     let settings: ISettings;
 
     if (mainWindow) {
       if (windowId === mainWindow.id) {
         this.logger?.debug(
-          `${BackgroundEventListener.name}#${_functionName}: main window has focus`
+          `${BackgroundEventListener.name}#${_functionName}: main window with id "${windowId}" has focus`
         );
 
-        // clear the password lock alarm
-        await this.passwordLockService.clearAlarm();
+        if (!this.isClearingPasswordLockAlarm) {
+          this.isClearingPasswordLockAlarm = true;
+
+          // clear the password lock alarm
+          await this.passwordLockService.clearAlarm();
+
+          this.isClearingPasswordLockAlarm = false;
+        }
 
         return;
       }
 
       this.logger?.debug(
-        `${BackgroundEventListener.name}#${_functionName}: main window has lost focus`
+        `${BackgroundEventListener.name}#${_functionName}: main window has lost focus to window with id "${windowId}"`
       );
 
+      passwordLockAlarm = await this.passwordLockService.getAlarm();
       settings = await this.settingsService.getAll();
 
       // restart the alarm if the password enable lock is on and the duration is not set to 0 ("never")
       if (
+        !this.isRestartingPasswordLockAlarm &&
+        !passwordLockAlarm &&
         settings.security.enablePasswordLock &&
         settings.security.passwordLockTimeoutDuration > 0
       ) {
+        this.isRestartingPasswordLockAlarm = true;
+
         await this.passwordLockService.restartAlarm(
           settings.security.passwordLockTimeoutDuration
         );
+
+        this.isRestartingPasswordLockAlarm = false;
 
         return;
       }

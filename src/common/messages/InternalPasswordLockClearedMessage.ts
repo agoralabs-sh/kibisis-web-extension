@@ -6,6 +6,6 @@ import BaseInternalMessage from './BaseInternalMessage';
 
 export default class InternalPasswordLockEnabledMessage extends BaseInternalMessage {
   constructor() {
-    super(InternalMessageReferenceEnum.PasswordLockEnabled);
+    super(InternalMessageReferenceEnum.PasswordLockCleared);
   }
 }
