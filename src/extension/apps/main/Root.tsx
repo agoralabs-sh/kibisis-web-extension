@@ -1,6 +1,11 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
+import {
+  NavigateFunction,
+  Outlet,
+  useLoaderData,
+  useNavigate,
+} from 'react-router-dom';
 
 // components
 import MainLayout from '@extension/components/MainLayout';
@@ -56,10 +61,16 @@ import {
   useSelectAccounts,
   useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
+  useSelectSettings,
 } from '@extension/selectors';
 
 // types
-import { IAccount, IAppThunkDispatch, INetwork } from '@extension/types';
+import {
+  IAccount,
+  IAppThunkDispatch,
+  INetwork,
+  ISettings,
+} from '@extension/types';
 
 const Root: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -68,6 +79,7 @@ const Root: FC = () => {
   const accounts: IAccount[] = useSelectAccounts();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const settings: ISettings = useSelectSettings();
   // handlers
   const handleAddAssetClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirm(null));
@@ -79,7 +91,7 @@ const Root: FC = () => {
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
 
-  // 1. fetch settings then fetch the data
+  // 1. fetch the required data
   useEffect(() => {
     dispatch(setNavigate(navigate));
     dispatch(fetchSettingsFromStorageThunk());
@@ -107,8 +119,9 @@ const Root: FC = () => {
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [selectedNetwork]);
+  // when the password lock is updated, if it is empty and the password lock is enabled, lock the screen
   useEffect(() => {
-    if (!passwordLockPassword) {
+    if (settings.security.enablePasswordLock && !passwordLockPassword) {
       navigate(PASSWORD_LOCK_ROUTE);
     }
   }, [passwordLockPassword]);
