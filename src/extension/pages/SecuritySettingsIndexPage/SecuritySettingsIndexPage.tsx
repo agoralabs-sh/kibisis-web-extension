@@ -1,4 +1,4 @@
-import { VStack } from '@chakra-ui/react';
+import { useDisclosure, VStack } from '@chakra-ui/react';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoLockClosedOutline } from 'react-icons/io5';
@@ -27,18 +27,29 @@ import {
 } from '@extension/constants';
 
 // features
+import { savePasswordLockThunk } from '@extension/features/password-lock';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 
+// modals
+import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
+
 // selectors
-import { useSelectSettings } from '@extension/selectors';
+import { useSelectLogger, useSelectSettings } from '@extension/selectors';
 
 // types
-import { IAppThunkDispatch, ISettings } from '@extension/types';
+import type { ILogger } from '@common/types';
+import type { IAppThunkDispatch, ISettings } from '@extension/types';
 
 const SecuritySettingsIndexPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const {
+    isOpen: isPasswordConfirmModalOpen,
+    onClose: onPasswordConfirmModalClose,
+    onOpen: onPasswordConfirmModalOpen,
+  } = useDisclosure();
   // selectors
+  const logger: ILogger = useSelectLogger();
   const settings: ISettings = useSelectSettings();
   // misc
   const durationOptions: IOption<number>[] = [
@@ -84,18 +95,62 @@ const SecuritySettingsIndexPage: FC = () => {
     },
   ];
   // handlers
-  const handleEnablePasswordLockSwitchChange = (
+  const handleEnablePasswordLockSwitchChange = async (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    dispatch(
-      saveSettingsToStorageThunk({
-        ...settings,
-        security: {
-          ...settings.security,
-          enablePasswordLock: event.target.checked,
-        },
-      })
-    );
+    const _functionName: string = 'handleEnablePasswordLockSwitchChange';
+
+    // if we are enabling, we need to set the password
+    if (event.target.checked) {
+      onPasswordConfirmModalOpen();
+
+      return;
+    }
+
+    try {
+      // disable the password lock and wait for the settings to be updated
+      await dispatch(
+        saveSettingsToStorageThunk({
+          ...settings,
+          security: {
+            ...settings.security,
+            enablePasswordLock: false,
+          },
+        })
+      ).unwrap();
+
+      // ...then remove the password from the password lock
+      dispatch(savePasswordLockThunk(null));
+    } catch (error) {
+      logger.debug(
+        `${SecuritySettingsIndexPage.name}#${_functionName}: failed save settings`
+      );
+    }
+  };
+  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
+    const _functionName: string = 'handleOnConfirmPasswordModalConfirm';
+
+    onPasswordConfirmModalClose();
+
+    try {
+      // enable the lock and wait for the settings to be updated
+      await dispatch(
+        saveSettingsToStorageThunk({
+          ...settings,
+          security: {
+            ...settings.security,
+            enablePasswordLock: true,
+          },
+        })
+      ).unwrap();
+
+      // then... save the new password to the password lock
+      dispatch(savePasswordLockThunk(password));
+    } catch (error) {
+      logger.debug(
+        `${SecuritySettingsIndexPage.name}#${_functionName}: failed save settings`
+      );
+    }
   };
   const handlePasswordTimeoutDurationChange = (option: IOption<number>) => {
     dispatch(
@@ -111,7 +166,14 @@ const SecuritySettingsIndexPage: FC = () => {
 
   return (
     <>
+      <ConfirmPasswordModal
+        isOpen={isPasswordConfirmModalOpen}
+        onCancel={onPasswordConfirmModalClose}
+        onConfirm={handleOnConfirmPasswordModalConfirm}
+      />
+
       <PageHeader title={t<string>('titles.page', { context: 'security' })} />
+
       <VStack w="full">
         {/*authentication*/}
         <SettingsSubHeading text={t<string>('headings.authentication')} />

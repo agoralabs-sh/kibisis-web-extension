@@ -27,6 +27,7 @@ type IMessages = InternalEventAddedMessage | InternalPasswordLockTimeoutMessage;
 export default function useOnMainAppMessage(): void {
   const _functionName: string = 'useOnMainAppMessage';
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // selectors
   const logger: ILogger = useSelectLogger();
   const handleMessage = async (message: IMessages) => {
     logger.debug(`${_functionName}(): message "${message.reference}" received`);
