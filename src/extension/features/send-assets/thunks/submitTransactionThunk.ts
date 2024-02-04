@@ -21,10 +21,11 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAssetTypes,
+  IAsyncThunkConfigWithRejectValue,
   INativeCurrency,
   IMainRootState,
   INetworkWithTransactionParams,
@@ -41,16 +42,11 @@ import {
   sendStandardAssetTransferTransaction,
 } from '../utils';
 
-interface AsyncThunkConfig {
-  state: IMainRootState;
-  rejectValue?: BaseExtensionError;
-}
-
 const submitTransactionThunk: AsyncThunk<
   string, // return
   string, // args
-  AsyncThunkConfig
-> = createAsyncThunk<string, string, AsyncThunkConfig>(
+  IAsyncThunkConfigWithRejectValue
+> = createAsyncThunk<string, string, IAsyncThunkConfigWithRejectValue>(
   SendAssetsThunkEnum.SubmitTransaction,
   async (password, { getState, rejectWithValue }) => {
     const amountInStandardUnits: string =

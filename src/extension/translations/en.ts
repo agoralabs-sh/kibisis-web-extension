@@ -164,9 +164,10 @@ const translation: IResourceLanguage = {
   },
   errors: {
     descriptions: {
-      code: `Something has gone wrong.`,
+      code: `Please contact support and describe what happened.`,
       code_1002: `Failed to parse the "{{type}}" data.`,
       code_2000: 'The password seems to be invalid.',
+      code_2003: 'This account already exists.',
     },
     inputs: {
       copySeedPhraseRequired:
@@ -183,6 +184,7 @@ const translation: IResourceLanguage = {
       code: 'Well This Is Embarrassing...',
       code_1002: 'Parsing Error',
       code_2000: 'Invalid Password',
+      code_2003: 'Account Already Exists',
     },
   },
   headings: {

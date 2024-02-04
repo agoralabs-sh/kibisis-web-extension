@@ -44,6 +44,7 @@ export type { default as IAssetFreezeTransaction } from './IAssetFreezeTransacti
 export type { default as IAssetTransferTransaction } from './IAssetTransferTransaction';
 export type { default as IAssetTypes } from './IAssetTypes';
 export type { default as IAssetUnfreezeTransaction } from './IAssetUnfreezeTransaction';
+export type { default as IAsyncThunkConfigWithRejectValue } from './IAsyncThunkConfigWithRejectValue';
 export type { default as IBackgroundRootState } from './IBackgroundRootState';
 export type { default as IBaseActionMeta } from './IBaseActionMeta';
 export type { default as IBaseAsset } from './IBaseAsset';
