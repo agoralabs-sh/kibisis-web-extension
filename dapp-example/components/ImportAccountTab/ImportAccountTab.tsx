@@ -18,7 +18,7 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { InfinitySpin } from 'react-loader-spinner';
 
 // enums
-import { Arc0300ImportKeyEncodingEnum } from '@extension/enums';
+import { Arc0300EncodingEnum } from '@extension/enums';
 
 // theme
 import { theme } from '@extension/theme';
@@ -35,14 +35,14 @@ const ImportAccountTab: FC = () => {
   // states
   const [account, setAccount] = useState<Account>(generateAccount());
   const [svgString, setSvgString] = useState<string | null>(null);
-  const [encoding, setEncoding] = useState<Arc0300ImportKeyEncodingEnum>(
-    Arc0300ImportKeyEncodingEnum.Hexadecimal
+  const [encoding, setEncoding] = useState<Arc0300EncodingEnum>(
+    Arc0300EncodingEnum.Hexadecimal
   );
   // misc
   const qrCodeSize: number = 350;
   // handlers
   const handleEncodingTypeChange = (event: ChangeEvent<HTMLSelectElement>) =>
-    setEncoding(event.target.value as Arc0300ImportKeyEncodingEnum);
+    setEncoding(event.target.value as Arc0300EncodingEnum);
   const handleGenerateNewAccountClick = () => {
     const _account: Account = generateAccount();
 
@@ -84,10 +84,8 @@ const ImportAccountTab: FC = () => {
           <Text>Encoding:</Text>
 
           <Select onChange={handleEncodingTypeChange} value={encoding}>
-            <option value={Arc0300ImportKeyEncodingEnum.Hexadecimal}>
-              Hexadecimal
-            </option>
-            <option value={Arc0300ImportKeyEncodingEnum.Base64URLSafe}>
+            <option value={Arc0300EncodingEnum.Hexadecimal}>Hexadecimal</option>
+            <option value={Arc0300EncodingEnum.Base64URLSafe}>
               Base64 (URL Safe)
             </option>
           </Select>

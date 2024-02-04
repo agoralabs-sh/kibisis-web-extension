@@ -17,6 +17,9 @@ import { useSelectScanQRCodeModal } from '@extension/selectors';
 // theme
 import { theme } from '@extension/theme';
 
+// types
+import { IArc0300BaseSchema } from '@extension/types';
+
 interface IProps {
   onClose: () => void;
 }
@@ -35,6 +38,8 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   // renders
   const renderContent = () => {
+    let arc0300Schema: IArc0300BaseSchema | null;
+
     if (scanning) {
       return (
         <ScanQRCodeModalScanningContent onCancelClick={handleCancelClick} />
@@ -49,11 +54,6 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
 
-  useEffect(() => {
-    if (uri) {
-      console.log(uri);
-    }
-  }, [uri]);
   useEffect(() => {
     if (isOpen) {
       startScanningAction();
