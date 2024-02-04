@@ -58,7 +58,7 @@ const ScanQRCodeModalUnknownURIContent: FC<IProps> = ({
           {uri && (
             <ModalTextItem
               isCode={true}
-              label={t<string>('labels.value')}
+              label={`${t<string>('labels.value')}:`}
               value={uri}
             />
           )}

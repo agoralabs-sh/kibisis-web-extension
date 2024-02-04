@@ -20,9 +20,10 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
+  IBaseAsyncThunkConfig,
   IMainRootState,
   INetwork,
   IPrivateKey,
@@ -32,12 +33,8 @@ import { ISaveNewAccountPayload } from '../types';
 const saveNewAccountThunk: AsyncThunk<
   IAccount, // return
   ISaveNewAccountPayload, // args
-  Record<string, never>
-> = createAsyncThunk<
-  IAccount,
-  ISaveNewAccountPayload,
-  { state: IMainRootState }
->(
+  IBaseAsyncThunkConfig
+> = createAsyncThunk<IAccount, ISaveNewAccountPayload, IBaseAsyncThunkConfig>(
   AccountsThunkEnum.SaveNewAccount,
   async ({ name, password, privateKey }, { dispatch, getState }) => {
     const logger: ILogger = getState().system.logger;

@@ -34,8 +34,10 @@ const translation: IResourceLanguage = {
     tryAgain: 'Try Again',
   },
   captions: {
+    accountAlreadyAdded: 'Account already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
+    addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
@@ -102,6 +104,8 @@ const translation: IResourceLanguage = {
     mustEnterPasswordToAuthorizeOptIn:
       'You must enter your password to authorize an opt-in transaction.',
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
+    mustEnterPasswordToImportAccount:
+      'You must enter your password to import this account.',
     mustEnterPasswordToSign: 'Enter your password to sign.',
     mustEnterPasswordToSignSecurityToken:
       'Enter your password to sign this security token.',
@@ -161,6 +165,7 @@ const translation: IResourceLanguage = {
   errors: {
     descriptions: {
       code: `Something has gone wrong.`,
+      code_1002: `Failed to parse the "{{type}}" data.`,
       code_2000: 'The password seems to be invalid.',
     },
     inputs: {
@@ -175,12 +180,14 @@ const translation: IResourceLanguage = {
       unknown: `Something doesn't look right`,
     },
     titles: {
-      code: 'Well this is embarrassing...',
-      code_2000: 'Invalid password',
+      code: 'Well This Is Embarrassing...',
+      code_1002: 'Parsing Error',
+      code_2000: 'Invalid Password',
     },
   },
   headings: {
     addAsset: 'Add Asset',
+    addedAccount: 'Added Account!',
     addedAsset: 'Added Asset {{symbol}}!',
     allowMainNetConfirm: 'Allow MainNet Networks',
     authentication: 'Authentication',

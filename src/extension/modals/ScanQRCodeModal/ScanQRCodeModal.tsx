@@ -71,6 +71,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
             return (
               <ScanQRCodeModalImportKeyContent
                 onCancelClick={handleCancelClick}
+                onComplete={handleClose}
                 schema={arc0300Schema as IArc0300ImportKeySchema}
               />
             );
