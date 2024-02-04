@@ -7,12 +7,12 @@ import { IoInformationCircleOutline } from 'react-icons/io5';
 
 // components
 import CopyIconButton from '@extension/components/CopyIconButton';
+import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import Warning from '@extension/components/Warning';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
-import SignTxnsTextItem from './SignTxnsTextItem';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -74,7 +74,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
         spacing={1}
         w="full"
       >
-        <SignTxnsTextItem
+        <ModalTextItem
           isCode={true}
           label={`${t<string>('labels.type')}:`}
           value={t<string>('values.appOnComplete', {
@@ -100,7 +100,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
 
       {/*Note*/}
       {transaction.note && transaction.note.length > 0 && (
-        <SignTxnsTextItem
+        <ModalTextItem
           isCode={true}
           label={`${t<string>('labels.note')}:`}
           value={new TextDecoder().decode(transaction.note)}
@@ -130,7 +130,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
       {/*App ID*/}
       {transaction.appIndex && (
         <HStack spacing={0} w="full">
-          <SignTxnsTextItem
+          <ModalTextItem
             flexGrow={1}
             isCode={true}
             label={`${t<string>('labels.id')}:`}

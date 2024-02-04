@@ -20,15 +20,15 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
   // states
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [scanning, setScanning] = useState<boolean>(false);
-  const [url, setUrl] = useState<string | null>(null);
+  const [uri, setUri] = useState<string | null>(null);
   // misc
   const captureAction: () => Promise<void> = async () => {
-    let capturedUrl: string;
+    let capturedURI: string;
 
     try {
-      capturedUrl = await captureQrCode();
+      capturedURI = await captureQrCode();
 
-      setUrl(capturedUrl);
+      setUri(capturedURI);
 
       return stopScanningAction();
     } catch (error) {
@@ -44,7 +44,7 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
       // add a three-second interval that attempts to capture a qr code on the screen
       setIntervalId(
         window.setInterval(async () => {
-          if (url) {
+          if (uri) {
             return stopScanningAction();
           }
 
@@ -68,6 +68,6 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
     scanning,
     startScanningAction,
     stopScanningAction,
-    url,
+    uri,
   };
 }

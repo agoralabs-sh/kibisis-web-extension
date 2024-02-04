@@ -42,6 +42,12 @@ const slice = createSlice({
     setOnline: (state: Draft<ISystemState>, action: PayloadAction<boolean>) => {
       state.online = action.payload;
     },
+    setScanQRCodeModal: (
+      state: Draft<ISystemState>,
+      action: PayloadAction<boolean>
+    ) => {
+      state.scanQRCodeModal = action.payload;
+    },
     setSideBar: (
       state: Draft<ISystemState>,
       action: PayloadAction<boolean>
@@ -58,5 +64,6 @@ export const {
   setLogger,
   setNavigate,
   setOnline,
+  setScanQRCodeModal,
   setSideBar,
 } = slice.actions;

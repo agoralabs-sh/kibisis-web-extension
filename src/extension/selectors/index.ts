@@ -35,6 +35,7 @@ export { default as useSelectSavingPasswordLock } from './useSelectSavingPasswor
 export { default as useSelectSavingRegistration } from './useSelectSavingRegistration';
 export { default as useSelectSavingSessions } from './useSelectSavingSessions';
 export { default as useSelectSavingSettings } from './useSelectSavingSettings';
+export { default as useSelectScanQRCodeModal } from './useSelectScanQRCodeModal';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';
 export { default as useSelectSendingAssetAmountInStandardUnits } from './useSelectSendingAssetAmountInStandardUnits';
 export { default as useSelectSendingAssetConfirming } from './useSelectSendingAssetConfirming';

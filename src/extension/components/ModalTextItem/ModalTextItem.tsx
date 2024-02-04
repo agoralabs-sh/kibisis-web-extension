@@ -13,7 +13,7 @@ interface IProps extends StackProps {
   value: string;
 }
 
-const SignTxnsTextItem: FC<IProps> = ({
+const ModalTextItem: FC<IProps> = ({
   isCode = false,
   label,
   value,
@@ -30,9 +30,12 @@ const SignTxnsTextItem: FC<IProps> = ({
       w="full"
       {...stackProps}
     >
+      {/*label*/}
       <Text color={defaultTextColor} fontSize="xs">
         {label}
       </Text>
+
+      {/*value*/}
       {isCode ? (
         <Code borderRadius="md" fontSize="xs" wordBreak="break-word">
           {value}
@@ -46,4 +49,4 @@ const SignTxnsTextItem: FC<IProps> = ({
   );
 };
 
-export default SignTxnsTextItem;
+export default ModalTextItem;

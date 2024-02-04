@@ -13,6 +13,7 @@ interface ISystemState {
   logger: ILogger;
   navigate: NavigateFunction | null;
   online: boolean;
+  scanQRCodeModal: boolean;
   sidebar: boolean;
 }
 

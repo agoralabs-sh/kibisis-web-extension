@@ -138,7 +138,7 @@ const translation: IResourceLanguage = {
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
     scanningForQrCode:
-      'Scanning for a WalletConnect QR Code. Make sure the WalletConnect QR code is visible in the background.',
+      'Scanning for a QR Code. Make sure the QR code is visible in the background.',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
@@ -153,6 +153,7 @@ const translation: IResourceLanguage = {
     transactionIdCopied: 'Transaction ID copied!',
     transactionSendSuccessful:
       'Transaction "{{transactionId}}" was successfully sent.',
+    unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
   },
   errors: {
@@ -205,6 +206,7 @@ const translation: IResourceLanguage = {
     passwordLock: 'Welcome back',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
+    scanningForQRCode: 'Scanning For QR Code',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
@@ -236,6 +238,7 @@ const translation: IResourceLanguage = {
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
     transactionSuccessful: 'Transaction Successful!',
+    unknownQRCode: 'Unknown QR Code',
   },
   labels: {
     activity: 'Activity',
@@ -319,6 +322,7 @@ const translation: IResourceLanguage = {
     removeAccount: 'Remove Account',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
+    scanQRCode: 'Scan QR Code',
     seedPhrase: 'Seed Phrase',
     selectionKey: 'VRF Public Key',
     selectWalletAccount: 'Select wallet account',
@@ -335,6 +339,7 @@ const translation: IResourceLanguage = {
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
     url: 'URL',
+    value: 'Value',
     version: 'Version',
     voteKey: 'Participation Public Key',
     voteKeyDilution: 'Key Dilution',

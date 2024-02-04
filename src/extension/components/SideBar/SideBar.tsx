@@ -44,7 +44,7 @@ import {
 
 // features
 import { initializeSendAsset } from '@extension/features/send-assets';
-import { openWalletConnectModal } from '@extension/features/sessions';
+import { setScanQRCodeModal } from '@extension/features/system';
 
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
@@ -72,14 +72,14 @@ const SideBar: FC = () => {
   const [searchParams] = useSearchParams({
     accountTabId: '0',
   });
-  // hooks
-  const borderColor: string = useBorderColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const network: INetwork | null = useSelectSelectedNetwork();
+  // hooks
+  const borderColor: string = useBorderColor();
+  const defaultTextColor: string = useDefaultTextColor();
+  const primaryColor: string = usePrimaryColor();
   // state
   const [activeAccountAddress, setActiveAccountAddress] = useState<
     string | null
@@ -108,7 +108,7 @@ const SideBar: FC = () => {
     onCloseSideBar();
     navigate(ADD_ACCOUNT_ROUTE);
   };
-  const handleConnectWalletClick = () => dispatch(openWalletConnectModal());
+  const handleScanQRCodeClick = () => dispatch(setScanQRCodeModal(true));
   const handleSendAssetClick = () => {
     if (network) {
       dispatch(
@@ -222,14 +222,14 @@ const SideBar: FC = () => {
 
       <Divider />
 
-      {/* accounts */}
+      {/*accounts*/}
       <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
         {renderAccounts()}
       </VStack>
 
       <Divider />
 
-      {/* send asset */}
+      {/*send asset*/}
       <SideBarActionItem
         icon={IoSendOutline}
         label={t<string>('labels.sendAsset', {
@@ -238,22 +238,21 @@ const SideBar: FC = () => {
         onClick={handleSendAssetClick}
       />
 
-      {/*TODO: disable until walletconnect is fully integrated*/}
-      {/* connect dapp */}
-      {/*<SideBarActionItem*/}
-      {/*  icon={IoScanOutline}*/}
-      {/*  label={t<string>('labels.connectWallet')}*/}
-      {/*  onClick={handleConnectWalletClick}*/}
-      {/*/>*/}
+      {/*scan qr code*/}
+      <SideBarActionItem
+        icon={IoScanOutline}
+        label={t<string>('labels.scanQRCode')}
+        onClick={handleScanQRCodeClick}
+      />
 
-      {/* add account */}
+      {/*add account*/}
       <SideBarActionItem
         icon={IoAddCircleOutline}
         label={t<string>('labels.addAccount')}
         onClick={handleAddAccountClick}
       />
 
-      {/* settings */}
+      {/*settings*/}
       <SideBarActionItem
         icon={IoSettingsOutline}
         label={t<string>('labels.settings')}
