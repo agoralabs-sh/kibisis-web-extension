@@ -1,4 +1,5 @@
 export { default as algorandProviderSignTxns } from './algorandProviderSignTxns';
+export { default as convertAccountToImportAccountURI } from './convertAccountToImportAccountURI';
 export { default as createAppCallTransaction } from './createAppCallTransaction';
 export { default as createAssetConfigTransaction } from './createAssetConfigTransaction';
 export { default as createAssetCreateTransaction } from './createAssetCreateTransaction';

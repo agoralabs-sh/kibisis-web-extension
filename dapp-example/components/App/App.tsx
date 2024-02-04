@@ -31,6 +31,7 @@ import ConnectMenu, {
   IConnectResult,
 } from '../ConnectMenu';
 import EnabledAccountsTable from '../EnabledAccountsTable';
+import ImportAccountTab from '../ImportAccountTab';
 import KeyRegistrationActionsTab from '../KeyRegistrationActionsTab';
 import PaymentActionsTab from '../PaymentActionsTab';
 import SignDataTab from '../SignDataTab';
@@ -185,6 +186,7 @@ const App: FC = () => {
                   <Tab>Keys</Tab>
                   <Tab>Sign Bytes</Tab>
                   <Tab>Sign JWT</Tab>
+                  <Tab>Import Account</Tab>
                 </TabList>
 
                 <TabPanels>
@@ -227,6 +229,8 @@ const App: FC = () => {
                     account={selectedAccount}
                     connectionType={connectionType}
                   />
+
+                  <ImportAccountTab />
                 </TabPanels>
               </Tabs>
             </VStack>
