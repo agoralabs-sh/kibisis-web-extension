@@ -9,7 +9,8 @@ import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-const SignTxnsLoadingItem: FC<StackProps> = (props: StackProps) => {
+const ModalSkeletonItem: FC<StackProps> = (props: StackProps) => {
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
 
@@ -27,6 +28,7 @@ const SignTxnsLoadingItem: FC<StackProps> = (props: StackProps) => {
           6
         )}:`}</Text>
       </Skeleton>
+
       <Skeleton>
         <Text color={subTextColor} fontSize="xs">
           {faker.random.alpha(8)}
@@ -36,4 +38,4 @@ const SignTxnsLoadingItem: FC<StackProps> = (props: StackProps) => {
   );
 };
 
-export default SignTxnsLoadingItem;
+export default ModalSkeletonItem;

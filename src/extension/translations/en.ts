@@ -31,6 +31,7 @@ const translation: IResourceLanguage = {
     save: 'Save',
     send: 'Send',
     sign: 'Sign',
+    tryAgain: 'Try Again',
   },
   captions: {
     addAsset:
@@ -84,6 +85,7 @@ const translation: IResourceLanguage = {
     groupIdCopied: 'Group ID copied!',
     hideAssetConfirm:
       'Are you sure you want to hide {{symbol}}? You can re-add it back to your asset holdings again.',
+    importAccount: 'You are about to import the following account.',
     importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
     importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
     importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
@@ -192,6 +194,7 @@ const translation: IResourceLanguage = {
     enterYourSeedPhrase: 'Enter your seed phrase',
     generateSeedPhrase: 'Generate seed phrase',
     hideAssetConfirm: 'Hide {{symbol}}',
+    importAccount: 'Import Account',
     importExistingAccount: 'Import An Existing Account',
     importExistingAccountComplete: 'Almost There...',
     importRekeyedAccount: 'Import A Rekeyed Account',

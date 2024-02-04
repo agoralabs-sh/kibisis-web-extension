@@ -23,32 +23,32 @@ export default function parseURIToArc0300Schema<Schema = IArc0300BaseSchema>(
 ): Schema | null {
   const _functionName: string = 'parseURIToArc0300Schema';
   const logger: ILogger | undefined = options?.logger;
-  let url: URL;
+  const [protocol, href]: string[] = uri.split(':').filter((value) => value);
 
-  // parse the url
-  try {
-    url = new URL(uri);
-  } catch (error) {
+  if (!protocol) {
     logger?.debug(`${_functionName}: invalid url`);
 
     return null;
   }
 
   // check if we are using the correct protocol
-  if (url.protocol !== `${ARC_0300_PROTOCOL}:`) {
+  if (protocol !== ARC_0300_PROTOCOL) {
     logger?.debug(
-      `${_functionName}: not an arc0300 protocol, found "${url.protocol}"`
+      `${_functionName}: not an arc0300 protocol, found "${protocol}"`
     );
 
     return null;
   }
 
+  const [origin, search] = href.split('?').filter((value) => value);
+  const [host, ...paths] = origin.split('/').filter((value) => value);
+
   // using the host of the parsed url, determine the arc0300 method
-  switch (url.host) {
+  switch (host) {
     case Arc0300MethodEnum.ImportKey:
       return parseArc0300ImportKeySchema(
-        url.pathname,
-        url.searchParams,
+        paths,
+        new URLSearchParams(search),
         options
       ) as Schema;
     default:

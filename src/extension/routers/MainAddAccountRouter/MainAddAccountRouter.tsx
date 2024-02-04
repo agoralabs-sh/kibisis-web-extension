@@ -46,7 +46,7 @@ import type {
 } from '@extension/types';
 
 // utils
-import getAddressFromPrivateKey from '@extension/utils/getAddressFromPrivateKey';
+import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 
 const MainAddAccountRouter: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -102,7 +102,7 @@ const MainAddAccountRouter: FC = () => {
     let address: string | null;
 
     if (addAccountResult) {
-      address = getAddressFromPrivateKey(addAccountResult.privateKey, {
+      address = convertPrivateKeyToAddress(addAccountResult.privateKey, {
         logger,
       });
 

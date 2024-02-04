@@ -9,13 +9,12 @@ import type { IBaseOptions, ILogger } from '@common/types';
 import type { IArc0300ImportKeySchema } from '@extension/types';
 
 export default function parseArc0300ImportKeySchema(
-  pathname: string,
+  paths: string[],
   searchParams: URLSearchParams,
   options?: IBaseOptions
 ): IArc0300ImportKeySchema | null {
   const _functionName: string = 'parseArc0300ImportKeySchema';
   const logger: ILogger | undefined = options?.logger;
-  const paths: string[] = pathname.split('/').filter((value) => value);
   let encodingParam: string | null;
   let encoding: Arc0300EncodingEnum;
 
