@@ -1,3 +1,10 @@
+# [1.11.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.4...v1.11.0-beta.5) (2024-02-05)
+
+
+### Features
+
+* import account via qr code ([#154](https://github.com/agoralabs-sh/kibisis-web-extension/issues/154)) ([548a785](https://github.com/agoralabs-sh/kibisis-web-extension/commit/548a785676637112a8af11608203936a55cb7feb))
+
 # [1.11.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.3...v1.11.0-beta.4) (2024-02-03)
 
 
