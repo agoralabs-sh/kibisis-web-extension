@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Route, Routes, useNavigate } from 'react-router-dom';
 
@@ -11,9 +12,11 @@ import {
 
 // features
 import {
+  ISaveNewAccountPayload,
   saveNewAccountThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
+import { create as createNotification } from '@extension/features/notifications';
 
 // modals
 import ConfirmPasswordModal from '@extension/modals//ConfirmPasswordModal';
@@ -46,13 +49,15 @@ import type {
 } from '@extension/types';
 
 // utils
-import getAddressFromPrivateKey from '@extension/utils/getAddressFromPrivateKey';
+import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
+import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const MainAddAccountRouter: FC = () => {
+  const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
-  const accounts: IAccount[] = useSelectAccounts();
   // selectors
+  const accounts: IAccount[] = useSelectAccounts();
   const logger: ILogger = useSelectLogger();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const saving: boolean = useSelectSavingAccounts();
@@ -61,19 +66,17 @@ const MainAddAccountRouter: FC = () => {
   const [addAccountResult, setAddAccountResult] =
     useState<IAddAccountCompleteResult | null>(null);
   // handlers
-  const handleOnAddAccountComplete: IAddAccountCompleteFunction = ({
+  const handleOnAddAccountComplete: IAddAccountCompleteFunction = async ({
     name,
     privateKey,
   }: IAddAccountCompleteResult) => {
     // if the password lock is enabled and the password is active, just submit the result
     if (settings.security.enablePasswordLock && passwordLockPassword) {
-      dispatch(
-        saveNewAccountThunk({
-          name,
-          password: passwordLockPassword,
-          privateKey,
-        })
-      );
+      await saveNewAccount({
+        name,
+        password: passwordLockPassword,
+        privateKey,
+      });
 
       return;
     }
@@ -85,13 +88,58 @@ const MainAddAccountRouter: FC = () => {
     });
   };
   const handleOnConfirmPasswordModalClose = () => setAddAccountResult(null);
-  const handleOnConfirmPasswordModalConfirm = (password: string) => {
+  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
     if (addAccountResult) {
+      await saveNewAccount({
+        name: addAccountResult.name,
+        password,
+        privateKey: addAccountResult.privateKey,
+      });
+    }
+  };
+  const saveNewAccount = async ({
+    name,
+    password,
+    privateKey,
+  }: ISaveNewAccountPayload) => {
+    let account: IAccount;
+
+    if (addAccountResult) {
+      try {
+        account = await dispatch(
+          saveNewAccountThunk({
+            name,
+            password,
+            privateKey,
+          })
+        ).unwrap();
+      } catch (error) {
+        dispatch(
+          createNotification({
+            description: t<string>('errors.descriptions.code', {
+              context: error.code,
+            }),
+            ephemeral: true,
+            title: t<string>('errors.titles.code', { context: error.code }),
+            type: 'error',
+          })
+        );
+
+        return;
+      }
+
       dispatch(
-        saveNewAccountThunk({
-          name: addAccountResult.name,
-          password,
-          privateKey: addAccountResult.privateKey,
+        createNotification({
+          ephemeral: true,
+          description: t<string>('captions.addedAccount', {
+            address: ellipseAddress(
+              AccountService.convertPublicKeyToAlgorandAddress(
+                account.publicKey
+              )
+            ),
+          }),
+          title: t<string>('headings.addedAccount'),
+          type: 'success',
         })
       );
     }
@@ -102,7 +150,7 @@ const MainAddAccountRouter: FC = () => {
     let address: string | null;
 
     if (addAccountResult) {
-      address = getAddressFromPrivateKey(addAccountResult.privateKey, {
+      address = convertPrivateKeyToAddress(addAccountResult.privateKey, {
         logger,
       });
 

@@ -37,7 +37,12 @@ import {
 } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
-import { setConfirm, setError, setNavigate } from '@extension/features/system';
+import {
+  setConfirm,
+  setError,
+  setNavigate,
+  setScanQRCodeModal,
+} from '@extension/features/system';
 
 // hooks
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
@@ -51,6 +56,7 @@ import AddAssetModal from '@extension/modals/AddAssetModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
 import ErrorModal from '@extension/modals/ErrorModal';
+import ScanQRCodeModal from '@extension/modals/ScanQRCodeModal';
 import SendAssetModal from '@extension/modals/SendAssetModal';
 import SignBytesModal from '@extension/modals/SignBytesModal';
 import SignTxnsModal from '@extension/modals/SignTxnsModal';
@@ -85,6 +91,7 @@ const Root: FC = () => {
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleErrorModalClose = () => dispatch(setError(null));
+  const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(false));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
   const handleSignTxnsModalClose = () => dispatch(setSignTxnsRequest(null));
@@ -140,6 +147,7 @@ const Root: FC = () => {
       <SignBytesModal onClose={handleSignBytesModalClose} />
       <AddAssetModal onClose={handleAddAssetClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
+      <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />
       <WalletConnectModal onClose={handleWalletConnectModalClose} />
       <MainLayout>
         <Outlet />

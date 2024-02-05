@@ -31,10 +31,13 @@ const translation: IResourceLanguage = {
     save: 'Save',
     send: 'Send',
     sign: 'Sign',
+    tryAgain: 'Try Again',
   },
   captions: {
+    accountAlreadyAdded: 'Account already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
+    addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
@@ -84,6 +87,7 @@ const translation: IResourceLanguage = {
     groupIdCopied: 'Group ID copied!',
     hideAssetConfirm:
       'Are you sure you want to hide {{symbol}}? You can re-add it back to your asset holdings again.',
+    importAccount: 'You are about to import the following account.',
     importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
     importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
     importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
@@ -100,6 +104,8 @@ const translation: IResourceLanguage = {
     mustEnterPasswordToAuthorizeOptIn:
       'You must enter your password to authorize an opt-in transaction.',
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
+    mustEnterPasswordToImportAccount:
+      'You must enter your password to import this account.',
     mustEnterPasswordToSign: 'Enter your password to sign.',
     mustEnterPasswordToSignSecurityToken:
       'Enter your password to sign this security token.',
@@ -138,7 +144,7 @@ const translation: IResourceLanguage = {
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
     scanningForQrCode:
-      'Scanning for a WalletConnect QR Code. Make sure the WalletConnect QR code is visible in the background.',
+      'Scanning for a QR Code. Make sure the QR code is visible in the background.',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
@@ -153,12 +159,15 @@ const translation: IResourceLanguage = {
     transactionIdCopied: 'Transaction ID copied!',
     transactionSendSuccessful:
       'Transaction "{{transactionId}}" was successfully sent.',
+    unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
   },
   errors: {
     descriptions: {
-      code: `Something has gone wrong.`,
+      code: `Please contact support and describe what happened.`,
+      code_1002: `Failed to parse the "{{type}}" data.`,
       code_2000: 'The password seems to be invalid.',
+      code_2003: 'This account already exists.',
     },
     inputs: {
       copySeedPhraseRequired:
@@ -172,12 +181,15 @@ const translation: IResourceLanguage = {
       unknown: `Something doesn't look right`,
     },
     titles: {
-      code: 'Well this is embarrassing...',
-      code_2000: 'Invalid password',
+      code: 'Well This Is Embarrassing...',
+      code_1002: 'Parsing Error',
+      code_2000: 'Invalid Password',
+      code_2003: 'Account Already Exists',
     },
   },
   headings: {
     addAsset: 'Add Asset',
+    addedAccount: 'Added Account!',
     addedAsset: 'Added Asset {{symbol}}!',
     allowMainNetConfirm: 'Allow MainNet Networks',
     authentication: 'Authentication',
@@ -191,6 +203,7 @@ const translation: IResourceLanguage = {
     enterYourSeedPhrase: 'Enter your seed phrase',
     generateSeedPhrase: 'Generate seed phrase',
     hideAssetConfirm: 'Hide {{symbol}}',
+    importAccount: 'Import Account',
     importExistingAccount: 'Import An Existing Account',
     importExistingAccountComplete: 'Almost There...',
     importRekeyedAccount: 'Import A Rekeyed Account',
@@ -205,6 +218,7 @@ const translation: IResourceLanguage = {
     passwordLock: 'Welcome back',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
+    scanningForQRCode: 'Scanning For QR Code',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
@@ -236,6 +250,7 @@ const translation: IResourceLanguage = {
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
     transactionSuccessful: 'Transaction Successful!',
+    unknownQRCode: 'Unknown QR Code',
   },
   labels: {
     activity: 'Activity',
@@ -319,6 +334,7 @@ const translation: IResourceLanguage = {
     removeAccount: 'Remove Account',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
+    scanQRCode: 'Scan QR Code',
     seedPhrase: 'Seed Phrase',
     selectionKey: 'VRF Public Key',
     selectWalletAccount: 'Select wallet account',
@@ -335,6 +351,7 @@ const translation: IResourceLanguage = {
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
     url: 'URL',
+    value: 'Value',
     version: 'Version',
     voteKey: 'Participation Public Key',
     voteKeyDilution: 'Key Dilution',

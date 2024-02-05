@@ -16,8 +16,8 @@ import { ConfigNameEnum, EnvironmentEnum, TargetEnum } from './enums';
 import {
   APP_TITLE,
   CHROME_BUILD_PATH,
-  DAPP_BUILD_PATH,
-  DAPP_SRC_PATH,
+  DAPP_EXAMPLE_BUILD_PATH,
+  DAPP_EXAMPLE_SRC_PATH,
   EDGE_BUILD_PATH,
   FIREFOX_BUILD_PATH,
   SRC_PATH,
@@ -41,7 +41,7 @@ const configs: (
 }: IWebpackEnvironmentVariables) => {
   let buildPath: string;
   let commonConfig: Configuration;
-  let dappPort: number;
+  let dappExamplePort: number;
   let definePlugin: DefinePlugin;
   let devtool: string | false | undefined;
   let extensionPath: string;
@@ -58,7 +58,7 @@ const configs: (
   // load .env file
   config();
 
-  dappPort = 8080;
+  dappExamplePort = 8080;
   definePlugin = new DefinePlugin({
     __APP_TITLE__: JSON.stringify(APP_TITLE),
     __ENV__: JSON.stringify(environment),
@@ -340,7 +340,7 @@ const configs: (
                 buildPath,
                 devtools: true,
                 persistState: true,
-                startUrls: [`http://localhost:${dappPort}`], // navigate to the dapp
+                startUrls: [`http://localhost:${dappExamplePort}`], // navigate to the dapp
                 target,
               }),
             ]
@@ -354,11 +354,11 @@ const configs: (
     merge(commonConfig, {
       devtool: 'cheap-module-source-map',
       devServer: {
-        port: dappPort,
-        watchFiles: [`${DAPP_SRC_PATH}/**/*`],
+        port: dappExamplePort,
+        watchFiles: [`${DAPP_EXAMPLE_SRC_PATH}/**/*`],
       },
       entry: {
-        ['main']: resolve(DAPP_SRC_PATH, 'index.ts'),
+        ['main']: resolve(DAPP_EXAMPLE_SRC_PATH, 'index.ts'),
       },
       mode: 'development',
       module: {
@@ -390,7 +390,7 @@ const configs: (
       output: {
         clean: true,
         filename: '[name].js',
-        path: DAPP_BUILD_PATH,
+        path: DAPP_EXAMPLE_BUILD_PATH,
         pathinfo: false,
       },
       plugins: [
@@ -402,10 +402,10 @@ const configs: (
         }),
         new HtmlWebpackPlugin({
           chunks: ['main'],
-          favicon: resolve(DAPP_SRC_PATH, 'favicon.png'),
+          favicon: resolve(DAPP_EXAMPLE_SRC_PATH, 'favicon.png'),
           filename: 'index.html',
           inject: 'body',
-          template: resolve(DAPP_SRC_PATH, 'index.hbs'),
+          template: resolve(DAPP_EXAMPLE_SRC_PATH, 'index.hbs'),
           title: `${APP_TITLE} Dapp Example`,
         }),
       ],

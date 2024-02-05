@@ -145,20 +145,20 @@ $ yarn start:<chrome|firefox>
 
 ### 4.1. Useful Commands
 
-| Command                | Description                                                                                                                                                                                            |
-|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `yarn build:chrome`    | Bundles the source code and Chrome specific assets into the `.chrome_build/` directory.                                                                                                                |
-| `yarn build:edge`      | Bundles the source code and Microsoft Edge specific assets into the `.edge_build/` directory.                                                                                                          |
-| `yarn build:firefox`   | Bundles the source code and Firefox specific assets into the `.firefox_build/` directory.                                                                                                              |
-| `yarn install:chrome`  | Installs/updates the latest version of Chrome For Testing browser to the project root. This removes the existing version if it exists.                                                                 |
-| `yarn install:firefox` | Installs/updates the latest version of Firefox Developer Edition browser to the project root. This removes the existing version if it exists.                                                          |
-| `yarn package:chrome`  | Packages the contents of the `.chrome_build/` directory into a `kibisis-chrome-{version}.zip` file, ready for submission.                                                                              |
-| `yarn package:edge`    | Packages the contents of the `.edge_build/` directory into a `kibisis-edge-{version}.zip` file, ready for submission.                                                                                  |
-| `yarn package:firefox` | Packages the contents of the `.firefox_build/` directory into a `kibisis-firefox-{version}.zip` file, ready for submission.                                                                            |
-| `yarn prettier`        | Runs `prettier` with the same configuration that is run on the pre-commit hooks.                                                                                                                       |
-| `yarn start:chrome`    | Bundles the source code & the add-on assets, starts the local Chrome For Testing Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension. |
-| `yarn start:firefox`   | Bundles the source code & the add-on assets, starts the local Firefox Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension.            |
-| `yarn start:dapp`      | Starts the example dApp at [http://localhost:8080](http://localhost:8080)                                                                                                                              |
+| Command                   | Description                                                                                                                                                                                            |
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `yarn build:chrome`       | Bundles the source code and Chrome specific assets into the `.chrome_build/` directory.                                                                                                                |
+| `yarn build:edge`         | Bundles the source code and Microsoft Edge specific assets into the `.edge_build/` directory.                                                                                                          |
+| `yarn build:firefox`      | Bundles the source code and Firefox specific assets into the `.firefox_build/` directory.                                                                                                              |
+| `yarn install:chrome`     | Installs/updates the latest version of Chrome For Testing browser to the project root. This removes the existing version if it exists.                                                                 |
+| `yarn install:firefox`    | Installs/updates the latest version of Firefox Developer Edition browser to the project root. This removes the existing version if it exists.                                                          |
+| `yarn package:chrome`     | Packages the contents of the `.chrome_build/` directory into a `kibisis-chrome-{version}.zip` file, ready for submission.                                                                              |
+| `yarn package:edge`       | Packages the contents of the `.edge_build/` directory into a `kibisis-edge-{version}.zip` file, ready for submission.                                                                                  |
+| `yarn package:firefox`    | Packages the contents of the `.firefox_build/` directory into a `kibisis-firefox-{version}.zip` file, ready for submission.                                                                            |
+| `yarn prettier`           | Runs `prettier` with the same configuration that is run on the pre-commit hooks.                                                                                                                       |
+| `yarn start:chrome`       | Bundles the source code & the add-on assets, starts the local Chrome For Testing Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension. |
+| `yarn start:firefox`      | Bundles the source code & the add-on assets, starts the local Firefox Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension.            |
+| `yarn start:dapp-example` | Starts the example dApp at [http://localhost:8080](http://localhost:8080)                                                                                                                              |
 <sup>[Back to top ^][table-of-contents]</sup>
 
 ### 4.2. Manifest Permissions

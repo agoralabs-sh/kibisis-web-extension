@@ -9,9 +9,6 @@ import {
   PrivateKeyAlreadyExistsError,
 } from '@extension/errors';
 
-// features
-import { setError } from '@extension/features/system';
-
 // enums
 import { AccountsThunkEnum } from '@extension/enums';
 
@@ -20,11 +17,10 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
-  IMainRootState,
-  INetwork,
+  IAsyncThunkConfigWithRejectValue,
   IPrivateKey,
 } from '@extension/types';
 import { ISaveNewAccountPayload } from '../types';
@@ -32,69 +28,68 @@ import { ISaveNewAccountPayload } from '../types';
 const saveNewAccountThunk: AsyncThunk<
   IAccount, // return
   ISaveNewAccountPayload, // args
-  Record<string, never>
+  IAsyncThunkConfigWithRejectValue
 > = createAsyncThunk<
   IAccount,
   ISaveNewAccountPayload,
-  { state: IMainRootState }
+  IAsyncThunkConfigWithRejectValue
 >(
   AccountsThunkEnum.SaveNewAccount,
-  async ({ name, password, privateKey }, { dispatch, getState }) => {
+  async (
+    { name, password, privateKey },
+    { dispatch, getState, rejectWithValue }
+  ) => {
+    const encodedPublicKey: string = encodeHex(
+      sign.keyPair.fromSecretKey(privateKey).publicKey
+    ).toUpperCase();
     const logger: ILogger = getState().system.logger;
-    const networks: INetwork[] = getState().networks.items;
     let account: IAccount;
     let accountService: AccountService;
-    let encodedPublicKey: string;
     let errorMessage: string;
     let privateKeyItem: IPrivateKey | null;
     let privateKeyService: PrivateKeyService;
 
+    logger.debug(`${AccountsThunkEnum.SaveNewAccount}: inferring public key`);
+
+    privateKeyService = new PrivateKeyService({
+      logger,
+      passwordTag: browser.runtime.id,
+    });
+
+    privateKeyItem = await privateKeyService.getPrivateKeyByPublicKey(
+      encodedPublicKey
+    );
+
+    if (privateKeyItem) {
+      errorMessage = `private key for "${encodedPublicKey}" already exists`;
+
+      logger.debug(`${AccountsThunkEnum.SaveNewAccount}: ${errorMessage}`);
+
+      return rejectWithValue(new PrivateKeyAlreadyExistsError(errorMessage));
+    }
+
+    logger.debug(
+      `${AccountsThunkEnum.SaveNewAccount}: saving private key "${encodedPublicKey}" to storage`
+    );
+
     try {
-      logger.debug(`${AccountsThunkEnum.SaveNewAccount}: inferring public key`);
-
-      encodedPublicKey = encodeHex(
-        sign.keyPair.fromSecretKey(privateKey).publicKey
-      ).toUpperCase();
-      privateKeyService = new PrivateKeyService({
-        logger,
-        passwordTag: browser.runtime.id,
-      });
-
-      privateKeyItem = await privateKeyService.getPrivateKeyByPublicKey(
-        encodedPublicKey
-      );
-
-      if (privateKeyItem) {
-        errorMessage = `private key for "${encodedPublicKey}" already exists`;
-
-        logger.debug(`${AccountsThunkEnum.SaveNewAccount}: ${errorMessage}`);
-
-        throw new PrivateKeyAlreadyExistsError(errorMessage);
-      }
-
-      logger.debug(
-        `${AccountsThunkEnum.SaveNewAccount}: saving private key "${encodedPublicKey}" to storage`
-      );
-
       // add the new private key
       privateKeyItem = await privateKeyService.setPrivateKey(
         privateKey,
         password
       );
-
-      if (!privateKeyItem) {
-        errorMessage = `failed to save private key "${encodedPublicKey}" to storage`;
-
-        logger.debug(`${AccountsThunkEnum.SaveNewAccount}: ${errorMessage}`);
-
-        throw new MalformedDataError(errorMessage);
-      }
     } catch (error) {
       logger.error(`${AccountsThunkEnum.SaveNewAccount}: ${error.message}`);
 
-      dispatch(setError(error));
+      return rejectWithValue(error);
+    }
 
-      throw error;
+    if (!privateKeyItem) {
+      errorMessage = `failed to save private key "${encodedPublicKey}" to storage`;
+
+      logger.debug(`${AccountsThunkEnum.SaveNewAccount}: ${errorMessage}`);
+
+      return rejectWithValue(new MalformedDataError(errorMessage));
     }
 
     logger.debug(

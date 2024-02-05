@@ -29,7 +29,6 @@ import { DEFAULT_GAP } from '@extension/constants';
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // selectors
@@ -39,7 +38,7 @@ import { useSelectSettings } from '@extension/selectors';
 import { theme } from '@extension/theme';
 
 // types
-import { ISettings } from '@extension/types';
+import type { ISettings } from '@extension/types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
@@ -56,17 +55,21 @@ const ShareAddressModal: FC<IProps> = ({
   onClose,
 }: IProps) => {
   const { t } = useTranslation();
+  // selectors
+  const settings: ISettings = useSelectSettings();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
   );
-  const primaryColorScheme: string = usePrimaryColorScheme();
   const textBackgroundColor: string = useTextBackgroundColor();
-  const settings: ISettings = useSelectSettings();
+  // states
   const [pillIndex, setPillIndex] = useState<number>(0);
   const [svgString, setSvgString] = useState<string | null>(null);
+  // misc
   const qrCodeSize: number = 350;
+  // handlers
   const handlePillChange = (index: number) => setPillIndex(index);
   const getFormatFromIndex = (index: number, value: string): string => {
     switch (index) {
@@ -112,6 +115,7 @@ const ShareAddressModal: FC<IProps> = ({
             {t<string>('headings.shareAddress')}
           </Heading>
         </ModalHeader>
+
         <ModalBody px={DEFAULT_GAP}>
           <VStack alignItems="center" spacing={2} w="full">
             {settings.advanced.allowDidTokenFormat && (

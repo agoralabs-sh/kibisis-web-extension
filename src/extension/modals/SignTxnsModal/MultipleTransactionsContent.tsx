@@ -5,6 +5,7 @@ import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
+import ModalTextItem from '@extension/components/ModalTextItem';
 import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetConfigTransactionContent from './AssetConfigTransactionContent';
 import AssetCreateTransactionContent from './AssetCreateTransactionContent';
@@ -12,7 +13,6 @@ import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
 import KeyRegistrationTransactionContent from './KeyRegistrationTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
-import SignTxnsTextItem from './SignTxnsTextItem';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -196,7 +196,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
   return (
     <VStack spacing={4} w="full">
       {/*Group ID*/}
-      <SignTxnsTextItem
+      <ModalTextItem
         label={`${t<string>('labels.groupId')}:`}
         value={computedGroupId}
       />

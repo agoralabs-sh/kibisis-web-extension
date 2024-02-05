@@ -35,6 +35,8 @@ export type { default as IAppWindow } from './IAppWindow';
 export type { default as IArc200Asset } from './IArc200Asset';
 export type { default as IArc200AssetHolding } from './IArc200AssetHolding';
 export type { default as IArc200AssetInformation } from './IArc200AssetInformation';
+export type { default as IARC0300BaseSchema } from './IARC0300BaseSchema';
+export type { default as IARC0300AccountImportSchema } from './IARC0300AccountImportSchema';
 export type { default as IAssetConfigTransaction } from './IAssetConfigTransaction';
 export type { default as IAssetCreateTransaction } from './IAssetCreateTransaction';
 export type { default as IAssetDestroyTransaction } from './IAssetDestroyTransaction';
@@ -42,6 +44,7 @@ export type { default as IAssetFreezeTransaction } from './IAssetFreezeTransacti
 export type { default as IAssetTransferTransaction } from './IAssetTransferTransaction';
 export type { default as IAssetTypes } from './IAssetTypes';
 export type { default as IAssetUnfreezeTransaction } from './IAssetUnfreezeTransaction';
+export type { default as IAsyncThunkConfigWithRejectValue } from './IAsyncThunkConfigWithRejectValue';
 export type { default as IBackgroundRootState } from './IBackgroundRootState';
 export type { default as IBaseActionMeta } from './IBaseActionMeta';
 export type { default as IBaseAsset } from './IBaseAsset';

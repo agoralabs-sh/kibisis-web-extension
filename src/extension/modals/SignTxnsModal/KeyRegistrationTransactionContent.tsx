@@ -6,10 +6,10 @@ import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
+import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
-import SignTxnsTextItem from './SignTxnsTextItem';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -72,7 +72,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
         <>
           {/*vote key*/}
           {transaction.voteKey && (
-            <SignTxnsTextItem
+            <ModalTextItem
               isCode={true}
               label={`${t<string>('labels.voteKey')}:`}
               value={encodeBase64(transaction.voteKey)}
@@ -81,7 +81,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
 
           {/*vote key dilution*/}
           {transaction.voteKeyDilution && (
-            <SignTxnsTextItem
+            <ModalTextItem
               label={`${t<string>('labels.voteKeyDilution')}:`}
               value={String(transaction.voteKeyDilution)}
             />
@@ -89,7 +89,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
 
           {/*selection key*/}
           {transaction.selectionKey && (
-            <SignTxnsTextItem
+            <ModalTextItem
               isCode={true}
               label={`${t<string>('labels.selectionKey')}:`}
               value={encodeBase64(transaction.selectionKey)}
@@ -98,7 +98,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
 
           {/*state proof key*/}
           {transaction.stateProofKey && (
-            <SignTxnsTextItem
+            <ModalTextItem
               isCode={true}
               label={`${t<string>('labels.stateProofKey')}:`}
               value={encodeBase64(transaction.stateProofKey)}
@@ -107,7 +107,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
 
           {/*first round*/}
           {transaction.voteFirst && (
-            <SignTxnsTextItem
+            <ModalTextItem
               label={`${t<string>('labels.firstRound')}:`}
               value={String(transaction.voteFirst)}
             />
@@ -115,7 +115,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
 
           {/*last round*/}
           {transaction.voteLast && (
-            <SignTxnsTextItem
+            <ModalTextItem
               label={`${t<string>('labels.lastRound')}:`}
               value={String(transaction.voteLast)}
             />
@@ -125,7 +125,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
 
       {/*note*/}
       {transaction.note && transaction.note.length > 0 && (
-        <SignTxnsTextItem
+        <ModalTextItem
           isCode={true}
           label={`${t<string>('labels.note')}:`}
           value={new TextDecoder().decode(transaction.note)}

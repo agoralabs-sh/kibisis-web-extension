@@ -5,10 +5,10 @@ import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
+import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
-import SignTxnsTextItem from './SignTxnsTextItem';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -99,7 +99,7 @@ const PaymentTransactionContent: FC<IProps> = ({
 
       {/*note*/}
       {transaction.note && transaction.note.length > 0 && (
-        <SignTxnsTextItem
+        <ModalTextItem
           isCode={true}
           label={`${t<string>('labels.note')}:`}
           value={new TextDecoder().decode(transaction.note)}

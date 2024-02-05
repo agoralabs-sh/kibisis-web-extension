@@ -70,7 +70,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const network: INetwork | null = useSelectSelectedNetwork();
   const isOpen: boolean = useSelectWalletConnectModalOpen();
   // hooks
-  const { scanning, startScanningAction, stopScanningAction, url } =
+  const { scanning, startScanningAction, stopScanningAction, uri } =
     useCaptureQrCode();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = useColorModeValue(
@@ -84,7 +84,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
     pairing,
     rejectSessionProposalAction,
     sessionProposal,
-  } = useWalletConnect(url);
+  } = useWalletConnect(uri);
   // states
   const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
   // handlers

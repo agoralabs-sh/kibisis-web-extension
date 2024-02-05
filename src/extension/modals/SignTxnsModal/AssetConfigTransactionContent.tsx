@@ -9,13 +9,13 @@ import { IoWarningOutline } from 'react-icons/io5';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
+import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsChangeAddressItem from './SignTxnsChangeAddressItem';
-import SignTxnsLoadingItem from './SignTxnsLoadingItem';
-import SignTxnsTextItem from './SignTxnsTextItem';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -156,7 +156,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
 
         {/*note*/}
         {transaction.note && transaction.note.length > 0 && (
-          <SignTxnsTextItem
+          <ModalTextItem
             isCode={true}
             label={`${t<string>('labels.note')}:`}
             value={new TextDecoder().decode(transaction.note)}
@@ -175,9 +175,9 @@ const AssetConfigTransactionContent: FC<IProps> = ({
         spacing={2}
         w="full"
       >
-        <SignTxnsLoadingItem />
-        <SignTxnsLoadingItem />
-        <SignTxnsLoadingItem />
+        <ModalSkeletonItem />
+        <ModalSkeletonItem />
+        <ModalSkeletonItem />
       </VStack>
     );
   }
@@ -217,7 +217,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
 
       {/*asset name*/}
       {asset.name && (
-        <SignTxnsTextItem
+        <ModalTextItem
           label={`${t<string>('labels.name')}:`}
           value={asset.name}
         />
@@ -225,7 +225,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
 
       {/*asset id*/}
       <HStack spacing={0} w="full">
-        <SignTxnsTextItem
+        <ModalTextItem
           flexGrow={1}
           isCode={true}
           label={`${t<string>('labels.id')}:`}

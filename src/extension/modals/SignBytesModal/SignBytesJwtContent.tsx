@@ -6,14 +6,14 @@ import {
   AccordionPanel,
   Box,
   HStack,
-  Icon,
   Text,
-  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoWarningOutline } from 'react-icons/io5';
+
+// components
+import WarningIcon from '@extension/components/WarningIcon';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -26,7 +26,7 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import { IAccount, IDecodedJwt } from '@extension/types';
+import type { IAccount, IDecodedJwt } from '@extension/types';
 
 interface IProps {
   decodedJwt: IDecodedJwt;
@@ -48,10 +48,13 @@ const SignBytesJwtContent: FC<IProps> = ({
       <Text textAlign="left" w="full">{`${t<string>(
         'labels.information'
       )}:`}</Text>
-      {/* Address/sub */}
+      {/*address/sub*/}
       {decodedJwt.payload.subject && (
         <HStack spacing={2} w="full">
+          {/*label*/}
           <Text fontSize="xs">{`${t<string>('labels.address')}:`}</Text>
+
+          {/*value*/}
           <Box
             backgroundColor={textBackgroundColor}
             borderRadius={theme.radii['3xl']}
@@ -62,31 +65,26 @@ const SignBytesJwtContent: FC<IProps> = ({
               {decodedJwt.payload.subject}
             </Text>
           </Box>
+
+          {/*warning*/}
           {(!signer ||
             decodedJwt.payload.subject !==
               AccountService.convertPublicKeyToAlgorandAddress(
                 signer.publicKey
               )) && (
-            <Tooltip
-              aria-label="Address does not match the signer"
-              label={t<string>('captions.addressDoesNotMatch')}
-            >
-              <span
-                style={{
-                  height: '1em',
-                  lineHeight: '1em',
-                }}
-              >
-                <Icon as={IoWarningOutline} color="yellow.500" />
-              </span>
-            </Tooltip>
+            <WarningIcon
+              tooltipLabel={t<string>('captions.addressDoesNotMatch')}
+            />
           )}
         </HStack>
       )}
-      {/* Audience/aud */}
+      {/*audience/aud*/}
       {decodedJwt.payload.audience && (
         <HStack spacing={2} w="full">
+          {/*label*/}
           <Text fontSize="xs">{`${t<string>('labels.audience')}:`}</Text>
+
+          {/*value*/}
           <Box
             backgroundColor={textBackgroundColor}
             borderRadius={theme.radii['3xl']}
@@ -97,26 +95,22 @@ const SignBytesJwtContent: FC<IProps> = ({
               {decodedJwt.payload.audience}
             </Text>
           </Box>
+
+          {/*warning*/}
           {decodedJwt.payload.audience !== host && (
-            <Tooltip
-              aria-label="Audience does not match the host"
-              label={t<string>('captions.audienceDoesNotMatch')}
-            >
-              <span
-                style={{
-                  height: '1em',
-                  lineHeight: '1em',
-                }}
-              >
-                <Icon as={IoWarningOutline} color="yellow.500" />
-              </span>
-            </Tooltip>
+            <WarningIcon
+              tooltipLabel={t<string>('captions.audienceDoesNotMatch')}
+            />
           )}
         </HStack>
       )}
-      {/* Expiration date/exp */}
+
+      {/*expiration date/exp*/}
       <HStack spacing={2} w="full">
+        {/*label*/}
         <Text fontSize="xs">{`${t<string>('labels.expirationDate')}:`}</Text>
+
+        {/*value*/}
         <Box
           backgroundColor={textBackgroundColor}
           borderRadius={theme.radii['3xl']}
@@ -127,20 +121,12 @@ const SignBytesJwtContent: FC<IProps> = ({
             {decodedJwt.payload.expiresAt.toLocaleString()}
           </Text>
         </Box>
+
+        {/*warning*/}
         {decodedJwt.payload.expiresAt < new Date() && (
-          <Tooltip
-            aria-label="Expiriation date is in the past"
-            label={t<string>('captions.securityTokenExpired')}
-          >
-            <span
-              style={{
-                height: '1em',
-                lineHeight: '1em',
-              }}
-            >
-              <Icon as={IoWarningOutline} color="yellow.500" />
-            </span>
-          </Tooltip>
+          <WarningIcon
+            tooltipLabel={t<string>('captions.securityTokenExpired')}
+          />
         )}
       </HStack>
       {/* More information */}
@@ -239,6 +225,7 @@ const SignBytesJwtContent: FC<IProps> = ({
                       {decodedJwt.header.algorithm}
                     </Text>
                   </Box>
+
                   {decodedJwt.header.curve && (
                     <Box
                       borderColor="blue.500"
@@ -257,20 +244,11 @@ const SignBytesJwtContent: FC<IProps> = ({
                       </Text>
                     </Box>
                   )}
+
                   {decodedJwt.header.algorithm !== 'EdDSA' && (
-                    <Tooltip
-                      aria-label="Invalid signing algorithm"
-                      label={t<string>('captions.invalidAlgorithm')}
-                    >
-                      <span
-                        style={{
-                          height: '1em',
-                          lineHeight: '1em',
-                        }}
-                      >
-                        <Icon as={IoWarningOutline} color="yellow.500" />
-                      </span>
-                    </Tooltip>
+                    <WarningIcon
+                      tooltipLabel={t<string>('captions.invalidAlgorithm')}
+                    />
                   )}
                 </HStack>
               )}

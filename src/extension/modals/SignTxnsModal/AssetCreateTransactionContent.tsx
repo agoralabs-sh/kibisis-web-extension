@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next';
 
 // components
 import AssetIcon from '@extension/components/AssetIcon';
+import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
+import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
-import SignTxnsLoadingItem from './SignTxnsLoadingItem';
-import SignTxnsTextItem from './SignTxnsTextItem';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -88,14 +88,14 @@ const AssetCreateTransactionContent: FC<IProps> = ({
         />
 
         {/*decimals*/}
-        <SignTxnsTextItem
+        <ModalTextItem
           label={`${t<string>('labels.decimals')}:`}
           value={String(transaction.assetDecimals)}
         />
 
         {/*unit name*/}
         {transaction.assetUnitName && (
-          <SignTxnsTextItem
+          <ModalTextItem
             label={`${t<string>('labels.unitName')}:`}
             value={transaction.assetUnitName}
           />
@@ -144,7 +144,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
         {/*url*/}
         {transaction.assetURL && (
           <HStack spacing={0} w="full">
-            <SignTxnsTextItem
+            <ModalTextItem
               isCode={true}
               label={`${t<string>('labels.url')}:`}
               value={transaction.assetURL}
@@ -159,7 +159,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
 
         {/*note*/}
         {transaction.note && transaction.note.length > 0 && (
-          <SignTxnsTextItem
+          <ModalTextItem
             isCode={true}
             label={`${t<string>('labels.note')}:`}
             value={new TextDecoder().decode(transaction.note)}
@@ -177,9 +177,9 @@ const AssetCreateTransactionContent: FC<IProps> = ({
         spacing={2}
         w="full"
       >
-        <SignTxnsLoadingItem />
-        <SignTxnsLoadingItem />
-        <SignTxnsLoadingItem />
+        <ModalSkeletonItem />
+        <ModalSkeletonItem />
+        <ModalSkeletonItem />
       </VStack>
     );
   }
@@ -200,7 +200,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
 
       {/*asset name*/}
       {transaction.assetName && (
-        <SignTxnsTextItem
+        <ModalTextItem
           label={`${t<string>('labels.name')}:`}
           value={transaction.assetName}
         />

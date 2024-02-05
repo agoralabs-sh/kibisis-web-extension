@@ -10,10 +10,12 @@ import { IBaseOptions } from '@common/types';
  * @param {IBaseOptions} options - [optional] optional options.
  * @returns {string} the address for a given private key, or null.
  */
-export default function getAddressFromPrivateKey(
+export default function convertPrivateKeyToAddress(
   privateKey: Uint8Array,
   options?: IBaseOptions
 ): string | null {
+  const _functionName: string = 'convertPrivateKeyToAddress';
+
   try {
     const publicKey: Uint8Array =
       sign.keyPair.fromSecretKey(privateKey).publicKey;
@@ -21,9 +23,7 @@ export default function getAddressFromPrivateKey(
     return encodeAddress(publicKey);
   } catch (error) {
     options?.logger &&
-      options.logger.error(
-        `${getAddressFromPrivateKey.name}(): ${error.message}`
-      );
+      options.logger.error(`${_functionName}(): ${error.message}`);
 
     return null;
   }

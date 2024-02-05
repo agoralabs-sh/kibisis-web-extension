@@ -3,6 +3,6 @@ interface IResult {
   privateKey: Uint8Array;
 }
 
-type IAddAccountCompleteFunction = (result: IResult) => void;
+type IAddAccountCompleteFunction = (result: IResult) => Promise<void>;
 
 export default IAddAccountCompleteFunction;
