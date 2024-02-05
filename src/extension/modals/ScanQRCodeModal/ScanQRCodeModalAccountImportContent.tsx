@@ -56,7 +56,7 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAppThunkDispatch,
-  IArc0300ImportKeySchema,
+  IARC0300AccountImportSchema,
   ISettings,
 } from '@extension/types';
 
@@ -64,15 +64,15 @@ import type {
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
-import decodePrivateKeyFromImportKeySchema from './utils/decodePrivateKeyFromImportKeySchema';
+import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
 
 interface IProps {
   onCancelClick: () => void;
   onComplete: () => void;
-  schema: IArc0300ImportKeySchema;
+  schema: IARC0300AccountImportSchema;
 }
 
-const ScanQRCodeModalImportKeyContent: FC<IProps> = ({
+const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   onCancelClick,
   onComplete,
   schema,
@@ -119,7 +119,7 @@ const ScanQRCodeModalImportKeyContent: FC<IProps> = ({
       // validate the password input
       if (validatePassword()) {
         logger.debug(
-          `${ScanQRCodeModalImportKeyContent.name}#${_functionName}: password not valid`
+          `${ScanQRCodeModalAccountImportContent.name}#${_functionName}: password not valid`
         );
 
         return;
@@ -132,7 +132,7 @@ const ScanQRCodeModalImportKeyContent: FC<IProps> = ({
 
     if (!_password) {
       logger.debug(
-        `${ScanQRCodeModalImportKeyContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
+        `${ScanQRCodeModalAccountImportContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
       );
 
       dispatch(
@@ -152,11 +152,11 @@ const ScanQRCodeModalImportKeyContent: FC<IProps> = ({
       return;
     }
 
-    privateKey = decodePrivateKeyFromImportKeySchema(schema);
+    privateKey = decodePrivateKeyFromAccountImportSchema(schema);
 
     if (!privateKey) {
       logger.debug(
-        `${ScanQRCodeModalImportKeyContent.name}#${_functionName}: failed to decode the private key`
+        `${ScanQRCodeModalAccountImportContent.name}#${_functionName}: failed to decode the private key`
       );
 
       dispatch(
@@ -305,7 +305,7 @@ const ScanQRCodeModalImportKeyContent: FC<IProps> = ({
   }, []);
   useEffect(() => {
     const privateKey: Uint8Array | null =
-      decodePrivateKeyFromImportKeySchema(schema);
+      decodePrivateKeyFromAccountImportSchema(schema);
 
     if (privateKey) {
       setAddress(convertPrivateKeyToAddress(privateKey));
@@ -353,4 +353,4 @@ const ScanQRCodeModalImportKeyContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalImportKeyContent;
+export default ScanQRCodeModalAccountImportContent;

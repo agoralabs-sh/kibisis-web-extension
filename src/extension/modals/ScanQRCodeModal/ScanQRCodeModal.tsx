@@ -2,7 +2,7 @@ import { Modal, ModalContent } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 
 // components
-import ScanQRCodeModalImportKeyContent from './ScanQRCodeModalImportKeyContent';
+import ScanQRCodeModalAccountImportContent from './ScanQRCodeModalAccountImportContent';
 import ScanQRCodeModalScanningContent from './ScanQRCodeModalScanningContent';
 import ScanQRCodeModalUnknownURIContent from './ScanQRCodeModalUnknownURIContent';
 
@@ -10,7 +10,7 @@ import ScanQRCodeModalUnknownURIContent from './ScanQRCodeModalUnknownURIContent
 import { BODY_BACKGROUND_COLOR } from '@extension/constants';
 
 // enums
-import { Arc0300MethodEnum } from '@extension/enums';
+import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 
 // hooks
 import useCaptureQrCode from '@extension/hooks/useCaptureQrCode';
@@ -27,12 +27,12 @@ import { theme } from '@extension/theme';
 // types
 import type { ILogger } from '@common/types';
 import type {
-  IArc0300BaseSchema,
-  IArc0300ImportKeySchema,
+  IARC0300AccountImportSchema,
+  IARC0300BaseSchema,
 } from '@extension/types';
 
 // utils
-import parseURIToArc0300Schema from '@extension/utils/parseURIToArc0300Schema';
+import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 
 interface IProps {
   onClose: () => void;
@@ -54,7 +54,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleRetryScan = () => startScanningAction();
   // renders
   const renderContent = () => {
-    let arc0300Schema: IArc0300BaseSchema | null;
+    let arc0300Schema: IARC0300BaseSchema | null;
 
     if (scanning) {
       return (
@@ -63,18 +63,22 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
     }
 
     if (uri) {
-      arc0300Schema = parseURIToArc0300Schema(uri, { logger });
+      arc0300Schema = parseURIToARC0300Schema(uri, { logger });
 
       if (arc0300Schema) {
-        switch (arc0300Schema.method) {
-          case Arc0300MethodEnum.ImportKey:
-            return (
-              <ScanQRCodeModalImportKeyContent
-                onCancelClick={handleCancelClick}
-                onComplete={handleClose}
-                schema={arc0300Schema as IArc0300ImportKeySchema}
-              />
-            );
+        switch (arc0300Schema.authority) {
+          case ARC0300AuthorityEnum.Account:
+            if (arc0300Schema.paths[0] === ARC0300PathEnum.Import) {
+              return (
+                <ScanQRCodeModalAccountImportContent
+                  onCancelClick={handleCancelClick}
+                  onComplete={handleClose}
+                  schema={arc0300Schema as IARC0300AccountImportSchema}
+                />
+              );
+            }
+
+            break;
           default:
             break;
         }

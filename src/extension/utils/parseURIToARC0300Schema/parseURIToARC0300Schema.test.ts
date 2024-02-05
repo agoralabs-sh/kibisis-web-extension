@@ -10,15 +10,18 @@ import { Account, generateAccount } from 'algosdk';
 import { ARC_0300_PROTOCOL } from '@extension/constants';
 
 // enums
-import { Arc0300EncodingEnum, Arc0300MethodEnum } from '@extension/enums';
+import { ARC0300EncodingEnum, ARC0300PathEnum } from '@extension/enums';
 
 // types
 import type { IBaseOptions } from '@common/types';
-import { IArc0300BaseSchema, IArc0300ImportKeySchema } from '@extension/types';
+import {
+  IARC0300BaseSchema,
+  IARC0300AccountImportSchema,
+} from '@extension/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';
-import parseURIToArc0300Schema from './parseURIToArc0300Schema';
+import parseURIToARC0300Schema from './parseURIToARC0300Schema';
 
 describe(`${__dirname}#parseURIToArc0300Schema()`, () => {
   const options: IBaseOptions = {
@@ -27,7 +30,7 @@ describe(`${__dirname}#parseURIToArc0300Schema()`, () => {
 
   it('should return null for an invalid url', () => {
     // act
-    const result: IArc0300BaseSchema | null = parseURIToArc0300Schema(
+    const result: IARC0300BaseSchema | null = parseURIToARC0300Schema(
       'not a valid url',
       options
     );
@@ -38,7 +41,7 @@ describe(`${__dirname}#parseURIToArc0300Schema()`, () => {
 
   it('should return null for it is not a valid arc0300 scheme', () => {
     // act
-    const result: IArc0300BaseSchema | null = parseURIToArc0300Schema(
+    const result: IARC0300BaseSchema | null = parseURIToARC0300Schema(
       'http://localhost:8080',
       options
     );
@@ -50,10 +53,10 @@ describe(`${__dirname}#parseURIToArc0300Schema()`, () => {
   describe('when parsing an import key uri', () => {
     it('should return null if no private key is provided', () => {
       // arrange
-      const uri: string = `${ARC_0300_PROTOCOL}://${Arc0300MethodEnum.ImportKey}?encoding=hex`;
+      const uri: string = `${ARC_0300_PROTOCOL}://${ARC0300PathEnum.Import}?encoding=hex`;
       // act
-      const result: IArc0300ImportKeySchema | null =
-        parseURIToArc0300Schema<IArc0300ImportKeySchema>(uri, options);
+      const result: IARC0300AccountImportSchema | null =
+        parseURIToARC0300Schema<IARC0300AccountImportSchema>(uri, options);
 
       // assert
       expect(result).toBe(null);
@@ -63,11 +66,11 @@ describe(`${__dirname}#parseURIToArc0300Schema()`, () => {
       // arrange
       const account: Account = generateAccount();
       const uri: string = `${ARC_0300_PROTOCOL}://${
-        Arc0300MethodEnum.ImportKey
+        ARC0300PathEnum.Import
       }/${encodeHex(account.sk)}`;
       // act
-      const result: IArc0300ImportKeySchema | null =
-        parseURIToArc0300Schema<IArc0300ImportKeySchema>(uri, options);
+      const result: IARC0300AccountImportSchema | null =
+        parseURIToARC0300Schema<IARC0300AccountImportSchema>(uri, options);
 
       // assert
       expect(result).toBe(null);
@@ -77,11 +80,11 @@ describe(`${__dirname}#parseURIToArc0300Schema()`, () => {
       // arrange
       const account: Account = generateAccount();
       const uri: string = `${ARC_0300_PROTOCOL}://${
-        Arc0300MethodEnum.ImportKey
+        ARC0300PathEnum.Import
       }/${encodeBase64(account.sk)}?encoding=base64`;
       // act
-      const result: IArc0300ImportKeySchema | null =
-        parseURIToArc0300Schema<IArc0300ImportKeySchema>(uri, options);
+      const result: IARC0300AccountImportSchema | null =
+        parseURIToARC0300Schema<IARC0300AccountImportSchema>(uri, options);
 
       // assert
       expect(result).toBe(null);
@@ -91,19 +94,19 @@ describe(`${__dirname}#parseURIToArc0300Schema()`, () => {
       // arrange
       const account: Account = generateAccount();
       const uri: string = `${ARC_0300_PROTOCOL}://${
-        Arc0300MethodEnum.ImportKey
-      }/${encodeHex(account.sk)}?encoding=${Arc0300EncodingEnum.Hexadecimal}`;
+        ARC0300PathEnum.Import
+      }/${encodeHex(account.sk)}?encoding=${ARC0300EncodingEnum.Hexadecimal}`;
       // act
-      const result: IArc0300ImportKeySchema | null =
-        parseURIToArc0300Schema<IArc0300ImportKeySchema>(uri, options);
+      const result: IARC0300AccountImportSchema | null =
+        parseURIToARC0300Schema<IARC0300AccountImportSchema>(uri, options);
 
       // assert
       if (!result) {
         throw new Error('failed to parse uri');
       }
 
-      expect(result.method).toBe(Arc0300MethodEnum.ImportKey);
-      expect(result.encoding).toBe(Arc0300EncodingEnum.Hexadecimal);
+      expect(result.method).toBe(ARC0300PathEnum.Import);
+      expect(result.encoding).toBe(ARC0300EncodingEnum.Hexadecimal);
       expect(decodeHex(result.encodedPrivateKey)).toEqual(account.sk);
     });
 
@@ -111,21 +114,21 @@ describe(`${__dirname}#parseURIToArc0300Schema()`, () => {
       // arrange
       const account: Account = generateAccount();
       const uri: string = `${ARC_0300_PROTOCOL}://${
-        Arc0300MethodEnum.ImportKey
+        ARC0300PathEnum.Import
       }/${encodeBase64URLSafe(account.sk)}?encoding=${
-        Arc0300EncodingEnum.Base64URLSafe
+        ARC0300EncodingEnum.Base64URLSafe
       }`;
       // act
-      const result: IArc0300ImportKeySchema | null =
-        parseURIToArc0300Schema<IArc0300ImportKeySchema>(uri, options);
+      const result: IARC0300AccountImportSchema | null =
+        parseURIToARC0300Schema<IARC0300AccountImportSchema>(uri, options);
 
       // assert
       if (!result) {
         throw new Error('failed to parse uri');
       }
 
-      expect(result.method).toBe(Arc0300MethodEnum.ImportKey);
-      expect(result.encoding).toBe(Arc0300EncodingEnum.Base64URLSafe);
+      expect(result.method).toBe(ARC0300PathEnum.Import);
+      expect(result.encoding).toBe(ARC0300EncodingEnum.Base64URLSafe);
       expect(decodeBase64URLSafe(result.encodedPrivateKey)).toEqual(account.sk);
     });
   });

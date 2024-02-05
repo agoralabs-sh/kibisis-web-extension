@@ -29,7 +29,7 @@ import {
 const RegistrationAddAccountRouter: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const saving: boolean = useSelectSavingRegistration();
-  const handleOnAddAccountComplete: IAddAccountCompleteFunction = ({
+  const handleOnAddAccountComplete: IAddAccountCompleteFunction = async ({
     name,
     privateKey,
   }: IAddAccountCompleteResult) => {

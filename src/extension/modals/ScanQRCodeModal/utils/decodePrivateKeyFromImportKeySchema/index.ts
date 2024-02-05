@@ -1,1 +1,1 @@
-export { default } from './decodePrivateKeyFromImportKeySchema';
+export { default } from './decodePrivateKeyFromAccountImportSchema';
