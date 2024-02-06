@@ -10,19 +10,19 @@
 
 <p align="center">
   <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases/latest">
-    <img alt="GitHub release" src="https://img.shields.io/github/v/release/agoralabs-sh/kibisis-web-extension?&logo=github">
+    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/agoralabs-sh/kibisis-web-extension?&logo=github">
   </a>
   <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases/latest">
-    <img alt="GitHub Release Date - Published_At" src="https://img.shields.io/github/release-date/agoralabs-sh/kibisis-web-extension?logo=github">
+    <img alt="GitHub Release Date - Published At" src="https://img.shields.io/github/release-date/agoralabs-sh/kibisis-web-extension?logo=github">
   </a>
 </p>
 
 <p align="center">
   <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases">
-    <img alt="GitHub License" src="https://img.shields.io/github/v/release/agoralabs-sh/kibisis-web-extension?include_prereleases&label=pre-release&logo=github">
+    <img alt="GitHub Pre-release" src="https://img.shields.io/github/v/release/agoralabs-sh/kibisis-web-extension?include_prereleases&label=pre-release&logo=github">
   </a>
   <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases">
-    <img alt="GitHub Release Date - Published_At" src="https://img.shields.io/github/release-date-pre/agoralabs-sh/kibisis-web-extension?label=pre-release date&logo=github">
+    <img alt="GitHub Pre-release Date - Published At" src="https://img.shields.io/github/release-date-pre/agoralabs-sh/kibisis-web-extension?label=pre-release date&logo=github">
   </a>
 </p>
 
@@ -163,11 +163,12 @@ $ yarn start:<chrome|firefox>
 
 ### 4.2. Manifest Permissions
 
-| Value         | Version  | Justification                                                                                                                                                                  |
-|---------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `<all_urls>`  | 2        | When the extension attempts to scan the QR code of a WalletConnect dapp, the [`tabs.captureVisibleTab()`][capture-visible-tab-api] function is used.                           |
-| `activeTab`   | 3        | As above, the extension requires access to the [`tabs.captureVisibleTab()`][capture-visible-tab-api].                                                                          |
-| `storage`     | 2 and 3  | The [storage][storage-api] API is used to maintain the state of the extension. It saves encrypted private keys, settings and the lists of AVM assets.                          |
+| Value        | Version  | Justification                                                                                                                                         |
+|--------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `<all_urls>` | 2        | When the extension attempts to scan the QR code of a WalletConnect dapp, the [`tabs.captureVisibleTab()`][capture-visible-tab-api] function is used.  |
+| `activeTab`  | 3        | As above, the extension requires access to the [`tabs.captureVisibleTab()`][capture-visible-tab-api].                                                 |
+| `alarms`     | 3        | A user can switch on a password lock. This feature utilizes the Alarms API as a timeout to lock the extension behind a password.                      |
+| `storage`    | 2 and 3  | The [storage][storage-api] API is used to maintain the state of the extension. It saves encrypted private keys, settings and the lists of AVM assets. |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
