@@ -1,11 +1,11 @@
-import { Stack, VStack } from '@chakra-ui/react';
-import React, { ChangeEvent, FC } from 'react';
+import { VStack } from '@chakra-ui/react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
-import Button from '@extension/components/Button';
 import PageHeader from '@extension/components/PageHeader';
+import SettingsButtonItem from '@extension/components/SettingsButtonItem';
 import SettingsSelectItem, {
   IOption,
 } from '@extension/components/SettingsSelectItem';
@@ -24,14 +24,15 @@ import {
 } from '@extension/selectors';
 
 // types
-import {
+import type {
   IAppThunkDispatch,
   IExplorer,
   INetwork,
   ISettings,
 } from '@extension/types';
+
+// utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-import { DEFAULT_GAP } from '@extension/constants';
 
 const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
@@ -51,10 +52,10 @@ const GeneralSettingsPage: FC = () => {
   const handleClearAllDataClick = () =>
     dispatch(
       setConfirm({
-        description: t<string>('captions.clearAllData'),
+        description: t<string>('captions.factoryResetModal'),
         onConfirm: () => dispatch(sendFactoryResetThunk()), // dispatch an event to the background
-        title: t<string>('headings.clearAllData'),
-        warningText: t<string>('captions.clearAllDataWarning'),
+        title: t<string>('headings.factoryReset'),
+        warningText: t<string>('captions.factoryResetWarning'),
       })
     );
   const handlePreferredBlockExplorerChange = (option: IOption<string>) => {
@@ -117,23 +118,14 @@ const GeneralSettingsPage: FC = () => {
             text={t<string>('headings.dangerZone')}
           />
 
-          <Stack
-            alignItems="center"
-            justifyContent="center"
-            px={DEFAULT_GAP / 2}
-            py={DEFAULT_GAP / 2}
-            w="full"
-          >
-            {/* clear all data */}
-            <Button
-              color="white"
-              colorScheme="red"
-              maxW={400}
-              onClick={handleClearAllDataClick}
-            >
-              {t<string>('buttons.clearAllData')}
-            </Button>
-          </Stack>
+          {/*factory reset button*/}
+          <SettingsButtonItem
+            buttonLabel={t<string>('buttons.reset')}
+            description={t<string>('captions.factoryReset')}
+            isWarning={true}
+            label={t<string>('labels.factoryReset')}
+            onClick={handleClearAllDataClick}
+          />
         </VStack>
       </VStack>
     </>

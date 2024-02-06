@@ -19,7 +19,7 @@ const SettingsSubHeading: FC<IProps> = ({ color, text }: IProps) => {
       as="b"
       color={color || subTextColor}
       fontSize="md"
-      pb={DEFAULT_GAP - 2}
+      pb={DEFAULT_GAP / 3}
       px={DEFAULT_GAP - 2}
       textAlign="left"
       w="full"

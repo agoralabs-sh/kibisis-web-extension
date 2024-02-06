@@ -76,8 +76,8 @@ const SettingsSelectItem: FC<IProps> = ({
   return (
     <HStack
       alignItems="center"
-      h={SETTINGS_ITEM_HEIGHT}
       justifyContent="space-between"
+      minH={SETTINGS_ITEM_HEIGHT}
       pb={DEFAULT_GAP - 2}
       px={DEFAULT_GAP - 2}
       spacing={2}

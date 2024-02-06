@@ -17,6 +17,7 @@ import { theme } from '@extension/theme';
 const Button: ForwardRefExoticComponent<
   PropsWithoutRef<ButtonProps> & RefAttributes<HTMLButtonElement>
 > = forwardRef<HTMLButtonElement, ButtonProps>((props: ButtonProps, ref) => {
+  // hooks
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
 
