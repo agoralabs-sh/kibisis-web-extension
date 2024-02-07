@@ -20,12 +20,17 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import React, { FC, useEffect, useState } from 'react';
-import { Provider, PROVIDER_ID, useWallet } from '@txnlab/use-wallet';
-import { SessionTypes } from '@walletconnect/types';
-import { useConnect } from '@web3modal/sign-react';
+import {
+  Provider,
+  PROVIDER_ID,
+  useWallet as useUseWallet,
+} from '@txnlab/use-wallet';
 
-// components
-import WalletConnectIcon from '@extension/components/WalletConnectIcon';
+// constants
+import {
+  ALGORAND_TEST_NET_GENESIS_HASH,
+  VOI_TEST_NET_GENESIS_HASH,
+} from '../../constants';
 
 // config
 import { networks } from '@extension/config';
@@ -34,9 +39,9 @@ import { networks } from '@extension/config';
 import { ConnectionTypeEnum } from '../../enums';
 
 // types
-import { INetwork } from '@extension/types';
-import { IWindow } from '@external/types';
-import { IAccountInformation } from '../../types';
+import type { INetwork } from '@extension/types';
+import type { IWindow } from '@external/types';
+import type { IAccountInformation } from '../../types';
 
 // utils
 import { getAccountInformation } from '../../utils';
@@ -58,31 +63,11 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
     isClosable: true,
     position: 'top',
   });
-  const { connect } = useConnect({
-    optionalNamespaces: {
-      // testnets
-      algorand: {
-        chains: ['algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe'],
-        events: [],
-        methods: ['algorand_signTransaction', 'algorand_signMessage'],
-      },
-      voi: {
-        chains: ['voi:IXnoWtviVVJW5LGivNFc0Dq14V3kqaXu'],
-        events: [],
-        methods: ['voi_signTransaction', 'voi_signMessage'],
-      },
-    },
-  });
-  const { connectedAccounts, providers } = useWallet();
+  const { connectedAccounts, providers } = useUseWallet();
   // state
   const [useWalletNetwork, setUseWalletNetwork] = useState<INetwork | null>(
     null
   );
-  // misc
-  const algorandTestNetGenesisHash: string =
-    'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=';
-  const voiTestNetGenesisHash: string =
-    'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=';
   // handlers
   const handleConnectViaAlgorandProvider =
     (genesisHash: string) => async () => {
@@ -140,9 +125,9 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
         });
       }
     };
-  const handleConnectViaUseWallet = (genesisHash: string) => async () => {
+  const handleConnectViaUseWallet = async () => {
     const provider: Provider | null =
-      providers?.find((value) => value.metadata.id === PROVIDER_ID.CUSTOM) ||
+      providers?.find((value) => value.metadata.id === PROVIDER_ID.KIBISIS) ||
       null;
     let network: INetwork | null;
 
@@ -156,26 +141,19 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
     }
 
     network =
-      networks.find((value) => value.genesisHash === genesisHash) || null;
+      networks.find(
+        (value) => value.genesisHash === ALGORAND_TEST_NET_GENESIS_HASH
+      ) || null;
 
     if (!network) {
       toast({
-        description: genesisHash,
+        description: `Network "${ALGORAND_TEST_NET_GENESIS_HASH}" not found`,
         status: 'error',
         title: `Unknown Network`,
       });
 
       return;
     }
-
-    // set the genesis hash
-    (
-      provider as Provider & {
-        providerProxy: {
-          setGenesisHash: (genesisHash: string) => void;
-        };
-      }
-    ).providerProxy.setGenesisHash(network.genesisHash);
 
     if (provider.isConnected) {
       setUseWalletNetwork(null);
@@ -186,11 +164,6 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
     setUseWalletNetwork(network);
 
     await provider.connect();
-  };
-  const handleWalletConnect = async () => {
-    const data: SessionTypes.Struct = await connect();
-
-    console.log(data);
   };
   const handleReset = async () => {
     setUseWalletNetwork(null);
@@ -238,7 +211,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
         <MenuGroup title="@agoralabs-sh/algorand-provider">
           <MenuItem
             onClick={handleConnectViaAlgorandProvider(
-              algorandTestNetGenesisHash
+              ALGORAND_TEST_NET_GENESIS_HASH
             )}
           >
             <HStack alignItems="center" w="full">
@@ -249,7 +222,9 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
           </MenuItem>
 
           <MenuItem
-            onClick={handleConnectViaAlgorandProvider(voiTestNetGenesisHash)}
+            onClick={handleConnectViaAlgorandProvider(
+              VOI_TEST_NET_GENESIS_HASH
+            )}
           >
             <HStack alignItems="center" w="full">
               <Text size="sm">Connect to Voi</Text>
@@ -262,34 +237,14 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
         <MenuDivider />
 
         <MenuGroup title="@txnlab/use-wallet">
-          <MenuItem
-            onClick={handleConnectViaUseWallet(algorandTestNetGenesisHash)}
-          >
+          <MenuItem onClick={handleConnectViaUseWallet}>
             <HStack alignItems="center" w="full">
               <Text size="sm">Connect to Algorand</Text>
 
               {renderNetworkTag()}
             </HStack>
           </MenuItem>
-
-          <MenuItem onClick={handleConnectViaUseWallet(voiTestNetGenesisHash)}>
-            <HStack alignItems="center" w="full">
-              <Text size="sm">Connect to Voi</Text>
-
-              {renderNetworkTag()}
-            </HStack>
-          </MenuItem>
         </MenuGroup>
-
-        <MenuDivider />
-
-        <MenuItem onClick={handleWalletConnect}>
-          <HStack justifyContent="space-between" w="full">
-            <Text size="sm">Connect via WalletConnect v2</Text>
-
-            <WalletConnectIcon />
-          </HStack>
-        </MenuItem>
 
         <MenuDivider />
 
