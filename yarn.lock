@@ -1067,6 +1067,19 @@
     "@chakra-ui/utils" "2.0.15"
     react-fast-compare "3.2.2"
 
+"@chakra-ui/system@^2.6.2":
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/system/-/system-2.6.2.tgz#528ec955bd6a7f74da46470ee8225b1e2c80a78b"
+  integrity sha512-EGtpoEjLrUu4W1fHD+a62XR+hzC5YfsWm+6lO0Kybcga3yYEij9beegO0jZgug27V+Rf7vns95VPVP6mFd/DEQ==
+  dependencies:
+    "@chakra-ui/color-mode" "2.2.0"
+    "@chakra-ui/object-utils" "2.1.0"
+    "@chakra-ui/react-utils" "2.0.12"
+    "@chakra-ui/styled-system" "2.9.2"
+    "@chakra-ui/theme-utils" "2.0.21"
+    "@chakra-ui/utils" "2.0.15"
+    react-fast-compare "3.2.2"
+
 "@chakra-ui/table@2.1.0":
   version "2.1.0"
   resolved "https://registry.npmjs.org/@chakra-ui/table/-/table-2.1.0.tgz"
@@ -7023,6 +7036,18 @@ handlebars@^4.7.7:
   dependencies:
     minimist "^1.2.5"
     neo-async "^2.6.0"
+    source-map "^0.6.1"
+    wordwrap "^1.0.0"
+  optionalDependencies:
+    uglify-js "^3.1.4"
+
+handlebars@^4.7.8:
+  version "4.7.8"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.8.tgz#41c42c18b1be2365439188c77c6afae71c0cd9e9"
+  integrity sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==
+  dependencies:
+    minimist "^1.2.5"
+    neo-async "^2.6.2"
     source-map "^0.6.1"
     wordwrap "^1.0.0"
   optionalDependencies:
