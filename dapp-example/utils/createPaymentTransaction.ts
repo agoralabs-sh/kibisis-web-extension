@@ -32,12 +32,27 @@ export default async function createPaymentTransaction({
     .getTransactionParams()
     .do();
 
+  // return makePaymentTxnWithSuggestedParams(
+  //   from,
+  //   to || from,
+  //   amount.toNumber(),
+  //   undefined,
+  //   note ? new TextEncoder().encode(note) : undefined,
+  //   suggestedParams
+  // );
+
   return makePaymentTxnWithSuggestedParams(
     from,
     to || from,
-    amount.toNumber(),
+    0,
     undefined,
     note ? new TextEncoder().encode(note) : undefined,
-    suggestedParams
+    {
+      ...suggestedParams,
+      firstRound: 1,
+      lastRound: 1,
+      fee: 0,
+      flatFee: true,
+    }
   );
 }

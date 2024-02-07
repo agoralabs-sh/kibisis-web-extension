@@ -3,7 +3,6 @@ import {
   encode as encodeBase64,
 } from '@stablelib/base64';
 import {
-  decodeUnsignedTransaction,
   encodeAddress,
   signTransaction as algoSignTransaction,
   Transaction,
@@ -23,6 +22,9 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IOptions } from './types';
+
+// utils
+import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 
 /**
  * Convenience function that signs a group of transactions.

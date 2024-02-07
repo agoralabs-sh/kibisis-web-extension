@@ -21,8 +21,8 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount, IAccountInformation, INetwork } from '@extension/types';
-import { ICondensedProps } from './types';
+import type { IAccount, IAccountInformation, INetwork } from '@extension/types';
+import type { ICondensedProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
@@ -49,15 +49,19 @@ const PaymentTransactionContent: FC<IProps> = ({
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
+  // misc
   const accountInformation: IAccountInformation | null = fromAccount
     ? AccountService.extractAccountInformationForNetwork(fromAccount, network)
     : null;
-  const atomicUintAmount: BigNumber = new BigNumber(
+  const amountAsAtomicUnit: BigNumber = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'
   );
-  const standardUnitAmount: BigNumber = convertToStandardUnit(
-    atomicUintAmount,
+  const amountAsStandardUnit: BigNumber = convertToStandardUnit(
+    amountAsAtomicUnit,
     network.nativeCurrency.decimals
+  );
+  const feeAsAtomicUnit: BigNumber = new BigNumber(
+    transaction.fee ? String(transaction.fee) : '0'
   );
   const icon: ReactNode = createIconFromDataUri(
     network.nativeCurrency.iconUrl,
@@ -74,6 +78,7 @@ const PaymentTransactionContent: FC<IProps> = ({
       sender: fromAccount,
     }
   );
+  // renders
   const renderExtraInformation = () => (
     <>
       {/*balance*/}
@@ -90,7 +95,7 @@ const PaymentTransactionContent: FC<IProps> = ({
 
       {/*fee*/}
       <SignTxnsAssetItem
-        atomicUnitAmount={new BigNumber(String(transaction.fee))}
+        atomicUnitAmount={feeAsAtomicUnit}
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
@@ -131,7 +136,7 @@ const PaymentTransactionContent: FC<IProps> = ({
 
           {/*amount*/}
           <SignTxnsAssetItem
-            atomicUnitAmount={atomicUintAmount}
+            atomicUnitAmount={amountAsAtomicUnit}
             decimals={network.nativeCurrency.decimals}
             icon={icon}
             label={`${t<string>('labels.amount')}:`}
@@ -143,7 +148,7 @@ const PaymentTransactionContent: FC<IProps> = ({
           {/*amount*/}
           <Tooltip
             aria-label="Amount with unrestricted decimals"
-            label={`${standardUnitAmount.toString()} ${
+            label={`${amountAsStandardUnit.toString()} ${
               network.nativeCurrency.symbol
             }`}
           >
@@ -154,7 +159,7 @@ const PaymentTransactionContent: FC<IProps> = ({
               w="full"
             >
               <Heading color={defaultTextColor} size="lg" textAlign="center">
-                {formatCurrencyUnit(standardUnitAmount, {
+                {formatCurrencyUnit(amountAsStandardUnit, {
                   decimals: network.nativeCurrency.decimals,
                 })}
               </Heading>

@@ -21,13 +21,13 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import {
+import type {
   IAccount,
   IStandardAsset,
   IExplorer,
   INetwork,
 } from '@extension/types';
-import { ICondensedProps } from './types';
+import type { ICondensedProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
@@ -55,15 +55,22 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
-  const [standardUnitAmount, setStandardAmount] = useState<BigNumber>(
+  // states
+  const [amountAsStandardUnit, setAmountAsStandardUnit] = useState<BigNumber>(
     new BigNumber('0')
   );
-  const atomicUintAmount: BigNumber = new BigNumber(
+  // misc
+  const amountAsAtomicUnit: BigNumber = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'
   );
+  const feeAsAtomicUnit: BigNumber = new BigNumber(
+    transaction.fee ? String(transaction.fee) : '0'
+  );
+  // renders
   const renderExtraInformation = (icon: ReactNode) => {
     if (!asset) {
       return null;
@@ -73,7 +80,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       <>
         {/*balance*/}
         <SignTxnsAssetItem
-          atomicUnitAmount={atomicUintAmount}
+          atomicUnitAmount={amountAsAtomicUnit}
           decimals={asset.decimals}
           displayUnit={true}
           icon={icon}
@@ -84,7 +91,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
         {/*fee*/}
         <SignTxnsAssetItem
-          atomicUnitAmount={new BigNumber(String(transaction.fee))}
+          atomicUnitAmount={feeAsAtomicUnit}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
@@ -136,8 +143,8 @@ const AssetTransferTransactionContent: FC<IProps> = ({
   // once the store has been updated with the asset information, update the asset and the amount
   useEffect(() => {
     if (asset) {
-      setStandardAmount(
-        convertToStandardUnit(atomicUintAmount, asset.decimals)
+      setAmountAsStandardUnit(
+        convertToStandardUnit(amountAsAtomicUnit, asset.decimals)
       );
     }
   }, [asset]);
@@ -201,7 +208,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
           {/*amount*/}
           <SignTxnsAssetItem
-            atomicUnitAmount={atomicUintAmount}
+            atomicUnitAmount={amountAsAtomicUnit}
             decimals={asset.decimals}
             displayUnit={true}
             icon={assetIcon}
@@ -214,7 +221,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           {/*amount*/}
           <Tooltip
             aria-label="Asset amount with unrestricted decimals"
-            label={`${standardUnitAmount.toString()} ${asset.unitName || ''}`}
+            label={`${amountAsStandardUnit.toString()} ${asset.unitName || ''}`}
           >
             <HStack
               alignItems="center"
@@ -223,7 +230,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
               w="full"
             >
               <Heading color={defaultTextColor} size="lg" textAlign="center">
-                {formatCurrencyUnit(standardUnitAmount, {
+                {formatCurrencyUnit(amountAsStandardUnit, {
                   decimals: asset.decimals,
                 })}
               </Heading>

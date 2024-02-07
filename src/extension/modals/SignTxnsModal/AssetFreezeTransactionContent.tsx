@@ -34,8 +34,8 @@ import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAccountInformation,
   IStandardAsset,
@@ -43,7 +43,7 @@ import {
   IExplorer,
   INetwork,
 } from '@extension/types';
-import { ICondensedProps } from './types';
+import type { ICondensedProps } from './types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
@@ -97,6 +97,10 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       sender: fromAccount,
     }
   );
+  // misc
+  const feeAsAtomicUnit: BigNumber = new BigNumber(
+    transaction.fee ? String(transaction.fee) : '0'
+  );
   // renders
   const renderExtraInformation = () => {
     if (!asset) {
@@ -135,7 +139,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
 
         {/*fee*/}
         <SignTxnsAssetItem
-          atomicUnitAmount={new BigNumber(String(transaction.fee))}
+          atomicUnitAmount={feeAsAtomicUnit}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,

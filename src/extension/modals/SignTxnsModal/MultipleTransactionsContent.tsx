@@ -24,7 +24,7 @@ import useBorderColor from '@extension/hooks/useBorderColor';
 import { useSelectStandardAssetsByGenesisHash } from '@extension/selectors';
 
 // types
-import {
+import type {
   IAccount,
   IStandardAsset,
   IExplorer,

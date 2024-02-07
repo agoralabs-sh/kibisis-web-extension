@@ -22,8 +22,8 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { IExplorer, INetwork } from '@extension/types';
-import { ICondensedProps } from './types';
+import type { IExplorer, INetwork } from '@extension/types';
+import type { ICondensedProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
@@ -43,8 +43,13 @@ const ApplicationTransactionContent: FC<IProps> = ({
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
+  // misc
+  const feeAsAtomicUnit: BigNumber = new BigNumber(
+    transaction.fee ? String(transaction.fee) : '0'
+  );
   const icon: ReactNode = createIconFromDataUri(
     network.nativeCurrency.iconUrl,
     {
@@ -58,16 +63,16 @@ const ApplicationTransactionContent: FC<IProps> = ({
   );
   const renderExtraInformation = () => (
     <>
-      {/* Fee */}
+      {/*fee*/}
       <SignTxnsAssetItem
-        atomicUnitAmount={new BigNumber(String(transaction.fee))}
+        atomicUnitAmount={feeAsAtomicUnit}
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
         unit={network.nativeCurrency.symbol}
       />
 
-      {/* Type */}
+      {/*type*/}
       <HStack
         alignItems="center"
         justifyContent="flex-end"
@@ -98,7 +103,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
         </Tooltip>
       </HStack>
 
-      {/*Note*/}
+      {/*note*/}
       {transaction.note && transaction.note.length > 0 && (
         <ModalTextItem
           isCode={true}
@@ -116,7 +121,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
       spacing={condensed ? 2 : 4}
       w="full"
     >
-      {/*Heading*/}
+      {/*heading*/}
       <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
         {t<string>('headings.transaction', {
           context: transactionType,
@@ -127,7 +132,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
         <Warning message={t<string>('captions.deleteApplication')} size="xs" />
       )}
 
-      {/*App ID*/}
+      {/*app id*/}
       {transaction.appIndex && (
         <HStack spacing={0} w="full">
           <ModalTextItem
@@ -160,7 +165,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
         </HStack>
       )}
 
-      {/* From */}
+      {/*from*/}
       <SignTxnsAddressItem
         address={encodeAddress(transaction.from.publicKey)}
         ariaLabel="From address"

@@ -13,6 +13,7 @@ import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
+import Warning from '@extension/components/Warning';
 import SignTxnsAddressItem from './SignTxnsAddressItem';
 import SignTxnsAssetItem from './SignTxnsAssetItem';
 import SignTxnsChangeAddressItem from './SignTxnsChangeAddressItem';
@@ -26,18 +27,17 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import {
+import type {
   IAccount,
   IStandardAsset,
   IExplorer,
   INetwork,
 } from '@extension/types';
-import { ICondensedProps } from './types';
+import type { ICondensedProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
-import Warning from '@extension/components/Warning';
 
 interface IProps {
   asset: IStandardAsset | null;
@@ -63,6 +63,10 @@ const AssetConfigTransactionContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
+  // misc
+  const feeAsAtomicUnit: BigNumber = new BigNumber(
+    transaction.fee ? String(transaction.fee) : '0'
+  );
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction.get_obj_for_encoding(),
@@ -71,6 +75,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
       sender: fromAccount,
     }
   );
+  // renders
   const renderExtraInformation = (icon: ReactNode) => {
     if (!asset) {
       return null;
@@ -80,7 +85,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
       <>
         {/*fee*/}
         <SignTxnsAssetItem
-          atomicUnitAmount={new BigNumber(String(transaction.fee))}
+          atomicUnitAmount={feeAsAtomicUnit}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,

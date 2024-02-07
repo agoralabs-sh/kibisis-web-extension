@@ -19,8 +19,8 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { IAccount, INetwork } from '@extension/types';
-import { ICondensedProps } from './types';
+import type { IAccount, INetwork } from '@extension/types';
+import type { ICondensedProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
@@ -40,8 +40,13 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
   transaction,
 }: IProps) => {
   const { t } = useTranslation();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
+  // misc
+  const feeAsAtomicUnit: BigNumber = new BigNumber(
+    transaction.fee ? String(transaction.fee) : '0'
+  );
   const icon: ReactNode = createIconFromDataUri(
     network.nativeCurrency.iconUrl,
     {
@@ -57,11 +62,12 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
       sender: fromAccount,
     }
   );
+  // renders
   const renderExtraInformation = () => (
     <>
       {/*fee*/}
       <SignTxnsAssetItem
-        atomicUnitAmount={new BigNumber(String(transaction.fee))}
+        atomicUnitAmount={feeAsAtomicUnit}
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
