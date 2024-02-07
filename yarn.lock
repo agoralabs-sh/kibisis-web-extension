@@ -2895,10 +2895,10 @@
   resolved "https://registry.npmjs.org/@tsconfig/node16/-/node16-1.0.3.tgz"
   integrity sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==
 
-"@txnlab/use-wallet@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@txnlab/use-wallet/-/use-wallet-2.3.1.tgz#9f3287e2c4bc2d7177bd62a86c5ae9126fc37ca6"
-  integrity sha512-bmhDU+s7rLA/FhPtPSrCxf8nZVdBJHyPWI6CCX/zMIsxyaYVyZ5XZc0anOs01NuRoIGOILTLVu0gTl0B2NKBFg==
+"@txnlab/use-wallet@^2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@txnlab/use-wallet/-/use-wallet-2.7.0.tgz#03aad228f9fd72893ca811850892dd811c8e26fa"
+  integrity sha512-Nj0V9lqLAkPKdM1GO6qUJocnvf+WNWdL7N8NOBg+KdxZcpJLrABqf8OIR4C4OzL/tB2GqXUPTgq0cbv4fZB0Ow==
   dependencies:
     immer "^9.0.15"
     zustand "^4.3.8"
