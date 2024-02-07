@@ -3,7 +3,6 @@ import {
   ALGORAND_MIN_TX_FEE,
   algosToMicroalgos,
   assignGroupID,
-  decodeUnsignedTransaction,
   encodeUnsignedTransaction,
   generateAccount,
   makePaymentTxnWithSuggestedParams,
@@ -12,6 +11,7 @@ import {
 } from 'algosdk';
 
 // utils
+import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import verifyTransactionGroupId from './verifyTransactionGroupId';
 
 describe(`${verifyTransactionGroupId.name}()`, () => {

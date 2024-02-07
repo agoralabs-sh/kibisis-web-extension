@@ -3,9 +3,9 @@ import {
   decode as decodeBase64,
   encode as encodeBase64,
 } from '@stablelib/base64';
-import { decodeUnsignedTransaction, Transaction } from 'algosdk';
+import { Transaction } from 'algosdk';
 import { v4 as uuid } from 'uuid';
-import browser, { Alarms, Runtime, Windows } from 'webextension-polyfill';
+import browser, { Runtime, Windows } from 'webextension-polyfill';
 
 // config
 import { networks } from '@extension/config';
@@ -81,6 +81,7 @@ import type {
 // utils
 import computeGroupId from '@common/utils/computeGroupId';
 import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
+import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import isNetworkSupported from '@extension/utils/isNetworkSupported';

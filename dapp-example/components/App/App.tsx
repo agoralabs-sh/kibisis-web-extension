@@ -17,19 +17,15 @@ import {
   PROVIDER_ID,
   SupportedProviders,
   useInitializeProviders,
-  WalletProvider,
+  WalletProvider as UseWalletProvider,
 } from '@txnlab/use-wallet';
-import { Web3ModalSign } from '@web3modal/sign-react';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // components
 import ApplicationActionsTab from '../ApplicationActionsTab';
 import AssetActionsTab from '../AssetActionsTab';
 import AtomicTransactionActionsTab from '../AtomicTransactionActionsTab';
-import ConnectMenu, {
-  CustomUseWalletProvider,
-  IConnectResult,
-} from '../ConnectMenu';
+import ConnectMenu, { IConnectResult } from '../ConnectMenu';
 import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountTab from '../ImportAccountTab';
 import KeyRegistrationActionsTab from '../KeyRegistrationActionsTab';
@@ -53,16 +49,13 @@ import { IAccountInformation } from '../../types';
 
 const App: FC = () => {
   const providers: SupportedProviders | null = useInitializeProviders({
-    providers: [
-      {
-        id: PROVIDER_ID.CUSTOM,
-        clientOptions: {
-          name: 'Kibisis',
-          icon: ICON_URI,
-          getProvider: () => new CustomUseWalletProvider(),
-        },
-      },
-    ],
+    nodeConfig: {
+      network: 'testnet',
+      nodeServer: 'https://testnet-api.algonode.cloud',
+      nodeToken: '',
+      nodePort: '443',
+    },
+    providers: [{ id: PROVIDER_ID.KIBISIS }],
   });
   // states
   const [connectionType, setConnectionType] =
@@ -105,24 +98,8 @@ const App: FC = () => {
   }, [enabledAccounts]);
 
   return (
-    <WalletProvider value={providers}>
+    <UseWalletProvider value={providers}>
       <ChakraProvider theme={theme}>
-        {/*wallet connect modal*/}
-        <Web3ModalSign
-          metadata={{
-            description: 'The Kibisis dApp example',
-            icons: [
-              `${window.location.protocol}//${window.location.host}/favicon.png`,
-            ],
-            name: document.title,
-            url: 'https://kibis.is',
-          }}
-          modalOptions={{
-            explorerRecommendedWalletIds: 'NONE',
-          }}
-          projectId={__WALLET_CONNECT_PROJECT_ID__}
-        />
-
         <Center as="main" backgroundColor="white">
           <Flex
             alignItems="center"
@@ -237,7 +214,7 @@ const App: FC = () => {
           </Flex>
         </Center>
       </ChakraProvider>
-    </WalletProvider>
+    </UseWalletProvider>
   );
 };
 

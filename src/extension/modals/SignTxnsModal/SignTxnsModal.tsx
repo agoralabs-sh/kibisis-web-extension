@@ -12,7 +12,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { decode as decodeBase64 } from '@stablelib/base64';
-import { decodeUnsignedTransaction, Transaction } from 'algosdk';
+import { Transaction } from 'algosdk';
 import React, {
   FC,
   KeyboardEvent,
@@ -84,8 +84,9 @@ import {
 } from '@extension/types';
 
 // utils
-import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
+import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
+import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import signTxns from '@extension/utils/signTxns';
 
 interface IProps {

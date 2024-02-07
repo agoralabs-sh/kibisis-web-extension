@@ -22,8 +22,8 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { IAccount, INetwork } from '@extension/types';
-import { ICondensedProps } from './types';
+import type { IAccount, INetwork } from '@extension/types';
+import type { ICondensedProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
@@ -48,6 +48,10 @@ const AssetCreateTransactionContent: FC<IProps> = ({
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
+  // misc
+  const feeAsAtomicUnit: BigNumber = new BigNumber(
+    transaction.fee ? String(transaction.fee) : '0'
+  );
   const fromAddress: string = encodeAddress(transaction.from.publicKey);
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction.get_obj_for_encoding(),
@@ -56,12 +60,13 @@ const AssetCreateTransactionContent: FC<IProps> = ({
       sender: fromAccount,
     }
   );
+  // renders
   const renderExtraInformation = () => {
     return (
       <>
         {/*fee*/}
         <SignTxnsAssetItem
-          atomicUnitAmount={new BigNumber(String(transaction.fee))}
+          atomicUnitAmount={feeAsAtomicUnit}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
