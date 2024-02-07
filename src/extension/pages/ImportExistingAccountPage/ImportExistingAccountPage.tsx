@@ -11,6 +11,7 @@ import { Account, mnemonicToSecretKey } from 'algosdk';
 import { Step, useSteps } from 'chakra-ui-steps';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // components
@@ -24,14 +25,26 @@ import Steps from '@extension/components/Steps';
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// features
+import { create as createNotification } from '@extension/features/notifications';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// selectors
+import { useSelectLogger } from '@extension/selectors';
+
 // types
-import { IAddAccountCompleteFunction } from '@extension/types';
+import type { ILogger } from '@common/types';
+import type {
+  IAddAccountCompleteFunction,
+  IAppThunkDispatch,
+  IMainRootState,
+  IRegistrationRootState,
+} from '@extension/types';
 
 interface IProps {
   onComplete: IAddAccountCompleteFunction;
@@ -43,11 +56,17 @@ const ImportExistingAccountPage: FC<IProps> = ({
   saving,
 }: IProps) => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch<IMainRootState | IRegistrationRootState> =
+    useDispatch<IAppThunkDispatch<IMainRootState | IRegistrationRootState>>();
   const navigate: NavigateFunction = useNavigate();
+  // selectors
+  const logger: ILogger = useSelectLogger();
+  // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = usePrimaryColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
+  // states
   const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
   });
@@ -57,16 +76,36 @@ const ImportExistingAccountPage: FC<IProps> = ({
   const [phrases, setPhrases] = useState<string[]>(
     Array.from({ length: 25 }, () => '')
   );
+  // misc
   const stepsLabels: string[] = [
     t<string>('headings.enterYourSeedPhrase'),
     t<string>('headings.nameYourAccount'),
   ];
   const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
+  // handlers
   const handleImportClick = () => {
+    const _functionName: string = 'handleImportClick';
+
     if (!account) {
-      // TODO: handle eventuality if the account is not defined
+      logger.debug(
+        `${ImportExistingAccountPage.displayName}#${_functionName}: unable to import account, account "null"`
+      );
+
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          description: t<string>('errors.descriptions.code'),
+          title: t<string>('errors.titles.code'),
+          type: 'error',
+        })
+      );
+
       return;
     }
+
+    logger.debug(
+      `${ImportExistingAccountPage.displayName}#${_functionName}: importing account "${account.addr}"`
+    );
 
     onComplete({
       name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
@@ -114,9 +153,11 @@ const ImportExistingAccountPage: FC<IProps> = ({
 
   return (
     <>
+      {/*page title*/}
       <PageHeader
         title={t<string>('titles.page', { context: 'importExistingAccount' })}
       />
+
       <VStack
         flexGrow={1}
         justifyContent="center"
@@ -132,12 +173,13 @@ const ImportExistingAccountPage: FC<IProps> = ({
           orientation="vertical"
           variant="circles"
         >
-          {/* Enter mnemonic */}
+          {/*enter seed phrase inputs*/}
           <Step label={stepsLabels[0]}>
             <VStack alignItems="flex-start" p={1} spacing={2} w="full">
               <Text color={subTextColor} size="md" textAlign="left">
                 {t<string>('captions.enterSeedPhrase')}
               </Text>
+
               <EnterMnemonicPhraseInput
                 disabled={saving}
                 error={error}
@@ -146,16 +188,19 @@ const ImportExistingAccountPage: FC<IProps> = ({
               />
             </VStack>
           </Step>
-          {/* Name account */}
+
+          {/*name account input*/}
           <Step label={stepsLabels[1]}>
             <VStack alignItems="flex-start" p={1} spacing={2} w="full">
               <Text color={subTextColor} size="md" textAlign="left">
                 {t<string>('captions.nameYourAccount')}
               </Text>
+
               <VStack w="full">
                 <Text color={defaultTextColor} textAlign="left" w="full">
                   {t<string>('labels.accountName')}
                 </Text>
+
                 <InputGroup size="md">
                   <Input
                     focusBorderColor={primaryColor}
@@ -171,12 +216,13 @@ const ImportExistingAccountPage: FC<IProps> = ({
           </Step>
         </Steps>
 
-        {/* Confirm completed */}
+        {/*confirm completed*/}
         {hasCompletedAllSteps && (
           <VStack alignItems="flex-start" spacing={2} w="full">
             <Heading color={defaultTextColor} fontSize="md" textAlign="left">
               {t<string>('headings.importExistingAccountComplete')}
             </Heading>
+
             <Text color={subTextColor} fontSize="md" textAlign="left">
               {t<string>('captions.importExistingAccountComplete')}
             </Text>
@@ -186,19 +232,22 @@ const ImportExistingAccountPage: FC<IProps> = ({
         <Spacer />
 
         <HStack spacing={4} w="full">
+          {/*previous button*/}
           <Button
-            onClick={handlePreviousClick}
             isDisabled={saving}
+            onClick={handlePreviousClick}
             size="lg"
             variant="outline"
             w="full"
           >
             {t<string>('buttons.previous')}
           </Button>
+
           {hasCompletedAllSteps ? (
+            // import button
             <Button
-              onClick={handleImportClick}
               isLoading={saving}
+              onClick={handleImportClick}
               size="lg"
               variant="solid"
               w="full"
@@ -206,7 +255,9 @@ const ImportExistingAccountPage: FC<IProps> = ({
               {t<string>('buttons.import')}
             </Button>
           ) : (
+            // next button
             <Button
+              isLoading={saving}
               onClick={handleNextClick}
               size="lg"
               variant="solid"

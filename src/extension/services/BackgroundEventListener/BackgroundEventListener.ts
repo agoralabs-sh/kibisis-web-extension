@@ -99,7 +99,7 @@ export default class BackgroundEventListener {
     const _functionName: string = 'onAlarm';
 
     this.logger?.debug(
-      `${BackgroundEventListener.name}#${_functionName}(): alarm "${alarm.name}" fired`
+      `${BackgroundEventListener.name}#${_functionName}(): alarm "${PASSWORD_LOCK_ALARM}" fired`
     );
 
     switch (alarm.name) {

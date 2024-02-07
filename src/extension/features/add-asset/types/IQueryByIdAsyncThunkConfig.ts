@@ -2,9 +2,10 @@
 import { BaseExtensionError } from '@extension/errors';
 
 // types
-import { IBaseAsyncThunkConfig } from '@extension/types';
+import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
 
-interface IQueryByIdAsyncThunkConfig extends IBaseAsyncThunkConfig {
+interface IQueryByIdAsyncThunkConfig
+  extends IBaseAsyncThunkConfig<IMainRootState> {
   rejectValue?: BaseExtensionError;
 }
 

@@ -34,14 +34,18 @@ import {
 } from '@extension/selectors';
 
 // types
-import { IAppThunkDispatch } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IRegistrationRootState,
+} from '@extension/types';
 
 const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch<IRegistrationRootState> =
+    useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
   const createPasswordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   const navigate: NavigateFunction = useNavigate();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
@@ -79,9 +83,11 @@ const CreatePasswordPage: FC = () => {
 
   return (
     <>
+      {/*page title*/}
       <PageHeader
         title={t<string>('titles.page', { context: 'createPassword' })}
       />
+
       <VStack
         flexGrow={1}
         pb={DEFAULT_GAP}
@@ -90,6 +96,7 @@ const CreatePasswordPage: FC = () => {
         w="full"
       >
         <VStack flexGrow={1} spacing={DEFAULT_GAP + 2} w="full">
+          {/*descriptions*/}
           <VStack spacing={DEFAULT_GAP / 2} w="full">
             <Text
               color={defaultTextColor}
@@ -105,6 +112,7 @@ const CreatePasswordPage: FC = () => {
             </Text>
           </VStack>
 
+          {/*create password input*/}
           <CreatePasswordInput
             inputRef={createPasswordInputRef}
             onChange={handlePasswordChange}
@@ -114,6 +122,7 @@ const CreatePasswordPage: FC = () => {
           />
         </VStack>
 
+        {/*next button*/}
         <Button
           onClick={handleNextClick}
           size="lg"

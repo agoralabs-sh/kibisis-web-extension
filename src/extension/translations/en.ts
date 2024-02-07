@@ -63,9 +63,6 @@ const translation: IResourceLanguage = {
     changePassword2:
       'You will be prompted to enter your current password when you press "Change Password".',
     changeTheme: 'Choose between dark and light mode.',
-    clearAllData: 'Are you sure you want to clear all your data?',
-    clearAllDataWarning:
-      'Once this has been completed, it cannot be reversed. All your settings and accounts will be removed',
     confirmingTransaction: 'Please wait, the transaction is being processed.',
     connectingToWalletConnect: 'Attempting to connect to WalletConnect.',
     copied: 'Copied!',
@@ -82,6 +79,10 @@ const translation: IResourceLanguage = {
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     enterSeedPhrase: `Add your seed phrase to import your account.`,
+    factoryReset: 'This will remove all accounts, settings and the password.',
+    factoryResetModal: 'Are you sure you want to perform a factory reset?',
+    factoryResetWarning:
+      'Once this has been completed, it cannot be reversed. All your accounts, settings and password will be removed',
     freezeManagerAddressDoesNotMatch:
       'This account does not have the authority to freeze/unfreeze this asset. This transaction will likely fail.',
     groupIdCopied: 'Group ID copied!',
@@ -164,7 +165,7 @@ const translation: IResourceLanguage = {
   },
   errors: {
     descriptions: {
-      code: `Please contact support and describe what happened.`,
+      code: `Please contact support with code {{code}} and describe what happened.`,
       code_1002: `Failed to parse the "{{type}}" data.`,
       code_2000: 'The password seems to be invalid.',
       code_2003: 'This account already exists.',
@@ -194,13 +195,13 @@ const translation: IResourceLanguage = {
     allowMainNetConfirm: 'Allow MainNet Networks',
     authentication: 'Authentication',
     beta: 'Beta',
-    clearAllData: 'Clear All Data',
     comingSoon: 'Coming Soon!',
     confirm: 'Confirm',
     createNewAccount: 'Create A New Account',
     dangerZone: 'Danger Zone',
     developer: 'Developer',
     enterYourSeedPhrase: 'Enter your seed phrase',
+    factoryReset: 'Factory Reset',
     generateSeedPhrase: 'Generate seed phrase',
     hideAssetConfirm: 'Hide {{symbol}}',
     importAccount: 'Import Account',
@@ -293,6 +294,7 @@ const translation: IResourceLanguage = {
     enablePasswordLock: 'Enable password lock?',
     expirationDate: 'Expiration Date',
     extensionId: 'Extension ID',
+    factoryReset: 'Factory Reset',
     fee: 'Fee',
     firstRound: 'First Round',
     freezeAccount: 'Freeze Account',

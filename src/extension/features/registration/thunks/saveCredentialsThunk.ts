@@ -1,66 +1,51 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { encode as encodeHex } from '@stablelib/hex';
-import { NavigateFunction } from 'react-router-dom';
 import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
-
-// constants
-import { CREATE_PASSWORD_ROUTE } from '@extension/constants';
 
 // enums
 import { RegisterThunkEnum } from '@extension/enums';
 
 // errors
-import { BaseExtensionError, MalformedDataError } from '@extension/errors';
-
-// features
-import { setError } from '@extension/features/system';
-import { sendRegistrationCompletedThunk } from '@extension/features/messages';
+import { InvalidPasswordError } from '@extension/errors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
+  IAsyncThunkConfigWithRejectValue,
   IPrivateKey,
   IRegistrationRootState,
 } from '@extension/types';
-import { ISaveCredentialsPayload } from '../types';
+import type { ISaveCredentialsPayload } from '../types';
 
 const saveCredentialsThunk: AsyncThunk<
-  void, // return
+  IAccount, // return
   ISaveCredentialsPayload, // args
-  Record<string, never>
+  IAsyncThunkConfigWithRejectValue<IRegistrationRootState>
 > = createAsyncThunk<
-  void,
+  IAccount,
   ISaveCredentialsPayload,
-  { state: IRegistrationRootState }
+  IAsyncThunkConfigWithRejectValue<IRegistrationRootState>
 >(
   RegisterThunkEnum.SaveCredentials,
-  async ({ name, privateKey }, { dispatch, getState }) => {
+  async ({ name, privateKey }, { dispatch, getState, rejectWithValue }) => {
     const logger: ILogger = getState().system.logger;
-    const navigate: NavigateFunction | null = getState().system.navigate;
     const password: string | null = getState().registration.password;
     let account: IAccount;
     let accountService: AccountService;
     let encodedPublicKey: string;
-    let inputError: BaseExtensionError;
     let privateKeyItem: IPrivateKey | null;
     let privateKeyService: PrivateKeyService;
 
     if (!password) {
-      inputError = new MalformedDataError('no password found');
+      logger.error(`${RegisterThunkEnum.SaveCredentials}: no password found`);
 
-      logger.error(
-        `${RegisterThunkEnum.SaveCredentials}: ${inputError.message}`
-      );
-
-      navigate && navigate(CREATE_PASSWORD_ROUTE);
-
-      throw inputError;
+      return rejectWithValue(new InvalidPasswordError());
     }
 
     try {
@@ -77,7 +62,7 @@ const saveCredentialsThunk: AsyncThunk<
       });
 
       logger.debug(
-        `${RegisterThunkEnum.SaveCredentials}: saving private key "${encodedPublicKey}" to storage`
+        `${RegisterThunkEnum.SaveCredentials}: saving private key, with encoded public key "${encodedPublicKey}", to storage`
       );
 
       // reset any previous credentials, set the password and the account
@@ -91,9 +76,7 @@ const saveCredentialsThunk: AsyncThunk<
     } catch (error) {
       logger.error(`${RegisterThunkEnum.SaveCredentials}: ${error.message}`);
 
-      dispatch(setError(error));
-
-      throw error;
+      return rejectWithValue(error);
     }
 
     logger.debug(
@@ -120,8 +103,7 @@ const saveCredentialsThunk: AsyncThunk<
       `${RegisterThunkEnum.SaveCredentials}: saved account for "${encodedPublicKey}" to storage`
     );
 
-    // send a message that registration has been completed
-    dispatch(sendRegistrationCompletedThunk());
+    return account;
   }
 );
 

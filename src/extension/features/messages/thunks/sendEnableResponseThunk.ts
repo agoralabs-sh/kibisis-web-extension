@@ -19,9 +19,14 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { ILogger } from '@common/types';
-import { IAccount, IBaseAsyncThunkConfig, ISession } from '@extension/types';
-import { IBaseResponseThunkPayload } from '../types';
+import type { ILogger } from '@common/types';
+import type {
+  IAccount,
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+  ISession,
+} from '@extension/types';
+import type { IBaseResponseThunkPayload } from '../types';
 
 interface IPayload extends IBaseResponseThunkPayload {
   originMessage: Arc0027EnableRequestMessage;
@@ -31,8 +36,8 @@ interface IPayload extends IBaseResponseThunkPayload {
 const sendEnableResponseThunk: AsyncThunk<
   void, // return
   IPayload, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<void, IPayload, IBaseAsyncThunkConfig>(
+  IBaseAsyncThunkConfig<IMainRootState>
+> = createAsyncThunk<void, IPayload, IBaseAsyncThunkConfig<IMainRootState>>(
   MessagesThunkEnum.SendEnableResponse,
   async (
     { error, eventId, originMessage, originTabId, session },

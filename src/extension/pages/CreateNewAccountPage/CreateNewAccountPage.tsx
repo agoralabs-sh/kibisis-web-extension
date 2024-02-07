@@ -33,7 +33,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { IAddAccountCompleteFunction } from '@extension/types';
+import type { IAddAccountCompleteFunction } from '@extension/types';
 
 interface IProps {
   onComplete: IAddAccountCompleteFunction;
@@ -98,9 +98,11 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
 
   return (
     <>
+      {/*page title*/}
       <PageHeader
         title={t<string>('titles.page', { context: 'createNewAccount' })}
       />
+
       <VStack
         flexGrow={1}
         justifyContent="center"
@@ -116,7 +118,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
           orientation="vertical"
           variant="circles"
         >
-          {/*save mnemonic*/}
+          {/*save seed phrase*/}
           <Step label={stepsLabels[0]}>
             <VStack
               alignItems="flex-start"
@@ -174,6 +176,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
                 </Grid>
               </VStack>
 
+              {/*copy seed phrase button*/}
               <CopyButton
                 colorScheme={primaryColorScheme}
                 size="md"
@@ -261,6 +264,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
         <Spacer />
 
         <HStack spacing={DEFAULT_GAP - 2} w="full">
+          {/*previous button*/}
           <Button
             onClick={handlePreviousClick}
             isDisabled={saving}
@@ -272,6 +276,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
           </Button>
 
           {hasCompletedAllSteps ? (
+            // save button
             <Button
               onClick={handleSaveClick}
               isLoading={saving}
@@ -282,6 +287,7 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
               {t<string>('buttons.save')}
             </Button>
           ) : (
+            // next button
             <Button
               onClick={handleNextClick}
               size="lg"
