@@ -28,12 +28,13 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAlgorandPendingTransactionResponse,
   IAssetTypes,
   IBaseAsyncThunkConfig,
+  IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
@@ -44,8 +45,12 @@ import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSetting
 const addStandardAssetThunk: AsyncThunk<
   string | null, // return
   string, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<string | null, string, IBaseAsyncThunkConfig>(
+  IBaseAsyncThunkConfig<IMainRootState>
+> = createAsyncThunk<
+  string | null,
+  string,
+  IBaseAsyncThunkConfig<IMainRootState>
+>(
   AddAssetThunkEnum.AddStandardAsset,
   async (password, { getState, rejectWithValue }) => {
     const accountId: string | null = getState().addAsset.accountId;

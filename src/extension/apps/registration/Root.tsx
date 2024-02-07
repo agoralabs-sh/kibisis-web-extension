@@ -3,22 +3,23 @@ import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
+// constants
+import { BODY_BACKGROUND_COLOR } from '@extension/constants';
+
 // features
-import { setError, setNavigate } from '@extension/features/system';
+import { setNavigate } from '@extension/features/system';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 
-// modals
-import ErrorModal from '@extension/modals//ErrorModal';
-
 // types
-import { IAppThunkDispatch } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IRegistrationRootState,
+} from '@extension/types';
 
 const Root: FC = () => {
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch: IAppThunkDispatch<IRegistrationRootState> =
+    useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
   const navigate: NavigateFunction = useNavigate();
-  const handleErrorModalClose = () => {
-    dispatch(setError(null));
-  };
 
   useEffect(() => {
     dispatch(setNavigate(navigate));
@@ -26,20 +27,17 @@ const Root: FC = () => {
   }, []);
 
   return (
-    <>
-      <ErrorModal onClose={handleErrorModalClose} />
-      <Center as="main" backgroundColor="var(--chakra-colors-chakra-body-bg)">
-        <Flex
-          alignItems="center"
-          direction="column"
-          justifyContent="center"
-          minH="100vh"
-          w="full"
-        >
-          <Outlet />
-        </Flex>
-      </Center>
-    </>
+    <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
+      <Flex
+        alignItems="center"
+        direction="column"
+        justifyContent="center"
+        minH="100vh"
+        w="full"
+      >
+        <Outlet />
+      </Flex>
+    </Center>
   );
 };
 

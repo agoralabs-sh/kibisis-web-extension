@@ -45,8 +45,12 @@ import {
 const submitTransactionThunk: AsyncThunk<
   string, // return
   string, // args
-  IAsyncThunkConfigWithRejectValue
-> = createAsyncThunk<string, string, IAsyncThunkConfigWithRejectValue>(
+  IAsyncThunkConfigWithRejectValue<IMainRootState>
+> = createAsyncThunk<
+  string,
+  string,
+  IAsyncThunkConfigWithRejectValue<IMainRootState>
+>(
   SendAssetsThunkEnum.SubmitTransaction,
   async (password, { getState, rejectWithValue }) => {
     const amountInStandardUnits: string =

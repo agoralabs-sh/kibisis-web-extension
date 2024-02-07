@@ -17,6 +17,7 @@ import {
 
 // features
 import { reducer as networksReducer } from '@extension/features/networks';
+import { reducer as notificationsReducer } from '@extension/features/notifications';
 import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as registrationReducer } from '@extension/features/registration';
 import { reducer as systemReducer } from '@extension/features/system';
@@ -29,7 +30,7 @@ import GetStartedPage from '@extension/pages/GetStartedPage';
 import RegistrationAddAccountRouter from '@extension/routers/RegistrationAddAccountRouter';
 
 // types
-import { IAppProps, IRegistrationRootState } from '@extension/types';
+import type { IAppProps, IRegistrationRootState } from '@extension/types';
 
 // utils
 import makeStore from '@extension/utils/makeStore';
@@ -65,6 +66,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     makeStore<IRegistrationRootState>(
       combineReducers({
         networks: networksReducer,
+        notifications: notificationsReducer,
         settings: settingsReducer,
         registration: registrationReducer,
         system: systemReducer,

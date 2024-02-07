@@ -7,14 +7,15 @@ import { AccountsThunkEnum } from '@extension/enums';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAccountInformation,
   IBaseAsyncThunkConfig,
+  IMainRootState,
   INetwork,
 } from '@extension/types';
-import { IUpdateArc200AssetHoldingPayload } from '../types';
+import type { IUpdateArc200AssetHoldingPayload } from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
@@ -22,11 +23,11 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 const removeArc200AssetHoldingThunk: AsyncThunk<
   IAccount | null, // return
   IUpdateArc200AssetHoldingPayload, // args
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IAccount | null,
   IUpdateArc200AssetHoldingPayload,
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IMainRootState>
 >(
   AccountsThunkEnum.RemoveArc200AssetHolding,
   async ({ accountId, appId, genesisHash }, { getState }) => {

@@ -1,15 +1,19 @@
 // features
-import { INetworksState } from '../features/networks';
-import { ISettingsState } from '../features/settings';
-import { IRegistrationState } from '../features/registration';
+import type { INetworksState } from '@extension/features/networks';
+import type { INotificationsState } from '@extension/features/notifications';
+import type { IRegistrationState } from '@extension/features/registration';
+import type { ISettingsState } from '@extension/features/settings';
+import type { ISystemState } from '@extension/features/system';
 
 // types
 import IBaseRootState from './IBaseRootState';
 
 interface IRegistrationRootState extends IBaseRootState {
   networks: INetworksState;
-  settings: ISettingsState;
+  notifications: INotificationsState;
   registration: IRegistrationState;
+  settings: ISettingsState;
+  system: ISystemState;
 }
 
 export default IRegistrationRootState;

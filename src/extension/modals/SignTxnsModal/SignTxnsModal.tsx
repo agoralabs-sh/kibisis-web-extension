@@ -202,9 +202,12 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
         default:
           dispatch(
             createNotification({
-              description: `Please contact support with code "${error.code}" and describe what happened.`,
+              description: t<string>('errors.descriptions.code', {
+                code: error.code,
+                context: error.code,
+              }),
               ephemeral: true,
-              title: t<string>('errors.titles.code'),
+              title: t<string>('errors.titles.code', { context: error.code }),
               type: 'error',
             })
           );

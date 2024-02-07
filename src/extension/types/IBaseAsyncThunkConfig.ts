@@ -1,8 +1,11 @@
 // types
-import IMainRootState from './IMainRootState';
+import type IMainRootState from './IMainRootState';
+import type IRegistrationRootState from './IRegistrationRootState';
 
-interface IBaseAsyncThunkConfig {
-  state: IMainRootState;
+interface IBaseAsyncThunkConfig<
+  State = IMainRootState | IRegistrationRootState
+> {
+  state: State;
 }
 
 export default IBaseAsyncThunkConfig;

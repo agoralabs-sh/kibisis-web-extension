@@ -165,7 +165,7 @@ const translation: IResourceLanguage = {
   },
   errors: {
     descriptions: {
-      code: `Please contact support and describe what happened.`,
+      code: `Please contact support with code {{code}} and describe what happened.`,
       code_1002: `Failed to parse the "{{type}}" data.`,
       code_2000: 'The password seems to be invalid.',
       code_2003: 'This account already exists.',
