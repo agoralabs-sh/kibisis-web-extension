@@ -1,3 +1,10 @@
+# [1.11.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.5...v1.11.0-beta.6) (2024-02-07)
+
+
+### Bug Fixes
+
+* import account not working on registration ([#155](https://github.com/agoralabs-sh/kibisis-web-extension/issues/155)) ([d3072df](https://github.com/agoralabs-sh/kibisis-web-extension/commit/d3072df9535c05606df960906687e028db78e112))
+
 # [1.11.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.4...v1.11.0-beta.5) (2024-02-05)
 
 
