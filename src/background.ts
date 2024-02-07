@@ -11,6 +11,7 @@ import { ISettings } from '@extension/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';
+import HeartbeatService from '@extension/services/HeartbeatService';
 
 (async () => {
   const browserAction: Action.Static | BrowserAction.Static =
@@ -20,6 +21,7 @@ import createLogger from '@common/utils/createLogger';
   let logger: ILogger = createLogger(
     __ENV__ === 'development' ? 'debug' : 'error'
   );
+  let heartbeatService: HeartbeatService;
   let settingsService: SettingsService = new SettingsService({ logger });
   let settings: ISettings = await settingsService.getAll();
 
@@ -28,12 +30,17 @@ import createLogger from '@common/utils/createLogger';
     logger = createLogger('debug');
   }
 
+  heartbeatService = new HeartbeatService({ logger });
+
   backgroundEventListener = new BackgroundEventListener({
     logger,
   });
   backgroundMessageHandler = new BackgroundMessageHandler({
     logger,
   });
+
+  // create an alarm to "tick" that will keep the extension from going idle
+  await heartbeatService.createOrGetAlarm();
 
   // listen to incoming messages from the content scripts and apps (pop-ups)
   browser.runtime.onMessage.addListener(

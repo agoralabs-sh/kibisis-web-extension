@@ -6,20 +6,15 @@ import { PASSWORD_LOCK_ALARM } from '@extension/constants';
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
 
+// utils
+import convertMillisecondsToMinutes from '@extension/utils/convertMillisecondsToMinutes';
+
 export default class PasswordLockService {
   // private variables
   private logger: ILogger | null;
 
   constructor({ logger }: IBaseOptions) {
     this.logger = logger || null;
-  }
-
-  /**
-   * private functions
-   */
-
-  private convertMillisecondsToMinutes(valueInMilliseconds: number): number {
-    return valueInMilliseconds / 60000;
   }
 
   /**
@@ -40,7 +35,7 @@ export default class PasswordLockService {
     timeoutInMilliseconds: number
   ): Promise<Alarms.Alarm | null> {
     const _functionName: string = 'createAlarm';
-    const delayInMinutes: number = this.convertMillisecondsToMinutes(
+    const delayInMinutes: number = convertMillisecondsToMinutes(
       timeoutInMilliseconds
     );
 
@@ -70,7 +65,7 @@ export default class PasswordLockService {
     this.logger?.debug(
       `${
         PasswordLockService.name
-      }#${_functionName}: restarting password lock alarm to expire in ${this.convertMillisecondsToMinutes(
+      }#${_functionName}: restarting password lock alarm to expire in ${convertMillisecondsToMinutes(
         timeoutInMilliseconds
       )} minute(s)`
     );
