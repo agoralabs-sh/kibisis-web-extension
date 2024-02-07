@@ -1,3 +1,10 @@
+# [1.11.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.6...v1.11.0-beta.7) (2024-02-07)
+
+
+### Bug Fixes
+
+* default decoded transaction amount and fee values to zero if undefined ([#156](https://github.com/agoralabs-sh/kibisis-web-extension/issues/156)) ([ecd5cb6](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ecd5cb6cad614e150b630275062eb282452e2c43))
+
 # [1.11.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.5...v1.11.0-beta.6) (2024-02-07)
 
 
