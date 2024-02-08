@@ -1,6 +1,3 @@
-// constants
-import { ARC_0300_SCHEME } from '@extension/constants';
-
 // enums
 import {
   ARC0300AuthorityEnum,
@@ -14,6 +11,7 @@ import type { IBaseOptions, ILogger } from '@common/types';
 import type { IARC0300AccountImportSchema } from '@extension/types';
 
 export default function parseARC0300AccountImportSchema(
+  scheme: string,
   paths: string[],
   searchParams: URLSearchParams,
   options?: IBaseOptions
@@ -68,6 +66,6 @@ export default function parseARC0300AccountImportSchema(
       encoding,
       privateKey: privateKeyParam,
     },
-    scheme: ARC_0300_SCHEME,
+    scheme,
   };
 }

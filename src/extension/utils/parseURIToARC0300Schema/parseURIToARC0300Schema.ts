@@ -1,5 +1,5 @@
 // constants
-import { ARC_0300_SCHEME } from '@extension/constants';
+import { ARC_0026_SCHEME, ARC_0300_SCHEME } from '@extension/constants';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
@@ -34,8 +34,10 @@ export default function parseURIToARC0300Schema<Schema = IARC0300BaseSchema>(
   }
 
   // check if we are using the correct scheme
-  if (scheme !== ARC_0300_SCHEME) {
-    logger?.debug(`${_functionName}: not an arc0300 scheme, found "${scheme}"`);
+  if (scheme !== ARC_0300_SCHEME && scheme !== ARC_0026_SCHEME) {
+    logger?.debug(
+      `${_functionName}: not an arc0300 or arc0026 scheme, found "${scheme}"`
+    );
 
     return null;
   }
@@ -53,6 +55,7 @@ export default function parseURIToARC0300Schema<Schema = IARC0300BaseSchema>(
       // if we are importing an account
       if (paths[0] === ARC0300PathEnum.Import) {
         return parseARC0300AccountImportSchema(
+          scheme,
           paths,
           new URLSearchParams(query),
           options
