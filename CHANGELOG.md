@@ -1,3 +1,10 @@
+# [1.12.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0...v1.12.0-beta.1) (2024-02-08)
+
+
+### Features
+
+* support arc-0026 (algorand) and arc-0300 (avm) schemes ([#163](https://github.com/agoralabs-sh/kibisis-web-extension/issues/163)) ([71526c7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/71526c7b0b006f3f16ceaca0af51ffcc12592074))
+
 # [1.11.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1...v1.11.0) (2024-02-08)
 
 
