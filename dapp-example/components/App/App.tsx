@@ -34,7 +34,6 @@ import SignDataTab from '../SignDataTab';
 import SignJwtTab from '../SignJwtTab';
 
 // constants
-import { ICON_URI } from '@common/constants';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums

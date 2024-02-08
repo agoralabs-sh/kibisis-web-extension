@@ -7,7 +7,7 @@ import { decode as decodeHex, encode as encodeHex } from '@stablelib/hex';
 import { Account, generateAccount } from 'algosdk';
 
 // constants
-import { ARC_0300_SCHEME } from '@extension/constants';
+import { ARC_0026_SCHEME, ARC_0300_SCHEME } from '@extension/constants';
 
 // enums
 import {
@@ -116,6 +116,7 @@ describe(`${__dirname}#parseURIToARC0300Schema()`, () => {
         throw new Error('failed to parse uri');
       }
 
+      expect(result.scheme).toBe(ARC_0300_SCHEME);
       expect(result.authority).toBe(ARC0300AuthorityEnum.Account);
       expect(result.paths).toEqual([ARC0300PathEnum.Import]);
       expect(result.query[ARC0300QueryEnum.Encoding]).toBe(
@@ -145,6 +146,7 @@ describe(`${__dirname}#parseURIToARC0300Schema()`, () => {
         throw new Error('failed to parse uri');
       }
 
+      expect(result.scheme).toBe(ARC_0300_SCHEME);
       expect(result.authority).toBe(ARC0300AuthorityEnum.Account);
       expect(result.paths).toEqual([ARC0300PathEnum.Import]);
       expect(result.query[ARC0300QueryEnum.Encoding]).toBe(
@@ -153,6 +155,34 @@ describe(`${__dirname}#parseURIToARC0300Schema()`, () => {
       expect(
         decodeBase64URLSafe(result.query[ARC0300QueryEnum.PrivateKey])
       ).toEqual(account.sk);
+    });
+
+    it('should return a valid schema with an arc-0026 scheme', () => {
+      // arrange
+      const account: Account = generateAccount();
+      const uri: string = `${ARC_0026_SCHEME}://${
+        ARC0300AuthorityEnum.Account
+      }/${ARC0300PathEnum.Import}?${ARC0300QueryEnum.PrivateKey}=${encodeHex(
+        account.sk
+      )}&${ARC0300QueryEnum.Encoding}=${ARC0300EncodingEnum.Hexadecimal}`;
+      // act
+      const result: IARC0300AccountImportSchema | null =
+        parseURIToARC0300Schema<IARC0300AccountImportSchema>(uri, options);
+
+      // assert
+      if (!result) {
+        throw new Error('failed to parse uri');
+      }
+
+      expect(result.scheme).toBe(ARC_0026_SCHEME);
+      expect(result.authority).toBe(ARC0300AuthorityEnum.Account);
+      expect(result.paths).toEqual([ARC0300PathEnum.Import]);
+      expect(result.query[ARC0300QueryEnum.Encoding]).toBe(
+        ARC0300EncodingEnum.Hexadecimal
+      );
+      expect(decodeHex(result.query[ARC0300QueryEnum.PrivateKey])).toEqual(
+        account.sk
+      );
     });
   });
 });
