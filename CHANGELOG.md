@@ -1,3 +1,22 @@
+# [1.11.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1...v1.11.0) (2024-02-08)
+
+
+### Bug Fixes
+
+* allow for comma separated seed phrases ([#142](https://github.com/agoralabs-sh/kibisis-web-extension/issues/142)) ([8fe314e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/8fe314e7c6849dddb2dd9b3c5532c711667b4add))
+* change label for "remove asset" to "hide asset" ([#140](https://github.com/agoralabs-sh/kibisis-web-extension/issues/140)) ([9a46c7d](https://github.com/agoralabs-sh/kibisis-web-extension/commit/9a46c7d5fec7462267869e9b2e34d3bab1c36328))
+* default decoded transaction amount and fee values to zero if undefined ([#156](https://github.com/agoralabs-sh/kibisis-web-extension/issues/156)) ([ecd5cb6](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ecd5cb6cad614e150b630275062eb282452e2c43))
+* import account not working on registration ([#155](https://github.com/agoralabs-sh/kibisis-web-extension/issues/155)) ([d3072df](https://github.com/agoralabs-sh/kibisis-web-extension/commit/d3072df9535c05606df960906687e028db78e112))
+* password lock always locks ([#152](https://github.com/agoralabs-sh/kibisis-web-extension/issues/152)) ([f877cdb](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f877cdb3f5069f8d06a644f77c63e7c742a33df8))
+
+
+### Features
+
+* add select account button to the address input ([#151](https://github.com/agoralabs-sh/kibisis-web-extension/issues/151)) ([c99e815](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c99e8151c775bb9fef97bbbaba251bf713d912af))
+* add settings option to allow users to use a password lock ([#150](https://github.com/agoralabs-sh/kibisis-web-extension/issues/150)) ([fd87b77](https://github.com/agoralabs-sh/kibisis-web-extension/commit/fd87b779694828a354f99ef037df335812e27adf))
+* import account via qr code ([#154](https://github.com/agoralabs-sh/kibisis-web-extension/issues/154)) ([548a785](https://github.com/agoralabs-sh/kibisis-web-extension/commit/548a785676637112a8af11608203936a55cb7feb))
+* remove zero when focusing on the send asset input ([#153](https://github.com/agoralabs-sh/kibisis-web-extension/issues/153)) ([32a3ad4](https://github.com/agoralabs-sh/kibisis-web-extension/commit/32a3ad4400890625dee6457f50553c1d25b7d408))
+
 # [1.11.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0-beta.6...v1.11.0-beta.7) (2024-02-07)
 
 
