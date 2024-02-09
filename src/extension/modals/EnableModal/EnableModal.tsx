@@ -29,10 +29,10 @@ import SessionRequestHeader, {
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { Arc0027ProviderMethodEnum } from '@common/enums';
+import { ARC0027ProviderMethodEnum } from '@common/enums';
 
 // errors
-import { SerializableArc0027MethodCanceledError } from '@common/errors';
+import { SerializableARC0027MethodCanceledError } from '@common/errors';
 
 // features
 import { sendEnableResponseThunk } from '@extension/features/messages';
@@ -44,7 +44,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // messages
-import { Arc0027EnableRequestMessage } from '@common/messages';
+import { ARC0027EnableRequestMessage } from '@common/messages';
 
 // selectors
 import {
@@ -84,7 +84,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const enableRequest: IClientRequest<Arc0027EnableRequestMessage> | null =
+  const enableRequest: IClientRequest<ARC0027EnableRequestMessage> | null =
     useSelectEnableRequest();
   const fetching: boolean = useSelectFetchingAccounts();
   const networks: INetwork[] = useSelectNetworks();
@@ -101,8 +101,8 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     if (enableRequest) {
       dispatch(
         sendEnableResponseThunk({
-          error: new SerializableArc0027MethodCanceledError(
-            Arc0027ProviderMethodEnum.Enable,
+          error: new SerializableARC0027MethodCanceledError(
+            ARC0027ProviderMethodEnum.Enable,
             __PROVIDER_ID__,
             `user dismissed connect modal`
           ),

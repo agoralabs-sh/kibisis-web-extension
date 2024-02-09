@@ -1,10 +1,10 @@
 // messages
-import { BaseArc0027RequestMessage } from '@common/messages';
-import { IArc0027ParamTypes, IClientInformation } from '@common/types';
+import { BaseARC0027RequestMessage } from '@common/messages';
+import { IARC0027ParamTypes, IClientInformation } from '@common/types';
 
 interface IInternalRequestMessage {
   clientInfo: IClientInformation;
-  data: BaseArc0027RequestMessage<IArc0027ParamTypes>;
+  data: BaseARC0027RequestMessage<IARC0027ParamTypes>;
 }
 
 export default IInternalRequestMessage;

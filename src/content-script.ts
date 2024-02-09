@@ -25,13 +25,13 @@ import injectScript from '@external/utils/injectScript';
     });
 
   // listen to broadcast messages from the webpage
-  channel.onmessage = externalMessageBroker.onArc0027RequestMessage.bind(
+  channel.onmessage = externalMessageBroker.onARC0027RequestMessage.bind(
     externalMessageBroker
   );
 
   // listen to incoming extension messages (from the background script / popup)
   browser.runtime.onMessage.addListener(
-    externalMessageBroker.onArc0027ResponseMessage.bind(externalMessageBroker)
+    externalMessageBroker.onARC0027ResponseMessage.bind(externalMessageBroker)
   );
 
   /**

@@ -1,7 +1,7 @@
 // types
-import { IArc200AssetsState } from '../types';
+import { IARC0200AssetsState } from '../types';
 
-export default function getInitialState(): IArc200AssetsState {
+export default function getInitialState(): IARC0200AssetsState {
   return {
     fetching: false,
     items: null,

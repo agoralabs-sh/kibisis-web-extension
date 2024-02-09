@@ -2,13 +2,13 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 // features
-import { updateArc200AssetInformationThunk } from '@extension/features/arc200-assets';
+import { updateARC0200AssetInformationThunk } from '@extension/features/arc200-assets';
 import { updateStandardAssetInformationThunk } from '@extension/features/standard-assets';
 
 // selectors
 import {
   useSelectAccounts,
-  useSelectArc200AssetsBySelectedNetwork,
+  useSelectARC0200AssetsBySelectedNetwork,
   useSelectSelectedNetwork,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
@@ -18,8 +18,8 @@ import {
   IAccount,
   IAccountInformation,
   IAppThunkDispatch,
-  IArc200Asset,
-  IArc200AssetHolding,
+  IARC0200Asset,
+  IARC0200AssetHolding,
   INetwork,
   IStandardAsset,
   IStandardAssetHolding,
@@ -35,7 +35,8 @@ export default function useOnNewAssets(): void {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
+  const arc200Assets: IARC0200Asset[] =
+    useSelectARC0200AssetsBySelectedNetwork();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
@@ -49,21 +50,21 @@ export default function useOnNewAssets(): void {
         ).toUpperCase();
         const accountInformation: IAccountInformation | null =
           account.networkInformation[encodedGenesisHash] || null;
-        let newArc200AssetHoldings: IArc200AssetHolding[];
+        let newARC0200AssetHoldings: IARC0200AssetHolding[];
 
         if (accountInformation) {
           // filter out any new arc200 assets
-          newArc200AssetHoldings =
+          newARC0200AssetHoldings =
             accountInformation.arc200AssetHoldings.filter(
               (assetHolding) =>
                 !arc200Assets.some((value) => value.id === assetHolding.id)
             );
 
           // if we have any new arc200 assets, update the information
-          if (newArc200AssetHoldings.length > 0) {
+          if (newARC0200AssetHoldings.length > 0) {
             dispatch(
-              updateArc200AssetInformationThunk({
-                ids: newArc200AssetHoldings.map((value) => value.id),
+              updateARC0200AssetInformationThunk({
+                ids: newARC0200AssetHoldings.map((value) => value.id),
                 network: selectedNetwork,
               })
             );

@@ -122,7 +122,7 @@ const SendAmountInput: FC<IProps> = ({
     let maximumTransactionAmountLabel: ReactElement;
 
     switch (selectedAsset.type) {
-      case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.ARC0200:
       case AssetTypeEnum.Native:
         symbol = selectedAsset.symbol;
         break;

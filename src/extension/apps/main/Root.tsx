@@ -19,7 +19,7 @@ import {
   fetchAccountsFromStorageThunk,
   startPollingForAccountsThunk,
 } from '@extension/features/accounts';
-import { fetchArc200AssetsFromStorageThunk } from '@extension/features/arc200-assets';
+import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc200-assets';
 import {
   setEnableRequest,
   setSignBytesRequest,
@@ -104,7 +104,7 @@ const Root: FC = () => {
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());
-    dispatch(fetchArc200AssetsFromStorageThunk());
+    dispatch(fetchARC0200AssetsFromStorageThunk());
     dispatch(initializeWalletConnectThunk());
     dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());

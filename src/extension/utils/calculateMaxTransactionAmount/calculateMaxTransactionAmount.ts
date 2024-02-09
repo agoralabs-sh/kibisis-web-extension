@@ -11,7 +11,7 @@ import {
   INativeCurrency,
   IStandardAssetHolding,
   INetworkWithTransactionParams,
-  IArc200AssetHolding,
+  IARC0200AssetHolding,
 } from '@extension/types';
 
 // utils
@@ -42,7 +42,7 @@ export default function calculateMaxTransactionAmount({
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
     ] || null;
   let amount: BigNumber;
-  let assetHolding: IArc200AssetHolding | IStandardAssetHolding | null;
+  let assetHolding: IARC0200AssetHolding | IStandardAssetHolding | null;
   let balance: BigNumber;
   let minBalance: BigNumber;
   let minFee: BigNumber;
@@ -52,7 +52,7 @@ export default function calculateMaxTransactionAmount({
   }
 
   switch (asset.type) {
-    case AssetTypeEnum.Arc200:
+    case AssetTypeEnum.ARC0200:
       assetHolding =
         accountInformation.arc200AssetHoldings.find(
           (value) => value.id === asset.id

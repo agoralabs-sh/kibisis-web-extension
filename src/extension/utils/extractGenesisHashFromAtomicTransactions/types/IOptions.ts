@@ -1,11 +1,11 @@
 // types
-import type { IArc0001SignTxns, IBaseOptions } from '@common/types';
+import type { IARC0001SignTxns, IBaseOptions } from '@common/types';
 
 /**
- * @property {IArc0001SignTxns[]} txns - a group of atomic transactions.
+ * @property {IARC0001SignTxns[]} txns - a group of atomic transactions.
  */
 interface IOptions extends IBaseOptions {
-  txns: IArc0001SignTxns[];
+  txns: IARC0001SignTxns[];
 }
 
 export default IOptions;

@@ -64,7 +64,7 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectArc200AssetsBySelectedNetwork,
+  useSelectARC0200AssetsBySelectedNetwork,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
@@ -88,7 +88,7 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAppThunkDispatch,
-  IArc200Asset,
+  IARC0200Asset,
   IAssetTypes,
   INativeCurrency,
   INetworkWithTransactionParams,
@@ -111,7 +111,8 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
+  const arc200Assets: IARC0200Asset[] =
+    useSelectARC0200AssetsBySelectedNetwork();
   const amountInStandardUnits: string =
     useSelectSendingAssetAmountInStandardUnits();
   const standardAssets: IStandardAsset[] =
@@ -484,7 +485,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const renderHeader = () => {
     switch (selectedAsset?.type) {
-      case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.ARC0200:
       case AssetTypeEnum.Native:
         return (
           <Heading color={defaultTextColor} size="md" textAlign="center">

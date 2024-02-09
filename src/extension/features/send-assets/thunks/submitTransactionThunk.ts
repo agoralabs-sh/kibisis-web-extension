@@ -37,7 +37,7 @@ import getAlgodClient from '@common/utils/getAlgodClient';
 import getIndexerClient from '@common/utils/getIndexerClient';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import {
-  sendArc200AssetTransferTransaction,
+  sendARC0200AssetTransferTransaction,
   sendPaymentTransaction,
   sendStandardAssetTransferTransaction,
 } from '../utils';
@@ -163,8 +163,8 @@ const submitTransactionThunk: AsyncThunk<
       suggestedParams = await algodClient.getTransactionParams().do();
 
       switch (asset.type) {
-        case AssetTypeEnum.Arc200:
-          return await sendArc200AssetTransferTransaction({
+        case AssetTypeEnum.ARC0200:
+          return await sendARC0200AssetTransferTransaction({
             algodClient,
             amount,
             asset,

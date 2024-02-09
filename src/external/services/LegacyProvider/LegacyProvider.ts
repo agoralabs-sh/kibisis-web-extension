@@ -32,37 +32,37 @@ import {
 import { LEGACY_WALLET_ID } from '@external/constants';
 
 // enums
-import { Arc0027ErrorCodeEnum, Arc0027ProviderMethodEnum } from '@common/enums';
+import { ARC0027ErrorCodeEnum, ARC0027ProviderMethodEnum } from '@common/enums';
 
 // errors
 import {
-  BaseSerializableArc0027Error,
-  SerializableArc0027FailedToPostSomeTransactionsError,
-  SerializableArc0027InvalidGroupIdError,
-  SerializableArc0027MethodNotSupportedError,
-  SerializableArc0027MethodTimedOutError,
-  SerializableArc0027NetworkNotSupportedError,
-  SerializableArc0027UnauthorizedSignerError,
-  SerializableArc0027UnknownError,
+  BaseSerializableARC0027Error,
+  SerializableARC0027FailedToPostSomeTransactionsError,
+  SerializableARC0027InvalidGroupIdError,
+  SerializableARC0027MethodNotSupportedError,
+  SerializableARC0027MethodTimedOutError,
+  SerializableARC0027NetworkNotSupportedError,
+  SerializableARC0027UnauthorizedSignerError,
+  SerializableARC0027UnknownError,
 } from '@common/errors';
 
 // messages
 import {
-  Arc0027EnableRequestMessage,
-  Arc0027SignBytesRequestMessage,
-  Arc0027SignTxnsRequestMessage,
-  BaseArc0027RequestMessage,
-  BaseArc0027ResponseMessage,
+  ARC0027EnableRequestMessage,
+  ARC0027SignBytesRequestMessage,
+  ARC0027SignTxnsRequestMessage,
+  BaseARC0027RequestMessage,
+  BaseARC0027ResponseMessage,
 } from '@common/messages';
 
 // types
 import type {
-  IArc0027EnableParams,
-  IArc0027EnableResult,
-  IArc0027SignBytesParams,
-  IArc0027SignBytesResult,
-  IArc0027SignTxnsParams,
-  IArc0027SignTxnsResult,
+  IARC0027EnableParams,
+  IARC0027EnableResult,
+  IARC0027SignBytesParams,
+  IARC0027SignBytesResult,
+  IARC0027SignTxnsParams,
+  IARC0027SignTxnsResult,
   IBaseOptions,
   ILogger,
 } from '@common/types';
@@ -83,8 +83,8 @@ export default class LegacyProvider extends BaseWalletManager {
    */
 
   private async handleEvent<Params, Result>(
-    method: Arc0027ProviderMethodEnum,
-    message: BaseArc0027RequestMessage<Params>,
+    method: ARC0027ProviderMethodEnum,
+    message: BaseARC0027RequestMessage<Params>,
     timeout?: number
   ): Promise<Result> {
     const _functionName: string = 'handleEvent';
@@ -99,7 +99,7 @@ export default class LegacyProvider extends BaseWalletManager {
         );
 
       channel.onmessage = (
-        event: MessageEvent<BaseArc0027ResponseMessage<Result>>
+        event: MessageEvent<BaseARC0027ResponseMessage<Result>>
       ) => {
         if (!event.data || event.data.requestId !== message.id) {
           return;
@@ -123,7 +123,7 @@ export default class LegacyProvider extends BaseWalletManager {
 
         if (!event.data.result) {
           reject(
-            new SerializableArc0027UnknownError(
+            new SerializableARC0027UnknownError(
               'no result was returned from the provider and no error was thrown',
               __PROVIDER_ID__
             )
@@ -151,7 +151,7 @@ export default class LegacyProvider extends BaseWalletManager {
           );
 
         reject(
-          new SerializableArc0027MethodTimedOutError(
+          new SerializableARC0027MethodTimedOutError(
             method,
             __PROVIDER_ID__,
             `no response from wallet for "${message.reference}"`
@@ -164,44 +164,44 @@ export default class LegacyProvider extends BaseWalletManager {
     });
   }
 
-  private static mapArc0027ErrorToLegacyError(
-    error: BaseSerializableArc0027Error
+  private static mapARC0027ErrorToLegacyError(
+    error: BaseSerializableARC0027Error
   ): BaseError {
     switch (error.code) {
-      case Arc0027ErrorCodeEnum.FailedToPostSomeTransactionsError:
+      case ARC0027ErrorCodeEnum.FailedToPostSomeTransactionsError:
         return new FailedToPostSomeTransactionsError(
           (
-            error as SerializableArc0027FailedToPostSomeTransactionsError
+            error as SerializableARC0027FailedToPostSomeTransactionsError
           ).data.successTxnIDs,
           error.message
         );
-      case Arc0027ErrorCodeEnum.InvalidGroupIdError:
+      case ARC0027ErrorCodeEnum.InvalidGroupIdError:
         return new InvalidGroupIdError(
           (
-            error as SerializableArc0027InvalidGroupIdError
+            error as SerializableARC0027InvalidGroupIdError
           ).data.computedGroupId,
           error.message
         );
-      case Arc0027ErrorCodeEnum.InvalidInputError:
+      case ARC0027ErrorCodeEnum.InvalidInputError:
         return new InvalidInputError(error.message);
-      case Arc0027ErrorCodeEnum.MethodCanceledError:
-      case Arc0027ErrorCodeEnum.MethodTimedOutError:
+      case ARC0027ErrorCodeEnum.MethodCanceledError:
+      case ARC0027ErrorCodeEnum.MethodTimedOutError:
         return new OperationCanceledError(error.message);
-      case Arc0027ErrorCodeEnum.MethodNotSupportedError:
+      case ARC0027ErrorCodeEnum.MethodNotSupportedError:
         return new WalletOperationNotSupportedError(
-          (error as SerializableArc0027MethodNotSupportedError).data.method,
+          (error as SerializableARC0027MethodNotSupportedError).data.method,
           error.message
         );
-      case Arc0027ErrorCodeEnum.NetworkNotSupportedError:
+      case ARC0027ErrorCodeEnum.NetworkNotSupportedError:
         return new NetworkNotSupportedError(
           (
-            error as SerializableArc0027NetworkNotSupportedError
+            error as SerializableARC0027NetworkNotSupportedError
           ).data.genesisHash,
           error.message
         );
-      case Arc0027ErrorCodeEnum.UnauthorizedSignerError:
+      case ARC0027ErrorCodeEnum.UnauthorizedSignerError:
         return new UnauthorizedSignerError(
-          (error as SerializableArc0027UnauthorizedSignerError).data.signer ||
+          (error as SerializableARC0027UnauthorizedSignerError).data.signer ||
             '',
           error.message
         );
@@ -215,15 +215,15 @@ export default class LegacyProvider extends BaseWalletManager {
    */
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
-    let result: IArc0027EnableResult;
+    let result: IARC0027EnableResult;
 
     try {
       result = await this.handleEvent<
-        IArc0027EnableParams,
-        IArc0027EnableResult
+        IARC0027EnableParams,
+        IARC0027EnableResult
       >(
-        Arc0027ProviderMethodEnum.Enable,
-        new Arc0027EnableRequestMessage({
+        ARC0027ProviderMethodEnum.Enable,
+        new ARC0027EnableRequestMessage({
           providerId: __PROVIDER_ID__,
           genesisHash: options?.genesisHash || null,
         })
@@ -239,7 +239,7 @@ export default class LegacyProvider extends BaseWalletManager {
         sessionId: result.sessionId,
       };
     } catch (error) {
-      throw LegacyProvider.mapArc0027ErrorToLegacyError(error);
+      throw LegacyProvider.mapARC0027ErrorToLegacyError(error);
     }
   }
 
@@ -251,15 +251,15 @@ export default class LegacyProvider extends BaseWalletManager {
     data,
     signer,
   }: ISignBytesOptions): Promise<ISignBytesResult> {
-    let result: IArc0027SignBytesResult;
+    let result: IARC0027SignBytesResult;
 
     try {
       result = await this.handleEvent<
-        IArc0027SignBytesParams,
-        IArc0027SignBytesResult
+        IARC0027SignBytesParams,
+        IARC0027SignBytesResult
       >(
-        Arc0027ProviderMethodEnum.SignTxns,
-        new Arc0027SignBytesRequestMessage({
+        ARC0027ProviderMethodEnum.SignTxns,
+        new ARC0027SignBytesRequestMessage({
           data: encodeBase64(data),
           providerId: __PROVIDER_ID__,
           signer,
@@ -271,20 +271,20 @@ export default class LegacyProvider extends BaseWalletManager {
         signature: decodeBase64(result.signature),
       };
     } catch (error) {
-      throw LegacyProvider.mapArc0027ErrorToLegacyError(error);
+      throw LegacyProvider.mapARC0027ErrorToLegacyError(error);
     }
   }
 
   public async signTxns({ txns }: ISignTxnsOptions): Promise<ISignTxnsResult> {
-    let result: IArc0027SignTxnsResult;
+    let result: IARC0027SignTxnsResult;
 
     try {
       result = await this.handleEvent<
-        IArc0027SignTxnsParams,
-        IArc0027SignTxnsResult
+        IARC0027SignTxnsParams,
+        IARC0027SignTxnsResult
       >(
-        Arc0027ProviderMethodEnum.SignBytes,
-        new Arc0027SignTxnsRequestMessage({
+        ARC0027ProviderMethodEnum.SignBytes,
+        new ARC0027SignTxnsRequestMessage({
           providerId: __PROVIDER_ID__,
           txns,
         }),
@@ -295,7 +295,7 @@ export default class LegacyProvider extends BaseWalletManager {
         stxns: result.stxns,
       };
     } catch (error) {
-      throw LegacyProvider.mapArc0027ErrorToLegacyError(error);
+      throw LegacyProvider.mapARC0027ErrorToLegacyError(error);
     }
   }
 }

@@ -3,8 +3,8 @@ import Select, { GroupBase, OptionProps, SingleValueProps } from 'react-select';
 import { FilterOptionOption } from 'react-select/dist/declarations/src/filters';
 
 // components
-import AssetSelectArc200AssetOption from './AssetSelectArc200AssetOption';
-import AssetSelectArc200AssetSingleValue from './AssetSelectArc200AssetSingleValue';
+import AssetSelectARC0200AssetOption from './AssetSelectARC0200AssetOption';
+import AssetSelectARC0200AssetSingleValue from './AssetSelectARC0200AssetSingleValue';
 import AssetSelectNativeCurrencyOption from './AssetSelectNativeCurrencyOption';
 import AssetSelectNativeCurrencySingleValue from './AssetSelectNativeCurrencySingleValue';
 import AssetSelectStandardAssetOption from './AssetSelectStandardAssetOption';
@@ -82,7 +82,7 @@ const AssetSelect: FC<IProps> = ({
 
     switch (asset.type) {
       // check if the asset exists in the asset holdings of the account; has it been "added"
-      case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.ARC0200:
         selectedAsset = accountInformation?.arc200AssetHoldings.find(
           (value) => value.id === asset.id
         )
@@ -118,7 +118,7 @@ const AssetSelect: FC<IProps> = ({
     inputValue: string
   ) => {
     switch (data.value.type) {
-      case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.ARC0200:
         return (
           data.value.id.toUpperCase().includes(inputValue.toUpperCase()) ||
           data.value.symbol.toUpperCase().includes(inputValue.toUpperCase())
@@ -149,9 +149,9 @@ const AssetSelect: FC<IProps> = ({
           isSelected,
         }: OptionProps<IOption, false, GroupBase<IOption>>) => {
           switch (data.value.type) {
-            case AssetTypeEnum.Arc200:
+            case AssetTypeEnum.ARC0200:
               return (
-                <AssetSelectArc200AssetOption
+                <AssetSelectARC0200AssetOption
                   asset={data.value}
                   isSelected={isSelected}
                   onClick={innerProps.onClick}
@@ -183,9 +183,9 @@ const AssetSelect: FC<IProps> = ({
           data,
         }: SingleValueProps<IOption, false, GroupBase<IOption>>) => {
           switch (data.value.type) {
-            case AssetTypeEnum.Arc200:
+            case AssetTypeEnum.ARC0200:
               return (
-                <AssetSelectArc200AssetSingleValue
+                <AssetSelectARC0200AssetSingleValue
                   asset={data.value}
                   network={network}
                 />

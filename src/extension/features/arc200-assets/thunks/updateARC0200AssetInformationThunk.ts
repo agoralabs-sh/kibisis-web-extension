@@ -1,0 +1,91 @@
+import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+
+// constants
+import { NODE_REQUEST_DELAY } from '@extension/constants';
+
+// enums
+import { ARC0200AssetsThunkEnum } from '@extension/enums';
+
+// services
+import ARC0200AssetService from '@extension/services/ARC0200AssetService';
+
+// types
+import type { ILogger } from '@common/types';
+import type { IARC0200Asset, IBaseAsyncThunkConfig } from '@extension/types';
+import type {
+  IUpdateARC0200AssetInformationPayload,
+  IUpdateARC0200AssetInformationResult,
+} from '../types';
+
+// utils
+import updateARC0200AssetInformationById from '@extension/utils/updateARC0200AssetInformationById';
+import upsertItemsById from '@extension/utils/upsertItemsById';
+
+const updateARC0200AssetInformationThunk: AsyncThunk<
+  IUpdateARC0200AssetInformationResult, // return
+  IUpdateARC0200AssetInformationPayload, // args
+  IBaseAsyncThunkConfig
+> = createAsyncThunk<
+  IUpdateARC0200AssetInformationResult,
+  IUpdateARC0200AssetInformationPayload,
+  IBaseAsyncThunkConfig
+>(
+  ARC0200AssetsThunkEnum.UpdateARC0200AssetInformation,
+  async ({ ids, network }, { getState }) => {
+    const logger: ILogger = getState().system.logger;
+    let asset: IARC0200Asset | null;
+    let currentAssets: IARC0200Asset[];
+    let id: string;
+    let assetService: ARC0200AssetService;
+    let updatedAssets: IARC0200Asset[] = [];
+
+    // get the information for each asset and add it to the array
+    for (let i: number = 0; i < ids.length; i++) {
+      id = ids[i];
+
+      try {
+        asset = await updateARC0200AssetInformationById(id, {
+          delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          logger,
+          network,
+        });
+
+        if (!asset) {
+          continue;
+        }
+
+        logger.debug(
+          `${ARC0200AssetsThunkEnum.UpdateARC0200AssetInformation}: successfully updated asset information for arc200 asset "${id}" on "${network.genesisId}"`
+        );
+
+        updatedAssets.push(asset);
+      } catch (error) {
+        logger.error(
+          `${ARC0200AssetsThunkEnum.UpdateARC0200AssetInformation}: failed to get asset information for arc200 asset "${id}" on ${network.genesisId}: ${error.message}`
+        );
+      }
+    }
+
+    assetService = new ARC0200AssetService({
+      logger,
+    });
+    currentAssets = await assetService.getByGenesisHash(network.genesisHash);
+
+    logger.debug(
+      `${ARC0200AssetsThunkEnum.UpdateARC0200AssetInformation}: saving new asset information for network "${network.genesisId}" to storage`
+    );
+
+    // update the storage with the new asset information
+    currentAssets = await assetService.saveByGenesisHash(
+      network.genesisHash,
+      upsertItemsById<IARC0200Asset>(currentAssets, updatedAssets)
+    );
+
+    return {
+      network,
+      arc200Assets: currentAssets,
+    };
+  }
+);
+
+export default updateARC0200AssetInformationThunk;

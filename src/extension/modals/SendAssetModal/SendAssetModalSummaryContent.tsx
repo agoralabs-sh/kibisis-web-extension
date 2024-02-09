@@ -65,7 +65,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
   // renders
   const renderAssetDisplay = () => {
     switch (asset.type) {
-      case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.ARC0200:
         return (
           <AssetDisplay
             atomicUnitAmount={atomicUnitAmount}
@@ -192,7 +192,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       )}
 
       {/*fee*/}
-      {asset.type !== AssetTypeEnum.Arc200 && (
+      {asset.type !== AssetTypeEnum.ARC0200 && (
         <SendAssetSummaryItem
           fontSize="sm"
           item={

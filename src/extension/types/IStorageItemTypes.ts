@@ -3,7 +3,7 @@ import IAccount from './IAccount';
 import IAdvancedSettings from './IAdvancedSettings';
 import IAppearanceSettings from './IAppearanceSettings';
 import IAppWindow from './IAppWindow';
-import IArc200Asset from './IArc200Asset';
+import IARC0200Asset from './IARC0200Asset';
 import IEvent from './IEvent';
 import IGeneralSettings from './IGeneralSettings';
 import IPasswordLock from './IPasswordLock';
@@ -19,7 +19,7 @@ type IStorageItemTypes =
   | IAdvancedSettings
   | IAppearanceSettings
   | IAppWindow
-  | IArc200Asset[]
+  | IARC0200Asset[]
   | IGeneralSettings
   | IEvent[]
   | IPasswordLock
