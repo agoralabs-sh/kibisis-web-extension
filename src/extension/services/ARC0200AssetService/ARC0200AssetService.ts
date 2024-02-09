@@ -1,5 +1,5 @@
 // constants
-import { ARC200_ASSETS_KEY_PREFIX } from '@extension/constants';
+import { ARC0200_ASSETS_KEY_PREFIX } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
@@ -51,7 +51,7 @@ export default class ARC0200AssetService {
    * @returns {string} the arc200 asset item key.
    */
   private createItemKey(genesisHash: string): string {
-    return `${ARC200_ASSETS_KEY_PREFIX}${convertGenesisHashToHex(
+    return `${ARC0200_ASSETS_KEY_PREFIX}${convertGenesisHashToHex(
       genesisHash
     ).toUpperCase()}`;
   }
@@ -61,9 +61,9 @@ export default class ARC0200AssetService {
    */
 
   /**
-   * Gets the ARC200 assets for a given genesis hash.
+   * Gets the ARC-0200 assets for a given genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
-   * @returns {Promise<IArc200Asset[]>} the list of standard assets.
+   * @returns {Promise<IARC0200Asset[]>} the list of standard assets.
    */
   public async getByGenesisHash(genesisHash: string): Promise<IARC0200Asset[]> {
     const assets: IARC0200Asset[] | null = await this.storageManager.getItem(
@@ -81,7 +81,7 @@ export default class ARC0200AssetService {
   }
 
   /**
-   * Removes all the ARC200 assets by the network's genesis hash.
+   * Removes all the ARC-0200 assets by the network's genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
    */
   public async removeByGenesisHash(genesisHash: string): Promise<void> {
@@ -89,10 +89,10 @@ export default class ARC0200AssetService {
   }
 
   /**
-   * Saves ARC200 assets to storage by the network's genesis hash.
+   * Saves ARC-0200 assets to storage by the network's genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
-   * @param {IArc200Asset[]} assets - the ARC200 assets to save to storage.
-   * @returns {IArc200Asset[]} the saved ARC200 assets.
+   * @param {IARC0200Asset[]} assets - the ARC-0200 assets to save to storage.
+   * @returns {IARC0200Asset[]} the saved ARC-0200 assets.
    */
   public async saveByGenesisHash(
     genesisHash: string,

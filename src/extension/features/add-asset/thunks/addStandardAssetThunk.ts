@@ -39,7 +39,7 @@ import type {
 } from '@extension/types';
 
 // utils
-import getAlgodClient from '@common/utils/getAlgodClient';
+import createAlgodClient from '@common/utils/createAlgodClient';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
 const addStandardAssetThunk: AsyncThunk<
@@ -140,7 +140,7 @@ const addStandardAssetThunk: AsyncThunk<
       return rejectWithValue(error);
     }
 
-    algodClient = getAlgodClient(selectedNetwork, {
+    algodClient = createAlgodClient(selectedNetwork, {
       logger,
     });
 

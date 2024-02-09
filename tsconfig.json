@@ -27,6 +27,7 @@
       "@extension/components/*": ["src/extension/components/*"],
       "@extension/config": ["src/extension/config"],
       "@extension/constants": ["src/extension/constants"],
+      "@extension/contracts/*": ["src/extension/contracts/*"],
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],

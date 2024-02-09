@@ -13,7 +13,7 @@ import {
 } from '@extension/types';
 
 // utils
-import getAlgodClient from '@common/utils/getAlgodClient';
+import createAlgodClient from '@common/utils/createAlgodClient';
 import algorandAccountInformationWithDelay from '@extension/utils/algorandAccountInformationWithDelay';
 import mapAlgorandAccountInformationToAccount from '@extension/utils/mapAlgorandAccountInformationToAccount';
 import fetchARC0200AssetHoldingWithDelay from './fetchARC0200AssetHoldingWithDelay';
@@ -62,7 +62,7 @@ export default async function updateAccountInformation({
     return currentAccountInformation;
   }
 
-  client = getAlgodClient(network, {
+  client = createAlgodClient(network, {
     logger,
   });
 

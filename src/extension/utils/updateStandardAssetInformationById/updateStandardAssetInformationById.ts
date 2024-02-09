@@ -10,7 +10,7 @@ import {
 } from '@extension/types';
 
 // utils
-import getAlgodClient from '@common/utils/getAlgodClient';
+import createAlgodClient from '@common/utils/createAlgodClient';
 import fetchStandardAssetInformationWithDelay from '../fetchStandardAssetInformationWithDelay';
 import mapStandardAssetFromAlgorandAsset from '../mapStandardAssetFromAlgorandAsset';
 
@@ -34,7 +34,7 @@ export default async function updateStandardAssetInformationById(
   let client: Algodv2;
   let verifiedAsset: ITinyManAssetResponse | null;
 
-  client = getAlgodClient(network, {
+  client = createAlgodClient(network, {
     logger,
   });
 

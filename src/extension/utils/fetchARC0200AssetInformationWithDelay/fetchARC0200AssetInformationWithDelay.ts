@@ -1,47 +1,47 @@
-import { Algodv2, Indexer } from 'algosdk';
-import ARC0200Contract from 'arc200js';
+import BigNumber from 'bignumber.js';
+
+// enums
+import { ErrorCodeEnum } from '@extension/enums';
+
+// contracts
+import ARC0200Contract from '@extension/contracts/ARC0200Contract';
 
 // types
-import { IARC0200AssetInformation } from '@extension/types';
-
-interface IOptions {
-  algodClient: Algodv2;
-  delay: number;
-  id: string;
-  indexerClient: Indexer;
-}
+import type { IARC0200AssetInformation } from '@extension/types';
+import type { IOptions } from './types';
 
 /**
  * Fetches ARC-0200 asset information from the node with a delay.
  * @param {IOptions} options - options needed to send the request.
- * @returns {IARC0200AssetInformation | null} ARC-0200 asset information from the node.
+ * @returns {IARC0200AssetInformation | null} ARC-0200 asset information or null if the asset is not an ARC-0200 asset.
  */
 export default async function fetchARC0200AssetInformationWithDelay({
-  algodClient,
   delay,
   id,
-  indexerClient,
+  logger,
+  network,
 }: IOptions): Promise<IARC0200AssetInformation | null> {
   return new Promise((resolve, reject) =>
     setTimeout(async () => {
-      const contract: ARC0200Contract = new ARC0200Contract(
-        parseInt(id),
-        algodClient,
-        indexerClient
-      );
-      let result: { returnValue: IARC0200AssetInformation; success: boolean };
+      let contract: ARC0200Contract;
+      let result: IARC0200AssetInformation;
 
       try {
-        result = await contract.getMetadata();
+        contract = new ARC0200Contract({
+          network,
+          logger,
+        });
+        result = await contract.metadata(new BigNumber(id));
 
-        if (!result.success) {
-          resolve(null);
-
-          return;
+        resolve(result);
+      } catch (error) {
+        switch (error.code) {
+          case ErrorCodeEnum.ARC0200NotAValidApplication:
+            return resolve(null);
+          default:
+            break;
         }
 
-        resolve(result.returnValue);
-      } catch (error) {
         reject(error);
       }
     }, delay)

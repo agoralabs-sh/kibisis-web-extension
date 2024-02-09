@@ -1,8 +1,8 @@
 import { Algodv2 } from 'algosdk';
 
 // types
-import { IBaseOptions } from '@common/types';
-import { INetwork, INode } from '@extension/types';
+import type { IBaseOptions } from '@common/types';
+import type { INetwork, INode } from '@extension/types';
 
 // utils
 import getRandomNode from '../getRandomNode';
@@ -13,16 +13,16 @@ import getRandomNode from '../getRandomNode';
  * @param {IBaseOptions} options - [optional] various options such as logger.
  * @returns {Algodv2} an initialized algod client.
  */
-export default function getAlgodClient(
+export default function createAlgodClient(
   network: INetwork,
   { logger }: IBaseOptions = { logger: undefined }
 ): Algodv2 {
+  const _functionName: string = 'createAlgodClient';
   const algod: INode = getRandomNode(network.algods);
 
-  logger &&
-    logger.debug(
-      `${getAlgodClient.name}(): selected algod node "${algod.canonicalName}"`
-    );
+  logger?.debug(
+    `${_functionName}: selected algod node "${algod.canonicalName}"`
+  );
 
   return new Algodv2('', algod.url, algod.port);
 }

@@ -1,3 +1,5 @@
+export { default as ARC0200NotAValidMethodError } from './ARC0200NotAValidMethodError';
+export { default as ARC0200NotAValidApplicationError } from './ARC0200NotAValidApplicationError';
 export { default as BaseExtensionError } from './BaseExtensionError';
 export { default as DecryptionError } from './DecryptionError';
 export { default as EncryptionError } from './EncryptionError';

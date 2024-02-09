@@ -33,7 +33,7 @@ import type {
 
 // utils
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
-import getAlgodClient from '@common/utils/getAlgodClient';
+import createAlgodClient from '@common/utils/createAlgodClient';
 import getIndexerClient from '@common/utils/getIndexerClient';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import {
@@ -151,7 +151,7 @@ const submitTransactionThunk: AsyncThunk<
       return rejectWithValue(error);
     }
 
-    algodClient = getAlgodClient(network, {
+    algodClient = createAlgodClient(network, {
       logger,
     });
 

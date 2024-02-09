@@ -1,14 +1,12 @@
 // types
-import { IBaseOptions } from '@common/types';
-import {
+import type { IBaseOptions } from '@common/types';
+import type {
   IARC0200AssetInformation,
   IARC0200Asset,
   INetwork,
 } from '@extension/types';
 
 // utils
-import getAlgodClient from '@common/utils/getAlgodClient';
-import getIndexerClient from '@common/utils/getIndexerClient';
 import fetchARC0200AssetInformationWithDelay from '../fetchARC0200AssetInformationWithDelay';
 import mapARC0200AssetFromARC0200AssetInformation from '../mapARC0200AssetFromARC0200AssetInformation';
 
@@ -32,14 +30,10 @@ export default async function updateARC0200AssetInformationById(
 
   try {
     assetInformation = await fetchARC0200AssetInformationWithDelay({
-      algodClient: getAlgodClient(network, {
-        logger,
-      }),
       delay,
       id,
-      indexerClient: getIndexerClient(network, {
-        logger,
-      }),
+      logger,
+      network,
     });
 
     if (!assetInformation) {

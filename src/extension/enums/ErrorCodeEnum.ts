@@ -16,6 +16,10 @@ enum ErrorCodeEnum {
 
   // transaction
   FailedToSendTransactionError = 4000,
+
+  // arc0200
+  ARC0200NotAValidApplication = 5000,
+  ARC0200NotAValidMethod = 5001,
 }
 
 export default ErrorCodeEnum;
