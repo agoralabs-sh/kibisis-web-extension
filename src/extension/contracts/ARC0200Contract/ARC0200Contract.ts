@@ -1,4 +1,4 @@
-import { ABIContract } from 'algosdk';
+import { ABIContract, ABIMethod, Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
 // abi
@@ -13,12 +13,18 @@ import { ARC0200NotAValidApplicationError } from '@extension/errors';
 // types
 import { IARC0200AssetInformation } from '@extension/types';
 
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+
 export default class ARC0200Contract extends BaseContract {
   constructor(options: INewBaseContractOptions) {
     super(options);
 
     this.abi = new ABIContract(abi);
   }
+
+  /**
+   * public functions
+   */
 
   /**
    * Gets the metadata for the ARC-0200 application.
@@ -45,19 +51,29 @@ export default class ARC0200Contract extends BaseContract {
   // }
 
   /**
-   * Gets the name of the ARC-0200 asset.
+   * Gets the decimals of the ARC-0200 asset.
    * @param {BigNumber} appId - the application ID of the ARC-0200 asset.
-   * @returns {string} the name of the ARC-0200 asset.
+   * @returns {BigNumber} the decimals of the ARC-0200 asset.
    * @throws {ARC0200NotAValidApplication} if the supplied application ID is not an ARC-0200 asset.
    */
-  public async name(appId: BigNumber): Promise<string> {
-    const _functionName: string = 'name';
-    let result: Uint8Array | null;
+  public async decimals(appId: BigNumber): Promise<BigNumber> {
+    const _functionName: string = 'decimals';
+    let abiMethod: ABIMethod;
+    let result: (BigNumber | null)[];
+    let transaction: Transaction;
 
     try {
-      result = await this.readByMethodName<Uint8Array>('arc200_name', {
+      abiMethod = this.abi.getMethodByName('arc200_decimals');
+      transaction = await this.createReadApplicationTransaction({
+        abiMethod,
         appId,
       });
+      result = (await this.simulateTransactions(appId, [
+        {
+          abiMethod,
+          transaction,
+        },
+      ])) as (BigNumber | null)[];
     } catch (error) {
       this.logger.error(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
@@ -66,11 +82,50 @@ export default class ARC0200Contract extends BaseContract {
       throw error;
     }
 
-    if (!result) {
+    if (!result[0]) {
       throw new ARC0200NotAValidApplicationError(appId.toString());
     }
 
-    return this.trimNullBytes(new TextDecoder().decode(result));
+    return result[0];
+  }
+
+  /**
+   * Gets the name of the ARC-0200 asset.
+   * @param {BigNumber} appId - the application ID of the ARC-0200 asset.
+   * @returns {string} the name of the ARC-0200 asset.
+   * @throws {ARC0200NotAValidApplication} if the supplied application ID is not an ARC-0200 asset.
+   */
+  public async name(appId: BigNumber): Promise<string> {
+    const _functionName: string = 'name';
+    let abiMethod: ABIMethod;
+    let result: (string | null)[];
+    let transaction: Transaction;
+
+    try {
+      abiMethod = this.abi.getMethodByName('arc200_name');
+      transaction = await this.createReadApplicationTransaction({
+        abiMethod,
+        appId,
+      });
+      result = (await this.simulateTransactions(appId, [
+        {
+          abiMethod,
+          transaction,
+        },
+      ])) as (string | null)[];
+    } catch (error) {
+      this.logger.error(
+        `${ARC0200Contract.name}#${_functionName}: ${error.message}`
+      );
+
+      throw error;
+    }
+
+    if (!result[0]) {
+      throw new ARC0200NotAValidApplicationError(appId.toString());
+    }
+
+    return this.trimNullBytes(result[0]);
   }
 
   /**
@@ -81,12 +136,22 @@ export default class ARC0200Contract extends BaseContract {
    */
   public async symbol(appId: BigNumber): Promise<string> {
     const _functionName: string = 'symbol';
-    let result: Uint8Array | null;
+    let abiMethod: ABIMethod;
+    let result: (string | null)[];
+    let transaction: Transaction;
 
     try {
-      result = await this.readByMethodName<Uint8Array>('arc200_symbol', {
+      abiMethod = this.abi.getMethodByName('arc200_symbol');
+      transaction = await this.createReadApplicationTransaction({
+        abiMethod,
         appId,
       });
+      result = (await this.simulateTransactions(appId, [
+        {
+          abiMethod,
+          transaction,
+        },
+      ])) as (string | null)[];
     } catch (error) {
       this.logger.error(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
@@ -95,10 +160,49 @@ export default class ARC0200Contract extends BaseContract {
       throw error;
     }
 
-    if (!result) {
+    if (!result[0]) {
       throw new ARC0200NotAValidApplicationError(appId.toString());
     }
 
-    return this.trimNullBytes(new TextDecoder().decode(result));
+    return this.trimNullBytes(result[0]);
+  }
+
+  /**
+   * Gets the total supply of the ARC-0200 asset.
+   * @param {BigNumber} appId - the application ID of the ARC-0200 asset.
+   * @returns {BigNumber} the total supply of the ARC-0200 asset.
+   * @throws {ARC0200NotAValidApplication} if the supplied application ID is not an ARC-0200 asset.
+   */
+  public async totalSupply(appId: BigNumber): Promise<BigNumber> {
+    const _functionName: string = 'totalSupply';
+    let abiMethod: ABIMethod;
+    let result: (BigNumber | null)[];
+    let transaction: Transaction;
+
+    try {
+      abiMethod = this.abi.getMethodByName('arc200_totalSupply');
+      transaction = await this.createReadApplicationTransaction({
+        abiMethod,
+        appId,
+      });
+      result = (await this.simulateTransactions(appId, [
+        {
+          abiMethod,
+          transaction,
+        },
+      ])) as (BigNumber | null)[];
+    } catch (error) {
+      this.logger.error(
+        `${ARC0200Contract.name}#${_functionName}: ${error.message}`
+      );
+
+      throw error;
+    }
+
+    if (!result[0]) {
+      throw new ARC0200NotAValidApplicationError(appId.toString());
+    }
+
+    return result[0];
   }
 }

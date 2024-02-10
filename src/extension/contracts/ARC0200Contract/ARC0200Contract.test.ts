@@ -20,6 +20,7 @@ import type { IARC0200AssetInformation, INetwork } from '@extension/types';
 import createLogger from '@common/utils/createLogger';
 
 describe(`${__dirname}#ARC0200Contract`, () => {
+  const appId: BigNumber = new BigNumber('6779767');
   const options: IBaseOptions = {
     logger: createLogger('debug'),
   };
@@ -39,11 +40,22 @@ describe(`${__dirname}#ARC0200Contract`, () => {
     });
   });
 
+  describe('when getting the decimals', () => {
+    it('should return the decimals', async () => {
+      // arrange
+      // act
+      const result: BigNumber = await contract.decimals(appId);
+
+      // assert
+      expect(result.toNumber()).toBe(6);
+    });
+  });
+
   describe('when getting the name', () => {
     it('should return the name', async () => {
       // arrange
       // act
-      const result: string = await contract.name(new BigNumber('6779767'));
+      const result: string = await contract.name(appId);
 
       // assert
       expect(result).toBe('Voi Incentive Asset');
@@ -51,13 +63,24 @@ describe(`${__dirname}#ARC0200Contract`, () => {
   });
 
   describe('when getting the symbol', () => {
-    it.only('should return the symbol', async () => {
+    it('should return the symbol', async () => {
       // arrange
       // act
-      const result: string = await contract.symbol(new BigNumber('6779767'));
+      const result: string = await contract.symbol(appId);
 
       // assert
       expect(result).toBe('VIA');
+    });
+  });
+
+  describe('when getting the total supply', () => {
+    it('should return the total supply', async () => {
+      // arrange
+      // act
+      const result: BigNumber = await contract.totalSupply(appId);
+
+      // assert
+      expect(result.toString()).toBe('10000000000000000');
     });
   });
 });

@@ -1,6 +1,5 @@
 import algosdk, {
   ABIContract,
-  ABIMethod,
   Algodv2,
   assignGroupID,
   decodeObj,
@@ -19,24 +18,29 @@ import { SIMULATE_MINIMUM_FEE } from './constants';
 import type { ILogger } from '@common/types';
 import type { INetwork } from '@extension/types';
 import type {
+  IABIResult,
+  ICreateReadApplicationTransactionOptions,
   INewBaseContractOptions,
-  IParseReadResponseOptions,
-  IReadByMethodNameOptions,
+  IParseTransactionResponseOptions,
+  ISimulateTransaction,
 } from './types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
 import createLogger from '@common/utils/createLogger';
+import BigNumber from 'bignumber.js';
 
 export default class BaseContract {
   // protected
   protected abi: ABIContract;
+  protected algodClient: Algodv2;
   protected readonly logger: ILogger;
   protected network: INetwork;
 
   constructor({ logger, network }: INewBaseContractOptions) {
     this.logger =
       logger || createLogger(__ENV__ === 'development' ? 'debug' : 'error');
+    this.algodClient = createAlgodClient(network, { logger });
     this.network = network;
   }
 
@@ -44,26 +48,29 @@ export default class BaseContract {
    * private functions
    */
 
-  private parseReadResponse<Response = Uint8Array>({
+  private parseTransactionResponse({
     abiMethod,
     appId,
-    methodName,
     response,
-  }: IParseReadResponseOptions): Response | null {
-    const _functionName: string = 'parseReadResponse';
-    const log: Uint8Array | null =
-      response.txnGroups[0].txnResults[0].txnResult.logs?.pop() || null;
+  }: IParseTransactionResponseOptions): IABIResult | null {
+    const _functionName: string = 'parseTransactionResponse';
+    const log: Uint8Array | null = response.logs?.pop() || null; // get the first log
+    let trimmedLog: Uint8Array;
     let type: string;
 
     if (!log) {
       this.logger.debug(
         `${
           BaseContract.name
-        }#${_functionName}: no log found for application "${appId.toString()}" and method "${methodName}"`
+        }#${_functionName}: no log found for application "${appId.toString()}" and method "${
+          abiMethod.name
+        }"`
       );
 
       return null;
     }
+
+    trimmedLog = log.slice(4); // remove the prefix
 
     // if the abi is not expecting a return
     if (abiMethod.returns.type === 'void') {
@@ -72,9 +79,16 @@ export default class BaseContract {
 
     type = (abiMethod.returns.type as algosdk.ABIType).toString();
 
-    // if we have bytes return them as bytes
+    // if we have bytes, return as a string
     if (type.includes('byte')) {
-      return log.slice(4) as Response; // remove the prefix
+      return new TextDecoder().decode(trimmedLog);
+    }
+
+    // if we have a uint, decode as a bignumber
+    if (type.includes('uint')) {
+      return new BigNumber(
+        String(abiMethod.returns.type.decode(trimmedLog) as bigint)
+      );
     }
 
     return null;
@@ -85,46 +99,54 @@ export default class BaseContract {
    */
 
   /**
-   * Using the method name, this simulates an app call transaction and reads the logs and parses the response. This is
-   * used to read data from an application.
-   * @param {string} methodName - the name of the method to call.
-   * @param {IReadByMethodNameOptions} - various other options required.
-   * @returns {Promise<Response | null>} the parsed response or null.
+   * Creates an application transaction that is used to read data.
+   * @param {ICreateReadApplicationTransactionOptions} options - the options to create the application transactions.
+   * @returns {Transaction} an application transaction.
    * @protected
    */
-  protected async readByMethodName<Response = Uint8Array>(
-    methodName: string,
-    { appId, appArgs }: IReadByMethodNameOptions
-  ): Promise<Response | null> {
-    const _functionName: string = 'readByMethodName';
-    const algodClient: Algodv2 = createAlgodClient(this.network, {
-      logger: this.logger,
-    });
-    let abiMethod: ABIMethod;
+  protected async createReadApplicationTransaction({
+    abiMethod,
+    appArgs,
+    appId,
+  }: ICreateReadApplicationTransactionOptions): Promise<Transaction> {
+    const suggestedParams: SuggestedParams = await this.algodClient
+      .getTransactionParams()
+      .do();
+
+    return makeApplicationNoOpTxn(
+      this.network.feeSunkAddress, // use an address that contains some algos
+      {
+        ...suggestedParams,
+        fee: SIMULATE_MINIMUM_FEE,
+        flatFee: true,
+      },
+      appId.toNumber(),
+      [
+        abiMethod.getSelector(), // method name
+        ...(appArgs ? appArgs : []), // the method parameters
+      ]
+    );
+  }
+
+  /**
+   * This simulates app call transactions, reads the logs and parses the responses. This is used to read data from an
+   * application.
+   * @param {BigNumber} appId - the application ID.
+   * @param {ISimulateTransaction[]} simulateTransactions - the application transactions to simulate.
+   * @returns {Promise<(IABIResult | null)[]>} returns the parsed logs from a simulated transactions.
+   * @protected
+   */
+  protected async simulateTransactions(
+    appId: BigNumber,
+    simulateTransactions: ISimulateTransaction[]
+  ): Promise<(IABIResult | null)[]> {
+    const transactions: Transaction[] = simulateTransactions.map(
+      (value) => value.transaction
+    );
     let request: algosdk.modelsv2.SimulateRequest;
     let response: algosdk.modelsv2.SimulateResponse;
-    let suggestedParams: SuggestedParams;
-    let transactions: Transaction[];
 
     try {
-      abiMethod = this.abi.getMethodByName(methodName);
-      suggestedParams = await algodClient.getTransactionParams().do();
-      transactions = [
-        makeApplicationNoOpTxn(
-          this.network.feeSunkAddress,
-          {
-            ...suggestedParams,
-            fee: SIMULATE_MINIMUM_FEE,
-            flatFee: true,
-          },
-          appId.toNumber(),
-          [
-            abiMethod.getSelector(), // method name
-            ...(appArgs ? appArgs : []), // the method parameters
-          ]
-        ),
-      ];
-
       assignGroupID(transactions);
 
       request = new algosdk.modelsv2.SimulateRequest({
@@ -141,17 +163,18 @@ export default class BaseContract {
           }),
         ],
       });
-      response = await algodClient
+      response = await this.algodClient
         .simulateTransactions(request)
         .setIntDecoding(IntDecoding.BIGINT)
         .do();
 
-      return this.parseReadResponse<Response>({
-        abiMethod,
-        appId,
-        methodName,
-        response,
-      });
+      return response.txnGroups[0].txnResults.map((value, index) =>
+        this.parseTransactionResponse({
+          abiMethod: simulateTransactions[index].abiMethod,
+          appId,
+          response: value.txnResult,
+        })
+      );
     } catch (error) {
       throw error;
     }
@@ -161,7 +184,7 @@ export default class BaseContract {
    * Convenience function that simply removes the null bytes ("\x00") from a decoded string.
    * @param {string} input - the string to trim.
    * @returns {string} the string with the null bytes trimmed.
-   * @private
+   * @protected
    */
   protected trimNullBytes(input: string): string {
     return input.replaceAll('\x00', '');
@@ -170,7 +193,9 @@ export default class BaseContract {
   /**
    * public functions
    */
+
   public setNetwork(network: INetwork): void {
+    this.algodClient = createAlgodClient(network, { logger: this.logger });
     this.network = network;
   }
 }
