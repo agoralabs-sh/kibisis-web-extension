@@ -5,6 +5,7 @@ import algosdk, {
   decodeObj,
   EncodedSignedTransaction,
   encodeUnsignedSimulateTransaction,
+  getApplicationAddress,
   IntDecoding,
   makeApplicationNoOpTxn,
   SuggestedParams,
@@ -14,6 +15,9 @@ import BigNumber from 'bignumber.js';
 
 // constants
 import { SIMULATE_MINIMUM_FEE } from './constants';
+
+// errors
+import { ReadABIContractError } from '@extension/errors';
 
 // types
 import type { ILogger } from '@common/types';
@@ -34,10 +38,12 @@ export default class BaseContract {
   // protected
   protected abi: ABIContract;
   protected algodClient: Algodv2;
+  protected appId: BigNumber;
   protected readonly logger: ILogger;
   protected network: INetwork;
 
-  constructor({ logger, network }: INewBaseContractOptions) {
+  constructor({ appId, logger, network }: INewBaseContractOptions) {
+    this.appId = appId;
     this.logger =
       logger || createLogger(__ENV__ === 'development' ? 'debug' : 'error');
     this.algodClient = createAlgodClient(network, { logger });
@@ -50,7 +56,6 @@ export default class BaseContract {
 
   private parseTransactionResponse({
     abiMethod,
-    appId,
     response,
   }: IParseTransactionResponseOptions): IABIResult | null {
     const _functionName: string = 'parseTransactionResponse';
@@ -62,7 +67,7 @@ export default class BaseContract {
       this.logger.debug(
         `${
           BaseContract.name
-        }#${_functionName}: no log found for application "${appId.toString()}" and method "${
+        }#${_functionName}: no log found for application "${this.appId.toString()}" and method "${
           abiMethod.name
         }"`
       );
@@ -107,7 +112,6 @@ export default class BaseContract {
   protected async createReadApplicationTransaction({
     abiMethod,
     appArgs,
-    appId,
   }: ICreateReadApplicationTransactionOptions): Promise<Transaction> {
     const suggestedParams: SuggestedParams = await this.algodClient
       .getTransactionParams()
@@ -120,7 +124,7 @@ export default class BaseContract {
         fee: SIMULATE_MINIMUM_FEE,
         flatFee: true,
       },
-      appId.toNumber(),
+      this.appId.toNumber(),
       [
         abiMethod.getSelector(), // method name
         ...(appArgs ? appArgs : []), // the method parameters
@@ -131,13 +135,11 @@ export default class BaseContract {
   /**
    * This simulates app call transactions, reads the logs and parses the responses. This is used to read data from an
    * application.
-   * @param {BigNumber} appId - the application ID.
    * @param {ISimulateTransaction[]} simulateTransactions - the application transactions to simulate.
    * @returns {Promise<(IABIResult | null)[]>} returns the parsed logs from a simulated transactions.
    * @protected
    */
   protected async simulateTransactions(
-    appId: BigNumber,
     simulateTransactions: ISimulateTransaction[]
   ): Promise<(IABIResult | null)[]> {
     const transactions: Transaction[] = simulateTransactions.map(
@@ -168,10 +170,16 @@ export default class BaseContract {
         .setIntDecoding(IntDecoding.BIGINT)
         .do();
 
+      if (response.txnGroups[0].failureMessage) {
+        throw new ReadABIContractError(
+          this.appId.toString(),
+          response.txnGroups[0].failureMessage
+        );
+      }
+
       return response.txnGroups[0].txnResults.map((value, index) =>
         this.parseTransactionResponse({
           abiMethod: simulateTransactions[index].abiMethod,
-          appId,
           response: value.txnResult,
         })
       );
@@ -194,8 +202,11 @@ export default class BaseContract {
    * public functions
    */
 
-  public setNetwork(network: INetwork): void {
-    this.algodClient = createAlgodClient(network, { logger: this.logger });
-    this.network = network;
+  /**
+   * Gets the account address associated with the application.
+   * @returns {string} the base32 encoded address for the application.
+   */
+  public applicationAddress(): string {
+    return getApplicationAddress(BigInt(this.appId.toString()));
   }
 }

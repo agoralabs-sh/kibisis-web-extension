@@ -36,7 +36,7 @@ export default async function fetchARC0200AssetInformationWithDelay({
         resolve(result);
       } catch (error) {
         switch (error.code) {
-          case ErrorCodeEnum.ARC0200NotAValidApplication:
+          case ErrorCodeEnum.InvalidABIContractError:
             return resolve(null);
           default:
             break;
