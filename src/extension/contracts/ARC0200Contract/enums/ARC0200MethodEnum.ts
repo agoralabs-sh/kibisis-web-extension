@@ -4,6 +4,7 @@ enum ARC0200MethodEnum {
   Name = 'arc200_name',
   Symbol = 'arc200_symbol',
   TotalSupply = 'arc200_totalSupply',
+  Transfer = 'arc200_transfer',
 }
 
 export default ARC0200MethodEnum;

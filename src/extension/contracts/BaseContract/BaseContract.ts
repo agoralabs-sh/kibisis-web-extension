@@ -8,7 +8,6 @@ import algosdk, {
   getApplicationAddress,
   IntDecoding,
   makeApplicationNoOpTxn,
-  SuggestedParams,
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
@@ -21,10 +20,12 @@ import { ReadABIContractError } from '@extension/errors';
 
 // types
 import type { ILogger } from '@common/types';
-import type { INetwork } from '@extension/types';
-import type {
+import type { IAlgorandAccountInformation, INetwork } from '@extension/types';
+import {
   IABIResult,
-  ICreateReadApplicationTransactionOptions,
+  IBaseApplicationOptions,
+  ICreateWriteApplicationTransactionOptions,
+  IDetermineBoxReferencesOptions,
   INewBaseContractOptions,
   IParseTransactionResponseOptions,
   ISimulateTransaction,
@@ -51,10 +52,105 @@ export default class BaseContract {
   }
 
   /**
-   * private functions
+   * protected functions
    */
 
-  private parseTransactionResponse({
+  /**
+   * Creates an application transaction that is used to read data.
+   * @param {IBaseApplicationOptions} options - the options to create the application transactions.
+   * @returns {Transaction} an application transaction.
+   * @protected
+   */
+  protected async createReadApplicationTransaction({
+    abiMethod,
+    appArgs,
+    suggestedParams,
+  }: IBaseApplicationOptions): Promise<Transaction> {
+    return makeApplicationNoOpTxn(
+      this.network.feeSunkAddress, // use an address that contains some algos
+      {
+        ...(suggestedParams ??
+          (await this.algodClient.getTransactionParams().do())),
+        fee: SIMULATE_MINIMUM_FEE,
+        flatFee: true,
+      },
+      this.appId.toNumber(),
+      [
+        abiMethod.getSelector(), // method name
+        ...(appArgs ? appArgs : []), // the method parameters
+      ]
+    );
+  }
+
+  protected async createWriteApplicationTransaction({
+    abiMethod,
+    appArgs,
+    boxes,
+    fromAddress,
+    note,
+    suggestedParams,
+  }: ICreateWriteApplicationTransactionOptions): Promise<Transaction> {
+    return makeApplicationNoOpTxn(
+      fromAddress,
+      suggestedParams ?? (await this.algodClient.getTransactionParams().do()),
+      this.appId.toNumber(),
+      [
+        abiMethod.getSelector(), // method name
+        ...(appArgs ? appArgs : []), // the method parameters
+      ],
+      undefined,
+      undefined,
+      undefined,
+      note ? new TextEncoder().encode(note) : undefined,
+      undefined,
+      undefined,
+      boxes
+    );
+  }
+
+  /**
+   * Simulates transactions that determine the required boxes that would need to be accessed.
+   * @param {IDetermineBoxReferencesOptions} - the options needed to create an application write call.
+   * @returns {algosdk.modelsv2.BoxReference[]} the required box references.
+   * @protected
+   */
+  protected async determineBoxReferences({
+    abiMethod,
+    appArgs,
+    fromAddress,
+    suggestedParams,
+  }: IDetermineBoxReferencesOptions): Promise<algosdk.modelsv2.BoxReference[]> {
+    const _functionName: string = 'determineBoxReferences';
+    let response: algosdk.modelsv2.SimulateResponse;
+
+    try {
+      response = await this.simulateTransactions([
+        {
+          abiMethod,
+          transaction: await this.createWriteApplicationTransaction({
+            abiMethod,
+            appArgs,
+            fromAddress,
+            suggestedParams,
+          }),
+        },
+      ]);
+
+      if (!response.txnGroups[0].unnamedResourcesAccessed?.boxes) {
+        return [];
+      }
+
+      return response.txnGroups[0].unnamedResourcesAccessed?.boxes;
+    } catch (error) {
+      this.logger.debug(
+        `${BaseContract.name}#${_functionName}: ${error.message}`
+      );
+
+      throw error;
+    }
+  }
+
+  protected parseTransactionResponse({
     abiMethod,
     response,
   }: IParseTransactionResponseOptions): IABIResult | null {
@@ -99,37 +195,46 @@ export default class BaseContract {
     return null;
   }
 
-  /**
-   * protected functions
-   */
-
-  /**
-   * Creates an application transaction that is used to read data.
-   * @param {ICreateReadApplicationTransactionOptions} options - the options to create the application transactions.
-   * @returns {Transaction} an application transaction.
-   * @protected
-   */
-  protected async createReadApplicationTransaction({
+  protected async readByMethod({
     abiMethod,
     appArgs,
-  }: ICreateReadApplicationTransactionOptions): Promise<Transaction> {
-    const suggestedParams: SuggestedParams = await this.algodClient
-      .getTransactionParams()
-      .do();
+    suggestedParams,
+  }: IBaseApplicationOptions): Promise<IABIResult | null> {
+    const _functionName: string = 'readByMethod';
+    let response: algosdk.modelsv2.SimulateResponse;
+    let transaction: Transaction;
 
-    return makeApplicationNoOpTxn(
-      this.network.feeSunkAddress, // use an address that contains some algos
-      {
-        ...suggestedParams,
-        fee: SIMULATE_MINIMUM_FEE,
-        flatFee: true,
-      },
-      this.appId.toNumber(),
-      [
-        abiMethod.getSelector(), // method name
-        ...(appArgs ? appArgs : []), // the method parameters
-      ]
-    );
+    try {
+      transaction = await this.createReadApplicationTransaction({
+        abiMethod,
+        appArgs,
+        suggestedParams,
+      });
+      response = await this.simulateTransactions([
+        {
+          abiMethod,
+          transaction,
+        },
+      ]);
+
+      if (response.txnGroups[0].failureMessage) {
+        throw new ReadABIContractError(
+          this.appId.toString(),
+          response.txnGroups[0].failureMessage
+        );
+      }
+
+      return this.parseTransactionResponse({
+        abiMethod,
+        response: response.txnGroups[0].txnResults[0].txnResult,
+      });
+    } catch (error) {
+      this.logger.debug(
+        `${BaseContract.name}#${_functionName}: ${error.message}`
+      );
+
+      throw error;
+    }
   }
 
   /**
@@ -141,12 +246,11 @@ export default class BaseContract {
    */
   protected async simulateTransactions(
     simulateTransactions: ISimulateTransaction[]
-  ): Promise<(IABIResult | null)[]> {
+  ): Promise<algosdk.modelsv2.SimulateResponse> {
     const transactions: Transaction[] = simulateTransactions.map(
       (value) => value.transaction
     );
     let request: algosdk.modelsv2.SimulateRequest;
-    let response: algosdk.modelsv2.SimulateResponse;
 
     try {
       assignGroupID(transactions);
@@ -165,24 +269,10 @@ export default class BaseContract {
           }),
         ],
       });
-      response = await this.algodClient
+      return await this.algodClient
         .simulateTransactions(request)
         .setIntDecoding(IntDecoding.BIGINT)
         .do();
-
-      if (response.txnGroups[0].failureMessage) {
-        throw new ReadABIContractError(
-          this.appId.toString(),
-          response.txnGroups[0].failureMessage
-        );
-      }
-
-      return response.txnGroups[0].txnResults.map((value, index) =>
-        this.parseTransactionResponse({
-          abiMethod: simulateTransactions[index].abiMethod,
-          response: value.txnResult,
-        })
-      );
     } catch (error) {
       throw error;
     }
@@ -208,5 +298,33 @@ export default class BaseContract {
    */
   public applicationAddress(): string {
     return getApplicationAddress(BigInt(this.appId.toString()));
+  }
+
+  /**
+   * Gets the account information for the account associated with the application.
+   * @returns {Promise<IAlgorandAccountInformation>} the application's account information.
+   */
+  public async applicationAccountInformation(): Promise<IAlgorandAccountInformation> {
+    return (await this.algodClient
+      .accountInformation(this.applicationAddress())
+      .do()) as IAlgorandAccountInformation;
+  }
+
+  public async boxByName(
+    name: Uint8Array
+  ): Promise<algosdk.modelsv2.Box | null> {
+    const _functionName: string = 'boxByName';
+
+    try {
+      return await this.algodClient
+        .getApplicationBoxByName(this.appId.toNumber(), name)
+        .do();
+    } catch (error) {
+      this.logger.debug(
+        `${BaseContract.name}#${_functionName}: ${error.message}`
+      );
+
+      return null;
+    }
   }
 }
