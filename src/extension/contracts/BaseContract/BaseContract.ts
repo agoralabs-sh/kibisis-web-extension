@@ -3,13 +3,14 @@ import algosdk, {
   Algodv2,
   assignGroupID,
   decodeObj,
+  EncodedSignedTransaction,
   encodeUnsignedSimulateTransaction,
   IntDecoding,
   makeApplicationNoOpTxn,
   SuggestedParams,
   Transaction,
 } from 'algosdk';
-import type { EncodedSignedTransaction } from 'algosdk/dist/types/types/transactions/encoded';
+import BigNumber from 'bignumber.js';
 
 // constants
 import { SIMULATE_MINIMUM_FEE } from './constants';
@@ -28,7 +29,6 @@ import type {
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
 import createLogger from '@common/utils/createLogger';
-import BigNumber from 'bignumber.js';
 
 export default class BaseContract {
   // protected

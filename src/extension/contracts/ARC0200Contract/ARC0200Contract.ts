@@ -5,15 +5,17 @@ import BigNumber from 'bignumber.js';
 import abi from './abi.json';
 
 // contracts
-import BaseContract, { INewBaseContractOptions } from '../BaseContract';
+import BaseContract, {
+  IABIResult,
+  INewBaseContractOptions,
+  ISimulateTransaction,
+} from '../BaseContract';
 
 // errors
 import { ARC0200NotAValidApplicationError } from '@extension/errors';
 
 // types
-import { IARC0200AssetInformation } from '@extension/types';
-
-import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import type { IARC0200AssetInformation } from '@extension/types';
 
 export default class ARC0200Contract extends BaseContract {
   constructor(options: INewBaseContractOptions) {
@@ -25,30 +27,6 @@ export default class ARC0200Contract extends BaseContract {
   /**
    * public functions
    */
-
-  /**
-   * Gets the metadata for the ARC-0200 application.
-   * @param {BigNumber} id - the ID of the ARC-0200 application.
-   * @returns {Promise<IARC0200AssetInformation>} returns the ARC-0200 asset information.
-   * @throws {ARC0200NotAValidApplication} if the application at ID does not exist or is not a valid ARC-0200
-   * application.
-   */
-  // public async metadata(id: BigNumber): Promise<IARC0200AssetInformation> {
-  //   const _functionName: string = 'metadata';
-  //   let result: PendingTransactionResponse;
-  //   let suggestedParams: SuggestedParams;
-  //
-  //   try {
-  //     suggestedParams = await this.algodClient.getTransactionParams().do();
-  //     result = await this.algodClient.simulateTransactions()
-  //       .setIntDecoding(IntDecoding.BIGINT)
-  //       .do();
-  //
-  //
-  //   } catch (error) {
-  //     this.logger.debug(`${ARC0200Contract.name}#${_functionName}: ${error.message}`);
-  //   }
-  // }
 
   /**
    * Gets the decimals of the ARC-0200 asset.
@@ -87,6 +65,62 @@ export default class ARC0200Contract extends BaseContract {
     }
 
     return result[0];
+  }
+
+  /**
+   * Gets the metadata for the ARC-0200 application.
+   * @param {BigNumber} appId - the ID of the ARC-0200 application.
+   * @returns {Promise<IARC0200AssetInformation>} returns the ARC-0200 asset information.
+   * @throws {ARC0200NotAValidApplication} if the application at ID does not exist or is not a valid ARC-0200
+   * application.
+   */
+  public async metadata(appId: BigNumber): Promise<IARC0200AssetInformation> {
+    const _functionName: string = 'metadata';
+    let simulateTransactions: ISimulateTransaction[];
+    let results: (IABIResult | null)[];
+
+    try {
+      simulateTransactions = await Promise.all<ISimulateTransaction>(
+        [
+          'arc200_decimals',
+          'arc200_name',
+          'arc200_symbol',
+          'arc200_totalSupply',
+        ].map(async (value) => {
+          const abiMethod: ABIMethod = this.abi.getMethodByName(value);
+
+          return {
+            abiMethod,
+            transaction: await this.createReadApplicationTransaction({
+              abiMethod,
+              appId,
+            }),
+          };
+        })
+      );
+      results = await this.simulateTransactions(appId, simulateTransactions);
+    } catch (error) {
+      this.logger.error(
+        `${ARC0200Contract.name}#${_functionName}: ${error.message}`
+      );
+
+      throw error;
+    }
+
+    // if any are null, the application is not an valid arc-0200
+    if (results.some((value) => !value)) {
+      throw new ARC0200NotAValidApplicationError(appId.toString());
+    }
+
+    const [decimalResult, nameResult, symbolResult, totalSupplyResult] =
+      results;
+
+    return {
+      decimals: BigInt((decimalResult as BigNumber).toString()),
+      name: nameResult as string,
+      symbol: symbolResult as string,
+      totalSupply: BigInt((totalSupplyResult as BigNumber).toString()),
+    };
   }
 
   /**
