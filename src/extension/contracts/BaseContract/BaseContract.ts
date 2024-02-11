@@ -252,30 +252,26 @@ export default class BaseContract {
     );
     let request: algosdk.modelsv2.SimulateRequest;
 
-    try {
-      assignGroupID(transactions);
+    assignGroupID(transactions);
 
-      request = new algosdk.modelsv2.SimulateRequest({
-        allowUnnamedResources: true,
-        allowEmptySignatures: true,
-        txnGroups: [
-          new algosdk.modelsv2.SimulateRequestTransactionGroup({
-            txns: transactions.map(
-              (value) =>
-                decodeObj(
-                  encodeUnsignedSimulateTransaction(value)
-                ) as EncodedSignedTransaction
-            ),
-          }),
-        ],
-      });
-      return await this.algodClient
-        .simulateTransactions(request)
-        .setIntDecoding(IntDecoding.BIGINT)
-        .do();
-    } catch (error) {
-      throw error;
-    }
+    request = new algosdk.modelsv2.SimulateRequest({
+      allowUnnamedResources: true,
+      allowEmptySignatures: true,
+      txnGroups: [
+        new algosdk.modelsv2.SimulateRequestTransactionGroup({
+          txns: transactions.map(
+            (value) =>
+              decodeObj(
+                encodeUnsignedSimulateTransaction(value)
+              ) as EncodedSignedTransaction
+          ),
+        }),
+      ],
+    });
+    return await this.algodClient
+      .simulateTransactions(request)
+      .setIntDecoding(IntDecoding.BIGINT)
+      .do();
   }
 
   /**
