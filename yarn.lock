@@ -4165,22 +4165,6 @@ anymatch@^3.0.3, anymatch@~3.1.2:
   resolved "https://registry.npmjs.org/aproba/-/aproba-2.0.0.tgz"
   integrity sha512-lYe4Gx7QT+MKGbDsA+Z+he/Wtef0BiwDOlK/XkBrdfsh9J/jPPXbX0tE9x9cl27Tmu5gg3QUbUrQYa/y+KOHPQ==
 
-arc200js@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/arc200js/-/arc200js-2.3.1.tgz"
-  integrity sha512-rBhoVVcHi2rYUTEteTvayGpI596N1uCPbQsQ9zNLmyJPkd2o5uTYyu4wBC87rWSGdDJejljylaC9NPalcei1cg==
-  dependencies:
-    arccjs "^2.3.1"
-
-arccjs@^2.3.1:
-  version "2.3.2"
-  resolved "https://registry.npmjs.org/arccjs/-/arccjs-2.3.2.tgz"
-  integrity sha512-RHdzIWU0UfYlnQP5f+RfVkPddsCyP9s0zwjOebIhdM1qnN21D7pAMBadg6JxDcawOVg9AktzQY+bghASb1uEJQ==
-  dependencies:
-    algosdk "^2.7.0"
-    buffer "^6.0.3"
-    sha512 "^0.0.1"
-
 archy@~1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/archy/-/archy-1.0.0.tgz"
@@ -11459,11 +11443,6 @@ sha.js@2.4.11:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
-
-sha512@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.npmjs.org/sha512/-/sha512-0.0.1.tgz"
-  integrity sha512-2t5rZu72ebMg2/OK44S/48UKxgBl7Kc3w/I0DkIzNld8NzDUxFBL2pOYAWEVknnuOqO62a3W+3x/xD7LrosGBg==
 
 shallow-clone@^3.0.0:
   version "3.0.1"

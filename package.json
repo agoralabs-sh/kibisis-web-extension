@@ -126,7 +126,6 @@
     "@walletconnect/utils": "^2.8.0",
     "@walletconnect/web3wallet": "^1.8.0",
     "algosdk": "^2.7.0",
-    "arc200js": "^2.3.1",
     "bignumber.js": "^9.1.1",
     "buffer": "^6.0.3",
     "chakra-ui-steps": "2.0.4",

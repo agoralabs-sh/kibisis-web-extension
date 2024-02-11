@@ -1,50 +1,49 @@
-import { Algodv2 } from 'algosdk';
-import Arc200Contract from 'arc200js';
+import BigNumber from 'bignumber.js';
+
+// contracts
+import ARC0200Contract from '@extension/contracts/ARC0200Contract';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
 
 // types
-import { IARC0200AssetHolding } from '@extension/types';
+import type { IBaseOptions } from '@common/types';
+import type { IARC0200AssetHolding, INetwork } from '@extension/types';
 
-interface IOptions {
+interface IOptions extends IBaseOptions {
   address: string;
-  arc200AppId: string;
-  client: Algodv2;
+  appId: string;
+  network: INetwork;
   delay: number;
 }
 
 /**
- * Fetches ARC-200 asset holding from the node with a delay.
+ * Fetches ARC-0200 asset holding from the node with a delay.
  * @param {IOptions} options - options needed to send the request.
- * @returns {IArc200AssetHolding} arc200 asset holding.
+ * @returns {IARC0200AssetHolding} the ARC-0200 asset holding.
  */
 export default async function fetchARC0200AssetHoldingWithDelay({
   address,
-  arc200AppId,
-  client,
+  appId,
   delay,
+  logger,
+  network,
 }: IOptions): Promise<IARC0200AssetHolding> {
   return new Promise((resolve, reject) =>
     setTimeout(async () => {
-      const contract: Arc200Contract = new Arc200Contract(
-        parseInt(arc200AppId),
-        client,
-        undefined
-      );
-      let amount: string = '0';
-      let result: { success: boolean; returnValue: bigint };
+      const contract: ARC0200Contract = new ARC0200Contract({
+        appId: new BigNumber(appId),
+        logger,
+        network,
+      });
+      let result: BigNumber;
 
       try {
-        result = await contract.arc200_balanceOf(address);
-
-        if (result.success) {
-          amount = String(result.returnValue);
-        }
+        result = await contract.balanceOf(address);
 
         resolve({
-          id: arc200AppId,
-          amount,
+          id: appId,
+          amount: result.toString(),
           type: AssetTypeEnum.ARC0200,
         });
       } catch (error) {
