@@ -1,3 +1,10 @@
+# [1.12.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.1...v1.12.0-beta.2) (2024-02-11)
+
+
+### Features
+
+* use custom implementation to interact with arc-0200 applications ([#166](https://github.com/agoralabs-sh/kibisis-web-extension/issues/166)) ([f8a3517](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f8a3517e88c09453590f2327fa534cf6a522f6d8))
+
 # [1.12.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0...v1.12.0-beta.1) (2024-02-08)
 
 
