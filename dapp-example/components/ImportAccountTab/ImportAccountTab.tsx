@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Checkbox,
+  CheckboxGroup,
   Code,
   CreateToastFnReturn,
   Flex,
@@ -8,6 +10,7 @@ import {
   Select,
   TabPanel,
   Text,
+  Tooltip,
   useToast,
   VStack,
 } from '@chakra-ui/react';
@@ -23,6 +26,9 @@ import { ARC0300EncodingEnum } from '@extension/enums';
 // theme
 import { theme } from '@extension/theme';
 
+// types
+import { IAccountImportAsset } from './types';
+
 // utils
 import { convertAccountToImportAccountURI } from '../../utils';
 
@@ -34,6 +40,18 @@ const ImportAccountTab: FC = () => {
   });
   // states
   const [account, setAccount] = useState<Account>(generateAccount());
+  const [assets, setAssets] = useState<IAccountImportAsset[]>([
+    {
+      appId: '6779767',
+      checked: false,
+      name: 'Voi Incentive Asset',
+    },
+    {
+      appId: '99',
+      checked: false,
+      name: 'Non-ARC0200 Asset',
+    },
+  ]);
   const [svgString, setSvgString] = useState<string | null>(null);
   const [encoding, setEncoding] = useState<ARC0300EncodingEnum>(
     ARC0300EncodingEnum.Hexadecimal
@@ -41,6 +59,21 @@ const ImportAccountTab: FC = () => {
   // misc
   const qrCodeSize: number = 350;
   // handlers
+  const handleAssetCheckChange =
+    (appId: string) => (event: ChangeEvent<HTMLInputElement>) => {
+      setAssets(
+        assets.map((value) => {
+          if (value.appId === appId) {
+            return {
+              ...value,
+              checked: event.target.checked,
+            };
+          }
+
+          return value;
+        })
+      );
+    };
   const handleEncodingTypeChange = (event: ChangeEvent<HTMLSelectElement>) =>
     setEncoding(event.target.value as ARC0300EncodingEnum);
   const handleGenerateNewAccountClick = () => {
@@ -59,7 +92,11 @@ const ImportAccountTab: FC = () => {
     (async () => {
       try {
         const svg: string = await toString(
-          convertAccountToImportAccountURI(account, encoding),
+          convertAccountToImportAccountURI(
+            account,
+            encoding,
+            assets.filter((value) => value.checked).map((value) => value.appId)
+          ),
           {
             type: 'svg',
             width: qrCodeSize,
@@ -74,7 +111,7 @@ const ImportAccountTab: FC = () => {
         });
       }
     })();
-  }, [account, encoding]);
+  }, [account, assets, encoding]);
 
   return (
     <TabPanel w="full">
@@ -90,6 +127,30 @@ const ImportAccountTab: FC = () => {
             </option>
           </Select>
         </HStack>
+
+        {/*assets to add*/}
+        <VStack alignItems="flex-start" spacing={4} w="full">
+          <Text>Add Assets:</Text>
+
+          <CheckboxGroup>
+            {assets.map((value, index) => (
+              <HStack key={`account-import-add-asset-${index}`}>
+                <Checkbox
+                  isChecked={value.checked}
+                  onChange={handleAssetCheckChange(value.appId)}
+                  size="lg"
+                  value={value.appId}
+                />
+
+                <Tooltip label={value.name}>
+                  <Text noOfLines={1} size="md" w={200}>
+                    {value.name}
+                  </Text>
+                </Tooltip>
+              </HStack>
+            ))}
+          </CheckboxGroup>
+        </VStack>
 
         {/*qr code*/}
         {svgString ? (
@@ -119,7 +180,13 @@ const ImportAccountTab: FC = () => {
           <Text>Value:</Text>
 
           <Code fontSize="sm" wordBreak="break-word">
-            {convertAccountToImportAccountURI(account, encoding)}
+            {convertAccountToImportAccountURI(
+              account,
+              encoding,
+              assets
+                .filter((value) => value.checked)
+                .map((value) => value.appId)
+            )}
           </Code>
         </HStack>
 

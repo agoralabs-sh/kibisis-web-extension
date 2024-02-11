@@ -10,6 +10,9 @@ import {
 import type { IBaseOptions, ILogger } from '@common/types';
 import type { IARC0300AccountImportSchema } from '@extension/types';
 
+// utils
+import isNumericString from '@extension/utils/isNumericString';
+
 export default function parseARC0300AccountImportSchema(
   scheme: string,
   paths: string[],
@@ -18,9 +21,11 @@ export default function parseARC0300AccountImportSchema(
 ): IARC0300AccountImportSchema | null {
   const _functionName: string = 'parseARC0300AccountImportSchema';
   const logger: ILogger | undefined = options?.logger;
-  let privateKeyParam: string | null;
-  let encodingParam: string | null;
+  let assets: string[] = [];
+  let assetParam: string | null;
   let encoding: ARC0300EncodingEnum;
+  let encodingParam: string | null;
+  let privateKeyParam: string | null;
 
   if (paths[0] !== ARC0300PathEnum.Import) {
     logger?.debug(`${_functionName}: invalid account import uri`);
@@ -59,12 +64,20 @@ export default function parseARC0300AccountImportSchema(
       return null;
   }
 
+  assetParam = searchParams.get(ARC0300QueryEnum.Asset);
+
+  // if we have an asset param, get the list of assets
+  if (assetParam) {
+    assets = assetParam.split(',').filter((value) => isNumericString(value));
+  }
+
   return {
     authority: ARC0300AuthorityEnum.Account,
     paths: [ARC0300PathEnum.Import],
     query: {
-      encoding,
-      privateKey: privateKeyParam,
+      [ARC0300QueryEnum.Asset]: assets,
+      [ARC0300QueryEnum.Encoding]: encoding,
+      [ARC0300QueryEnum.PrivateKey]: privateKeyParam,
     },
     scheme,
   };

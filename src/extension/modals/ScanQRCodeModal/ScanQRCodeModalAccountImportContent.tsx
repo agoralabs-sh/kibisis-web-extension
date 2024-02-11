@@ -11,7 +11,6 @@ import React, {
   FC,
   KeyboardEvent,
   MutableRefObject,
-  ReactNode,
   useEffect,
   useRef,
   useState,
@@ -20,8 +19,12 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
+import AssetAvatar from '@extension/components/AssetAvatar';
+import AssetBadge from '@extension/components/AssetBadge';
+import AssetIcon from '@extension/components/AssetIcon';
 import Button from '@extension/components/Button';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import PasswordInput, {
   usePassword,
@@ -31,7 +34,11 @@ import PasswordInput, {
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { ErrorCodeEnum } from '@extension/enums';
+import {
+  ARC0300QueryEnum,
+  AssetTypeEnum,
+  ErrorCodeEnum,
+} from '@extension/enums';
 
 // features
 import { saveNewAccountThunk } from '@extension/features/accounts';
@@ -39,12 +46,16 @@ import { create as createNotification } from '@extension/features/notifications'
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
+import useAccountImportAssets from './hooks/useAccountImportAssets';
 
 // selectors
 import {
   useSelectAccounts,
   useSelectLogger,
   useSelectPasswordLockPassword,
+  useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -57,6 +68,7 @@ import type {
   IAccount,
   IAppThunkDispatch,
   IARC0300AccountImportSchema,
+  INetwork,
   ISettings,
 } from '@extension/types';
 
@@ -84,10 +96,12 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const logger: ILogger = useSelectLogger();
+  const network: INetwork | null = useSelectSelectedNetwork();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const settings: ISettings = useSelectSettings();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
+  const { assets, loading } = useAccountImportAssets(schema);
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -96,6 +110,8 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
     validate: validatePassword,
     value: password,
   } = usePassword();
+  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
+  const subTextColor = useSubTextColor();
   // states
   const [address, setAddress] = useState<string | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
@@ -244,13 +260,52 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
     setSaving(false);
   };
   // renders
-  const renderFooter = () => {
-    const cancelButton: ReactNode = (
-      <Button onClick={handleCancelClick} size="lg" variant="outline" w="full">
-        {t<string>('buttons.cancel')}
-      </Button>
-    );
+  const renderAssets = () => {
+    if (loading) {
+      return (
+        <VStack spacing={2} w="full">
+          <ModalSkeletonItem />
+          <ModalSkeletonItem />
+          <ModalSkeletonItem />
+        </VStack>
+      );
+    }
 
+    return assets.map((value, index) => (
+      <ModalItem
+        key={`account-import-add-asset-${index}`}
+        label={`${value.name}:`}
+        value={
+          <HStack spacing={2}>
+            {/*icon*/}
+            <AssetAvatar
+              asset={value}
+              fallbackIcon={
+                <AssetIcon
+                  color={primaryButtonTextColor}
+                  h={3}
+                  w={3}
+                  {...(network && {
+                    networkTheme: network.chakraTheme,
+                  })}
+                />
+              }
+              size="xs"
+            />
+
+            {/*symbol*/}
+            <Text color={subTextColor} fontSize="xs">
+              {value.symbol}
+            </Text>
+
+            {/*type*/}
+            <AssetBadge size="xs" type={value.type} />
+          </HStack>
+        }
+      />
+    ));
+  };
+  const renderFooter = () => {
     // only show cancel button if the account has been added
     if (isAccountAlreadyKnown) {
       return (
@@ -331,21 +386,48 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
             {t<string>('captions.importAccount')}
           </Text>
 
-          {/*address*/}
-          {!address ? (
-            <ModalSkeletonItem />
-          ) : (
-            <ModalTextItem
-              label={`${t<string>('labels.address')}:`}
-              tooltipLabel={address}
-              value={ellipseAddress(address, {
-                end: 10,
-                start: 10,
-              })}
-              {...(isAccountAlreadyKnown && {
-                warningLabel: t<string>('captions.accountAlreadyAdded'),
-              })}
-            />
+          <VStack spacing={2} w="full">
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              {t<string>('labels.account')}
+            </Text>
+
+            {/*address*/}
+            {!address ? (
+              <ModalSkeletonItem />
+            ) : (
+              <ModalTextItem
+                label={`${t<string>('labels.address')}:`}
+                tooltipLabel={address}
+                value={ellipseAddress(address, {
+                  end: 10,
+                  start: 10,
+                })}
+                {...(isAccountAlreadyKnown && {
+                  warningLabel: t<string>('captions.accountAlreadyAdded'),
+                })}
+              />
+            )}
+          </VStack>
+
+          {/*assets*/}
+          {schema.query[ARC0300QueryEnum.Asset].length > 0 && (
+            <VStack spacing={2} w="full">
+              <Text
+                color={defaultTextColor}
+                fontSize="sm"
+                textAlign="left"
+                w="full"
+              >
+                {t<string>('labels.assets')}
+              </Text>
+
+              {renderAssets()}
+            </VStack>
           )}
         </VStack>
       </ModalBody>

@@ -258,6 +258,7 @@ const translation: IResourceLanguage = {
     unknownQRCode: 'Unknown QR Code',
   },
   labels: {
+    account: 'Account',
     activity: 'Activity',
     address: 'Address',
     addressToSign: 'Address To Sign',

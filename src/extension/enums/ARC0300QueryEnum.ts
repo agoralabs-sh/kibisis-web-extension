@@ -1,6 +1,7 @@
 enum ARC0300QueryEnum {
+  Asset = 'asset',
   Encoding = 'encoding',
-  PrivateKey = 'privateKey',
+  PrivateKey = 'privatekey',
 }
 
 export default ARC0300QueryEnum;
