@@ -96,7 +96,7 @@ export default class ARC0200Contract extends BaseContract {
   }
 
   public async buildUnsignedTransferTransactions({
-    amount,
+    amountInAtomicUnits,
     fromAddress,
     note,
     toAddress,
@@ -143,7 +143,7 @@ export default class ARC0200Contract extends BaseContract {
       }
 
       encodedAmount = (abiMethod.args[1].type as ABIType).encode(
-        BigInt(String(amount.toString()))
+        BigInt(String(amountInAtomicUnits.toString()))
       );
       encodedToAddress = (abiMethod.args[0].type as ABIType).encode(toAddress);
       appArgs = [encodedToAddress, encodedAmount];

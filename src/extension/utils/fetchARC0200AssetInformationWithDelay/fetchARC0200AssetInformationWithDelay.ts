@@ -28,10 +28,11 @@ export default async function fetchARC0200AssetInformationWithDelay({
 
       try {
         contract = new ARC0200Contract({
+          appId: new BigNumber(id),
           network,
           logger,
         });
-        result = await contract.metadata(new BigNumber(id));
+        result = await contract.metadata();
 
         resolve(result);
       } catch (error) {

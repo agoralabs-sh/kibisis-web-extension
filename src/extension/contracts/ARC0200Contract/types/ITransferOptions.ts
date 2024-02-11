@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 
 interface ITransferOptions {
-  amount: BigNumber;
+  amountInAtomicUnits: BigNumber;
   fromAddress: string;
   note?: string;
   toAddress: string;

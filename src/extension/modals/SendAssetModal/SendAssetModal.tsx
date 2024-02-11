@@ -10,6 +10,7 @@ import {
   Textarea,
   VStack,
 } from '@chakra-ui/react';
+import { Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, {
   ChangeEvent,
@@ -48,6 +49,7 @@ import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 import { updateAccountsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 import {
+  createUnsignedTransactionsThunk,
   reset as resetSendAssets,
   setAmount,
   setFromAddress,
@@ -149,7 +151,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // state
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<string>('0');
-  const [showSummary, setShowSummary] = useState<boolean>(false);
+  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   // misc
   const allAssets: (IAssetTypes | INativeCurrency)[] = [
     ...arc200Assets,
@@ -172,8 +174,8 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     // reset modal store - should close modal
     dispatch(resetSendAssets());
 
-    // reset modal input
-    setShowSummary(false);
+    // reset modal input and transactions
+    setTransactions(null);
     resetToAddress();
     resetPassword();
 
@@ -188,8 +190,45 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       )
     );
   const handleNextClick = async () => {
-    if (!validateToAddress()) {
-      setShowSummary(true);
+    const _functionName: string = 'handleNextClick';
+    let _transactions: Transaction[];
+
+    if (validateToAddress()) {
+      return;
+    }
+
+    logger.debug(
+      `${SendAssetModal.name}#${_functionName}: creating unsigned transactions`
+    );
+
+    try {
+      _transactions = await dispatch(
+        createUnsignedTransactionsThunk()
+      ).unwrap();
+
+      logger.debug(
+        `${
+          SendAssetModal.name
+        }#${_functionName}: created unsigned transactions "[${_transactions
+          .map((value) => value.type)
+          .join(',')}]"`
+      );
+
+      setTransactions(_transactions);
+    } catch (error) {
+      logger.error(`${SendAssetModal.name}#${_functionName}:`, error);
+
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
     }
   };
   const handleNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
@@ -205,7 +244,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handlePreviousClick = () => {
     resetPassword();
-    setShowSummary(false);
+    setTransactions(null);
   };
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
@@ -319,7 +358,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     }
 
     if (fromAccount && network && selectedAsset) {
-      if (showSummary) {
+      if (transactions && transactions.length > 0) {
         return (
           <SendAssetModalSummaryContent
             amountInStandardUnits={amountInStandardUnits}
@@ -328,6 +367,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             network={network}
             note={note}
             toAddress={toAddress}
+            transactions={transactions}
           />
         );
       }
@@ -429,7 +469,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       return null;
     }
 
-    if (showSummary) {
+    if (transactions && transactions.length > 0) {
       return (
         <VStack alignItems="flex-start" spacing={4} w="full">
           {!settings.security.enablePasswordLock && !passwordLockPassword && (
@@ -514,10 +554,10 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
 
   useEffect(() => {
-    if (showSummary && passwordInputRef.current) {
+    if (transactions && transactions.length > 0 && passwordInputRef.current) {
       passwordInputRef.current.focus();
     }
-  }, [showSummary]);
+  }, [transactions]);
   useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
 

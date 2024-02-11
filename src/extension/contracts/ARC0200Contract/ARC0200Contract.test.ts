@@ -106,7 +106,7 @@ describe.skip(`${__dirname}#ARC0200Contract`, () => {
       // act
       const transactions: Transaction[] =
         await contract.buildUnsignedTransferTransactions({
-          amount: new BigNumber('1'),
+          amountInAtomicUnits: new BigNumber('1'),
           fromAddress:
             'KREOFZLBZNCFTBNY4NQQMYZHPZLCCHR66FKZ3DQPXY6BIXXL4YIS232YAU',
           toAddress: account.addr,
@@ -122,7 +122,7 @@ describe.skip(`${__dirname}#ARC0200Contract`, () => {
       // act
       const transactions: Transaction[] =
         await contract.buildUnsignedTransferTransactions({
-          amount: new BigNumber('1'),
+          amountInAtomicUnits: new BigNumber('1'),
           fromAddress:
             'KREOFZLBZNCFTBNY4NQQMYZHPZLCCHR66FKZ3DQPXY6BIXXL4YIS232YAU',
           toAddress: account.addr,
