@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 // types
 import { IAssetTypes, INativeCurrency, IMainRootState } from '@extension/types';
 
-export default function useSelectSendingAssetSelectedAsset():
+export default function useSelectSendAssetSelectedAsset():
   | IAssetTypes
   | INativeCurrency
   | null {

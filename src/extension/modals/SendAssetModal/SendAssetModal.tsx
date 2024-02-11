@@ -70,11 +70,12 @@ import {
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
-  useSelectSendingAssetAmountInStandardUnits,
-  useSelectSendingAssetConfirming,
-  useSelectSendingAssetFromAccount,
-  useSelectSendingAssetNote,
-  useSelectSendingAssetSelectedAsset,
+  useSelectSendAssetAmountInStandardUnits,
+  useSelectSendAssetConfirming,
+  useSelectSendAssetCreating,
+  useSelectSendAssetFromAccount,
+  useSelectSendAssetNote,
+  useSelectSendAssetSelectedAsset,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
@@ -116,18 +117,19 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const arc200Assets: IARC0200Asset[] =
     useSelectARC0200AssetsBySelectedNetwork();
   const amountInStandardUnits: string =
-    useSelectSendingAssetAmountInStandardUnits();
+    useSelectSendAssetAmountInStandardUnits();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
-  const confirming: boolean = useSelectSendingAssetConfirming();
-  const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
+  const confirming: boolean = useSelectSendAssetConfirming();
+  const creating: boolean = useSelectSendAssetCreating();
+  const fromAccount: IAccount | null = useSelectSendAssetFromAccount();
   const logger: ILogger = useSelectLogger();
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
-  const note: string | null = useSelectSendingAssetNote();
+  const note: string | null = useSelectSendAssetNote();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const selectedAsset: IAssetTypes | INativeCurrency | null =
-    useSelectSendingAssetSelectedAsset();
+    useSelectSendAssetSelectedAsset();
   const settings: ISettings = useSelectSettings();
   // hooks
   const {
@@ -388,6 +390,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {/*amount*/}
           <SendAmountInput
             account={fromAccount}
+            disabled={creating}
             network={network}
             maximumTransactionAmount={maximumTransactionAmount}
             onValueChange={handleAmountChange}
@@ -413,6 +416,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
                 network.nativeCurrency, // add the native currency to the front
                 ...allAssets,
               ]}
+              disabled={creating}
               network={network}
               onAssetChange={handleAssetChange}
               value={selectedAsset}
@@ -433,6 +437,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
             <AccountSelect
               accounts={accounts}
+              disabled={creating}
               onSelect={handleFromAccountChange}
               value={fromAccount}
             />
@@ -441,6 +446,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {/*to address*/}
           <AddressInput
             accounts={accounts}
+            disabled={creating}
             error={toAddressError}
             label={t<string>('labels.to')}
             onBlur={onToAddressBlur}
@@ -462,6 +468,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
             <Textarea
               focusBorderColor={primaryColor}
+              isDisabled={creating}
               onChange={handleNoteChange}
               placeholder={t<string>('placeholders.enterNote')}
               resize="vertical"
@@ -528,7 +535,13 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {t<string>('buttons.cancel')}
         </Button>
 
-        <Button onClick={handleNextClick} size="lg" variant="solid" w="full">
+        <Button
+          isLoading={creating}
+          onClick={handleNextClick}
+          size="lg"
+          variant="solid"
+          w="full"
+        >
           {t<string>('buttons.next')}
         </Button>
       </HStack>

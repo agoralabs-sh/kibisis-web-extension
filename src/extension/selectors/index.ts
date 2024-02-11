@@ -37,12 +37,6 @@ export { default as useSelectSavingSessions } from './useSelectSavingSessions';
 export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectScanQRCodeModal } from './useSelectScanQRCodeModal';
 export { default as useSelectSelectedNetwork } from './useSelectSelectedNetwork';
-export { default as useSelectSendingAssetAmountInStandardUnits } from './useSelectSendingAssetAmountInStandardUnits';
-export { default as useSelectSendingAssetConfirming } from './useSelectSendingAssetConfirming';
-export { default as useSelectSendingAssetFromAccount } from './useSelectSendingAssetFromAccount';
-export { default as useSelectSendingAssetNote } from './useSelectSendingAssetNote';
-export { default as useSelectSendingAssetSelectedAsset } from './useSelectSendingAssetSelectedAsset';
-export { default as useSelectSendingAssetToAddress } from './useSelectSendingAssetToAddress';
 export { default as useSelectSessions } from './useSelectSessions';
 export { default as useSelectSettings } from './useSelectSettings';
 export { default as useSelectSideBar } from './useSelectSideBar';
@@ -54,3 +48,4 @@ export { default as useSelectUpdatingArc200Assets } from './useSelectUpdatingArc
 export { default as useSelectUpdatingStandardAssets } from './useSelectUpdatingStandardAssets';
 export { default as useSelectWalletConnectModalOpen } from './useSelectWalletConnectModalOpen';
 export { default as useSelectWeb3Wallet } from './useSelectWeb3Wallet';
+export * from './send-assets';

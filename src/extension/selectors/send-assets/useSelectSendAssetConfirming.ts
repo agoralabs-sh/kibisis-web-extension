@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 // types
 import { IMainRootState } from '@extension/types';
 
-export default function useSelectSendingAssetConfirming(): boolean {
+export default function useSelectSendAssetConfirming(): boolean {
   return useSelector<IMainRootState, boolean>(
     (state) => state.sendAssets.confirming
   );

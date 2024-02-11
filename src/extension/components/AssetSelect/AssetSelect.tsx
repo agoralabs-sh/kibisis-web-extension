@@ -39,6 +39,7 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 interface IProps {
   account: IAccount;
   assets: (IAssetTypes | INativeCurrency)[];
+  disabled?: boolean;
   network: INetworkWithTransactionParams;
   onAssetChange: (value: IAssetTypes | INativeCurrency) => void;
   value: IAssetTypes | INativeCurrency;
@@ -48,6 +49,7 @@ interface IProps {
 const AssetSelect: FC<IProps> = ({
   account,
   assets,
+  disabled = false,
   network,
   onAssetChange,
   value,
@@ -206,6 +208,7 @@ const AssetSelect: FC<IProps> = ({
           }
         },
       }}
+      isDisabled={disabled}
       filterOption={handleSearchFilter}
       onChange={handleAssetChange}
       options={selectableAssets.map<IOption>((value) => ({
