@@ -5,10 +5,10 @@ import { StoreNameEnum } from '@extension/enums';
 
 // thunks
 import {
-  addArc200AssetHoldingThunk,
+  addARC0200AssetHoldingThunk,
   fetchAccountsFromStorageThunk,
   removeAccountByIdThunk,
-  removeArc200AssetHoldingThunk,
+  removeARC0200AssetHoldingThunk,
   saveAccountNameThunk,
   saveNewAccountThunk,
   startPollingForAccountsThunk,
@@ -28,7 +28,7 @@ const slice = createSlice({
   extraReducers: (builder) => {
     /** add arc200 asset holdings **/
     builder.addCase(
-      addArc200AssetHoldingThunk.fulfilled,
+      addARC0200AssetHoldingThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
         if (action.payload) {
           state.items = state.items.map((value) =>
@@ -43,7 +43,7 @@ const slice = createSlice({
       }
     );
     builder.addCase(
-      addArc200AssetHoldingThunk.pending,
+      addARC0200AssetHoldingThunk.pending,
       (state: IAccountsState, action) => {
         state.updatingAccounts = [
           // filter the unrelated updating account ids
@@ -60,7 +60,7 @@ const slice = createSlice({
       }
     );
     builder.addCase(
-      addArc200AssetHoldingThunk.rejected,
+      addARC0200AssetHoldingThunk.rejected,
       (state: IAccountsState, action) => {
         // remove updated account from the account update list
         state.updatingAccounts = state.updatingAccounts.filter(
@@ -109,7 +109,7 @@ const slice = createSlice({
     );
     /** remove arc200 asset holdings **/
     builder.addCase(
-      removeArc200AssetHoldingThunk.fulfilled,
+      removeARC0200AssetHoldingThunk.fulfilled,
       (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
         if (action.payload) {
           state.items = state.items.map((value) =>
@@ -124,7 +124,7 @@ const slice = createSlice({
       }
     );
     builder.addCase(
-      removeArc200AssetHoldingThunk.pending,
+      removeARC0200AssetHoldingThunk.pending,
       (state: IAccountsState, action) => {
         state.updatingAccounts = [
           // filter the unrelated updating account ids
@@ -141,7 +141,7 @@ const slice = createSlice({
       }
     );
     builder.addCase(
-      removeArc200AssetHoldingThunk.rejected,
+      removeARC0200AssetHoldingThunk.rejected,
       (state: IAccountsState, action) => {
         // remove updated account from the account update list
         state.updatingAccounts = state.updatingAccounts.filter(

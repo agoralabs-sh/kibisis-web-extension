@@ -4,19 +4,19 @@ import { Algodv2 } from 'algosdk';
 import { ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT } from '@extension/constants';
 
 // types
-import { IBaseOptions } from '@common/types';
-import {
+import type { IBaseOptions } from '@common/types';
+import type {
   IAccountInformation,
   IAlgorandAccountInformation,
-  IArc200AssetHolding,
+  IARC0200AssetHolding,
   INetwork,
 } from '@extension/types';
 
 // utils
-import getAlgodClient from '@common/utils/getAlgodClient';
+import createAlgodClient from '@common/utils/createAlgodClient';
 import algorandAccountInformationWithDelay from '@extension/utils/algorandAccountInformationWithDelay';
 import mapAlgorandAccountInformationToAccount from '@extension/utils/mapAlgorandAccountInformationToAccount';
-import fetchArc200AssetHoldingWithDelay from './fetchArc200AssetHoldingWithDelay';
+import fetchARC0200AssetHoldingWithDelay from './fetchARC0200AssetHoldingWithDelay';
 
 interface IOptions extends IBaseOptions {
   address: string;
@@ -39,8 +39,9 @@ export default async function updateAccountInformation({
   logger,
   network,
 }: IOptions): Promise<IAccountInformation> {
+  const _functionName: string = 'updateAccountInformation';
   let algorandAccountInformation: IAlgorandAccountInformation;
-  let arc200AssetHoldings: IArc200AssetHolding[];
+  let arc200AssetHoldings: IARC0200AssetHolding[];
   let client: Algodv2;
   let updatedAt: Date;
 
@@ -52,24 +53,22 @@ export default async function updateAccountInformation({
       ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT >
       new Date().getTime()
   ) {
-    logger &&
-      logger.debug(
-        `${updateAccountInformation.name}: last updated "${new Date(
-          currentAccountInformation.updatedAt
-        ).toString()}", skipping`
-      );
+    logger?.debug(
+      `${_functionName}: last updated "${new Date(
+        currentAccountInformation.updatedAt
+      ).toString()}", skipping`
+    );
 
     return currentAccountInformation;
   }
 
-  client = getAlgodClient(network, {
+  client = createAlgodClient(network, {
     logger,
   });
 
-  logger &&
-    logger.debug(
-      `${updateAccountInformation.name}: updating account information for "${address}" on "${network.genesisId}"`
-    );
+  logger?.debug(
+    `${_functionName}: updating account information for "${address}" on "${network.genesisId}"`
+  );
 
   try {
     algorandAccountInformation = await algorandAccountInformationWithDelay({
@@ -80,24 +79,22 @@ export default async function updateAccountInformation({
     arc200AssetHoldings = await Promise.all(
       currentAccountInformation.arc200AssetHoldings.map(
         async (value) =>
-          await fetchArc200AssetHoldingWithDelay({
+          await fetchARC0200AssetHoldingWithDelay({
             address,
-            arc200AppId: value.id,
-            client,
+            appId: value.id,
             delay,
+            logger,
+            network,
           })
       )
     );
     updatedAt = new Date();
 
-    logger &&
-      logger.debug(
-        `${
-          updateAccountInformation.name
-        }: successfully updated account information for "${address}" on "${
-          network.genesisId
-        }" at "${updatedAt.toString()}"`
-      );
+    logger?.debug(
+      `${_functionName}: successfully updated account information for "${address}" on "${
+        network.genesisId
+      }" at "${updatedAt.toString()}"`
+    );
 
     return mapAlgorandAccountInformationToAccount(
       algorandAccountInformation,
@@ -108,10 +105,9 @@ export default async function updateAccountInformation({
       updatedAt.getTime()
     );
   } catch (error) {
-    logger &&
-      logger.error(
-        `${updateAccountInformation.name}: failed to get account information for "${address}" on ${network.genesisId}: ${error.message}`
-      );
+    logger?.error(
+      `${_functionName}: failed to get account information for "${address}" on ${network.genesisId}: ${error.message}`
+    );
 
     return currentAccountInformation;
   }

@@ -17,7 +17,7 @@ const AssetBadge: FC<IProps> = ({ size = 'sm', type }: IProps) => {
   const colorMode: ColorMode = useSelectColorMode();
 
   switch (type) {
-    case AssetTypeEnum.Arc200:
+    case AssetTypeEnum.ARC0200:
       return (
         <Tag
           colorScheme="green"

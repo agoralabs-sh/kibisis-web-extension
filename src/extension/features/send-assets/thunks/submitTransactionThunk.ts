@@ -1,14 +1,12 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Address, Algodv2, decodeAddress, SuggestedParams } from 'algosdk';
-import BigNumber from 'bignumber.js';
+import { Address, decodeAddress } from 'algosdk';
 import browser from 'webextension-polyfill';
 
 // enums
-import { AssetTypeEnum, SendAssetsThunkEnum } from '@extension/enums';
+import { SendAssetsThunkEnum } from '@extension/enums';
 
 // errors
 import {
-  BaseExtensionError,
   DecryptionError,
   FailedToSendTransactionError,
   MalformedDataError,
@@ -17,89 +15,54 @@ import {
 } from '@extension/errors';
 
 // services
-import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { ILogger } from '@common/types';
 import type {
   IAccount,
-  IAssetTypes,
   IAsyncThunkConfigWithRejectValue,
-  INativeCurrency,
   IMainRootState,
-  INetworkWithTransactionParams,
+  INetwork,
 } from '@extension/types';
+import type { ISubmitTransactionsThunkPayload } from '../types';
 
 // utils
-import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
-import getAlgodClient from '@common/utils/getAlgodClient';
-import getIndexerClient from '@common/utils/getIndexerClient';
-import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import {
-  sendArc200AssetTransferTransaction,
-  sendPaymentTransaction,
-  sendStandardAssetTransferTransaction,
-} from '../utils';
+import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
+import isAccountKnown from '@extension/utils/isAccountKnown';
+import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
 
 const submitTransactionThunk: AsyncThunk<
-  string, // return
-  string, // args
+  string[], // return
+  ISubmitTransactionsThunkPayload, // args
   IAsyncThunkConfigWithRejectValue<IMainRootState>
 > = createAsyncThunk<
-  string,
-  string,
+  string[],
+  ISubmitTransactionsThunkPayload,
   IAsyncThunkConfigWithRejectValue<IMainRootState>
 >(
   SendAssetsThunkEnum.SubmitTransaction,
-  async (password, { getState, rejectWithValue }) => {
-    const amountInStandardUnits: string =
-      getState().sendAssets.amountInStandardUnits.length > 0
-        ? getState().sendAssets.amountInStandardUnits
-        : '0';
-    const asset: IAssetTypes | INativeCurrency | null =
-      getState().sendAssets.selectedAsset;
+  async ({ password, transactions }, { getState, rejectWithValue }) => {
+    const accounts: IAccount[] = getState().accounts.items;
     const fromAddress: string | null = getState().sendAssets.fromAddress;
     const logger: ILogger = getState().system.logger;
-    const networks: INetworkWithTransactionParams[] = getState().networks.items;
+    const genesisHash: string | null = extractGenesisHashFromAtomicTransactions(
+      { logger, transactions }
+    );
+    const networks: INetwork[] = getState().networks.items;
     const online: boolean = getState().system.online;
-    const network: INetworkWithTransactionParams | null =
-      selectNetworkFromSettings(networks, getState().settings);
-    const note: string | null = getState().sendAssets.note;
-    const toAddress: string | null = getState().sendAssets.toAddress;
-    let amount: string;
-    let fromAccount: IAccount | null;
-    let algodClient: Algodv2;
-    let decodedAddress: Address;
+    let errorMessage: string;
+    let decodedFromAddress: Address;
+    let network: INetwork | null;
     let privateKey: Uint8Array | null;
     let privateKeyService: PrivateKeyService;
-    let suggestedParams: SuggestedParams;
 
-    if (!asset || !fromAddress || !toAddress) {
-      logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}: required fields not completed`
-      );
+    if (!fromAddress) {
+      errorMessage = `fromAddress field missing`;
 
-      return rejectWithValue(new MalformedDataError('required fields missing'));
-    }
+      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${errorMessage}`);
 
-    fromAccount =
-      getState().accounts.items.find(
-        (value) =>
-          AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-          fromAddress
-      ) || null;
-
-    if (!fromAccount) {
-      logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}: no account found for "${fromAddress}"`
-      );
-
-      return rejectWithValue(
-        new MalformedDataError(
-          `no account data found for "${fromAddress}" in wallet`
-        )
-      );
+      return rejectWithValue(new MalformedDataError(errorMessage));
     }
 
     if (!online) {
@@ -112,16 +75,36 @@ const submitTransactionThunk: AsyncThunk<
       );
     }
 
-    if (!network) {
+    if (!genesisHash) {
       logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}: no network selected`
+        `${SendAssetsThunkEnum.SubmitTransaction}: failed to get the genesis hash from the transactions`
       );
 
       return rejectWithValue(
-        new NetworkNotSelectedError(
-          'attempted to send transaction, but no network selected'
+        new MalformedDataError(
+          'unable to determine genesis hash from transactions'
         )
       );
+    }
+
+    network =
+      networks.find((value) => value.genesisHash === genesisHash) || null;
+
+    if (!network) {
+      errorMessage = `no network configuration found for "${genesisHash}"`;
+
+      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${errorMessage}`);
+
+      return rejectWithValue(new NetworkNotSelectedError(errorMessage));
+    }
+
+    // check if we actually have the account
+    if (!isAccountKnown(accounts, fromAddress)) {
+      errorMessage = `no account data found for "${fromAddress}" in wallet`;
+
+      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${errorMessage}`);
+
+      return rejectWithValue(new MalformedDataError(errorMessage));
     }
 
     privateKeyService = new PrivateKeyService({
@@ -130,9 +113,9 @@ const submitTransactionThunk: AsyncThunk<
     });
 
     try {
-      decodedAddress = decodeAddress(fromAddress);
+      decodedFromAddress = decodeAddress(fromAddress);
       privateKey = await privateKeyService.getDecryptedPrivateKey(
-        decodedAddress.publicKey,
+        decodedFromAddress.publicKey,
         password
       );
 
@@ -143,68 +126,15 @@ const submitTransactionThunk: AsyncThunk<
           )
         );
       }
+
+      return await signAndSendTransactions({
+        logger,
+        network,
+        privateKey,
+        unsignedTransactions: transactions,
+      });
     } catch (error) {
-      logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}(): ${error.message}`
-      );
-
-      return rejectWithValue(error);
-    }
-
-    algodClient = getAlgodClient(network, {
-      logger,
-    });
-
-    try {
-      amount = convertToAtomicUnit(
-        new BigNumber(amountInStandardUnits),
-        asset.decimals
-      ).toString(); // convert to atomic units
-      suggestedParams = await algodClient.getTransactionParams().do();
-
-      switch (asset.type) {
-        case AssetTypeEnum.Arc200:
-          return await sendArc200AssetTransferTransaction({
-            algodClient,
-            amount,
-            asset,
-            fromAddress,
-            indexerClient: getIndexerClient(network, { logger }),
-            logger,
-            note,
-            privateKey,
-            toAddress,
-          });
-        case AssetTypeEnum.Standard:
-          return sendStandardAssetTransferTransaction({
-            algodClient,
-            amount,
-            asset,
-            fromAddress,
-            logger,
-            note,
-            privateKey,
-            suggestedParams,
-            toAddress,
-          });
-        case AssetTypeEnum.Native:
-          return sendPaymentTransaction({
-            algodClient,
-            amount,
-            fromAddress,
-            logger,
-            note,
-            privateKey,
-            suggestedParams,
-            toAddress,
-          });
-        default:
-          throw new Error('unknown asset');
-      }
-    } catch (error) {
-      logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}(): ${error.message}`
-      );
+      logger.error(`${SendAssetsThunkEnum.SubmitTransaction}:`, error);
 
       return rejectWithValue(new FailedToSendTransactionError(error.message));
     }

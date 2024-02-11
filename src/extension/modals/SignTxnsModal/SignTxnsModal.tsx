@@ -37,13 +37,13 @@ import SignTxnsModalContent from './SignTxnsModalContent';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { Arc0027ErrorCodeEnum, Arc0027ProviderMethodEnum } from '@common/enums';
+import { ARC0027ErrorCodeEnum, ARC0027ProviderMethodEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
 import {
-  SerializableArc0027InvalidInputError,
-  SerializableArc0027MethodCanceledError,
+  SerializableARC0027InvalidInputError,
+  SerializableARC0027MethodCanceledError,
 } from '@common/errors';
 
 // features
@@ -56,7 +56,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // messages
-import { Arc0027SignTxnsRequestMessage } from '@common/messages';
+import { ARC0027SignTxnsRequestMessage } from '@common/messages';
 
 // selectors
 import {
@@ -74,8 +74,8 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAppThunkDispatch,
   IClientRequest,
@@ -115,7 +115,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
   const sessions: ISession[] = useSelectSessions();
-  const signTxnsRequest: IClientRequest<Arc0027SignTxnsRequestMessage> | null =
+  const signTxnsRequest: IClientRequest<ARC0027SignTxnsRequestMessage> | null =
     useSelectSignTxnsRequest();
   // state
   const [network, setNetwork] = useState<INetwork | null>(null);
@@ -125,8 +125,8 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     if (signTxnsRequest) {
       dispatch(
         sendSignTxnsResponseThunk({
-          error: new SerializableArc0027MethodCanceledError(
-            Arc0027ProviderMethodEnum.SignTxns,
+          error: new SerializableARC0027MethodCanceledError(
+            ARC0027ProviderMethodEnum.SignTxns,
             __PROVIDER_ID__,
             `user dismissed sign transaction modal`
           ),
@@ -189,7 +189,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           setPasswordError(t<string>('errors.inputs.invalidPassword'));
 
           break;
-        case Arc0027ErrorCodeEnum.UnauthorizedSignerError:
+        case ARC0027ErrorCodeEnum.UnauthorizedSignerError:
           dispatch(
             sendSignTxnsResponseThunk({
               error,
@@ -303,14 +303,16 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       if (signTxnsRequest.originMessage.params) {
         genesisHash = extractGenesisHashFromAtomicTransactions({
           logger,
-          txns: signTxnsRequest.originMessage.params.txns,
+          transactions: signTxnsRequest.originMessage.params.txns.map((value) =>
+            decodeUnsignedTransaction(decodeBase64(value.txn))
+          ),
         });
 
         // if there is network, the input is invalid
         if (!genesisHash) {
           dispatch(
             sendSignTxnsResponseThunk({
-              error: new SerializableArc0027InvalidInputError(
+              error: new SerializableARC0027InvalidInputError(
                 __PROVIDER_ID__,
                 `the transaction group is not atomic, they are bound for multiple networks`
               ),

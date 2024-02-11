@@ -1,2 +1,2 @@
 export * from './Application';
-export * from './Arc0027';
+export * from './ARC0027';

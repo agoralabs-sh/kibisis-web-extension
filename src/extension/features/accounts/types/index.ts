@@ -4,4 +4,4 @@ export type { default as IFetchAccountsFromStoragePayload } from './IFetchAccoun
 export type { default as ISaveAccountNamePayload } from './ISaveAccountNamePayload';
 export type { default as ISaveNewAccountPayload } from './ISaveNewAccountPayload';
 export type { default as IUpdateAccountsPayload } from './IUpdateAccountsPayload';
-export type { default as IUpdateArc200AssetHoldingPayload } from './IUpdateArc200AssetHoldingPayload';
+export type { default as IUpdateARC0200AssetHoldingPayload } from './IUpdateARC0200AssetHoldingPayload';

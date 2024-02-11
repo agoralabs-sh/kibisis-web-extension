@@ -5,7 +5,7 @@ enum ErrorCodeEnum {
   ParsingError = 1002,
   NetworkNotSelectedError = 1003,
 
-  // private key service
+  // private key
   InvalidPasswordError = 2000,
   EncryptionError = 2001,
   DecryptionError = 2002,
@@ -16,6 +16,10 @@ enum ErrorCodeEnum {
 
   // transaction
   FailedToSendTransactionError = 4000,
+
+  // contract (application)
+  InvalidABIContractError = 5000,
+  ReadABIContractError = 5001,
 }
 
 export default ErrorCodeEnum;

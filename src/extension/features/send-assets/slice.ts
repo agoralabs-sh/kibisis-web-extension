@@ -4,17 +4,39 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '@extension/enums';
 
 // thunks
-import { submitTransactionThunk } from './thunks';
+import {
+  createUnsignedTransactionsThunk,
+  submitTransactionThunk,
+} from './thunks';
 
 // types
-import { IAssetTypes, INativeCurrency } from '@extension/types';
-import { IInitializeSendAssetPayload, ISendAssetsState } from './types';
+import type { IAssetTypes, INativeCurrency } from '@extension/types';
+import type { IInitializeSendAssetPayload, ISendAssetsState } from './types';
 
 // utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
+    /** create unsigned transactions **/
+    builder.addCase(
+      createUnsignedTransactionsThunk.fulfilled,
+      (state: ISendAssetsState) => {
+        state.creating = false;
+      }
+    );
+    builder.addCase(
+      createUnsignedTransactionsThunk.pending,
+      (state: ISendAssetsState) => {
+        state.creating = true;
+      }
+    );
+    builder.addCase(
+      createUnsignedTransactionsThunk.rejected,
+      (state: ISendAssetsState) => {
+        state.creating = false;
+      }
+    );
     /** submit transaction **/
     builder.addCase(
       submitTransactionThunk.fulfilled,
@@ -48,6 +70,7 @@ const slice = createSlice({
     reset: (state: Draft<ISendAssetsState>) => {
       state.amountInStandardUnits = '0';
       state.confirming = false;
+      state.creating = false;
       state.fromAddress = null;
       state.note = null;
       state.selectedAsset = null;

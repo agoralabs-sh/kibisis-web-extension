@@ -7,7 +7,7 @@ import { AssetTypeEnum } from '@extension/enums';
 // selectors
 import {
   useSelectAccounts,
-  useSelectArc200AssetsBySelectedNetwork,
+  useSelectARC0200AssetsBySelectedNetwork,
   useSelectSelectedNetwork,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
@@ -19,8 +19,8 @@ import AccountService from '@extension/services/AccountService';
 import {
   IAccount,
   IAccountInformation,
-  IArc200Asset,
-  IArc200AssetHolding,
+  IARC0200Asset,
+  IARC0200AssetHolding,
   IAssetTypes,
   IStandardAsset,
   IStandardAssetHolding,
@@ -39,7 +39,8 @@ export default function useAssetPage({
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
+  const arc200Assets: IARC0200Asset[] =
+    useSelectARC0200AssetsBySelectedNetwork();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
   // state
@@ -48,7 +49,7 @@ export default function useAssetPage({
     useState<IAccountInformation | null>(null);
   const [asset, setAsset] = useState<IAssetTypes | null>(null);
   const [assetHolding, setAssetHolding] = useState<
-    IArc200AssetHolding | IStandardAssetHolding | null
+    IARC0200AssetHolding | IStandardAssetHolding | null
   >(null);
   const [amountInStandardUnits, setAmountInStandardUnits] = useState<BigNumber>(
     new BigNumber('0')
@@ -112,13 +113,13 @@ export default function useAssetPage({
   // 3. when we have the account information, get the asset holding
   useEffect(() => {
     let selectedAssetHolding:
-      | IArc200AssetHolding
+      | IARC0200AssetHolding
       | IStandardAssetHolding
       | null;
 
     if (asset && accountInformation) {
       switch (asset.type) {
-        case AssetTypeEnum.Arc200:
+        case AssetTypeEnum.ARC0200:
           selectedAssetHolding =
             accountInformation.arc200AssetHoldings.find(
               (value) => value.id === assetId

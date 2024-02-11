@@ -1,5 +1,5 @@
 // types
-import { IArc200Asset, IStandardAsset } from '@extension/types';
+import { IARC0200Asset, IStandardAsset } from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '../convertGenesisHashToHex';
@@ -11,7 +11,7 @@ import convertGenesisHashToHex from '../convertGenesisHashToHex';
  * @returns {(IStandardAsset | IArc200Asset)[]} a list of assets for the network.
  */
 export default function selectAssetsForNetwork<
-  T = IStandardAsset | IArc200Asset
+  T = IStandardAsset | IARC0200Asset
 >(assets: Record<string, T[]> | null, genesisHash: string): T[] {
   if (!assets) {
     return [];

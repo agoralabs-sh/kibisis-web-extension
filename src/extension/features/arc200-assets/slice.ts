@@ -5,15 +5,15 @@ import { StoreNameEnum } from '@extension/enums';
 
 // thunks
 import {
-  fetchArc200AssetsFromStorageThunk,
-  updateArc200AssetInformationThunk,
+  fetchARC0200AssetsFromStorageThunk,
+  updateARC0200AssetInformationThunk,
 } from './thunks';
 
 // types
-import { IArc200Asset } from '@extension/types';
+import { IARC0200Asset } from '@extension/types';
 import {
-  IArc200AssetsState,
-  IUpdateArc200AssetInformationResult,
+  IARC0200AssetsState,
+  IUpdateARC0200AssetInformationResult,
 } from './types';
 
 // utils
@@ -24,33 +24,33 @@ const slice = createSlice({
   extraReducers: (builder) => {
     /** fetch arc200 assets from storage **/
     builder.addCase(
-      fetchArc200AssetsFromStorageThunk.fulfilled,
+      fetchARC0200AssetsFromStorageThunk.fulfilled,
       (
-        state: IArc200AssetsState,
-        action: PayloadAction<Record<string, IArc200Asset[]>>
+        state: IARC0200AssetsState,
+        action: PayloadAction<Record<string, IARC0200Asset[]>>
       ) => {
         state.items = action.payload;
         state.fetching = false;
       }
     );
     builder.addCase(
-      fetchArc200AssetsFromStorageThunk.pending,
-      (state: IArc200AssetsState) => {
+      fetchARC0200AssetsFromStorageThunk.pending,
+      (state: IARC0200AssetsState) => {
         state.fetching = true;
       }
     );
     builder.addCase(
-      fetchArc200AssetsFromStorageThunk.rejected,
-      (state: IArc200AssetsState) => {
+      fetchARC0200AssetsFromStorageThunk.rejected,
+      (state: IARC0200AssetsState) => {
         state.fetching = false;
       }
     );
     /** update arc200 asset information **/
     builder.addCase(
-      updateArc200AssetInformationThunk.fulfilled,
+      updateARC0200AssetInformationThunk.fulfilled,
       (
-        state: IArc200AssetsState,
-        action: PayloadAction<IUpdateArc200AssetInformationResult>
+        state: IARC0200AssetsState,
+        action: PayloadAction<IUpdateARC0200AssetInformationResult>
       ) => {
         state.items = {
           ...state.items,
@@ -62,14 +62,14 @@ const slice = createSlice({
       }
     );
     builder.addCase(
-      updateArc200AssetInformationThunk.pending,
-      (state: IArc200AssetsState) => {
+      updateARC0200AssetInformationThunk.pending,
+      (state: IARC0200AssetsState) => {
         state.updating = true;
       }
     );
     builder.addCase(
-      updateArc200AssetInformationThunk.rejected,
-      (state: IArc200AssetsState) => {
+      updateARC0200AssetInformationThunk.rejected,
+      (state: IARC0200AssetsState) => {
         state.updating = false;
       }
     );

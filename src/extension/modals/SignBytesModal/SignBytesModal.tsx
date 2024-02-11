@@ -37,11 +37,11 @@ import SignBytesJwtContent from './SignBytesJwtContent';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { Arc0027ProviderMethodEnum } from '@common/enums';
+import { ARC0027ProviderMethodEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
-import { SerializableArc0027MethodCanceledError } from '@common/errors';
+import { SerializableARC0027MethodCanceledError } from '@common/errors';
 
 // features
 import { sendSignBytesResponseThunk } from '@extension/features/messages';
@@ -53,7 +53,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // messages
-import { Arc0027SignBytesRequestMessage } from '@common/messages';
+import { ARC0027SignBytesRequestMessage } from '@common/messages';
 
 // selectors
 import {
@@ -99,7 +99,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const fetching: boolean = useSelectFetchingAccounts();
   const logger: ILogger = useSelectLogger();
   const sessions: ISession[] = useSelectSessions();
-  const signBytesRequest: IClientRequest<Arc0027SignBytesRequestMessage> | null =
+  const signBytesRequest: IClientRequest<ARC0027SignBytesRequestMessage> | null =
     useSelectSignBytesRequest();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
@@ -123,8 +123,8 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     if (signBytesRequest) {
       dispatch(
         sendSignBytesResponseThunk({
-          error: new SerializableArc0027MethodCanceledError(
-            Arc0027ProviderMethodEnum.SignBytes,
+          error: new SerializableARC0027MethodCanceledError(
+            ARC0027ProviderMethodEnum.SignBytes,
             __PROVIDER_ID__,
             `user dismissed sign bytes modal`
           ),

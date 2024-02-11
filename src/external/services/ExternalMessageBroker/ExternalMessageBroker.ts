@@ -1,18 +1,18 @@
 import browser from 'webextension-polyfill';
 
 // enums
-import { Arc0027MessageReferenceEnum } from '@common/enums';
+import { ARC0027MessageReferenceEnum } from '@common/enums';
 
 // messages
 import {
-  BaseArc0027RequestMessage,
-  BaseArc0027ResponseMessage,
+  BaseARC0027RequestMessage,
+  BaseARC0027ResponseMessage,
 } from '@common/messages';
 
 // types
 import type {
-  IArc0027ParamTypes,
-  IArc0027ResultTypes,
+  IARC0027ParamTypes,
+  IARC0027ResultTypes,
   IBaseOptions,
   IClientInformation,
   ILogger,
@@ -132,16 +132,16 @@ export default class ExternalMessageBroker {
    * public functions
    */
 
-  public async onArc0027RequestMessage(
-    message: MessageEvent<BaseArc0027RequestMessage<IArc0027ParamTypes>>
+  public async onARC0027RequestMessage(
+    message: MessageEvent<BaseARC0027RequestMessage<IARC0027ParamTypes>>
   ): Promise<void> {
-    const _functionName: string = 'onArc0027RequestMessage';
+    const _functionName: string = 'onARC0027RequestMessage';
 
     switch (message.data.reference) {
-      case Arc0027MessageReferenceEnum.EnableRequest:
-      case Arc0027MessageReferenceEnum.GetProvidersRequest:
-      case Arc0027MessageReferenceEnum.SignBytesRequest:
-      case Arc0027MessageReferenceEnum.SignTxnsRequest:
+      case ARC0027MessageReferenceEnum.EnableRequest:
+      case ARC0027MessageReferenceEnum.GetProvidersRequest:
+      case ARC0027MessageReferenceEnum.SignBytesRequest:
+      case ARC0027MessageReferenceEnum.SignTxnsRequest:
         this.logger?.debug(
           `${ExternalMessageBroker.name}#${_functionName}(): request message "${message.data.reference}" received`
         );
@@ -156,16 +156,16 @@ export default class ExternalMessageBroker {
     }
   }
 
-  public onArc0027ResponseMessage(
-    message: BaseArc0027ResponseMessage<IArc0027ResultTypes>
+  public onARC0027ResponseMessage(
+    message: BaseARC0027ResponseMessage<IARC0027ResultTypes>
   ): void {
-    const _functionName: string = 'onArc0027ResponseMessage';
+    const _functionName: string = 'onARC0027ResponseMessage';
 
     switch (message.reference) {
-      case Arc0027MessageReferenceEnum.EnableResponse:
-      case Arc0027MessageReferenceEnum.GetProvidersResponse:
-      case Arc0027MessageReferenceEnum.SignBytesResponse:
-      case Arc0027MessageReferenceEnum.SignTxnsResponse:
+      case ARC0027MessageReferenceEnum.EnableResponse:
+      case ARC0027MessageReferenceEnum.GetProvidersResponse:
+      case ARC0027MessageReferenceEnum.SignBytesResponse:
+      case ARC0027MessageReferenceEnum.SignTxnsResponse:
         this.logger?.debug(
           `${ExternalMessageBroker.name}#${_functionName}(): response message "${message.reference}" received`
         );

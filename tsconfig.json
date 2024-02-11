@@ -27,6 +27,7 @@
       "@extension/components/*": ["src/extension/components/*"],
       "@extension/config": ["src/extension/config"],
       "@extension/constants": ["src/extension/constants"],
+      "@extension/contracts/*": ["src/extension/contracts/*"],
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
@@ -68,7 +69,8 @@
       "@external/constants": ["src/external/constants"],
       "@external/services/*": ["src/external/services/*"],
       "@external/types": ["src/external/types"],
-      "@external/utils/*": ["src/external/utils/*"]
+      "@external/utils/*": ["src/external/utils/*"],
+      "@test/utils/*": ["test/utils/*"]
     },
     "removeComments": false,
     "resolveJsonModule": true,

@@ -310,7 +310,7 @@ export default class AccountService {
                 arc200AssetHoldings: accountInformation.arc200AssetHoldings.map(
                   (value) => ({
                     ...value,
-                    type: AssetTypeEnum.Arc200,
+                    type: AssetTypeEnum.ARC0200,
                   })
                 ),
                 standardAssetHoldings:

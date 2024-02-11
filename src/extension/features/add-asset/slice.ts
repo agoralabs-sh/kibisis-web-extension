@@ -15,13 +15,13 @@ import { BaseExtensionError } from '@extension/errors';
 // thunks
 import {
   addStandardAssetThunk,
-  queryArc200AssetThunk,
+  queryARC0200AssetThunk,
   queryStandardAssetThunk,
 } from './thunks';
 
 // types
 import {
-  IArc200Asset,
+  IARC0200Asset,
   IAssetTypes,
   IRejectedActionMeta,
   IStandardAsset,
@@ -29,7 +29,7 @@ import {
 import {
   IAddAssetState,
   IAssetsWithNextToken,
-  IQueryArc200AssetPayload,
+  IQueryARC0200AssetPayload,
   IQueryStandardAssetPayload,
 } from './types';
 
@@ -53,26 +53,26 @@ const slice = createSlice({
     });
     /** query arc200 asset **/
     builder.addCase(
-      queryArc200AssetThunk.fulfilled,
+      queryARC0200AssetThunk.fulfilled,
       (
         state: IAddAssetState,
-        action: PayloadAction<IAssetsWithNextToken<IArc200Asset>>
+        action: PayloadAction<IAssetsWithNextToken<IARC0200Asset>>
       ) => {
         state.arc200Assets = action.payload;
         state.fetching = false;
       }
     );
-    builder.addCase(queryArc200AssetThunk.pending, (state: IAddAssetState) => {
+    builder.addCase(queryARC0200AssetThunk.pending, (state: IAddAssetState) => {
       state.fetching = true;
     });
     builder.addCase(
-      queryArc200AssetThunk.rejected,
+      queryARC0200AssetThunk.rejected,
       (
         state: IAddAssetState,
         action: PayloadAction<
           BaseExtensionError,
           string,
-          IRejectedActionMeta<IQueryArc200AssetPayload>,
+          IRejectedActionMeta<IQueryARC0200AssetPayload>,
           SerializedError
         >
       ) => {

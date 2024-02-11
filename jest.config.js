@@ -13,6 +13,7 @@ module.exports = {
   },
   rootDir: '.',
   setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
+  // testEnvironment: 'jest-environment-node', // TODO: this is required for the ARC0200Contract tests, otherwise the algosdk fails
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.tsx?$': [

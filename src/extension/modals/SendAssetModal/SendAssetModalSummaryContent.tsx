@@ -1,4 +1,5 @@
-import { Code, VStack } from '@chakra-ui/react';
+import { Code, HStack, VStack } from '@chakra-ui/react';
+import { Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +10,7 @@ import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
 import AssetDisplay from '@extension/components/AssetDisplay';
 import AssetIcon from '@extension/components/AssetIcon';
+import WarningIcon from '@extension/components/WarningIcon';
 import SendAssetSummaryItem from './SendAssetSummaryItem';
 
 // constants
@@ -43,6 +45,7 @@ interface IProps {
   network: INetworkWithTransactionParams;
   note: string | null;
   toAddress: string;
+  transactions: Transaction[];
 }
 
 const SendAssetModalSummaryContent: FC<IProps> = ({
@@ -52,6 +55,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
   network,
   note,
   toAddress,
+  transactions,
 }: IProps) => {
   const { t } = useTranslation();
   // hooks
@@ -62,10 +66,13 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
     new BigNumber(amountInStandardUnits),
     asset.decimals
   );
+  const totalFee: BigNumber = new BigNumber(
+    transactions.reduce((acc, value) => acc + value.fee, 0)
+  );
   // renders
   const renderAssetDisplay = () => {
     switch (asset.type) {
-      case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.ARC0200:
         return (
           <AssetDisplay
             atomicUnitAmount={atomicUnitAmount}
@@ -135,6 +142,54 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
         return null;
     }
   };
+  const renderExtraPaymentItem = () => {
+    let extraPaymentInAtomicUnits: BigNumber;
+
+    // only arc0200 with one-time box storage will need to show extra payment
+    if (asset.type !== AssetTypeEnum.ARC0200 || transactions.length <= 1) {
+      return null;
+    }
+
+    // get all the payment transactions
+    extraPaymentInAtomicUnits = new BigNumber(
+      String(
+        transactions.reduce(
+          (acc, value) =>
+            value.type === 'pay' ? (value.amount as bigint) + acc : acc,
+          BigInt(0)
+        )
+      )
+    );
+
+    return (
+      <SendAssetSummaryItem
+        fontSize="sm"
+        item={
+          <HStack spacing={2}>
+            <AssetDisplay
+              atomicUnitAmount={extraPaymentInAtomicUnits}
+              amountColor={subTextColor}
+              decimals={network.nativeCurrency.decimals}
+              fontSize="sm"
+              icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
+                color: subTextColor,
+                h: 3,
+                w: 3,
+              })}
+              unit={network.nativeCurrency.symbol}
+            />
+
+            <WarningIcon
+              tooltipLabel={t<string>('captions.extraPayment', {
+                symbol: asset.symbol,
+              })}
+            />
+          </HStack>
+        }
+        label={t<string>('labels.extraPayment')}
+      />
+    );
+  };
 
   return (
     <VStack
@@ -192,12 +247,12 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       )}
 
       {/*fee*/}
-      {asset.type !== AssetTypeEnum.Arc200 && (
-        <SendAssetSummaryItem
-          fontSize="sm"
-          item={
+      <SendAssetSummaryItem
+        fontSize="sm"
+        item={
+          <HStack spacing={2}>
             <AssetDisplay
-              atomicUnitAmount={new BigNumber(network.minFee)}
+              atomicUnitAmount={totalFee}
               amountColor={subTextColor}
               decimals={network.nativeCurrency.decimals}
               fontSize="sm"
@@ -208,10 +263,23 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
               })}
               unit={network.nativeCurrency.symbol}
             />
-          }
-          label={t<string>('labels.fee')}
-        />
-      )}
+
+            {/*show a warning for higher arc0200 fees for one-time box storage*/}
+            {asset.type === AssetTypeEnum.ARC0200 &&
+              transactions.length > 1 && (
+                <WarningIcon
+                  tooltipLabel={t<string>('captions.higherFee', {
+                    symbol: asset.symbol,
+                  })}
+                />
+              )}
+          </HStack>
+        }
+        label={t<string>('labels.fee')}
+      />
+
+      {/*extra payment*/}
+      {renderExtraPaymentItem()}
 
       {/*note*/}
       {note && note.length > 0 && (

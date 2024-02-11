@@ -32,9 +32,9 @@ export type { default as IAppThunkDispatchReturn } from './IAppThunkDispatchRetu
 export type { default as IApplicationTransaction } from './IApplicationTransaction';
 export type { default as IApplicationTransactionTypes } from './IApplicationTransactionTypes';
 export type { default as IAppWindow } from './IAppWindow';
-export type { default as IArc200Asset } from './IArc200Asset';
-export type { default as IArc200AssetHolding } from './IArc200AssetHolding';
-export type { default as IArc200AssetInformation } from './IArc200AssetInformation';
+export type { default as IARC0200Asset } from './IARC0200Asset';
+export type { default as IARC0200AssetHolding } from './IARC0200AssetHolding';
+export type { default as IARC0200AssetInformation } from './IARC0200AssetInformation';
 export type { default as IARC0300BaseSchema } from './IARC0300BaseSchema';
 export type { default as IARC0300AccountImportSchema } from './IARC0300AccountImportSchema';
 export type { default as IAssetConfigTransaction } from './IAssetConfigTransaction';

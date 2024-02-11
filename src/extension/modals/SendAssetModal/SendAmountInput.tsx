@@ -47,6 +47,7 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 interface IProps {
   account: IAccount;
+  disabled?: boolean;
   network: INetworkWithTransactionParams;
   maximumTransactionAmount: string;
   onValueChange: (value: string) => void;
@@ -56,6 +57,7 @@ interface IProps {
 
 const SendAmountInput: FC<IProps> = ({
   account,
+  disabled = false,
   network,
   maximumTransactionAmount,
   onValueChange,
@@ -122,7 +124,7 @@ const SendAmountInput: FC<IProps> = ({
     let maximumTransactionAmountLabel: ReactElement;
 
     switch (selectedAsset.type) {
-      case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.ARC0200:
       case AssetTypeEnum.Native:
         symbol = selectedAsset.symbol;
         break;
@@ -219,6 +221,7 @@ const SendAmountInput: FC<IProps> = ({
         <NumberInput
           colorScheme={primaryColorScheme}
           clampValueOnBlur={false}
+          isDisabled={disabled}
           focusBorderColor={primaryColor}
           onBlur={handleOnBlur}
           onChange={handleOnChange}

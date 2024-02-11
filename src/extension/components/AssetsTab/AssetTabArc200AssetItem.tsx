@@ -41,7 +41,7 @@ import { useSelectColorMode } from '@extension/selectors';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount, IArc200Asset, INetwork } from '@extension/types';
+import { IAccount, IARC0200Asset, INetwork } from '@extension/types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
@@ -50,7 +50,7 @@ import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 interface IProps {
   account: IAccount;
   amount: string;
-  arc200Asset: IArc200Asset;
+  arc200Asset: IARC0200Asset;
   network: INetwork;
 }
 
@@ -155,7 +155,7 @@ const AssetTabArc200AssetItem: FC<IProps> = ({
               })}
             </Text>
 
-            <AssetBadge type={AssetTypeEnum.Arc200} />
+            <AssetBadge type={AssetTypeEnum.ARC0200} />
           </VStack>
         </HStack>
       </Button>

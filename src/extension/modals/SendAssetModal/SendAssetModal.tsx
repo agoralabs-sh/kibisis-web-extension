@@ -10,6 +10,7 @@ import {
   Textarea,
   VStack,
 } from '@chakra-ui/react';
+import { Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, {
   ChangeEvent,
@@ -48,6 +49,7 @@ import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 import { updateAccountsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 import {
+  createUnsignedTransactionsThunk,
   reset as resetSendAssets,
   setAmount,
   setFromAddress,
@@ -64,15 +66,16 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectArc200AssetsBySelectedNetwork,
+  useSelectARC0200AssetsBySelectedNetwork,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
-  useSelectSendingAssetAmountInStandardUnits,
-  useSelectSendingAssetConfirming,
-  useSelectSendingAssetFromAccount,
-  useSelectSendingAssetNote,
-  useSelectSendingAssetSelectedAsset,
+  useSelectSendAssetAmountInStandardUnits,
+  useSelectSendAssetConfirming,
+  useSelectSendAssetCreating,
+  useSelectSendAssetFromAccount,
+  useSelectSendAssetNote,
+  useSelectSendAssetSelectedAsset,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
@@ -88,7 +91,7 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAppThunkDispatch,
-  IArc200Asset,
+  IARC0200Asset,
   IAssetTypes,
   INativeCurrency,
   INetworkWithTransactionParams,
@@ -111,20 +114,22 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
+  const arc200Assets: IARC0200Asset[] =
+    useSelectARC0200AssetsBySelectedNetwork();
   const amountInStandardUnits: string =
-    useSelectSendingAssetAmountInStandardUnits();
+    useSelectSendAssetAmountInStandardUnits();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
-  const confirming: boolean = useSelectSendingAssetConfirming();
-  const fromAccount: IAccount | null = useSelectSendingAssetFromAccount();
+  const confirming: boolean = useSelectSendAssetConfirming();
+  const creating: boolean = useSelectSendAssetCreating();
+  const fromAccount: IAccount | null = useSelectSendAssetFromAccount();
   const logger: ILogger = useSelectLogger();
   const network: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
-  const note: string | null = useSelectSendingAssetNote();
+  const note: string | null = useSelectSendAssetNote();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const selectedAsset: IAssetTypes | INativeCurrency | null =
-    useSelectSendingAssetSelectedAsset();
+    useSelectSendAssetSelectedAsset();
   const settings: ISettings = useSelectSettings();
   // hooks
   const {
@@ -148,7 +153,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // state
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<string>('0');
-  const [showSummary, setShowSummary] = useState<boolean>(false);
+  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   // misc
   const allAssets: (IAssetTypes | INativeCurrency)[] = [
     ...arc200Assets,
@@ -171,8 +176,8 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     // reset modal store - should close modal
     dispatch(resetSendAssets());
 
-    // reset modal input
-    setShowSummary(false);
+    // reset modal input and transactions
+    setTransactions(null);
     resetToAddress();
     resetPassword();
 
@@ -187,8 +192,45 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       )
     );
   const handleNextClick = async () => {
-    if (!validateToAddress()) {
-      setShowSummary(true);
+    const _functionName: string = 'handleNextClick';
+    let _transactions: Transaction[];
+
+    if (validateToAddress()) {
+      return;
+    }
+
+    logger.debug(
+      `${SendAssetModal.name}#${_functionName}: creating unsigned transactions`
+    );
+
+    try {
+      _transactions = await dispatch(
+        createUnsignedTransactionsThunk()
+      ).unwrap();
+
+      logger.debug(
+        `${
+          SendAssetModal.name
+        }#${_functionName}: created unsigned transactions "[${_transactions
+          .map((value) => value.type)
+          .join(',')}]"`
+      );
+
+      setTransactions(_transactions);
+    } catch (error) {
+      logger.error(`${SendAssetModal.name}#${_functionName}:`, error);
+
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
     }
   };
   const handleNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
@@ -204,15 +246,15 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handlePreviousClick = () => {
     resetPassword();
-    setShowSummary(false);
+    setTransactions(null);
   };
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
-    let transactionId: string;
+    let transactionIds: string[];
     let toAccount: IAccount | null;
 
-    if (!fromAccount || !network) {
+    if (!fromAccount || !network || !transactions || transactions.length <= 0) {
       return;
     }
 
@@ -241,8 +283,11 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     }
 
     try {
-      transactionId = await dispatch(
-        submitTransactionThunk(_password)
+      transactionIds = await dispatch(
+        submitTransactionThunk({
+          password: _password,
+          transactions,
+        })
       ).unwrap();
       toAccount =
         accounts.find(
@@ -252,13 +297,21 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             ) === toAddress
         ) || null;
 
+      logger.debug(
+        `${
+          SendAssetModal.name
+        }#${_functionName}: sent transactions [${transactionIds
+          .map((value) => `"${value}"`)
+          .join(',')}] to the network`
+      );
+
       // send a success transaction
       dispatch(
         createNotification({
-          description: t<string>('captions.transactionSendSuccessful', {
-            transactionId: ellipseAddress(transactionId, { end: 4, start: 4 }),
+          description: t<string>('captions.transactionsSentSuccessfully', {
+            amount: transactionIds.length,
           }),
-          title: t<string>('headings.transactionSuccessful'),
+          title: t<string>('headings.transactionsSuccessful'),
           type: 'success',
         })
       );
@@ -318,7 +371,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     }
 
     if (fromAccount && network && selectedAsset) {
-      if (showSummary) {
+      if (transactions && transactions.length > 0) {
         return (
           <SendAssetModalSummaryContent
             amountInStandardUnits={amountInStandardUnits}
@@ -327,6 +380,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             network={network}
             note={note}
             toAddress={toAddress}
+            transactions={transactions}
           />
         );
       }
@@ -336,6 +390,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {/*amount*/}
           <SendAmountInput
             account={fromAccount}
+            disabled={creating}
             network={network}
             maximumTransactionAmount={maximumTransactionAmount}
             onValueChange={handleAmountChange}
@@ -361,6 +416,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
                 network.nativeCurrency, // add the native currency to the front
                 ...allAssets,
               ]}
+              disabled={creating}
               network={network}
               onAssetChange={handleAssetChange}
               value={selectedAsset}
@@ -381,6 +437,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
             <AccountSelect
               accounts={accounts}
+              disabled={creating}
               onSelect={handleFromAccountChange}
               value={fromAccount}
             />
@@ -389,6 +446,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {/*to address*/}
           <AddressInput
             accounts={accounts}
+            disabled={creating}
             error={toAddressError}
             label={t<string>('labels.to')}
             onBlur={onToAddressBlur}
@@ -410,6 +468,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
             <Textarea
               focusBorderColor={primaryColor}
+              isDisabled={creating}
               onChange={handleNoteChange}
               placeholder={t<string>('placeholders.enterNote')}
               resize="vertical"
@@ -428,7 +487,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       return null;
     }
 
-    if (showSummary) {
+    if (transactions && transactions.length > 0) {
       return (
         <VStack alignItems="flex-start" spacing={4} w="full">
           {!settings.security.enablePasswordLock && !passwordLockPassword && (
@@ -476,7 +535,13 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {t<string>('buttons.cancel')}
         </Button>
 
-        <Button onClick={handleNextClick} size="lg" variant="solid" w="full">
+        <Button
+          isLoading={creating}
+          onClick={handleNextClick}
+          size="lg"
+          variant="solid"
+          w="full"
+        >
           {t<string>('buttons.next')}
         </Button>
       </HStack>
@@ -484,7 +549,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const renderHeader = () => {
     switch (selectedAsset?.type) {
-      case AssetTypeEnum.Arc200:
+      case AssetTypeEnum.ARC0200:
       case AssetTypeEnum.Native:
         return (
           <Heading color={defaultTextColor} size="md" textAlign="center">
@@ -513,10 +578,10 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   };
 
   useEffect(() => {
-    if (showSummary && passwordInputRef.current) {
+    if (transactions && transactions.length > 0 && passwordInputRef.current) {
       passwordInputRef.current.focus();
     }
-  }, [showSummary]);
+  }, [transactions]);
   useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
 

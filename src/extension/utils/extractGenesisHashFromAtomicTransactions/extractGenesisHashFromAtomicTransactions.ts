@@ -1,8 +1,4 @@
-import {
-  decode as decodeBase64,
-  encode as encodeBase64,
-} from '@stablelib/base64';
-import { decodeUnsignedTransaction, Transaction } from 'algosdk';
+import { encode as encodeBase64 } from '@stablelib/base64';
 
 // types
 import type { IOptions } from './types';
@@ -14,26 +10,19 @@ import type { IOptions } from './types';
  */
 export default function extractGenesisHashFromAtomicTransactions({
   logger,
-  txns,
+  transactions,
 }: IOptions): string | null {
   const _functionName: string = 'extractGenesisHashFromAtomicTransactions';
-  let decodedUnsignedTransactions: Transaction[];
   let genesisHashes: string[];
 
   try {
-    decodedUnsignedTransactions = txns.map((value) =>
-      decodeUnsignedTransaction(decodeBase64(value.txn))
-    );
-    genesisHashes = decodedUnsignedTransactions.reduce<string[]>(
-      (acc, transaction) => {
-        const genesisHash: string = encodeBase64(transaction.genesisHash);
+    genesisHashes = transactions.reduce<string[]>((acc, transaction) => {
+      const genesisHash: string = encodeBase64(transaction.genesisHash);
 
-        return acc.some((value) => value === genesisHash)
-          ? acc
-          : [...acc, genesisHash];
-      },
-      []
-    );
+      return acc.some((value) => value === genesisHash)
+        ? acc
+        : [...acc, genesisHash];
+    }, []);
 
     // if there are too many genesis hashes or no genesis hashes, this is an invalid atomic transaction group
     if (genesisHashes.length > 1 || genesisHashes.length <= 0) {
@@ -48,7 +37,7 @@ export default function extractGenesisHashFromAtomicTransactions({
 
     return genesisHashes[0];
   } catch (error) {
-    logger?.error(`${_functionName}(): ${error.message}`);
+    logger?.error(`${_functionName}: ${error.message}`);
 
     return null;
   }

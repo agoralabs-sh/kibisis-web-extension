@@ -27,7 +27,7 @@ const AssetAvatar: FC<IProps> = ({
   let props: AvatarProps = avatarProps;
 
   switch (asset.type) {
-    case AssetTypeEnum.Arc200:
+    case AssetTypeEnum.ARC0200:
     case AssetTypeEnum.Standard:
       props = {
         ...props,

@@ -27,11 +27,17 @@ import { IAccount } from '@extension/types';
 
 interface IProps {
   accounts: IAccount[];
+  disabled?: boolean;
   onSelect: (account: IAccount) => void;
   value: IAccount;
 }
 
-const AccountSelect: FC<IProps> = ({ accounts, onSelect, value }: IProps) => {
+const AccountSelect: FC<IProps> = ({
+  accounts,
+  disabled = false,
+  onSelect,
+  value,
+}: IProps) => {
   // hooks
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const expandedBackground: string = useColorModeValue(
@@ -49,6 +55,7 @@ const AccountSelect: FC<IProps> = ({ accounts, onSelect, value }: IProps) => {
         _hover={{ bg: buttonHoverBackgroundColor }}
         borderRadius="md"
         borderWidth="1px"
+        disabled={disabled}
         minH={`${ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT}px`}
         px={DEFAULT_GAP - 2}
         py={DEFAULT_GAP / 3}

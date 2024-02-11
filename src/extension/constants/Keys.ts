@@ -1,6 +1,6 @@
 export const ACCOUNTS_ITEM_KEY_PREFIX: string = 'accounts_';
 export const APP_WINDOW_KEY_PREFIX: string = 'app_window_';
-export const ARC200_ASSETS_KEY_PREFIX: string = 'arc200_assets_';
+export const ARC0200_ASSETS_KEY_PREFIX: string = 'arc200_assets_';
 export const EVENT_QUEUE_ITEM_KEY: string = 'event_queue';
 export const NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX: string =
   'network_transaction_params_';

@@ -1,6 +1,6 @@
 // features
 import { IAccountsState } from '@extension/features/accounts';
-import { IArc200AssetsState } from '@extension/features/arc200-assets';
+import { IARC0200AssetsState } from '@extension/features/arc200-assets';
 import { IEventsState } from '@extension/features/events';
 import { INetworksState } from '@extension/features/networks';
 import { ISessionsState } from '@extension/features/sessions';
@@ -12,7 +12,7 @@ import IBaseRootState from './IBaseRootState';
 
 interface IBackgroundRootState extends IBaseRootState {
   accounts: IAccountsState;
-  arc200Assets: IArc200AssetsState;
+  arc200Assets: IARC0200AssetsState;
   events: IEventsState;
   networks: INetworksState;
   sessions: ISessionsState;

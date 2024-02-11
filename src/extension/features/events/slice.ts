@@ -5,9 +5,9 @@ import { StoreNameEnum } from '@extension/enums';
 
 // messages
 import {
-  Arc0027EnableRequestMessage,
-  Arc0027SignBytesRequestMessage,
-  Arc0027SignTxnsRequestMessage,
+  ARC0027EnableRequestMessage,
+  ARC0027SignBytesRequestMessage,
+  ARC0027SignTxnsRequestMessage,
 } from '@common/messages';
 
 // types
@@ -23,19 +23,19 @@ const slice = createSlice({
   reducers: {
     setEnableRequest: (
       state: Draft<IEventsState>,
-      action: PayloadAction<IClientRequest<Arc0027EnableRequestMessage> | null>
+      action: PayloadAction<IClientRequest<ARC0027EnableRequestMessage> | null>
     ) => {
       state.enableRequest = action.payload;
     },
     setSignBytesRequest: (
       state: Draft<IEventsState>,
-      action: PayloadAction<IClientRequest<Arc0027SignBytesRequestMessage> | null>
+      action: PayloadAction<IClientRequest<ARC0027SignBytesRequestMessage> | null>
     ) => {
       state.signBytesRequest = action.payload;
     },
     setSignTxnsRequest: (
       state: Draft<IEventsState>,
-      action: PayloadAction<IClientRequest<Arc0027SignTxnsRequestMessage> | null>
+      action: PayloadAction<IClientRequest<ARC0027SignTxnsRequestMessage> | null>
     ) => {
       state.signTxnsRequest = action.payload;
     },

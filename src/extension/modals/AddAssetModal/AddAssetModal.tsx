@@ -30,14 +30,14 @@ import { useDispatch } from 'react-redux';
 // components
 import Button from '@extension/components/Button';
 import IconButton from '@extension/components/IconButton';
-import AddAssetModalArc200AssetSummaryContent from './AddAssetModalArc200AssetSummaryContent';
-import AddAssetModalStandardAssetConfirmingContent from './AddAssetModalStandardAssetConfirmingContent';
-import AddAssetModalStandardAssetSummaryContent from './AddAssetModalStandardAssetSummaryContent';
-import AddAssetArc200AssetItem from './AddAssetArc200AssetItem';
-import AddAssetStandardAssetItem from './AddAssetStandardAssetItem';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
+import AddAssetARC0200AssetItem from './AddAssetARC0200AssetItem';
+import AddAssetModalARC0200AssetSummaryContent from './AddAssetModalARC0200AssetSummaryContent';
+import AddAssetModalStandardAssetConfirmingContent from './AddAssetModalStandardAssetConfirmingContent';
+import AddAssetModalStandardAssetSummaryContent from './AddAssetModalStandardAssetSummaryContent';
+import AddAssetStandardAssetItem from './AddAssetStandardAssetItem';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -47,17 +47,17 @@ import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 
 // features
 import {
-  addArc200AssetHoldingThunk,
+  addARC0200AssetHoldingThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import {
   addStandardAssetThunk,
   clearAssets,
   IAssetsWithNextToken,
-  IQueryArc200AssetPayload,
+  IQueryARC0200AssetPayload,
   IQueryByIdAsyncThunkConfig,
   IQueryStandardAssetPayload,
-  queryArc200AssetThunk,
+  queryARC0200AssetThunk,
   queryStandardAssetThunk,
   setSelectedAsset,
 } from '@extension/features/add-asset';
@@ -72,7 +72,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import {
   useSelectAccounts,
   useSelectAddAssetAccount,
-  useSelectAddAssetArc200Assets,
+  useSelectAddAssetARC0200Assets,
   useSelectAddAssetConfirming,
   useSelectAddAssetFetching,
   useSelectAddAssetSelectedAsset,
@@ -93,7 +93,7 @@ import type {
   IAccount,
   IAppThunkDispatch,
   IAppThunkDispatchReturn,
-  IArc200Asset,
+  IARC0200Asset,
   IAssetTypes,
   IExplorer,
   INetworkWithTransactionParams,
@@ -118,7 +118,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // selectors
   const account: IAccount | null = useSelectAddAssetAccount();
   const accounts: IAccount[] = useSelectAccounts();
-  const arc200Assets: IArc200Asset[] = useSelectAddAssetArc200Assets();
+  const arc200Assets: IARC0200Asset[] = useSelectAddAssetARC0200Assets();
   const confirming: boolean = useSelectAddAssetConfirming();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const fetching: boolean = useSelectAddAssetFetching();
@@ -145,9 +145,9 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const [query, setQuery] = useState<string>('');
   const [queryArc200AssetDispatch, setQueryArc200AssetDispatch] =
     useState<IAppThunkDispatchReturn<
-      IQueryArc200AssetPayload,
+      IQueryARC0200AssetPayload,
       IQueryByIdAsyncThunkConfig,
-      IAssetsWithNextToken<IArc200Asset>
+      IAssetsWithNextToken<IARC0200Asset>
     > | null>(null);
   const [queryStandardAssetDispatch, setQueryStandardAssetDispatch] =
     useState<IAppThunkDispatchReturn<
@@ -173,7 +173,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     try {
       updatedAccount = await dispatch(
-        addArc200AssetHoldingThunk({
+        addARC0200AssetHoldingThunk({
           accountId: account.id,
           appId: selectedAsset.id,
           genesisHash: selectedNetwork.genesisHash,
@@ -348,7 +348,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
         setQueryArc200AssetDispatch(
           dispatch(
-            queryArc200AssetThunk({
+            queryARC0200AssetThunk({
               accountId: account.id,
               applicationId: query,
               refresh: true,
@@ -431,9 +431,9 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     if (selectedNetwork) {
       if (selectedAsset) {
         switch (selectedAsset.type) {
-          case AssetTypeEnum.Arc200:
+          case AssetTypeEnum.ARC0200:
             return (
-              <AddAssetModalArc200AssetSummaryContent
+              <AddAssetModalARC0200AssetSummaryContent
                 asset={selectedAsset}
                 explorer={explorer}
                 network={selectedNetwork}
@@ -528,7 +528,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
                   onClick={handleSelectAssetClick}
                 />
               ) : (
-                <AddAssetArc200AssetItem
+                <AddAssetARC0200AssetItem
                   asset={value}
                   key={`add-asset-modal-item-${index}`}
                   network={selectedNetwork}

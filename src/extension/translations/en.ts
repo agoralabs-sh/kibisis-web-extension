@@ -79,6 +79,8 @@ const translation: IResourceLanguage = {
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     enterSeedPhrase: `Add your seed phrase to import your account.`,
+    extraPayment:
+      'An extra network payment has been applied as this is the first time the recipient has interacted with the {{symbol}} asset.',
     factoryReset: 'This will remove all accounts, settings and the password.',
     factoryResetModal: 'Are you sure you want to perform a factory reset?',
     factoryResetWarning:
@@ -88,6 +90,8 @@ const translation: IResourceLanguage = {
     groupIdCopied: 'Group ID copied!',
     hideAssetConfirm:
       'Are you sure you want to hide {{symbol}}? You can re-add it back to your asset holdings again.',
+    higherFee:
+      'The fee is higher as this is the first time the recipient has interacted with the {{symbol}} asset.',
     importAccount: 'You are about to import the following account.',
     importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
     importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
@@ -158,8 +162,8 @@ const translation: IResourceLanguage = {
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
     transactionIdCopied: 'Transaction ID copied!',
-    transactionSendSuccessful:
-      'Transaction "{{transactionId}}" was successfully sent.',
+    transactionsSentSuccessfully:
+      '{{amount}} transaction(s) were successfully sent.',
     unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
   },
@@ -250,7 +254,7 @@ const translation: IResourceLanguage = {
     [`transaction_${TransactionTypeEnum.KeyRegistrationOnline}`]:
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
-    transactionSuccessful: 'Transaction Successful!',
+    transactionsSuccessful: 'Transaction(s) Successful!',
     unknownQRCode: 'Unknown QR Code',
   },
   labels: {
@@ -294,6 +298,7 @@ const translation: IResourceLanguage = {
     enablePasswordLock: 'Enable password lock?',
     expirationDate: 'Expiration Date',
     extensionId: 'Extension ID',
+    extraPayment: 'Extra Payment',
     factoryReset: 'Factory Reset',
     fee: 'Fee',
     firstRound: 'First Round',

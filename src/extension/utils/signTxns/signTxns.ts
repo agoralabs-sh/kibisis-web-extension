@@ -10,7 +10,7 @@ import {
 import browser from 'webextension-polyfill';
 
 // errors
-import { SerializableArc0027UnauthorizedSignerError } from '@common/errors';
+import { SerializableARC0027UnauthorizedSignerError } from '@common/errors';
 import {
   DecryptionError,
   InvalidPasswordError,
@@ -85,7 +85,7 @@ export default async function signTxns({
       if (!authorizedSigners.some((value) => value === signer)) {
         // if there is no signed transaction, we have been instructed to sign, so error
         if (!txn.stxn) {
-          throw new SerializableArc0027UnauthorizedSignerError(
+          throw new SerializableARC0027UnauthorizedSignerError(
             signer,
             __PROVIDER_ID__,
             `signer "${signer}" not authorized to sign transaction "${unsignedTransaction.txID()}"`

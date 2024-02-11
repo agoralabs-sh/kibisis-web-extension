@@ -30,8 +30,8 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // selectors
 import {
-  useSelectArc200AssetsBySelectedNetwork,
-  useSelectFetchingArc200Assets,
+  useSelectARC0200AssetsBySelectedNetwork,
+  useSelectFetchingARC0200Assets,
   useSelectFetchingStandardAssets,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
@@ -45,7 +45,7 @@ import {
   IAccountInformation,
   IStandardAsset,
   INetwork,
-  IArc200Asset,
+  IARC0200Asset,
   IAppThunkDispatch,
 } from '@extension/types';
 
@@ -62,8 +62,9 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const arc200Assets: IArc200Asset[] = useSelectArc200AssetsBySelectedNetwork();
-  const fetchingArc200Assets: boolean = useSelectFetchingArc200Assets();
+  const arc200Assets: IARC0200Asset[] =
+    useSelectARC0200AssetsBySelectedNetwork();
+  const fetchingArc200Assets: boolean = useSelectFetchingARC0200Assets();
   const fetchingStandardAssets: boolean = useSelectFetchingStandardAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const standardAssets: IStandardAsset[] =
@@ -106,7 +107,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
       assetNodes = allAssetHoldings.reduce<ReactNode[]>(
         (acc, { amount, id, isArc200 }, currentIndex) => {
           const key: string = `asset-tab-item-${currentIndex}`;
-          let arc200Asset: IArc200Asset | null;
+          let arc200Asset: IARC0200Asset | null;
           let standardAsset: IStandardAsset | null;
 
           // for standard assets

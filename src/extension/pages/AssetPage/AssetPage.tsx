@@ -35,7 +35,7 @@ import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
 import { AssetTypeEnum } from '@extension/enums';
 
 // features
-import { removeArc200AssetHoldingThunk } from '@extension/features/accounts';
+import { removeARC0200AssetHoldingThunk } from '@extension/features/accounts';
 import { initializeSendAsset } from '@extension/features/send-assets';
 import { setConfirm } from '@extension/features/system';
 
@@ -119,7 +119,7 @@ const AssetPage: FC = () => {
       !account ||
       !asset ||
       !selectedNetwork ||
-      asset.type !== AssetTypeEnum.Arc200
+      asset.type !== AssetTypeEnum.ARC0200
     ) {
       return;
     }
@@ -132,7 +132,7 @@ const AssetPage: FC = () => {
         onConfirm: () => {
           // remove the asset
           dispatch(
-            removeArc200AssetHoldingThunk({
+            removeARC0200AssetHoldingThunk({
               accountId: account.id,
               appId: asset.id,
               genesisHash: selectedNetwork.genesisHash,
@@ -249,7 +249,7 @@ const AssetPage: FC = () => {
             </Tooltip>
 
             {/*symbol/unit*/}
-            {asset.type === AssetTypeEnum.Arc200 && (
+            {asset.type === AssetTypeEnum.ARC0200 && (
               <Text color={subTextColor} fontSize="md" textAlign="center">
                 {asset.symbol}
               </Text>
@@ -335,7 +335,7 @@ const AssetPage: FC = () => {
               )}
 
               {/*remove asset*/}
-              {asset.type === AssetTypeEnum.Arc200 && (
+              {asset.type === AssetTypeEnum.ARC0200 && (
                 <Tooltip label={t<string>('labels.hideAsset')}>
                   <IconButton
                     aria-label="Hide Asset"

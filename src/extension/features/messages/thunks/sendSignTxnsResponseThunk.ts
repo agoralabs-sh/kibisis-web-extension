@@ -2,7 +2,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
 // enums
-import { Arc0027MessageReferenceEnum } from '@common/enums';
+import { ARC0027MessageReferenceEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // features
@@ -10,8 +10,8 @@ import { removeEventByIdThunk } from '@extension/features/events';
 
 // messages
 import {
-  Arc0027SignTxnsRequestMessage,
-  Arc0027SignTxnsResponseMessage,
+  ARC0027SignTxnsRequestMessage,
+  ARC0027SignTxnsResponseMessage,
 } from '@common/messages';
 
 // types
@@ -20,7 +20,7 @@ import { IBaseAsyncThunkConfig } from '@extension/types';
 import { IBaseResponseThunkPayload } from '../types';
 
 interface IPayload extends IBaseResponseThunkPayload {
-  originMessage: Arc0027SignTxnsRequestMessage;
+  originMessage: ARC0027SignTxnsRequestMessage;
   stxns: (string | null)[] | null;
 }
 
@@ -37,14 +37,14 @@ const sendTxnsBytesResponseThunk: AsyncThunk<
     const logger: ILogger = getState().system.logger;
 
     logger.debug(
-      `${MessagesThunkEnum.SendSignTxnsResponse}: sending "${Arc0027MessageReferenceEnum.SignTxnsResponse}" message to content script`
+      `${MessagesThunkEnum.SendSignTxnsResponse}: sending "${ARC0027MessageReferenceEnum.SignTxnsResponse}" message to content script`
     );
 
     // send the error the webpage (via the content script)
     if (error) {
       await browser.tabs.sendMessage(
         originTabId,
-        new Arc0027SignTxnsResponseMessage(originMessage.id, error, null)
+        new ARC0027SignTxnsResponseMessage(originMessage.id, error, null)
       );
 
       // remove the event
@@ -57,7 +57,7 @@ const sendTxnsBytesResponseThunk: AsyncThunk<
     if (stxns) {
       await browser.tabs.sendMessage(
         originTabId,
-        new Arc0027SignTxnsResponseMessage(originMessage.id, null, {
+        new ARC0027SignTxnsResponseMessage(originMessage.id, null, {
           providerId: __PROVIDER_ID__,
           stxns,
         })
