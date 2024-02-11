@@ -249,10 +249,10 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
-    let transactionId: string;
+    let transactionIds: string[];
     let toAccount: IAccount | null;
 
-    if (!fromAccount || !network) {
+    if (!fromAccount || !network || !transactions || transactions.length <= 0) {
       return;
     }
 
@@ -281,8 +281,11 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     }
 
     try {
-      transactionId = await dispatch(
-        submitTransactionThunk(_password)
+      transactionIds = await dispatch(
+        submitTransactionThunk({
+          password: _password,
+          transactions,
+        })
       ).unwrap();
       toAccount =
         accounts.find(
@@ -292,13 +295,21 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             ) === toAddress
         ) || null;
 
+      logger.debug(
+        `${
+          SendAssetModal.name
+        }#${_functionName}: sent transactions [${transactionIds
+          .map((value) => `"${value}"`)
+          .join(',')}] to the network`
+      );
+
       // send a success transaction
       dispatch(
         createNotification({
-          description: t<string>('captions.transactionSendSuccessful', {
-            transactionId: ellipseAddress(transactionId, { end: 4, start: 4 }),
+          description: t<string>('captions.transactionsSentSuccessfully', {
+            amount: transactionIds.length,
           }),
-          title: t<string>('headings.transactionSuccessful'),
+          title: t<string>('headings.transactionsSuccessful'),
           type: 'success',
         })
       );

@@ -74,8 +74,8 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAppThunkDispatch,
   IClientRequest,
@@ -303,7 +303,9 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       if (signTxnsRequest.originMessage.params) {
         genesisHash = extractGenesisHashFromAtomicTransactions({
           logger,
-          txns: signTxnsRequest.originMessage.params.txns,
+          transactions: signTxnsRequest.originMessage.params.txns.map((value) =>
+            decodeUnsignedTransaction(decodeBase64(value.txn))
+          ),
         });
 
         // if there is network, the input is invalid

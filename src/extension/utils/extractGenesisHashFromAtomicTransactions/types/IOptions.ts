@@ -1,11 +1,13 @@
+import { Transaction } from 'algosdk';
+
 // types
-import type { IARC0001SignTxns, IBaseOptions } from '@common/types';
+import type { IBaseOptions } from '@common/types';
 
 /**
- * @property {IARC0001SignTxns[]} txns - a group of atomic transactions.
+ * @property {Transaction[]} txns - a group of atomic transactions.
  */
 interface IOptions extends IBaseOptions {
-  txns: IARC0001SignTxns[];
+  transactions: Transaction[];
 }
 
 export default IOptions;

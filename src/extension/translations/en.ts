@@ -162,8 +162,8 @@ const translation: IResourceLanguage = {
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
     transactionIdCopied: 'Transaction ID copied!',
-    transactionSendSuccessful:
-      'Transaction "{{transactionId}}" was successfully sent.',
+    transactionsSentSuccessfully:
+      '{{amount}} transaction(s) were successfully sent.',
     unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
   },
@@ -254,7 +254,7 @@ const translation: IResourceLanguage = {
     [`transaction_${TransactionTypeEnum.KeyRegistrationOnline}`]:
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
-    transactionSuccessful: 'Transaction Successful!',
+    transactionsSuccessful: 'Transaction(s) Successful!',
     unknownQRCode: 'Unknown QR Code',
   },
   labels: {

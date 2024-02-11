@@ -530,7 +530,9 @@ export default class BackgroundMessageHandler {
 
     genesisHash = extractGenesisHashFromAtomicTransactions({
       logger: this.logger || undefined,
-      txns: message.params.txns,
+      transactions: message.params.txns.map((value) =>
+        decodeUnsignedTransaction(decodeBase64(value.txn))
+      ),
     });
 
     if (!genesisHash) {

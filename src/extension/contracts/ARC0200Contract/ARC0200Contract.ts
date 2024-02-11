@@ -2,6 +2,7 @@ import algosdk, {
   ABIContract,
   ABIMethod,
   ABIType,
+  assignGroupID,
   BoxReference,
   makePaymentTxnWithSuggestedParams,
   SuggestedParams,
@@ -112,6 +113,7 @@ export default class ARC0200Contract extends BaseContract {
     let encodedAmount: Uint8Array;
     let encodedToAddress: Uint8Array;
     let suggestedParams: SuggestedParams;
+    let transactions: Transaction[];
 
     try {
       abiMethod = this.abi.getMethodByName(ARC0200MethodEnum.Transfer);
@@ -195,10 +197,17 @@ export default class ARC0200Contract extends BaseContract {
         }),
       });
 
-      return [
+      transactions = [
         ...(paymentTransaction ? [paymentTransaction] : []),
         appWriteTransaction,
       ];
+
+      // if there is a payment transaction, group them together
+      if (transactions.length > 1) {
+        assignGroupID(transactions);
+      }
+
+      return transactions;
     } catch (error) {
       this.logger.debug(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
