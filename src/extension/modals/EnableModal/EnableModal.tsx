@@ -270,6 +270,15 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
             enableRequest.originMessage.params?.genesisHash
         ) || selectDefaultNetwork(networks)
       );
+
+      // if the authorized addresses are empty, auto add the first address
+      if (authorizedAddresses.length <= 0 && accounts.length > 0) {
+        setAuthorizedAddresses([
+          AccountService.convertPublicKeyToAlgorandAddress(
+            accounts[0].publicKey
+          ),
+        ]);
+      }
     }
   }, [enableRequest]);
 
