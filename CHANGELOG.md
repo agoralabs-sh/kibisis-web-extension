@@ -1,3 +1,10 @@
+# [1.12.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.2...v1.12.0-beta.3) (2024-02-12)
+
+
+### Features
+
+* allow arc-0200 assets to be added in the account import uri via qr code ([#169](https://github.com/agoralabs-sh/kibisis-web-extension/issues/169)) ([e4b718d](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e4b718dbfa02ce2361735fd5c76c10599da306ba))
+
 # [1.12.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.1...v1.12.0-beta.2) (2024-02-11)
 
 
