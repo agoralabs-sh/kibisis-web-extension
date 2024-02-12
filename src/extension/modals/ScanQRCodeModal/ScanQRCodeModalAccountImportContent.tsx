@@ -17,6 +17,12 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import {
+  Location,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
@@ -32,7 +38,7 @@ import PasswordInput, {
 } from '@extension/components/PasswordInput';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { ErrorCodeEnum } from '@extension/enums';
@@ -52,7 +58,6 @@ import useAccountImportAssets from './hooks/useAccountImportAssets';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
@@ -75,7 +80,6 @@ import type {
 // utils
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import isAccountKnown from '@extension/utils/isAccountKnown';
 import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
 
 interface IProps {
@@ -91,10 +95,11 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const location: Location = useLocation();
+  const navigate: NavigateFunction = useNavigate();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
   const logger: ILogger = useSelectLogger();
   const network: INetwork | null = useSelectSelectedNetwork();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
@@ -119,10 +124,6 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   // states
   const [address, setAddress] = useState<string | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
-  // misc
-  const isAccountAlreadyKnown: boolean = address
-    ? isAccountKnown(accounts, address)
-    : false;
   // handlers
   const handleCancelClick = () => {
     reset();
@@ -213,7 +214,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           addARC0200AssetHoldingsThunk({
             accountId: account.id,
             assets,
-            genesisHash: network?.genesisHash,
+            genesisHash: network.genesisHash,
           })
         ).unwrap();
       }
@@ -221,6 +222,15 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
       switch (error.code) {
         case ErrorCodeEnum.InvalidPasswordError:
           setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+          break;
+        case ErrorCodeEnum.PrivateKeyAlreadyExistsError:
+          logger.debug(
+            `${ScanQRCodeModalAccountImportContent.name}#${_functionName}: account already exists, carry on`
+          );
+
+          // clean up and close
+          handleOnComplete();
 
           break;
         default:
@@ -243,9 +253,6 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
       return;
     }
 
-    // clean up and close
-    handleOnComplete();
-
     if (account) {
       dispatch(
         createNotification({
@@ -261,7 +268,23 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           type: 'success',
         })
       );
+
+      // if the page is on the account page, go to the new account
+      if (location.pathname.includes(ACCOUNTS_ROUTE)) {
+        navigate(
+          `${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
+            account.publicKey
+          )}`,
+          {
+            preventScrollReset: true,
+            replace: true,
+          }
+        );
+      }
     }
+
+    // clean up and close
+    handleOnComplete();
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -278,57 +301,6 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
     resetPassword();
     resetAccountImportAssets();
     setSaving(false);
-  };
-  // renders
-  const renderFooter = () => {
-    // only show cancel button if the account has been added
-    if (isAccountAlreadyKnown) {
-      return (
-        <Button onClick={handleCancelClick} size="lg" variant="solid" w="full">
-          {t<string>('buttons.cancel')}
-        </Button>
-      );
-    }
-
-    return (
-      <VStack alignItems="flex-start" spacing={4} w="full">
-        {!settings.security.enablePasswordLock && !passwordLockPassword && (
-          <PasswordInput
-            error={passwordError}
-            hint={t<string>('captions.mustEnterPasswordToImportAccount')}
-            onChange={onPasswordChange}
-            onKeyUp={handleKeyUpPasswordInput}
-            inputRef={passwordInputRef}
-            value={password}
-          />
-        )}
-
-        <HStack spacing={4} w="full">
-          {/*cancel button*/}
-          <Button
-            onClick={handleCancelClick}
-            size="lg"
-            variant="outline"
-            w="full"
-          >
-            {t<string>('buttons.cancel')}
-          </Button>
-
-          {/*import button*/}
-          {!isAccountAlreadyKnown && (
-            <Button
-              isLoading={saving}
-              onClick={handleImportClick}
-              size="lg"
-              variant="solid"
-              w="full"
-            >
-              {t<string>('buttons.import')}
-            </Button>
-          )}
-        </HStack>
-      </VStack>
-    );
   };
 
   useEffect(() => {
@@ -374,9 +346,6 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
                 value={ellipseAddress(address, {
                   end: 10,
                   start: 10,
-                })}
-                {...(isAccountAlreadyKnown && {
-                  warningLabel: t<string>('captions.accountAlreadyAdded'),
                 })}
               />
             )}
@@ -433,7 +402,43 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
       </ModalBody>
 
       {/*footer*/}
-      <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
+      <ModalFooter p={DEFAULT_GAP}>
+        <VStack alignItems="flex-start" spacing={4} w="full">
+          {!settings.security.enablePasswordLock && !passwordLockPassword && (
+            <PasswordInput
+              error={passwordError}
+              hint={t<string>('captions.mustEnterPasswordToImportAccount')}
+              onChange={onPasswordChange}
+              onKeyUp={handleKeyUpPasswordInput}
+              inputRef={passwordInputRef}
+              value={password}
+            />
+          )}
+
+          <HStack spacing={4} w="full">
+            {/*cancel button*/}
+            <Button
+              onClick={handleCancelClick}
+              size="lg"
+              variant="outline"
+              w="full"
+            >
+              {t<string>('buttons.cancel')}
+            </Button>
+
+            {/*import button*/}
+            <Button
+              isLoading={loading || saving}
+              onClick={handleImportClick}
+              size="lg"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.import')}
+            </Button>
+          </HStack>
+        </VStack>
+      </ModalFooter>
     </>
   );
 };

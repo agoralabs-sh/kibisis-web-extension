@@ -95,6 +95,7 @@ const translation: IResourceLanguage = {
     importAccount: 'You are about to import the following account.',
     importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
     importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
+    importingAccount: 'Importing new account and adding assets.',
     importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
     initializingWalletConnect:
       'Putting the final touches into your WalletConnect interface.',
