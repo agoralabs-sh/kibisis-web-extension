@@ -1,3 +1,10 @@
+# [1.12.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.3...v1.12.0-beta.4) (2024-02-12)
+
+
+### Features
+
+* automatically add the first account on the enable modal ([#170](https://github.com/agoralabs-sh/kibisis-web-extension/issues/170)) ([b64d9f1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b64d9f18909442f931686b16d75581c9579aacc8))
+
 # [1.12.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.2...v1.12.0-beta.3) (2024-02-12)
 
 
