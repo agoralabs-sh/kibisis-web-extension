@@ -20,7 +20,7 @@ import type { IUpdateARC0200AssetHoldingsPayload } from '../types';
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
-const removeARC0200AssetHoldingThunk: AsyncThunk<
+const removeARC0200AssetHoldingsThunk: AsyncThunk<
   IAccount | null, // return
   IUpdateARC0200AssetHoldingsPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
@@ -30,7 +30,7 @@ const removeARC0200AssetHoldingThunk: AsyncThunk<
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   AccountsThunkEnum.RemoveARC0200AssetHolding,
-  async ({ accountId, appId, genesisHash }, { getState }) => {
+  async ({ accountId, assets, genesisHash }, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetwork[] = getState().networks.items;
     const accounts: IAccount[] = getState().accounts.items;
@@ -66,23 +66,6 @@ const removeARC0200AssetHoldingThunk: AsyncThunk<
     currentAccountInformation =
       account.networkInformation[encodedGenesisHash] ||
       AccountService.initializeDefaultAccountInformation();
-
-    if (
-      !currentAccountInformation.arc200AssetHoldings.find(
-        (value) => value.id === appId
-      )
-    ) {
-      logger.debug(
-        `${AccountsThunkEnum.RemoveARC0200AssetHolding}: arc200 asset "${appId}" has already been removed, ignoring`
-      );
-
-      return null;
-    }
-
-    logger.debug(
-      `${AccountsThunkEnum.RemoveARC0200AssetHolding}: removing arc200 asset "${appId}" from account "${account.id}"`
-    );
-
     accountService = new AccountService({
       logger,
     });
@@ -90,11 +73,12 @@ const removeARC0200AssetHoldingThunk: AsyncThunk<
       ...account,
       networkInformation: {
         ...account.networkInformation,
-        [convertGenesisHashToHex(network.genesisHash).toUpperCase()]: {
+        [encodedGenesisHash]: {
           ...currentAccountInformation,
           arc200AssetHoldings:
             currentAccountInformation.arc200AssetHoldings.filter(
-              (value) => value.id !== appId
+              (assetHolding) =>
+                !assets.find((value) => value.id === assetHolding.id) // filter the assets holdings that are not in the assets to be removed
             ),
         },
       },
@@ -111,4 +95,4 @@ const removeARC0200AssetHoldingThunk: AsyncThunk<
   }
 );
 
-export default removeARC0200AssetHoldingThunk;
+export default removeARC0200AssetHoldingsThunk;
