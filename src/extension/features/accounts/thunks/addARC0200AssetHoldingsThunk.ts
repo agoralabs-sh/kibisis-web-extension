@@ -17,26 +17,27 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAccountInformation,
+  IARC0200AssetHolding,
   IBaseAsyncThunkConfig,
   IMainRootState,
   INetwork,
 } from '@extension/types';
-import type { IUpdateARC0200AssetHoldingPayload } from '../types';
+import type { IUpdateARC0200AssetHoldingsPayload } from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
-const addARC0200AssetHoldingThunk: AsyncThunk<
+const addARC0200AssetHoldingsThunk: AsyncThunk<
   IAccount | null, // return
-  IUpdateARC0200AssetHoldingPayload, // args
+  IUpdateARC0200AssetHoldingsPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IAccount | null,
-  IUpdateARC0200AssetHoldingPayload,
+  IUpdateARC0200AssetHoldingsPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   AccountsThunkEnum.AddARC0200AssetHolding,
-  async ({ accountId, appId, genesisHash }, { getState }) => {
+  async ({ accountId, assets, genesisHash }, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetwork[] = getState().networks.items;
     const accounts: IAccount[] = getState().accounts.items;
@@ -46,6 +47,7 @@ const addARC0200AssetHoldingThunk: AsyncThunk<
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
     let network: INetwork | null;
+    let newAssetHoldings: IARC0200AssetHolding[] = [];
 
     if (!account) {
       logger.debug(
@@ -72,22 +74,18 @@ const addARC0200AssetHoldingThunk: AsyncThunk<
     currentAccountInformation =
       account.networkInformation[encodedGenesisHash] ||
       AccountService.initializeDefaultAccountInformation();
-
-    if (
-      currentAccountInformation.arc200AssetHoldings.find(
-        (value) => value.id === appId
+    newAssetHoldings = assets
+      .filter(
+        (asset) =>
+          !currentAccountInformation.arc200AssetHoldings.find(
+            (value) => value.id === asset.id
+          )
       )
-    ) {
-      logger.debug(
-        `${AccountsThunkEnum.AddARC0200AssetHolding}: arc200 asset "${appId}" has already been added, ignoring`
-      );
-
-      return null;
-    }
-
-    logger.debug(
-      `${AccountsThunkEnum.AddARC0200AssetHolding}: adding arc200 asset "${appId}" to account "${account.id}"`
-    );
+      .map((value) => ({
+        amount: '0',
+        id: value.id,
+        type: AssetTypeEnum.ARC0200,
+      }));
 
     accountService = new AccountService({
       logger,
@@ -96,27 +94,22 @@ const addARC0200AssetHoldingThunk: AsyncThunk<
       ...account,
       networkInformation: {
         ...account.networkInformation,
-        [convertGenesisHashToHex(network.genesisHash).toUpperCase()]:
-          await updateAccountInformation({
-            address: AccountService.convertPublicKeyToAlgorandAddress(
-              account.publicKey
-            ),
-            currentAccountInformation: {
-              ...currentAccountInformation,
-              arc200AssetHoldings: [
-                ...currentAccountInformation.arc200AssetHoldings,
-                {
-                  amount: '0',
-                  id: appId,
-                  type: AssetTypeEnum.ARC0200,
-                },
-              ],
-            },
-            delay: NODE_REQUEST_DELAY,
-            forceUpdate: true,
-            logger,
-            network,
-          }),
+        [encodedGenesisHash]: await updateAccountInformation({
+          address: AccountService.convertPublicKeyToAlgorandAddress(
+            account.publicKey
+          ),
+          currentAccountInformation: {
+            ...currentAccountInformation,
+            arc200AssetHoldings: [
+              ...currentAccountInformation.arc200AssetHoldings,
+              ...newAssetHoldings,
+            ],
+          },
+          delay: NODE_REQUEST_DELAY,
+          forceUpdate: true,
+          logger,
+          network,
+        }),
       },
     };
 
@@ -131,4 +124,4 @@ const addARC0200AssetHoldingThunk: AsyncThunk<
   }
 );
 
-export default addARC0200AssetHoldingThunk;
+export default addARC0200AssetHoldingsThunk;

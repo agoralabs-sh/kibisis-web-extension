@@ -1,6 +1,5 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { encode as encodeHex } from '@stablelib/hex';
-import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
 
 // errors
@@ -35,12 +34,9 @@ const saveNewAccountThunk: AsyncThunk<
   IAsyncThunkConfigWithRejectValue
 >(
   AccountsThunkEnum.SaveNewAccount,
-  async (
-    { name, password, privateKey },
-    { dispatch, getState, rejectWithValue }
-  ) => {
+  async ({ name, password, privateKey }, { getState, rejectWithValue }) => {
     const encodedPublicKey: string = encodeHex(
-      sign.keyPair.fromSecretKey(privateKey).publicKey
+      PrivateKeyService.extractPublicKeyFromPrivateKey(privateKey)
     ).toUpperCase();
     const logger: ILogger = getState().system.logger;
     let account: IAccount;

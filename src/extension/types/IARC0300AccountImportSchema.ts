@@ -9,6 +9,7 @@ import {
 import type IARC0300BaseSchema from './IARC0300BaseSchema';
 
 interface IARC0300AccountImportQuery {
+  [ARC0300QueryEnum.Asset]: string[];
   [ARC0300QueryEnum.Encoding]: ARC0300EncodingEnum;
   [ARC0300QueryEnum.PrivateKey]: string;
 }

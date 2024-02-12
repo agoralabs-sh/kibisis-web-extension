@@ -9,7 +9,6 @@ export { default as useSelectAddAssetAccount } from './useSelectAddAssetAccount'
 export { default as useSelectAddAssetFetching } from './useSelectAddAssetFetching';
 export { default as useSelectAddAssetSelectedAsset } from './useSelectAddAssetSelectedAsset';
 export { default as useSelectAddAssetStandardAssets } from './useSelectAddAssetStandardAssets';
-export { default as useSelectARC0200AssetsBySelectedNetwork } from './useSelectARC0200AssetsBySelectedNetwork';
 export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConfirm } from './useSelectConfirm';
 export { default as useSelectDebugLogging } from './useSelectDebugLogging';
@@ -48,4 +47,5 @@ export { default as useSelectUpdatingArc200Assets } from './useSelectUpdatingArc
 export { default as useSelectUpdatingStandardAssets } from './useSelectUpdatingStandardAssets';
 export { default as useSelectWalletConnectModalOpen } from './useSelectWalletConnectModalOpen';
 export { default as useSelectWeb3Wallet } from './useSelectWeb3Wallet';
+export * from './arc-0200-assets';
 export * from './send-assets';

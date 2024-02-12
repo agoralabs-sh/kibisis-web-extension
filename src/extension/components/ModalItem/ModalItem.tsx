@@ -1,18 +1,19 @@
-import { Code, HStack, Text, Tooltip } from '@chakra-ui/react';
+import { HStack, Text, Tooltip } from '@chakra-ui/react';
 import React, { FC } from 'react';
+
+// components
+import WarningIcon from '@extension/components/WarningIcon';
 
 // constants
 import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import WarningIcon from '@extension/components/WarningIcon';
 
 // types
 import { IProps } from './types';
 
-const ModalTextItem: FC<IProps> = ({
-  isCode = false,
+const ModalItem: FC<IProps> = ({
   label,
   tooltipLabel,
   value,
@@ -21,22 +22,6 @@ const ModalTextItem: FC<IProps> = ({
 }: IProps) => {
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  // renders
-  const renderValue = () => {
-    if (isCode) {
-      return (
-        <Code borderRadius="md" fontSize="xs" wordBreak="break-word">
-          {value}
-        </Code>
-      );
-    }
-
-    return (
-      <Text color={defaultTextColor} fontSize="xs">
-        {value}
-      </Text>
-    );
-  };
 
   return (
     <HStack
@@ -59,10 +44,10 @@ const ModalTextItem: FC<IProps> = ({
             aria-label={`A tooltip displaying the label ${tooltipLabel}`}
             label={tooltipLabel}
           >
-            {renderValue()}
+            {value}
           </Tooltip>
         ) : (
-          renderValue()
+          value
         )}
 
         {/*warning*/}
@@ -72,4 +57,4 @@ const ModalTextItem: FC<IProps> = ({
   );
 };
 
-export default ModalTextItem;
+export default ModalItem;

@@ -35,7 +35,7 @@ import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
 import { AssetTypeEnum } from '@extension/enums';
 
 // features
-import { removeARC0200AssetHoldingThunk } from '@extension/features/accounts';
+import { removeARC0200AssetHoldingsThunk } from '@extension/features/accounts';
 import { initializeSendAsset } from '@extension/features/send-assets';
 import { setConfirm } from '@extension/features/system';
 
@@ -132,9 +132,9 @@ const AssetPage: FC = () => {
         onConfirm: () => {
           // remove the asset
           dispatch(
-            removeARC0200AssetHoldingThunk({
+            removeARC0200AssetHoldingsThunk({
               accountId: account.id,
-              appId: asset.id,
+              assets: [asset],
               genesisHash: selectedNetwork.genesisHash,
             })
           );

@@ -1,7 +1,7 @@
-export { default as addARC0200AssetHoldingThunk } from './addARC0200AssetHoldingThunk';
+export { default as addARC0200AssetHoldingsThunk } from './addARC0200AssetHoldingsThunk';
 export { default as fetchAccountsFromStorageThunk } from './fetchAccountsFromStorageThunk';
 export { default as removeAccountByIdThunk } from './removeAccountByIdThunk';
-export { default as removeARC0200AssetHoldingThunk } from './removeARC0200AssetHoldingThunk';
+export { default as removeARC0200AssetHoldingsThunk } from './removeARC0200AssetHoldingsThunk';
 export { default as saveAccountNameThunk } from './saveAccountNameThunk';
 export { default as saveNewAccountThunk } from './saveNewAccountThunk';
 export { default as startPollingForAccountsThunk } from './startPollingForAccountsThunk';

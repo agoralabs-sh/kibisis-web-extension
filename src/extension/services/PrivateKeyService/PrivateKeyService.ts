@@ -40,6 +40,31 @@ export default class PrivateKeyService {
   }
 
   /**
+   * public static functions
+   */
+
+  /**
+   * Convenience that extracts the raw public key from a public key.
+   * @param {Uint8Array} privateKey - the raw private key.
+   * @returns {Uint8Array} the public key for the supplied private key.
+   * @throws {MalformedDataError} If the private key is the incorrect format (should have been created using
+   * {@link http://ed25519.cr.yp.to/ ed25519}).
+   */
+  public static extractPublicKeyFromPrivateKey(
+    privateKey: Uint8Array
+  ): Uint8Array {
+    let keyPair: SignKeyPair;
+
+    try {
+      keyPair = sign.keyPair.fromSecretKey(privateKey);
+
+      return keyPair.publicKey;
+    } catch (error) {
+      throw new MalformedDataError(error.message);
+    }
+  }
+
+  /**
    * private functions
    */
 
@@ -328,7 +353,7 @@ export default class PrivateKeyService {
    * @param {string} password - the password used to initialize the private key storage.
    * @returns {IPrivateKey | null} the initialized private key item.
    * @throws {InvalidPasswordError} If the password is invalid.
-   * @throws {MalformedDataError} If there the private key is the incorrect format (should have been created using
+   * @throws {MalformedDataError} iIf the private key is the incorrect format (should have been created using
    * {@link http://ed25519.cr.yp.to/ ed25519}).
    * @throws {EncryptionError} If there was a problem with the encryption or the private key is invalid.
    */
@@ -340,7 +365,6 @@ export default class PrivateKeyService {
     const isPasswordValid: boolean = await this.verifyPassword(password);
     let encodedPublicKey: string;
     let encryptedPrivateKey: Uint8Array;
-    let keyPair: SignKeyPair;
     let now: Date;
     let passwordTag: IPasswordTag | null;
     let privateKeyItem: IPrivateKey | null;
@@ -354,17 +378,9 @@ export default class PrivateKeyService {
       throw new InvalidPasswordError();
     }
 
-    try {
-      keyPair = sign.keyPair.fromSecretKey(privateKey);
-    } catch (error) {
-      this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): ${error.message}`
-      );
-
-      throw new MalformedDataError(error.message);
-    }
-
-    encodedPublicKey = encodeHex(keyPair.publicKey);
+    encodedPublicKey = encodeHex(
+      PrivateKeyService.extractPublicKeyFromPrivateKey(privateKey)
+    );
 
     this.logger?.debug(
       `${PrivateKeyService.name}#${_functionName}(): encrypting private key for public key "${encodedPublicKey}"`
