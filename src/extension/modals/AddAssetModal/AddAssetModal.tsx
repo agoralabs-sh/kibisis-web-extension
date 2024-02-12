@@ -47,7 +47,7 @@ import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 
 // features
 import {
-  addARC0200AssetHoldingThunk,
+  addARC0200AssetHoldingsThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import {
@@ -173,9 +173,9 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     try {
       updatedAccount = await dispatch(
-        addARC0200AssetHoldingThunk({
+        addARC0200AssetHoldingsThunk({
           accountId: account.id,
-          appId: selectedAsset.id,
+          assets: [selectedAsset],
           genesisHash: selectedNetwork.genesisHash,
         })
       ).unwrap();

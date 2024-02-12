@@ -26,6 +26,7 @@ import Button from '@extension/components/Button';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
+import ModalSubHeading from '@extension/components/ModalSubHeading';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
@@ -34,14 +35,13 @@ import PasswordInput, {
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import {
-  ARC0300QueryEnum,
-  AssetTypeEnum,
-  ErrorCodeEnum,
-} from '@extension/enums';
+import { ErrorCodeEnum } from '@extension/enums';
 
 // features
-import { saveNewAccountThunk } from '@extension/features/accounts';
+import {
+  addARC0200AssetHoldingsThunk,
+  saveNewAccountThunk,
+} from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
@@ -101,7 +101,11 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   const settings: ISettings = useSelectSettings();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const { assets, loading } = useAccountImportAssets(schema);
+  const {
+    assets,
+    loading,
+    reset: resetAccountImportAssets,
+  } = useAccountImportAssets(schema);
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -127,7 +131,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   const handleImportClick = async () => {
     const _functionName: string = 'handleImportClick';
     let _password: string | null;
-    let account: IAccount;
+    let account: IAccount | null;
     let privateKey: Uint8Array | null;
 
     // if there is no password lock
@@ -202,6 +206,17 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           privateKey,
         })
       ).unwrap();
+
+      // if there are assets, add them to the new account
+      if (assets.length > 0 && network) {
+        account = await dispatch(
+          addARC0200AssetHoldingsThunk({
+            accountId: account.id,
+            assets,
+            genesisHash: network?.genesisHash,
+          })
+        ).unwrap();
+      }
     } catch (error) {
       switch (error.code) {
         case ErrorCodeEnum.InvalidPasswordError:
@@ -228,21 +243,25 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
       return;
     }
 
-    dispatch(
-      createNotification({
-        ephemeral: true,
-        description: t<string>('captions.addedAccount', {
-          address: ellipseAddress(
-            AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
-          ),
-        }),
-        title: t<string>('headings.addedAccount'),
-        type: 'success',
-      })
-    );
-
     // clean up and close
     handleOnComplete();
+
+    if (account) {
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          description: t<string>('captions.addedAccount', {
+            address: ellipseAddress(
+              AccountService.convertPublicKeyToAlgorandAddress(
+                account.publicKey
+              )
+            ),
+          }),
+          title: t<string>('headings.addedAccount'),
+          type: 'success',
+        })
+      );
+    }
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -257,54 +276,10 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   };
   const reset = () => {
     resetPassword();
+    resetAccountImportAssets();
     setSaving(false);
   };
   // renders
-  const renderAssets = () => {
-    if (loading) {
-      return (
-        <VStack spacing={2} w="full">
-          <ModalSkeletonItem />
-          <ModalSkeletonItem />
-          <ModalSkeletonItem />
-        </VStack>
-      );
-    }
-
-    return assets.map((value, index) => (
-      <ModalItem
-        key={`account-import-add-asset-${index}`}
-        label={`${value.name}:`}
-        value={
-          <HStack spacing={2}>
-            {/*icon*/}
-            <AssetAvatar
-              asset={value}
-              fallbackIcon={
-                <AssetIcon
-                  color={primaryButtonTextColor}
-                  h={3}
-                  w={3}
-                  {...(network && {
-                    networkTheme: network.chakraTheme,
-                  })}
-                />
-              }
-              size="xs"
-            />
-
-            {/*symbol*/}
-            <Text color={subTextColor} fontSize="xs">
-              {value.symbol}
-            </Text>
-
-            {/*type*/}
-            <AssetBadge size="xs" type={value.type} />
-          </HStack>
-        }
-      />
-    ));
-  };
   const renderFooter = () => {
     // only show cancel button if the account has been added
     if (isAccountAlreadyKnown) {
@@ -368,7 +343,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
     if (privateKey) {
       setAddress(convertPrivateKeyToAddress(privateKey));
     }
-  }, [schema]);
+  }, []);
 
   return (
     <>
@@ -387,14 +362,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           </Text>
 
           <VStack spacing={2} w="full">
-            <Text
-              color={defaultTextColor}
-              fontSize="sm"
-              textAlign="left"
-              w="full"
-            >
-              {t<string>('labels.account')}
-            </Text>
+            <ModalSubHeading text={t<string>('labels.account')} />
 
             {/*address*/}
             {!address ? (
@@ -415,18 +383,50 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           </VStack>
 
           {/*assets*/}
-          {schema.query[ARC0300QueryEnum.Asset].length > 0 && (
+          {loading && (
             <VStack spacing={2} w="full">
-              <Text
-                color={defaultTextColor}
-                fontSize="sm"
-                textAlign="left"
-                w="full"
-              >
-                {t<string>('labels.assets')}
-              </Text>
+              <ModalSkeletonItem />
+              <ModalSkeletonItem />
+              <ModalSkeletonItem />
+            </VStack>
+          )}
+          {assets.length > 0 && !loading && (
+            <VStack spacing={2} w="full">
+              <ModalSubHeading text={t<string>('labels.assets')} />
 
-              {renderAssets()}
+              {assets.map((value, index) => (
+                <ModalItem
+                  key={`account-import-add-asset-${index}`}
+                  label={`${value.name}:`}
+                  value={
+                    <HStack spacing={2}>
+                      {/*icon*/}
+                      <AssetAvatar
+                        asset={value}
+                        fallbackIcon={
+                          <AssetIcon
+                            color={primaryButtonTextColor}
+                            h={3}
+                            w={3}
+                            {...(network && {
+                              networkTheme: network.chakraTheme,
+                            })}
+                          />
+                        }
+                        size="xs"
+                      />
+
+                      {/*symbol*/}
+                      <Text color={subTextColor} fontSize="xs">
+                        {value.symbol}
+                      </Text>
+
+                      {/*type*/}
+                      <AssetBadge size="xs" type={value.type} />
+                    </HStack>
+                  }
+                />
+              ))}
             </VStack>
           )}
         </VStack>

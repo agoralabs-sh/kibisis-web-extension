@@ -15,18 +15,18 @@ import type {
   IMainRootState,
   INetwork,
 } from '@extension/types';
-import type { IUpdateARC0200AssetHoldingPayload } from '../types';
+import type { IUpdateARC0200AssetHoldingsPayload } from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const removeARC0200AssetHoldingThunk: AsyncThunk<
   IAccount | null, // return
-  IUpdateARC0200AssetHoldingPayload, // args
+  IUpdateARC0200AssetHoldingsPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IAccount | null,
-  IUpdateARC0200AssetHoldingPayload,
+  IUpdateARC0200AssetHoldingsPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   AccountsThunkEnum.RemoveARC0200AssetHolding,

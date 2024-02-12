@@ -76,14 +76,14 @@ const updateARC0200AssetInformationThunk: AsyncThunk<
     );
 
     // update the storage with the new asset information
-    currentAssets = await assetService.saveByGenesisHash(
+    await assetService.saveByGenesisHash(
       network.genesisHash,
       upsertItemsById<IARC0200Asset>(currentAssets, updatedAssets)
     );
 
     return {
       network,
-      arc200Assets: currentAssets,
+      arc200Assets: updatedAssets,
     };
   }
 );

@@ -1,4 +1,4 @@
-export { default as addARC0200AssetHoldingThunk } from './addARC0200AssetHoldingThunk';
+export { default as addARC0200AssetHoldingsThunk } from './addARC0200AssetHoldingsThunk';
 export { default as fetchAccountsFromStorageThunk } from './fetchAccountsFromStorageThunk';
 export { default as removeAccountByIdThunk } from './removeAccountByIdThunk';
 export { default as removeARC0200AssetHoldingThunk } from './removeARC0200AssetHoldingThunk';

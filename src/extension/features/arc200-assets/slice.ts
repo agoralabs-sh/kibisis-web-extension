@@ -19,6 +19,7 @@ import {
 // utils
 import { getInitialState } from './utils';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import upsertItemsById from '@extension/utils/upsertItemsById';
 
 const slice = createSlice({
   extraReducers: (builder) => {
@@ -52,11 +53,19 @@ const slice = createSlice({
         state: IARC0200AssetsState,
         action: PayloadAction<IUpdateARC0200AssetInformationResult>
       ) => {
+        const encodedGenesisHash: string = convertGenesisHashToHex(
+          action.payload.network.genesisHash
+        ).toUpperCase();
+        const currentARC0200Assets: IARC0200Asset[] = state.items
+          ? state.items[encodedGenesisHash]
+          : [];
+
         state.items = {
           ...state.items,
-          [convertGenesisHashToHex(
-            action.payload.network.genesisHash
-          ).toUpperCase()]: action.payload.arc200Assets,
+          [encodedGenesisHash]: upsertItemsById<IARC0200Asset>(
+            currentARC0200Assets,
+            action.payload.arc200Assets
+          ),
         };
         state.updating = false;
       }

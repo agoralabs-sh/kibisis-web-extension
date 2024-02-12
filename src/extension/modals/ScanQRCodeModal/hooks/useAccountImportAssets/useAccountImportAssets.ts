@@ -1,52 +1,84 @@
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 // enums
 import { ARC0300QueryEnum } from '@extension/enums';
 
+// features
+import { updateARC0200AssetInformationThunk } from '@extension/features/arc200-assets';
+
 // selectors
-import { useSelectARC0200AssetsBySelectedNetwork } from '@extension/selectors';
+import {
+  useSelectARC0200AssetsBySelectedNetwork,
+  useSelectSelectedNetwork,
+} from '@extension/selectors';
 
 // types
 import type {
+  IAppThunkDispatch,
   IARC0200Asset,
   IARC0300AccountImportSchema,
+  INetwork,
 } from '@extension/types';
 import type { IUseAccountImportAssets } from './types';
 
 export default function useAccountImportAssets(
   schema: IARC0300AccountImportSchema
 ): IUseAccountImportAssets {
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const arc0200Assets: IARC0200Asset[] =
     useSelectARC0200AssetsBySelectedNetwork();
+  const network: INetwork | null = useSelectSelectedNetwork();
   // states
   const [assets, setAssets] = useState<IARC0200Asset[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const reset = () => {
+    setAssets([]);
+    setLoading(false);
+  };
 
   useEffect(() => {
     (async () => {
-      const _assets: IARC0200Asset[] = [];
+      const unknownAssets: string[] = [];
+      let knownAssets: IARC0200Asset[] = [];
 
-      // iterate all the assets to add, and check if they are the types of assets that can be added
-      for (const appId of schema.query[ARC0300QueryEnum.Asset]) {
+      setLoading(true);
+
+      // iterate all the assets to add, and check if they are known arc-0200 assets
+      schema.query[ARC0300QueryEnum.Asset].forEach((appId) => {
         const asset: IARC0200Asset | null =
           arc0200Assets.find((value) => value.id === appId) || null;
 
+        // if the asset is known added
         if (asset) {
-          _assets.push(asset);
-
-          continue;
+          return knownAssets.push(asset);
         }
 
-        // TODO: attempt to fetch the asset
+        // ...otherwise, we need to check the network if it is an arc-0200
+        return unknownAssets.push(appId);
+      });
+
+      // for the unknown assets, attempt to fetch their information, if they are not arc-0200 they will be filtered out
+      if (network) {
+        const { arc200Assets: newAssets } = await dispatch(
+          updateARC0200AssetInformationThunk({
+            ids: unknownAssets,
+            network,
+          })
+        ).unwrap();
+
+        knownAssets = [...knownAssets, ...newAssets];
       }
 
-      setAssets(_assets);
+      setAssets(knownAssets);
+      setLoading(false);
     })();
-  }, [schema]);
+  }, []);
 
   return {
     assets,
     loading,
+    reset,
   };
 }
