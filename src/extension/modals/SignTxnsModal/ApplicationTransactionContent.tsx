@@ -31,7 +31,7 @@ import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
   condensed?: ICondensedProps;
-  explorer: IExplorer;
+  explorer: IExplorer | null;
   network: INetwork;
   transaction: Transaction;
 }

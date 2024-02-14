@@ -1,22 +1,14 @@
 import { encode as encodeHex } from '@stablelib/hex';
-import { encodeAddress, Transaction } from 'algosdk';
+import { Transaction } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import ApplicationTransactionContent from './ApplicationTransactionContent';
-import AssetConfigTransactionContent from './AssetConfigTransactionContent';
-import AssetCreateTransactionContent from './AssetCreateTransactionContent';
-import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
-import AssetTransferTransactionContent from './AssetTransferTransactionContent';
-import KeyRegistrationTransactionContent from './KeyRegistrationTransactionContent';
+// components
 import MultipleTransactionsContent from './MultipleTransactionsContent';
-import PaymentTransactionContent from './PaymentTransactionContent';
+import SingleTransactionContent from './SingleTransactionContent';
 
 // constants
 import { NODE_REQUEST_DELAY } from '@extension/constants';
-
-// enums
-import { TransactionTypeEnum } from '@extension/enums';
 
 // features
 import { updateAccountInformation } from '@extension/features/accounts';
@@ -42,22 +34,16 @@ import {
   IAppThunkDispatch,
   IStandardAsset,
   IExplorer,
-  INetwork,
 } from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
-  network: INetwork;
   transactions: Transaction[];
 }
 
-const SignTxnsModalContent: FC<IProps> = ({
-  network,
-  transactions,
-}: IProps) => {
+const SignTxnsModalContent: FC<IProps> = ({ transactions }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
@@ -75,10 +61,6 @@ const SignTxnsModalContent: FC<IProps> = ({
     network.explorers.find((value) => value.id === preferredExplorer?.id) ||
     network.explorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  let singleTransaction: Transaction | null;
-  let singleTransactionAsset: IStandardAsset | null;
-  let singleTransactionFromAccount: IAccount | null;
-  let singleTransactionType: TransactionTypeEnum;
 
   // fetch unknown asset information
   useEffect(() => {
@@ -176,98 +158,7 @@ const SignTxnsModalContent: FC<IProps> = ({
     );
   }
 
-  singleTransaction = transactions[0];
-
-  if (singleTransaction) {
-    singleTransactionAsset =
-      standardAssets.find(
-        (value) => value.id === String(singleTransaction?.assetIndex)
-      ) || null;
-    singleTransactionFromAccount = fromAccounts[0] || null;
-    singleTransactionType = parseTransactionType(
-      singleTransaction.get_obj_for_encoding(),
-      {
-        network,
-        sender: singleTransactionFromAccount,
-      }
-    );
-
-    switch (singleTransaction.type) {
-      case 'acfg':
-        if (singleTransactionType === TransactionTypeEnum.AssetCreate) {
-          return (
-            <AssetCreateTransactionContent
-              fromAccount={singleTransactionFromAccount}
-              loading={fetchingAccountInformation}
-              network={network}
-              transaction={singleTransaction}
-            />
-          );
-        }
-
-        return (
-          <AssetConfigTransactionContent
-            asset={singleTransactionAsset}
-            explorer={explorer}
-            fromAccount={singleTransactionFromAccount}
-            loading={fetchingAccountInformation || updatingStandardAssets}
-            network={network}
-            transaction={singleTransaction}
-          />
-        );
-      case 'afrz':
-        return (
-          <AssetFreezeTransactionContent
-            asset={singleTransactionAsset}
-            explorer={explorer}
-            fromAccount={singleTransactionFromAccount}
-            loading={fetchingAccountInformation || updatingStandardAssets}
-            network={network}
-            transaction={singleTransaction}
-          />
-        );
-      case 'appl':
-        return (
-          <ApplicationTransactionContent
-            explorer={explorer}
-            network={network}
-            transaction={singleTransaction}
-          />
-        );
-      case 'axfer':
-        return (
-          <AssetTransferTransactionContent
-            asset={singleTransactionAsset}
-            explorer={explorer}
-            fromAccount={singleTransactionFromAccount}
-            loading={fetchingAccountInformation || updatingStandardAssets}
-            network={network}
-            transaction={singleTransaction}
-          />
-        );
-      case 'keyreg':
-        return (
-          <KeyRegistrationTransactionContent
-            fromAccount={singleTransactionFromAccount}
-            network={network}
-            transaction={singleTransaction}
-          />
-        );
-      case 'pay':
-        return (
-          <PaymentTransactionContent
-            fromAccount={singleTransactionFromAccount}
-            loading={fetchingAccountInformation}
-            network={network}
-            transaction={singleTransaction}
-          />
-        );
-      default:
-        break;
-    }
-  }
-
-  return null;
+  return <SingleTransactionContent transaction={transactions[0]} />;
 };
 
 export default SignTxnsModalContent;

@@ -79,13 +79,12 @@ import type {
 } from '@extension/types';
 
 // utils
-import computeGroupId from '@common/utils/computeGroupId';
-import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
+import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import isNetworkSupported from '@extension/utils/isNetworkSupported';
-import verifyTransactionGroupId from '@extension/utils/verifyTransactionGroupId';
+import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
 
 export default class BackgroundMessageHandler {
   // private variables
@@ -181,7 +180,7 @@ export default class BackgroundMessageHandler {
         ))
       ) {
         this.logger?.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): genesis hash "${message.params.genesisHash}" is not supported`
+          `${BackgroundMessageHandler.name}#${_functionName}: genesis hash "${message.params.genesisHash}" is not supported`
         );
 
         // send the response to the web page (via the content script)
@@ -189,7 +188,7 @@ export default class BackgroundMessageHandler {
           new Arc0027EnableResponseMessage(
             message.id,
             new SerializableArc0027NetworkNotSupportedError(
-              message.params.genesisHash,
+              [message.params.genesisHash],
               __PROVIDER_ID__
             ),
             null
@@ -453,12 +452,11 @@ export default class BackgroundMessageHandler {
   ): Promise<void> {
     const _functionName: string = 'handleSignTxnsRequestMessage';
     let decodedUnsignedTransactions: Transaction[];
-    let encodedComputedGroupId: string;
     let errorMessage: string;
     let filteredSessions: ISession[];
-    let genesisHash: string | null;
-    let network: INetwork | null;
+    let genesisHashes: string[];
     let supportedNetworks: INetwork[];
+    let unsupportedTransactionsByNetwork: Transaction[];
 
     if (!message.params) {
       return await this.sendResponse(
@@ -500,14 +498,11 @@ export default class BackgroundMessageHandler {
       );
     }
 
-    // validate the transaction group ids
-    if (!verifyTransactionGroupId(decodedUnsignedTransactions)) {
-      encodedComputedGroupId = encodeBase64(
-        computeGroupId(decodedUnsignedTransactions)
-      );
-      errorMessage = `the computed group id "${encodedComputedGroupId}" does not match the assigned transaction group ids [${decodedUnsignedTransactions.map(
-        (value) => `"${value.group ? encodeBase64(value.group) : 'undefined'}"`
-      )}]`;
+    console.log(decodedUnsignedTransactions);
+
+    // verify the transaction groups
+    if (!verifyTransactionGroups(decodedUnsignedTransactions)) {
+      errorMessage = `the supplied transactions are invalid and do not conform to the arc-0001 group validation, please https://arc.algorand.foundation/ARCs/arc-0001#group-validation on how to correctly build transactions`;
 
       this.logger?.debug(
         `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
@@ -518,33 +513,6 @@ export default class BackgroundMessageHandler {
         new Arc0027SignTxnsResponseMessage(
           message.id,
           new SerializableArc0027InvalidGroupIdError(
-            encodedComputedGroupId,
-            __PROVIDER_ID__,
-            errorMessage
-          ),
-          null
-        ),
-        originTabId
-      );
-    }
-
-    genesisHash = extractGenesisHashFromAtomicTransactions({
-      logger: this.logger || undefined,
-      txns: message.params.txns,
-    });
-
-    if (!genesisHash) {
-      errorMessage = `the transaction group is not atomic, they are bound for multiple networks`;
-
-      this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
-      );
-
-      // send the response to the web page
-      return await this.sendResponse(
-        new Arc0027SignTxnsResponseMessage(
-          message.id,
-          new SerializableArc0027InvalidInputError(
             __PROVIDER_ID__,
             errorMessage
           ),
@@ -555,13 +523,21 @@ export default class BackgroundMessageHandler {
     }
 
     supportedNetworks = await fetchSupportedNetworks(this.settingsService);
-    network =
-      supportedNetworks.find((value) => value.genesisHash === genesisHash) ||
-      null;
+    unsupportedTransactionsByNetwork = decodedUnsignedTransactions.filter(
+      (transaction) =>
+        supportedNetworks.every(
+          (value) => value.genesisHash !== encodeBase64(transaction.genesisHash)
+        )
+    ); // get any transaction that whose genesis hash is not supported
 
-    if (!network) {
+    // check if any transactions contain unsupported networks
+    if (unsupportedTransactionsByNetwork.length > 0) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): genesis hash "${genesisHash}" is not supported`
+        `${
+          BackgroundMessageHandler.name
+        }#${_functionName}: transactions [${unsupportedTransactionsByNetwork
+          .map((value) => `"${value.txID()}"`)
+          .join(',')}] contain genesis hashes that are not supported`
       );
 
       // send the response to the web page (via the content script)
@@ -569,7 +545,9 @@ export default class BackgroundMessageHandler {
         new Arc0027SignTxnsResponseMessage(
           message.id,
           new SerializableArc0027NetworkNotSupportedError(
-            genesisHash,
+            uniqueGenesisHashesFromTransactions(
+              unsupportedTransactionsByNetwork
+            ),
             __PROVIDER_ID__
           ),
           null
@@ -578,15 +556,19 @@ export default class BackgroundMessageHandler {
       );
     }
 
+    genesisHashes = uniqueGenesisHashesFromTransactions(
+      decodedUnsignedTransactions
+    );
     filteredSessions = await this.fetchSessions(
-      (value) =>
-        value.host === clientInfo.host && value.genesisHash === genesisHash
+      (session) =>
+        session.host === clientInfo.host &&
+        genesisHashes.some((value) => value === session.genesisHash)
     );
 
     // if the app has not been enabled
     if (filteredSessions.length <= 0) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): no sessions found for sign txns request`
+        `${BackgroundMessageHandler.name}#${_functionName}: no sessions found for sign txns request`
       );
 
       // send the response to the web page

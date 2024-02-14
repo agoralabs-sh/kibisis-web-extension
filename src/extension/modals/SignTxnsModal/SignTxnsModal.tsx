@@ -19,14 +19,12 @@ import React, {
   MutableRefObject,
   useEffect,
   useRef,
-  useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
-import ChainBadge from '@extension/components/ChainBadge';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
@@ -41,10 +39,7 @@ import { Arc0027ErrorCodeEnum, Arc0027ProviderMethodEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // errors
-import {
-  SerializableArc0027InvalidInputError,
-  SerializableArc0027MethodCanceledError,
-} from '@common/errors';
+import { SerializableArc0027MethodCanceledError } from '@common/errors';
 
 // features
 import { sendSignTxnsResponseThunk } from '@extension/features/messages';
@@ -54,16 +49,14 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
+import useAuthorizedAccounts from './hooks/useAuthorizedAccounts';
 
 // messages
 import { Arc0027SignTxnsRequestMessage } from '@common/messages';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectLogger,
-  useSelectNetworks,
-  useSelectSessions,
   useSelectSignTxnsRequest,
 } from '@extension/selectors';
 
@@ -74,19 +67,15 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAppThunkDispatch,
   IClientRequest,
-  INetwork,
-  ISession,
 } from '@extension/types';
 
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
-import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
-import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import signTxns from '@extension/utils/signTxns';
 
 interface IProps {
@@ -98,7 +87,12 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  // selectors
+  const logger: ILogger = useSelectLogger();
+  const signTxnsRequest: IClientRequest<Arc0027SignTxnsRequestMessage> | null =
+    useSelectSignTxnsRequest();
   // hooks
+  const authorizedAccounts: IAccount[] = useAuthorizedAccounts(signTxnsRequest);
   const defaultTextColor: string = useDefaultTextColor();
   const {
     error: passwordError,
@@ -110,16 +104,6 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   } = usePassword();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
-  // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const logger: ILogger = useSelectLogger();
-  const networks: INetwork[] = useSelectNetworks();
-  const sessions: ISession[] = useSelectSessions();
-  const signTxnsRequest: IClientRequest<Arc0027SignTxnsRequestMessage> | null =
-    useSelectSignTxnsRequest();
-  // state
-  const [network, setNetwork] = useState<INetwork | null>(null);
-  const [authorizedAccounts, setAuthorizedAccounts] = useState<IAccount[]>([]);
   // handlers
   const handleCancelClick = () => {
     if (signTxnsRequest) {
@@ -220,7 +204,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   const renderContent = () => {
     let decodedTransactions: Transaction[];
 
-    if (!signTxnsRequest || !signTxnsRequest.originMessage.params || !network) {
+    if (!signTxnsRequest || !signTxnsRequest.originMessage.params) {
       return <VStack spacing={4} w="full"></VStack>;
     }
 
@@ -228,15 +212,10 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
     );
 
-    return (
-      <SignTxnsModalContent
-        network={network}
-        transactions={decodedTransactions}
-      />
-    );
+    return <SignTxnsModalContent transactions={decodedTransactions} />;
   };
   const renderHeader = () => {
-    if (!signTxnsRequest || !signTxnsRequest.originMessage.params || !network) {
+    if (!signTxnsRequest || !signTxnsRequest.originMessage.params) {
       return <SignTxnsHeaderSkeleton />;
     }
 
@@ -273,9 +252,6 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           </Text>
         </Box>
 
-        {/*network*/}
-        <ChainBadge network={network} />
-
         {/*caption*/}
         <Text color={subTextColor} fontSize="md" textAlign="center">
           {t<string>(
@@ -294,65 +270,6 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       passwordInputRef.current.focus();
     }
   }, []);
-  useEffect(() => {
-    let authorizedAddresses: string[];
-    let filteredSessions: ISession[];
-    let genesisHash: string | null;
-
-    if (signTxnsRequest && signTxnsRequest.originMessage.params) {
-      if (signTxnsRequest.originMessage.params) {
-        genesisHash = extractGenesisHashFromAtomicTransactions({
-          logger,
-          txns: signTxnsRequest.originMessage.params.txns,
-        });
-
-        // if there is network, the input is invalid
-        if (!genesisHash) {
-          dispatch(
-            sendSignTxnsResponseThunk({
-              error: new SerializableArc0027InvalidInputError(
-                __PROVIDER_ID__,
-                `the transaction group is not atomic, they are bound for multiple networks`
-              ),
-              eventId: signTxnsRequest.eventId,
-              originMessage: signTxnsRequest.originMessage,
-              originTabId: signTxnsRequest.originTabId,
-              stxns: null,
-            })
-          );
-
-          return handleClose();
-        }
-
-        // update the network
-        setNetwork(
-          networks.find((value) => value.genesisHash === genesisHash) || null
-        );
-      }
-
-      // filter sessions by genesis hash
-      filteredSessions = sessions.filter(
-        (value) => value.genesisHash === genesisHash
-      );
-      authorizedAddresses = getAuthorizedAddressesForHost(
-        signTxnsRequest.clientInfo.host,
-        filteredSessions
-      );
-
-      // set the authorized accounts
-      setAuthorizedAccounts(
-        accounts.filter((account) =>
-          authorizedAddresses.some(
-            (value) =>
-              value ===
-              AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
-              )
-          )
-        )
-      );
-    }
-  }, [accounts, networks, sessions, signTxnsRequest]);
 
   return (
     <Modal

@@ -53,7 +53,7 @@ import parseTransactionType from '@extension/utils/parseTransactionType';
 interface IProps {
   asset: IStandardAsset | null;
   condensed?: ICondensedProps;
-  explorer: IExplorer;
+  explorer: IExplorer | null;
   fromAccount: IAccount | null;
   loading?: boolean;
   network: INetwork;

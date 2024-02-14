@@ -1,7 +1,7 @@
 import { Box, VStack } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
@@ -21,48 +21,49 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useBorderColor from '@extension/hooks/useBorderColor';
 
 // selectors
-import { useSelectStandardAssetsByGenesisHash } from '@extension/selectors';
+import {
+  useSelectAccounts,
+  useSelectStandardAssetsByGenesisHash,
+} from '@extension/selectors';
 
 // types
-import type {
+import {
   IAccount,
   IStandardAsset,
   IExplorer,
   INetwork,
+  IAccountInformation,
 } from '@extension/types';
 
 // utils
 import computeGroupId from '@common/utils/computeGroupId';
 import parseTransactionType from '@extension/utils/parseTransactionType';
+import groupTransactions from '@extension/utils/groupTransactions';
+import { encode as encodeHex } from '@stablelib/hex';
+import AccountService from '@extension/services/AccountService';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import { updateAccountInformation } from '@extension/features/accounts';
+import { NODE_REQUEST_DELAY } from '@extension/constants';
 
 interface IProps {
-  explorer: IExplorer;
-  fromAccounts: IAccount[];
-  loadingAccountInformation?: boolean;
-  loadingAssetInformation?: boolean;
-  network: INetwork;
   transactions: Transaction[];
 }
 
-const MultipleTransactionsContent: FC<IProps> = ({
-  explorer,
-  fromAccounts,
-  loadingAccountInformation = false,
-  loadingAssetInformation = false,
-  network,
-  transactions,
-}: IProps) => {
+const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   const { t } = useTranslation();
   // selectors
-  const assets: IStandardAsset[] = useSelectStandardAssetsByGenesisHash(
-    network.genesisHash
-  );
+  const accounts: IAccount[] = useSelectAccounts();
   // hooks
   const borderColor: string = useBorderColor();
   // state
+  const [fetchingAccountInformation, setFetchingAccountInformation] =
+    useState<boolean>(false);
+  const [fromAccounts, setFromAccounts] = useState<IAccount[]>([]);
   const [openAccordions, setOpenAccordions] = useState<boolean[]>(
     Array.from({ length: transactions.length }, () => false)
   );
+  // misc
+  const groupOfTransactions: Transaction[][] = groupTransactions(transactions);
   // handlers
   const handleToggleAccordion = (accordionIndex: number) => (open: boolean) => {
     setOpenAccordions(
