@@ -5,7 +5,7 @@ import { encodeUnsignedTransaction, Transaction } from 'algosdk';
 // types
 import { IWindow } from '@external/types';
 
-export default async function algorandProviderSignTxns(
+export default async function signAlgorandProviderTransactions(
   txns: Transaction[]
 ): Promise<(string | null)[] | null> {
   const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;

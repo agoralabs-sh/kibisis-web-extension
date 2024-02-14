@@ -1,4 +1,3 @@
-export { default as algorandProviderSignTxns } from './algorandProviderSignTxns';
 export { default as convertAccountToImportAccountURI } from './convertAccountToAccountImportURI';
 export { default as createAppCallTransaction } from './createAppCallTransaction';
 export { default as createAssetConfigTransaction } from './createAssetConfigTransaction';
@@ -11,4 +10,5 @@ export { default as createPaymentTransaction } from './createPaymentTransaction'
 export { default as getAccountInformation } from './getAccountInformation';
 export { default as getRandomAlgodClient } from './getRandomAlgodClient';
 export { default as isValidJwt } from './isValidJwt';
-export { default as useWalletSignTxns } from './useWalletSignTxns';
+export { default as signAlgorandProviderTransactions } from './signAlgorandProviderTransactions';
+export { default as useUseWalletSignTxns } from './useUseWalletSignTxns';
