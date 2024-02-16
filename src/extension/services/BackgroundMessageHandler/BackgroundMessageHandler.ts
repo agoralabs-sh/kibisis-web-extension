@@ -498,8 +498,6 @@ export default class BackgroundMessageHandler {
       );
     }
 
-    console.log(decodedUnsignedTransactions);
-
     // verify the transaction groups
     if (!verifyTransactionGroups(decodedUnsignedTransactions)) {
       errorMessage = `the supplied transactions are invalid and do not conform to the arc-0001 group validation, please https://arc.algorand.foundation/ARCs/arc-0001#group-validation on how to correctly build transactions`;

@@ -39,7 +39,7 @@ export default async function createAppCallTransaction({
   note,
   suggestedParams,
   type,
-}: IOptions): Promise<Transaction | null> {
+}: IOptions): Promise<Transaction> {
   const appArgs: Uint8Array[] = [Uint8Array.from([0]), Uint8Array.from([0, 1])];
   const encodedApprovalProgram: string = 'BIEBMgkxABIxGYEED01D';
   const encodedClearProgram: string = 'BIEB';
@@ -99,17 +99,6 @@ export default async function createAppCallTransaction({
         undefined,
         note ? encoder.encode(note) : undefined
       );
-    case TransactionTypeEnum.ApplicationNoOp:
-      return makeApplicationNoOpTxn(
-        from,
-        _suggestedParams,
-        parseInt(TESTNET_APP_INDEX),
-        appArgs,
-        undefined,
-        undefined,
-        undefined,
-        note ? encoder.encode(note) : undefined
-      );
     case TransactionTypeEnum.ApplicationOptIn:
       return makeApplicationOptInTxn(
         from,
@@ -134,7 +123,17 @@ export default async function createAppCallTransaction({
         undefined,
         note ? encoder.encode(note) : undefined
       );
+    case TransactionTypeEnum.ApplicationNoOp:
     default:
-      return null;
+      return makeApplicationNoOpTxn(
+        from,
+        _suggestedParams,
+        parseInt(TESTNET_APP_INDEX),
+        appArgs,
+        undefined,
+        undefined,
+        undefined,
+        note ? encoder.encode(note) : undefined
+      );
   }
 }

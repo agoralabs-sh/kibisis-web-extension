@@ -8,6 +8,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Stack,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -17,8 +18,8 @@ import React, {
   FC,
   KeyboardEvent,
   MutableRefObject,
-  useEffect,
   useRef,
+  useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -28,11 +29,16 @@ import Button from '@extension/components/Button';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
+import AtomicTransactionsContent from './AtomicTransactionsContent';
+import MultipleTransactionsContent from './MultipleTransactionsContent';
 import SignTxnsHeaderSkeleton from './SignTxnsHeaderSkeleton';
-import SignTxnsModalContent from './SignTxnsModalContent';
+import SingleTransactionContent from './SingleTransactionContent';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
+
+// contexts
+import { MultipleTransactionsContext } from './contexts';
 
 // enums
 import { Arc0027ErrorCodeEnum, Arc0027ProviderMethodEnum } from '@common/enums';
@@ -50,6 +56,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import useAuthorizedAccounts from './hooks/useAuthorizedAccounts';
+import useUpdateStandardAssetInformation from './hooks/useUpdateStandardAssetInformation';
 
 // messages
 import { Arc0027SignTxnsRequestMessage } from '@common/messages';
@@ -76,6 +83,7 @@ import type {
 
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
+import groupTransactions from '@extension/utils/groupTransactions';
 import signTxns from '@extension/utils/signTxns';
 
 interface IProps {
@@ -104,6 +112,10 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   } = usePassword();
   const subTextColor: string = useSubTextColor();
   const textBackgroundColor: string = useTextBackgroundColor();
+  // states
+  const [moreDetailsTransactions, setMoreDetailsTransactions] = useState<
+    Transaction[] | null
+  >(null);
   // handlers
   const handleCancelClick = () => {
     if (signTxnsRequest) {
@@ -135,6 +147,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
       await handleSignClick();
     }
   };
+  const handlePreviousClick = () => setMoreDetailsTransactions(null);
   const handleSignClick = async () => {
     let stxns: (string | null)[];
 
@@ -203,6 +216,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const renderContent = () => {
     let decodedTransactions: Transaction[];
+    let groupsOfTransactions: Transaction[][];
 
     if (!signTxnsRequest || !signTxnsRequest.originMessage.params) {
       return <VStack spacing={4} w="full"></VStack>;
@@ -211,8 +225,35 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     decodedTransactions = signTxnsRequest.originMessage.params.txns.map(
       (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
     );
+    groupsOfTransactions = groupTransactions(decodedTransactions);
 
-    return <SignTxnsModalContent transactions={decodedTransactions} />;
+    // if we have multiple groups/single transactions
+    if (groupsOfTransactions.length > 1) {
+      return (
+        <MultipleTransactionsContext.Provider
+          value={{
+            moreDetailsTransactions,
+            setMoreDetailsTransactions,
+          }}
+        >
+          <MultipleTransactionsContent
+            groupsOfTransactions={groupsOfTransactions}
+          />
+        </MultipleTransactionsContext.Provider>
+      );
+    }
+
+    // if the group of transactions is a greater that one, it will be atomic transactions
+    if (groupsOfTransactions[0].length > 1) {
+      return (
+        <AtomicTransactionsContent transactions={groupsOfTransactions[0]} />
+      );
+    }
+
+    // otherwise it is a single transaction
+    return (
+      <SingleTransactionContent transaction={groupsOfTransactions[0][0]} />
+    );
   };
   const renderHeader = () => {
     if (!signTxnsRequest || !signTxnsRequest.originMessage.params) {
@@ -230,27 +271,34 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           {/*app icon*/}
           <Avatar
             name={signTxnsRequest.clientInfo.appName}
-            size="sm"
+            size="md"
             src={signTxnsRequest.clientInfo.iconUrl || undefined}
           />
 
-          {/*app name*/}
-          <Heading color={defaultTextColor} size="md" textAlign="center">
-            {signTxnsRequest.clientInfo.appName}
-          </Heading>
-        </HStack>
+          <VStack
+            alignItems="flex-start"
+            justifyContent="space-evenly"
+            spacing={1}
+            w="full"
+          >
+            {/*app name*/}
+            <Heading color={defaultTextColor} size="md" textAlign="center">
+              {signTxnsRequest.clientInfo.appName}
+            </Heading>
 
-        {/*host*/}
-        <Box
-          backgroundColor={textBackgroundColor}
-          borderRadius={theme.radii['3xl']}
-          px={DEFAULT_GAP / 3}
-          py={1}
-        >
-          <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-            {signTxnsRequest.clientInfo.host}
-          </Text>
-        </Box>
+            {/*host*/}
+            <Box
+              backgroundColor={textBackgroundColor}
+              borderRadius={theme.radii['3xl']}
+              px={DEFAULT_GAP / 3}
+              py={1}
+            >
+              <Text color={defaultTextColor} fontSize="xs" textAlign="center">
+                {signTxnsRequest.clientInfo.host}
+              </Text>
+            </Box>
+          </VStack>
+        </HStack>
 
         {/*caption*/}
         <Text color={subTextColor} fontSize="md" textAlign="center">
@@ -264,15 +312,11 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
 
-  // focus when the modal is opened
-  useEffect(() => {
-    if (passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, []);
+  useUpdateStandardAssetInformation(signTxnsRequest);
 
   return (
     <Modal
+      initialFocusRef={passwordInputRef}
       isOpen={!!signTxnsRequest}
       motionPreset="slideInBottom"
       onClose={handleClose}
@@ -314,14 +358,29 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
 
             {/*buttons*/}
             <HStack spacing={4} w="full">
-              <Button
-                onClick={handleCancelClick}
-                size="lg"
-                variant="outline"
-                w="full"
-              >
-                {t<string>('buttons.cancel')}
-              </Button>
+              {moreDetailsTransactions && moreDetailsTransactions.length > 0 ? (
+                // previous button
+                <Button
+                  onClick={handlePreviousClick}
+                  size="lg"
+                  variant="outline"
+                  w="full"
+                >
+                  {t<string>('buttons.previous')}
+                </Button>
+              ) : (
+                // cancel button
+                <Button
+                  onClick={handleCancelClick}
+                  size="lg"
+                  variant="outline"
+                  w="full"
+                >
+                  {t<string>('buttons.cancel')}
+                </Button>
+              )}
+
+              {/*sign button*/}
               <Button
                 onClick={handleSignClick}
                 size="lg"

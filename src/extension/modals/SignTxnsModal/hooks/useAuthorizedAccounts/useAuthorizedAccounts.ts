@@ -56,59 +56,57 @@ export default function useAuthorizedAccounts(
     let genesisHashes: string[];
 
     if (signTxnsRequest && signTxnsRequest.originMessage.params) {
-      if (signTxnsRequest.originMessage.params) {
-        try {
-          decodedUnsignedTransactions =
-            signTxnsRequest.originMessage.params.txns.map((value) =>
-              decodeUnsignedTransaction(decodeBase64(value.txn))
-            );
-        } catch (error) {
-          errorMessage = `failed to decode transactions: ${error.message}`;
-
-          logger?.debug(`${_functionName}: ${errorMessage}`);
-
-          dispatch(
-            sendSignTxnsResponseThunk({
-              error: new SerializableArc0027UnknownError(
-                __PROVIDER_ID__,
-                errorMessage
-              ),
-              eventId: signTxnsRequest.eventId,
-              originMessage: signTxnsRequest.originMessage,
-              originTabId: signTxnsRequest.originTabId,
-              stxns: null,
-            })
+      try {
+        decodedUnsignedTransactions =
+          signTxnsRequest.originMessage.params.txns.map((value) =>
+            decodeUnsignedTransaction(decodeBase64(value.txn))
           );
+      } catch (error) {
+        errorMessage = `failed to decode transactions: ${error.message}`;
 
-          return;
-        }
+        logger?.debug(`${_functionName}: ${errorMessage}`);
 
-        genesisHashes = uniqueGenesisHashesFromTransactions(
-          decodedUnsignedTransactions
+        dispatch(
+          sendSignTxnsResponseThunk({
+            error: new SerializableArc0027UnknownError(
+              __PROVIDER_ID__,
+              errorMessage
+            ),
+            eventId: signTxnsRequest.eventId,
+            originMessage: signTxnsRequest.originMessage,
+            originTabId: signTxnsRequest.originTabId,
+            stxns: null,
+          })
         );
 
-        // filter sessions by the available genesis hashes
-        filteredSessions = sessions.filter((session) =>
-          genesisHashes.some((value) => value === session.genesisHash)
-        );
-        authorizedAddresses = getAuthorizedAddressesForHost(
-          signTxnsRequest.clientInfo.host,
-          filteredSessions
-        );
-
-        // set the authorized accounts
-        setAuthorizedAccounts(
-          accounts.filter((account) =>
-            authorizedAddresses.some(
-              (value) =>
-                value ===
-                AccountService.convertPublicKeyToAlgorandAddress(
-                  account.publicKey
-                )
-            )
-          )
-        );
+        return;
       }
+
+      genesisHashes = uniqueGenesisHashesFromTransactions(
+        decodedUnsignedTransactions
+      );
+
+      // filter sessions by the available genesis hashes
+      filteredSessions = sessions.filter((session) =>
+        genesisHashes.some((value) => value === session.genesisHash)
+      );
+      authorizedAddresses = getAuthorizedAddressesForHost(
+        signTxnsRequest.clientInfo.host,
+        filteredSessions
+      );
+
+      // set the authorized accounts
+      setAuthorizedAccounts(
+        accounts.filter((account) =>
+          authorizedAddresses.some(
+            (value) =>
+              value ===
+              AccountService.convertPublicKeyToAlgorandAddress(
+                account.publicKey
+              )
+          )
+        )
+      );
     }
   }, [accounts, sessions, signTxnsRequest]);
 

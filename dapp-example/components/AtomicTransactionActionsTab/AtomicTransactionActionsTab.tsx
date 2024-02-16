@@ -96,10 +96,11 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
     (SignedTransaction | null)[]
   >([]);
   // misc
-  const createUnsignedAtomicTxns = async (): Promise<Transaction[] | null> => {
+  const createUnsignedAtomicTxns = async (
+    extraTransactions?: Transaction[]
+  ): Promise<Transaction[] | null> => {
     const unsignedTransactions: Transaction[] = [];
     let assetValue: IAssetValue;
-    let unsignedAppTransaction: Transaction | null;
 
     if (!account || !network) {
       toast({
@@ -145,21 +146,21 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
       );
     }
 
-    // include the app call if checked
-    if (includeApplicationCall) {
-      unsignedAppTransaction = await createAppCallTransaction({
-        from: account.address,
-        network,
-        note: 'Extra application call',
-        type: TransactionTypeEnum.ApplicationNoOp,
-      });
-
-      if (unsignedAppTransaction) {
-        unsignedTransactions.push(unsignedAppTransaction);
-      }
-    }
-
-    return assignGroupID(unsignedTransactions);
+    return assignGroupID([
+      ...unsignedTransactions,
+      // include the app call if checked
+      ...(includeApplicationCall
+        ? [
+            await createAppCallTransaction({
+              from: account.address,
+              network,
+              note: 'Extra application call',
+              type: TransactionTypeEnum.ApplicationNoOp,
+            }),
+          ]
+        : []),
+      ...(extraTransactions ? extraTransactions : []),
+    ]);
   };
   const handleSigningTxns = async (unsignedTxns: Transaction[]) => {
     let result: (string | null)[] | null = null;
@@ -258,10 +259,30 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
   const handleIncludeApplicationCallCheckChange = () =>
     setIncludeApplicationCall(!includeApplicationCall);
   const handleSignAGroupOfAtomicTxnsClick = async () => {
-    const unsignedTxnsOne: Transaction[] | null =
-      await createUnsignedAtomicTxns();
-    const unsignedTxnsTwo: Transaction[] | null =
-      await createUnsignedAtomicTxns();
+    let unsignedTxnsOne: Transaction[] | null;
+    let unsignedTxnsTwo: Transaction[] | null;
+
+    if (!account || !network) {
+      toast({
+        description: 'You must first enable the dApp with the wallet.',
+        status: 'error',
+        title: 'No Account Not Found!',
+      });
+
+      return;
+    }
+
+    unsignedTxnsOne = await createUnsignedAtomicTxns();
+    unsignedTxnsTwo = await createUnsignedAtomicTxns([
+      // add an extra payment transaction to make this unique
+      await createPaymentTransaction({
+        amount: new BigNumber('0'),
+        from: account.address,
+        network,
+        note: 'Extra single payment transaction',
+        to: null,
+      }),
+    ]);
 
     if (!unsignedTxnsOne || !unsignedTxnsTwo) {
       return;
