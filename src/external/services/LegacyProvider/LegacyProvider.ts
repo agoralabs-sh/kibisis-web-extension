@@ -176,12 +176,7 @@ export default class LegacyProvider extends BaseWalletManager {
           error.message
         );
       case ARC0027ErrorCodeEnum.InvalidGroupIdError:
-        return new InvalidGroupIdError(
-          (
-            error as SerializableARC0027InvalidGroupIdError
-          ).data.computedGroupId,
-          error.message
-        );
+        return new InvalidGroupIdError('', error.message);
       case ARC0027ErrorCodeEnum.InvalidInputError:
         return new InvalidInputError(error.message);
       case ARC0027ErrorCodeEnum.MethodCanceledError:
@@ -196,7 +191,7 @@ export default class LegacyProvider extends BaseWalletManager {
         return new NetworkNotSupportedError(
           (
             error as SerializableARC0027NetworkNotSupportedError
-          ).data.genesisHash,
+          ).data.genesisHashes[0],
           error.message
         );
       case ARC0027ErrorCodeEnum.UnauthorizedSignerError:

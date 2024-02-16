@@ -41,6 +41,7 @@ export { default as useSelectSettings } from './useSelectSettings';
 export { default as useSelectSideBar } from './useSelectSideBar';
 export { default as useSelectSignBytesRequest } from './useSelectSignBytesRequest';
 export { default as useSelectSignTxnsRequest } from './useSelectSignTxnsRequest';
+export { default as useSelectStandardAssets } from './useSelectStandardAssets';
 export { default as useSelectStandardAssetsByGenesisHash } from './useSelectStandardAssetsByGenesisHash';
 export { default as useSelectStandardAssetsBySelectedNetwork } from './useSelectStandardAssetsBySelectedNetwork';
 export { default as useSelectUpdatingArc200Assets } from './useSelectUpdatingArc200Assets';

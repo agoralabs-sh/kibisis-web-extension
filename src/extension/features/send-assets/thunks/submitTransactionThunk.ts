@@ -28,9 +28,9 @@ import type {
 import type { ISubmitTransactionsThunkPayload } from '../types';
 
 // utils
-import extractGenesisHashFromAtomicTransactions from '@extension/utils/extractGenesisHashFromAtomicTransactions';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
+import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
 const submitTransactionThunk: AsyncThunk<
   string[], // return
@@ -46,9 +46,8 @@ const submitTransactionThunk: AsyncThunk<
     const accounts: IAccount[] = getState().accounts.items;
     const fromAddress: string | null = getState().sendAssets.fromAddress;
     const logger: ILogger = getState().system.logger;
-    const genesisHash: string | null = extractGenesisHashFromAtomicTransactions(
-      { logger, transactions }
-    );
+    const genesisHash: string | null =
+      uniqueGenesisHashesFromTransactions(transactions).pop() || null;
     const networks: INetwork[] = getState().networks.items;
     const online: boolean = getState().system.online;
     let errorMessage: string;

@@ -52,13 +52,13 @@ import { IAccountInformation, IAssetInformation } from '../../types';
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import {
-  algorandProviderSignTxns,
+  signAlgorandProviderTransactions,
   createAssetConfigTransaction,
   createAssetCreateTransaction,
   createAssetDestroyTransaction,
   createAssetFreezeTransaction,
   createAssetTransferTransaction,
-  useWalletSignTxns,
+  useUseWalletSignTxns,
 } from '../../utils';
 
 interface IProps {
@@ -229,7 +229,9 @@ const AssetActionsTab: FC<IProps> = ({
 
         switch (connectionType) {
           case ConnectionTypeEnum.AlgorandProvider:
-            result = await algorandProviderSignTxns([unsignedTransaction]);
+            result = await signAlgorandProviderTransactions([
+              unsignedTransaction,
+            ]);
 
             if (!result) {
               toast({
@@ -244,7 +246,7 @@ const AssetActionsTab: FC<IProps> = ({
 
             break;
           case ConnectionTypeEnum.UseWallet:
-            result = await useWalletSignTxns(
+            result = await useUseWalletSignTxns(
               signTransactions,
               [0],
               [encodeUnsignedTransaction(unsignedTransaction)]

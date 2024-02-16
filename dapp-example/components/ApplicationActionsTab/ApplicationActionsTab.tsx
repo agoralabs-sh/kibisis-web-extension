@@ -41,9 +41,9 @@ import { IAccountInformation } from '../../types';
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import {
-  algorandProviderSignTxns,
+  signAlgorandProviderTransactions,
   createAppCallTransaction,
-  useWalletSignTxns,
+  useUseWalletSignTxns,
 } from '../../utils';
 
 interface IProps {
@@ -104,7 +104,9 @@ const ApplicationActionsTab: FC<IProps> = ({
 
         switch (connectionType) {
           case ConnectionTypeEnum.AlgorandProvider:
-            result = await algorandProviderSignTxns([unsignedTransaction]);
+            result = await signAlgorandProviderTransactions([
+              unsignedTransaction,
+            ]);
 
             if (!result) {
               toast({
@@ -119,7 +121,7 @@ const ApplicationActionsTab: FC<IProps> = ({
 
             break;
           case ConnectionTypeEnum.UseWallet:
-            result = await useWalletSignTxns(
+            result = await useUseWalletSignTxns(
               signTransactions,
               [0],
               [encodeUnsignedTransaction(unsignedTransaction)]

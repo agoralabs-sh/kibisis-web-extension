@@ -29,6 +29,7 @@ interface IOptions {
   from: string;
   network: INetwork;
   note: string | null;
+  suggestedParams?: SuggestedParams;
   type: TransactionTypeEnum;
 }
 
@@ -36,22 +37,22 @@ export default async function createAppCallTransaction({
   from,
   network,
   note,
+  suggestedParams,
   type,
-}: IOptions): Promise<Transaction | null> {
+}: IOptions): Promise<Transaction> {
   const appArgs: Uint8Array[] = [Uint8Array.from([0]), Uint8Array.from([0, 1])];
   const encodedApprovalProgram: string = 'BIEBMgkxABIxGYEED01D';
   const encodedClearProgram: string = 'BIEB';
   const client: Algodv2 = getRandomAlgodClient(network);
   const encoder: TextEncoder = new TextEncoder();
-  const suggestedParams: SuggestedParams = await client
-    .getTransactionParams()
-    .do();
+  const _suggestedParams: SuggestedParams =
+    suggestedParams || (await client.getTransactionParams().do());
 
   switch (type) {
     case TransactionTypeEnum.ApplicationClearState:
       return makeApplicationClearStateTxn(
         from,
-        suggestedParams,
+        _suggestedParams,
         parseInt(TESTNET_APP_INDEX),
         appArgs,
         undefined,
@@ -62,7 +63,7 @@ export default async function createAppCallTransaction({
     case TransactionTypeEnum.ApplicationCloseOut:
       return makeApplicationCloseOutTxn(
         from,
-        suggestedParams,
+        _suggestedParams,
         parseInt(TESTNET_APP_INDEX),
         appArgs,
         undefined,
@@ -73,7 +74,7 @@ export default async function createAppCallTransaction({
     case TransactionTypeEnum.ApplicationCreate:
       return makeApplicationCreateTxn(
         from,
-        suggestedParams,
+        _suggestedParams,
         OnApplicationComplete.NoOpOC,
         decodeBase64(encodedApprovalProgram),
         decodeBase64(encodedClearProgram),
@@ -90,18 +91,7 @@ export default async function createAppCallTransaction({
     case TransactionTypeEnum.ApplicationDelete:
       return makeApplicationDeleteTxn(
         from,
-        suggestedParams,
-        parseInt(TESTNET_APP_INDEX),
-        appArgs,
-        undefined,
-        undefined,
-        undefined,
-        note ? encoder.encode(note) : undefined
-      );
-    case TransactionTypeEnum.ApplicationNoOp:
-      return makeApplicationNoOpTxn(
-        from,
-        suggestedParams,
+        _suggestedParams,
         parseInt(TESTNET_APP_INDEX),
         appArgs,
         undefined,
@@ -112,7 +102,7 @@ export default async function createAppCallTransaction({
     case TransactionTypeEnum.ApplicationOptIn:
       return makeApplicationOptInTxn(
         from,
-        suggestedParams,
+        _suggestedParams,
         parseInt(TESTNET_APP_INDEX),
         appArgs,
         undefined,
@@ -123,7 +113,7 @@ export default async function createAppCallTransaction({
     case TransactionTypeEnum.ApplicationUpdate:
       return makeApplicationUpdateTxn(
         from,
-        suggestedParams,
+        _suggestedParams,
         parseInt(TESTNET_APP_INDEX),
         decodeBase64(encodedApprovalProgram),
         decodeBase64(encodedClearProgram),
@@ -133,7 +123,17 @@ export default async function createAppCallTransaction({
         undefined,
         note ? encoder.encode(note) : undefined
       );
+    case TransactionTypeEnum.ApplicationNoOp:
     default:
-      return null;
+      return makeApplicationNoOpTxn(
+        from,
+        _suggestedParams,
+        parseInt(TESTNET_APP_INDEX),
+        appArgs,
+        undefined,
+        undefined,
+        undefined,
+        note ? encoder.encode(note) : undefined
+      );
   }
 }
