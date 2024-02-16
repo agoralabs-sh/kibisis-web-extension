@@ -18,6 +18,7 @@ interface IOptions {
   from: string;
   network: INetwork;
   note: string | null;
+  suggestedParams?: SuggestedParams;
   to: string | null;
 }
 
@@ -27,12 +28,12 @@ export default async function createAssetTransferTransaction({
   from,
   network,
   note,
+  suggestedParams,
   to,
 }: IOptions): Promise<Transaction> {
   const client: Algodv2 = getRandomAlgodClient(network);
-  const suggestedParams: SuggestedParams = await client
-    .getTransactionParams()
-    .do();
+  const _suggestedParams: SuggestedParams =
+    suggestedParams || (await client.getTransactionParams().do());
   const encoder: TextEncoder = new TextEncoder();
 
   // for all other assets, use asset transfer transactions
@@ -44,6 +45,6 @@ export default async function createAssetTransferTransaction({
     amount.toNumber(),
     note ? encoder.encode(note) : undefined,
     parseInt(assetId),
-    suggestedParams
+    _suggestedParams
   );
 }

@@ -14,6 +14,7 @@ import {
 } from '@extension/features/events';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
+import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import { closeCurrentWindowThunk } from '@extension/features/system';
 
 // hooks
@@ -79,6 +80,7 @@ const Root: FC = () => {
 
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
+    dispatch(fetchStandardAssetsFromStorageThunk());
   }, []);
   // fetch accounts when the selected network has been found
   useEffect(() => {

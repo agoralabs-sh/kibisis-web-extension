@@ -1,6 +1,6 @@
 import { encode as encodeBase64 } from '@stablelib/base64';
 
-export default async function useWalletSignTxns(
+export default async function useUseWalletSignTxns(
   signTransactionsFunction: (
     transactions: Uint8Array[] | Uint8Array[][],
     indexesToSign?: number[],

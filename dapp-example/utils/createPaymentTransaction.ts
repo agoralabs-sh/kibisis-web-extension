@@ -17,6 +17,7 @@ interface IOptions {
   from: string;
   network: INetwork;
   note: string | null;
+  suggestedParams?: SuggestedParams;
   to: string | null;
 }
 
@@ -25,12 +26,12 @@ export default async function createPaymentTransaction({
   from,
   network,
   note,
+  suggestedParams,
   to,
 }: IOptions): Promise<Transaction> {
   const client: Algodv2 = getRandomAlgodClient(network);
-  const suggestedParams: SuggestedParams = await client
-    .getTransactionParams()
-    .do();
+  let _suggestedParams: SuggestedParams =
+    suggestedParams || (await client.getTransactionParams().do());
 
   return makePaymentTxnWithSuggestedParams(
     from,
@@ -38,6 +39,6 @@ export default async function createPaymentTransaction({
     amount.toNumber(),
     undefined,
     note ? new TextEncoder().encode(note) : undefined,
-    suggestedParams
+    _suggestedParams
   );
 }
