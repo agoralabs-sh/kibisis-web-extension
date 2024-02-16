@@ -1,5 +1,4 @@
 import { info, setFailed } from '@actions/core';
-import styles from 'ansi-styles';
 import { Stats } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -19,6 +18,7 @@ import {
 } from './utils';
 
 (async () => {
+  const styles = (await import('ansi-styles')).default;
   const infoPrefix: string = `${styles.yellow.open}[INFO]${styles.yellow.close}`;
   let accessToken: string;
   let operationId: string;
