@@ -35,6 +35,10 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
       logger.debug(`${_functionName}(): ${error.message}`);
     }
   };
+  const resetAction = () => {
+    setUri(null);
+    stopScanningAction();
+  };
   const startScanningAction: () => void = () => {
     setScanning(true);
 
@@ -65,6 +69,7 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
   };
 
   return {
+    resetAction,
     scanning,
     startScanningAction,
     stopScanningAction,

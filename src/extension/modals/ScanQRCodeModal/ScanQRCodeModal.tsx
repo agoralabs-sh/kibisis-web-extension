@@ -4,6 +4,7 @@ import React, { FC, useEffect } from 'react';
 // components
 import ScanQRCodeModalAccountImportContent from './ScanQRCodeModalAccountImportContent';
 import ScanQRCodeModalScanningContent from './ScanQRCodeModalScanningContent';
+import ScanQRCodeModalSelectScanLocationContent from './ScanQRCodeModalSelectScanLocationContent';
 import ScanQRCodeModalUnknownURIContent from './ScanQRCodeModalUnknownURIContent';
 
 // constants
@@ -43,22 +44,27 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   const logger: ILogger = useSelectLogger();
   const isOpen: boolean = useSelectScanQRCodeModal();
   // hooks
-  const { scanning, startScanningAction, stopScanningAction, uri } =
+  const { resetAction, scanning, startScanningAction, uri } =
     useCaptureQrCode();
   // handlers
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
-    stopScanningAction();
+    resetAction();
     onClose();
   };
+  const handlePreviousClick = () => resetAction();
   const handleRetryScan = () => startScanningAction();
+  const handleScanBrowserWindowClick = () => {
+    startScanningAction();
+  };
+  const handleScanUsingWebcamClick = () => {};
   // renders
   const renderContent = () => {
     let arc0300Schema: IARC0300BaseSchema | null;
 
     if (scanning) {
       return (
-        <ScanQRCodeModalScanningContent onCancelClick={handleCancelClick} />
+        <ScanQRCodeModalScanningContent onPreviousClick={handlePreviousClick} />
       );
     }
 
@@ -71,8 +77,8 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
             if (arc0300Schema.paths[0] === ARC0300PathEnum.Import) {
               return (
                 <ScanQRCodeModalAccountImportContent
-                  onCancelClick={handleCancelClick}
                   onComplete={handleClose}
+                  onPreviousClick={handlePreviousClick}
                   schema={arc0300Schema as IARC0300AccountImportSchema}
                 />
               );
@@ -86,19 +92,20 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
     }
 
     return (
-      <ScanQRCodeModalUnknownURIContent
+      <ScanQRCodeModalSelectScanLocationContent
         onCancelClick={handleCancelClick}
-        onTryAgainClick={handleRetryScan}
-        uri={uri}
+        onScanBrowserWindowClick={handleScanBrowserWindowClick}
+        onScanUsingWebcamClick={handleScanUsingWebcamClick}
       />
     );
+    // return (
+    //   <ScanQRCodeModalUnknownURIContent
+    //     onCancelClick={handleCancelClick}
+    //     onTryAgainClick={handleRetryScan}
+    //     uri={uri}
+    //   />
+    // );
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      startScanningAction();
-    }
-  }, [isOpen]);
 
   return (
     <Modal

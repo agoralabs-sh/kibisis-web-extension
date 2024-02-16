@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowBackOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
@@ -24,11 +25,11 @@ import useColorModeValue from '@extension/hooks/useColorModeValue';
 import { theme } from '@extension/theme';
 
 interface IProps {
-  onCancelClick: () => void;
+  onPreviousClick: () => void;
 }
 
 const ScanQRCodeModalScanningContent: FC<IProps> = ({
-  onCancelClick,
+  onPreviousClick,
 }: IProps) => {
   const { t } = useTranslation();
   // hooks
@@ -38,7 +39,7 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
     theme.colors.primaryDark['500']
   );
   // handlers
-  const handleCancelClick = () => onCancelClick();
+  const handlePreviousClick = () => onPreviousClick();
 
   return (
     <>
@@ -74,8 +75,15 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
 
       {/*footer*/}
       <ModalFooter p={DEFAULT_GAP}>
-        <Button onClick={handleCancelClick} size="lg" variant="solid" w="full">
-          {t<string>('buttons.cancel')}
+        {/*previous button*/}
+        <Button
+          leftIcon={<IoArrowBackOutline />}
+          onClick={handlePreviousClick}
+          size="lg"
+          variant="solid"
+          w="full"
+        >
+          {t<string>('buttons.previous')}
         </Button>
       </ModalFooter>
     </>

@@ -16,6 +16,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import {
   Location,
@@ -83,14 +84,14 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
 
 interface IProps {
-  onCancelClick: () => void;
   onComplete: () => void;
+  onPreviousClick: () => void;
   schema: IARC0300AccountImportSchema;
 }
 
 const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
-  onCancelClick,
   onComplete,
+  onPreviousClick,
   schema,
 }: IProps) => {
   const { t } = useTranslation();
@@ -125,9 +126,9 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   const [address, setAddress] = useState<string | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
   // handlers
-  const handleCancelClick = () => {
+  const handlePreviousClick = () => {
     reset();
-    onCancelClick();
+    onPreviousClick();
   };
   const handleImportClick = async () => {
     const _functionName: string = 'handleImportClick';
@@ -416,14 +417,15 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           )}
 
           <HStack spacing={4} w="full">
-            {/*cancel button*/}
+            {/*previous button*/}
             <Button
-              onClick={handleCancelClick}
+              leftIcon={<IoArrowBackOutline />}
+              onClick={handlePreviousClick}
               size="lg"
               variant="outline"
               w="full"
             >
-              {t<string>('buttons.cancel')}
+              {t<string>('buttons.previous')}
             </Button>
 
             {/*import button*/}
