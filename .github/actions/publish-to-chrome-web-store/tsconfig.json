@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "alwaysStrict": true,
@@ -10,8 +11,8 @@
     "incremental": true,
     "isolatedModules": true,
     "lib": ["ESNext"],
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
