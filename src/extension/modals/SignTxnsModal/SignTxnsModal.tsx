@@ -22,6 +22,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -361,6 +362,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
               {moreDetailsTransactions && moreDetailsTransactions.length > 0 ? (
                 // previous button
                 <Button
+                  leftIcon={<IoArrowBackOutline />}
                   onClick={handlePreviousClick}
                   size="lg"
                   variant="outline"

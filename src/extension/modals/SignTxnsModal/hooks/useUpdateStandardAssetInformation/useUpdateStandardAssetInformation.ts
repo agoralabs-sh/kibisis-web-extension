@@ -52,7 +52,8 @@ export default function useUpdateStandardAssetInformation(
     if (
       signTxnsRequest &&
       signTxnsRequest.originMessage.params &&
-      standardAssets
+      standardAssets &&
+      networks.length > 0
     ) {
       try {
         decodedUnsignedTransactions =
@@ -117,5 +118,5 @@ export default function useUpdateStandardAssetInformation(
         }
       );
     }
-  }, [signTxnsRequest]);
+  }, [signTxnsRequest, standardAssets, networks]);
 }
