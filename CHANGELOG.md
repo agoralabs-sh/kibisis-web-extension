@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0...v1.11.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* allow groups of single/atomic transactions ([#172](https://github.com/agoralabs-sh/kibisis-web-extension/issues/172)) ([722f9c2](https://github.com/agoralabs-sh/kibisis-web-extension/commit/722f9c28b77f703c7ac3ebde07968d2156a31d20))
+
 # [1.11.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.10.1...v1.11.0) (2024-02-08)
 
 
