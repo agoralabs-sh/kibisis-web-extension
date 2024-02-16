@@ -81,22 +81,22 @@ import {
     );
 
     info(`${infoPrefix} access token created`);
-    // info(
-    //   `${infoPrefix} uploading add-on "${process.env.ITEM_ID}" with zip file "${zipPath}"`
-    // );
-    //
-    // await uploadZipFile(zipPath, process.env.ITEM_ID, accessToken);
-    //
-    // info(
-    //   `${infoPrefix} successfully uploaded zip file to item "${process.env.ITEM_ID}"`
-    // );
-    // info(`${infoPrefix} publishing extension: ${process.env.ITEM_ID}`);
-    //
-    // await publish(process.env.ITEM_ID, accessToken);
-    //
-    // info(
-    //   `${infoPrefix} successfully published extension "${process.env.ITEM_ID}"`
-    // );
+    info(
+      `${infoPrefix} uploading add-on "${process.env.ITEM_ID}" with zip file "${zipPath}"`
+    );
+
+    await uploadZipFile(zipPath, process.env.ITEM_ID, accessToken);
+
+    info(
+      `${infoPrefix} successfully uploaded zip file to item "${process.env.ITEM_ID}"`
+    );
+    info(`${infoPrefix} publishing extension: ${process.env.ITEM_ID}`);
+
+    await publish(process.env.ITEM_ID, accessToken);
+
+    info(
+      `${infoPrefix} successfully published extension "${process.env.ITEM_ID}"`
+    );
   } catch (error) {
     handleError(error);
   }
