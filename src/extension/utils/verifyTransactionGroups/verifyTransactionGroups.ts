@@ -30,9 +30,9 @@ export default function verifyTransactionGroups(
     .reduce<boolean[]>((acc, currentValue) => {
       let computedEncodedGroupId: string;
 
-      // transaction groups with a length of 1 should be a single transaction with no group defined
+      // if a transaction group has a length of 1, it is a single transaction and the group id is optional
       if (currentValue.length <= 1) {
-        return [...acc, !currentValue[0].group];
+        return [...acc, true];
       }
 
       // compute the group of transactions to ensure every transaction is present
