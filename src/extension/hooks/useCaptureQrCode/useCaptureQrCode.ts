@@ -7,11 +7,11 @@ import { QR_CODE_SCAN_INTERVAL } from '@extension/constants';
 import { useSelectLogger } from '@extension/selectors';
 
 // types
-import { ILogger } from '@common/types';
-import { IUseCaptureQrCodeState } from './types';
+import type { ILogger } from '@common/types';
+import type { IScanMode, IUseCaptureQrCodeState } from './types';
 
 // utils
-import { captureQrCode } from './utils';
+import captureQrCode from './utils/captureQrCode';
 
 export default function useCaptureQrCode(): IUseCaptureQrCodeState {
   const _functionName: string = 'useCaptureQrCode';
@@ -19,14 +19,17 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
   const logger: ILogger = useSelectLogger();
   // states
   const [intervalId, setIntervalId] = useState<number | null>(null);
+  const [mode, setScanMode] = useState<IScanMode | null>(null);
   const [scanning, setScanning] = useState<boolean>(false);
   const [uri, setUri] = useState<string | null>(null);
   // misc
-  const captureAction: () => Promise<void> = async () => {
+  const captureAction: (mode: IScanMode) => Promise<void> = async (
+    mode: IScanMode
+  ) => {
     let capturedURI: string;
 
     try {
-      capturedURI = await captureQrCode();
+      capturedURI = await captureQrCode(mode);
 
       setUri(capturedURI);
 
@@ -39,11 +42,11 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
     setUri(null);
     stopScanningAction();
   };
-  const startScanningAction: () => void = () => {
+  const startScanningAction: (mode: IScanMode) => void = (mode: IScanMode) => {
     setScanning(true);
 
     (async () => {
-      await captureAction();
+      await captureAction(mode);
 
       // add a three-second interval that attempts to capture a qr code on the screen
       setIntervalId(
@@ -53,7 +56,7 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
           }
 
           // attempt to capture the qr code
-          await captureAction();
+          await captureAction(mode);
         }, QR_CODE_SCAN_INTERVAL)
       );
     })();

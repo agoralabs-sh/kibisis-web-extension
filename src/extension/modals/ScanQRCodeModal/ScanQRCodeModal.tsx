@@ -1,14 +1,11 @@
-import { Modal, ModalContent } from '@chakra-ui/react';
-import React, { FC, useEffect } from 'react';
+import { Modal } from '@chakra-ui/react';
+import React, { FC, useState } from 'react';
 
 // components
 import ScanQRCodeModalAccountImportContent from './ScanQRCodeModalAccountImportContent';
 import ScanQRCodeModalScanningContent from './ScanQRCodeModalScanningContent';
 import ScanQRCodeModalSelectScanLocationContent from './ScanQRCodeModalSelectScanLocationContent';
-import ScanQRCodeModalUnknownURIContent from './ScanQRCodeModalUnknownURIContent';
-
-// constants
-import { BODY_BACKGROUND_COLOR } from '@extension/constants';
+import ScanQRCodeModalStreamWebcamContent from './ScanQRCodeModalStreamWebcamContent';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
@@ -21,9 +18,6 @@ import {
   useSelectLogger,
   useSelectScanQRCodeModal,
 } from '@extension/selectors';
-
-// theme
-import { theme } from '@extension/theme';
 
 // types
 import type { ILogger } from '@common/types';
@@ -46,21 +40,36 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   // hooks
   const { resetAction, scanning, startScanningAction, uri } =
     useCaptureQrCode();
+  // state
+  const [showWebcam, setShowWebcam] = useState<boolean>(false);
   // handlers
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
     resetAction();
     onClose();
   };
-  const handlePreviousClick = () => resetAction();
-  const handleRetryScan = () => startScanningAction();
-  const handleScanBrowserWindowClick = () => {
-    startScanningAction();
+  const handlePreviousClick = () => {
+    resetAction();
+    setShowWebcam(false); // close the webcam, if open
   };
-  const handleScanUsingWebcamClick = () => {};
+  const handleScanBrowserWindowClick = () => {
+    startScanningAction('browserWindow');
+  };
+  const handleScanUsingWebcamClick = async () => {
+    setShowWebcam(true);
+    startScanningAction('extensionPopup');
+  };
   // renders
   const renderContent = () => {
     let arc0300Schema: IARC0300BaseSchema | null;
+
+    if (showWebcam) {
+      return (
+        <ScanQRCodeModalStreamWebcamContent
+          onPreviousClick={handlePreviousClick}
+        />
+      );
+    }
 
     if (scanning) {
       return (
@@ -98,13 +107,6 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
         onScanUsingWebcamClick={handleScanUsingWebcamClick}
       />
     );
-    // return (
-    //   <ScanQRCodeModalUnknownURIContent
-    //     onCancelClick={handleCancelClick}
-    //     onTryAgainClick={handleRetryScan}
-    //     uri={uri}
-    //   />
-    // );
   };
 
   return (
@@ -115,13 +117,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
       size="full"
       scrollBehavior="inside"
     >
-      <ModalContent
-        backgroundColor={BODY_BACKGROUND_COLOR}
-        borderTopRadius={theme.radii['3xl']}
-        borderBottomRadius={0}
-      >
-        {renderContent()}
-      </ModalContent>
+      {renderContent()}
     </Modal>
   );
 };

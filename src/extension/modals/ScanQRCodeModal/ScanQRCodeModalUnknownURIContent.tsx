@@ -2,6 +2,7 @@ import {
   Heading,
   HStack,
   ModalBody,
+  ModalContent,
   ModalFooter,
   ModalHeader,
   Spinner,
@@ -16,10 +17,11 @@ import Button from '@extension/components/Button';
 import ModalTextItem from '@extension/components/ModalTextItem';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import { theme } from '@extension/theme';
 
 interface IProps {
   onCancelClick: () => void;
@@ -40,7 +42,11 @@ const ScanQRCodeModalUnknownURIContent: FC<IProps> = ({
   const handleTryAgainClick = () => onTryAgainClick();
 
   return (
-    <>
+    <ModalContent
+      backgroundColor={BODY_BACKGROUND_COLOR}
+      borderTopRadius={theme.radii['3xl']}
+      borderBottomRadius={0}
+    >
       {/*header*/}
       <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
         <Heading color={defaultTextColor} size="md" textAlign="center">
@@ -89,7 +95,7 @@ const ScanQRCodeModalUnknownURIContent: FC<IProps> = ({
           </Button>
         </HStack>
       </ModalFooter>
-    </>
+    </ModalContent>
   );
 };
 

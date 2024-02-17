@@ -1,6 +1,7 @@
 import {
   Heading,
   ModalBody,
+  ModalContent,
   ModalFooter,
   ModalHeader,
   Spinner,
@@ -15,7 +16,7 @@ import { IoArrowBackOutline } from 'react-icons/io5';
 import Button from '@extension/components/Button';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -42,7 +43,11 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
   const handlePreviousClick = () => onPreviousClick();
 
   return (
-    <>
+    <ModalContent
+      backgroundColor={BODY_BACKGROUND_COLOR}
+      borderTopRadius={theme.radii['3xl']}
+      borderBottomRadius={0}
+    >
       {/*header*/}
       <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
         <Heading color={defaultTextColor} size="md" textAlign="center">
@@ -86,7 +91,7 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
           {t<string>('buttons.previous')}
         </Button>
       </ModalFooter>
-    </>
+    </ModalContent>
   );
 };
 

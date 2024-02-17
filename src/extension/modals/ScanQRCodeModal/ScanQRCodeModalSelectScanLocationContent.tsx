@@ -1,6 +1,7 @@
 import {
   Heading,
   ModalBody,
+  ModalContent,
   ModalFooter,
   ModalHeader,
   Text,
@@ -14,10 +15,11 @@ import { IoBrowsersOutline, IoVideocamOutline } from 'react-icons/io5';
 import Button from '@extension/components/Button';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import { theme } from '@extension/theme';
 
 interface IProps {
   onCancelClick: () => void;
@@ -39,7 +41,11 @@ const ScanQRCodeModalSelectScanLocationContent: FC<IProps> = ({
   const handleScanBrowserWindowClick = () => onScanBrowserWindowClick();
 
   return (
-    <>
+    <ModalContent
+      backgroundColor={BODY_BACKGROUND_COLOR}
+      borderTopRadius={theme.radii['3xl']}
+      borderBottomRadius={0}
+    >
       {/*header*/}
       <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
         <Heading color={defaultTextColor} size="md" textAlign="center">
@@ -99,7 +105,7 @@ const ScanQRCodeModalSelectScanLocationContent: FC<IProps> = ({
           {t<string>('buttons.cancel')}
         </Button>
       </ModalFooter>
-    </>
+    </ModalContent>
   );
 };
 

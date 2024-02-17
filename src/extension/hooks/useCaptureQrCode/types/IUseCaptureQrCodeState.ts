@@ -1,7 +1,10 @@
+// types
+import IScanMode from './IScanMode';
+
 interface IUseCaptureQrCodeState {
   resetAction: () => void;
   scanning: boolean;
-  startScanningAction: () => void;
+  startScanningAction: (mode: IScanMode) => void;
   stopScanningAction: () => void;
   uri: string | null;
 }

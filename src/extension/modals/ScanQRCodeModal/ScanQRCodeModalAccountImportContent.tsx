@@ -2,6 +2,7 @@ import {
   Heading,
   HStack,
   ModalBody,
+  ModalContent,
   ModalFooter,
   ModalHeader,
   Text,
@@ -39,7 +40,11 @@ import PasswordInput, {
 } from '@extension/components/PasswordInput';
 
 // constants
-import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
+import {
+  ACCOUNTS_ROUTE,
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+} from '@extension/constants';
 
 // enums
 import { ErrorCodeEnum } from '@extension/enums';
@@ -82,6 +87,7 @@ import type {
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
+import { theme } from '@extension/theme';
 
 interface IProps {
   onComplete: () => void;
@@ -319,7 +325,11 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   }, []);
 
   return (
-    <>
+    <ModalContent
+      backgroundColor={BODY_BACKGROUND_COLOR}
+      borderTopRadius={theme.radii['3xl']}
+      borderBottomRadius={0}
+    >
       {/*header*/}
       <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
         <Heading color={defaultTextColor} size="md" textAlign="center">
@@ -441,7 +451,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           </HStack>
         </VStack>
       </ModalFooter>
-    </>
+    </ModalContent>
   );
 };
 
