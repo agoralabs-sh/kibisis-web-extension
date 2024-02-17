@@ -33,6 +33,13 @@
 
 * support arc-0026 (algorand) and arc-0300 (avm) schemes ([#163](https://github.com/agoralabs-sh/kibisis-web-extension/issues/163)) ([71526c7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/71526c7b0b006f3f16ceaca0af51ffcc12592074))
 
+## [1.11.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.1...v1.11.2) (2024-02-17)
+
+
+### Bug Fixes
+
+* allow single transactions with a group id ([#178](https://github.com/agoralabs-sh/kibisis-web-extension/issues/178)) ([935a73c](https://github.com/agoralabs-sh/kibisis-web-extension/commit/935a73ce3f17fa5db554729d45c4e72aa28884ff))
+
 ## [1.11.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.0...v1.11.1) (2024-02-16)
 
 
