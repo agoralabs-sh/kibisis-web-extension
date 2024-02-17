@@ -52,121 +52,146 @@ describe(`${__dirname}/verifyTransactionGroups()`, () => {
     expect(result).toBe(false);
   });
 
-  it('should return true if the transaction list has one entry and no group id (a single transaction)', () => {
-    // arrange
-    // act
-    const result: boolean = verifyTransactionGroups(
-      createTransactions(1, fromAccount.addr, toAccount.addr)
-    );
+  describe('when using a single transaction', () => {
+    it('should return true if the transaction list has one entry and no group id (a single transaction)', () => {
+      // arrange
+      // act
+      const result: boolean = verifyTransactionGroups(
+        createTransactions(1, fromAccount.addr, toAccount.addr)
+      );
 
-    // assert
-    expect(result).toBe(true);
+      // assert
+      expect(result).toBe(true);
+    });
+
+    it('should return true if the transaction list has one entry and a group id (a single transaction)', () => {
+      // arrange
+      let transactions: Transaction[] = createTransactions(
+        1,
+        fromAccount.addr,
+        toAccount.addr
+      );
+
+      transactions = assignGroupID(transactions);
+
+      // act
+      const result: boolean = verifyTransactionGroups([transactions[0]]);
+
+      // assert
+      expect(result).toBe(true);
+    });
   });
 
-  it('should return false if the transaction list has one entry and a group id (a single transaction)', () => {
-    // arrange
-    let transactions: Transaction[] = createTransactions(
-      2,
-      fromAccount.addr,
-      toAccount.addr
-    );
+  describe('when using atomic transactions', () => {
+    it('should return true if there is a single group atomic transactions', () => {
+      // arrange
+      let atomicTransactionss: Transaction[] = createTransactions(
+        5,
+        fromAccount.addr,
+        toAccount.addr
+      );
+      let result: boolean;
 
-    transactions = assignGroupID(transactions);
+      // assign a group id
+      atomicTransactionss = assignGroupID(atomicTransactionss);
 
-    // act
-    const result: boolean = verifyTransactionGroups([transactions[0]]);
+      // act
+      result = verifyTransactionGroups(atomicTransactionss);
 
-    // assert
-    expect(result).toBe(false);
+      // assert
+      expect(result).toBe(true);
+    });
+
+    it('should return true if there is multiple atomic transactions', () => {
+      // arrange
+      let atomicTransactionsOne: Transaction[] = createTransactions(
+        5,
+        fromAccount.addr,
+        toAccount.addr
+      );
+      let atomicTransactionsTwo: Transaction[] = createTransactions(
+        5,
+        fromAccount.addr,
+        toAccount.addr
+      );
+      let result: boolean;
+
+      // assign group ids, but remove the last one
+      atomicTransactionsOne = assignGroupID(atomicTransactionsOne);
+      atomicTransactionsTwo = assignGroupID(atomicTransactionsTwo);
+
+      // act
+      result = verifyTransactionGroups([
+        ...atomicTransactionsOne,
+        ...atomicTransactionsTwo,
+      ]);
+
+      // assert
+      expect(result).toBe(true);
+    });
   });
 
-  it('should return true if the there are atomic transactions and a single transaction', () => {
-    // arrange
-    const transactions: Transaction[] = createTransactions(
-      4,
-      fromAccount.addr,
-      toAccount.addr
-    );
-    let result: boolean;
-    let singleTransaction: Transaction | null = transactions.pop() || null;
-    let atomicTransactions: Transaction[] = assignGroupID(transactions);
+  describe('when there is a mix of atomic transactions and single transactions', () => {
+    it('should return true if the there are atomic transactions and a single transaction', () => {
+      // arrange
+      const transactions: Transaction[] = createTransactions(
+        4,
+        fromAccount.addr,
+        toAccount.addr
+      );
+      let result: boolean;
+      let singleTransaction: Transaction | null = transactions.pop() || null;
+      let atomicTransactions: Transaction[] = assignGroupID(transactions);
 
-    if (!singleTransaction) {
-      throw new Error('unable to create a single transaction');
-    }
+      if (!singleTransaction) {
+        throw new Error('unable to create a single transaction');
+      }
 
-    // act
-    result = verifyTransactionGroups([
-      // add the atomic transactions
-      ...atomicTransactions,
-      // add a single transaction
-      singleTransaction,
-    ]);
+      // act
+      result = verifyTransactionGroups([
+        // add the atomic transactions
+        ...atomicTransactions,
+        // add a single transaction
+        singleTransaction,
+      ]);
 
-    // assert
-    expect(result).toBe(true);
-  });
+      // assert
+      expect(result).toBe(true);
+    });
 
-  it('should return true if there is multiple atomic transactions', () => {
-    // arrange
-    let atomicTransactionsOne: Transaction[] = createTransactions(
-      5,
-      fromAccount.addr,
-      toAccount.addr
-    );
-    let atomicTransactionsTwo: Transaction[] = createTransactions(
-      5,
-      fromAccount.addr,
-      toAccount.addr
-    );
-    let result: boolean;
+    it('should return true if there are multiple atomic transactions and single transactions', () => {
+      // arrange
+      const singleTransaction: Transaction | null =
+        createTransactions(1, fromAccount.addr, toAccount.addr).pop() || null;
+      let atomicTransactionsOne: Transaction[] = createTransactions(
+        5,
+        fromAccount.addr,
+        toAccount.addr
+      );
+      let atomicTransactionsTwo: Transaction[] = createTransactions(
+        5,
+        fromAccount.addr,
+        toAccount.addr
+      );
+      let result: boolean;
 
-    // assign group ids, but remove the last one
-    atomicTransactionsOne = assignGroupID(atomicTransactionsOne);
-    atomicTransactionsTwo = assignGroupID(atomicTransactionsTwo);
+      if (!singleTransaction) {
+        throw new Error('unable to create a single transaction');
+      }
 
-    // act
-    result = verifyTransactionGroups([
-      ...atomicTransactionsOne,
-      ...atomicTransactionsTwo,
-    ]);
+      // assign group ids, but remove the last one
+      atomicTransactionsOne = assignGroupID(atomicTransactionsOne);
+      atomicTransactionsTwo = assignGroupID(atomicTransactionsTwo);
 
-    // assert
-    expect(result).toBe(true);
-  });
+      // act
+      result = verifyTransactionGroups([
+        ...atomicTransactionsOne,
+        singleTransaction,
+        ...atomicTransactionsTwo,
+      ]);
 
-  it('should return true if there are multiple atomic transactions and single transactions', () => {
-    // arrange
-    const singleTransaction: Transaction | null =
-      createTransactions(1, fromAccount.addr, toAccount.addr).pop() || null;
-    let atomicTransactionsOne: Transaction[] = createTransactions(
-      5,
-      fromAccount.addr,
-      toAccount.addr
-    );
-    let atomicTransactionsTwo: Transaction[] = createTransactions(
-      5,
-      fromAccount.addr,
-      toAccount.addr
-    );
-    let result: boolean;
-
-    if (!singleTransaction) {
-      throw new Error('unable to create a single transaction');
-    }
-
-    // assign group ids, but remove the last one
-    atomicTransactionsOne = assignGroupID(atomicTransactionsOne);
-    atomicTransactionsTwo = assignGroupID(atomicTransactionsTwo);
-
-    // act
-    result = verifyTransactionGroups([
-      ...atomicTransactionsOne,
-      singleTransaction,
-      ...atomicTransactionsTwo,
-    ]);
-
-    // assert
-    expect(result).toBe(true);
+      // assert
+      expect(result).toBe(true);
+    });
   });
 });
