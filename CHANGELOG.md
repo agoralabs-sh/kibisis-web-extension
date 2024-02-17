@@ -1,3 +1,10 @@
+# [1.12.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.5...v1.12.0-beta.6) (2024-02-17)
+
+
+### Bug Fixes
+
+* allow single transactions with a group id ([#178](https://github.com/agoralabs-sh/kibisis-web-extension/issues/178)) ([935a73c](https://github.com/agoralabs-sh/kibisis-web-extension/commit/935a73ce3f17fa5db554729d45c4e72aa28884ff))
+
 # [1.12.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.4...v1.12.0-beta.5) (2024-02-16)
 
 
