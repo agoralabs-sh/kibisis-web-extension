@@ -14,7 +14,7 @@ const QRCodeFrameIcon: FC<IconProps> = (props: IconProps) => (
       d="M2,75 L2,98 L25,98"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1"
     />
 
     <path

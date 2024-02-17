@@ -1,10 +1,4 @@
-import {
-  Box,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  VStack,
-} from '@chakra-ui/react';
+import { ModalBody, ModalContent, ModalFooter, VStack } from '@chakra-ui/react';
 import React, {
   FC,
   MutableRefObject,
@@ -21,9 +15,6 @@ import QRCodeFrameIcon from './QRCodeFrameIcon';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
-
-// hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
@@ -42,12 +33,12 @@ const ScanQRCodeModalStreamWebcamContent: FC<IProps> = ({
   onPreviousClick,
 }: IProps) => {
   const { t } = useTranslation();
+  const canvasRef: MutableRefObject<HTMLCanvasElement | null> =
+    useRef<HTMLCanvasElement | null>(null);
   const videoRef: MutableRefObject<HTMLVideoElement | null> =
     useRef<HTMLVideoElement | null>(null);
   // selectors
   const logger: ILogger = useSelectLogger();
-  // hooks
-  const defaultTextColor: string = useDefaultTextColor();
   // state
   const [stream, setStream] = useState<MediaStream | null>(null);
   // handlers

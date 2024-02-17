@@ -116,6 +116,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
       onClose={onClose}
       size="full"
       scrollBehavior="inside"
+      useInert={false} // ensure the webcam screen can be captured
     >
       {renderContent()}
     </Modal>
