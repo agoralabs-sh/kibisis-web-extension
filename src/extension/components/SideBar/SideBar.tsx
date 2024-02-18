@@ -28,6 +28,7 @@ import SideBarSkeletonAccountItem from './SideBarSkeletonAccountItem';
 
 // constants
 import {
+  ACCOUNTS_ROUTE,
   ADD_ACCOUNT_ROUTE,
   SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
@@ -93,13 +94,16 @@ const SideBar: FC = () => {
     setIsHeaderShowing(false);
     setIsOpen(!isOpen);
   };
-  const handleAccountClick = (id: string) => {
-    dispatch(
+  const handleAccountClick = async (id: string) => {
+    await dispatch(
       saveActiveAccountDetails({
         accountId: id,
         tabIndex: activeAccountDetails?.tabIndex || 0,
       })
     );
+    navigate(`${ACCOUNTS_ROUTE}`, {
+      replace: true,
+    });
 
     onCloseSideBar();
   };

@@ -23,9 +23,6 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import { IAccount, INetwork, ITransactions } from '@extension/types';
 
@@ -100,9 +97,7 @@ const TransactionItem: FC<IProps> = ({
       rightIcon={
         <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />
       }
-      to={`${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
-        account.publicKey
-      )}${TRANSACTIONS_ROUTE}/${transaction.id}`}
+      to={`${TRANSACTIONS_ROUTE}/${transaction.id}`}
       variant="ghost"
       w="full"
     >
