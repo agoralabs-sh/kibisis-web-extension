@@ -1,3 +1,10 @@
+# [1.12.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.6...v1.12.0-beta.7) (2024-02-18)
+
+
+### Features
+
+*  scan qr code using camera ([#179](https://github.com/agoralabs-sh/kibisis-web-extension/issues/179)) ([beca132](https://github.com/agoralabs-sh/kibisis-web-extension/commit/beca132f7d4dca5581f7a12580f52e3cffe5c35c))
+
 # [1.12.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.5...v1.12.0-beta.6) (2024-02-17)
 
 
