@@ -6,7 +6,10 @@ import { v4 as uuid } from 'uuid';
 import { networks } from '@extension/config';
 
 // constants
-import { ACCOUNTS_ITEM_KEY_PREFIX } from '@extension/constants';
+import {
+  ACCOUNTS_ITEM_KEY_PREFIX,
+  ACTIVE_ACCOUNT_DETAILS_KEY,
+} from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
@@ -15,21 +18,19 @@ import { AssetTypeEnum } from '@extension/enums';
 import StorageManager from '../StorageManager';
 
 // types
-import { IBaseOptions, ILogger } from '@common/types';
-import {
+import type { IBaseOptions, ILogger } from '@common/types';
+import type {
   IAccount,
   IAccountInformation,
   IAccountTransactions,
   IInitializeAccountOptions,
   INetwork,
+  IActiveAccountDetails,
 } from '@extension/types';
+import type { ISaveAccountsOptions } from './types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-
-export interface ISaveAccountsOptions {
-  saveTransactions?: boolean;
-}
 
 export default class AccountService {
   // private variables
@@ -346,6 +347,16 @@ export default class AccountService {
   }
 
   /**
+   * Gets the active account details.
+   * @returns {Promise<IActiveAccountDetails | null>} the active account details or null if none exist.
+   */
+  public async getActiveAccountDetails(): Promise<IActiveAccountDetails | null> {
+    return await this.storageManager.getItem<IActiveAccountDetails>(
+      ACTIVE_ACCOUNT_DETAILS_KEY
+    );
+  }
+
+  /**
    * Removes an account by its ID.
    * @param {string} id - the account ID.
    */
@@ -393,5 +404,20 @@ export default class AccountService {
     );
 
     return accounts;
+  }
+
+  /**
+   * Saves the active account details to storage,
+   * @param {IActiveAccountDetails} activeAccountDetails - the active account details.
+   * @returns {Promise<IActiveAccountDetails>} the saved active account details.
+   */
+  public async saveActiveAccountDetails(
+    activeAccountDetails: IActiveAccountDetails
+  ): Promise<IActiveAccountDetails> {
+    await this.storageManager.setItems({
+      [ACTIVE_ACCOUNT_DETAILS_KEY]: activeAccountDetails,
+    });
+
+    return activeAccountDetails;
   }
 }
