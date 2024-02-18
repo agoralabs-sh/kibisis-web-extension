@@ -3,15 +3,15 @@ import React, { FC, useState } from 'react';
 
 // components
 import ScanQRCodeModalAccountImportContent from './ScanQRCodeModalAccountImportContent';
+import ScanQRCodeModalCameraStreamContent from './ScanQRCodeModalCameraStreamContent';
 import ScanQRCodeModalScanningContent from './ScanQRCodeModalScanningContent';
-import ScanQRCodeModalSelectScanLocationContent from './ScanQRCodeModalSelectScanLocationContent';
-import ScanQRCodeModalStreamWebcamContent from './ScanQRCodeModalStreamWebcamContent';
+import ScanQRCodeModalSelectScanModeContent from './ScanQRCodeModalSelectScanModeContent';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 
 // hooks
-import useCaptureQrCode from '@extension/hooks/useCaptureQrCode';
+import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 
 // selectors
 import {
@@ -39,9 +39,9 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   const isOpen: boolean = useSelectScanQRCodeModal();
   // hooks
   const { resetAction, scanning, startScanningAction, uri } =
-    useCaptureQrCode();
+    useCaptureQRCode();
   // state
-  const [showWebcam, setShowWebcam] = useState<boolean>(false);
+  const [showCamera, setShowCamera] = useState<boolean>(false);
   // handlers
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
@@ -50,22 +50,22 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handlePreviousClick = () => {
     resetAction();
-    setShowWebcam(false); // close the webcam, if open
+    setShowCamera(false); // close the webcam, if open
   };
   const handleScanBrowserWindowClick = () => {
     startScanningAction('browserWindow');
   };
-  const handleScanUsingWebcamClick = async () => {
-    setShowWebcam(true);
+  const handleScanUsingCameraClick = async () => {
+    setShowCamera(true);
     startScanningAction('extensionPopup');
   };
   // renders
   const renderContent = () => {
     let arc0300Schema: IARC0300BaseSchema | null;
 
-    if (showWebcam) {
+    if (showCamera) {
       return (
-        <ScanQRCodeModalStreamWebcamContent
+        <ScanQRCodeModalCameraStreamContent
           onPreviousClick={handlePreviousClick}
         />
       );
@@ -101,10 +101,10 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
     }
 
     return (
-      <ScanQRCodeModalSelectScanLocationContent
+      <ScanQRCodeModalSelectScanModeContent
         onCancelClick={handleCancelClick}
         onScanBrowserWindowClick={handleScanBrowserWindowClick}
-        onScanUsingWebcamClick={handleScanUsingWebcamClick}
+        onScanUsingCameraClick={handleScanUsingCameraClick}
       />
     );
   };
@@ -116,7 +116,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
       onClose={onClose}
       size="full"
       scrollBehavior="inside"
-      useInert={false} // ensure the webcam screen can be captured
+      useInert={false} // ensure the camera screen can be captured
     >
       {renderContent()}
     </Modal>

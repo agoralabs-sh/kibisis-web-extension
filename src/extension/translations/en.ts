@@ -31,7 +31,7 @@ const translation: IResourceLanguage = {
     reset: 'Reset',
     save: 'Save',
     scanBrowserWindow: 'Scan Browser Window',
-    scanUsingWebcam: 'Scan Using Webcam',
+    scanUsingCamera: 'Scan Using Camera',
     send: 'Send',
     sign: 'Sign',
     tryAgain: 'Try Again',
@@ -62,6 +62,9 @@ const translation: IResourceLanguage = {
       'This transaction will update the application, replacing the approval and clear programs. The application ID will not be changed.',
     audienceDoesNotMatch:
       'The intended recipient of this token, does not match the host',
+    cameraQRCodeScanNotAllowed1: 'Camera access has been denied.',
+    cameraQRCodeScanNotAllowed2:
+      'You will need to go into your settings and allow access.',
     changePassword1: 'Enter your new password.',
     changePassword2:
       'You will be prompted to enter your current password when you press "Change Password".',
@@ -74,6 +77,8 @@ const translation: IResourceLanguage = {
     createPassword1: `First, let's create a new password to secure this device.`,
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
+    debugLogging:
+      'Debugging information will be output to the extension console.',
     defaultConfirm: 'Are you sure?',
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
@@ -103,8 +108,7 @@ const translation: IResourceLanguage = {
     initializingWalletConnect:
       'Putting the final touches into your WalletConnect interface.',
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
-    debugLogging:
-      'Debugging information will be output to the extension console.',
+    loadingCameraStream: 'Loading your camera stream.',
     managerAddressDoesNotMatch:
       'This account does not have the authority to alter this asset. This transaction will likely fail.',
     maximumNativeCurrencyTransactionAmount:
@@ -174,10 +178,11 @@ const translation: IResourceLanguage = {
   },
   errors: {
     descriptions: {
-      code: `Please contact support with code {{code}} and describe what happened.`,
+      code: `Please contact support with code "{{code}}" and describe what happened.`,
       code_1002: `Failed to parse the "{{type}}" data.`,
       code_2000: 'The password seems to be invalid.',
       code_2003: 'This account already exists.',
+      code_6000: 'There was an error starting the camera.',
     },
     inputs: {
       copySeedPhraseRequired:
@@ -192,9 +197,10 @@ const translation: IResourceLanguage = {
     },
     titles: {
       code: 'Well This Is Embarrassing...',
-      code_1002: 'Parsing Error',
-      code_2000: 'Invalid Password',
-      code_2003: 'Account Already Exists',
+      code_1002: '1002 Parsing Error',
+      code_2000: '2000 Invalid Password',
+      code_2003: '2003 Account Already Exists',
+      code_6000: '6000 Camera Error',
     },
   },
   headings: {
@@ -204,6 +210,8 @@ const translation: IResourceLanguage = {
     allowMainNetConfirm: 'Allow MainNet Networks',
     authentication: 'Authentication',
     beta: 'Beta',
+    cameraDenied: 'Camera Denied',
+    cameraLoading: 'Camera Loading',
     comingSoon: 'Coming Soon!',
     confirm: 'Confirm',
     createNewAccount: 'Create A New Account',

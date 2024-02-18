@@ -2,12 +2,12 @@ import jsQR, { QRCode } from 'jsqr';
 import browser, { Windows } from 'webextension-polyfill';
 
 // types
-import { IScanMode } from '@extension/hooks/useCaptureQrCode';
+import { IScanMode } from '@extension/hooks/useCaptureQRCode';
 
 // utils
 import convertDataUriToImageData from '@extension/utils/convertDataUriToImageData';
 
-export default async function captureQrCode(mode: IScanMode): Promise<string> {
+export default async function captureQRCode(mode: IScanMode): Promise<string> {
   let dataImageUrl: string;
   let imageData: ImageData | null;
   let result: QRCode | null;
@@ -28,7 +28,7 @@ export default async function captureQrCode(mode: IScanMode): Promise<string> {
   }
 
   if (!window) {
-    throw new Error('unable to find browser window');
+    throw new Error(`unable to find browser window for scan mode "${mode}"`);
   }
 
   dataImageUrl = await browser.tabs.captureVisibleTab(window.id, {
@@ -43,7 +43,7 @@ export default async function captureQrCode(mode: IScanMode): Promise<string> {
   result = jsQR(imageData.data, imageData.width, imageData.height);
 
   if (!result) {
-    throw new Error('no qr code found');
+    throw new Error(`no qr code found for scan mode "${mode}"`);
   }
 
   return result.data;

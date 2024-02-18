@@ -29,7 +29,7 @@ import WalletConnectBannerIcon from '@extension/components/WalletConnectBannerIc
 import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
-import useCaptureQrCode from '@extension/hooks/useCaptureQrCode';
+import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
@@ -71,7 +71,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const isOpen: boolean = useSelectWalletConnectModalOpen();
   // hooks
   const { scanning, startScanningAction, stopScanningAction, uri } =
-    useCaptureQrCode();
+    useCaptureQRCode();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
@@ -345,7 +345,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
   useEffect(() => {
     if (isOpen) {
-      startScanningAction();
+      startScanningAction('browserWindow');
     }
   }, [isOpen]);
 

@@ -19,25 +19,27 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+
+// theme
 import { theme } from '@extension/theme';
 
 interface IProps {
   onCancelClick: () => void;
   onScanBrowserWindowClick: () => void;
-  onScanUsingWebcamClick: () => void;
+  onScanUsingCameraClick: () => void;
 }
 
-const ScanQRCodeModalSelectScanLocationContent: FC<IProps> = ({
+const ScanQRCodeModalSelectScanModeContent: FC<IProps> = ({
   onCancelClick,
   onScanBrowserWindowClick,
-  onScanUsingWebcamClick,
+  onScanUsingCameraClick,
 }: IProps) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // handlers
   const handleCancelClick = () => onCancelClick();
-  const handleScanUsingWebcamClick = () => onScanUsingWebcamClick();
+  const handleScanUsingCameraClick = () => onScanUsingCameraClick();
   const handleScanBrowserWindowClick = () => onScanBrowserWindowClick();
 
   return (
@@ -79,15 +81,15 @@ const ScanQRCodeModalSelectScanLocationContent: FC<IProps> = ({
               {t<string>('buttons.scanBrowserWindow')}
             </Button>
 
-            {/*scan using webcam button*/}
+            {/*scan using camera button*/}
             <Button
-              onClick={handleScanUsingWebcamClick}
+              onClick={handleScanUsingCameraClick}
               rightIcon={<IoVideocamOutline />}
               size="lg"
               variant="solid"
               w="full"
             >
-              {t<string>('buttons.scanUsingWebcam')}
+              {t<string>('buttons.scanUsingCamera')}
             </Button>
           </VStack>
         </VStack>
@@ -109,4 +111,4 @@ const ScanQRCodeModalSelectScanLocationContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalSelectScanLocationContent;
+export default ScanQRCodeModalSelectScanModeContent;

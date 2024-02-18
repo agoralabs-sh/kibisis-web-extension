@@ -11,27 +11,25 @@ import type { ILogger } from '@common/types';
 import type { IScanMode, IUseCaptureQrCodeState } from './types';
 
 // utils
-import captureQrCode from './utils/captureQrCode';
+import captureQRCode from './utils/captureQRCode';
 
-export default function useCaptureQrCode(): IUseCaptureQrCodeState {
-  const _functionName: string = 'useCaptureQrCode';
+export default function useCaptureQRCode(): IUseCaptureQrCodeState {
+  const _functionName: string = 'useCaptureQRCode';
   // selectors
   const logger: ILogger = useSelectLogger();
   // states
   const [intervalId, setIntervalId] = useState<number | null>(null);
-  const [mode, setScanMode] = useState<IScanMode | null>(null);
+  const [_, setScanMode] = useState<IScanMode | null>(null);
   const [scanning, setScanning] = useState<boolean>(false);
-  const [uri, setUri] = useState<string | null>(null);
+  const [uri, setURI] = useState<string | null>(null);
   // misc
-  const captureAction: (mode: IScanMode) => Promise<void> = async (
-    mode: IScanMode
-  ) => {
+  const captureAction = async (mode: IScanMode) => {
     let capturedURI: string;
 
     try {
-      capturedURI = await captureQrCode(mode);
+      capturedURI = await captureQRCode(mode);
 
-      setUri(capturedURI);
+      setURI(capturedURI);
 
       return stopScanningAction();
     } catch (error) {
@@ -39,10 +37,12 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
     }
   };
   const resetAction = () => {
-    setUri(null);
+    setURI(null);
+    setScanMode(null);
     stopScanningAction();
   };
-  const startScanningAction: (mode: IScanMode) => void = (mode: IScanMode) => {
+  const startScanningAction = (mode: IScanMode) => {
+    setScanMode(mode);
     setScanning(true);
 
     (async () => {
@@ -61,7 +61,7 @@ export default function useCaptureQrCode(): IUseCaptureQrCodeState {
       );
     })();
   };
-  const stopScanningAction: () => void = () => {
+  const stopScanningAction = () => {
     if (intervalId) {
       window.clearInterval(intervalId);
 
