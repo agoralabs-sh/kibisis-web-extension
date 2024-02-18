@@ -158,7 +158,7 @@ const translation: IResourceLanguage = {
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
     scanningForQrCode:
       'Scanning for a QR Code. Make sure the QR code is visible in the background.',
-    selectScanLocation: 'Choose where to scan for the QR code.',
+    selectScanLocation: 'Choose how you would like to scan the QR code.',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',

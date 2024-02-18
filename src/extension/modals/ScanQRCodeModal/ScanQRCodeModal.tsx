@@ -6,6 +6,7 @@ import ScanQRCodeModalAccountImportContent from './ScanQRCodeModalAccountImportC
 import ScanQRCodeModalCameraStreamContent from './ScanQRCodeModalCameraStreamContent';
 import ScanQRCodeModalScanningContent from './ScanQRCodeModalScanningContent';
 import ScanQRCodeModalSelectScanModeContent from './ScanQRCodeModalSelectScanModeContent';
+import ScanQRCodeModalUnknownURIContent from './ScanQRCodeModalUnknownURIContent';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
@@ -63,20 +64,6 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   const renderContent = () => {
     let arc0300Schema: IARC0300BaseSchema | null;
 
-    if (showCamera) {
-      return (
-        <ScanQRCodeModalCameraStreamContent
-          onPreviousClick={handlePreviousClick}
-        />
-      );
-    }
-
-    if (scanning) {
-      return (
-        <ScanQRCodeModalScanningContent onPreviousClick={handlePreviousClick} />
-      );
-    }
-
     if (uri) {
       arc0300Schema = parseURIToARC0300Schema(uri, { logger });
 
@@ -98,6 +85,28 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
             break;
         }
       }
+
+      // if the uri cannot be parsed
+      return (
+        <ScanQRCodeModalUnknownURIContent
+          onPreviousClick={handlePreviousClick}
+          uri={uri}
+        />
+      );
+    }
+
+    if (showCamera) {
+      return (
+        <ScanQRCodeModalCameraStreamContent
+          onPreviousClick={handlePreviousClick}
+        />
+      );
+    }
+
+    if (scanning) {
+      return (
+        <ScanQRCodeModalScanningContent onPreviousClick={handlePreviousClick} />
+      );
     }
 
     return (
