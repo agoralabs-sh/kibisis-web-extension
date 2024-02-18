@@ -1,3 +1,10 @@
+# [1.12.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.7...v1.12.0-beta.8) (2024-02-18)
+
+
+### Bug Fixes
+
+* active account and account tab are saved to storage ([#180](https://github.com/agoralabs-sh/kibisis-web-extension/issues/180)) ([30e5eca](https://github.com/agoralabs-sh/kibisis-web-extension/commit/30e5ecaa6b7c10f0b0f5f4370d2d9e89edc7addf))
+
 # [1.12.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.6...v1.12.0-beta.7) (2024-02-18)
 
 
