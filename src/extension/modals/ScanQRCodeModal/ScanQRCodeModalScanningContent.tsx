@@ -1,6 +1,7 @@
 import {
   Heading,
   ModalBody,
+  ModalContent,
   ModalFooter,
   ModalHeader,
   Spinner,
@@ -9,12 +10,13 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowBackOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -24,11 +26,11 @@ import useColorModeValue from '@extension/hooks/useColorModeValue';
 import { theme } from '@extension/theme';
 
 interface IProps {
-  onCancelClick: () => void;
+  onPreviousClick: () => void;
 }
 
 const ScanQRCodeModalScanningContent: FC<IProps> = ({
-  onCancelClick,
+  onPreviousClick,
 }: IProps) => {
   const { t } = useTranslation();
   // hooks
@@ -38,10 +40,14 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
     theme.colors.primaryDark['500']
   );
   // handlers
-  const handleCancelClick = () => onCancelClick();
+  const handlePreviousClick = () => onPreviousClick();
 
   return (
-    <>
+    <ModalContent
+      backgroundColor={BODY_BACKGROUND_COLOR}
+      borderTopRadius={theme.radii['3xl']}
+      borderBottomRadius={0}
+    >
       {/*header*/}
       <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
         <Heading color={defaultTextColor} size="md" textAlign="center">
@@ -74,11 +80,18 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
 
       {/*footer*/}
       <ModalFooter p={DEFAULT_GAP}>
-        <Button onClick={handleCancelClick} size="lg" variant="solid" w="full">
-          {t<string>('buttons.cancel')}
+        {/*previous button*/}
+        <Button
+          leftIcon={<IoArrowBackOutline />}
+          onClick={handlePreviousClick}
+          size="lg"
+          variant="solid"
+          w="full"
+        >
+          {t<string>('buttons.previous')}
         </Button>
       </ModalFooter>
-    </>
+    </ModalContent>
   );
 };
 

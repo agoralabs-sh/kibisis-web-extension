@@ -20,6 +20,9 @@ enum ErrorCodeEnum {
   // contract (application)
   InvalidABIContractError = 5000,
   ReadABIContractError = 5001,
+
+  // devices
+  CameraError = 6000,
 }
 
 export default ErrorCodeEnum;

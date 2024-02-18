@@ -1,28 +1,24 @@
-import { Modal, ModalContent } from '@chakra-ui/react';
-import React, { FC, useEffect } from 'react';
+import { Modal } from '@chakra-ui/react';
+import React, { FC, useState } from 'react';
 
 // components
 import ScanQRCodeModalAccountImportContent from './ScanQRCodeModalAccountImportContent';
+import ScanQRCodeModalCameraStreamContent from './ScanQRCodeModalCameraStreamContent';
 import ScanQRCodeModalScanningContent from './ScanQRCodeModalScanningContent';
+import ScanQRCodeModalSelectScanModeContent from './ScanQRCodeModalSelectScanModeContent';
 import ScanQRCodeModalUnknownURIContent from './ScanQRCodeModalUnknownURIContent';
-
-// constants
-import { BODY_BACKGROUND_COLOR } from '@extension/constants';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 
 // hooks
-import useCaptureQrCode from '@extension/hooks/useCaptureQrCode';
+import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 
 // selectors
 import {
   useSelectLogger,
   useSelectScanQRCodeModal,
 } from '@extension/selectors';
-
-// theme
-import { theme } from '@extension/theme';
 
 // types
 import type { ILogger } from '@common/types';
@@ -43,24 +39,30 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   const logger: ILogger = useSelectLogger();
   const isOpen: boolean = useSelectScanQRCodeModal();
   // hooks
-  const { scanning, startScanningAction, stopScanningAction, uri } =
-    useCaptureQrCode();
+  const { resetAction, scanning, startScanningAction, uri } =
+    useCaptureQRCode();
+  // state
+  const [showCamera, setShowCamera] = useState<boolean>(false);
   // handlers
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
-    stopScanningAction();
+    resetAction();
     onClose();
   };
-  const handleRetryScan = () => startScanningAction();
+  const handlePreviousClick = () => {
+    resetAction();
+    setShowCamera(false); // close the webcam, if open
+  };
+  const handleScanBrowserWindowClick = () => {
+    startScanningAction('browserWindow');
+  };
+  const handleScanUsingCameraClick = async () => {
+    setShowCamera(true);
+    startScanningAction('extensionPopup');
+  };
   // renders
   const renderContent = () => {
     let arc0300Schema: IARC0300BaseSchema | null;
-
-    if (scanning) {
-      return (
-        <ScanQRCodeModalScanningContent onCancelClick={handleCancelClick} />
-      );
-    }
 
     if (uri) {
       arc0300Schema = parseURIToARC0300Schema(uri, { logger });
@@ -71,8 +73,8 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
             if (arc0300Schema.paths[0] === ARC0300PathEnum.Import) {
               return (
                 <ScanQRCodeModalAccountImportContent
-                  onCancelClick={handleCancelClick}
                   onComplete={handleClose}
+                  onPreviousClick={handlePreviousClick}
                   schema={arc0300Schema as IARC0300AccountImportSchema}
                 />
               );
@@ -83,22 +85,38 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
             break;
         }
       }
+
+      // if the uri cannot be parsed
+      return (
+        <ScanQRCodeModalUnknownURIContent
+          onPreviousClick={handlePreviousClick}
+          uri={uri}
+        />
+      );
+    }
+
+    if (showCamera) {
+      return (
+        <ScanQRCodeModalCameraStreamContent
+          onPreviousClick={handlePreviousClick}
+        />
+      );
+    }
+
+    if (scanning) {
+      return (
+        <ScanQRCodeModalScanningContent onPreviousClick={handlePreviousClick} />
+      );
     }
 
     return (
-      <ScanQRCodeModalUnknownURIContent
+      <ScanQRCodeModalSelectScanModeContent
         onCancelClick={handleCancelClick}
-        onTryAgainClick={handleRetryScan}
-        uri={uri}
+        onScanBrowserWindowClick={handleScanBrowserWindowClick}
+        onScanUsingCameraClick={handleScanUsingCameraClick}
       />
     );
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      startScanningAction();
-    }
-  }, [isOpen]);
 
   return (
     <Modal
@@ -107,14 +125,9 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
       onClose={onClose}
       size="full"
       scrollBehavior="inside"
+      useInert={false} // ensure the camera screen can be captured
     >
-      <ModalContent
-        backgroundColor={BODY_BACKGROUND_COLOR}
-        borderTopRadius={theme.radii['3xl']}
-        borderBottomRadius={0}
-      >
-        {renderContent()}
-      </ModalContent>
+      {renderContent()}
     </Modal>
   );
 };

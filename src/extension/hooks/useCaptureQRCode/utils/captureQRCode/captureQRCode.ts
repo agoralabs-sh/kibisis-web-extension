@@ -1,21 +1,34 @@
 import jsQR, { QRCode } from 'jsqr';
 import browser, { Windows } from 'webextension-polyfill';
 
+// types
+import { IScanMode } from '@extension/hooks/useCaptureQRCode';
+
 // utils
 import convertDataUriToImageData from '@extension/utils/convertDataUriToImageData';
 
-export default async function captureQrCode(): Promise<string> {
+export default async function captureQRCode(mode: IScanMode): Promise<string> {
   let dataImageUrl: string;
   let imageData: ImageData | null;
   let result: QRCode | null;
   let windows: Windows.Window[];
-  let window: Windows.Window | null;
+  let window: Windows.Window | null = null;
 
   windows = await browser.windows.getAll();
-  window = windows.find((value) => value.type !== 'popup') || null; // get windows that are not popups, i.e. the extension
+
+  switch (mode) {
+    case 'browserWindow':
+      window = windows.find((value) => value.type !== 'popup') || null; // get windows that are not the extension window
+      break;
+    case 'extensionPopup':
+      window = windows.find((value) => value.type === 'popup') || null; // get extension window as we will be showing a video from teh webcam
+      break;
+    default:
+      break;
+  }
 
   if (!window) {
-    throw new Error('unable to find browser window');
+    throw new Error(`unable to find browser window for scan mode "${mode}"`);
   }
 
   dataImageUrl = await browser.tabs.captureVisibleTab(window.id, {
@@ -30,7 +43,7 @@ export default async function captureQrCode(): Promise<string> {
   result = jsQR(imageData.data, imageData.width, imageData.height);
 
   if (!result) {
-    throw new Error('no qr code found');
+    throw new Error(`no qr code found for scan mode "${mode}"`);
   }
 
   return result.data;

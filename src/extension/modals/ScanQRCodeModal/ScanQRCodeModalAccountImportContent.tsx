@@ -2,6 +2,7 @@ import {
   Heading,
   HStack,
   ModalBody,
+  ModalContent,
   ModalFooter,
   ModalHeader,
   Text,
@@ -16,6 +17,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import {
   Location,
@@ -38,7 +40,11 @@ import PasswordInput, {
 } from '@extension/components/PasswordInput';
 
 // constants
-import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
+import {
+  ACCOUNTS_ROUTE,
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+} from '@extension/constants';
 
 // enums
 import { ErrorCodeEnum } from '@extension/enums';
@@ -81,16 +87,17 @@ import type {
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
+import { theme } from '@extension/theme';
 
 interface IProps {
-  onCancelClick: () => void;
   onComplete: () => void;
+  onPreviousClick: () => void;
   schema: IARC0300AccountImportSchema;
 }
 
 const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
-  onCancelClick,
   onComplete,
+  onPreviousClick,
   schema,
 }: IProps) => {
   const { t } = useTranslation();
@@ -125,9 +132,9 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   const [address, setAddress] = useState<string | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
   // handlers
-  const handleCancelClick = () => {
+  const handlePreviousClick = () => {
     reset();
-    onCancelClick();
+    onPreviousClick();
   };
   const handleImportClick = async () => {
     const _functionName: string = 'handleImportClick';
@@ -318,7 +325,11 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   }, []);
 
   return (
-    <>
+    <ModalContent
+      backgroundColor={BODY_BACKGROUND_COLOR}
+      borderTopRadius={theme.radii['3xl']}
+      borderBottomRadius={0}
+    >
       {/*header*/}
       <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
         <Heading color={defaultTextColor} size="md" textAlign="center">
@@ -416,14 +427,15 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           )}
 
           <HStack spacing={4} w="full">
-            {/*cancel button*/}
+            {/*previous button*/}
             <Button
-              onClick={handleCancelClick}
+              leftIcon={<IoArrowBackOutline />}
+              onClick={handlePreviousClick}
               size="lg"
               variant="outline"
               w="full"
             >
-              {t<string>('buttons.cancel')}
+              {t<string>('buttons.previous')}
             </Button>
 
             {/*import button*/}
@@ -439,7 +451,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           </HStack>
         </VStack>
       </ModalFooter>
-    </>
+    </ModalContent>
   );
 };
 
