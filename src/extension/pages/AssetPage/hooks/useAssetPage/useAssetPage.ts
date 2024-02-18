@@ -6,17 +6,14 @@ import { AssetTypeEnum } from '@extension/enums';
 
 // selectors
 import {
-  useSelectAccounts,
+  useSelectActiveAccount,
+  useSelectActiveAccountInformation,
   useSelectARC0200AssetsBySelectedNetwork,
-  useSelectSelectedNetwork,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
-import {
+import type {
   IAccount,
   IAccountInformation,
   IARC0200Asset,
@@ -24,29 +21,25 @@ import {
   IAssetTypes,
   IStandardAsset,
   IStandardAssetHolding,
-  INetwork,
 } from '@extension/types';
-import { IUseAssetPageOptions, IUseAssetPageState } from './types';
+import type { IUseAssetPageOptions, IUseAssetPageState } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 
 export default function useAssetPage({
-  address,
   assetId,
   onError,
 }: IUseAssetPageOptions): IUseAssetPageState {
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const account: IAccount | null = useSelectActiveAccount();
+  const accountInformation: IAccountInformation | null =
+    useSelectActiveAccountInformation();
   const arc200Assets: IARC0200Asset[] =
     useSelectARC0200AssetsBySelectedNetwork();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
   // state
-  const [account, setAccount] = useState<IAccount | null>(null);
-  const [accountInformation, setAccountInformation] =
-    useState<IAccountInformation | null>(null);
   const [asset, setAsset] = useState<IAssetTypes | null>(null);
   const [assetHolding, setAssetHolding] = useState<
     IARC0200AssetHolding | IStandardAssetHolding | null
@@ -55,28 +48,7 @@ export default function useAssetPage({
     new BigNumber('0')
   );
 
-  // 1a. when we have the address and accounts, get the account
-  useEffect(() => {
-    let selectedAccount: IAccount | null;
-
-    if (address && accounts.length > 0) {
-      selectedAccount =
-        accounts.find(
-          (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === address
-        ) || null;
-
-      // if there is no account, we have an error
-      if (!selectedAccount) {
-        return onError();
-      }
-
-      setAccount(selectedAccount);
-    }
-  }, [address, accounts]);
-  // 1b. when we have the asset id and the assets, get the asset
+  // 1. when we have the asset id and the assets, get the asset
   useEffect(() => {
     let selectedAsset: IAssetTypes | null;
 
@@ -99,18 +71,7 @@ export default function useAssetPage({
       setAsset(selectedAsset);
     }
   }, [arc200Assets, assetId, standardAssets]);
-  // 2. when the account has been found and we have the selected network, get the account information
-  useEffect(() => {
-    if (account && selectedNetwork) {
-      setAccountInformation(
-        AccountService.extractAccountInformationForNetwork(
-          account,
-          selectedNetwork
-        ) || null
-      );
-    }
-  }, [account, selectedNetwork]);
-  // 3. when we have the account information, get the asset holding
+  // 2. when we have the asset and the account information, get the asset holding
   useEffect(() => {
     let selectedAssetHolding:
       | IARC0200AssetHolding
@@ -144,7 +105,7 @@ export default function useAssetPage({
       setAssetHolding(selectedAssetHolding);
     }
   }, [asset, accountInformation]);
-  // 4. when we have the asset and asset holding, update the standard amount
+  // 3. when we have the asset and asset holding, update the standard amount
   useEffect(() => {
     if (asset && assetHolding) {
       setAmountInStandardUnits(

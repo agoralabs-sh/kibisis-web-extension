@@ -9,13 +9,18 @@ import { AccountsThunkEnum } from '@extension/enums';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { ILogger } from '@common/types';
+import type { ILogger } from '@common/types';
 import {
   IAccount,
+  IActiveAccountDetails,
+  IBaseAsyncThunkConfig,
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
-import { IFetchAccountsFromStoragePayload } from '../types';
+import type {
+  IFetchAccountsFromStoragePayload,
+  IFetchAccountsFromStorageResult,
+} from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
@@ -23,13 +28,13 @@ import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSetting
 import { updateAccountInformation, updateAccountTransactions } from '../utils';
 
 const fetchAccountsFromStorageThunk: AsyncThunk<
-  IAccount[], // return
+  IFetchAccountsFromStorageResult, // return
   IFetchAccountsFromStoragePayload | undefined, // args
-  Record<string, never>
+  IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
-  IAccount[],
+  IFetchAccountsFromStorageResult,
   IFetchAccountsFromStoragePayload | undefined,
-  { state: IMainRootState }
+  IBaseAsyncThunkConfig<IMainRootState>
 >(AccountsThunkEnum.FetchAccountsFromStorage, async (options, { getState }) => {
   const logger: ILogger = getState().system.logger;
   const networks: INetworkWithTransactionParams[] = getState().networks.items;
@@ -40,6 +45,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   const selectedNetwork: INetworkWithTransactionParams | null =
     selectNetworkFromSettings(networks, getState().settings);
   let accounts: IAccount[];
+  let activeAccountDetails: IActiveAccountDetails | null;
   let encodedGenesisHash: string;
 
   logger.debug(
@@ -48,6 +54,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
 
   accounts = await accountService.getAllAccounts();
   accounts = accounts.sort((a, b) => a.createdAt - b.createdAt); // sort by created at date (oldest first)
+  activeAccountDetails = await accountService.getActiveAccountDetails();
 
   if (online && selectedNetwork) {
     encodedGenesisHash = convertGenesisHashToHex(
@@ -115,7 +122,10 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
     }
   }
 
-  return accounts;
+  return {
+    accounts,
+    activeAccountDetails,
+  };
 });
 
 export default fetchAccountsFromStorageThunk;

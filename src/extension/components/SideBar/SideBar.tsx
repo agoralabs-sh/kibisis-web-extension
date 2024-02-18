@@ -16,13 +16,7 @@ import {
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import {
-  Location,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // components
 import Divider from '@extension/components/Divider';
@@ -34,8 +28,8 @@ import SideBarSkeletonAccountItem from './SideBarSkeletonAccountItem';
 
 // constants
 import {
-  ADD_ACCOUNT_ROUTE,
   ACCOUNTS_ROUTE,
+  ADD_ACCOUNT_ROUTE,
   SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
   SIDEBAR_MAX_WIDTH,
@@ -43,6 +37,7 @@ import {
 } from '@extension/constants';
 
 // features
+import { saveActiveAccountDetails } from '@extension/features/accounts';
 import { initializeSendAsset } from '@extension/features/send-assets';
 import { setScanQRCodeModal } from '@extension/features/system';
 
@@ -54,6 +49,8 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 // selectors
 import {
   useSelectAccounts,
+  useSelectActiveAccount,
+  useSelectActiveAccountDetails,
   useSelectFetchingAccounts,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
@@ -62,18 +59,22 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount, IAppThunkDispatch, INetwork } from '@extension/types';
+import type {
+  IAccount,
+  IActiveAccountDetails,
+  IAppThunkDispatch,
+  INetwork,
+} from '@extension/types';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
-  const [searchParams] = useSearchParams({
-    accountTabId: '0',
-  });
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
+  const activeAccount: IAccount | null = useSelectActiveAccount();
+  const activeAccountDetails: IActiveAccountDetails | null =
+    useSelectActiveAccountDetails();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const network: INetwork | null = useSelectSelectedNetwork();
   // hooks
@@ -81,9 +82,6 @@ const SideBar: FC = () => {
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = usePrimaryColor();
   // state
-  const [activeAccountAddress, setActiveAccountAddress] = useState<
-    string | null
-  >(null);
   const [width, setWidth] = useState<number>(SIDEBAR_MIN_WIDTH);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHeaderShowing, setIsHeaderShowing] = useState<boolean>(false);
@@ -96,13 +94,18 @@ const SideBar: FC = () => {
     setIsHeaderShowing(false);
     setIsOpen(!isOpen);
   };
-  const handleAccountClick = (address: string) => {
-    onCloseSideBar();
-    navigate(
-      `${ACCOUNTS_ROUTE}/${address}?accountTabId=${
-        searchParams.get('accountTabId') || '0'
-      }`
+  const handleAccountClick = async (id: string) => {
+    await dispatch(
+      saveActiveAccountDetails({
+        accountId: id,
+        tabIndex: activeAccountDetails?.tabIndex || 0,
+      })
     );
+    navigate(`${ACCOUNTS_ROUTE}`, {
+      replace: true,
+    });
+
+    onCloseSideBar();
   };
   const handleAddAccountClick = () => {
     onCloseSideBar();
@@ -110,14 +113,12 @@ const SideBar: FC = () => {
   };
   const handleScanQRCodeClick = () => dispatch(setScanQRCodeModal(true));
   const handleSendAssetClick = () => {
-    if (network) {
+    if (activeAccount && network) {
       dispatch(
         initializeSendAsset({
-          fromAddress:
-            activeAccountAddress ||
-            AccountService.convertPublicKeyToAlgorandAddress(
-              accounts[0].publicKey
-            ),
+          fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
+            activeAccount.publicKey
+          ),
           selectedAsset: network.nativeCurrency, // use native currency
         })
       );
@@ -141,13 +142,7 @@ const SideBar: FC = () => {
 
     return accounts.map((value, index) => (
       <SideBarAccountItem
-        active={
-          activeAccountAddress
-            ? AccountService.convertPublicKeyToAlgorandAddress(
-                value.publicKey
-              ) === activeAccountAddress
-            : false
-        }
+        active={activeAccount ? value.id === activeAccount.id : false}
         account={value}
         key={`sidebar-item-${index}`}
         onClick={handleAccountClick}
@@ -164,25 +159,6 @@ const SideBar: FC = () => {
 
     setWidth(SIDEBAR_MIN_WIDTH);
   }, [isOpen]);
-  useEffect(() => {
-    if (location.pathname.includes(ACCOUNTS_ROUTE)) {
-      const pathnames: string[] = location.pathname
-        .split('/')
-        .filter((value) => value.length > 0);
-      const addressIndex: number = pathnames.findIndex(
-        (value) => value === 'accounts'
-      );
-
-      // if we have an address, get the address path, ie. /address/XXXX/...
-      if (addressIndex >= 0) {
-        setActiveAccountAddress(pathnames[addressIndex + 1] || null);
-
-        return;
-      }
-    }
-
-    setActiveAccountAddress(null);
-  }, [location]);
 
   return (
     <VStack

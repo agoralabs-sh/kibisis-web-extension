@@ -3,6 +3,7 @@ export { default as fetchAccountsFromStorageThunk } from './fetchAccountsFromSto
 export { default as removeAccountByIdThunk } from './removeAccountByIdThunk';
 export { default as removeARC0200AssetHoldingsThunk } from './removeARC0200AssetHoldingsThunk';
 export { default as saveAccountNameThunk } from './saveAccountNameThunk';
+export { default as saveActiveAccountDetails } from './saveActiveAccountDetails';
 export { default as saveNewAccountThunk } from './saveNewAccountThunk';
 export { default as startPollingForAccountsThunk } from './startPollingForAccountsThunk';
 export { default as stopPollingForAccountsThunk } from './stopPollingForAccountsThunk';

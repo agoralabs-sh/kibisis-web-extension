@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // selectors
-import useSelectAccounts from './useSelectAccounts';
+import useSelectAccounts from './accounts/useSelectAccounts';
 
 // types
 import { IAccount, IMainRootState } from '@extension/types';

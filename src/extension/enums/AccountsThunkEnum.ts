@@ -4,6 +4,7 @@ enum AccountsThunkEnum {
   RemoveAccountById = 'accounts/removeAccountById',
   RemoveARC0200AssetHolding = 'accounts/removeARC0200AssetHolding',
   SaveAccountName = 'accounts/saveAccountName',
+  SaveActiveAccountDetails = 'accounts/saveActiveAccountDetails',
   SaveNewAccount = 'accounts/saveNewAccount',
   StartPollingForAccounts = 'accounts/startPollingForAccounts',
   StopPollingForAccounts = 'accounts/stopPollingForAccounts',

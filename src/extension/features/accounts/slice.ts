@@ -10,6 +10,7 @@ import {
   removeAccountByIdThunk,
   removeARC0200AssetHoldingsThunk,
   saveAccountNameThunk,
+  saveActiveAccountDetails,
   saveNewAccountThunk,
   startPollingForAccountsThunk,
   stopPollingForAccountsThunk,
@@ -17,8 +18,8 @@ import {
 } from './thunks';
 
 // types
-import { IAccount } from '@extension/types';
-import { IAccountsState } from './types';
+import type { IAccount, IActiveAccountDetails } from '@extension/types';
+import type { IAccountsState, IFetchAccountsFromStorageResult } from './types';
 
 // utils
 import upsertItemsById from '@extension/utils/upsertItemsById';
@@ -71,8 +72,12 @@ const slice = createSlice({
     /** fetch accounts from storage **/
     builder.addCase(
       fetchAccountsFromStorageThunk.fulfilled,
-      (state: IAccountsState, action: PayloadAction<IAccount[]>) => {
-        state.items = action.payload;
+      (
+        state: IAccountsState,
+        action: PayloadAction<IFetchAccountsFromStorageResult>
+      ) => {
+        state.activeAccountDetails = action.payload.activeAccountDetails;
+        state.items = action.payload.accounts;
         state.fetching = false;
       }
     );
@@ -168,6 +173,16 @@ const slice = createSlice({
     builder.addCase(saveAccountNameThunk.rejected, (state: IAccountsState) => {
       state.saving = false;
     });
+    /** save active account details **/
+    builder.addCase(
+      saveActiveAccountDetails.fulfilled,
+      (
+        state: IAccountsState,
+        action: PayloadAction<IActiveAccountDetails | null>
+      ) => {
+        state.activeAccountDetails = action.payload;
+      }
+    );
     /** save new account **/
     builder.addCase(
       saveNewAccountThunk.fulfilled,

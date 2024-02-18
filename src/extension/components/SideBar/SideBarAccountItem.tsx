@@ -35,7 +35,7 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 interface IProps {
   account: IAccount;
   active: boolean;
-  onClick: (address: string) => void;
+  onClick: (id: string) => void;
 }
 
 const SideBarAccountItem: FC<IProps> = ({
@@ -53,6 +53,7 @@ const SideBarAccountItem: FC<IProps> = ({
     'gray.200',
     'whiteAlpha.200'
   );
+  // misc
   const address: string = AccountService.convertPublicKeyToAlgorandAddress(
     account.publicKey
   );
@@ -68,7 +69,8 @@ const SideBarAccountItem: FC<IProps> = ({
           bg: buttonHoverBackgroundColor,
         },
       };
-  const handleOnClick = () => onClick(address);
+  // handlers
+  const handleOnClick = () => onClick(account.id);
 
   return (
     <Tooltip

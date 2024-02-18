@@ -93,9 +93,7 @@ const AssetTabArc200AssetItem: FC<IProps> = ({
         rightIcon={
           <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />
         }
-        to={`${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
-        )}${ASSETS_ROUTE}/${arc200Asset.id}`}
+        to={`${ASSETS_ROUTE}/${arc200Asset.id}`}
         variant="ghost"
         w="full"
       >

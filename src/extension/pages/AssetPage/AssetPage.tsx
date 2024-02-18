@@ -73,7 +73,7 @@ const AssetPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
-  const { address, assetId } = useParams();
+  const { assetId } = useParams();
   const {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,
@@ -91,7 +91,6 @@ const AssetPage: FC = () => {
     assetHolding,
     amountInStandardUnits,
   } = useAssetPage({
-    address: address || null,
     assetId: assetId || null,
     onError: () =>
       navigate(ACCOUNTS_ROUTE, {
@@ -105,10 +104,12 @@ const AssetPage: FC = () => {
   // handlers
   const handleReceiveClick = () => onShareAddressModalOpen();
   const handleSendClick = () => {
-    if (asset && address) {
+    if (asset && account) {
       dispatch(
         initializeSendAsset({
-          fromAddress: address,
+          fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
+            account.publicKey
+          ),
           selectedAsset: asset,
         })
       );
@@ -158,7 +159,7 @@ const AssetPage: FC = () => {
 
   // if we don't have the params, return to accounts page
   useEffect(() => {
-    if (!address || !assetId) {
+    if (!assetId) {
       return reset();
     }
   }, []);

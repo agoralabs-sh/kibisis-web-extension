@@ -2,76 +2,44 @@ import { useEffect, useState } from 'react';
 
 // selectors
 import {
-  useSelectAccounts,
+  useSelectActiveAccount,
+  useSelectActiveAccountTransactions,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
-import {
+import type {
   IAccount,
   IAccountTransactions,
   INetwork,
   ITransactions,
 } from '@extension/types';
-import { IUseTransactionPageOptions, IUseTransactionPageState } from './types';
+import type { IUseTransactionPageState } from './types';
 
-export default function useTransactionPage({
-  address,
-  onError,
-  transactionId,
-}: IUseTransactionPageOptions): IUseTransactionPageState {
+export default function useTransactionPage(
+  transactionId: string | null
+): IUseTransactionPageState {
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
+  const account: IAccount | null = useSelectActiveAccount();
+  const accountTransactions: IAccountTransactions | null =
+    useSelectActiveAccountTransactions();
   const network: INetwork | null = useSelectSelectedNetwork();
   // state
-  const [account, setAccount] = useState<IAccount | null>(null);
   const [transaction, setTransaction] = useState<ITransactions | null>(null);
 
-  // 1. when we have the address and accounts, get the account
+  // when the account has been found, and we have the selected network, get the account transaction
   useEffect(() => {
-    let selectedAccount: IAccount | null;
-
-    if (address && accounts.length > 0) {
-      selectedAccount =
-        accounts.find(
-          (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === address
-        ) || null;
-
-      // if there is no account, we have an error
-      if (!selectedAccount) {
-        return onError();
-      }
-
-      setAccount(selectedAccount);
-    }
-  }, [address, accounts]);
-  // 2. when the account has been found, and we have the selected network, get the account transaction
-  useEffect(() => {
-    let accountTransactions: IAccountTransactions | null;
     let selectedTransaction: ITransactions | null;
 
-    if (account && network) {
-      accountTransactions = AccountService.extractAccountTransactionsForNetwork(
-        account,
-        network
-      );
+    if (accountTransactions) {
+      selectedTransaction =
+        accountTransactions.transactions.find(
+          (value) => value.id === transactionId
+        ) || null;
 
-      if (accountTransactions) {
-        selectedTransaction =
-          accountTransactions.transactions.find(
-            (value) => value.id === transactionId
-          ) || null;
-
-        setTransaction(selectedTransaction);
-      }
+      setTransaction(selectedTransaction);
     }
-  }, [account, network]);
+  }, [accountTransactions]);
 
   return {
     account,

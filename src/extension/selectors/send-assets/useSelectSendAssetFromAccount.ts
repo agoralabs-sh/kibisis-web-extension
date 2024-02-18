@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // selectors
-import useSelectAccounts from '../useSelectAccounts';
+import useSelectAccounts from '../accounts/useSelectAccounts';
 
 // services
 import AccountService from '@extension/services/AccountService';

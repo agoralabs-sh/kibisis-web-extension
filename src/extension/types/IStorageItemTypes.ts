@@ -1,5 +1,6 @@
 // types
 import IAccount from './IAccount';
+import IActiveAccountDetails from './IActiveAccountDetails';
 import IAdvancedSettings from './IAdvancedSettings';
 import IAppearanceSettings from './IAppearanceSettings';
 import IAppWindow from './IAppWindow';
@@ -16,6 +17,7 @@ import ITransactionParams from './ITransactionParams';
 
 type IStorageItemTypes =
   | IAccount
+  | IActiveAccountDetails
   | IAdvancedSettings
   | IAppearanceSettings
   | IAppWindow

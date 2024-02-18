@@ -6,12 +6,13 @@ import { Link } from 'react-router-dom';
 
 // components
 import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
+import AssetTransferTransactionItemContent from './AssetTransferTransactionItemContent';
 import DefaultTransactionItemContent from './DefaultTransactionItemContent';
 import PaymentTransactionItemContent from './PaymentTransactionItemContent';
 
 // constants
 import {
-  ACCOUNTS_ROUTE,
+  DEFAULT_GAP,
   TAB_ITEM_HEIGHT,
   TRANSACTIONS_ROUTE,
 } from '@extension/constants';
@@ -23,14 +24,8 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
-import { IAccount, INetwork, ITransactions } from '@extension/types';
-
-// utils
-import AssetTransferTransactionItemContent from './AssetTransferTransactionItemContent';
+import type { IAccount, INetwork, ITransactions } from '@extension/types';
 
 interface IProps {
   account: IAccount;
@@ -100,13 +95,11 @@ const TransactionItem: FC<IProps> = ({
       rightIcon={
         <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />
       }
-      to={`${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
-        account.publicKey
-      )}${TRANSACTIONS_ROUTE}/${transaction.id}`}
+      to={`${TRANSACTIONS_ROUTE}/${transaction.id}`}
       variant="ghost"
       w="full"
     >
-      <HStack m={0} p={0} spacing={2} w="full">
+      <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
         {renderContent()}
       </HStack>
     </Button>

@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // types
-import { IAccount, IMainRootState } from '@extension/types';
+import type { IAccount, IMainRootState } from '@extension/types';
 
 /**
  * Selects an account for the supplied ID.
