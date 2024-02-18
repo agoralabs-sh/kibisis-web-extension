@@ -1,7 +1,6 @@
 import {
   HStack,
   Icon,
-  Skeleton,
   Spacer,
   Text,
   Tooltip,
@@ -12,9 +11,7 @@ import {
   TabPanels,
   Tabs,
   StackProps,
-  Heading,
 } from '@chakra-ui/react';
-import { faker } from '@faker-js/faker';
 import BigNumber from 'bignumber.js';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,14 +23,7 @@ import {
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import {
-  Location,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // components
 import ActivityTab from '@extension/components/ActivityTab';
@@ -44,18 +34,14 @@ import EditableAccountNameField from '@extension/components/EditableAccountNameF
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import NetworkSelect, {
-  NetworkSelectSkeleton,
-} from '@extension/components/NetworkSelect';
-import NativeBalance, {
-  NativeBalanceSkeleton,
-} from '@extension/components/NativeBalance';
+import NetworkSelect from '@extension/components/NetworkSelect';
+import NativeBalance from '@extension/components/NativeBalance';
+import AccountPageSkeletonContent from './AccountPageSkeletonContent';
 
 // constants
 import {
   ACCOUNT_PAGE_HEADER_ITEM_HEIGHT,
   ADD_ACCOUNT_ROUTE,
-  ACCOUNTS_ROUTE,
   DEFAULT_GAP,
 } from '@extension/constants';
 
@@ -63,13 +49,13 @@ import {
 import {
   removeAccountByIdThunk,
   saveAccountNameThunk,
+  saveActiveAccountDetails,
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 import { setConfirm } from '@extension/features/system';
 
 // hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -78,10 +64,10 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 
 // selectors
 import {
-  useSelectAccountByAddress,
-  useSelectAccountInformationByAddress,
-  useSelectAccounts,
-  useSelectAccountTransactionsByAddress,
+  useSelectActiveAccount,
+  useSelectActiveAccountDetails,
+  useSelectActiveAccountInformation,
+  useSelectActiveAccountTransactions,
   useSelectFetchingAccounts,
   useSelectFetchingSettings,
   useSelectIsOnline,
@@ -96,10 +82,11 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import {
+import type {
   IAccount,
   IAccountInformation,
   IAccountTransactions,
+  IActiveAccountDetails,
   IAppThunkDispatch,
   IExplorer,
   INetwork,
@@ -117,19 +104,15 @@ const AccountPage: FC = () => {
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
-  const location: Location = useLocation();
   const navigate: NavigateFunction = useNavigate();
-  const { address } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams({
-    accountTabId: '0',
-  });
   // selectors
-  const account: IAccount | null = useSelectAccountByAddress(address);
+  const account: IAccount | null = useSelectActiveAccount();
   const accountInformation: IAccountInformation | null =
-    useSelectAccountInformationByAddress(address);
-  const accounts: IAccount[] = useSelectAccounts();
+    useSelectActiveAccountInformation();
   const accountTransactions: IAccountTransactions | null =
-    useSelectAccountTransactionsByAddress(address);
+    useSelectActiveAccountTransactions();
+  const activeAccountDetails: IActiveAccountDetails | null =
+    useSelectActiveAccountDetails();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
   const fetchingSettings: boolean = useSelectFetchingSettings();
   const online: boolean = useSelectIsOnline();
@@ -139,15 +122,10 @@ const AccountPage: FC = () => {
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();
   const subTextColor: string = useSubTextColor();
   // state
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  // misc
-  const accountTabId: number = parseInt(
-    searchParams.get('accountTabId') || '0'
-  );
   // handlers
   const handleActivityScrollEnd = () => {
     if (account && accountTransactions && accountTransactions.next) {
@@ -206,10 +184,16 @@ const AccountPage: FC = () => {
       );
     }
   };
-  const handleTabChange = (index: number) =>
-    setSearchParams({
-      accountTabId: index.toString(),
-    });
+  const handleTabChange = (tabIndex: number) => {
+    if (account) {
+      dispatch(
+        saveActiveAccountDetails({
+          accountId: account.id,
+          tabIndex,
+        })
+      );
+    }
+  };
   // renders
   const renderContent = () => {
     const headerContainerProps: StackProps = {
@@ -221,25 +205,10 @@ const AccountPage: FC = () => {
 
     if (fetchingAccounts || fetchingSettings) {
       return (
-        <VStack {...headerContainerProps}>
-          <NetworkSelectSkeleton network={networks[0]} />
-
-          <HStack alignItems="center" w="full">
-            {/*name/address*/}
-            <Skeleton>
-              <Skeleton>
-                <Heading color={defaultTextColor} size="md" textAlign="left">
-                  {faker.random.alphaNumeric(12).toUpperCase()}
-                </Heading>
-              </Skeleton>
-            </Skeleton>
-
-            <Spacer />
-
-            {/*balance*/}
-            <NativeBalanceSkeleton />
-          </HStack>
-        </VStack>
+        <AccountPageSkeletonContent
+          network={networks[0]}
+          {...headerContainerProps}
+        />
       );
     }
 
@@ -380,7 +349,7 @@ const AccountPage: FC = () => {
           {/*assets/nfts/activity tabs*/}
           <Tabs
             colorScheme={primaryColorScheme}
-            defaultIndex={accountTabId}
+            defaultIndex={activeAccountDetails?.tabIndex || 0}
             isLazy={true}
             m={0}
             onChange={handleTabChange}
@@ -432,41 +401,6 @@ const AccountPage: FC = () => {
     );
   };
 
-  useEffect(() => {
-    let address: string;
-
-    // if there is no account, go to the first account, or the accounts index if no accounts exist
-    if (!account) {
-      navigate(
-        `${ACCOUNTS_ROUTE}${
-          accounts[0]
-            ? `/${AccountService.convertPublicKeyToAlgorandAddress(
-                accounts[0].publicKey
-              )}`
-            : ''
-        }`,
-        {
-          replace: true,
-        }
-      );
-
-      return;
-    }
-
-    address = AccountService.convertPublicKeyToAlgorandAddress(
-      account.publicKey
-    );
-
-    // if there is an account, but the location doesn't match, change the location
-    if (!location.pathname.includes(address)) {
-      navigate(`${ACCOUNTS_ROUTE}/${address}`, {
-        preventScrollReset: true,
-        replace: true,
-      });
-
-      return;
-    }
-  }, [account]);
   useEffect(() => {
     if (account) {
       // if we have no transaction data, or the transaction data is empty, attempt a fetch

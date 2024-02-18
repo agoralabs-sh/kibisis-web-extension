@@ -15,11 +15,12 @@ import Root from './Root';
 
 // constants
 import {
-  ADD_ACCOUNT_ROUTE,
   ACCOUNTS_ROUTE,
+  ADD_ACCOUNT_ROUTE,
+  ASSETS_ROUTE,
   SETTINGS_ROUTE,
   PASSWORD_LOCK_ROUTE,
-  PASSWORD_LOCK_ALARM,
+  TRANSACTIONS_ROUTE,
 } from '@extension/constants';
 
 // features
@@ -44,10 +45,13 @@ import {
 } from '@extension/features/system';
 
 // pages
+import AccountPage from '@extension/pages/AccountPage';
+import AssetPage from '@extension/pages/AssetPage';
+import LoadingPage from '@extension/pages/LoadingPage';
 import PasswordLockPage from '@extension/pages/PasswordLockPage';
+import TransactionPage from '@extension/pages/TransactionPage';
 
 // routers
-import AccountRouter from '@extension/routers/AccountRouter';
 import AddAccountRouter from '@extension/routers/MainAddAccountRouter';
 import SettingsRouter from '@extension/routers/SettingsRouter';
 
@@ -62,7 +66,6 @@ import type {
 
 // utils
 import makeStore from '@extension/utils/makeStore';
-import LoadingPage from '@extension/pages/LoadingPage';
 
 const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
   const _functionName: string = 'createRouter';
@@ -78,7 +81,7 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
               path: '/',
             },
             {
-              element: <AccountRouter />,
+              element: <AccountPage />,
               loader: () => {
                 dispatch(setSideBar(true));
 
@@ -96,6 +99,15 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
               path: `${ADD_ACCOUNT_ROUTE}/*`,
             },
             {
+              element: <AssetPage />,
+              loader: () => {
+                dispatch(setSideBar(true));
+
+                return null;
+              },
+              path: `${ASSETS_ROUTE}/:assetId`,
+            },
+            {
               element: <SettingsRouter />,
               loader: () => {
                 dispatch(setSideBar(true));
@@ -103,6 +115,15 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
                 return null;
               },
               path: `${SETTINGS_ROUTE}/*`,
+            },
+            {
+              element: <TransactionPage />,
+              loader: () => {
+                dispatch(setSideBar(true));
+
+                return null;
+              },
+              path: `${TRANSACTIONS_ROUTE}/:transactionId`,
             },
           ],
           element: <Root />,
