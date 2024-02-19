@@ -180,6 +180,11 @@ export default class BaseContract {
 
     type = (abiMethod.returns.type as algosdk.ABIType).toString();
 
+    // if we have an address, return as a string
+    if (type.includes('address')) {
+      return abiMethod.returns.type.decode(trimmedLog) as string;
+    }
+
     // if we have bytes, return as a string
     if (type.includes('byte')) {
       return new TextDecoder().decode(trimmedLog);
