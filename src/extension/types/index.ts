@@ -33,6 +33,8 @@ export type { default as IAppThunkDispatchReturn } from './IAppThunkDispatchRetu
 export type { default as IApplicationTransaction } from './IApplicationTransaction';
 export type { default as IApplicationTransactionTypes } from './IApplicationTransactionTypes';
 export type { default as IAppWindow } from './IAppWindow';
+export type { default as IARC0003TokenMetadata } from './IARC0003TokenMetadata';
+export type { default as IARC0003TokenMetadataLocalization } from './IARC0003TokenMetadataLocalization';
 export type { default as IARC0200Asset } from './IARC0200Asset';
 export type { default as IARC0200AssetHolding } from './IARC0200AssetHolding';
 export type { default as IARC0200AssetInformation } from './IARC0200AssetInformation';

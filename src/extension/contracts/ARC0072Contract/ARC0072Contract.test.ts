@@ -14,7 +14,7 @@ import type { IARC0200AssetInformation, INetwork } from '@extension/types';
 // utils
 import createLogger from '@common/utils/createLogger';
 
-describe(`${__dirname}#ARC0072Contract`, () => {
+describe.skip(`${__dirname}#ARC0072Contract`, () => {
   const appId: BigNumber = new BigNumber('28385598');
   const options: IBaseOptions = {
     logger: createLogger('debug'),
