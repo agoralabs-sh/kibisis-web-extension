@@ -6,6 +6,7 @@ import { IResourceLanguage } from '@extension/types';
 
 const translation: IResourceLanguage = {
   buttons: {
+    add: 'Add',
     addAccount: 'Add Account',
     addAsset: 'Add Asset',
     allow: 'Allow',
@@ -40,6 +41,7 @@ const translation: IResourceLanguage = {
     accountAlreadyAdded: 'Account already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
+    addAssetURI: 'You are about to add the following asset.',
     addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
@@ -294,6 +296,7 @@ const translation: IResourceLanguage = {
     authorizedAccounts: 'Authorized Accounts',
     authorizedAddresses: 'Authorized Addresses',
     balance: 'Balance',
+    chain: 'Chain',
     clawbackAccount: 'Clawback Account',
     connectWallet: 'Connect Wallet',
     copyAddress: 'Copy Address',

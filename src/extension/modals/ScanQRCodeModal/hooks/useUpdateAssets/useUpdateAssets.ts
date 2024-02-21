@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-// enums
-import { ARC0300QueryEnum } from '@extension/enums';
-
 // features
 import { updateARC0200AssetInformationThunk } from '@extension/features/arc200-assets';
 
@@ -17,14 +14,11 @@ import {
 import type {
   IAppThunkDispatch,
   IARC0200Asset,
-  IARC0300AccountImportSchema,
   INetwork,
 } from '@extension/types';
-import type { IUseAccountImportAssets } from './types';
+import type { IUseUpdateAssets } from './types';
 
-export default function useAccountImportAssets(
-  schema: IARC0300AccountImportSchema
-): IUseAccountImportAssets {
+export default function useUpdateAssets(assetIDs: string[]): IUseUpdateAssets {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const arc0200Assets: IARC0200Asset[] =
@@ -46,7 +40,7 @@ export default function useAccountImportAssets(
       setLoading(true);
 
       // iterate all the assets to add, and check if they are known arc-0200 assets
-      schema.query[ARC0300QueryEnum.Asset].forEach((appId) => {
+      assetIDs.forEach((appId) => {
         const asset: IARC0200Asset | null =
           arc0200Assets.find((value) => value.id === appId) || null;
 

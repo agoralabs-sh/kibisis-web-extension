@@ -47,7 +47,7 @@ import {
 } from '@extension/constants';
 
 // enums
-import { ErrorCodeEnum } from '@extension/enums';
+import { ARC0300QueryEnum, ErrorCodeEnum } from '@extension/enums';
 
 // features
 import {
@@ -60,7 +60,7 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useAccountImportAssets from './hooks/useAccountImportAssets';
+import useUpdateAssets from './hooks/useUpdateAssets';
 
 // selectors
 import {
@@ -72,6 +72,9 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+
+// theme
+import { theme } from '@extension/theme';
 
 // types
 import type { ILogger } from '@common/types';
@@ -87,7 +90,6 @@ import type {
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
-import { theme } from '@extension/theme';
 
 interface IProps {
   onComplete: () => void;
@@ -116,8 +118,8 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   const {
     assets,
     loading,
-    reset: resetAccountImportAssets,
-  } = useAccountImportAssets(schema);
+    reset: resetUpdateAssets,
+  } = useUpdateAssets(schema.query[ARC0300QueryEnum.Asset]);
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -306,7 +308,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   };
   const reset = () => {
     resetPassword();
-    resetAccountImportAssets();
+    resetUpdateAssets();
     setSaving(false);
   };
 
