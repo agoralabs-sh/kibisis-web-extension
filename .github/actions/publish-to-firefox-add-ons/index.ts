@@ -14,7 +14,7 @@ import { createJwt, handleError, publish, uploadZipFile } from './utils';
 
 (async () => {
   const styles = (await import('ansi-styles')).default;
-  const infoPrefix: string = `${styles.yellow.open}[INFO]${styles.yellow.close}`;
+  const infoLogPrefix: string = `${styles.yellow.open}[INFO]${styles.yellow.close}`;
   let jwt: string;
   let uploadUuid: string;
   let zipPath: string;
@@ -62,26 +62,26 @@ import { createJwt, handleError, publish, uploadZipFile } from './utils';
       );
     }
 
-    info(`${infoPrefix} creating jwt...`);
+    info(`${infoLogPrefix} creating jwt...`);
 
     jwt = createJwt(process.env.JWT_ISSUER, process.env.JWT_SECRET);
 
-    info(`${infoPrefix} jwt created`);
+    info(`${infoLogPrefix} jwt created`);
     info(
-      `${infoPrefix} uploading add-on "${process.env.PRODUCT_ID}" with zip file "${zipPath}"`
+      `${infoLogPrefix} uploading add-on "${process.env.ADD_ON_ID}" with zip file "${zipPath}"`
     );
 
-    uploadUuid = await uploadZipFile(zipPath, jwt);
+    uploadUuid = await uploadZipFile(zipPath, jwt, { infoLogPrefix });
 
     info(
-      `${infoPrefix} successfully uploaded zip file with uuid "${uploadUuid}"`
+      `${infoLogPrefix} successfully uploaded zip file with uuid "${uploadUuid}"`
     );
-    info(`${infoPrefix} publishing add-on: ${process.env.ADD_ON_ID}`);
+    info(`${infoLogPrefix} publishing add-on: ${process.env.ADD_ON_ID}`);
 
     await publish(process.env.ADD_ON_ID, uploadUuid, jwt);
 
     info(
-      `${infoPrefix} successfully published add-on "${process.env.ADD_ON_ID}"`
+      `${infoLogPrefix} successfully published add-on "${process.env.ADD_ON_ID}"`
     );
   } catch (error) {
     handleError(error);
