@@ -36,6 +36,7 @@ export type { default as IAppWindow } from './IAppWindow';
 export type { default as IARC0200Asset } from './IARC0200Asset';
 export type { default as IARC0200AssetHolding } from './IARC0200AssetHolding';
 export type { default as IARC0200AssetInformation } from './IARC0200AssetInformation';
+export type { default as IARC0300AssetAddSchema } from './IARC0300AssetAddSchema';
 export type { default as IARC0300BaseSchema } from './IARC0300BaseSchema';
 export type { default as IARC0300AccountImportSchema } from './IARC0300AccountImportSchema';
 export type { default as IAssetConfigTransaction } from './IAssetConfigTransaction';

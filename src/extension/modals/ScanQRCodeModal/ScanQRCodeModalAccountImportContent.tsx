@@ -19,12 +19,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import {
-  Location,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Location, useLocation } from 'react-router-dom';
 
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
@@ -47,11 +42,12 @@ import {
 } from '@extension/constants';
 
 // enums
-import { ErrorCodeEnum } from '@extension/enums';
+import { ARC0300QueryEnum, ErrorCodeEnum } from '@extension/enums';
 
 // features
 import {
   addARC0200AssetHoldingsThunk,
+  saveActiveAccountDetails,
   saveNewAccountThunk,
 } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
@@ -60,10 +56,11 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useAccountImportAssets from './hooks/useAccountImportAssets';
+import useUpdateAssets from './hooks/useUpdateAssets';
 
 // selectors
 import {
+  useSelectActiveAccountDetails,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
@@ -73,10 +70,14 @@ import {
 // services
 import AccountService from '@extension/services/AccountService';
 
+// theme
+import { theme } from '@extension/theme';
+
 // types
 import type { ILogger } from '@common/types';
 import type {
   IAccount,
+  IActiveAccountDetails,
   IAppThunkDispatch,
   IARC0300AccountImportSchema,
   INetwork,
@@ -87,7 +88,6 @@ import type {
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
-import { theme } from '@extension/theme';
 
 interface IProps {
   onComplete: () => void;
@@ -103,10 +103,11 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const location: Location = useLocation();
-  const navigate: NavigateFunction = useNavigate();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   // selectors
+  const activeAccountDetails: IActiveAccountDetails | null =
+    useSelectActiveAccountDetails();
   const logger: ILogger = useSelectLogger();
   const network: INetwork | null = useSelectSelectedNetwork();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
@@ -116,8 +117,8 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   const {
     assets,
     loading,
-    reset: resetAccountImportAssets,
-  } = useAccountImportAssets(schema);
+    reset: resetUpdateAssets,
+  } = useUpdateAssets(schema.query[ARC0300QueryEnum.Asset]);
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -276,16 +277,13 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
         })
       );
 
-      // if the page is on the account page, go to the new account
+      // if the page is on the account page, set the new active account
       if (location.pathname.includes(ACCOUNTS_ROUTE)) {
-        navigate(
-          `${ACCOUNTS_ROUTE}/${AccountService.convertPublicKeyToAlgorandAddress(
-            account.publicKey
-          )}`,
-          {
-            preventScrollReset: true,
-            replace: true,
-          }
+        dispatch(
+          saveActiveAccountDetails({
+            accountId: account.id,
+            tabIndex: activeAccountDetails?.tabIndex || 0,
+          })
         );
       }
     }
@@ -306,7 +304,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   };
   const reset = () => {
     resetPassword();
-    resetAccountImportAssets();
+    resetUpdateAssets();
     setSaving(false);
   };
 

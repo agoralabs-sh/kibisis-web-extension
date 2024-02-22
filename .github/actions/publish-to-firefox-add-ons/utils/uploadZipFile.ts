@@ -15,23 +15,26 @@ import { ErrorCodeEnum } from '../enums';
 import { ActionError } from '../errors';
 
 // types
-import { IUploadResponse } from '../types';
+import type { IBaseOptions, IUploadResponse } from '../types';
 
 // utils
 import createAuthorizationHeader from './createAuthorizationHeader';
 import waitInMilliseconds from './waitInMilliseconds';
+import { info } from '@actions/core';
 
 /**
  * Uploads the zip file and waits for validation.
  * @param {string} zipPath - the path to the zip file to upload.
  * @param {string} jwt - the JWT used to authenticate the request.
+ * @param {IBaseOptions} options - [optional] various options to customize.
  * @returns {Promise<string>} the ID for the upload.
  * @see {@link https://addons-server.readthedocs.io/en/latest/topics/api/addons.html#upload-create}
  * @see {@link https://addons-server.readthedocs.io/en/latest/topics/api/addons.html#upload-detail}
  */
 export default async function uploadZipFile(
   zipPath: string,
-  jwt: string
+  jwt: string,
+  { infoLogPrefix }: IBaseOptions
 ): Promise<string> {
   const url: string = `${BASE_URL}/upload/`;
   const formData: FormData = new FormData();
@@ -61,6 +64,9 @@ export default async function uploadZipFile(
     response = await axios.get(`${url}${uuid}`, {
       headers: createAuthorizationHeader(jwt),
     });
+
+    info(`${infoLogPrefix} response: ${JSON.stringify(response.data)}`);
+
     isValid = response.data.valid;
 
     await waitInMilliseconds(pollTime);

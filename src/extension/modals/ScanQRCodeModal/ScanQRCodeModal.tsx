@@ -17,6 +17,7 @@ import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 // selectors
 import {
   useSelectLogger,
+  useSelectNetworks,
   useSelectScanQRCodeModal,
 } from '@extension/selectors';
 
@@ -24,11 +25,14 @@ import {
 import type { ILogger } from '@common/types';
 import type {
   IARC0300AccountImportSchema,
+  IARC0300AssetAddSchema,
   IARC0300BaseSchema,
+  INetwork,
 } from '@extension/types';
 
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
+import ScanQRCodeModalAssetAddContent from '@extension/modals/ScanQRCodeModal/ScanQRCodeModalAssetAddContent';
 
 interface IProps {
   onClose: () => void;
@@ -37,6 +41,7 @@ interface IProps {
 const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   // selectors
   const logger: ILogger = useSelectLogger();
+  const networks: INetwork[] = useSelectNetworks();
   const isOpen: boolean = useSelectScanQRCodeModal();
   // hooks
   const { resetAction, scanning, startScanningAction, uri } =
@@ -65,7 +70,10 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
     let arc0300Schema: IARC0300BaseSchema | null;
 
     if (uri) {
-      arc0300Schema = parseURIToARC0300Schema(uri, { logger });
+      arc0300Schema = parseURIToARC0300Schema(uri, {
+        logger,
+        supportedNetworks: networks,
+      });
 
       if (arc0300Schema) {
         switch (arc0300Schema.authority) {
@@ -76,6 +84,18 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
                   onComplete={handleClose}
                   onPreviousClick={handlePreviousClick}
                   schema={arc0300Schema as IARC0300AccountImportSchema}
+                />
+              );
+            }
+
+            break;
+          case ARC0300AuthorityEnum.Asset:
+            if (arc0300Schema.paths[0] === ARC0300PathEnum.Add) {
+              return (
+                <ScanQRCodeModalAssetAddContent
+                  onComplete={handleClose}
+                  onPreviousClick={handlePreviousClick}
+                  schema={arc0300Schema as IARC0300AssetAddSchema}
                 />
               );
             }
