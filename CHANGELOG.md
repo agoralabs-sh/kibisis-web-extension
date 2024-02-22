@@ -1,3 +1,10 @@
+# [1.12.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.8...v1.12.0-beta.9) (2024-02-22)
+
+
+### Features
+
+* add arc 0200 asset via qr code ([#182](https://github.com/agoralabs-sh/kibisis-web-extension/issues/182)) ([46dc081](https://github.com/agoralabs-sh/kibisis-web-extension/commit/46dc0819c60f4914a12a652b59c43352575d0558))
+
 # [1.12.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.7...v1.12.0-beta.8) (2024-02-18)
 
 
