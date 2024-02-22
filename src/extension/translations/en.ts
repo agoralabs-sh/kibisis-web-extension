@@ -41,7 +41,8 @@ const translation: IResourceLanguage = {
     accountAlreadyAdded: 'Account already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
-    addAssetURI: 'You are about to add the following asset.',
+    addAssetURI:
+      'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
@@ -210,6 +211,7 @@ const translation: IResourceLanguage = {
     addedAccount: 'Added Account!',
     addedAsset: 'Added Asset {{symbol}}!',
     allowMainNetConfirm: 'Allow MainNet Networks',
+    assetDetails: 'Asset Details',
     authentication: 'Authentication',
     beta: 'Beta',
     cameraDenied: 'Camera Denied',
@@ -242,6 +244,7 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Remove All Sessions',
     scanningForQRCode: 'Scanning For QR Code',
     scanQrCode: 'Scan QR Code',
+    selectAccount: 'Select Account',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
@@ -371,6 +374,7 @@ const translation: IResourceLanguage = {
     shareAddress: 'Share Address',
     signingMethod: 'Signing Method',
     stateProofKey: 'State Proof Public Key',
+    symbol: 'Symbol',
     theme: 'Theme',
     to: 'To',
     totalSupply: 'Total Supply',

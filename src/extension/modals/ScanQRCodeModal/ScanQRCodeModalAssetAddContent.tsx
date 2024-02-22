@@ -7,7 +7,6 @@ import {
   ModalFooter,
   ModalHeader,
   Text,
-  Tooltip,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -20,33 +19,39 @@ import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import {
-  Location,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Location, useLocation } from 'react-router-dom';
 
 // components
+import AccountSelect from '@extension/components/AccountSelect';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 import Button from '@extension/components/Button';
+import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalItem from '@extension/components/ModalItem';
+import ModalSubHeading from '@extension/components/ModalSubHeading';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 
 // constants
 import {
+  ACCOUNTS_ROUTE,
   BODY_BACKGROUND_COLOR,
   DEFAULT_GAP,
   MODAL_ITEM_HEIGHT,
 } from '@extension/constants';
 
 // enums
-import { ARC0300QueryEnum } from '@extension/enums';
+import { ARC0300QueryEnum, ErrorCodeEnum } from '@extension/enums';
+
+// features
+import {
+  addARC0200AssetHoldingsThunk,
+  saveActiveAccountDetails,
+} from '@extension/features/accounts';
+import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -54,7 +59,13 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useUpdateAssets from './hooks/useUpdateAssets';
 
 // selectors
-import { useSelectLogger, useSelectNetworks } from '@extension/selectors';
+import {
+  useSelectAccounts,
+  useSelectActiveAccount,
+  useSelectActiveAccountDetails,
+  useSelectLogger,
+  useSelectNetworks,
+} from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -62,6 +73,8 @@ import { theme } from '@extension/theme';
 // types
 import type { ILogger } from '@common/types';
 import type {
+  IAccount,
+  IActiveAccountDetails,
   IAppThunkDispatch,
   IARC0200Asset,
   IARC0300AssetAddSchema,
@@ -71,7 +84,7 @@ import type {
 // utils
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
-import ChainBadge from '@extension/components/ChainBadge';
+import isAssetInAccountHoldings from '@extension/utils/isAssetInAccountHoldings';
 
 interface IProps {
   onComplete: () => void;
@@ -87,9 +100,12 @@ const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const location: Location = useLocation();
-  const navigate: NavigateFunction = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
+  const accounts: IAccount[] = useSelectAccounts();
+  const activeAccount: IAccount | null = useSelectActiveAccount();
+  const activeAccountDetails: IActiveAccountDetails | null =
+    useSelectActiveAccountDetails();
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
   // hooks
@@ -101,6 +117,7 @@ const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   // states
+  const [account, setAccount] = useState<IAccount | null>(activeAccount);
   const [saving, setSaving] = useState<boolean>(false);
   // misc
   const asset: IARC0200Asset | null = assets[0] || null;
@@ -116,21 +133,98 @@ const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
     ? convertToStandardUnit(new BigNumber(asset.totalSupply), asset.decimals)
     : new BigNumber('0');
   // handlers
-  const handleMoreInformationToggle = (value: boolean) =>
-    value ? onOpen() : onClose();
-  const handlePreviousClick = () => {
-    reset();
-    onPreviousClick();
-  };
   const handleAddClick = async () => {
     const _functionName: string = 'handleAddClick';
+    let updatedAccount: IAccount | null;
 
-    // clean up and close
-    handleOnComplete();
+    if (!account || !asset || !network) {
+      return;
+    }
+
+    // if the asset is already in the account, just clean up and close
+    if (isAssetInAccountHoldings({ account, asset, network })) {
+      logger.debug(
+        `${ScanQRCodeModalAssetAddContent.name}#${_functionName}: asset "${asset.id}" already added`
+      );
+
+      handleOnComplete();
+
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      updatedAccount = await dispatch(
+        addARC0200AssetHoldingsThunk({
+          accountId: account.id,
+          assets: [asset],
+          genesisHash: network.genesisHash,
+        })
+      ).unwrap();
+
+      if (updatedAccount) {
+        dispatch(
+          createNotification({
+            title: t<string>('headings.addedAsset', {
+              symbol: asset.symbol,
+            }),
+            type: 'success',
+          })
+        );
+
+        // if the page is on the account page, set the new active account
+        if (location.pathname.includes(ACCOUNTS_ROUTE)) {
+          dispatch(
+            saveActiveAccountDetails({
+              accountId: updatedAccount.id,
+              tabIndex: activeAccountDetails?.tabIndex || 0,
+            })
+          );
+        }
+      }
+
+      // clean up and close
+      handleOnComplete();
+    } catch (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.OfflineError:
+          dispatch(
+            createNotification({
+              ephemeral: true,
+              title: t<string>('headings.offline'),
+              type: 'error',
+            })
+          );
+          break;
+        default:
+          dispatch(
+            createNotification({
+              description: t<string>('errors.descriptions.code', {
+                code: error.code,
+                context: error.code,
+              }),
+              ephemeral: true,
+              title: t<string>('errors.titles.code', { context: error.code }),
+              type: 'error',
+            })
+          );
+          break;
+      }
+    }
+
+    setSaving(false);
   };
+  const handleMoreInformationToggle = (value: boolean) =>
+    value ? onOpen() : onClose();
   const handleOnComplete = () => {
     reset();
     onComplete();
+  };
+  const handleOnAccountSelect = (value: IAccount) => setAccount(value);
+  const handlePreviousClick = () => {
+    reset();
+    onPreviousClick();
   };
   const reset = () => {
     resetUpdateAssets();
@@ -164,111 +258,133 @@ const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
               <ModalSkeletonItem />
             </VStack>
           ) : (
-            <VStack spacing={2} w="full">
-              {/*asset icon*/}
-              <AssetAvatar
-                asset={asset}
-                fallbackIcon={
-                  <AssetIcon
-                    color={primaryButtonTextColor}
-                    networkTheme={network?.chakraTheme}
-                    h={6}
-                    w={6}
-                  />
-                }
-                size="md"
-              />
+            <VStack spacing={DEFAULT_GAP - 2} w="full">
+              {/*select account*/}
+              <VStack spacing={DEFAULT_GAP / 3} w="full">
+                <ModalSubHeading text={t<string>('headings.selectAccount')} />
 
-              {/*symbol*/}
-              <Tooltip aria-label="ARC200 asset symbol" label={asset.symbol}>
-                <Text
+                <AccountSelect
+                  accounts={accounts}
+                  onSelect={handleOnAccountSelect}
+                  value={account || accounts[0]}
+                />
+              </VStack>
+
+              {/*asset details*/}
+              <VStack spacing={DEFAULT_GAP / 3} w="full">
+                <ModalSubHeading text={t<string>('headings.assetDetails')} />
+
+                <ModalItem
+                  label={`${t<string>('labels.symbol')}:`}
+                  tooltipLabel={asset.symbol}
+                  value={
+                    <HStack spacing={1}>
+                      {/*symbol*/}
+                      <Text
+                        color={defaultTextColor}
+                        fontSize="xs"
+                        maxW={200}
+                        noOfLines={1}
+                        textAlign="center"
+                      >
+                        {asset.symbol}
+                      </Text>
+
+                      {/*asset icon*/}
+                      <AssetAvatar
+                        asset={asset}
+                        fallbackIcon={
+                          <AssetIcon
+                            color={primaryButtonTextColor}
+                            networkTheme={network.chakraTheme}
+                            h={3}
+                            w={3}
+                          />
+                        }
+                        size="xs"
+                      />
+                    </HStack>
+                  }
+                />
+
+                {/*name*/}
+                <ModalTextItem
+                  label={`${t<string>('labels.name')}:`}
+                  tooltipLabel={asset.name}
+                  value={asset.name}
+                />
+
+                {/*id*/}
+                <ModalItem
+                  label={`${t<string>('labels.applicationId')}:`}
+                  tooltipLabel={asset.id}
+                  value={
+                    <HStack spacing={0}>
+                      <Code
+                        borderRadius="md"
+                        fontSize="xs"
+                        wordBreak="break-word"
+                      >
+                        {asset.id}
+                      </Code>
+
+                      <CopyIconButton
+                        ariaLabel={t<string>('labels.copyApplicationId')}
+                        tooltipLabel={t<string>('labels.copyApplicationId')}
+                        size="sm"
+                        value={asset.id}
+                      />
+                    </HStack>
+                  }
+                />
+
+                {/*type*/}
+                <ModalItem
+                  label={`${t<string>('labels.chain')}:`}
+                  value={<ChainBadge network={network} />}
+                />
+
+                {/*type*/}
+                <ModalItem
+                  label={`${t<string>('labels.type')}:`}
+                  value={<AssetBadge type={asset.type} />}
+                />
+
+                <MoreInformationAccordion
                   color={defaultTextColor}
-                  fontSize="md"
-                  maxW={200}
-                  noOfLines={1}
-                  textAlign="center"
+                  fontSize="xs"
+                  isOpen={isOpen}
+                  minButtonHeight={MODAL_ITEM_HEIGHT}
+                  onChange={handleMoreInformationToggle}
                 >
-                  {asset.symbol}
-                </Text>
-              </Tooltip>
-
-              {/*name*/}
-              <ModalTextItem
-                label={`${t<string>('labels.name')}:`}
-                tooltipLabel={asset.name}
-                value={asset.name}
-              />
-
-              {/*id*/}
-              <ModalItem
-                label={`${t<string>('labels.applicationId')}:`}
-                tooltipLabel={asset.id}
-                value={
-                  <HStack spacing={0}>
-                    <Code
-                      borderRadius="md"
-                      fontSize="xs"
-                      wordBreak="break-word"
-                    >
-                      {asset.id}
-                    </Code>
-
-                    <CopyIconButton
-                      ariaLabel={t<string>('labels.copyApplicationId')}
-                      tooltipLabel={t<string>('labels.copyApplicationId')}
-                      size="sm"
-                      value={asset.id}
+                  <VStack spacing={2} w="full">
+                    {/*decimals*/}
+                    <ModalTextItem
+                      label={`${t<string>('labels.decimals')}:`}
+                      value={asset.decimals.toString()}
                     />
-                  </HStack>
-                }
-              />
 
-              {/*type*/}
-              <ModalItem
-                label={`${t<string>('labels.chain')}:`}
-                value={<ChainBadge network={network} />}
-              />
-
-              {/*type*/}
-              <ModalItem
-                label={`${t<string>('labels.type')}:`}
-                value={<AssetBadge type={asset.type} />}
-              />
-
-              <MoreInformationAccordion
-                color={defaultTextColor}
-                fontSize="sm"
-                isOpen={isOpen}
-                minButtonHeight={MODAL_ITEM_HEIGHT}
-                onChange={handleMoreInformationToggle}
-              >
-                <VStack spacing={2} w="full">
-                  {/*decimals*/}
-                  <ModalTextItem
-                    label={`${t<string>('labels.decimals')}:`}
-                    value={asset.decimals.toString()}
-                  />
-
-                  {/*total supply*/}
-                  <ModalTextItem
-                    label={`${t<string>('labels.totalSupply')}:`}
-                    tooltipLabel={formatCurrencyUnit(
-                      totalSupplyInStandardUnits,
-                      {
-                        decimals: asset.decimals,
-                        thousandSeparatedOnly: true,
-                      }
-                    )}
-                    value={formatCurrencyUnit(
-                      convertToStandardUnit(
-                        new BigNumber(asset.totalSupply),
-                        asset.decimals
-                      ),
-                      { decimals: asset.decimals }
-                    )}
-                  />
-                </VStack>
-              </MoreInformationAccordion>
+                    {/*total supply*/}
+                    <ModalTextItem
+                      label={`${t<string>('labels.totalSupply')}:`}
+                      tooltipLabel={formatCurrencyUnit(
+                        totalSupplyInStandardUnits,
+                        {
+                          decimals: asset.decimals,
+                          thousandSeparatedOnly: true,
+                        }
+                      )}
+                      value={formatCurrencyUnit(
+                        convertToStandardUnit(
+                          new BigNumber(asset.totalSupply),
+                          asset.decimals
+                        ),
+                        { decimals: asset.decimals }
+                      )}
+                    />
+                  </VStack>
+                </MoreInformationAccordion>
+              </VStack>
             </VStack>
           )}
         </VStack>
