@@ -207,11 +207,13 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    accountInformation: 'Account Information',
     addAsset: 'Add Asset',
     addedAccount: 'Added Account!',
     addedAsset: 'Added Asset {{symbol}}!',
     allowMainNetConfirm: 'Allow MainNet Networks',
     assetDetails: 'Asset Details',
+    assets: 'Assets',
     authentication: 'Authentication',
     beta: 'Beta',
     cameraDenied: 'Camera Denied',

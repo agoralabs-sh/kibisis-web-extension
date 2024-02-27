@@ -56,7 +56,7 @@ import { create as createNotification } from '@extension/features/notifications'
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import useUpdateAssets from './hooks/useUpdateAssets';
+import useUpdateARC0200Assets from './hooks/useUpdateARC0200Assets';
 
 // selectors
 import {
@@ -110,17 +110,17 @@ const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
   const networks: INetwork[] = useSelectNetworks();
   // hooks
   const {
-    assets,
+    arc0200Assets,
     loading,
     reset: resetUpdateAssets,
-  } = useUpdateAssets([schema.paths[1]]);
+  } = useUpdateARC0200Assets([schema.paths[1]]);
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   // states
   const [account, setAccount] = useState<IAccount | null>(activeAccount);
   const [saving, setSaving] = useState<boolean>(false);
   // misc
-  const asset: IARC0200Asset | null = assets[0] || null;
+  const asset: IARC0200Asset | null = arc0200Assets[0] || null;
   const network: INetwork | null =
     networks.find(
       (value) =>

@@ -1,7 +1,13 @@
 import { useSelector } from 'react-redux';
 
 // types
-import { IStandardAsset, IMainRootState, INetwork } from '@extension/types';
+import type {
+  IStandardAsset,
+  IMainRootState,
+  INetwork,
+} from '@extension/types';
+
+// utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 

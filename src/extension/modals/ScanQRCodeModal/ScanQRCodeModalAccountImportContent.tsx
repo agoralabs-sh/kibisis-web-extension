@@ -8,10 +8,12 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import BigNumber from 'bignumber.js';
 import React, {
   FC,
   KeyboardEvent,
   MutableRefObject,
+  ReactElement,
   useEffect,
   useRef,
   useState,
@@ -24,6 +26,7 @@ import { Location, useLocation } from 'react-router-dom';
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
+import AssetDisplay from '@extension/components/AssetDisplay';
 import AssetIcon from '@extension/components/AssetIcon';
 import Button from '@extension/components/Button';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
@@ -42,7 +45,11 @@ import {
 } from '@extension/constants';
 
 // enums
-import { ARC0300QueryEnum, ErrorCodeEnum } from '@extension/enums';
+import {
+  ARC0300QueryEnum,
+  AssetTypeEnum,
+  ErrorCodeEnum,
+} from '@extension/enums';
 
 // features
 import {
@@ -56,7 +63,9 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useUpdateAssets from './hooks/useUpdateAssets';
+import useAccountInformationAndAssetHoldings from './hooks/useAccountInformationAndAssetHoldings';
+import useUpdateARC0200Assets from './hooks/useUpdateARC0200Assets';
+import useUpdateStandardAssets from './hooks/useUpdateStandardAssets';
 
 // selectors
 import {
@@ -79,15 +88,20 @@ import type {
   IAccount,
   IActiveAccountDetails,
   IAppThunkDispatch,
+  IARC0200Asset,
   IARC0300AccountImportSchema,
   INetwork,
   ISettings,
+  IStandardAsset,
 } from '@extension/types';
 
 // utils
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
 
 interface IProps {
   onComplete: () => void;
@@ -113,12 +127,12 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const settings: ISettings = useSelectSettings();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
   const {
-    assets,
-    loading,
-    reset: resetUpdateAssets,
-  } = useUpdateAssets(schema.query[ARC0300QueryEnum.Asset]);
+    accountInformation,
+    loading: loadingAccountInformation,
+    updateAccountInformationAndAssetHoldingsAction,
+  } = useAccountInformationAndAssetHoldings();
+  const defaultTextColor: string = useDefaultTextColor();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -129,9 +143,29 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   } = usePassword();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor = useSubTextColor();
+  const {
+    assets: arc0200Assets,
+    loading: loadingARC0200Assets,
+    reset: resetUpdateARC0200Assets,
+  } = useUpdateARC0200Assets({
+    assetIDs: schema.query[ARC0300QueryEnum.Asset],
+    network,
+  });
+  const {
+    assets: standardAssets,
+    loading: loadingStandardAssets,
+    reset: resetUpdateStandardAssets,
+  } = useUpdateStandardAssets({
+    assetIDs:
+      accountInformation?.standardAssetHoldings.map(({ id }) => id) || [], // get the standard asset information once we have which asset holdings are present
+    network,
+  });
   // states
   const [address, setAddress] = useState<string | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
+  // misc
+  const isLoading: boolean =
+    loadingAccountInformation || loadingARC0200Assets || loadingStandardAssets;
   // handlers
   const handlePreviousClick = () => {
     reset();
@@ -217,11 +251,11 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
       ).unwrap();
 
       // if there are assets, add them to the new account
-      if (assets.length > 0 && network) {
+      if (arc0200Assets.length > 0 && network) {
         account = await dispatch(
           addARC0200AssetHoldingsThunk({
             accountId: account.id,
-            assets,
+            assets: arc0200Assets,
             genesisHash: network.genesisHash,
           })
         ).unwrap();
@@ -304,7 +338,8 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   };
   const reset = () => {
     resetPassword();
-    resetUpdateAssets();
+    resetUpdateARC0200Assets();
+    resetUpdateStandardAssets();
     setSaving(false);
   };
 
@@ -313,6 +348,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
       passwordInputRef.current.focus();
     }
   }, []);
+  // 1. decode the private key to get the address
   useEffect(() => {
     const privateKey: Uint8Array | null =
       decodePrivateKeyFromAccountImportSchema(schema);
@@ -321,6 +357,123 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
       setAddress(convertPrivateKeyToAddress(privateKey));
     }
   }, []);
+  // 2. when we get the address, get the account information
+  useEffect(() => {
+    if (address && network) {
+      (async () =>
+        await updateAccountInformationAndAssetHoldingsAction({
+          address,
+          arc0200Assets: arc0200Assets,
+          network,
+        }))();
+    }
+  }, [address, arc0200Assets]);
+  const renderAssets = () => {
+    if (isLoading) {
+      return (
+        <VStack spacing={DEFAULT_GAP / 3} w="full">
+          <ModalSkeletonItem />
+          <ModalSkeletonItem />
+          <ModalSkeletonItem />
+        </VStack>
+      );
+    }
+
+    if (
+      accountInformation &&
+      (accountInformation.arc200AssetHoldings.length > 0 ||
+        accountInformation.standardAssetHoldings.length > 0)
+    ) {
+      return (
+        <VStack spacing={DEFAULT_GAP / 3} w="full">
+          <ModalSubHeading text={t<string>('headings.assets')} />
+
+          {[
+            ...accountInformation.arc200AssetHoldings,
+            ...accountInformation.standardAssetHoldings,
+          ].reduce<ReactElement[]>((acc, assetHolding, index) => {
+            let asset: IStandardAsset | IARC0200Asset | null;
+            let symbol: string | null;
+
+            switch (assetHolding.type) {
+              case AssetTypeEnum.ARC0200:
+                asset =
+                  arc0200Assets.find(({ id }) => id === assetHolding.id) ||
+                  null;
+                symbol = asset?.symbol || null;
+                break;
+              case AssetTypeEnum.Standard:
+                asset =
+                  standardAssets.find(({ id }) => id === assetHolding.id) ||
+                  null;
+                symbol = asset?.unitName || null;
+                break;
+              default:
+                asset = null;
+                symbol = null;
+                break;
+            }
+
+            if (asset) {
+              return [
+                ...acc,
+                <ModalItem
+                  key={`account-import-asset-${index}`}
+                  label={`${asset.name || asset.id}:`}
+                  value={
+                    <HStack spacing={DEFAULT_GAP / 3}>
+                      {/*balance*/}
+                      <Text color={subTextColor} fontSize="xs">
+                        {formatCurrencyUnit(
+                          convertToStandardUnit(
+                            new BigNumber(assetHolding.amount),
+                            asset.decimals
+                          ),
+                          {
+                            decimals: asset.decimals,
+                          }
+                        )}
+                      </Text>
+
+                      {/*icon*/}
+                      <AssetAvatar
+                        asset={asset}
+                        fallbackIcon={
+                          <AssetIcon
+                            color={primaryButtonTextColor}
+                            h={4}
+                            w={4}
+                            {...(network && {
+                              networkTheme: network.chakraTheme,
+                            })}
+                          />
+                        }
+                        size="xs"
+                      />
+
+                      {/*symbol*/}
+                      {symbol && (
+                        <Text color={subTextColor} fontSize="xs">
+                          {symbol}
+                        </Text>
+                      )}
+
+                      {/*type*/}
+                      <AssetBadge size="xs" type={asset.type} />
+                    </HStack>
+                  }
+                />,
+              ];
+            }
+
+            return acc;
+          }, [])}
+        </VStack>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <ModalContent
@@ -343,7 +496,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           </Text>
 
           <VStack spacing={2} w="full">
-            <ModalSubHeading text={t<string>('labels.account')} />
+            <ModalSubHeading text={t<string>('headings.accountInformation')} />
 
             {/*address*/}
             {!address ? (
@@ -358,61 +511,50 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
                 })}
               />
             )}
+
+            {loadingAccountInformation || !accountInformation ? (
+              <>
+                <ModalSkeletonItem />
+              </>
+            ) : (
+              <>
+                {/*balance*/}
+                {network && (
+                  <ModalItem
+                    label={t<string>('labels.balance')}
+                    value={
+                      <AssetDisplay
+                        atomicUnitAmount={
+                          new BigNumber(accountInformation.atomicBalance)
+                        }
+                        amountColor={subTextColor}
+                        decimals={network.nativeCurrency.decimals}
+                        fontSize="sm"
+                        icon={createIconFromDataUri(
+                          network.nativeCurrency.iconUrl,
+                          {
+                            color: subTextColor,
+                            h: 3,
+                            w: 3,
+                          }
+                        )}
+                        unit={network.nativeCurrency.symbol}
+                      />
+                    }
+                  />
+                )}
+              </>
+            )}
           </VStack>
 
           {/*assets*/}
-          {loading && (
-            <VStack spacing={2} w="full">
-              <ModalSkeletonItem />
-              <ModalSkeletonItem />
-              <ModalSkeletonItem />
-            </VStack>
-          )}
-          {assets.length > 0 && !loading && (
-            <VStack spacing={2} w="full">
-              <ModalSubHeading text={t<string>('labels.assets')} />
-
-              {assets.map((value, index) => (
-                <ModalItem
-                  key={`account-import-add-asset-${index}`}
-                  label={`${value.name}:`}
-                  value={
-                    <HStack spacing={2}>
-                      {/*icon*/}
-                      <AssetAvatar
-                        asset={value}
-                        fallbackIcon={
-                          <AssetIcon
-                            color={primaryButtonTextColor}
-                            h={3}
-                            w={3}
-                            {...(network && {
-                              networkTheme: network.chakraTheme,
-                            })}
-                          />
-                        }
-                        size="xs"
-                      />
-
-                      {/*symbol*/}
-                      <Text color={subTextColor} fontSize="xs">
-                        {value.symbol}
-                      </Text>
-
-                      {/*type*/}
-                      <AssetBadge size="xs" type={value.type} />
-                    </HStack>
-                  }
-                />
-              ))}
-            </VStack>
-          )}
+          {renderAssets()}
         </VStack>
       </ModalBody>
 
       {/*footer*/}
       <ModalFooter p={DEFAULT_GAP}>
-        <VStack alignItems="flex-start" spacing={4} w="full">
+        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
           {!settings.security.enablePasswordLock && !passwordLockPassword && (
             <PasswordInput
               error={passwordError}
@@ -438,7 +580,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
 
             {/*import button*/}
             <Button
-              isLoading={loading || saving}
+              isLoading={isLoading || saving}
               onClick={handleImportClick}
               size="lg"
               variant="solid"

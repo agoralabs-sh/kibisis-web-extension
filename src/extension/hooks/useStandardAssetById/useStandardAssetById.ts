@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-// features
-import { updateStandardAssetInformationThunk } from '@extension/features/standard-assets';
-
 // selectors
 import {
   useSelectSelectedNetwork,
   useSelectStandardAssetsBySelectedNetwork,
-  useSelectUpdatingStandardAssets,
+  useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
 
 // types
-import { IAppThunkDispatch, IStandardAsset, INetwork } from '@extension/types';
-import { IUseStandardAssetByIdState } from './types';
+import type {
+  IAppThunkDispatch,
+  IStandardAsset,
+  INetwork,
+} from '@extension/types';
+import type { IUseStandardAssetByIdState } from './types';
 
 export default function useStandardAssetById(
   id: string
@@ -23,7 +24,7 @@ export default function useStandardAssetById(
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
-  const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
+  const updatingStandardAssets: boolean = useSelectStandardAssetsUpdating();
   // state
   const [standardAsset, setStandardAsset] = useState<IStandardAsset | null>(
     null

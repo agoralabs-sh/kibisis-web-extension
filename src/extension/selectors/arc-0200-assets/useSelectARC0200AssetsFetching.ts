@@ -2,9 +2,8 @@ import { useSelector } from 'react-redux';
 
 // types
 import { IMainRootState } from '@extension/types';
-
-export default function useSelectUpdatingStandardAssets(): boolean {
+export default function useSelectARC0200AssetsFetching(): boolean {
   return useSelector<IMainRootState, boolean>(
-    (state) => state.standardAssets.updating
+    (state) => state.arc200Assets.fetching
   );
 }

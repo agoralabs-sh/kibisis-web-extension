@@ -1,10 +1,10 @@
 // types
 import type { IARC0200Asset } from '@extension/types';
 
-interface IUseUpdateAssets {
+interface IUseUpdateARC0200AssetsState {
   assets: IARC0200Asset[];
   loading: boolean;
   reset: () => void;
 }
 
-export default IUseUpdateAssets;
+export default IUseUpdateARC0200AssetsState;

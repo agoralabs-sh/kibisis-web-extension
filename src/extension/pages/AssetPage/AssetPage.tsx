@@ -51,9 +51,9 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 
 // selectors
 import {
-  useSelectFetchingStandardAssets,
   useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
+  useSelectStandardAssetsFetching,
 } from '@extension/selectors';
 
 // services
@@ -80,7 +80,7 @@ const AssetPage: FC = () => {
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
   // selectors
-  const fetchingAssets: boolean = useSelectFetchingStandardAssets();
+  const fetchingAssets: boolean = useSelectStandardAssetsFetching();
   const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // hooks
