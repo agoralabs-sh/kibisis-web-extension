@@ -10,18 +10,19 @@ import { AccountsThunkEnum } from '@extension/enums';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
-import { IUpdateAccountsPayload } from '../types';
+import type { IUpdateAccountsPayload } from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import { updateAccountInformation, updateAccountTransactions } from '../utils';
+import updateAccountInformation from '@extension/utils/updateAccountInformation';
+import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 
 const updateAccountsThunk: AsyncThunk<
   IAccount[], // return

@@ -4,27 +4,18 @@ import { Algodv2 } from 'algosdk';
 import { ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT } from '@extension/constants';
 
 // types
-import type { IBaseOptions } from '@common/types';
 import type {
   IAccountInformation,
   IAlgorandAccountInformation,
   IARC0200AssetHolding,
-  INetwork,
 } from '@extension/types';
+import type { IOptions } from './types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
+import fetchARC0200AssetHoldingWithDelay from '@extension/utils/fetchARC0200AssetHoldingWithDelay';
 import algorandAccountInformationWithDelay from '@extension/utils/algorandAccountInformationWithDelay';
 import mapAlgorandAccountInformationToAccount from '@extension/utils/mapAlgorandAccountInformationToAccount';
-import fetchARC0200AssetHoldingWithDelay from './fetchARC0200AssetHoldingWithDelay';
-
-interface IOptions extends IBaseOptions {
-  address: string;
-  currentAccountInformation: IAccountInformation;
-  delay?: number;
-  forceUpdate?: boolean;
-  network: INetwork;
-}
 
 /**
  * Fetches the account information for a given address.

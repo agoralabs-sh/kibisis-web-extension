@@ -1,5 +1,3 @@
-import { Indexer } from 'algosdk';
-
 // constants
 import {
   DEFAULT_TRANSACTION_INDEXER_LIMIT,
@@ -7,25 +5,15 @@ import {
 } from '@extension/constants';
 
 // types
-import { IBaseOptions } from '@common/types';
-import {
+import type {
   IAlgorandAccountTransaction,
-  INetwork,
   ITransactions,
 } from '@extension/types';
+import type { IOptions } from './types';
 
 // utils
+import lookupAlgorandAccountTransactionsWithDelay from '@extension/utils/lookupAlgorandAccountTransactionsWithDelay';
 import mapAlgorandTransactionToTransaction from '@extension/utils/mapAlgorandTransactionToTransaction';
-import lookupAlgorandAccountTransactionsWithDelay from './lookupAlgorandAccountTransactionsWithDelay';
-
-interface IOptions extends IBaseOptions {
-  address: string;
-  afterTime: number;
-  client: Indexer;
-  delay?: number;
-  next: string | null;
-  network: INetwork;
-}
 
 /**
  * Fetches all latest transactions from a given time. This function runs recursively until the 'next-token' is
@@ -42,6 +30,7 @@ export default async function refreshTransactions({
   network,
   next,
 }: IOptions): Promise<ITransactions[]> {
+  const _functionName: string = 'refreshTransactions';
   let algorandAccountTransactions: IAlgorandAccountTransaction;
   let newestTransactions: ITransactions[];
 
@@ -77,10 +66,9 @@ export default async function refreshTransactions({
 
     return newestTransactions;
   } catch (error) {
-    logger &&
-      logger.error(
-        `${refreshTransactions.name}: failed to get transactions for "${address}" on ${network.genesisId}: ${error.message}`
-      );
+    logger?.error(
+      `${_functionName}: failed to get transactions for "${address}" on ${network.genesisId}: ${error.message}`
+    );
 
     return [];
   }
