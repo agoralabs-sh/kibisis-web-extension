@@ -1,3 +1,20 @@
+# [1.12.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.2...v1.12.0) (2024-02-29)
+
+
+### Bug Fixes
+
+* active account and account tab are saved to storage ([#180](https://github.com/agoralabs-sh/kibisis-web-extension/issues/180)) ([30e5eca](https://github.com/agoralabs-sh/kibisis-web-extension/commit/30e5ecaa6b7c10f0b0f5f4370d2d9e89edc7addf))
+
+
+### Features
+
+*  scan qr code using camera ([#179](https://github.com/agoralabs-sh/kibisis-web-extension/issues/179)) ([beca132](https://github.com/agoralabs-sh/kibisis-web-extension/commit/beca132f7d4dca5581f7a12580f52e3cffe5c35c))
+* add arc 0200 asset via qr code ([#182](https://github.com/agoralabs-sh/kibisis-web-extension/issues/182)) ([46dc081](https://github.com/agoralabs-sh/kibisis-web-extension/commit/46dc0819c60f4914a12a652b59c43352575d0558))
+* allow arc-0200 assets to be added in the account import uri via qr code ([#169](https://github.com/agoralabs-sh/kibisis-web-extension/issues/169)) ([e4b718d](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e4b718dbfa02ce2361735fd5c76c10599da306ba))
+* automatically add the first account on the enable modal ([#170](https://github.com/agoralabs-sh/kibisis-web-extension/issues/170)) ([b64d9f1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b64d9f18909442f931686b16d75581c9579aacc8))
+* support arc-0026 (algorand) and arc-0300 (avm) schemes ([#163](https://github.com/agoralabs-sh/kibisis-web-extension/issues/163)) ([71526c7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/71526c7b0b006f3f16ceaca0af51ffcc12592074))
+* use custom implementation to interact with arc-0200 applications ([#166](https://github.com/agoralabs-sh/kibisis-web-extension/issues/166)) ([f8a3517](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f8a3517e88c09453590f2327fa534cf6a522f6d8))
+
 # [1.12.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.8...v1.12.0-beta.9) (2024-02-22)
 
 
