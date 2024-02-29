@@ -1,3 +1,10 @@
+## [1.12.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0...v1.12.1-beta.1) (2024-02-29)
+
+
+### Bug Fixes
+
+* handle private key decryption errors explicitly when sending assets ([#190](https://github.com/agoralabs-sh/kibisis-web-extension/issues/190)) ([b58a1ab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b58a1ab01217ab72efc08a544e3b7dcb62bf9eee))
+
 # [1.12.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.2...v1.12.0) (2024-02-29)
 
 
