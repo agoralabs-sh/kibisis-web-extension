@@ -4,6 +4,7 @@ export * from './ARC0300';
 export * from './Dimensions';
 export * from './Durations';
 export * from './Encryption';
+export * from './Fees';
 export * from './Keys';
 export * from './Links';
 export * from './Limits';

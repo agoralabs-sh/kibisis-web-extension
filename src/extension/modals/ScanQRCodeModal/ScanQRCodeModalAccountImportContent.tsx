@@ -157,7 +157,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
     reset: resetUpdateStandardAssets,
   } = useUpdateStandardAssets({
     assetIDs:
-      accountInformation?.standardAssetHoldings.map(({ id }) => id) || [], // get the standard asset information once we have which asset holdings are present
+      accountInformation?.standardAssetHoldings.map(({ id }) => id) || [], // get the standard asset information once we know which asset holdings are present
     network,
   });
   // states
@@ -359,7 +359,12 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   }, []);
   // 2. when we get the address, get the account information
   useEffect(() => {
-    if (address && network) {
+    if (
+      !loadingAccountInformation &&
+      !accountInformation &&
+      address &&
+      network
+    ) {
       (async () =>
         await updateAccountInformationAndAssetHoldingsAction({
           address,
