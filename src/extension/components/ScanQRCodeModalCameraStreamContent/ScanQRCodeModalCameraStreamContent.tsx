@@ -51,14 +51,11 @@ import { theme } from '@extension/theme';
 
 // types
 import type { ILogger } from '@common/types';
+import type { IScanQRCodeModalContentProps } from '@extension/types';
 
-interface IProps {
-  onPreviousClick: () => void;
-}
-
-const ScanQRCodeModalCameraStreamContent: FC<IProps> = ({
+const ScanQRCodeModalCameraStreamContent: FC<IScanQRCodeModalContentProps> = ({
   onPreviousClick,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   const videoRef: MutableRefObject<HTMLVideoElement | null> =
     useRef<HTMLVideoElement | null>(null);

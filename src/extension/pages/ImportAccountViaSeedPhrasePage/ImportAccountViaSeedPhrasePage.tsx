@@ -40,21 +40,16 @@ import { useSelectLogger } from '@extension/selectors';
 // types
 import type { ILogger } from '@common/types';
 import type {
-  IAddAccountCompleteFunction,
+  IAddAccountPageProps,
   IAppThunkDispatch,
   IMainRootState,
   IRegistrationRootState,
 } from '@extension/types';
 
-interface IProps {
-  onComplete: IAddAccountCompleteFunction;
-  saving: boolean;
-}
-
-const ImportExistingAccountPage: FC<IProps> = ({
+const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   onComplete,
   saving,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch<IMainRootState | IRegistrationRootState> =
     useDispatch<IAppThunkDispatch<IMainRootState | IRegistrationRootState>>();
@@ -88,7 +83,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
 
     if (!account) {
       logger.debug(
-        `${ImportExistingAccountPage.displayName}#${_functionName}: unable to import account, account "null"`
+        `${ImportAccountViaSeedPhrasePage.name}#${_functionName}: unable to import account, account "null"`
       );
 
       dispatch(
@@ -104,7 +99,7 @@ const ImportExistingAccountPage: FC<IProps> = ({
     }
 
     logger.debug(
-      `${ImportExistingAccountPage.displayName}#${_functionName}: importing account "${account.addr}"`
+      `${ImportAccountViaSeedPhrasePage.name}#${_functionName}: importing account "${account.addr}"`
     );
 
     onComplete({
@@ -155,7 +150,9 @@ const ImportExistingAccountPage: FC<IProps> = ({
     <>
       {/*page title*/}
       <PageHeader
-        title={t<string>('titles.page', { context: 'importExistingAccount' })}
+        title={t<string>('titles.page', {
+          context: 'importAccountViaSeedPhrase',
+        })}
       />
 
       <VStack
@@ -220,11 +217,11 @@ const ImportExistingAccountPage: FC<IProps> = ({
         {hasCompletedAllSteps && (
           <VStack alignItems="flex-start" spacing={2} w="full">
             <Heading color={defaultTextColor} fontSize="md" textAlign="left">
-              {t<string>('headings.importExistingAccountComplete')}
+              {t<string>('headings.importAccountViaSeedPhraseComplete')}
             </Heading>
 
             <Text color={subTextColor} fontSize="md" textAlign="left">
-              {t<string>('captions.importExistingAccountComplete')}
+              {t<string>('captions.importAccountViaSeedPhraseComplete')}
             </Text>
           </VStack>
         )}
@@ -272,4 +269,4 @@ const ImportExistingAccountPage: FC<IProps> = ({
   );
 };
 
-export default ImportExistingAccountPage;
+export default ImportAccountViaSeedPhrasePage;

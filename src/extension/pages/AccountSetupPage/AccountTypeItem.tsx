@@ -1,10 +1,12 @@
-import { Box, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
+import { Box, HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
 import React, { FC, ElementType } from 'react';
+import { IoArrowForwardOutline } from 'react-icons/io5';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+import { DEFAULT_GAP } from '@extension/constants';
 
 interface IProps {
   description: string;
@@ -28,9 +30,12 @@ const AccountTypeItem: FC<IProps> = ({
   const subTextColor: string = useSubTextColor();
   const renderContent = () => {
     return (
-      <VStack alignItems="flex-start" spacing={4} w="full">
+      <HStack alignItems="center" spacing={DEFAULT_GAP / 2} w="full">
+        {/*icon*/}
         <Icon as={icon} color={defaultTextColor} h={10} w={10} />
+
         <VStack alignItems="flex-start" spacing={2} w="full">
+          {/*heading*/}
           <Text
             color={defaultTextColor}
             fontSize="md"
@@ -40,6 +45,8 @@ const AccountTypeItem: FC<IProps> = ({
           >
             {title}
           </Text>
+
+          {/*description*/}
           <Text
             color={subTextColor}
             fontSize="sm"
@@ -50,7 +57,10 @@ const AccountTypeItem: FC<IProps> = ({
             {description}
           </Text>
         </VStack>
-      </VStack>
+
+        {/*icon*/}
+        <Icon as={IoArrowForwardOutline} color={defaultTextColor} h={6} w={6} />
+      </HStack>
     );
   };
 
@@ -66,7 +76,7 @@ const AccountTypeItem: FC<IProps> = ({
           borderWidth={1}
           cursor="not-allowed"
           opacity={0.5}
-          p={4}
+          p={DEFAULT_GAP - 2}
         >
           {renderContent()}
         </Box>
@@ -86,7 +96,7 @@ const AccountTypeItem: FC<IProps> = ({
         borderStyle="solid"
         borderWidth={1}
         onClick={onClick}
-        p={4}
+        p={DEFAULT_GAP - 2}
       >
         {renderContent()}
       </Box>

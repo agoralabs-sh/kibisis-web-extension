@@ -9,7 +9,6 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoBrowsersOutline, IoVideocamOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
@@ -22,25 +21,23 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // theme
 import { theme } from '@extension/theme';
+import { IoBrowsersOutline, IoVideocamOutline } from 'react-icons/io5';
 
-interface IProps {
-  onCancelClick: () => void;
-  onScanBrowserWindowClick: () => void;
-  onScanUsingCameraClick: () => void;
-}
+// types
+import type { IProps } from './types';
 
 const ScanQRCodeModalSelectScanModeContent: FC<IProps> = ({
   onCancelClick,
   onScanBrowserWindowClick,
   onScanUsingCameraClick,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // handlers
   const handleCancelClick = () => onCancelClick();
-  const handleScanUsingCameraClick = () => onScanUsingCameraClick();
   const handleScanBrowserWindowClick = () => onScanBrowserWindowClick();
+  const handleScanUsingCameraClick = () => onScanUsingCameraClick();
 
   return (
     <ModalContent

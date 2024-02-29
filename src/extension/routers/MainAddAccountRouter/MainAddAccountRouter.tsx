@@ -7,7 +7,7 @@ import { NavigateFunction, Route, Routes, useNavigate } from 'react-router-dom';
 import {
   ACCOUNTS_ROUTE,
   CREATE_NEW_ACCOUNT_ROUTE,
-  IMPORT_EXISTING_ACCOUNT_ROUTE,
+  IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE,
 } from '@extension/constants';
 
 // features
@@ -24,7 +24,7 @@ import ConfirmPasswordModal from '@extension/modals//ConfirmPasswordModal';
 // pages
 import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
-import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
+import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSeedPhrasePage';
 
 // selectors
 import {
@@ -201,12 +201,12 @@ const MainAddAccountRouter: FC = () => {
 
         <Route
           element={
-            <ImportExistingAccountPage
+            <ImportAccountViaSeedPhrasePage
               onComplete={handleOnAddAccountComplete}
               saving={saving}
             />
           }
-          path={IMPORT_EXISTING_ACCOUNT_ROUTE}
+          path={IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE}
         />
       </Routes>
     </>

@@ -56,7 +56,7 @@ import { create as createNotification } from '@extension/features/notifications'
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import useUpdateAssets from './hooks/useUpdateAssets';
+import useUpdateARC0200Assets from '@extension/hooks/useUpdateARC0200Assets';
 
 // selectors
 import {
@@ -113,7 +113,7 @@ const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
     assets,
     loading,
     reset: resetUpdateAssets,
-  } = useUpdateAssets([schema.paths[1]]);
+  } = useUpdateARC0200Assets([schema.paths[1]]);
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   // states

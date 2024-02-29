@@ -56,7 +56,7 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useUpdateAssets from './hooks/useUpdateAssets';
+import useUpdateARC0200Assets from '@extension/hooks/useUpdateARC0200Assets';
 
 // selectors
 import {
@@ -79,27 +79,21 @@ import type {
   IAccount,
   IActiveAccountDetails,
   IAppThunkDispatch,
-  IARC0300AccountImportSchema,
   INetwork,
   ISettings,
 } from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import decodePrivateKeyFromAccountImportSchema from './utils/decodePrivateKeyFromImportKeySchema';
-
-interface IProps {
-  onComplete: () => void;
-  onPreviousClick: () => void;
-  schema: IARC0300AccountImportSchema;
-}
+import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
 const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   onComplete,
   onPreviousClick,
   schema,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const location: Location = useLocation();
@@ -118,7 +112,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
     assets,
     loading,
     reset: resetUpdateAssets,
-  } = useUpdateAssets(schema.query[ARC0300QueryEnum.Asset]);
+  } = useUpdateARC0200Assets(schema.query[ARC0300QueryEnum.Asset]);
   const {
     error: passwordError,
     onChange: onPasswordChange,

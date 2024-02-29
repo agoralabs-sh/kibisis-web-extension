@@ -4,7 +4,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -14,31 +13,27 @@ import { IoArrowBackOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
+import ModalTextItem from '@extension/components/ModalTextItem';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useColorModeValue from '@extension/hooks/useColorModeValue';
 
 // theme
 import { theme } from '@extension/theme';
 
-interface IProps {
-  onPreviousClick: () => void;
-}
+// types
+import type { IProps } from './types';
 
-const ScanQRCodeModalScanningContent: FC<IProps> = ({
+const ScanQRCodeModalUnknownURIContent: FC<IProps> = ({
   onPreviousClick,
-}: IProps) => {
+  uri,
+}) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
-  );
   // handlers
   const handlePreviousClick = () => onPreviousClick();
 
@@ -51,30 +46,24 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
       {/*header*/}
       <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
         <Heading color={defaultTextColor} size="md" textAlign="center">
-          {t<string>('headings.scanningForQRCode')}
+          {t<string>('headings.unknownQRCode')}
         </Heading>
       </ModalHeader>
 
       {/*body*/}
       <ModalBody display="flex" px={DEFAULT_GAP}>
-        <VStack
-          alignItems="center"
-          flexGrow={1}
-          justifyContent="center"
-          spacing={4}
-          w="full"
-        >
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor={defaultTextColor}
-            color={primaryColor}
-            size="xl"
-          />
-
+        <VStack alignItems="center" flexGrow={1} spacing={DEFAULT_GAP} w="full">
+          {/*caption*/}
           <Text color={defaultTextColor} fontSize="md" textAlign="center">
-            {t<string>('captions.scanningForQrCode')}
+            {t<string>('captions.unknownQRCode')}
           </Text>
+
+          {/*value*/}
+          <ModalTextItem
+            isCode={true}
+            label={`${t<string>('labels.value')}:`}
+            value={uri}
+          />
         </VStack>
       </ModalBody>
 
@@ -85,7 +74,7 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
           leftIcon={<IoArrowBackOutline />}
           onClick={handlePreviousClick}
           size="lg"
-          variant="solid"
+          variant="outline"
           w="full"
         >
           {t<string>('buttons.previous')}
@@ -95,4 +84,4 @@ const ScanQRCodeModalScanningContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalScanningContent;
+export default ScanQRCodeModalUnknownURIContent;

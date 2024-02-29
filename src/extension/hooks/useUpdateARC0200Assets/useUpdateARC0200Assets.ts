@@ -16,9 +16,11 @@ import type {
   IARC0200Asset,
   INetwork,
 } from '@extension/types';
-import type { IUseUpdateAssets } from './types';
+import type { IUseUpdateARC0200AssetsState } from './types';
 
-export default function useUpdateAssets(assetIDs: string[]): IUseUpdateAssets {
+export default function useUpdateARC0200Assets(
+  assetIDs: string[]
+): IUseUpdateARC0200AssetsState {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const arc0200Assets: IARC0200Asset[] =

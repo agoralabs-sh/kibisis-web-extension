@@ -7,7 +7,7 @@ import { NavigateFunction, Route, Routes, useNavigate } from 'react-router-dom';
 import {
   CREATE_NEW_ACCOUNT_ROUTE,
   CREATE_PASSWORD_ROUTE,
-  IMPORT_EXISTING_ACCOUNT_ROUTE,
+  IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE,
 } from '@extension/constants';
 
 // enums
@@ -21,7 +21,7 @@ import { saveCredentialsThunk } from '@extension/features/registration';
 // pages
 import AccountSetupPage from '@extension/pages/AccountSetupPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
-import ImportExistingAccountPage from '@extension/pages/ImportExistingAccountPage';
+import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSeedPhrasePage';
 
 // selectors
 import { useSelectSavingRegistration } from '@extension/selectors';
@@ -94,15 +94,15 @@ const RegistrationAddAccountRouter: FC = () => {
         path={CREATE_NEW_ACCOUNT_ROUTE}
       />
 
-      {/*import existing account*/}
+      {/*import account via seed phrase*/}
       <Route
         element={
-          <ImportExistingAccountPage
+          <ImportAccountViaSeedPhrasePage
             onComplete={handleOnAddAccountComplete}
             saving={saving}
           />
         }
-        path={IMPORT_EXISTING_ACCOUNT_ROUTE}
+        path={IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE}
       />
     </Routes>
   );
