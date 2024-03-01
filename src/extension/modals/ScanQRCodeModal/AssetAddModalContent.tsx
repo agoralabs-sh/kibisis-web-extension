@@ -92,7 +92,7 @@ interface IProps {
   schema: IARC0300AssetAddSchema;
 }
 
-const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
+const AssetAddModalContent: FC<IProps> = ({
   onComplete,
   onPreviousClick,
   schema,
@@ -144,7 +144,7 @@ const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
     // if the asset is already in the account, just clean up and close
     if (isAssetInAccountHoldings({ account, asset, network })) {
       logger.debug(
-        `${ScanQRCodeModalAssetAddContent.name}#${_functionName}: asset "${asset.id}" already added`
+        `${AssetAddModalContent.name}#${_functionName}: asset "${asset.id}" already added`
       );
 
       handleOnComplete();
@@ -422,4 +422,4 @@ const ScanQRCodeModalAssetAddContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalAssetAddContent;
+export default AssetAddModalContent;

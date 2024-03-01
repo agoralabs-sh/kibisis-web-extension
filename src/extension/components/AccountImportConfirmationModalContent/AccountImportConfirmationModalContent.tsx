@@ -89,7 +89,7 @@ import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddr
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
-const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
+const AccountImportConfirmationModalContent: FC<IProps> = ({
   onComplete,
   onPreviousClick,
   schema,
@@ -142,7 +142,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
       // validate the password input
       if (validatePassword()) {
         logger.debug(
-          `${ScanQRCodeModalAccountImportContent.name}#${_functionName}: password not valid`
+          `${AccountImportConfirmationModalContent.name}#${_functionName}: password not valid`
         );
 
         return;
@@ -155,7 +155,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
 
     if (!_password) {
       logger.debug(
-        `${ScanQRCodeModalAccountImportContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
+        `${AccountImportConfirmationModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
       );
 
       dispatch(
@@ -179,7 +179,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
 
     if (!privateKey) {
       logger.debug(
-        `${ScanQRCodeModalAccountImportContent.name}#${_functionName}: failed to decode the private key`
+        `${AccountImportConfirmationModalContent.name}#${_functionName}: failed to decode the private key`
       );
 
       dispatch(
@@ -228,7 +228,7 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
           break;
         case ErrorCodeEnum.PrivateKeyAlreadyExistsError:
           logger.debug(
-            `${ScanQRCodeModalAccountImportContent.name}#${_functionName}: account already exists, carry on`
+            `${AccountImportConfirmationModalContent.name}#${_functionName}: account already exists, carry on`
           );
 
           // clean up and close
@@ -447,4 +447,4 @@ const ScanQRCodeModalAccountImportContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalAccountImportContent;
+export default AccountImportConfirmationModalContent;

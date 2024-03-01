@@ -29,7 +29,7 @@ import type { IProps } from './types';
 // utils
 import isCameraAvailable from '@extension/utils/isCameraAvailable';
 
-const ScanQRCodeModalSelectScanModeContent: FC<IProps> = ({
+const ScanModeModalContent: FC<IProps> = ({
   onCancelClick,
   onScanBrowserWindowClick,
   onScanUsingCameraClick,
@@ -113,4 +113,4 @@ const ScanQRCodeModalSelectScanModeContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalSelectScanModeContent;
+export default ScanModeModalContent;

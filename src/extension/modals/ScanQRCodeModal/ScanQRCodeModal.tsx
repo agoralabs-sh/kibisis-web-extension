@@ -2,12 +2,12 @@ import { Modal } from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
 
 // components
+import AccountImportConfirmationModalContent from '@extension/components/AccountImportConfirmationModalContent';
+import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
-import ScanQRCodeModalAccountImportContent from '@extension/components/ScanQRCodeModalAccountImportContent';
-import ScanQRCodeModalSelectScanModeContent from '@extension/components/ScanQRCodeModalScanModeContent';
-import ScanQRCodeModalUnknownURIContent from '@extension/components/ScanQRCodeModalUnkownURIContent';
-import ScanQRCodeModalAssetAddContent from './ScanQRCodeModalAssetAddContent';
+import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
+import AssetAddModalContent from './AssetAddModalContent';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
@@ -75,7 +75,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
           case ARC0300AuthorityEnum.Account:
             if (arc0300Schema.paths[0] === ARC0300PathEnum.Import) {
               return (
-                <ScanQRCodeModalAccountImportContent
+                <AccountImportConfirmationModalContent
                   onComplete={handleClose}
                   onPreviousClick={handlePreviousClick}
                   schema={arc0300Schema as IARC0300AccountImportSchema}
@@ -87,7 +87,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
           case ARC0300AuthorityEnum.Asset:
             if (arc0300Schema.paths[0] === ARC0300PathEnum.Add) {
               return (
-                <ScanQRCodeModalAssetAddContent
+                <AssetAddModalContent
                   onComplete={handleClose}
                   onPreviousClick={handlePreviousClick}
                   schema={arc0300Schema as IARC0300AssetAddSchema}
@@ -103,7 +103,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
 
       // if the uri cannot be parsed
       return (
-        <ScanQRCodeModalUnknownURIContent
+        <UnknownURIModalContent
           onPreviousClick={handlePreviousClick}
           uri={uri}
         />
@@ -129,7 +129,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
     }
 
     return (
-      <ScanQRCodeModalSelectScanModeContent
+      <ScanModeModalContent
         onCancelClick={handleCancelClick}
         onScanBrowserWindowClick={handleScanBrowserWindowClick}
         onScanUsingCameraClick={handleScanUsingCameraClick}

@@ -27,10 +27,7 @@ import { theme } from '@extension/theme';
 // types
 import type { IProps } from './types';
 
-const ScanQRCodeModalUnknownURIContent: FC<IProps> = ({
-  onPreviousClick,
-  uri,
-}) => {
+const UnknownURIModalContent: FC<IProps> = ({ onPreviousClick, uri }) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
@@ -84,4 +81,4 @@ const ScanQRCodeModalUnknownURIContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalUnknownURIContent;
+export default UnknownURIModalContent;
