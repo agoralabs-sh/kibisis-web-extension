@@ -83,6 +83,7 @@ export type { default as IPrivateKey } from './IPrivateKey';
 export type { default as IRegistrationRootState } from './IRegistrationRootState';
 export type { default as IRejectedActionMeta } from './IRejectedActionMeta';
 export type { default as IResourceLanguage } from './IResourceLanguage';
+export type { default as IScanQRCodeModalContentProps } from './IScanQRCodeModalContentProps';
 export type { default as ISecuritySettings } from './ISecuritySettings';
 export type { default as ISession } from './ISession';
 export type { default as ISettings } from './ISettings';

@@ -21,8 +21,10 @@ enum ErrorCodeEnum {
   InvalidABIContractError = 5000,
   ReadABIContractError = 5001,
 
-  // devices
+  // camera
   CameraError = 6000,
+  CameraNotAllowedError = 6001,
+  CameraNotFoundError = 6002,
 }
 
 export default ErrorCodeEnum;
