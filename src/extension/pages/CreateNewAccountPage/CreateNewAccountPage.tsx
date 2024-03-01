@@ -90,6 +90,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
     }
 
     onComplete({
+      arc0200Assets: [],
       name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
       privateKey: account.sk,
     });

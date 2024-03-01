@@ -19,7 +19,7 @@ import { create as createNotification } from '@extension/features/notifications'
 import { saveCredentialsThunk } from '@extension/features/registration';
 
 // pages
-import AccountSetupPage from '@extension/pages/AccountSetupPage';
+import AddAccountTypePage from '@extension/pages/AddAccountTypePage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSeedPhrasePage';
 
@@ -34,7 +34,7 @@ import type {
   IRegistrationRootState,
 } from '@extension/types';
 
-const RegistrationAddAccountRouter: FC = () => {
+const AddAccountRegistrationRouter: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch<IRegistrationRootState> =
     useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
@@ -81,9 +81,18 @@ const RegistrationAddAccountRouter: FC = () => {
 
   return (
     <Routes>
-      <Route element={<AccountSetupPage />} path="/" />
+      {/*add account type page*/}
+      <Route
+        element={
+          <AddAccountTypePage
+            onComplete={handleOnAddAccountComplete}
+            saving={saving}
+          />
+        }
+        path="/"
+      />
 
-      {/*create account*/}
+      {/*create account page*/}
       <Route
         element={
           <CreateNewAccountPage
@@ -94,7 +103,7 @@ const RegistrationAddAccountRouter: FC = () => {
         path={CREATE_NEW_ACCOUNT_ROUTE}
       />
 
-      {/*import account via seed phrase*/}
+      {/*import account via seed phrase page*/}
       <Route
         element={
           <ImportAccountViaSeedPhrasePage
@@ -108,4 +117,4 @@ const RegistrationAddAccountRouter: FC = () => {
   );
 };
 
-export default RegistrationAddAccountRouter;
+export default AddAccountRegistrationRouter;

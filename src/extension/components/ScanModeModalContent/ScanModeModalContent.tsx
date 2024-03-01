@@ -31,16 +31,16 @@ import isCameraAvailable from '@extension/utils/isCameraAvailable';
 
 const ScanModeModalContent: FC<IProps> = ({
   onCancelClick,
-  onScanBrowserWindowClick,
-  onScanUsingCameraClick,
+  onScanViaCameraClick,
+  onScanViaTabClick,
 }) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // handlers
   const handleCancelClick = () => onCancelClick();
-  const handleScanBrowserWindowClick = () => onScanBrowserWindowClick();
-  const handleScanUsingCameraClick = () => onScanUsingCameraClick();
+  const handleScanViaCameraClick = () => onScanViaCameraClick();
+  const handleScanViaTabClick = () => onScanViaTabClick();
 
   return (
     <ModalContent
@@ -70,9 +70,9 @@ const ScanModeModalContent: FC<IProps> = ({
             spacing={DEFAULT_GAP}
             w="full"
           >
-            {/*scan browser window*/}
+            {/*scan via tab button*/}
             <Button
-              onClick={handleScanBrowserWindowClick}
+              onClick={handleScanViaTabClick}
               rightIcon={<IoBrowsersOutline />}
               size="lg"
               variant="solid"
@@ -81,10 +81,10 @@ const ScanModeModalContent: FC<IProps> = ({
               {t<string>('buttons.scanBrowserWindow')}
             </Button>
 
-            {/*scan using camera button*/}
+            {/*scan via camera button*/}
             {isCameraAvailable() && (
               <Button
-                onClick={handleScanUsingCameraClick}
+                onClick={handleScanViaCameraClick}
                 rightIcon={<IoVideocamOutline />}
                 size="lg"
                 variant="solid"

@@ -78,18 +78,25 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IActiveAccountDetails,
+  IAddAccountCompleteFunction,
   IAppThunkDispatch,
+  IARC0300AccountImportSchema,
   INetwork,
   ISettings,
 } from '@extension/types';
-import type { IProps } from './types';
 
 // utils
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
-const AccountImportConfirmationModalContent: FC<IProps> = ({
+interface IProps {
+  onComplete: () => void;
+  onPreviousClick: () => void;
+  schema: IARC0300AccountImportSchema;
+}
+
+const AccountImportModalContent: FC<IProps> = ({
   onComplete,
   onPreviousClick,
   schema,
@@ -142,7 +149,7 @@ const AccountImportConfirmationModalContent: FC<IProps> = ({
       // validate the password input
       if (validatePassword()) {
         logger.debug(
-          `${AccountImportConfirmationModalContent.name}#${_functionName}: password not valid`
+          `${AccountImportModalContent.name}#${_functionName}: password not valid`
         );
 
         return;
@@ -155,7 +162,7 @@ const AccountImportConfirmationModalContent: FC<IProps> = ({
 
     if (!_password) {
       logger.debug(
-        `${AccountImportConfirmationModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
+        `${AccountImportModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
       );
 
       dispatch(
@@ -179,7 +186,7 @@ const AccountImportConfirmationModalContent: FC<IProps> = ({
 
     if (!privateKey) {
       logger.debug(
-        `${AccountImportConfirmationModalContent.name}#${_functionName}: failed to decode the private key`
+        `${AccountImportModalContent.name}#${_functionName}: failed to decode the private key`
       );
 
       dispatch(
@@ -228,7 +235,7 @@ const AccountImportConfirmationModalContent: FC<IProps> = ({
           break;
         case ErrorCodeEnum.PrivateKeyAlreadyExistsError:
           logger.debug(
-            `${AccountImportConfirmationModalContent.name}#${_functionName}: account already exists, carry on`
+            `${AccountImportModalContent.name}#${_functionName}: account already exists, carry on`
           );
 
           // clean up and close
@@ -447,4 +454,4 @@ const AccountImportConfirmationModalContent: FC<IProps> = ({
   );
 };
 
-export default AccountImportConfirmationModalContent;
+export default AccountImportModalContent;

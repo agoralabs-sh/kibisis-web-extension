@@ -1,7 +1,7 @@
 interface IProps {
   onCancelClick: () => void;
-  onScanBrowserWindowClick: () => void;
-  onScanUsingCameraClick: () => void;
+  onScanViaCameraClick: () => void;
+  onScanViaTabClick: () => void;
 }
 
 export default IProps;

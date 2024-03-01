@@ -13,22 +13,24 @@ import {
 // features
 import {
   ISaveNewAccountPayload,
+  saveActiveAccountDetails,
   saveNewAccountThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 
 // modals
-import ConfirmPasswordModal from '@extension/modals//ConfirmPasswordModal';
+import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // pages
-import AccountSetupPage from '@extension/pages/AccountSetupPage';
+import AddAccountTypePage from '@extension/pages/AddAccountTypePage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSeedPhrasePage';
 
 // selectors
 import {
   useSelectAccounts,
+  useSelectActiveAccountDetails,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSavingAccounts,
@@ -42,6 +44,7 @@ import AccountService from '@extension/services/AccountService';
 import type { ILogger } from '@common/types';
 import type {
   IAccount,
+  IActiveAccountDetails,
   IAddAccountCompleteFunction,
   IAddAccountCompleteResult,
   IAppThunkDispatch,
@@ -52,12 +55,14 @@ import type {
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-const MainAddAccountRouter: FC = () => {
+const AddAccountMainRouter: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
+  const activeAccountDetails: IActiveAccountDetails | null =
+    useSelectActiveAccountDetails();
   const logger: ILogger = useSelectLogger();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const saving: boolean = useSelectSavingAccounts();
@@ -67,6 +72,7 @@ const MainAddAccountRouter: FC = () => {
     useState<IAddAccountCompleteResult | null>(null);
   // handlers
   const handleOnAddAccountComplete: IAddAccountCompleteFunction = async ({
+    arc0200Assets,
     name,
     privateKey,
   }: IAddAccountCompleteResult) => {
@@ -83,25 +89,29 @@ const MainAddAccountRouter: FC = () => {
 
     // set the result to state, in order for the password confirm modal to handle the encryption
     setAddAccountResult({
+      arc0200Assets,
       name,
       privateKey,
     });
   };
   const handleOnConfirmPasswordModalClose = () => setAddAccountResult(null);
   const handleOnConfirmPasswordModalConfirm = async (password: string) => {
-    if (addAccountResult) {
-      await saveNewAccount({
-        name: addAccountResult.name,
-        password,
-        privateKey: addAccountResult.privateKey,
-      });
+    if (!addAccountResult) {
+      return;
     }
+
+    await saveNewAccount({
+      name: addAccountResult.name,
+      password,
+      privateKey: addAccountResult.privateKey,
+    });
   };
   const saveNewAccount = async ({
     name,
     password,
     privateKey,
   }: ISaveNewAccountPayload) => {
+    const _functionName: string = 'saveNewAccount';
     let account: IAccount;
 
     if (addAccountResult) {
@@ -114,9 +124,12 @@ const MainAddAccountRouter: FC = () => {
           })
         ).unwrap();
       } catch (error) {
+        logger.error(`${AddAccountMainRouter.name}#${_functionName}:`, error);
+
         dispatch(
           createNotification({
             description: t<string>('errors.descriptions.code', {
+              code: error.code,
               context: error.code,
             }),
             ephemeral: true,
@@ -171,7 +184,13 @@ const MainAddAccountRouter: FC = () => {
               accountIds: [account.id],
             })
           );
-          navigate(`${ACCOUNTS_ROUTE}/${address}`, {
+          dispatch(
+            saveActiveAccountDetails({
+              accountId: account.id,
+              tabIndex: activeAccountDetails?.tabIndex || 0,
+            })
+          );
+          navigate(ACCOUNTS_ROUTE, {
             replace: true,
           });
         }
@@ -188,7 +207,18 @@ const MainAddAccountRouter: FC = () => {
       />
 
       <Routes>
-        <Route element={<AccountSetupPage />} path="/" />
+        {/*add account type page*/}
+        <Route
+          element={
+            <AddAccountTypePage
+              onComplete={handleOnAddAccountComplete}
+              saving={saving}
+            />
+          }
+          path="/"
+        />
+
+        {/*create account page*/}
         <Route
           element={
             <CreateNewAccountPage
@@ -199,6 +229,7 @@ const MainAddAccountRouter: FC = () => {
           path={CREATE_NEW_ACCOUNT_ROUTE}
         />
 
+        {/*import account via seed phrase page*/}
         <Route
           element={
             <ImportAccountViaSeedPhrasePage
@@ -213,4 +244,4 @@ const MainAddAccountRouter: FC = () => {
   );
 };
 
-export default MainAddAccountRouter;
+export default AddAccountMainRouter;

@@ -1,8 +1,6 @@
-interface IResult {
-  name: string | null;
-  privateKey: Uint8Array;
-}
+// types
+import IAddAccountCompleteResult from './IAddAccountCompleteResult';
 
-type IAddAccountCompleteFunction = (result: IResult) => Promise<void>;
+type IAddAccountCompleteFunction = (result: IAddAccountCompleteResult) => void;
 
 export default IAddAccountCompleteFunction;

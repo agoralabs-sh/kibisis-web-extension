@@ -21,7 +21,16 @@ import {
 // modals
 import ScanQRCodeAddAccountModal from '@extension/modals/ScanQRCodeAddAccountModal';
 
-const AccountSetupPage: FC = () => {
+// types
+import type {
+  IAddAccountCompleteResult,
+  IAddAccountPageProps,
+} from '@extension/types';
+
+const AddAccountTypePage: FC<IAddAccountPageProps> = ({
+  onComplete,
+  saving,
+}) => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const {
@@ -52,6 +61,8 @@ const AccountSetupPage: FC = () => {
           break;
       }
     };
+  const handleOnComplete = (result: IAddAccountCompleteResult) =>
+    onComplete(result);
   const handleScanQRCodeModalClose = () => onScanQRCodeModalClose();
 
   return (
@@ -59,6 +70,8 @@ const AccountSetupPage: FC = () => {
       <ScanQRCodeAddAccountModal
         isOpen={isScanQRCodeModalOpen}
         onClose={handleScanQRCodeModalClose}
+        onComplete={handleOnComplete}
+        saving={saving}
       />
 
       <PageHeader
@@ -72,18 +85,23 @@ const AccountSetupPage: FC = () => {
         spacing={DEFAULT_GAP - 2}
         w="full"
       >
+        {/*create new account*/}
         <AccountTypeItem
           description={t<string>('captions.createNewAccount')}
           icon={CreateNewAccountIcon}
           onClick={handleAccountTypeClick('create')}
           title={t<string>('headings.createNewAccount')}
         />
+
+        {/*import account via seed phrase*/}
         <AccountTypeItem
           description={t<string>('captions.importAccountViaSeedPhrase')}
           icon={ImportAccountIcon}
           onClick={handleAccountTypeClick('import-via-seed-phrase')}
           title={t<string>('headings.importAccountViaSeedPhrase')}
         />
+
+        {/*import account via qr code*/}
         <AccountTypeItem
           description={t<string>('captions.importAccountViaQRCode')}
           icon={IoQrCodeOutline}
@@ -95,4 +113,4 @@ const AccountSetupPage: FC = () => {
   );
 };
 
-export default AccountSetupPage;
+export default AddAccountTypePage;

@@ -27,7 +27,7 @@ import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
 import GetStartedPage from '@extension/pages/GetStartedPage';
 
 // routers
-import RegistrationAddAccountRouter from '@extension/routers/RegistrationAddAccountRouter';
+import AddAccountRouter from '@extension/routers/AddAccountRegistrationRouter';
 
 // types
 import type { IAppProps, IRegistrationRootState } from '@extension/types';
@@ -52,7 +52,7 @@ const createRouter = () =>
           path: CREATE_PASSWORD_ROUTE,
         },
         {
-          element: <RegistrationAddAccountRouter />,
+          element: <AddAccountRouter />,
           path: `${ADD_ACCOUNT_ROUTE}/*`,
         },
       ],

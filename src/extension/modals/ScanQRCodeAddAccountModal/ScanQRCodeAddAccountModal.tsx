@@ -2,17 +2,14 @@ import { Modal } from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
 
 // components
-import ScanQRCodeModalAccountImportContent from '@extension/components/ScanQRCodeModalAccountImportContent';
-import ScanQRCodeModalCameraStreamContent from '@extension/components/ScanQRCodeModalCameraStreamContent';
-import ScanQRCodeModalSelectScanModeContent from '@extension/components/ScanQRCodeModalScanModeContent';
-import ScanQRCodeModalScanningBrowserWindowContent from '@extension/components/ScanQRCodeModalScanningBrowserWindowContent';
-import ScanQRCodeModalUnknownURIContent from '@extension/components/ScanQRCodeModalUnkownURIContent';
+import ScanModeModalContent from '@extension/components/ScanModeModalContent';
+import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
+import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
+import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
+import AddAccountModalContent from './AddAccountModalContent';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
-
-// hooks
-import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 
 // selectors
 import { useSelectLogger, useSelectNetworks } from '@extension/selectors';
@@ -20,6 +17,7 @@ import { useSelectLogger, useSelectNetworks } from '@extension/selectors';
 // types
 import type { ILogger } from '@common/types';
 import type {
+  IAddAccountCompleteResult,
   IARC0300AccountImportSchema,
   IARC0300BaseSchema,
   INetwork,
@@ -29,32 +27,37 @@ import type { IProps } from './types';
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 
-const ScanQRCodeAddAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
+const ScanQRCodeAddAccountModal: FC<IProps> = ({
+  isOpen,
+  onClose,
+  onComplete,
+  saving,
+}) => {
   // selectors
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
-  // hooks
-  const { resetAction, scanning, startScanningAction, uri } =
-    useCaptureQRCode();
   // state
-  const [showCamera, setShowCamera] = useState<boolean>(false);
+  const [scanViaCamera, setScanViaCamera] = useState<boolean>(false);
+  const [scanViaTab, setScanViaTab] = useState<boolean>(false);
+  const [uri, setURI] = useState<string | null>(null);
+  // misc
+  const reset = () => {
+    setURI(null);
+    setScanViaCamera(false);
+    setScanViaTab(false);
+  };
   // handlers
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
-    resetAction();
+    reset();
     onClose();
   };
-  const handlePreviousClick = () => {
-    resetAction();
-    setShowCamera(false); // close the webcam, if open
-  };
-  const handleScanBrowserWindowClick = () => {
-    startScanningAction('browserWindow');
-  };
-  const handleScanUsingCameraClick = async () => {
-    setShowCamera(true);
-    startScanningAction('extensionPopup');
-  };
+  const handleOnComplete = (result: IAddAccountCompleteResult) =>
+    onComplete(result);
+  const handleOnURI = (uri: string) => setURI(uri);
+  const handlePreviousClick = () => reset();
+  const handleScanViaCameraClick = () => setScanViaCamera(true);
+  const handleScanViaTabClick = () => setScanViaTab(true);
   // renders
   const renderContent = () => {
     let arc0300Schema: IARC0300BaseSchema | null;
@@ -71,7 +74,7 @@ const ScanQRCodeAddAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
         arc0300Schema.paths[0] !== ARC0300PathEnum.Import
       ) {
         return (
-          <ScanQRCodeModalUnknownURIContent
+          <UnknownURIModalContent
             onPreviousClick={handlePreviousClick}
             uri={uri}
           />
@@ -79,35 +82,38 @@ const ScanQRCodeAddAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
       }
 
       return (
-        <ScanQRCodeModalAccountImportContent
-          onComplete={handleClose}
+        <AddAccountModalContent
+          onComplete={handleOnComplete}
           onPreviousClick={handlePreviousClick}
           schema={arc0300Schema as IARC0300AccountImportSchema}
+          saving={saving}
         />
       );
     }
 
-    if (showCamera) {
+    if (scanViaCamera) {
       return (
-        <ScanQRCodeModalCameraStreamContent
+        <ScanQRCodeViaCameraModalContent
           onPreviousClick={handlePreviousClick}
+          onURI={handleOnURI}
         />
       );
     }
 
-    if (scanning) {
+    if (scanViaTab) {
       return (
-        <ScanQRCodeModalScanningBrowserWindowContent
+        <ScanQRCodeViaTabModalContent
           onPreviousClick={handlePreviousClick}
+          onURI={handleOnURI}
         />
       );
     }
 
     return (
-      <ScanQRCodeModalSelectScanModeContent
+      <ScanModeModalContent
         onCancelClick={handleCancelClick}
-        onScanBrowserWindowClick={handleScanBrowserWindowClick}
-        onScanUsingCameraClick={handleScanUsingCameraClick}
+        onScanViaCameraClick={handleScanViaCameraClick}
+        onScanViaTabClick={handleScanViaTabClick}
       />
     );
   };
@@ -119,7 +125,6 @@ const ScanQRCodeAddAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
       onClose={onClose}
       size="full"
       scrollBehavior="inside"
-      useInert={false} // ensure the camera screen can be captured
     >
       {renderContent()}
     </Modal>

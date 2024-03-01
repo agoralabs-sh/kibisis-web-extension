@@ -2,11 +2,11 @@ import { Modal } from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
 
 // components
-import AccountImportConfirmationModalContent from '@extension/components/AccountImportConfirmationModalContent';
 import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
+import AccountImportModalContent from './AccountImportModalContent';
 import AssetAddModalContent from './AssetAddModalContent';
 
 // enums
@@ -58,8 +58,8 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handleOnURI = (uri: string) => setURI(uri);
   const handlePreviousClick = () => reset();
-  const handleScanBrowserWindowClick = () => setScanViaTab(true);
-  const handleScanUsingCameraClick = () => setScanViaCamera(true);
+  const handleScanViaCameraClick = () => setScanViaCamera(true);
+  const handleScanViaTabClick = () => setScanViaTab(true);
   // renders
   const renderContent = () => {
     let arc0300Schema: IARC0300BaseSchema | null;
@@ -75,7 +75,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
           case ARC0300AuthorityEnum.Account:
             if (arc0300Schema.paths[0] === ARC0300PathEnum.Import) {
               return (
-                <AccountImportConfirmationModalContent
+                <AccountImportModalContent
                   onComplete={handleClose}
                   onPreviousClick={handlePreviousClick}
                   schema={arc0300Schema as IARC0300AccountImportSchema}
@@ -131,8 +131,8 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
     return (
       <ScanModeModalContent
         onCancelClick={handleCancelClick}
-        onScanBrowserWindowClick={handleScanBrowserWindowClick}
-        onScanUsingCameraClick={handleScanUsingCameraClick}
+        onScanViaTabClick={handleScanViaTabClick}
+        onScanViaCameraClick={handleScanViaCameraClick}
       />
     );
   };
