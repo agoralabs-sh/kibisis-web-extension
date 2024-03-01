@@ -21,6 +21,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import Button from '@extension/components/Button';
 import CopyButton from '@extension/components/CopyButton';
 import PageHeader from '@extension/components/PageHeader';
+import SeedPhraseDisplay from '@extension/components/SeedPhraseDisplay';
 import Steps from '@extension/components/Steps';
 
 // constants
@@ -147,31 +148,10 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
                   {t<string>('captions.saveMnemonicPhrase2')}
                 </Text>
 
-                <Grid gap={2} templateColumns="repeat(3, 1fr)" w="full">
-                  {secretKeyToMnemonic(account.sk)
-                    .split(' ')
-                    .map((value, index, array) => {
-                      if (index >= array.length - 1) {
-                        return (
-                          <GridItem
-                            colEnd={2}
-                            colStart={2}
-                            key={`create-new-account-page-mnemonic-phrase-item-${index}`}
-                          >
-                            <Code w="full">{value}</Code>
-                          </GridItem>
-                        );
-                      }
-
-                      return (
-                        <GridItem
-                          key={`create-new-account-page-mnemonic-phrase-item-${index}`}
-                        >
-                          <Code w="full">{value}</Code>
-                        </GridItem>
-                      );
-                    })}
-                </Grid>
+                {/*seed phrase*/}
+                <SeedPhraseDisplay
+                  seedPhrase={secretKeyToMnemonic(account.sk)}
+                />
               </VStack>
 
               {/*copy seed phrase button*/}

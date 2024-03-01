@@ -16,6 +16,7 @@ const translation: IResourceLanguage = {
     clearAllData: 'Clear All Data',
     confirm: 'Confirm',
     connect: 'Connect',
+    copy: 'Copy',
     copySeedPhrase: 'Copy Seed Phrase',
     create: 'Create',
     dismiss: 'Dismiss',
@@ -36,6 +37,7 @@ const translation: IResourceLanguage = {
     send: 'Send',
     sign: 'Sign',
     tryAgain: 'Try Again',
+    view: 'View',
   },
   captions: {
     accountAlreadyAdded: 'Account already added.',
@@ -178,6 +180,8 @@ const translation: IResourceLanguage = {
       '{{amount}} transaction(s) were successfully sent.',
     unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
+    viewSeedPhrase1: 'Select an account to view the seed phrase.',
+    viewSeedPhrase2: 'You will be prompted to enter your password.',
   },
   errors: {
     descriptions: {
@@ -414,6 +418,7 @@ const translation: IResourceLanguage = {
     page_security: 'Security',
     page_sessions: 'Sessions',
     page_settings: 'Settings',
+    page_viewSeedPhrase: 'View Seed Phrase',
   },
   values: {
     appOnComplete: 'Application Operation',
