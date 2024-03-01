@@ -13,7 +13,7 @@ const SeedPhraseDisplay: FC<IProps> = ({ seedPhrase }) => {
             <GridItem
               colEnd={2}
               colStart={2}
-              key={`create-new-account-page-mnemonic-phrase-item-${index}`}
+              key={`seed-display-phrase-item-${index}`}
             >
               <Code w="full">{value}</Code>
             </GridItem>
@@ -21,9 +21,7 @@ const SeedPhraseDisplay: FC<IProps> = ({ seedPhrase }) => {
         }
 
         return (
-          <GridItem
-            key={`create-new-account-page-mnemonic-phrase-item-${index}`}
-          >
+          <GridItem key={`seed-phrase-display-item-${index}`}>
             <Code w="full">{value}</Code>
           </GridItem>
         );

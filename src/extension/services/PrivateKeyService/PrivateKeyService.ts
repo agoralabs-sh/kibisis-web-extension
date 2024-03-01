@@ -83,7 +83,7 @@ export default class PrivateKeyService {
 
   /**
    * Gets the decrypted private key from local storage for a given public key.
-   * @param {Uint8Array} publicKey - the encoded public key of the private key.
+   * @param {Uint8Array} publicKey - the decoded public key of the private key.
    * @param {string} password - the password used to encrypt the private key.
    * @returns {Uint8Array | null} the decrypted private key, or null if no account is stored.
    * @throws {InvalidPasswordError} If the password is invalid.
