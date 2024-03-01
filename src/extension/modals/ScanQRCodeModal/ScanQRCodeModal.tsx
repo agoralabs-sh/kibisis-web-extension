@@ -2,17 +2,15 @@ import { Modal } from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
 
 // components
+import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
+import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
+import ScanQRCodeModalAssetAddContent from './ScanQRCodeModalAssetAddContent';
 import ScanQRCodeModalAccountImportContent from './ScanQRCodeModalAccountImportContent';
-import ScanQRCodeModalCameraStreamContent from './ScanQRCodeModalCameraStreamContent';
-import ScanQRCodeModalScanningContent from './ScanQRCodeModalScanningContent';
 import ScanQRCodeModalSelectScanModeContent from './ScanQRCodeModalSelectScanModeContent';
 import ScanQRCodeModalUnknownURIContent from './ScanQRCodeModalUnknownURIContent';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
-
-// hooks
-import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 
 // selectors
 import {
@@ -32,7 +30,6 @@ import type {
 
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
-import ScanQRCodeModalAssetAddContent from '@extension/modals/ScanQRCodeModal/ScanQRCodeModalAssetAddContent';
 
 interface IProps {
   onClose: () => void;
@@ -43,28 +40,26 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
   const isOpen: boolean = useSelectScanQRCodeModal();
-  // hooks
-  const { resetAction, scanning, startScanningAction, uri } =
-    useCaptureQRCode();
   // state
-  const [showCamera, setShowCamera] = useState<boolean>(false);
+  const [scanViaCamera, setScanViaCamera] = useState<boolean>(false);
+  const [scanViaTab, setScanViaTab] = useState<boolean>(false);
+  const [uri, setURI] = useState<string | null>(null);
+  // misc
+  const reset = () => {
+    setURI(null);
+    setScanViaCamera(false);
+    setScanViaTab(false);
+  };
   // handlers
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
-    resetAction();
+    reset();
     onClose();
   };
-  const handlePreviousClick = () => {
-    resetAction();
-    setShowCamera(false); // close the webcam, if open
-  };
-  const handleScanBrowserWindowClick = () => {
-    startScanningAction('browserWindow');
-  };
-  const handleScanUsingCameraClick = async () => {
-    setShowCamera(true);
-    startScanningAction('extensionPopup');
-  };
+  const handleOnURI = (uri: string) => setURI(uri);
+  const handlePreviousClick = () => reset();
+  const handleScanBrowserWindowClick = () => setScanViaTab(true);
+  const handleScanUsingCameraClick = () => setScanViaCamera(true);
   // renders
   const renderContent = () => {
     let arc0300Schema: IARC0300BaseSchema | null;
@@ -115,17 +110,21 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
       );
     }
 
-    if (showCamera) {
+    if (scanViaCamera) {
       return (
-        <ScanQRCodeModalCameraStreamContent
+        <ScanQRCodeViaCameraModalContent
           onPreviousClick={handlePreviousClick}
+          onURI={handleOnURI}
         />
       );
     }
 
-    if (scanning) {
+    if (scanViaTab) {
       return (
-        <ScanQRCodeModalScanningContent onPreviousClick={handlePreviousClick} />
+        <ScanQRCodeViaTabModalContent
+          onPreviousClick={handlePreviousClick}
+          onURI={handleOnURI}
+        />
       );
     }
 
@@ -145,7 +144,6 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
       onClose={onClose}
       size="full"
       scrollBehavior="inside"
-      useInert={false} // ensure the camera screen can be captured
     >
       {renderContent()}
     </Modal>

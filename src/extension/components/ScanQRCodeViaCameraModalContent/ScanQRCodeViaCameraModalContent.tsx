@@ -10,13 +10,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, {
-  FC,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, MutableRefObject, useEffect, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   IoAlertCircleOutline,
@@ -35,101 +29,58 @@ import {
   SUPPORT_MAIL_TO_LINK,
 } from '@extension/constants';
 
-// errors
-import { BaseExtensionError, CameraError } from '@extension/errors';
+// enums
+import { ErrorCodeEnum, ScanModeEnum } from '@extension/enums';
 
 // hooks
+import useCameraStream from '@extension/hooks/useCameraStream';
+import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-
-// selectors
-import { useSelectLogger } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
+import type { IScanQRCodeModalContentProps } from '@extension/types';
 
-interface IProps {
-  onPreviousClick: () => void;
-}
-
-const ScanQRCodeModalCameraStreamContent: FC<IProps> = ({
+const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
   onPreviousClick,
-}: IProps) => {
-  const { t } = useTranslation();
+  onURI,
+}) => {
   const videoRef: MutableRefObject<HTMLVideoElement | null> =
     useRef<HTMLVideoElement | null>(null);
-  // selectors
-  const logger: ILogger = useSelectLogger();
+  const { t } = useTranslation();
   // hooks
+  const {
+    error,
+    loading,
+    reset: resetCameraStream,
+    startStream,
+    stream,
+  } = useCameraStream();
+  const {
+    resetAction: resetScanAction,
+    startScanningAction,
+    uri,
+  } = useCaptureQRCode();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
   );
   const subTextColor: string = useSubTextColor();
-  // state
-  const [error, setError] = useState<BaseExtensionError | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [notAllowed, setNotAllowed] = useState<boolean>(false);
-  const [stream, setStream] = useState<MediaStream | null>(null);
   // misc
-  const startStreaming = async () => {
-    const _functionName: string = 'useEffect';
-    let _stream: MediaStream;
-
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      try {
-        setError(null);
-        setLoading(true);
-
-        _stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            height: window.innerHeight,
-            width: window.innerWidth,
-          },
-        });
-
-        setStream(_stream);
-      } catch (error) {
-        logger.error(
-          `${ScanQRCodeModalCameraStreamContent.name}#${_functionName}: `,
-          error
-        );
-
-        // if the user denied access, inform the user
-        if (
-          (error as DOMException).name === 'NotAllowedError' ||
-          (error as DOMException).name === 'SecurityError'
-        ) {
-          setNotAllowed(true);
-          setLoading(false);
-
-          return;
-        }
-
-        setError(new CameraError((error as DOMException).name, error.message));
-      }
-
-      setLoading(false);
-    }
+  const reset = () => {
+    // stop scanning and stop streaming
+    resetCameraStream();
+    resetScanAction();
   };
   // handlers
   const handlePreviousClick = () => {
-    // stop the camera stream
-    if (stream) {
-      stream.getTracks().forEach((value) => value.stop());
-    }
-
-    setError(null);
-    setLoading(false);
-    setStream(null);
-    setNotAllowed(false);
-
     onPreviousClick();
+    reset();
   };
   // renders
   const renderBody = () => {
@@ -137,8 +88,25 @@ const ScanQRCodeModalCameraStreamContent: FC<IProps> = ({
       return <QRCodeFrameIcon color="white" h="20rem" w="20rem" />;
     }
 
-    // show a general error page
     if (error) {
+      // if the camera was denied access, show a special error
+      if (error.code === ErrorCodeEnum.CameraNotAllowedError) {
+        return (
+          <>
+            {/*icon*/}
+            <Icon as={IoBanOutline} color={defaultTextColor} h={16} w={16} />
+
+            {/*captions*/}
+            <Text color={defaultTextColor} fontSize="md" textAlign="center">
+              {t<string>('captions.cameraQRCodeScanNotAllowed1')}
+            </Text>
+            <Text color={defaultTextColor} fontSize="md" textAlign="center">
+              {t<string>('captions.cameraQRCodeScanNotAllowed2')}
+            </Text>
+          </>
+        );
+      }
+
       return (
         <>
           {/*icon*/}
@@ -171,23 +139,6 @@ const ScanQRCodeModalCameraStreamContent: FC<IProps> = ({
       );
     }
 
-    if (notAllowed) {
-      return (
-        <>
-          {/*icon*/}
-          <Icon as={IoBanOutline} color={defaultTextColor} h={16} w={16} />
-
-          {/*captions*/}
-          <Text color={defaultTextColor} fontSize="md" textAlign="center">
-            {t<string>('captions.cameraQRCodeScanNotAllowed1')}
-          </Text>
-          <Text color={defaultTextColor} fontSize="md" textAlign="center">
-            {t<string>('captions.cameraQRCodeScanNotAllowed2')}
-          </Text>
-        </>
-      );
-    }
-
     return (
       <>
         {/*loader*/}
@@ -208,14 +159,27 @@ const ScanQRCodeModalCameraStreamContent: FC<IProps> = ({
   };
 
   useEffect(() => {
-    (async () => await startStreaming())();
+    (async () => await startStream())();
   }, []);
   useEffect(() => {
     if (stream && videoRef.current) {
       videoRef.current.srcObject = stream;
       videoRef.current.play();
+
+      // once we start the stream, start scanning for a qr code
+      startScanningAction({
+        mode: ScanModeEnum.Camera,
+        videoElement: videoRef.current,
+      });
     }
   }, [stream]);
+  useEffect(() => {
+    if (uri) {
+      onURI(uri);
+
+      reset();
+    }
+  }, [uri]);
 
   return (
     <ModalContent
@@ -240,7 +204,7 @@ const ScanQRCodeModalCameraStreamContent: FC<IProps> = ({
       />
 
       {/*header*/}
-      {notAllowed && (
+      {error && error.code === ErrorCodeEnum.CameraNotAllowedError && (
         <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {t<string>('headings.cameraDenied')}
@@ -285,4 +249,4 @@ const ScanQRCodeModalCameraStreamContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalCameraStreamContent;
+export default ScanQRCodeViaCameraModalContent;
