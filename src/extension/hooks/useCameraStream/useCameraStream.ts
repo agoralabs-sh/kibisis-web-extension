@@ -15,6 +15,9 @@ import { useSelectLogger } from '@extension/selectors';
 import type { ILogger } from '@common/types';
 import type { IUseCameraStreamState } from './types';
 
+// utils
+import isCameraAvailable from '@extension/utils/isCameraAvailable';
+
 export default function useCameraStream(): IUseCameraStreamState {
   // selectors
   const logger: ILogger = useSelectLogger();
@@ -33,7 +36,7 @@ export default function useCameraStream(): IUseCameraStreamState {
     const _functionName: string = 'startStream';
     let _stream: MediaStream;
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    if (!isCameraAvailable()) {
       setError(new CameraNotFoundError('camera not found'));
 
       return;

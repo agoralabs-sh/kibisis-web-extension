@@ -23,6 +23,9 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 // theme
 import { theme } from '@extension/theme';
 
+// utils
+import isCameraAvailable from '@extension/utils/isCameraAvailable';
+
 interface IProps {
   onCancelClick: () => void;
   onScanBrowserWindowClick: () => void;
@@ -82,15 +85,17 @@ const ScanQRCodeModalSelectScanModeContent: FC<IProps> = ({
             </Button>
 
             {/*scan using camera button*/}
-            <Button
-              onClick={handleScanUsingCameraClick}
-              rightIcon={<IoVideocamOutline />}
-              size="lg"
-              variant="solid"
-              w="full"
-            >
-              {t<string>('buttons.scanUsingCamera')}
-            </Button>
+            {isCameraAvailable() && (
+              <Button
+                onClick={handleScanUsingCameraClick}
+                rightIcon={<IoVideocamOutline />}
+                size="lg"
+                variant="solid"
+                w="full"
+              >
+                {t<string>('buttons.scanUsingCamera')}
+              </Button>
+            )}
           </VStack>
         </VStack>
       </ModalBody>
