@@ -15,3 +15,4 @@ export const SECURITY_ROUTE: string = '/security';
 export const SESSIONS_ROUTE: string = '/sessions';
 export const SETTINGS_ROUTE: string = '/settings';
 export const TRANSACTIONS_ROUTE: string = '/transactions';
+export const VIEW_SEED_PHRASE_ROUTE: string = '/view-seed-phrase';

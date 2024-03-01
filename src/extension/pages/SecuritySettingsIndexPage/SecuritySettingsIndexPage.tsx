@@ -1,7 +1,7 @@
 import { useDisclosure, VStack } from '@chakra-ui/react';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoLockClosedOutline } from 'react-icons/io5';
+import { IoKeyOutline, IoLockClosedOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -24,6 +24,7 @@ import {
   PASSWORD_LOCK_DURATION_NORMAL,
   SECURITY_ROUTE,
   SETTINGS_ROUTE,
+  VIEW_SEED_PHRASE_ROUTE,
 } from '@extension/constants';
 
 // features
@@ -211,6 +212,13 @@ const SecuritySettingsIndexPage: FC = () => {
           icon={IoLockClosedOutline}
           label={t<string>('titles.page', { context: 'changePassword' })}
           to={`${SETTINGS_ROUTE}${SECURITY_ROUTE}${CHANGE_PASSWORD_ROUTE}`}
+        />
+
+        {/*view seed phrase*/}
+        <SettingsLinkItem
+          icon={IoKeyOutline}
+          label={t<string>('titles.page', { context: 'viewSeedPhrase' })}
+          to={`${SETTINGS_ROUTE}${SECURITY_ROUTE}${VIEW_SEED_PHRASE_ROUTE}`}
         />
       </VStack>
     </>
