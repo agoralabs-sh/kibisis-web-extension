@@ -42,12 +42,10 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // theme
 import { theme } from '@extension/theme';
 
-interface IProps {
-  onPreviousClick: () => void;
-  onURI: (uri: string) => void;
-}
+// types
+import type { IScanQRCodeModalContentProps } from '@extension/types';
 
-const ScanQRCodeModalScanViaCameraContent: FC<IProps> = ({
+const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
   onPreviousClick,
   onURI,
 }) => {
@@ -251,4 +249,4 @@ const ScanQRCodeModalScanViaCameraContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalScanViaCameraContent;
+export default ScanQRCodeViaCameraModalContent;

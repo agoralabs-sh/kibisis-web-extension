@@ -1,11 +1,11 @@
 import { Modal } from '@chakra-ui/react';
-import React, { FC, MutableRefObject, useRef, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 // components
+import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
+import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import ScanQRCodeModalAssetAddContent from './ScanQRCodeModalAssetAddContent';
 import ScanQRCodeModalAccountImportContent from './ScanQRCodeModalAccountImportContent';
-import ScanQRCodeModalScanViaCameraContent from './ScanQRCodeModalScanViaCameraContent';
-import ScanQRCodeModalScanViaTabContent from './ScanQRCodeModalScanViaTabContent';
 import ScanQRCodeModalSelectScanModeContent from './ScanQRCodeModalSelectScanModeContent';
 import ScanQRCodeModalUnknownURIContent from './ScanQRCodeModalUnknownURIContent';
 
@@ -36,8 +36,6 @@ interface IProps {
 }
 
 const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
-  const videoRef: MutableRefObject<HTMLVideoElement | null> =
-    useRef<HTMLVideoElement | null>(null);
   // selectors
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
@@ -114,7 +112,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
 
     if (scanViaCamera) {
       return (
-        <ScanQRCodeModalScanViaCameraContent
+        <ScanQRCodeViaCameraModalContent
           onPreviousClick={handlePreviousClick}
           onURI={handleOnURI}
         />
@@ -123,7 +121,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
 
     if (scanViaTab) {
       return (
-        <ScanQRCodeModalScanViaTabContent
+        <ScanQRCodeViaTabModalContent
           onPreviousClick={handlePreviousClick}
           onURI={handleOnURI}
         />

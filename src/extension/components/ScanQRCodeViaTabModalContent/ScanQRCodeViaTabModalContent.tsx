@@ -29,15 +29,13 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 // theme
 import { theme } from '@extension/theme';
 
-interface IProps {
-  onPreviousClick: () => void;
-  onURI: (uri: string) => void;
-}
+// types
+import type { IScanQRCodeModalContentProps } from '@extension/types';
 
-const ScanQRCodeModalScanViaTabContent: FC<IProps> = ({
+const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
   onPreviousClick,
   onURI,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
   const {
@@ -123,4 +121,4 @@ const ScanQRCodeModalScanViaTabContent: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeModalScanViaTabContent;
+export default ScanQRCodeViaTabModalContent;
