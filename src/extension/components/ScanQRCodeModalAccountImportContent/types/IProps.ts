@@ -1,11 +1,9 @@
 // types
-import type {
-  IARC0300AccountImportSchema,
-  IScanQRCodeModalContentProps,
-} from '@extension/types';
+import type { IARC0300AccountImportSchema } from '@extension/types';
 
-interface IProps extends IScanQRCodeModalContentProps {
+interface IProps {
   onComplete: () => void;
+  onPreviousClick: () => void;
   schema: IARC0300AccountImportSchema;
 }
 

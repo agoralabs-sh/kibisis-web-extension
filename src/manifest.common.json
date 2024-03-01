@@ -1,6 +1,6 @@
 {
   "name": "Kibisis",
-  "version": "1.12.1",
+  "version": "1.13.0",
   "description": "An AVM wallet in your browser that goes beyond just DeFi.",
   "author": "Agora Labs",
   "icons": {
@@ -9,12 +9,8 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-        "content-script.js"
-      ]
+      "matches": ["*://*/*"],
+      "js": ["content-script.js"]
     }
   ]
 }

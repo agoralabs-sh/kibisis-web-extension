@@ -3,50 +3,60 @@ import { useState } from 'react';
 // constants
 import { QR_CODE_SCAN_INTERVAL } from '@extension/constants';
 
+// enums
+import { ScanModeEnum } from '@extension/enums';
+
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
 // types
 import type { ILogger } from '@common/types';
-import type { IScanMode, IUseCaptureQrCodeState } from './types';
+import type { IStartScanningOptions, IUseCaptureQrCodeState } from './types';
 
 // utils
-import captureQRCode from './utils/captureQRCode';
+import captureQRCodeFromCamera from './utils/captureQRCodeFromCamera';
+import captureQRCodeFromTab from './utils/captureQRCodeFromTab';
 
 export default function useCaptureQRCode(): IUseCaptureQrCodeState {
-  const _functionName: string = 'useCaptureQRCode';
   // selectors
   const logger: ILogger = useSelectLogger();
   // states
   const [intervalId, setIntervalId] = useState<number | null>(null);
-  const [_, setScanMode] = useState<IScanMode | null>(null);
   const [scanning, setScanning] = useState<boolean>(false);
   const [uri, setURI] = useState<string | null>(null);
   // misc
-  const captureAction = async (mode: IScanMode) => {
-    let capturedURI: string;
+  const captureAction = async (options: IStartScanningOptions) => {
+    const _functionName: string = 'captureAction';
+    let capturedURI: string | null = null;
 
     try {
-      capturedURI = await captureQRCode(mode);
+      switch (options.mode) {
+        case ScanModeEnum.Camera:
+          capturedURI = await captureQRCodeFromCamera(options.videoElement);
+          break;
+        case ScanModeEnum.Tab:
+          capturedURI = await captureQRCodeFromTab();
+          break;
+        default:
+          break;
+      }
 
       setURI(capturedURI);
 
       return stopScanningAction();
     } catch (error) {
-      logger.debug(`${_functionName}(): ${error.message}`);
+      logger.debug(`${_functionName}: ${error.message}`);
     }
   };
   const resetAction = () => {
     setURI(null);
-    setScanMode(null);
     stopScanningAction();
   };
-  const startScanningAction = (mode: IScanMode) => {
-    setScanMode(mode);
+  const startScanningAction = (options: IStartScanningOptions) => {
     setScanning(true);
 
     (async () => {
-      await captureAction(mode);
+      await captureAction(options);
 
       // add a three-second interval that attempts to capture a qr code on the screen
       setIntervalId(
@@ -56,7 +66,7 @@ export default function useCaptureQRCode(): IUseCaptureQrCodeState {
           }
 
           // attempt to capture the qr code
-          await captureAction(mode);
+          await captureAction(options);
         }, QR_CODE_SCAN_INTERVAL)
       );
     })();

@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoBrowsersOutline, IoVideocamOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
@@ -21,10 +22,12 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // theme
 import { theme } from '@extension/theme';
-import { IoBrowsersOutline, IoVideocamOutline } from 'react-icons/io5';
 
 // types
 import type { IProps } from './types';
+
+// utils
+import isCameraAvailable from '@extension/utils/isCameraAvailable';
 
 const ScanQRCodeModalSelectScanModeContent: FC<IProps> = ({
   onCancelClick,
@@ -79,15 +82,17 @@ const ScanQRCodeModalSelectScanModeContent: FC<IProps> = ({
             </Button>
 
             {/*scan using camera button*/}
-            <Button
-              onClick={handleScanUsingCameraClick}
-              rightIcon={<IoVideocamOutline />}
-              size="lg"
-              variant="solid"
-              w="full"
-            >
-              {t<string>('buttons.scanUsingCamera')}
-            </Button>
+            {isCameraAvailable() && (
+              <Button
+                onClick={handleScanUsingCameraClick}
+                rightIcon={<IoVideocamOutline />}
+                size="lg"
+                variant="solid"
+                w="full"
+              >
+                {t<string>('buttons.scanUsingCamera')}
+              </Button>
+            )}
           </VStack>
         </VStack>
       </ModalBody>

@@ -1,3 +1,24 @@
+# [1.13.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.1...v1.13.0-beta.2) (2024-03-01)
+
+
+### Bug Fixes
+
+* camera should correctly pick up qr codes on chrome ([#193](https://github.com/agoralabs-sh/kibisis-web-extension/issues/193)) ([252b07b](https://github.com/agoralabs-sh/kibisis-web-extension/commit/252b07b8048fcaa42eff5583cfb12586bcff727a))
+
+## [1.12.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0...v1.12.1) (2024-03-01)
+
+
+### Bug Fixes
+
+* camera should correctly pick up qr codes on chrome ([#193](https://github.com/agoralabs-sh/kibisis-web-extension/issues/193)) ([252b07b](https://github.com/agoralabs-sh/kibisis-web-extension/commit/252b07b8048fcaa42eff5583cfb12586bcff727a))
+
+# [1.13.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.1-beta.1...v1.13.0-beta.1) (2024-03-01)
+
+
+### Features
+
+* view seed phrase for accounts ([#191](https://github.com/agoralabs-sh/kibisis-web-extension/issues/191)) ([5beedac](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5beedacbf44403aa2f91d77f3e1a3f7e7ccc5fb6))
+
 ## [1.12.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0...v1.12.1-beta.1) (2024-02-29)
 
 

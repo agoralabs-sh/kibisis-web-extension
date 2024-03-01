@@ -1,7 +1,5 @@
-// types
-import type { IScanQRCodeModalContentProps } from '@extension/types';
-
-interface IProps extends IScanQRCodeModalContentProps {
+interface IProps {
+  onPreviousClick: () => void;
   uri: string;
 }
 

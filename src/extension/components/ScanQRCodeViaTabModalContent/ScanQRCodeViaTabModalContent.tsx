@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 
@@ -18,28 +18,54 @@ import Button from '@extension/components/Button';
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
+// enums
+import { ScanModeEnum } from '@extension/enums';
+
 // hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
 import type { IScanQRCodeModalContentProps } from '@extension/types';
-
-const ScanQRCodeModalScanningBrowserWindowContent: FC<
-  IScanQRCodeModalContentProps
-> = ({ onPreviousClick }) => {
+const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
+  onPreviousClick,
+  onURI,
+}) => {
   const { t } = useTranslation();
   // hooks
+  const {
+    resetAction: resetScanAction,
+    startScanningAction,
+    uri,
+  } = useCaptureQRCode();
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColor: string = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
   );
   // handlers
-  const handlePreviousClick = () => onPreviousClick();
+  const handlePreviousClick = () => {
+    onPreviousClick();
+    resetScanAction();
+  };
+
+  useEffect(() => {
+    startScanningAction({
+      mode: ScanModeEnum.Tab,
+    });
+  }, []);
+  useEffect(() => {
+    if (uri) {
+      onURI(uri);
+
+      // stop scanning
+      resetScanAction();
+    }
+  }, [uri]);
 
   return (
     <ModalContent
@@ -94,4 +120,4 @@ const ScanQRCodeModalScanningBrowserWindowContent: FC<
   );
 };
 
-export default ScanQRCodeModalScanningBrowserWindowContent;
+export default ScanQRCodeViaTabModalContent;
