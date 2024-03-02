@@ -1,3 +1,10 @@
+# [1.13.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.2...v1.13.0-beta.3) (2024-03-02)
+
+
+### Features
+
+* add registration option to import an account via a qr code ([#195](https://github.com/agoralabs-sh/kibisis-web-extension/issues/195)) ([fff684e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/fff684edf2135f8520bbcef0b568cd4e6cae6bd4))
+
 # [1.13.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.1...v1.13.0-beta.2) (2024-03-01)
 
 
