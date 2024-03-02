@@ -18,6 +18,7 @@ import {
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
+import { setScanQRCodeModal } from '@extension/features/system';
 
 // modals
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
@@ -72,7 +73,6 @@ const AddAccountMainRouter: FC = () => {
     useState<IAddAccountCompleteResult | null>(null);
   // handlers
   const handleOnAddAccountComplete: IAddAccountCompleteFunction = async ({
-    arc0200Assets,
     name,
     privateKey,
   }: IAddAccountCompleteResult) => {
@@ -89,7 +89,6 @@ const AddAccountMainRouter: FC = () => {
 
     // set the result to state, in order for the password confirm modal to handle the encryption
     setAddAccountResult({
-      arc0200Assets,
       name,
       privateKey,
     });
@@ -106,6 +105,7 @@ const AddAccountMainRouter: FC = () => {
       privateKey: addAccountResult.privateKey,
     });
   };
+  const handleImportAccountViaQRCodeOpen = () => {};
   const saveNewAccount = async ({
     name,
     password,
@@ -211,8 +211,7 @@ const AddAccountMainRouter: FC = () => {
         <Route
           element={
             <AddAccountTypePage
-              onComplete={handleOnAddAccountComplete}
-              saving={saving}
+              onImportAccountViaQRCodeClick={handleImportAccountViaQRCodeOpen}
             />
           }
           path="/"

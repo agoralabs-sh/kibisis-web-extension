@@ -1,4 +1,4 @@
-import { VStack, useDisclosure } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoQrCodeOutline } from 'react-icons/io5';
@@ -18,26 +18,12 @@ import {
   IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE,
 } from '@extension/constants';
 
-// modals
-import ScanQRCodeAddAccountModal from '@extension/modals/ScanQRCodeAddAccountModal';
-
 // types
-import type {
-  IAddAccountCompleteResult,
-  IAddAccountPageProps,
-} from '@extension/types';
+import type { IProps } from './types';
 
-const AddAccountTypePage: FC<IAddAccountPageProps> = ({
-  onComplete,
-  saving,
-}) => {
+const AddAccountTypePage: FC<IProps> = ({ onImportAccountViaQRCodeClick }) => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
-  const {
-    isOpen: isScanQRCodeModalOpen,
-    onClose: onScanQRCodeModalClose,
-    onOpen: onScanQRCodeModalOpen,
-  } = useDisclosure();
   // handlers
   const handleAccountTypeClick =
     (type: 'create' | 'import-via-seed-phrase' | 'import-via-qr-code') =>
@@ -54,26 +40,16 @@ const AddAccountTypePage: FC<IAddAccountPageProps> = ({
 
           break;
         case 'import-via-qr-code':
-          onScanQRCodeModalOpen();
+          onImportAccountViaQRCodeClick();
 
           break;
         default:
           break;
       }
     };
-  const handleOnComplete = (result: IAddAccountCompleteResult) =>
-    onComplete(result);
-  const handleScanQRCodeModalClose = () => onScanQRCodeModalClose();
 
   return (
     <>
-      <ScanQRCodeAddAccountModal
-        isOpen={isScanQRCodeModalOpen}
-        onClose={handleScanQRCodeModalClose}
-        onComplete={handleOnComplete}
-        saving={saving}
-      />
-
       <PageHeader
         title={t<string>('titles.page', { context: 'accountSetup' })}
       />

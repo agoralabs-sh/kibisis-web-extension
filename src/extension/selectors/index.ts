@@ -23,11 +23,8 @@ export { default as useSelectNetworks } from './useSelectNetworks';
 export { default as useSelectNotShowingNotifications } from './useSelectNotShowingNotifications';
 export { default as useSelectPasswordLockPassword } from './useSelectPasswordLockPassword';
 export { default as useSelectPreferredBlockExplorer } from './useSelectPreferredBlockExplorer';
-export { default as useSelectRegistrationPassword } from './useSelectRegistrationPassword';
-export { default as useSelectRegistrationScore } from './useSelectRegistrationScore';
 export { default as useSelectSavingAccounts } from './useSelectSavingAccounts';
 export { default as useSelectSavingPasswordLock } from './useSelectSavingPasswordLock';
-export { default as useSelectSavingRegistration } from './useSelectSavingRegistration';
 export { default as useSelectSavingSessions } from './useSelectSavingSessions';
 export { default as useSelectSavingSettings } from './useSelectSavingSettings';
 export { default as useSelectScanQRCodeModal } from './useSelectScanQRCodeModal';
@@ -46,4 +43,5 @@ export { default as useSelectWalletConnectModalOpen } from './useSelectWalletCon
 export { default as useSelectWeb3Wallet } from './useSelectWeb3Wallet';
 export * from './accounts';
 export * from './arc-0200-assets';
+export * from './registration';
 export * from './send-assets';

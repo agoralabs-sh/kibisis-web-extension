@@ -6,7 +6,7 @@ import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
-import AddAccountModalContent from './AddAccountModalContent';
+import ConfirmAccountModalContent from './ConfirmAccountModalContent';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
@@ -27,7 +27,7 @@ import type { IProps } from './types';
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 
-const ScanQRCodeAddAccountModal: FC<IProps> = ({
+const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
   isOpen,
   onClose,
   onComplete,
@@ -82,7 +82,7 @@ const ScanQRCodeAddAccountModal: FC<IProps> = ({
       }
 
       return (
-        <AddAccountModalContent
+        <ConfirmAccountModalContent
           onComplete={handleOnComplete}
           onPreviousClick={handlePreviousClick}
           schema={arc0300Schema as IARC0300AccountImportSchema}
@@ -131,4 +131,4 @@ const ScanQRCodeAddAccountModal: FC<IProps> = ({
   );
 };
 
-export default ScanQRCodeAddAccountModal;
+export default RegistrationImportAccountViaQRCodeModal;

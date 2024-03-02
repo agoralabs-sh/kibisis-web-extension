@@ -78,7 +78,6 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IActiveAccountDetails,
-  IAddAccountCompleteFunction,
   IAppThunkDispatch,
   IARC0300AccountImportSchema,
   INetwork,

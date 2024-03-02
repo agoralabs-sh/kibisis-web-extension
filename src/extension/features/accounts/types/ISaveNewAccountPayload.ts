@@ -1,7 +1,7 @@
 interface ISaveNewAccountPayload {
   name: string | null;
-  password: string;
   privateKey: Uint8Array;
+  password: string;
 }
 
 export default ISaveNewAccountPayload;

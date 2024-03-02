@@ -16,7 +16,13 @@ import { ErrorCodeEnum } from '@extension/enums';
 // features
 import { sendRegistrationCompletedThunk } from '@extension/features/messages';
 import { create as createNotification } from '@extension/features/notifications';
-import { saveCredentialsThunk } from '@extension/features/registration';
+import {
+  saveCredentialsThunk,
+  setImportAccountViaQRCodeOpen,
+} from '@extension/features/registration';
+
+// modals
+import RegistrationImportAccountViaQRCodeModal from '@extension/modals/RegistrationImportAccountViaQRCodeModal';
 
 // pages
 import AddAccountTypePage from '@extension/pages/AddAccountTypePage';
@@ -24,7 +30,10 @@ import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSeedPhrasePage';
 
 // selectors
-import { useSelectSavingRegistration } from '@extension/selectors';
+import {
+  useSelectRegistrationImportAccountViaQRCodeOpen,
+  useSelectRegistrationSaving,
+} from '@extension/selectors';
 
 // types
 import type {
@@ -40,15 +49,19 @@ const AddAccountRegistrationRouter: FC = () => {
     useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
   const navigate: NavigateFunction = useNavigate();
   // selectors
-  const saving: boolean = useSelectSavingRegistration();
+  const importAccountViaQRCodeOpen: boolean =
+    useSelectRegistrationImportAccountViaQRCodeOpen();
+  const saving: boolean = useSelectRegistrationSaving();
   // handlers
   const handleOnAddAccountComplete: IAddAccountCompleteFunction = async ({
+    arc0200Assets,
     name,
     privateKey,
   }: IAddAccountCompleteResult) => {
     try {
       await dispatch(
         saveCredentialsThunk({
+          arc0200Assets,
           name,
           privateKey,
         })
@@ -78,42 +91,54 @@ const AddAccountRegistrationRouter: FC = () => {
       }
     }
   };
+  const handleOnImportAccountViaQRCodeClose = () =>
+    dispatch(setImportAccountViaQRCodeOpen(false));
+  const handleOnImportAccountViaQRCodeOpen = () =>
+    dispatch(setImportAccountViaQRCodeOpen(true));
 
   return (
-    <Routes>
-      {/*add account type page*/}
-      <Route
-        element={
-          <AddAccountTypePage
-            onComplete={handleOnAddAccountComplete}
-            saving={saving}
-          />
-        }
-        path="/"
+    <>
+      <RegistrationImportAccountViaQRCodeModal
+        isOpen={importAccountViaQRCodeOpen}
+        onClose={handleOnImportAccountViaQRCodeClose}
+        onComplete={handleOnAddAccountComplete}
+        saving={saving}
       />
 
-      {/*create account page*/}
-      <Route
-        element={
-          <CreateNewAccountPage
-            onComplete={handleOnAddAccountComplete}
-            saving={saving}
-          />
-        }
-        path={CREATE_NEW_ACCOUNT_ROUTE}
-      />
+      <Routes>
+        {/*add account type page*/}
+        <Route
+          element={
+            <AddAccountTypePage
+              onImportAccountViaQRCodeClick={handleOnImportAccountViaQRCodeOpen}
+            />
+          }
+          path="/"
+        />
 
-      {/*import account via seed phrase page*/}
-      <Route
-        element={
-          <ImportAccountViaSeedPhrasePage
-            onComplete={handleOnAddAccountComplete}
-            saving={saving}
-          />
-        }
-        path={IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE}
-      />
-    </Routes>
+        {/*create account page*/}
+        <Route
+          element={
+            <CreateNewAccountPage
+              onComplete={handleOnAddAccountComplete}
+              saving={saving}
+            />
+          }
+          path={CREATE_NEW_ACCOUNT_ROUTE}
+        />
+
+        {/*import account via seed phrase page*/}
+        <Route
+          element={
+            <ImportAccountViaSeedPhrasePage
+              onComplete={handleOnAddAccountComplete}
+              saving={saving}
+            />
+          }
+          path={IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE}
+        />
+      </Routes>
+    </>
   );
 };
 

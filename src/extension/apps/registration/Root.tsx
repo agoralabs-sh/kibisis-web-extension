@@ -7,8 +7,9 @@ import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 import { BODY_BACKGROUND_COLOR } from '@extension/constants';
 
 // features
-import { setNavigate } from '@extension/features/system';
+import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc200-assets';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
+import { setNavigate } from '@extension/features/system';
 
 // types
 import type {
@@ -23,6 +24,7 @@ const Root: FC = () => {
 
   useEffect(() => {
     dispatch(setNavigate(navigate));
+    dispatch(fetchARC0200AssetsFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
   }, []);
 

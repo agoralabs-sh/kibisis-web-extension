@@ -16,6 +16,7 @@ import {
 } from '@extension/constants';
 
 // features
+import { reducer as arc200AssetsReducer } from '@extension/features/arc200-assets';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as notificationsReducer } from '@extension/features/notifications';
 import { reducer as settingsReducer } from '@extension/features/settings';
@@ -65,6 +66,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   const store: Store<IRegistrationRootState> =
     makeStore<IRegistrationRootState>(
       combineReducers({
+        arc200Assets: arc200AssetsReducer,
         networks: networksReducer,
         notifications: notificationsReducer,
         settings: settingsReducer,

@@ -68,7 +68,7 @@ interface IProps {
   saving: boolean;
 }
 
-const AccountImportModalContent: FC<IProps> = ({
+const ConfirmAccountModalContent: FC<IProps> = ({
   onComplete,
   onPreviousClick,
   schema,
@@ -102,7 +102,7 @@ const AccountImportModalContent: FC<IProps> = ({
 
     if (!privateKey) {
       logger.debug(
-        `${AccountImportModalContent.name}#${_functionName}: failed to decode the private key`
+        `${ConfirmAccountModalContent.name}#${_functionName}: failed to decode the private key`
       );
 
       dispatch(
@@ -258,4 +258,4 @@ const AccountImportModalContent: FC<IProps> = ({
   );
 };
 
-export default AccountImportModalContent;
+export default ConfirmAccountModalContent;
