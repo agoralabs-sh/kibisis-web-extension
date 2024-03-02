@@ -5,7 +5,7 @@ import { StoreNameEnum } from '@extension/enums';
 
 // types
 import type { ILogger } from '@common/types';
-import type { ISystemState, IConfirmModal } from './types';
+import type { IConfirmModal, IScanQRCodeModal, ISystemState } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -28,7 +28,7 @@ const slice = createSlice({
     },
     setScanQRCodeModal: (
       state: Draft<ISystemState>,
-      action: PayloadAction<boolean>
+      action: PayloadAction<IScanQRCodeModal | null>
     ) => {
       state.scanQRCodeModal = action.payload;
     },

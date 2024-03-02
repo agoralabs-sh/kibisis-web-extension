@@ -19,7 +19,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import { Location, useLocation } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
@@ -42,7 +42,11 @@ import {
 } from '@extension/constants';
 
 // enums
-import { ARC0300QueryEnum, ErrorCodeEnum } from '@extension/enums';
+import {
+  AccountTabEnum,
+  ARC0300QueryEnum,
+  ErrorCodeEnum,
+} from '@extension/enums';
 
 // features
 import {
@@ -102,7 +106,7 @@ const AccountImportModalContent: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const location: Location = useLocation();
+  const navigate: NavigateFunction = useNavigate();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   // selectors
@@ -277,15 +281,14 @@ const AccountImportModalContent: FC<IProps> = ({
         })
       );
 
-      // if the page is on the account page, set the new active account
-      if (location.pathname.includes(ACCOUNTS_ROUTE)) {
-        dispatch(
-          saveActiveAccountDetails({
-            accountId: account.id,
-            tabIndex: activeAccountDetails?.tabIndex || 0,
-          })
-        );
-      }
+      // go to the account and the assets tab
+      dispatch(
+        saveActiveAccountDetails({
+          accountId: account.id,
+          tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
+        })
+      );
+      navigate(ACCOUNTS_ROUTE);
     }
 
     // clean up and close

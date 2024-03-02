@@ -87,7 +87,7 @@ const Root: FC = () => {
   const handleAddAssetClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
-  const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(false));
+  const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
   const handleSignTxnsModalClose = () => dispatch(setSignTxnsRequest(null));

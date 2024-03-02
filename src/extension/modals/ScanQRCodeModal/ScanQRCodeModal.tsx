@@ -12,6 +12,9 @@ import AssetAddModalContent from './AssetAddModalContent';
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 
+// features
+import type { IScanQRCodeModal } from '@extension/features/system';
+
 // selectors
 import {
   useSelectLogger,
@@ -39,7 +42,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   // selectors
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
-  const isOpen: boolean = useSelectScanQRCodeModal();
+  const scanQRCodeModal: IScanQRCodeModal | null = useSelectScanQRCodeModal();
   // state
   const [scanViaCamera, setScanViaCamera] = useState<boolean>(false);
   const [scanViaTab, setScanViaTab] = useState<boolean>(false);
@@ -70,29 +73,55 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
         supportedNetworks: networks,
       });
 
-      if (arc0300Schema) {
+      if (scanQRCodeModal && arc0300Schema) {
         switch (arc0300Schema.authority) {
           case ARC0300AuthorityEnum.Account:
-            if (arc0300Schema.paths[0] === ARC0300PathEnum.Import) {
-              return (
-                <AccountImportModalContent
-                  onComplete={handleClose}
-                  onPreviousClick={handlePreviousClick}
-                  schema={arc0300Schema as IARC0300AccountImportSchema}
-                />
-              );
+            if (
+              scanQRCodeModal.allowedAuthorities.length <= 0 ||
+              scanQRCodeModal.allowedAuthorities.includes(
+                ARC0300AuthorityEnum.Account
+              )
+            ) {
+              // import
+              if (
+                arc0300Schema.paths[0] === ARC0300PathEnum.Import &&
+                (scanQRCodeModal.allowedParams.length <= 0 ||
+                  scanQRCodeModal.allowedParams.includes(
+                    ARC0300PathEnum.Import
+                  ))
+              ) {
+                return (
+                  <AccountImportModalContent
+                    onComplete={handleClose}
+                    onPreviousClick={handlePreviousClick}
+                    schema={arc0300Schema as IARC0300AccountImportSchema}
+                  />
+                );
+              }
             }
 
             break;
           case ARC0300AuthorityEnum.Asset:
-            if (arc0300Schema.paths[0] === ARC0300PathEnum.Add) {
-              return (
-                <AssetAddModalContent
-                  onComplete={handleClose}
-                  onPreviousClick={handlePreviousClick}
-                  schema={arc0300Schema as IARC0300AssetAddSchema}
-                />
-              );
+            if (
+              scanQRCodeModal.allowedAuthorities.length <= 0 ||
+              scanQRCodeModal.allowedAuthorities.includes(
+                ARC0300AuthorityEnum.Asset
+              )
+            ) {
+              // add
+              if (
+                arc0300Schema.paths[0] === ARC0300PathEnum.Add &&
+                (scanQRCodeModal.allowedParams.length <= 0 ||
+                  scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Add))
+              ) {
+                return (
+                  <AssetAddModalContent
+                    onComplete={handleClose}
+                    onPreviousClick={handlePreviousClick}
+                    schema={arc0300Schema as IARC0300AssetAddSchema}
+                  />
+                );
+              }
             }
 
             break;
@@ -139,7 +168,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={!!scanQRCodeModal}
       motionPreset="slideInBottom"
       onClose={onClose}
       size="full"

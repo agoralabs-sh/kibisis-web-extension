@@ -10,6 +10,13 @@ import {
   IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE,
 } from '@extension/constants';
 
+// enums
+import {
+  AccountTabEnum,
+  ARC0300AuthorityEnum,
+  ARC0300PathEnum,
+} from '@extension/enums';
+
 // features
 import {
   ISaveNewAccountPayload,
@@ -18,6 +25,7 @@ import {
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
+import { setScanQRCodeModal } from '@extension/features/system';
 
 // modals
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
@@ -103,7 +111,14 @@ const AddAccountMainRouter: FC = () => {
       privateKey: addAccountResult.privateKey,
     });
   };
-  const handleImportAccountViaQRCodeOpen = () => {};
+  const handleImportAccountViaQRCodeClick = () =>
+    dispatch(
+      setScanQRCodeModal({
+        // only allow account import
+        allowedAuthorities: [ARC0300AuthorityEnum.Account],
+        allowedParams: [ARC0300PathEnum.Import],
+      })
+    );
   const saveNewAccount = async ({
     name,
     password,
@@ -185,7 +200,7 @@ const AddAccountMainRouter: FC = () => {
           dispatch(
             saveActiveAccountDetails({
               accountId: account.id,
-              tabIndex: activeAccountDetails?.tabIndex || 0,
+              tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
             })
           );
           navigate(ACCOUNTS_ROUTE, {
@@ -209,7 +224,7 @@ const AddAccountMainRouter: FC = () => {
         <Route
           element={
             <AddAccountTypePage
-              onImportAccountViaQRCodeClick={handleImportAccountViaQRCodeOpen}
+              onImportAccountViaQRCodeClick={handleImportAccountViaQRCodeClick}
             />
           }
           path="/"

@@ -9,7 +9,7 @@ export default function getInitialState(): ISystemState {
     confirmModal: null,
     logger: createLogger(__ENV__ === 'development' ? 'debug' : 'error'),
     online: true,
+    scanQRCodeModal: null,
     sidebar: false,
-    scanQRCodeModal: false,
   };
 }

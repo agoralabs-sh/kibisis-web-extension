@@ -1,4 +1,5 @@
 export { default as AccountsThunkEnum } from './AccountsThunkEnum';
+export { default as AccountTabEnum } from './AccountTabEnum';
 export { default as AddAssetThunkEnum } from './AddAssetThunkEnum';
 export { default as AppTypeEnum } from './AppTypeEnum';
 export { default as ARC0300AssetTypeEnum } from './ARC0300AssetTypeEnum';

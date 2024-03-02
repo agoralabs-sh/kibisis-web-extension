@@ -2,15 +2,15 @@ import {
   HStack,
   Icon,
   Spacer,
-  Text,
-  Tooltip,
-  VStack,
-  useDisclosure,
-  TabList,
+  StackProps,
   Tab,
+  TabList,
   TabPanels,
   Tabs,
-  StackProps,
+  Text,
+  Tooltip,
+  useDisclosure,
+  VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC, useEffect, useState } from 'react';
@@ -44,6 +44,9 @@ import {
   ADD_ACCOUNT_ROUTE,
   DEFAULT_GAP,
 } from '@extension/constants';
+
+// enums
+import { AccountTabEnum } from '@extension/enums';
 
 // features
 import {
@@ -184,7 +187,7 @@ const AccountPage: FC = () => {
       );
     }
   };
-  const handleTabChange = (tabIndex: number) => {
+  const handleTabChange = (tabIndex: AccountTabEnum) => {
     if (account) {
       dispatch(
         saveActiveAccountDetails({
@@ -349,7 +352,9 @@ const AccountPage: FC = () => {
           {/*assets/nfts/activity tabs*/}
           <Tabs
             colorScheme={primaryColorScheme}
-            defaultIndex={activeAccountDetails?.tabIndex || 0}
+            defaultIndex={
+              activeAccountDetails?.tabIndex || AccountTabEnum.Assets
+            }
             isLazy={true}
             m={0}
             onChange={handleTabChange}
