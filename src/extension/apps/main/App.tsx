@@ -52,7 +52,7 @@ import PasswordLockPage from '@extension/pages/PasswordLockPage';
 import TransactionPage from '@extension/pages/TransactionPage';
 
 // routers
-import AddAccountRouter from '@extension/routers/MainAddAccountRouter';
+import AddAccountRouter from '@extension/routers/AddAccountMainRouter';
 import SettingsRouter from '@extension/routers/SettingsRouter';
 
 // types

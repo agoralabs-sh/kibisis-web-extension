@@ -1,13 +1,13 @@
 import { Center, Flex } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 // constants
 import { BODY_BACKGROUND_COLOR } from '@extension/constants';
 
 // features
-import { setNavigate } from '@extension/features/system';
+import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc200-assets';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 
 // types
@@ -19,10 +19,9 @@ import type {
 const Root: FC = () => {
   const dispatch: IAppThunkDispatch<IRegistrationRootState> =
     useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
-  const navigate: NavigateFunction = useNavigate();
 
   useEffect(() => {
-    dispatch(setNavigate(navigate));
+    dispatch(fetchARC0200AssetsFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
   }, []);
 

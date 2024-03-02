@@ -1,15 +1,11 @@
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
-import { NavigateFunction } from 'react-router-dom';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
-// errors
-import { BaseExtensionError } from '@extension/errors';
-
 // types
-import { ILogger } from '@common/types';
-import { ISystemState, IConfirm } from './types';
+import type { ILogger } from '@common/types';
+import type { IConfirmModal, IScanQRCodeModal, ISystemState } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -18,33 +14,21 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.System,
   reducers: {
-    setConfirm: (
+    setConfirmModal: (
       state: Draft<ISystemState>,
-      action: PayloadAction<IConfirm | null>
+      action: PayloadAction<IConfirmModal | null>
     ) => {
-      state.confirm = action.payload;
-    },
-    setError: (
-      state: Draft<ISystemState>,
-      action: PayloadAction<BaseExtensionError | null>
-    ) => {
-      state.error = action.payload;
+      state.confirmModal = action.payload;
     },
     setLogger: (state: Draft<ISystemState>, action: PayloadAction<ILogger>) => {
       state.logger = action.payload;
-    },
-    setNavigate: (
-      state: Draft<ISystemState>,
-      action: PayloadAction<NavigateFunction>
-    ) => {
-      state.navigate = action.payload;
     },
     setOnline: (state: Draft<ISystemState>, action: PayloadAction<boolean>) => {
       state.online = action.payload;
     },
     setScanQRCodeModal: (
       state: Draft<ISystemState>,
-      action: PayloadAction<boolean>
+      action: PayloadAction<IScanQRCodeModal | null>
     ) => {
       state.scanQRCodeModal = action.payload;
     },
@@ -59,10 +43,8 @@ const slice = createSlice({
 
 export const reducer: Reducer = slice.reducer;
 export const {
-  setConfirm,
-  setError,
+  setConfirmModal,
   setLogger,
-  setNavigate,
   setOnline,
   setScanQRCodeModal,
   setSideBar,

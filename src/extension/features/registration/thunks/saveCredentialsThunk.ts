@@ -18,10 +18,16 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAsyncThunkConfigWithRejectValue,
+  INetwork,
   IPrivateKey,
   IRegistrationRootState,
 } from '@extension/types';
 import type { ISaveCredentialsPayload } from '../types';
+
+// utils
+import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import initializeARC0200AssetHoldingFromARC0200Asset from '@extension/utils/initializeARC0200AssetHoldingFromARC0200Asset';
 
 const saveCredentialsThunk: AsyncThunk<
   IAccount, // return
@@ -33,11 +39,17 @@ const saveCredentialsThunk: AsyncThunk<
   IAsyncThunkConfigWithRejectValue<IRegistrationRootState>
 >(
   RegisterThunkEnum.SaveCredentials,
-  async ({ name, privateKey }, { dispatch, getState, rejectWithValue }) => {
+  async (
+    { arc0200Assets, name, privateKey },
+    { dispatch, getState, rejectWithValue }
+  ) => {
     const logger: ILogger = getState().system.logger;
+    const networks: INetwork[] = getState().networks.items;
     const password: string | null = getState().registration.password;
     let account: IAccount;
     let accountService: AccountService;
+    let defaultNetwork: INetwork;
+    let encodedGenesisHash: string;
     let encodedPublicKey: string;
     let privateKeyItem: IPrivateKey | null;
     let privateKeyService: PrivateKeyService;
@@ -83,6 +95,10 @@ const saveCredentialsThunk: AsyncThunk<
       `${RegisterThunkEnum.SaveCredentials}: successfully saved credentials`
     );
 
+    defaultNetwork = selectDefaultNetwork(networks);
+    encodedGenesisHash = convertGenesisHashToHex(
+      defaultNetwork.genesisHash
+    ).toUpperCase();
     account = AccountService.initializeDefaultAccount({
       publicKey: encodedPublicKey,
       ...(privateKeyItem && {
@@ -92,6 +108,18 @@ const saveCredentialsThunk: AsyncThunk<
         name,
       }),
     });
+    // add any supplied arc-0200 assets
+    account = {
+      ...account,
+      networkInformation: {
+        [encodedGenesisHash]: {
+          ...account.networkInformation[encodedGenesisHash],
+          arc200AssetHoldings: arc0200Assets.map(
+            initializeARC0200AssetHoldingFromARC0200Asset
+          ),
+        },
+      },
+    };
     accountService = new AccountService({
       logger,
     });

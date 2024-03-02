@@ -7,7 +7,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { saveCredentialsThunk } from './thunks';
 
 // types
-import { IRegistrationState, ISetPasswordPayload } from './types';
+import type { IRegistrationState, ISetPasswordPayload } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -44,9 +44,17 @@ const slice = createSlice({
     reset: (state: Draft<IRegistrationState>) => {
       const initialState: IRegistrationState = getInitialState();
 
+      state.importAccountViaQRCodeModalOpen =
+        initialState.importAccountViaQRCodeModalOpen;
       state.password = initialState.password;
       state.saving = initialState.saving;
       state.score = initialState.score;
+    },
+    setImportAccountViaQRCodeOpen: (
+      state: Draft<IRegistrationState>,
+      action: PayloadAction<boolean>
+    ) => {
+      state.importAccountViaQRCodeModalOpen = action.payload;
     },
     setPassword: (
       state: Draft<IRegistrationState>,
@@ -66,4 +74,5 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { reset, setPassword } = slice.actions;
+export const { reset, setImportAccountViaQRCodeOpen, setPassword } =
+  slice.actions;

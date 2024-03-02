@@ -31,7 +31,6 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IScanQRCodeModalContentProps } from '@extension/types';
-
 const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
   onPreviousClick,
   onURI,

@@ -34,14 +34,12 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IAddAccountCompleteFunction } from '@extension/types';
+import type { IAddAccountPageProps } from '@extension/types';
 
-interface IProps {
-  onComplete: IAddAccountCompleteFunction;
-  saving: boolean;
-}
-
-const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
+const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
+  onComplete,
+  saving,
+}) => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const { nextStep, prevStep, activeStep } = useSteps({
@@ -84,14 +82,14 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
 
     prevStep();
   };
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     if (!copySeedPhraseConfirm) {
       setError(t<string>('errors.inputs.copySeedPhraseRequired'));
 
       return;
     }
 
-    onComplete({
+    await onComplete({
       name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
       privateKey: account.sk,
     });

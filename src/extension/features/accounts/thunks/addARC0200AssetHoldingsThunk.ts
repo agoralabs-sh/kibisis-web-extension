@@ -7,7 +7,7 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 import { updateAccountInformation } from '@extension/features/accounts';
 
 // enums
-import { AccountsThunkEnum, AssetTypeEnum } from '@extension/enums';
+import { AccountsThunkEnum } from '@extension/enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -26,6 +26,7 @@ import type { IUpdateARC0200AssetHoldingsPayload } from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import initializeARC0200AssetHoldingFromARC0200Asset from '@extension/utils/initializeARC0200AssetHoldingFromARC0200Asset';
 
 const addARC0200AssetHoldingsThunk: AsyncThunk<
   IAccount | null, // return
@@ -81,11 +82,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
             (value) => value.id === asset.id
           )
       )
-      .map((value) => ({
-        amount: '0',
-        id: value.id,
-        type: AssetTypeEnum.ARC0200,
-      }));
+      .map(initializeARC0200AssetHoldingFromARC0200Asset);
 
     accountService = new AccountService({
       logger,

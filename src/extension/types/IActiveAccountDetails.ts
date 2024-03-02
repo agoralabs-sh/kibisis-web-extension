@@ -1,6 +1,9 @@
+// enums
+import { AccountTabEnum } from '@extension/enums';
+
 interface IActiveAccountDetails {
   accountId: string;
-  tabIndex: number;
+  tabIndex: AccountTabEnum;
 }
 
 export default IActiveAccountDetails;

@@ -13,7 +13,7 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // features
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
-import { setConfirm } from '@extension/features/system';
+import { setConfirmModal } from '@extension/features/system';
 
 // selectors
 import { useSelectSettings } from '@extension/selectors';
@@ -37,7 +37,7 @@ const AdvancedSettingsPage: FC = () => {
     // if the switch is being enabled, get the user to confirmation
     if (allowMainNet) {
       dispatch(
-        setConfirm({
+        setConfirmModal({
           description: t<string>('captions.allowMainNetConfirm'),
           onConfirm: () =>
             dispatch(

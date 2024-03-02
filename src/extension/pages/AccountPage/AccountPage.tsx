@@ -2,15 +2,15 @@ import {
   HStack,
   Icon,
   Spacer,
-  Text,
-  Tooltip,
-  VStack,
-  useDisclosure,
-  TabList,
+  StackProps,
   Tab,
+  TabList,
   TabPanels,
   Tabs,
-  StackProps,
+  Text,
+  Tooltip,
+  useDisclosure,
+  VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC, useEffect, useState } from 'react';
@@ -45,6 +45,9 @@ import {
   DEFAULT_GAP,
 } from '@extension/constants';
 
+// enums
+import { AccountTabEnum } from '@extension/enums';
+
 // features
 import {
   removeAccountByIdThunk,
@@ -53,7 +56,7 @@ import {
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
-import { setConfirm } from '@extension/features/system';
+import { setConfirmModal } from '@extension/features/system';
 
 // hooks
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
@@ -165,7 +168,7 @@ const AccountPage: FC = () => {
   const handleRemoveAccountClick = () => {
     if (account) {
       dispatch(
-        setConfirm({
+        setConfirmModal({
           description: t<string>('captions.removeAccount', {
             address: ellipseAddress(
               AccountService.convertPublicKeyToAlgorandAddress(
@@ -184,7 +187,7 @@ const AccountPage: FC = () => {
       );
     }
   };
-  const handleTabChange = (tabIndex: number) => {
+  const handleTabChange = (tabIndex: AccountTabEnum) => {
     if (account) {
       dispatch(
         saveActiveAccountDetails({
@@ -349,7 +352,9 @@ const AccountPage: FC = () => {
           {/*assets/nfts/activity tabs*/}
           <Tabs
             colorScheme={primaryColorScheme}
-            defaultIndex={activeAccountDetails?.tabIndex || 0}
+            defaultIndex={
+              activeAccountDetails?.tabIndex || AccountTabEnum.Assets
+            }
             isLazy={true}
             m={0}
             onChange={handleTabChange}
