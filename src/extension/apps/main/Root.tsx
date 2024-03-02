@@ -37,12 +37,7 @@ import {
 } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
-import {
-  setConfirm,
-  setError,
-  setNavigate,
-  setScanQRCodeModal,
-} from '@extension/features/system';
+import { setConfirm, setScanQRCodeModal } from '@extension/features/system';
 
 // hooks
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
@@ -55,7 +50,6 @@ import useNotifications from '@extension/hooks/useNotifications';
 import AddAssetModal from '@extension/modals/AddAssetModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
-import ErrorModal from '@extension/modals/ErrorModal';
 import ScanQRCodeModal from '@extension/modals/ScanQRCodeModal';
 import SendAssetModal from '@extension/modals/SendAssetModal';
 import SignBytesModal from '@extension/modals/SignBytesModal';
@@ -90,7 +84,6 @@ const Root: FC = () => {
   const handleAddAssetClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirm(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
-  const handleErrorModalClose = () => dispatch(setError(null));
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(false));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
@@ -100,7 +93,6 @@ const Root: FC = () => {
 
   // 1. fetch the required data
   useEffect(() => {
-    dispatch(setNavigate(navigate));
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());
@@ -140,7 +132,6 @@ const Root: FC = () => {
 
   return (
     <>
-      <ErrorModal onClose={handleErrorModalClose} />
       <ConfirmModal onClose={handleConfirmClose} />
       <EnableModal onClose={handleEnableModalClose} />
       <SignTxnsModal onClose={handleSignTxnsModalClose} />

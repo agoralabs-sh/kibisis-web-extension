@@ -18,7 +18,6 @@ import {
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
-import { setScanQRCodeModal } from '@extension/features/system';
 
 // modals
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';

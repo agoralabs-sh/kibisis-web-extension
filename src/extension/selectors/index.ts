@@ -9,7 +9,6 @@ export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectConfirm } from './useSelectConfirm';
 export { default as useSelectDebugLogging } from './useSelectDebugLogging';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';
-export { default as useSelectError } from './useSelectError';
 export { default as useSelectFetchingAccounts } from './useSelectFetchingAccounts';
 export { default as useSelectFetchingARC0200Assets } from './useSelectFetchingARC0200Assets';
 export { default as useSelectFetchingSessions } from './useSelectFetchingSessions';
