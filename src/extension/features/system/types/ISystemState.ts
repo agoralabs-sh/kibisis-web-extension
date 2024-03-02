@@ -1,9 +1,9 @@
 // types
 import type { ILogger } from '@common/types';
-import IConfirm from './IConfirm';
+import IConfirmModal from './IConfirmModal';
 
 interface ISystemState {
-  confirm: IConfirm | null;
+  confirmModal: IConfirmModal | null;
   logger: ILogger;
   online: boolean;
   scanQRCodeModal: boolean;

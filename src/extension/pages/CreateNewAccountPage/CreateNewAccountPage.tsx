@@ -82,15 +82,14 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
 
     prevStep();
   };
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     if (!copySeedPhraseConfirm) {
       setError(t<string>('errors.inputs.copySeedPhraseRequired'));
 
       return;
     }
 
-    onComplete({
-      arc0200Assets: [],
+    await onComplete({
       name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
       privateKey: account.sk,
     });

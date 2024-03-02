@@ -6,7 +6,6 @@ export { default as useSelectAddAssetFetching } from './useSelectAddAssetFetchin
 export { default as useSelectAddAssetSelectedAsset } from './useSelectAddAssetSelectedAsset';
 export { default as useSelectAddAssetStandardAssets } from './useSelectAddAssetStandardAssets';
 export { default as useSelectColorMode } from './useSelectColorMode';
-export { default as useSelectConfirm } from './useSelectConfirm';
 export { default as useSelectDebugLogging } from './useSelectDebugLogging';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';
 export { default as useSelectFetchingAccounts } from './useSelectFetchingAccounts';
@@ -44,3 +43,4 @@ export * from './accounts';
 export * from './arc-0200-assets';
 export * from './registration';
 export * from './send-assets';
+export * from './system';

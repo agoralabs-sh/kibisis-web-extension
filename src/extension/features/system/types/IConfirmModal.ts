@@ -1,4 +1,4 @@
-interface IConfirm {
+interface IConfirmModal {
   description: string;
   onCancel?: () => void;
   onConfirm?: () => void;
@@ -6,4 +6,4 @@ interface IConfirm {
   warningText?: string;
 }
 
-export default IConfirm;
+export default IConfirmModal;

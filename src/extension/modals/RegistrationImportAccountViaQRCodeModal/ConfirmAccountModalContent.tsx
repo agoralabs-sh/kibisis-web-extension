@@ -50,9 +50,9 @@ import { theme } from '@extension/theme';
 // types
 import type { ILogger } from '@common/types';
 import type {
-  IAddAccountCompleteFunction,
   IAppThunkDispatch,
   IARC0300AccountImportSchema,
+  IRegistrationAddAccountCompleteResult,
   INetwork,
 } from '@extension/types';
 
@@ -62,7 +62,7 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
 interface IProps {
-  onComplete: IAddAccountCompleteFunction;
+  onComplete: (result: IRegistrationAddAccountCompleteResult) => Promise<void>;
   onPreviousClick: () => void;
   schema: IARC0300AccountImportSchema;
   saving: boolean;
@@ -122,7 +122,7 @@ const ConfirmAccountModalContent: FC<IProps> = ({
       return;
     }
 
-    onComplete({
+    await onComplete({
       arc0200Assets: assets,
       name: null,
       privateKey,

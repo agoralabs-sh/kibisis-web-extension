@@ -5,7 +5,7 @@ import { StoreNameEnum } from '@extension/enums';
 
 // types
 import type { ILogger } from '@common/types';
-import type { ISystemState, IConfirm } from './types';
+import type { ISystemState, IConfirmModal } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -14,11 +14,11 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.System,
   reducers: {
-    setConfirm: (
+    setConfirmModal: (
       state: Draft<ISystemState>,
-      action: PayloadAction<IConfirm | null>
+      action: PayloadAction<IConfirmModal | null>
     ) => {
-      state.confirm = action.payload;
+      state.confirmModal = action.payload;
     },
     setLogger: (state: Draft<ISystemState>, action: PayloadAction<ILogger>) => {
       state.logger = action.payload;
@@ -43,7 +43,7 @@ const slice = createSlice({
 
 export const reducer: Reducer = slice.reducer;
 export const {
-  setConfirm,
+  setConfirmModal,
   setLogger,
   setOnline,
   setScanQRCodeModal,

@@ -17,10 +17,10 @@ import { useSelectLogger, useSelectNetworks } from '@extension/selectors';
 // types
 import type { ILogger } from '@common/types';
 import type {
-  IAddAccountCompleteResult,
   IARC0300AccountImportSchema,
   IARC0300BaseSchema,
   INetwork,
+  IRegistrationAddAccountCompleteResult,
 } from '@extension/types';
 import type { IProps } from './types';
 
@@ -52,8 +52,9 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
     reset();
     onClose();
   };
-  const handleOnComplete = (result: IAddAccountCompleteResult) =>
-    onComplete(result);
+  const handleOnComplete = async (
+    result: IRegistrationAddAccountCompleteResult
+  ) => onComplete(result);
   const handleOnURI = (uri: string) => setURI(uri);
   const handlePreviousClick = () => reset();
   const handleScanViaCameraClick = () => setScanViaCamera(true);

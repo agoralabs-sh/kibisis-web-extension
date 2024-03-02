@@ -14,7 +14,7 @@ import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 // features
 import { sendFactoryResetThunk } from '@extension/features/messages';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
-import { setConfirm } from '@extension/features/system';
+import { setConfirmModal } from '@extension/features/system';
 
 // selectors
 import {
@@ -51,7 +51,7 @@ const GeneralSettingsPage: FC = () => {
   // handlers
   const handleClearAllDataClick = () =>
     dispatch(
-      setConfirm({
+      setConfirmModal({
         description: t<string>('captions.factoryResetModal'),
         onConfirm: () => dispatch(sendFactoryResetThunk()), // dispatch an event to the background
         title: t<string>('headings.factoryReset'),

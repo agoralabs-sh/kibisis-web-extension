@@ -53,7 +53,7 @@ import {
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
-import { setConfirm } from '@extension/features/system';
+import { setConfirmModal } from '@extension/features/system';
 
 // hooks
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
@@ -165,7 +165,7 @@ const AccountPage: FC = () => {
   const handleRemoveAccountClick = () => {
     if (account) {
       dispatch(
-        setConfirm({
+        setConfirmModal({
           description: t<string>('captions.removeAccount', {
             address: ellipseAddress(
               AccountService.convertPublicKeyToAlgorandAddress(

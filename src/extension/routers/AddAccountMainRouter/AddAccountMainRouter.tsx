@@ -45,7 +45,6 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IActiveAccountDetails,
-  IAddAccountCompleteFunction,
   IAddAccountCompleteResult,
   IAppThunkDispatch,
   ISettings,
@@ -71,7 +70,7 @@ const AddAccountMainRouter: FC = () => {
   const [addAccountResult, setAddAccountResult] =
     useState<IAddAccountCompleteResult | null>(null);
   // handlers
-  const handleOnAddAccountComplete: IAddAccountCompleteFunction = async ({
+  const handleOnAddAccountComplete = async ({
     name,
     privateKey,
   }: IAddAccountCompleteResult) => {

@@ -37,7 +37,10 @@ import {
 } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
-import { setConfirm, setScanQRCodeModal } from '@extension/features/system';
+import {
+  setConfirmModal,
+  setScanQRCodeModal,
+} from '@extension/features/system';
 
 // hooks
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
@@ -82,7 +85,7 @@ const Root: FC = () => {
   const settings: ISettings = useSelectSettings();
   // handlers
   const handleAddAssetClose = () => dispatch(resetAddAsset());
-  const handleConfirmClose = () => dispatch(setConfirm(null));
+  const handleConfirmClose = () => dispatch(setConfirmModal(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(false));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());

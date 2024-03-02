@@ -78,7 +78,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   ];
   const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
   // handlers
-  const handleImportClick = () => {
+  const handleImportClick = async () => {
     const _functionName: string = 'handleImportClick';
 
     if (!account) {
@@ -102,8 +102,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
       `${ImportAccountViaSeedPhrasePage.name}#${_functionName}: importing account "${account.addr}"`
     );
 
-    onComplete({
-      arc0200Assets: [],
+    await onComplete({
       name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
       privateKey: account.sk,
     });

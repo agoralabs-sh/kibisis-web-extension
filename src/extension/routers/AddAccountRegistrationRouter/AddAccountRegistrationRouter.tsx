@@ -37,9 +37,9 @@ import {
 
 // types
 import type {
-  IAddAccountCompleteFunction,
   IAddAccountCompleteResult,
   IAppThunkDispatch,
+  IRegistrationAddAccountCompleteResult,
   IRegistrationRootState,
 } from '@extension/types';
 
@@ -52,12 +52,12 @@ const AddAccountRegistrationRouter: FC = () => {
   const importAccountViaQRCodeOpen: boolean =
     useSelectRegistrationImportAccountViaQRCodeOpen();
   const saving: boolean = useSelectRegistrationSaving();
-  // handlers
-  const handleOnAddAccountComplete: IAddAccountCompleteFunction = async ({
+  // misc
+  const saveNewAccount = async ({
     arc0200Assets,
     name,
     privateKey,
-  }: IAddAccountCompleteResult) => {
+  }: IRegistrationAddAccountCompleteResult) => {
     try {
       await dispatch(
         saveCredentialsThunk({
@@ -91,6 +91,17 @@ const AddAccountRegistrationRouter: FC = () => {
       }
     }
   };
+  // handlers
+  const handleOnImportAccountViaQRCodeComplete = async (
+    result: IRegistrationAddAccountCompleteResult
+  ) => await saveNewAccount(result);
+  const handleOnAddAccountComplete = async (
+    result: IAddAccountCompleteResult
+  ) =>
+    await saveNewAccount({
+      ...result,
+      arc0200Assets: [],
+    });
   const handleOnImportAccountViaQRCodeClose = () =>
     dispatch(setImportAccountViaQRCodeOpen(false));
   const handleOnImportAccountViaQRCodeOpen = () =>
@@ -101,7 +112,7 @@ const AddAccountRegistrationRouter: FC = () => {
       <RegistrationImportAccountViaQRCodeModal
         isOpen={importAccountViaQRCodeOpen}
         onClose={handleOnImportAccountViaQRCodeClose}
-        onComplete={handleOnAddAccountComplete}
+        onComplete={handleOnImportAccountViaQRCodeComplete}
         saving={saving}
       />
 
