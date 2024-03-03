@@ -1,3 +1,17 @@
+# [1.13.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.1...v1.13.0) (2024-03-03)
+
+
+### Bug Fixes
+
+* handle private key decryption errors explicitly when sending assets ([#190](https://github.com/agoralabs-sh/kibisis-web-extension/issues/190)) ([b58a1ab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b58a1ab01217ab72efc08a544e3b7dcb62bf9eee))
+
+
+### Features
+
+* add page to export account via a qr code ([#196](https://github.com/agoralabs-sh/kibisis-web-extension/issues/196)) ([29b4cb0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/29b4cb0f68314eface21e03820824f6fa7f97eef))
+* add registration option to import an account via a qr code ([#195](https://github.com/agoralabs-sh/kibisis-web-extension/issues/195)) ([fff684e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/fff684edf2135f8520bbcef0b568cd4e6cae6bd4))
+* view seed phrase for accounts ([#191](https://github.com/agoralabs-sh/kibisis-web-extension/issues/191)) ([5beedac](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5beedacbf44403aa2f91d77f3e1a3f7e7ccc5fb6))
+
 # [1.13.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.3...v1.13.0-beta.4) (2024-03-03)
 
 
