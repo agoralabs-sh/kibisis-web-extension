@@ -1,7 +1,11 @@
 import { useDisclosure, VStack } from '@chakra-ui/react';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoKeyOutline, IoLockClosedOutline } from 'react-icons/io5';
+import {
+  IoKeyOutline,
+  IoLockClosedOutline,
+  IoPushOutline,
+} from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -16,6 +20,7 @@ import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 // constants
 import {
   CHANGE_PASSWORD_ROUTE,
+  EXPORT_ACCOUNT_ROUTE,
   PASSWORD_LOCK_DURATION_HIGH,
   PASSWORD_LOCK_DURATION_HIGHER,
   PASSWORD_LOCK_DURATION_HIGHEST,
@@ -219,6 +224,13 @@ const SecuritySettingsIndexPage: FC = () => {
           icon={IoKeyOutline}
           label={t<string>('titles.page', { context: 'viewSeedPhrase' })}
           to={`${SETTINGS_ROUTE}${SECURITY_ROUTE}${VIEW_SEED_PHRASE_ROUTE}`}
+        />
+
+        {/*export account*/}
+        <SettingsLinkItem
+          icon={IoPushOutline}
+          label={t<string>('titles.page', { context: 'exportAccount' })}
+          to={`${SETTINGS_ROUTE}${SECURITY_ROUTE}${EXPORT_ACCOUNT_ROUTE}`}
         />
       </VStack>
     </>

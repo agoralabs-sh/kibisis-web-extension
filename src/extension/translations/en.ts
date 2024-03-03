@@ -17,6 +17,7 @@ const translation: IResourceLanguage = {
     confirm: 'Confirm',
     connect: 'Connect',
     copy: 'Copy',
+    copyURI: 'Copy URI',
     copySeedPhrase: 'Copy Seed Phrase',
     create: 'Create',
     dismiss: 'Dismiss',
@@ -92,6 +93,7 @@ const translation: IResourceLanguage = {
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     enterSeedPhrase: `Add your seed phrase to import your account.`,
+    exportAccount: 'Select account to view the QR code to export your account.',
     extraPayment:
       'An extra network payment has been applied as this is the first time the recipient has interacted with the {{symbol}} asset.',
     factoryReset: 'This will remove all accounts, settings and the password.',
@@ -411,6 +413,7 @@ const translation: IResourceLanguage = {
     page_changePassword: 'Change Password',
     page_createNewAccount: 'Create A New Account',
     page_createPassword: 'Secure Your Device',
+    page_exportAccount: 'Export Account',
     page_general: 'General',
     page_importAccountViaQRCode: 'Import An Account Via QR Code',
     page_importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',

@@ -7,6 +7,7 @@ export const ASSETS_ROUTE: string = '/assets';
 export const CREATE_NEW_ACCOUNT_ROUTE: string = '/create-new-account';
 export const CREATE_PASSWORD_ROUTE: string = '/create-password';
 export const CHANGE_PASSWORD_ROUTE: string = '/change-password';
+export const EXPORT_ACCOUNT_ROUTE: string = '/export-account';
 export const GENERAL_ROUTE: string = '/general';
 export const GET_STARTED_ROUTE: string = '/get-started';
 export const IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE: string =
