@@ -56,6 +56,7 @@
       "@extension/features/system": ["src/extension/features/system"],
       "@extension/fonts/*": ["src/extension/fonts/*"],
       "@extension/hooks/*": ["src/extension/hooks/*"],
+      "@extension/images/*": ["src/extension/images/*"],
       "@extension/modals/*": ["src/extension/modals/*"],
       "@extension/pages/*": ["src/extension/pages/*"],
       "@extension/routers/*": ["src/extension/routers/*"],

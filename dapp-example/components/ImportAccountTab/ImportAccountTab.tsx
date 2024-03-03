@@ -30,7 +30,7 @@ import { theme } from '@extension/theme';
 import { IAccountImportAsset } from './types';
 
 // utils
-import { convertAccountToImportAccountURI } from '../../utils';
+import createAccountImportURI from '@extension/utils/createAccountImportURI';
 
 const ImportAccountTab: FC = () => {
   const toast: CreateToastFnReturn = useToast({
@@ -92,11 +92,13 @@ const ImportAccountTab: FC = () => {
     (async () => {
       try {
         const svg: string = await toString(
-          convertAccountToImportAccountURI(
-            account,
+          createAccountImportURI({
+            assets: assets
+              .filter((value) => value.checked)
+              .map((value) => value.appId),
             encoding,
-            assets.filter((value) => value.checked).map((value) => value.appId)
-          ),
+            privateKey: account.sk,
+          }),
           {
             type: 'svg',
             width: qrCodeSize,
@@ -180,13 +182,13 @@ const ImportAccountTab: FC = () => {
           <Text>Value:</Text>
 
           <Code fontSize="sm" wordBreak="break-word">
-            {convertAccountToImportAccountURI(
-              account,
-              encoding,
-              assets
+            {createAccountImportURI({
+              assets: assets
                 .filter((value) => value.checked)
-                .map((value) => value.appId)
-            )}
+                .map((value) => value.appId),
+              encoding,
+              privateKey: account.sk,
+            })}
           </Code>
         </HStack>
 
