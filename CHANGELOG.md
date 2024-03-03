@@ -1,3 +1,10 @@
+# [1.13.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.3...v1.13.0-beta.4) (2024-03-03)
+
+
+### Features
+
+* add page to export account via a qr code ([#196](https://github.com/agoralabs-sh/kibisis-web-extension/issues/196)) ([29b4cb0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/29b4cb0f68314eface21e03820824f6fa7f97eef))
+
 # [1.13.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.2...v1.13.0-beta.3) (2024-03-02)
 
 
