@@ -53,7 +53,7 @@ jobs:
       - name: "🗜️ Zip build"
         run: zip -qr chrome_build.zip .chrome_build/
       - name: "📤 Upload build"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: chrome_build
           path: chrome_build.zip
@@ -78,7 +78,7 @@ jobs:
       - name: "🗜️ Zip build"
         run: zip -qr edge_build.zip .edge_build/
       - name: "📤 Upload build"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: edge_build
           path: edge_build.zip
@@ -103,7 +103,7 @@ jobs:
       - name: "🗜️ Zip build"
         run: zip -qr firefox_build.zip .firefox_build/
       - name: "📤 Upload build"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: firefox_build
           path: firefox_build.zip
@@ -134,7 +134,7 @@ jobs:
       - name: "🔧 Setup"
         uses: ./.github/actions/use-dependencies
       - name: "📥 Download build"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: firefox_build
       - name: "🗜️ Unzip build"
@@ -152,7 +152,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "🗑️ Delete artifacts"
-        uses: geekyeggo/delete-artifact@v2
+        uses: geekyeggo/delete-artifact@v4
         with:
           failOnError: false
           name: |

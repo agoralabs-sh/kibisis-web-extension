@@ -7,11 +7,14 @@ export const ASSETS_ROUTE: string = '/assets';
 export const CREATE_NEW_ACCOUNT_ROUTE: string = '/create-new-account';
 export const CREATE_PASSWORD_ROUTE: string = '/create-password';
 export const CHANGE_PASSWORD_ROUTE: string = '/change-password';
+export const EXPORT_ACCOUNT_ROUTE: string = '/export-account';
 export const GENERAL_ROUTE: string = '/general';
 export const GET_STARTED_ROUTE: string = '/get-started';
-export const IMPORT_EXISTING_ACCOUNT_ROUTE: string = '/import-existing-account';
+export const IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE: string =
+  '/import-account-via-seed-phrase';
 export const PASSWORD_LOCK_ROUTE: string = '/password-lock';
 export const SECURITY_ROUTE: string = '/security';
 export const SESSIONS_ROUTE: string = '/sessions';
 export const SETTINGS_ROUTE: string = '/settings';
 export const TRANSACTIONS_ROUTE: string = '/transactions';
+export const VIEW_SEED_PHRASE_ROUTE: string = '/view-seed-phrase';

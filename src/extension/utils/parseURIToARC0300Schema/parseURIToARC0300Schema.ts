@@ -5,24 +5,24 @@ import { ARC_0026_SCHEME, ARC_0300_SCHEME } from '@extension/constants';
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 
 // types
-import type { IBaseOptions, ILogger } from '@common/types';
 import type { IARC0300BaseSchema } from '@extension/types';
+import type { IOptions } from './types';
 
 // utils
 import parseARC0300AccountImportSchema from './parseARC0300AccountImportSchema';
+import parseARC0300AssetAddSchema from './parseARC0300AssetAddSchema';
 
 /**
  * Parses an ARC-0300 URI to a schema object.
  * @param {string} uri - the URI to parse.
- * @param {IBaseOptions} options - [optional] base options to add utility to the function, such as logging.
+ * @param {IBaseOptions} options - options needed to parse the URI.
  * @returns {IARC0300BaseSchema | null} a valid ARC-0300 schema, or null if the URI was invalid.
  */
 export default function parseURIToARC0300Schema<Schema = IARC0300BaseSchema>(
   uri: string,
-  options?: IBaseOptions
+  { logger, supportedNetworks }: IOptions
 ): Schema | null {
   const _functionName: string = 'parseURIToARC0300Schema';
-  const logger: ILogger | undefined = options?.logger;
   const [scheme, authorityPathsAndQuery]: string[] = uri
     .split(':')
     .filter((value) => value);
@@ -58,7 +58,18 @@ export default function parseURIToARC0300Schema<Schema = IARC0300BaseSchema>(
           scheme,
           paths,
           new URLSearchParams(query),
-          options
+          { logger }
+        ) as Schema;
+      }
+
+      break;
+    case ARC0300AuthorityEnum.Asset:
+      if (paths[0] === ARC0300PathEnum.Add) {
+        return parseARC0300AssetAddSchema(
+          scheme,
+          paths,
+          new URLSearchParams(query),
+          { logger, supportedNetworks }
         ) as Schema;
       }
 

@@ -3,8 +3,8 @@ import React, {
   FC,
   ReactNode,
   TransitionEvent,
-  useState,
   useEffect,
+  useState,
 } from 'react';
 import {
   IoAddCircleOutline,
@@ -35,6 +35,9 @@ import {
   SIDEBAR_MAX_WIDTH,
   SIDEBAR_MIN_WIDTH,
 } from '@extension/constants';
+
+// enums
+import { AccountTabEnum } from '@extension/enums';
 
 // features
 import { saveActiveAccountDetails } from '@extension/features/accounts';
@@ -98,7 +101,7 @@ const SideBar: FC = () => {
     await dispatch(
       saveActiveAccountDetails({
         accountId: id,
-        tabIndex: activeAccountDetails?.tabIndex || 0,
+        tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
       })
     );
     navigate(`${ACCOUNTS_ROUTE}`, {
@@ -111,7 +114,13 @@ const SideBar: FC = () => {
     onCloseSideBar();
     navigate(ADD_ACCOUNT_ROUTE);
   };
-  const handleScanQRCodeClick = () => dispatch(setScanQRCodeModal(true));
+  const handleScanQRCodeClick = () =>
+    dispatch(
+      setScanQRCodeModal({
+        allowedAuthorities: [], // allow all
+        allowedParams: [], // allow all
+      })
+    );
   const handleSendAssetClick = () => {
     if (activeAccount && network) {
       dispatch(

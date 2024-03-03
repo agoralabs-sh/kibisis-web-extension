@@ -21,7 +21,7 @@ import PageHeader from '@extension/components/PageHeader';
 import SettingsSessionItem from '@extension/components/SettingsSessionItem';
 
 // features
-import { setConfirm } from '@extension/features/system';
+import { setConfirmModal } from '@extension/features/system';
 import {
   clearSessionsThunk,
   removeSessionByIdThunk,
@@ -61,7 +61,7 @@ const SessionsSettingsPage: FC = () => {
     setManagedSession(sessions.find((value) => value.id === id) || null);
   const handleRemoveAllSessionsClick = () =>
     dispatch(
-      setConfirm({
+      setConfirmModal({
         description: t<string>('captions.removeAllSessions'),
         onConfirm: () => dispatch(clearSessionsThunk()),
         title: t<string>('headings.removeAllSessions'),

@@ -111,6 +111,7 @@ const submitTransactionThunk: AsyncThunk<
       passwordTag: browser.runtime.id,
     });
 
+    // attempt to decrypt the key suing the password
     try {
       decodedFromAddress = decodeAddress(fromAddress);
       privateKey = await privateKeyService.getDecryptedPrivateKey(
@@ -125,7 +126,15 @@ const submitTransactionThunk: AsyncThunk<
           )
         );
       }
+    } catch (error) {
+      logger.debug(
+        `${SendAssetsThunkEnum.SubmitTransaction}(): ${error.message}`
+      );
 
+      return rejectWithValue(error);
+    }
+
+    try {
       return await signAndSendTransactions({
         logger,
         network,

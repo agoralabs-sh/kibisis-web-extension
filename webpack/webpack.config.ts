@@ -47,6 +47,7 @@ const configs: (
   let extensionPath: string;
   let fontLoaderRule: RuleSetRule;
   let handleBarsLoaderRule: RuleSetRule;
+  let imageLoaderRule: RuleSetRule;
   let manifestPaths: string[];
   let maxSize: number;
   let optimization: Record<string, unknown>;
@@ -80,6 +81,13 @@ const configs: (
   handleBarsLoaderRule = {
     loader: 'handlebars-loader',
     test: /\.hbs$/,
+  };
+  imageLoaderRule = {
+    test: /\.(png|jpg|jpeg|gif)$/i,
+    type: 'asset/resource',
+    generator: {
+      filename: 'assets/[hash][ext][query]',
+    },
   };
   maxSize = 4000000; // 4 MB
   commonConfig = createCommonConfig();
@@ -296,6 +304,7 @@ const configs: (
           stylesLoaderRule,
           handleBarsLoaderRule,
           fontLoaderRule,
+          imageLoaderRule,
         ],
       },
       name: ConfigNameEnum.ExtensionApps,

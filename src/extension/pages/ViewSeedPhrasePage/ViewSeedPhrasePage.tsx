@@ -1,0 +1,238 @@
+import { SkeletonText, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { decode as decodeHex } from '@stablelib/hex';
+import { secretKeyToMnemonic } from 'algosdk';
+import React, { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { IoEyeOutline } from 'react-icons/io5';
+import { useDispatch } from 'react-redux';
+import browser from 'webextension-polyfill';
+
+// components
+import AccountSelect from '@extension/components/AccountSelect';
+import Button from '@extension/components/Button';
+import CopyButton from '@extension/components/CopyButton';
+import PageHeader from '@extension/components/PageHeader';
+import SeedPhraseDisplay, {
+  createMaskedSeedPhrase,
+} from '@extension/components/SeedPhraseDisplay';
+
+// constants
+import {
+  ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT,
+  DEFAULT_GAP,
+} from '@extension/constants';
+
+// errors
+import { DecryptionError } from '@extension/errors';
+
+// features
+import { create as createNotification } from '@extension/features/notifications';
+
+// hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
+
+// modals
+import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
+
+// selectors
+import {
+  useSelectActiveAccount,
+  useSelectAccounts,
+  useSelectLogger,
+} from '@extension/selectors';
+
+// services
+import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
+
+// types
+import type { ILogger } from '@common/types';
+import type { IAccount, IAppThunkDispatch } from '@extension/types';
+
+const ViewSeedPhrasePage: FC = () => {
+  const { t } = useTranslation();
+  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  // selectors
+  const activeAccount: IAccount | null = useSelectActiveAccount();
+  const accounts: IAccount[] = useSelectAccounts();
+  const logger: ILogger = useSelectLogger();
+  // hooks
+  const defaultTextColor: string = useDefaultTextColor();
+  const primaryColorScheme: string = usePrimaryColorScheme();
+  // state
+  const [password, setPassword] = useState<string | null>(null);
+  const [seedPhrase, setSeedPhrase] = useState<string>(
+    createMaskedSeedPhrase()
+  );
+  const [selectedAccount, setSelectedAccount] = useState<IAccount | null>(
+    activeAccount
+  );
+  // misc
+  const decryptSeedPhrase = async () => {
+    const _functionName: string = 'decryptSeedPhrase';
+    const privateKeyService: PrivateKeyService = new PrivateKeyService({
+      logger,
+      passwordTag: browser.runtime.id,
+    });
+    let privateKey: Uint8Array | null;
+
+    if (!password || !selectedAccount) {
+      logger?.debug(
+        `${ViewSeedPhrasePage.name}#${_functionName}: no password or account found`
+      );
+
+      return;
+    }
+
+    // get the private key
+    try {
+      privateKey = await privateKeyService.getDecryptedPrivateKey(
+        decodeHex(selectedAccount.publicKey),
+        password
+      );
+
+      if (!privateKey) {
+        throw new DecryptionError(
+          `failed to get private key for account "${AccountService.convertPublicKeyToAlgorandAddress(
+            selectedAccount.publicKey
+          )}"`
+        );
+      }
+
+      // convert the secret key to the mnemonic
+      setSeedPhrase(secretKeyToMnemonic(privateKey));
+    } catch (error) {
+      logger?.error(
+        `${ViewSeedPhrasePage.name}#${_functionName}: ${error.message}`
+      );
+
+      // reset the seed phrase
+      setSeedPhrase(createMaskedSeedPhrase());
+
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
+
+      return;
+    }
+  };
+  // handlers
+  const handleAccountSelect = (account: IAccount) =>
+    setSelectedAccount(account);
+  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
+    // close the password modal
+    onClose();
+
+    setPassword(password);
+  };
+  const handleViewClick = () => onOpen();
+
+  useEffect(() => {
+    if (password) {
+      (async () => await decryptSeedPhrase())();
+    }
+  }, [password, selectedAccount]);
+  useEffect(() => {
+    if (activeAccount && !selectedAccount) {
+      setSelectedAccount(activeAccount);
+    }
+  }, [activeAccount]);
+
+  return (
+    <>
+      <ConfirmPasswordModal
+        isOpen={isOpen}
+        onCancel={onClose}
+        onConfirm={handleOnConfirmPasswordModalConfirm}
+      />
+
+      {/*page title*/}
+      <PageHeader
+        title={t<string>('titles.page', { context: 'viewSeedPhrase' })}
+      />
+
+      <VStack
+        flexGrow={1}
+        pb={DEFAULT_GAP}
+        px={DEFAULT_GAP}
+        spacing={DEFAULT_GAP / 3}
+        w="full"
+      >
+        <VStack flexGrow={1} spacing={DEFAULT_GAP} w="full">
+          {/*captions*/}
+          <Text
+            color={defaultTextColor}
+            fontSize="sm"
+            textAlign="left"
+            w="full"
+          >
+            {t<string>('captions.viewSeedPhrase1')}
+          </Text>
+
+          {/*account select*/}
+          {!selectedAccount ? (
+            <SkeletonText
+              height={`${ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT}px`}
+              noOfLines={1}
+              w="full"
+            />
+          ) : (
+            <AccountSelect
+              accounts={accounts}
+              onSelect={handleAccountSelect}
+              value={selectedAccount}
+            />
+          )}
+
+          <Text
+            color={defaultTextColor}
+            fontSize="sm"
+            textAlign="left"
+            w="full"
+          >
+            {t<string>('captions.viewSeedPhrase2')}
+          </Text>
+
+          {/*seed phrase*/}
+          <SeedPhraseDisplay seedPhrase={seedPhrase} />
+        </VStack>
+
+        {password ? (
+          // copy seed phrase button
+          <CopyButton
+            colorScheme={primaryColorScheme}
+            size="lg"
+            value={seedPhrase}
+            variant="solid"
+            w="full"
+          >
+            {t<string>('buttons.copy')}
+          </CopyButton>
+        ) : (
+          // view button
+          <Button
+            onClick={handleViewClick}
+            rightIcon={<IoEyeOutline />}
+            size="lg"
+            variant="solid"
+            w="full"
+          >
+            {t<string>('buttons.view')}
+          </Button>
+        )}
+      </VStack>
+    </>
+  );
+};
+
+export default ViewSeedPhrasePage;

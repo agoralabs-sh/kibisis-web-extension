@@ -1,3 +1,83 @@
+# [1.13.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.1...v1.13.0) (2024-03-03)
+
+
+### Bug Fixes
+
+* handle private key decryption errors explicitly when sending assets ([#190](https://github.com/agoralabs-sh/kibisis-web-extension/issues/190)) ([b58a1ab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b58a1ab01217ab72efc08a544e3b7dcb62bf9eee))
+
+
+### Features
+
+* add page to export account via a qr code ([#196](https://github.com/agoralabs-sh/kibisis-web-extension/issues/196)) ([29b4cb0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/29b4cb0f68314eface21e03820824f6fa7f97eef))
+* add registration option to import an account via a qr code ([#195](https://github.com/agoralabs-sh/kibisis-web-extension/issues/195)) ([fff684e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/fff684edf2135f8520bbcef0b568cd4e6cae6bd4))
+* view seed phrase for accounts ([#191](https://github.com/agoralabs-sh/kibisis-web-extension/issues/191)) ([5beedac](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5beedacbf44403aa2f91d77f3e1a3f7e7ccc5fb6))
+
+# [1.13.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.3...v1.13.0-beta.4) (2024-03-03)
+
+
+### Features
+
+* add page to export account via a qr code ([#196](https://github.com/agoralabs-sh/kibisis-web-extension/issues/196)) ([29b4cb0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/29b4cb0f68314eface21e03820824f6fa7f97eef))
+
+# [1.13.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.2...v1.13.0-beta.3) (2024-03-02)
+
+
+### Features
+
+* add registration option to import an account via a qr code ([#195](https://github.com/agoralabs-sh/kibisis-web-extension/issues/195)) ([fff684e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/fff684edf2135f8520bbcef0b568cd4e6cae6bd4))
+
+# [1.13.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0-beta.1...v1.13.0-beta.2) (2024-03-01)
+
+
+### Bug Fixes
+
+* camera should correctly pick up qr codes on chrome ([#193](https://github.com/agoralabs-sh/kibisis-web-extension/issues/193)) ([252b07b](https://github.com/agoralabs-sh/kibisis-web-extension/commit/252b07b8048fcaa42eff5583cfb12586bcff727a))
+
+## [1.12.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0...v1.12.1) (2024-03-01)
+
+
+### Bug Fixes
+
+* camera should correctly pick up qr codes on chrome ([#193](https://github.com/agoralabs-sh/kibisis-web-extension/issues/193)) ([252b07b](https://github.com/agoralabs-sh/kibisis-web-extension/commit/252b07b8048fcaa42eff5583cfb12586bcff727a))
+
+# [1.13.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.1-beta.1...v1.13.0-beta.1) (2024-03-01)
+
+
+### Features
+
+* view seed phrase for accounts ([#191](https://github.com/agoralabs-sh/kibisis-web-extension/issues/191)) ([5beedac](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5beedacbf44403aa2f91d77f3e1a3f7e7ccc5fb6))
+
+## [1.12.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0...v1.12.1-beta.1) (2024-02-29)
+
+
+### Bug Fixes
+
+* handle private key decryption errors explicitly when sending assets ([#190](https://github.com/agoralabs-sh/kibisis-web-extension/issues/190)) ([b58a1ab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b58a1ab01217ab72efc08a544e3b7dcb62bf9eee))
+
+# [1.12.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.11.2...v1.12.0) (2024-02-29)
+
+
+### Bug Fixes
+
+* active account and account tab are saved to storage ([#180](https://github.com/agoralabs-sh/kibisis-web-extension/issues/180)) ([30e5eca](https://github.com/agoralabs-sh/kibisis-web-extension/commit/30e5ecaa6b7c10f0b0f5f4370d2d9e89edc7addf))
+
+
+### Features
+
+*  scan qr code using camera ([#179](https://github.com/agoralabs-sh/kibisis-web-extension/issues/179)) ([beca132](https://github.com/agoralabs-sh/kibisis-web-extension/commit/beca132f7d4dca5581f7a12580f52e3cffe5c35c))
+* add arc 0200 asset via qr code ([#182](https://github.com/agoralabs-sh/kibisis-web-extension/issues/182)) ([46dc081](https://github.com/agoralabs-sh/kibisis-web-extension/commit/46dc0819c60f4914a12a652b59c43352575d0558))
+* allow arc-0200 assets to be added in the account import uri via qr code ([#169](https://github.com/agoralabs-sh/kibisis-web-extension/issues/169)) ([e4b718d](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e4b718dbfa02ce2361735fd5c76c10599da306ba))
+* automatically add the first account on the enable modal ([#170](https://github.com/agoralabs-sh/kibisis-web-extension/issues/170)) ([b64d9f1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/b64d9f18909442f931686b16d75581c9579aacc8))
+* support arc-0026 (algorand) and arc-0300 (avm) schemes ([#163](https://github.com/agoralabs-sh/kibisis-web-extension/issues/163)) ([71526c7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/71526c7b0b006f3f16ceaca0af51ffcc12592074))
+* use custom implementation to interact with arc-0200 applications ([#166](https://github.com/agoralabs-sh/kibisis-web-extension/issues/166)) ([f8a3517](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f8a3517e88c09453590f2327fa534cf6a522f6d8))
+
+# [1.12.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.8...v1.12.0-beta.9) (2024-02-22)
+
+
+### Features
+
+* add arc 0200 asset via qr code ([#182](https://github.com/agoralabs-sh/kibisis-web-extension/issues/182)) ([46dc081](https://github.com/agoralabs-sh/kibisis-web-extension/commit/46dc0819c60f4914a12a652b59c43352575d0558))
+
 # [1.12.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.0-beta.7...v1.12.0-beta.8) (2024-02-18)
 
 

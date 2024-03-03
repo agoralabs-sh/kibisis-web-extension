@@ -1,19 +1,13 @@
-import { NavigateFunction } from 'react-router-dom';
-
-// errors
-import { BaseExtensionError } from '@extension/errors';
-
 // types
-import { ILogger } from '@common/types';
-import IConfirm from './IConfirm';
+import type { ILogger } from '@common/types';
+import IConfirmModal from './IConfirmModal';
+import IScanQRCodeModal from './IScanQRCodeModal';
 
 interface ISystemState {
-  confirm: IConfirm | null;
-  error: BaseExtensionError | null;
+  confirmModal: IConfirmModal | null;
   logger: ILogger;
-  navigate: NavigateFunction | null;
   online: boolean;
-  scanQRCodeModal: boolean;
+  scanQRCodeModal: IScanQRCodeModal | null;
   sidebar: boolean;
 }
 

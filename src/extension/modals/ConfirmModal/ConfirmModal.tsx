@@ -21,13 +21,13 @@ import Warning from '@extension/components/Warning';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { IConfirm } from '@extension/features/system';
+import type { IConfirmModal } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // selectors
-import { useSelectConfirm } from '@extension/selectors';
+import { useSelectConfirmModal } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -40,7 +40,7 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const initialRef: RefObject<HTMLButtonElement> | undefined = createRef();
   // hooks
-  const confirm: IConfirm | null = useSelectConfirm();
+  const confirm: IConfirmModal | null = useSelectConfirmModal();
   // selectors
   const defaultTextColor: string = useDefaultTextColor();
   // handlers
@@ -69,6 +69,7 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
       scrollBehavior="inside"
     >
       <ModalOverlay />
+
       <ModalContent
         alignSelf="flex-end"
         backgroundColor={BODY_BACKGROUND_COLOR}

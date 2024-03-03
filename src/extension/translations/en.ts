@@ -6,6 +6,7 @@ import { IResourceLanguage } from '@extension/types';
 
 const translation: IResourceLanguage = {
   buttons: {
+    add: 'Add',
     addAccount: 'Add Account',
     addAsset: 'Add Asset',
     allow: 'Allow',
@@ -15,6 +16,8 @@ const translation: IResourceLanguage = {
     clearAllData: 'Clear All Data',
     confirm: 'Confirm',
     connect: 'Connect',
+    copy: 'Copy',
+    copyURI: 'Copy URI',
     copySeedPhrase: 'Copy Seed Phrase',
     create: 'Create',
     dismiss: 'Dismiss',
@@ -35,11 +38,14 @@ const translation: IResourceLanguage = {
     send: 'Send',
     sign: 'Sign',
     tryAgain: 'Try Again',
+    view: 'View',
   },
   captions: {
     accountAlreadyAdded: 'Account already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
+    addAssetURI:
+      'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
@@ -73,7 +79,7 @@ const translation: IResourceLanguage = {
     connectingToWalletConnect: 'Attempting to connect to WalletConnect.',
     copied: 'Copied!',
     createNewAccount:
-      'Create a new account. You will be prompted to save a mnemonic seed phrase.',
+      'Create a new account. You will be prompted to save a seed phrase.',
     createPassword1: `First, let's create a new password to secure this device.`,
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
@@ -87,6 +93,7 @@ const translation: IResourceLanguage = {
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     enterSeedPhrase: `Add your seed phrase to import your account.`,
+    exportAccount: 'Select account to view the QR code to export your account.',
     extraPayment:
       'An extra network payment has been applied as this is the first time the recipient has interacted with the {{symbol}} asset.',
     factoryReset: 'This will remove all accounts, settings and the password.',
@@ -101,10 +108,10 @@ const translation: IResourceLanguage = {
     higherFee:
       'The fee is higher as this is the first time the recipient has interacted with the {{symbol}} asset.',
     importAccount: 'You are about to import the following account.',
-    importExistingAccount: `Import an existing account using you mnemonic seed phrase.`,
-    importExistingAccountComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
+    importAccountViaQRCode: `Import an account, including any assets, by scanning a QR code.`,
+    importAccountViaSeedPhrase: `Import an existing account using a seed phrase.`,
+    importAccountViaSeedPhraseComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
     importingAccount: 'Importing new account and adding assets.',
-    importRekeyedAccount: `Import an existing account that has been rekeyed. You will need the mnemonic seed phrase of the authorized account and the address of the rekeyed account.`,
     initializingWalletConnect:
       'Putting the final touches into your WalletConnect interface.',
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
@@ -175,6 +182,8 @@ const translation: IResourceLanguage = {
       '{{amount}} transaction(s) were successfully sent.',
     unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
+    viewSeedPhrase1: 'Select an account to view the seed phrase.',
+    viewSeedPhrase2: 'You will be prompted to enter your password.',
   },
   errors: {
     descriptions: {
@@ -208,6 +217,7 @@ const translation: IResourceLanguage = {
     addedAccount: 'Added Account!',
     addedAsset: 'Added Asset {{symbol}}!',
     allowMainNetConfirm: 'Allow MainNet Networks',
+    assetDetails: 'Asset Details',
     authentication: 'Authentication',
     beta: 'Beta',
     cameraDenied: 'Camera Denied',
@@ -222,9 +232,9 @@ const translation: IResourceLanguage = {
     generateSeedPhrase: 'Generate seed phrase',
     hideAssetConfirm: 'Hide {{symbol}}',
     importAccount: 'Import Account',
-    importExistingAccount: 'Import An Existing Account',
-    importExistingAccountComplete: 'Almost There...',
-    importRekeyedAccount: 'Import A Rekeyed Account',
+    importAccountViaQRCode: 'Create A Pre-Funded Account',
+    importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',
+    importAccountViaSeedPhraseComplete: 'Almost There...',
     nameYourAccount: 'Name your account',
     network: 'Network',
     newAccountComplete: 'Almost There...',
@@ -240,6 +250,7 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Remove All Sessions',
     scanningForQRCode: 'Scanning For QR Code',
     scanQrCode: 'Scan QR Code',
+    selectAccount: 'Select Account',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     transaction: 'Unknown Transaction 💀',
@@ -294,6 +305,7 @@ const translation: IResourceLanguage = {
     authorizedAccounts: 'Authorized Accounts',
     authorizedAddresses: 'Authorized Addresses',
     balance: 'Balance',
+    chain: 'Chain',
     clawbackAccount: 'Clawback Account',
     connectWallet: 'Connect Wallet',
     copyAddress: 'Copy Address',
@@ -368,6 +380,7 @@ const translation: IResourceLanguage = {
     shareAddress: 'Share Address',
     signingMethod: 'Signing Method',
     stateProofKey: 'State Proof Public Key',
+    symbol: 'Symbol',
     theme: 'Theme',
     to: 'To',
     totalSupply: 'Total Supply',
@@ -400,13 +413,15 @@ const translation: IResourceLanguage = {
     page_changePassword: 'Change Password',
     page_createNewAccount: 'Create A New Account',
     page_createPassword: 'Secure Your Device',
+    page_exportAccount: 'Export Account',
     page_general: 'General',
-    page_importExistingAccount: 'Import An Existing Account',
-    page_importRekeyedAccount: 'Import A Rekeyed Account',
+    page_importAccountViaQRCode: 'Import An Account Via QR Code',
+    page_importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',
     page_passwordLock: 'Enter Your Password',
     page_security: 'Security',
     page_sessions: 'Sessions',
     page_settings: 'Settings',
+    page_viewSeedPhrase: 'View Seed Phrase',
   },
   values: {
     appOnComplete: 'Application Operation',

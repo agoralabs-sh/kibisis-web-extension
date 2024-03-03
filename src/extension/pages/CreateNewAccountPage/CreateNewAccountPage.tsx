@@ -21,6 +21,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import Button from '@extension/components/Button';
 import CopyButton from '@extension/components/CopyButton';
 import PageHeader from '@extension/components/PageHeader';
+import SeedPhraseDisplay from '@extension/components/SeedPhraseDisplay';
 import Steps from '@extension/components/Steps';
 
 // constants
@@ -33,14 +34,12 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IAddAccountCompleteFunction } from '@extension/types';
+import type { IAddAccountPageProps } from '@extension/types';
 
-interface IProps {
-  onComplete: IAddAccountCompleteFunction;
-  saving: boolean;
-}
-
-const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
+const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
+  onComplete,
+  saving,
+}) => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const { nextStep, prevStep, activeStep } = useSteps({
@@ -83,14 +82,14 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
 
     prevStep();
   };
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     if (!copySeedPhraseConfirm) {
       setError(t<string>('errors.inputs.copySeedPhraseRequired'));
 
       return;
     }
 
-    onComplete({
+    await onComplete({
       name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
       privateKey: account.sk,
     });
@@ -149,31 +148,10 @@ const CreateNewAccountPage: FC<IProps> = ({ onComplete, saving }: IProps) => {
                   {t<string>('captions.saveMnemonicPhrase2')}
                 </Text>
 
-                <Grid gap={2} templateColumns="repeat(3, 1fr)" w="full">
-                  {secretKeyToMnemonic(account.sk)
-                    .split(' ')
-                    .map((value, index, array) => {
-                      if (index >= array.length - 1) {
-                        return (
-                          <GridItem
-                            colEnd={2}
-                            colStart={2}
-                            key={`create-new-account-page-mnemonic-phrase-item-${index}`}
-                          >
-                            <Code w="full">{value}</Code>
-                          </GridItem>
-                        );
-                      }
-
-                      return (
-                        <GridItem
-                          key={`create-new-account-page-mnemonic-phrase-item-${index}`}
-                        >
-                          <Code w="full">{value}</Code>
-                        </GridItem>
-                      );
-                    })}
-                </Grid>
+                {/*seed phrase*/}
+                <SeedPhraseDisplay
+                  seedPhrase={secretKeyToMnemonic(account.sk)}
+                />
               </VStack>
 
               {/*copy seed phrase button*/}

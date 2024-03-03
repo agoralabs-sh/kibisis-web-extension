@@ -28,6 +28,9 @@ import WalletConnectBannerIcon from '@extension/components/WalletConnectBannerIc
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// enums
+import { ScanModeEnum } from '@extension/enums';
+
 // hooks
 import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
@@ -345,7 +348,9 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
   useEffect(() => {
     if (isOpen) {
-      startScanningAction('browserWindow');
+      startScanningAction({
+        mode: ScanModeEnum.Tab,
+      });
     }
   }, [isOpen]);
 

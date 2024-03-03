@@ -1,4 +1,5 @@
 enum ARC0300PathEnum {
+  Add = 'add',
   Import = 'import',
 }
 

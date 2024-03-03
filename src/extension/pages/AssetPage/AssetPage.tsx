@@ -37,7 +37,7 @@ import { AssetTypeEnum } from '@extension/enums';
 // features
 import { removeARC0200AssetHoldingsThunk } from '@extension/features/accounts';
 import { initializeSendAsset } from '@extension/features/send-assets';
-import { setConfirm } from '@extension/features/system';
+import { setConfirmModal } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -126,7 +126,7 @@ const AssetPage: FC = () => {
     }
 
     dispatch(
-      setConfirm({
+      setConfirmModal({
         description: t<string>('captions.hideAssetConfirm', {
           symbol: asset.symbol,
         }),
