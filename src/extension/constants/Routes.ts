@@ -12,6 +12,7 @@ export const GENERAL_ROUTE: string = '/general';
 export const GET_STARTED_ROUTE: string = '/get-started';
 export const IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE: string =
   '/import-account-via-seed-phrase';
+export const NFTS_ROUTE: string = '/nfts';
 export const PASSWORD_LOCK_ROUTE: string = '/password-lock';
 export const SECURITY_ROUTE: string = '/security';
 export const SESSIONS_ROUTE: string = '/sessions';

@@ -1,5 +1,5 @@
 import { Avatar, AvatarBadge, AvatarProps, Icon } from '@chakra-ui/react';
-import React, { FC, ReactElement } from 'react';
+import React, { FC } from 'react';
 import { IoCheckmarkOutline } from 'react-icons/io5';
 
 // enums
@@ -9,18 +9,9 @@ import { AssetTypeEnum } from '@extension/enums';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // types
-import { IAssetTypes, INativeCurrency } from '@extension/types';
+import type { IProps } from './types';
 
-interface IProps extends AvatarProps {
-  asset: IAssetTypes | INativeCurrency;
-  fallbackIcon?: ReactElement;
-}
-
-const AssetAvatar: FC<IProps> = ({
-  asset,
-  fallbackIcon,
-  ...avatarProps
-}: IProps) => {
+const AssetAvatar: FC<IProps> = ({ asset, fallbackIcon, ...avatarProps }) => {
   // hooks
   const primaryColor: string = usePrimaryColor();
   // misc

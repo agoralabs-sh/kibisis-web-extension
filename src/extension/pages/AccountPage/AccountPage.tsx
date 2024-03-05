@@ -27,15 +27,15 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // components
 import ActivityTab from '@extension/components/ActivityTab';
-import AccountNftsTab from '@extension/components/AccountNftsTab';
 import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import EditableAccountNameField from '@extension/components/EditableAccountNameField';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import NetworkSelect from '@extension/components/NetworkSelect';
 import NativeBalance from '@extension/components/NativeBalance';
+import NetworkSelect from '@extension/components/NetworkSelect';
+import NFTsTab from '@extension/components/NFTsTab';
 import AccountPageSkeletonContent from './AccountPageSkeletonContent';
 
 // constants
@@ -374,7 +374,7 @@ const AccountPage: FC = () => {
             >
               <AssetsTab account={account} />
 
-              <AccountNftsTab />
+              <NFTsTab account={account} />
 
               <ActivityTab
                 account={account}

@@ -32,11 +32,13 @@ const AssetTabLoadingItem: FC = () => {
     >
       <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
         <SkeletonCircle size="9" />
+
         <Skeleton flexGrow={1}>
           <Text color={defaultTextColor} fontSize="sm">
             {faker.company.bsBuzz()}
           </Text>
         </Skeleton>
+
         <Skeleton>
           <Text color={defaultTextColor} fontSize="sm">
             {faker.random.numeric(3)}
