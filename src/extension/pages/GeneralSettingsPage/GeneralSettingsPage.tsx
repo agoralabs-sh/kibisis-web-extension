@@ -26,7 +26,7 @@ import {
 // types
 import type {
   IAppThunkDispatch,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
   ISettings,
 } from '@extension/types';
@@ -38,13 +38,13 @@ const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const preferredBlockExplorer: IExplorer | null =
+  const preferredBlockExplorer: IBlockExplorer | null =
     useSelectPreferredBlockExplorer();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
   // misc
   const blockExplorerOptions: IOption<string>[] =
-    selectedNetwork?.explorers.map((value) => ({
+    selectedNetwork?.blockExplorers.map((value) => ({
       label: value.canonicalName,
       value: value.id,
     })) || [];
@@ -59,12 +59,13 @@ const GeneralSettingsPage: FC = () => {
       })
     );
   const handlePreferredBlockExplorerChange = (option: IOption<string>) => {
-    let explorer: IExplorer | null;
+    let explorer: IBlockExplorer | null;
 
     if (selectedNetwork) {
       explorer =
-        selectedNetwork.explorers.find((value) => value.id === option.value) ||
-        null;
+        selectedNetwork.blockExplorers.find(
+          (value) => value.id === option.value
+        ) || null;
 
       if (explorer) {
         dispatch(

@@ -26,7 +26,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // types
 import {
   IARC0200Asset,
-  IExplorer,
+  IBlockExplorer,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
@@ -36,7 +36,7 @@ import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 
 interface IProps {
   asset: IARC0200Asset;
-  explorer: IExplorer | null;
+  explorer: IBlockExplorer | null;
   network: INetworkWithTransactionParams;
 }
 

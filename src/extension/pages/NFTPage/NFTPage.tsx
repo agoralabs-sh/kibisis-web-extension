@@ -37,7 +37,7 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IExplorer } from '@extension/types';
+import type { IBlockExplorer } from '@extension/types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
@@ -47,7 +47,7 @@ const NFTPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { appId, tokenId } = useParams();
   // selectors
-  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
   const fetchingARC0072Assets: boolean = useSelectARC0072AssetsFetching();
   // hooks
   const { account, accountInformation, assetHolding } = useNFTPage({

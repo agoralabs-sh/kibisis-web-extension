@@ -38,7 +38,7 @@ import { useSelectPreferredBlockExplorer } from '@extension/selectors';
 import {
   IAccount,
   IApplicationTransaction,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
 } from '@extension/types';
 
@@ -60,7 +60,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();

@@ -36,7 +36,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // types
 import {
   IAccount,
-  IExplorer,
+  IBlockExplorer,
   INetworkWithTransactionParams,
   IStandardAsset,
 } from '@extension/types';
@@ -50,7 +50,7 @@ import isAccountKnown from '@extension/utils/isAccountKnown';
 interface IProps {
   accounts: IAccount[];
   asset: IStandardAsset;
-  explorer: IExplorer | null;
+  explorer: IBlockExplorer | null;
   network: INetworkWithTransactionParams;
 }
 

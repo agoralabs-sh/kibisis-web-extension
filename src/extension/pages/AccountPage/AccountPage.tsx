@@ -91,7 +91,7 @@ import type {
   IAccountTransactions,
   IActiveAccountDetails,
   IAppThunkDispatch,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
   ISettings,
 } from '@extension/types';
@@ -120,7 +120,7 @@ const AccountPage: FC = () => {
   const fetchingSettings: boolean = useSelectFetchingSettings();
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
-  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
   const savingAccounts: boolean = useSelectSavingAccounts();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();

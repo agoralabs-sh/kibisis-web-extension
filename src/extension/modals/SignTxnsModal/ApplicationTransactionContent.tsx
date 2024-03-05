@@ -22,7 +22,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IExplorer, INetwork } from '@extension/types';
+import type { IBlockExplorer, INetwork } from '@extension/types';
 import type { ICondensedProps } from './types';
 
 // utils
@@ -31,7 +31,7 @@ import parseTransactionType from '@extension/utils/parseTransactionType';
 
 interface IProps {
   condensed?: ICondensedProps;
-  explorer: IExplorer | null;
+  explorer: IBlockExplorer | null;
   network: INetwork;
   transaction: Transaction;
 }

@@ -1,4 +1,4 @@
-interface IExplorer {
+interface IBlockExplorer {
   accountPath: string;
   applicationPath: string;
   assetPath: string;
@@ -10,4 +10,4 @@ interface IExplorer {
   transactionPath: string;
 }
 
-export default IExplorer;
+export default IBlockExplorer;

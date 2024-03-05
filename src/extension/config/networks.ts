@@ -36,7 +36,7 @@ const networks: INetwork[] = [
     ],
     canonicalName: 'Voi',
     chakraTheme: 'voi',
-    explorers: [
+    blockExplorers: [
       {
         accountPath: '/account',
         applicationPath: '/application',
@@ -89,7 +89,7 @@ const networks: INetwork[] = [
     arc0072Indexers: [],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
-    explorers: [
+    blockExplorers: [
       {
         accountPath: '/address',
         applicationPath: '/application',
@@ -149,7 +149,7 @@ const networks: INetwork[] = [
     ],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
-    explorers: [],
+    blockExplorers: [],
     feeSunkAddress:
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
     genesisId: 'betanet-v1.0',
@@ -188,7 +188,7 @@ const networks: INetwork[] = [
     arc0072Indexers: [],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
-    explorers: [
+    blockExplorers: [
       {
         accountPath: '/address',
         applicationPath: '/application',

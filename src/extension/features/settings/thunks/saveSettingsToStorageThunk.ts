@@ -46,7 +46,7 @@ const saveSettingsToStorageThunk: AsyncThunk<
 
       settings.general.preferredBlockExplorerIds[
         convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
-      ] = selectedNetwork.explorers[0]?.id || null;
+      ] = selectedNetwork.blockExplorers[0]?.id || null;
       settings.general.selectedNetworkGenesisHash = selectedNetwork.genesisHash;
     }
 

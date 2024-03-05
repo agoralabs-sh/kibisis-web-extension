@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // types
-import { IExplorer, IMainRootState, INetwork } from '@extension/types';
+import { IBlockExplorer, IMainRootState, INetwork } from '@extension/types';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 /**
@@ -9,8 +9,8 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
  * explorer is used (first index), or null.
  * @returns {IExplorer | null} the current preferred block explorer from settings, or the default explorer, or null.
  */
-export default function useSelectPreferredBlockExplorer(): IExplorer | null {
-  return useSelector<IMainRootState, IExplorer | null>((state) => {
+export default function useSelectPreferredBlockExplorer(): IBlockExplorer | null {
+  return useSelector<IMainRootState, IBlockExplorer | null>((state) => {
     const selectedNetwork: INetwork | null =
       state.networks.items.find(
         (value) =>
@@ -23,14 +23,14 @@ export default function useSelectPreferredBlockExplorer(): IExplorer | null {
     }
 
     return (
-      selectedNetwork.explorers.find(
+      selectedNetwork.blockExplorers.find(
         (value) =>
           value.id ===
           state.settings.general.preferredBlockExplorerIds[
             convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
           ]
       ) ||
-      selectedNetwork.explorers[0] ||
+      selectedNetwork.blockExplorers[0] ||
       null
     );
   });

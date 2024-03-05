@@ -95,7 +95,7 @@ import type {
   IAppThunkDispatchReturn,
   IARC0200Asset,
   IAssetTypes,
-  IExplorer,
+  IBlockExplorer,
   INetworkWithTransactionParams,
   ISettings,
   IStandardAsset,
@@ -120,7 +120,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const accounts: IAccount[] = useSelectAccounts();
   const arc200Assets: IARC0200Asset[] = useSelectAddAssetARC0200Assets();
   const confirming: boolean = useSelectAddAssetConfirming();
-  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
   const fetching: boolean = useSelectAddAssetFetching();
   const logger: ILogger = useSelectLogger();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();

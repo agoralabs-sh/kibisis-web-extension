@@ -37,7 +37,7 @@ import {
 import {
   IAccount,
   IAssetCreateTransaction,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
 } from '@extension/types';
 
@@ -59,7 +59,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();

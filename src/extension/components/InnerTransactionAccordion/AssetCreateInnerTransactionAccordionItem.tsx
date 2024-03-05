@@ -36,7 +36,7 @@ import {
 import {
   IAccount,
   IAssetCreateTransaction,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
 } from '@extension/types';
 
@@ -61,15 +61,18 @@ const AssetCreateInnerTransactionAccordionItem: FC<IProps> = ({
   const { t } = useTranslation();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const preferredExplorer: IBlockExplorer | null =
+    useSelectPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const explorer: IExplorer | null =
-    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
-    network.explorers[0] ||
+  const explorer: IBlockExplorer | null =
+    network.blockExplorers.find(
+      (value) => value.id === preferredExplorer?.id
+    ) ||
+    network.blockExplorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
 
   return (
