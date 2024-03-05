@@ -33,33 +33,24 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// services
+import AccountService from '@extension/services/AccountService';
+
 // types
-import {
-  IAccount,
-  IBlockExplorer,
-  INetworkWithTransactionParams,
-  IStandardAsset,
-} from '@extension/types';
+import type { IAccountInformation } from '@extension/types';
+import type { IAddAssetModalStandardAssetSummaryContentProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import isAccountKnown from '@extension/utils/isAccountKnown';
+import WarningIcon from '@extension/components/WarningIcon';
 
-interface IProps {
-  accounts: IAccount[];
-  asset: IStandardAsset;
-  explorer: IBlockExplorer | null;
-  network: INetworkWithTransactionParams;
-}
-
-const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
-  accounts,
-  asset,
-  explorer,
-  network,
-}: IProps) => {
+const AddAssetModalStandardAssetSummaryContent: FC<
+  IAddAssetModalStandardAssetSummaryContentProps
+> = ({ account, accounts, asset, blockExplorer, network }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // hooks
@@ -67,9 +58,24 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
+  const accountInformation: IAccountInformation | null =
+    AccountService.extractAccountInformationForNetwork(account, network);
+  const accountBalanceInAtomicUnits: BigNumber = new BigNumber(
+    accountInformation?.atomicBalance || '0'
+  );
+  const minimumTransactionFee: BigNumber = new BigNumber(network.minFee);
   const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
     new BigNumber(asset.total),
     asset.decimals
+  );
+  const minimumBalanceRequirement: BigNumber =
+    calculateMinimumBalanceRequirementForStandardAssets({
+      account,
+      network,
+      numOfStandardAssets: 1,
+    });
+  const isEnoughMinimumBalance: boolean = accountBalanceInAtomicUnits.gte(
+    minimumBalanceRequirement.plus(minimumTransactionFee)
   );
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
@@ -130,13 +136,13 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
                 value={asset.id}
               />
 
-              {explorer && (
+              {blockExplorer && (
                 <OpenTabIconButton
                   size="sm"
                   tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
+                    name: blockExplorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+                  url={`${blockExplorer.baseUrl}${blockExplorer.assetPath}/${asset.id}`}
                 />
               )}
             </HStack>
@@ -154,13 +160,13 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
               />
 
               {/*open in explorer button*/}
-              {!isAccountKnown(accounts, asset.creator) && explorer && (
+              {!isAccountKnown(accounts, asset.creator) && blockExplorer && (
                 <OpenTabIconButton
                   size="sm"
                   tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
+                    name: blockExplorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${asset.creator}`}
+                  url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.creator}`}
                 />
               )}
             </HStack>
@@ -212,8 +218,9 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
           {/*fee*/}
           <PageItem fontSize="sm" label={t<string>('labels.fee')}>
             <HStack spacing={1}>
+              {/*fee display*/}
               <AssetDisplay
-                atomicUnitAmount={new BigNumber(network.minFee)}
+                atomicUnitAmount={minimumTransactionFee}
                 amountColor={subTextColor}
                 decimals={network.nativeCurrency.decimals}
                 fontSize="sm"
@@ -225,10 +232,38 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
                 unit={network.nativeCurrency.symbol}
               />
 
+              {/*info*/}
               <InfoIconTooltip
                 color={subTextColor}
                 label={t<string>('captions.optInFee')}
               />
+
+              {/*not enough funds warning*/}
+              {!isEnoughMinimumBalance && (
+                <WarningIcon
+                  tooltipLabel={t<string>('captions.minimumBalanceTooLow', {
+                    balance: formatCurrencyUnit(
+                      convertToStandardUnit(
+                        accountBalanceInAtomicUnits,
+                        network.nativeCurrency.decimals
+                      ),
+                      {
+                        decimals: network.nativeCurrency.decimals,
+                      }
+                    ),
+                    cost: formatCurrencyUnit(
+                      convertToStandardUnit(
+                        minimumBalanceRequirement.plus(minimumTransactionFee),
+                        network.nativeCurrency.decimals
+                      ),
+                      {
+                        decimals: network.nativeCurrency.decimals,
+                      }
+                    ),
+                    symbol: network.nativeCurrency.symbol,
+                  })}
+                />
+              )}
             </HStack>
           </PageItem>
 
@@ -290,13 +325,13 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
 
                     {/*open in explorer button*/}
                     {!isAccountKnown(accounts, asset.clawbackAddress) &&
-                      explorer && (
+                      blockExplorer && (
                         <OpenTabIconButton
                           size="sm"
                           tooltipLabel={t<string>('captions.openOn', {
-                            name: explorer.canonicalName,
+                            name: blockExplorer.canonicalName,
                           })}
-                          url={`${explorer.baseUrl}${explorer.accountPath}/${asset.clawbackAddress}`}
+                          url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.clawbackAddress}`}
                         />
                       )}
                   </HStack>
@@ -320,13 +355,13 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
 
                     {/*open in explorer button*/}
                     {!isAccountKnown(accounts, asset.freezeAddress) &&
-                      explorer && (
+                      blockExplorer && (
                         <OpenTabIconButton
                           size="sm"
                           tooltipLabel={t<string>('captions.openOn', {
-                            name: explorer.canonicalName,
+                            name: blockExplorer.canonicalName,
                           })}
-                          url={`${explorer.baseUrl}${explorer.accountPath}/${asset.freezeAddress}`}
+                          url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.freezeAddress}`}
                         />
                       )}
                   </HStack>
@@ -350,13 +385,13 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
 
                     {/*open in explorer button*/}
                     {!isAccountKnown(accounts, asset.managerAddress) &&
-                      explorer && (
+                      blockExplorer && (
                         <OpenTabIconButton
                           size="sm"
                           tooltipLabel={t<string>('captions.openOn', {
-                            name: explorer.canonicalName,
+                            name: blockExplorer.canonicalName,
                           })}
-                          url={`${explorer.baseUrl}${explorer.accountPath}/${asset.managerAddress}`}
+                          url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.managerAddress}`}
                         />
                       )}
                   </HStack>
@@ -380,13 +415,13 @@ const AddAssetModalStandardAssetSummaryContent: FC<IProps> = ({
 
                     {/*open in explorer button*/}
                     {!isAccountKnown(accounts, asset.reserveAddress) &&
-                      explorer && (
+                      blockExplorer && (
                         <OpenTabIconButton
                           size="sm"
                           tooltipLabel={t<string>('captions.openOn', {
-                            name: explorer.canonicalName,
+                            name: blockExplorer.canonicalName,
                           })}
-                          url={`${explorer.baseUrl}${explorer.accountPath}/${asset.reserveAddress}`}
+                          url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.reserveAddress}`}
                         />
                       )}
                   </HStack>
