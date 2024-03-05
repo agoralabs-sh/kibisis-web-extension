@@ -18,7 +18,7 @@ import type { IOptions } from './types';
 export default function calculateMinimumBalanceRequirementForStandardAssets({
   account,
   network,
-  numOfStandardAssets,
+  numOfStandardAssets = 1,
 }: IOptions): BigNumber {
   const accountInformation: IAccountInformation | null =
     AccountService.extractAccountInformationForNetwork(account, network);

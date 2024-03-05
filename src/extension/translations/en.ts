@@ -195,6 +195,7 @@ const translation: IResourceLanguage = {
       code_1002: `Failed to parse the "{{type}}" data.`,
       code_2000: 'The password seems to be invalid.',
       code_2003: 'This account already exists.',
+      code_4001: 'Your balance will fall below the minimum balance required.',
       code_6000: 'There was an error starting the camera.',
     },
     inputs: {
@@ -213,6 +214,7 @@ const translation: IResourceLanguage = {
       code_1002: '1002 Parsing Error',
       code_2000: '2000 Invalid Password',
       code_2003: '2003 Account Already Exists',
+      code_4001: '4001 Minimum Balance Required',
       code_6000: '6000 Camera Error',
     },
   },

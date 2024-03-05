@@ -72,11 +72,12 @@ const AddAssetModalStandardAssetSummaryContent: FC<
     calculateMinimumBalanceRequirementForStandardAssets({
       account,
       network,
-      numOfStandardAssets: 1,
     });
   const isEnoughMinimumBalance: boolean = accountBalanceInAtomicUnits.gte(
     minimumBalanceRequirement.plus(minimumTransactionFee)
   );
+  const accountAddress: string =
+    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
@@ -148,25 +149,25 @@ const AddAssetModalStandardAssetSummaryContent: FC<
             </HStack>
           </PageItem>
 
-          {/*creator account*/}
-          <PageItem fontSize="sm" label={t<string>('labels.creatorAccount')}>
+          {/*account*/}
+          <PageItem fontSize="sm" label={t<string>('labels.account')}>
             <HStack spacing={0}>
               <AddressDisplay
-                address={asset.creator}
-                ariaLabel="Creator address"
+                address={accountAddress}
+                ariaLabel="Accoun to add the standard asset to"
                 color={subTextColor}
                 fontSize="sm"
                 network={network}
               />
 
               {/*open in explorer button*/}
-              {!isAccountKnown(accounts, asset.creator) && blockExplorer && (
+              {blockExplorer && (
                 <OpenTabIconButton
                   size="sm"
                   tooltipLabel={t<string>('captions.openOn', {
                     name: blockExplorer.canonicalName,
                   })}
-                  url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.creator}`}
+                  url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${accountAddress}`}
                 />
               )}
             </HStack>
@@ -297,6 +298,34 @@ const AddAssetModalStandardAssetSummaryContent: FC<
                     })}
                   </Text>
                 </Tooltip>
+              </PageItem>
+
+              {/*creator account*/}
+              <PageItem
+                fontSize="sm"
+                label={t<string>('labels.creatorAccount')}
+              >
+                <HStack spacing={0}>
+                  <AddressDisplay
+                    address={asset.creator}
+                    ariaLabel="Creator address"
+                    color={subTextColor}
+                    fontSize="sm"
+                    network={network}
+                  />
+
+                  {/*open in explorer button*/}
+                  {!isAccountKnown(accounts, asset.creator) &&
+                    blockExplorer && (
+                      <OpenTabIconButton
+                        size="sm"
+                        tooltipLabel={t<string>('captions.openOn', {
+                          name: blockExplorer.canonicalName,
+                        })}
+                        url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.creator}`}
+                      />
+                    )}
+                </HStack>
               </PageItem>
 
               {/*default frozen*/}
