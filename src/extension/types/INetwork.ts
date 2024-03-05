@@ -2,11 +2,12 @@
 import { NetworkTypeEnum } from '../enums';
 
 // types
-import IARC0072Indexer from './IARC0072Indexer';
-import IChainNamespace from './IChainNamespace';
-import IBlockExplorer from './IBlockExplorer';
-import INativeCurrency from './INativeCurrency';
-import INode from './INode';
+import type IARC0072Indexer from './IARC0072Indexer';
+import type IChainNamespace from './IChainNamespace';
+import type IBlockExplorer from './IBlockExplorer';
+import type INativeCurrency from './INativeCurrency';
+import type INFTExplorer from './INFTExplorer';
+import type INode from './INode';
 
 interface INetwork {
   algods: INode[];
@@ -20,6 +21,7 @@ interface INetwork {
   indexers: INode[];
   namespace: IChainNamespace;
   nativeCurrency: INativeCurrency;
+  nftExplorers: INFTExplorer[];
   type: NetworkTypeEnum;
 }
 

@@ -73,6 +73,16 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
+    nftExplorers: [
+      {
+        baseURL: 'https://nftnavigator.xyz',
+        canonicalName: 'NFT Navigator',
+        collectionPath: (appId: string) => `/collection/${appId}`,
+        id: 'nft-navigator',
+        tokenPath: (appId: string, tokenId: string) =>
+          `/collection/${appId}/token/${tokenId}`,
+      },
+    ],
     type: NetworkTypeEnum.Test,
   },
   /**
@@ -137,6 +147,7 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
+    nftExplorers: [],
     type: NetworkTypeEnum.Stable,
   },
   {
@@ -147,6 +158,7 @@ const networks: INetwork[] = [
         url: 'https://betanet-api.algonode.cloud',
       },
     ],
+    arc0072Indexers: [],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
     blockExplorers: [],
@@ -174,7 +186,7 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    arc0072Indexers: [],
+    nftExplorers: [],
     type: NetworkTypeEnum.Beta,
   },
   {
@@ -225,6 +237,7 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
+    nftExplorers: [],
     type: NetworkTypeEnum.Test,
   },
 ];
