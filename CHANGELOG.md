@@ -1,3 +1,10 @@
+# [1.14.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0-beta.1...v1.14.0-beta.2) (2024-03-05)
+
+
+### Features
+
+* dont allow adding of standard asset if account balance is below the minimum balance requirement ([#199](https://github.com/agoralabs-sh/kibisis-web-extension/issues/199)) ([272a01a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/272a01a752fb9977fe50add2cdb0142e8ce57714))
+
 # [1.14.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0...v1.14.0-beta.1) (2024-03-05)
 
 
