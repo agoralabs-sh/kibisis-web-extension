@@ -18,9 +18,9 @@ import {
 
 // types
 import type { IAccountInformation, INetwork } from '@extension/types';
-import type { IProps } from './types';
+import type { INFTsTabProps } from './types';
 
-const NFTsTab: FC<IProps> = ({ account }) => {
+const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
   const { t } = useTranslation();
   // selectors
   const fetchingARC0072Assets: boolean = useSelectARC0072AssetsFetching();
@@ -40,12 +40,15 @@ const NFTsTab: FC<IProps> = ({ account }) => {
     }
 
     if (selectedNetwork && accountInformation) {
-      assetNodes = accountInformation.arc0072AssetHoldings.map((value) => (
-        <NFTsTabARC0072AssetItem
-          arc0072AssetHolding={value}
-          network={selectedNetwork}
-        />
-      ));
+      assetNodes = accountInformation.arc0072AssetHoldings.map(
+        (value, index) => (
+          <NFTsTabARC0072AssetItem
+            arc0072AssetHolding={value}
+            key={`nfts-tab-nft-item-${index}`}
+            network={selectedNetwork}
+          />
+        )
+      );
     }
 
     return assetNodes.length > 0 ? (

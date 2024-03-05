@@ -1,8 +1,8 @@
 // types
 import type { IAccount } from '@extension/types';
 
-interface IProps {
+interface INFTsTabProps {
   account: IAccount;
 }
 
-export default IProps;
+export default INFTsTabProps;

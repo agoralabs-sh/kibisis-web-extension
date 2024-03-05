@@ -21,14 +21,9 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IARC0072AssetHolding, INetwork } from '@extension/types';
+import type { INFTsTabARC0072AssetItemProps } from './types';
 
-interface IProps {
-  arc0072AssetHolding: IARC0072AssetHolding;
-  network: INetwork;
-}
-
-const NFTsTabARC0072AssetItem: FC<IProps> = ({
+const NFTsTabARC0072AssetItem: FC<INFTsTabARC0072AssetItemProps> = ({
   arc0072AssetHolding,
   network,
 }) => {

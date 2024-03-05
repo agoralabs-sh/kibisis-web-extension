@@ -4,11 +4,12 @@ import {
   HStack,
   Image,
   Link,
+  Skeleton,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, useEffect } from 'react';
+import React, { FC, ReactElement, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
@@ -27,17 +28,21 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useNFTPage from './hooks/useNFTPage';
 
+// images
+import nftPlaceholderImage from '@extension/images/placeholder_nft.png';
+
 // selectors
 import {
   useSelectARC0072AssetsFetching,
   useSelectSettingsPreferredBlockExplorer,
+  useSelectSettingsPreferredNFTExplorer,
 } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IBlockExplorer } from '@extension/types';
+import type { IBlockExplorer, INFTExplorer } from '@extension/types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
@@ -47,8 +52,10 @@ const NFTPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { appId, tokenId } = useParams();
   // selectors
-  const explorer: IBlockExplorer | null =
+  const blockExplorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
+  const nftExplorer: INFTExplorer | null =
+    useSelectSettingsPreferredNFTExplorer();
   const fetchingARC0072Assets: boolean = useSelectARC0072AssetsFetching();
   // hooks
   const { account, accountInformation, assetHolding } = useNFTPage({
@@ -66,6 +73,51 @@ const NFTPage: FC = () => {
     navigate(ACCOUNTS_ROUTE, {
       replace: true,
     });
+  // renders
+  const renderImage = () => {
+    let imageElement: ReactElement;
+
+    if (!assetHolding) {
+      return (
+        <Skeleton>
+          <Image
+            alt="NFT image loading"
+            borderRadius="md"
+            boxSize="250px"
+            objectFit="cover"
+            src={nftPlaceholderImage}
+          />
+        </Skeleton>
+      );
+    }
+
+    imageElement = (
+      <Image
+        alt="NFT image"
+        borderRadius="md"
+        boxSize="250px"
+        objectFit="cover"
+        src={assetHolding.metadata.image || nftPlaceholderImage}
+      />
+    );
+
+    // if we have an nft explorer, wrap the nft in a link
+    if (nftExplorer) {
+      return (
+        <Link
+          href={`${nftExplorer.baseURL}${nftExplorer.tokenPath(
+            assetHolding.id,
+            assetHolding.tokenId
+          )}`}
+          isExternal={true}
+        >
+          {imageElement}
+        </Link>
+      );
+    }
+
+    return imageElement;
+  };
   let accountAddress: string;
 
   // if we don't have the params, return to accounts page
@@ -115,25 +167,7 @@ const NFTPage: FC = () => {
           w="full"
         >
           {/*image*/}
-          {assetHolding.metadata.image ? (
-            <Link href={assetHolding.metadata.image} isExternal={true}>
-              <Image
-                alt="NFT image"
-                borderRadius="md"
-                boxSize="250px"
-                objectFit="cover"
-                src={assetHolding.metadata.image}
-              />
-            </Link>
-          ) : (
-            <Image
-              alt="Placeholder image"
-              borderRadius="md"
-              boxSize="250px"
-              objectFit="cover"
-              src=""
-            />
-          )}
+          {renderImage()}
 
           {/*token id/type*/}
           <HStack
@@ -195,12 +229,12 @@ const NFTPage: FC = () => {
               />
 
               {/*open app on explorer*/}
-              {explorer && (
+              {blockExplorer && (
                 <OpenTabIconButton
                   tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
+                    name: blockExplorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.applicationPath}/${assetHolding.id}`}
+                  url={`${blockExplorer.baseUrl}${blockExplorer.applicationPath}/${assetHolding.id}`}
                 />
               )}
             </HStack>
