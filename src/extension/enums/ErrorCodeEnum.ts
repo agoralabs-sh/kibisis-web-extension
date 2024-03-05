@@ -17,6 +17,7 @@ enum ErrorCodeEnum {
 
   // transaction
   FailedToSendTransactionError = 4000,
+  NotEnoughMinimumBalanceError = 4001,
 
   // contract (application)
   InvalidABIContractError = 5000,

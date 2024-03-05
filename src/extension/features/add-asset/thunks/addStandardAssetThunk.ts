@@ -9,6 +9,7 @@ import {
   Transaction,
   waitForConfirmation,
 } from 'algosdk';
+import BigNumber from 'bignumber.js';
 import browser from 'webextension-polyfill';
 
 // enums
@@ -20,6 +21,7 @@ import {
   FailedToSendTransactionError,
   MalformedDataError,
   NetworkNotSelectedError,
+  NotEnoughMinimumBalanceError,
   OfflineError,
 } from '@extension/errors';
 
@@ -31,6 +33,7 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 import type { ILogger } from '@common/types';
 import type {
   IAccount,
+  IAccountInformation,
   IAlgorandPendingTransactionResponse,
   IAssetTypes,
   IBaseAsyncThunkConfig,
@@ -40,6 +43,7 @@ import type {
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
+import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
 const addStandardAssetThunk: AsyncThunk<
@@ -61,9 +65,12 @@ const addStandardAssetThunk: AsyncThunk<
     const online: boolean = getState().system.online;
     const selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(getState().networks.items, getState().settings);
+    let accountBalanceInAtomicUnits: BigNumber;
+    let accountInformation: IAccountInformation | null;
     let address: string;
     let algodClient: Algodv2;
     let decodedAddress: Address;
+    let minimumBalanceRequirementInAtomicUnits: BigNumber;
     let privateKey: Uint8Array | null;
     let privateKeyService: PrivateKeyService;
     let sentRawTransaction: { txId: string };
@@ -138,6 +145,30 @@ const addStandardAssetThunk: AsyncThunk<
       logger.debug(`${AddAssetThunkEnum.AddStandardAsset}(): ${error.message}`);
 
       return rejectWithValue(error);
+    }
+
+    accountInformation = AccountService.extractAccountInformationForNetwork(
+      account,
+      selectedNetwork
+    );
+    accountBalanceInAtomicUnits = new BigNumber(
+      accountInformation?.atomicBalance || '0'
+    );
+    minimumBalanceRequirementInAtomicUnits =
+      calculateMinimumBalanceRequirementForStandardAssets({
+        account,
+        network: selectedNetwork,
+      }).plus(new BigNumber(selectedNetwork.minFee)); // current minimum account balance + minimum balance required to add the asset + the transaction fee
+
+    // if the account balance is below the minimum required for adding a standard asset, error
+    if (
+      accountBalanceInAtomicUnits.lt(minimumBalanceRequirementInAtomicUnits)
+    ) {
+      logger.debug(
+        `${AddAssetThunkEnum.AddStandardAsset}: the required minimum balance to add asset "${asset.id}" is "${minimumBalanceRequirementInAtomicUnits}", but the current balance is "${accountBalanceInAtomicUnits}"`
+      );
+
+      return rejectWithValue(new NotEnoughMinimumBalanceError(``));
     }
 
     algodClient = createAlgodClient(selectedNetwork, {

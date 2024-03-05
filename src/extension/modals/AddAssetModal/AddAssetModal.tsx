@@ -429,7 +429,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     dispatch(setSelectedAsset(asset));
   // renders
   const renderContent = () => {
-    if (selectedNetwork) {
+    if (selectedNetwork && account) {
       if (selectedAsset) {
         switch (selectedAsset.type) {
           case AssetTypeEnum.ARC0200:
@@ -451,9 +451,10 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
             return (
               <AddAssetModalStandardAssetSummaryContent
+                account={account}
                 accounts={accounts}
                 asset={selectedAsset}
-                explorer={explorer}
+                blockExplorer={explorer}
                 network={selectedNetwork}
               />
             );
