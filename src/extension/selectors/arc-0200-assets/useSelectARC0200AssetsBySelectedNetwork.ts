@@ -22,8 +22,8 @@ export default function useSelectARC0200AssetsBySelectedNetwork(): IARC0200Asset
       return [];
     }
 
-    return state.arc200Assets.items
-      ? state.arc200Assets.items[
+    return state.arc0200Assets.items
+      ? state.arc0200Assets.items[
           convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
         ]
       : [];

@@ -1,5 +1,5 @@
 // types
-import { ITransactions } from '@extension/types';
+import type { ITransactions } from '@extension/types';
 
 /**
  * @property {string | null} next - the token for the next page of results.

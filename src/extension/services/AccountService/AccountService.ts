@@ -147,6 +147,7 @@ export default class AccountService {
 
   public static initializeDefaultAccountInformation(): IAccountInformation {
     return {
+      arc0072AssetHoldings: [],
       arc200AssetHoldings: [],
       atomicBalance: '0',
       authAddress: null,
@@ -224,6 +225,7 @@ export default class AccountService {
     accountInformation: IAccountInformation
   ): IAccountInformation {
     return {
+      arc0072AssetHoldings: accountInformation.arc0072AssetHoldings,
       arc200AssetHoldings: accountInformation.arc200AssetHoldings,
       atomicBalance: accountInformation.atomicBalance,
       authAddress: accountInformation.authAddress,

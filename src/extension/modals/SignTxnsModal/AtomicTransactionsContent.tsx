@@ -34,7 +34,7 @@ import {
   useSelectAccounts,
   useSelectLogger,
   useSelectNetworks,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsByGenesisHash,
   useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
@@ -47,7 +47,7 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAccountInformation,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
   IStandardAsset,
 } from '@extension/types';
@@ -72,7 +72,8 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   const accounts: IAccount[] = useSelectAccounts();
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const preferredExplorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsByGenesisHash(genesisHash);
   const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
@@ -89,9 +90,11 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   const computedGroupId: string = encodeBase64(computeGroupId(transactions));
   const network: INetwork | null =
     networks.find((value) => value.genesisHash === genesisHash) || null;
-  const explorer: IExplorer | null =
-    network?.explorers.find((value) => value.id === preferredExplorer?.id) ||
-    network?.explorers[0] ||
+  const explorer: IBlockExplorer | null =
+    network?.blockExplorers.find(
+      (value) => value.id === preferredExplorer?.id
+    ) ||
+    network?.blockExplorers[0] ||
     null; // get the preferred explorer, if it exists in the network, otherwise get the default one
   // handlers
   const handleToggleAccordion = (accordionIndex: number) => (open: boolean) => {

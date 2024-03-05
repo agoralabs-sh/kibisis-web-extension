@@ -11,6 +11,7 @@ import IBaseAsset from './IBaseAsset';
  * @property {boolean} defaultFrozen - whether holdings of this asset are frozen by default.
  * @property {boolean} deleted - whether this asset is deleted or not.
  * @property {string | null} freezeAddress - the address of the account that can freeze this asset.
+ * @property {string | null} iconUrl - the URL of the asset icon.
  * @property {string} id - the ID of this asset.
  * @property {string | null} managerAddress - the address of the account that can manage the keys of this asset and to
  * destroy it.
@@ -34,6 +35,7 @@ interface IStandardAsset extends IBaseAsset {
   defaultFrozen: boolean;
   deleted: boolean;
   freezeAddress: string | null;
+  iconUrl: string | null;
   id: string;
   managerAddress: string | null;
   metadataHash: string | null;

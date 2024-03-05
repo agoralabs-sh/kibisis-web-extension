@@ -28,7 +28,7 @@ export default class ARC0200AssetService {
    * public static functions
    */
 
-  public static initializeDefaultArc200Asset(): IARC0200Asset {
+  public static initializeDefaultARC0200Asset(): IARC0200Asset {
     return {
       decimals: 0,
       iconUrl: null,
@@ -75,7 +75,7 @@ export default class ARC0200AssetService {
     }
 
     return assets.map((value) => ({
-      ...ARC0200AssetService.initializeDefaultArc200Asset(), // add any new properties
+      ...ARC0200AssetService.initializeDefaultARC0200Asset(), // add any new properties
       ...value,
     }));
   }

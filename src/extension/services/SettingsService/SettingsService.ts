@@ -57,6 +57,7 @@ export default class SettingsService {
       },
       general: {
         preferredBlockExplorerIds: {},
+        preferredNFTExplorerIds: {},
         selectedNetworkGenesisHash: defaultNetwork.genesisHash,
       },
       security: {

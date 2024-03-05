@@ -28,7 +28,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // services
@@ -37,7 +37,7 @@ import AccountService from '@extension/services/AccountService';
 // types
 import {
   IAccount,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
   IPaymentTransaction,
 } from '@extension/types';
@@ -61,7 +61,8 @@ const PaymentTransactionContent: FC<IProps> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const preferredExplorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
@@ -69,9 +70,11 @@ const PaymentTransactionContent: FC<IProps> = ({
   const accountAddress: string =
     AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   const amount: BigNumber = new BigNumber(transaction.amount);
-  const explorer: IExplorer | null =
-    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
-    network.explorers[0] ||
+  const explorer: IBlockExplorer | null =
+    network.blockExplorers.find(
+      (value) => value.id === preferredExplorer?.id
+    ) ||
+    network.blockExplorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const isReceiverKnown: boolean =
     accounts.findIndex(

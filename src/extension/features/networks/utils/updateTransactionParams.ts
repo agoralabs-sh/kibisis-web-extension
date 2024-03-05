@@ -2,15 +2,15 @@
 import { NETWORK_TRANSACTION_PARAMS_ANTIQUATED_TIMEOUT } from '@extension/constants';
 
 // types
-import { IBaseOptions } from '@common/types';
-import {
+import type { IBaseOptions } from '@common/types';
+import type {
   IAlgorandTransactionParams,
   INetworkWithTransactionParams,
   INode,
 } from '@extension/types';
 
 // utils
-import getRandomNode from '@common/utils/getRandomNode';
+import getRandomItem from '@common/utils/getRandomItem';
 
 /**
  * Fetches the transaction params for a give network.
@@ -22,6 +22,7 @@ export default async function updateTransactionParams(
   network: INetworkWithTransactionParams,
   { logger }: IBaseOptions
 ): Promise<INetworkWithTransactionParams> {
+  const _functionName: string = 'updateTransactionParams';
   let algorandTransactionParams: IAlgorandTransactionParams;
   let algod: INode;
   let response: Response;
@@ -33,22 +34,20 @@ export default async function updateTransactionParams(
     network.updatedAt + NETWORK_TRANSACTION_PARAMS_ANTIQUATED_TIMEOUT >
       new Date().getTime()
   ) {
-    logger &&
-      logger.debug(
-        `${updateTransactionParams.name}: last updated "${new Date(
-          network.updatedAt
-        ).toString()}", skipping`
-      );
+    logger?.debug(
+      `${_functionName}: last updated "${new Date(
+        network.updatedAt
+      ).toString()}", skipping`
+    );
 
     return network;
   }
 
-  algod = getRandomNode(network.algods);
+  algod = getRandomItem(network.algods);
 
-  logger &&
-    logger.debug(
-      `${updateTransactionParams.name}: updating transaction params for network "${network.genesisId}"`
-    );
+  logger?.debug(
+    `${_functionName}: updating transaction params for network "${network.genesisId}"`
+  );
 
   try {
     // use rest api as the
@@ -62,24 +61,20 @@ export default async function updateTransactionParams(
 
     // check if the genesis hashes match
     if (algorandTransactionParams['genesis-hash'] !== network.genesisHash) {
-      logger &&
-        logger.debug(
-          `${updateTransactionParams.name}: requested network genesis hash "${network.genesisHash}" does not match the returned genesis hash "${algorandTransactionParams['genesis-hash']}", ignoring`
-        );
+      logger?.debug(
+        `${_functionName}: requested network genesis hash "${network.genesisHash}" does not match the returned genesis hash "${algorandTransactionParams['genesis-hash']}", ignoring`
+      );
 
       return network;
     }
 
     updatedAt = new Date();
 
-    logger &&
-      logger.debug(
-        `${
-          updateTransactionParams.name
-        }: successfully updated transaction params for network "${
-          network.genesisId
-        }" at "${updatedAt.toString()}"`
-      );
+    logger?.debug(
+      `${_functionName}: successfully updated transaction params for network "${
+        network.genesisId
+      }" at "${updatedAt.toString()}"`
+    );
 
     return {
       ...network,
@@ -88,10 +83,9 @@ export default async function updateTransactionParams(
       updatedAt: updatedAt.getTime(),
     };
   } catch (error) {
-    logger &&
-      logger.error(
-        `${updateTransactionParams.name}: failed to get transaction params for network "${network.genesisId}": ${error.message}`
-      );
+    logger?.error(
+      `${_functionName}: failed to get transaction params for network "${network.genesisId}": ${error.message}`
+    );
 
     return network;
   }

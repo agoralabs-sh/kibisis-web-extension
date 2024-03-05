@@ -4,6 +4,7 @@ import IActiveAccountDetails from './IActiveAccountDetails';
 import IAdvancedSettings from './IAdvancedSettings';
 import IAppearanceSettings from './IAppearanceSettings';
 import IAppWindow from './IAppWindow';
+import IARC0072Asset from './IARC0072Asset';
 import IARC0200Asset from './IARC0200Asset';
 import IEvent from './IEvent';
 import IGeneralSettings from './IGeneralSettings';
@@ -21,6 +22,7 @@ type IStorageItemTypes =
   | IAdvancedSettings
   | IAppearanceSettings
   | IAppWindow
+  | IARC0072Asset[]
   | IARC0200Asset[]
   | IGeneralSettings
   | IEvent[]

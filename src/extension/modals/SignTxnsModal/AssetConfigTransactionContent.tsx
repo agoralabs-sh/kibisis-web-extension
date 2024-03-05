@@ -30,7 +30,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import type {
   IAccount,
   IStandardAsset,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
 } from '@extension/types';
 import type { ICondensedProps } from './types';
@@ -42,7 +42,7 @@ import parseTransactionType from '@extension/utils/parseTransactionType';
 interface IProps {
   asset: IStandardAsset | null;
   condensed?: ICondensedProps;
-  explorer: IExplorer | null;
+  explorer: IBlockExplorer | null;
   fromAccount: IAccount | null;
   loading?: boolean;
   network: INetwork;

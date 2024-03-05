@@ -18,6 +18,7 @@ import {
   ACCOUNTS_ROUTE,
   ADD_ACCOUNT_ROUTE,
   ASSETS_ROUTE,
+  NFTS_ROUTE,
   SETTINGS_ROUTE,
   PASSWORD_LOCK_ROUTE,
   TRANSACTIONS_ROUTE,
@@ -26,7 +27,8 @@ import {
 // features
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as addAssetReducer } from '@extension/features/add-asset';
-import { reducer as arc200AssetsReducer } from '@extension/features/arc200-assets';
+import { reducer as arc0072AssetsReducer } from '@extension/features/arc0072-assets';
+import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
 import { reducer as eventsReducer } from '@extension/features/events';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
@@ -48,6 +50,7 @@ import {
 import AccountPage from '@extension/pages/AccountPage';
 import AssetPage from '@extension/pages/AssetPage';
 import LoadingPage from '@extension/pages/LoadingPage';
+import NFTPage from '@extension/pages/NFTPage';
 import PasswordLockPage from '@extension/pages/PasswordLockPage';
 import TransactionPage from '@extension/pages/TransactionPage';
 
@@ -108,6 +111,15 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
               path: `${ASSETS_ROUTE}/:assetId`,
             },
             {
+              element: <NFTPage />,
+              loader: () => {
+                dispatch(setSideBar(true));
+
+                return null;
+              },
+              path: `${NFTS_ROUTE}/:appId/:tokenId`,
+            },
+            {
               element: <SettingsRouter />,
               loader: () => {
                 dispatch(setSideBar(true));
@@ -164,7 +176,8 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     combineReducers({
       accounts: accountsReducer,
       addAsset: addAssetReducer,
-      arc200Assets: arc200AssetsReducer,
+      arc0072Assets: arc0072AssetsReducer,
+      arc0200Assets: arc200AssetsReducer,
       events: eventsReducer,
       messages: messagesReducer,
       networks: networksReducer,

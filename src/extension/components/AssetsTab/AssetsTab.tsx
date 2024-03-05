@@ -12,10 +12,10 @@ import { IoAdd } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
+import AssetTabLoadingItem from '@extension/components/AssetTabLoadingItem';
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
-import AssetTabArc200AssetItem from './AssetTabArc200AssetItem';
-import AssetTabLoadingItem from './AssetTabLoadingItem';
+import AssetTabARC0200AssetItem from './AssetTabARC0200AssetItem';
 import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 
 // constants
@@ -31,45 +31,36 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 // selectors
 import {
   useSelectARC0200AssetsBySelectedNetwork,
-  useSelectFetchingARC0200Assets,
+  useSelectARC0200AssetsFetching,
+  useSelectARC0200AssetsUpdating,
   useSelectFetchingStandardAssets,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
-  useSelectUpdatingArc200Assets,
   useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
 
 // types
-import {
-  IAccount,
+import type {
   IAccountInformation,
   IStandardAsset,
   INetwork,
   IARC0200Asset,
   IAppThunkDispatch,
 } from '@extension/types';
+import type { IAssetsTabAssetHolding, IProps } from './types';
 
-interface IAssetHolding {
-  amount: string;
-  id: string;
-  isArc200: boolean;
-}
-interface IProps {
-  account: IAccount;
-}
-
-const AssetsTab: FC<IProps> = ({ account }: IProps) => {
+const AssetsTab: FC<IProps> = ({ account }) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const arc200Assets: IARC0200Asset[] =
+  const arc0200Assets: IARC0200Asset[] =
     useSelectARC0200AssetsBySelectedNetwork();
-  const fetchingArc200Assets: boolean = useSelectFetchingARC0200Assets();
+  const fetchingARC0200Assets: boolean = useSelectARC0200AssetsFetching();
   const fetchingStandardAssets: boolean = useSelectFetchingStandardAssets();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
-  const updatingArc200Assets: boolean = useSelectUpdatingArc200Assets();
+  const updatingARC0200Assets: boolean = useSelectARC0200AssetsUpdating();
   const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
@@ -77,17 +68,17 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
     account.id
   );
   // misc
-  const allAssetHoldings: IAssetHolding[] = accountInformation
+  const allAssetHoldings: IAssetsTabAssetHolding[] = accountInformation
     ? [
         ...accountInformation.arc200AssetHoldings.map(({ amount, id }) => ({
           amount,
           id,
-          isArc200: true,
+          isARC0200: true,
         })),
         ...accountInformation.standardAssetHoldings.map(({ amount, id }) => ({
           amount,
           id,
-          isArc200: false,
+          isARC0200: false,
         })),
       ]
     : [];
@@ -97,7 +88,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
   const renderContent = () => {
     let assetNodes: ReactNode[] = [];
 
-    if (fetchingArc200Assets || fetchingStandardAssets) {
+    if (fetchingARC0200Assets || fetchingStandardAssets) {
       return Array.from({ length: 3 }, (_, index) => (
         <AssetTabLoadingItem key={`asset-tab-loading-item-${index}`} />
       ));
@@ -105,13 +96,13 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
 
     if (selectedNetwork && accountInformation && allAssetHoldings.length > 0) {
       assetNodes = allAssetHoldings.reduce<ReactNode[]>(
-        (acc, { amount, id, isArc200 }, currentIndex) => {
+        (acc, { amount, id, isARC0200 }, currentIndex) => {
           const key: string = `asset-tab-item-${currentIndex}`;
           let arc200Asset: IARC0200Asset | null;
           let standardAsset: IStandardAsset | null;
 
           // for standard assets
-          if (!isArc200) {
+          if (!isARC0200) {
             standardAsset =
               standardAssets.find((value) => value.id === id) || null;
 
@@ -122,7 +113,6 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
             return [
               ...acc,
               <AssetTabStandardAssetItem
-                account={account}
                 amount={amount}
                 key={key}
                 network={selectedNetwork}
@@ -131,7 +121,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
             ];
           }
 
-          arc200Asset = arc200Assets.find((value) => value.id === id) || null;
+          arc200Asset = arc0200Assets.find((value) => value.id === id) || null;
 
           if (!arc200Asset) {
             return acc;
@@ -139,10 +129,9 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
 
           return [
             ...acc,
-            <AssetTabArc200AssetItem
-              account={account}
+            <AssetTabARC0200AssetItem
               amount={amount}
-              arc200Asset={arc200Asset}
+              arc0200Asset={arc200Asset}
               key={key}
               network={selectedNetwork}
             />,
@@ -164,7 +153,7 @@ const AssetsTab: FC<IProps> = ({ account }: IProps) => {
           w="full"
         >
           {/*updating asset spinner*/}
-          {updatingArc200Assets ||
+          {updatingARC0200Assets ||
             (updatingStandardAssets && (
               <Tooltip
                 aria-label="Updating asset information spinner"

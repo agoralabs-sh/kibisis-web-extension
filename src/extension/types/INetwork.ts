@@ -2,22 +2,26 @@
 import { NetworkTypeEnum } from '../enums';
 
 // types
-import IChainNamespace from './IChainNamespace';
-import IExplorer from './IExplorer';
-import INativeCurrency from './INativeCurrency';
-import INode from './INode';
+import type IARC0072Indexer from './IARC0072Indexer';
+import type IChainNamespace from './IChainNamespace';
+import type IBlockExplorer from './IBlockExplorer';
+import type INativeCurrency from './INativeCurrency';
+import type INFTExplorer from './INFTExplorer';
+import type INode from './INode';
 
 interface INetwork {
+  algods: INode[];
+  arc0072Indexers: IARC0072Indexer[];
+  blockExplorers: IBlockExplorer[];
   canonicalName: string;
   chakraTheme: string;
-  explorers: IExplorer[];
   feeSunkAddress: string;
   genesisHash: string;
   genesisId: string;
+  indexers: INode[];
   namespace: IChainNamespace;
   nativeCurrency: INativeCurrency;
-  indexers: INode[];
-  algods: INode[];
+  nftExplorers: INFTExplorer[];
   type: NetworkTypeEnum;
 }
 

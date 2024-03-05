@@ -52,7 +52,7 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 // selectors
 import {
   useSelectFetchingStandardAssets,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -63,7 +63,7 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import { IAppThunkDispatch, IExplorer, INetwork } from '@extension/types';
+import { IAppThunkDispatch, IBlockExplorer, INetwork } from '@extension/types';
 
 // utils
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
@@ -81,7 +81,8 @@ const AssetPage: FC = () => {
   } = useDisclosure();
   // selectors
   const fetchingAssets: boolean = useSelectFetchingStandardAssets();
-  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // hooks
   const {

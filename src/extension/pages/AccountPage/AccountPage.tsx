@@ -27,15 +27,15 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // components
 import ActivityTab from '@extension/components/ActivityTab';
-import AccountNftsTab from '@extension/components/AccountNftsTab';
 import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import EditableAccountNameField from '@extension/components/EditableAccountNameField';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import NetworkSelect from '@extension/components/NetworkSelect';
 import NativeBalance from '@extension/components/NativeBalance';
+import NetworkSelect from '@extension/components/NetworkSelect';
+import NFTsTab from '@extension/components/NFTsTab';
 import AccountPageSkeletonContent from './AccountPageSkeletonContent';
 
 // constants
@@ -72,10 +72,10 @@ import {
   useSelectActiveAccountInformation,
   useSelectActiveAccountTransactions,
   useSelectFetchingAccounts,
-  useSelectFetchingSettings,
+  useSelectSettingsFetching,
   useSelectIsOnline,
   useSelectNetworks,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
   useSelectSavingAccounts,
   useSelectSelectedNetwork,
   useSelectSettings,
@@ -91,7 +91,7 @@ import type {
   IAccountTransactions,
   IActiveAccountDetails,
   IAppThunkDispatch,
-  IExplorer,
+  IBlockExplorer,
   INetwork,
   ISettings,
 } from '@extension/types';
@@ -117,10 +117,11 @@ const AccountPage: FC = () => {
   const activeAccountDetails: IActiveAccountDetails | null =
     useSelectActiveAccountDetails();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
-  const fetchingSettings: boolean = useSelectFetchingSettings();
+  const fetchingSettings: boolean = useSelectSettingsFetching();
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
-  const explorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   const savingAccounts: boolean = useSelectSavingAccounts();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
@@ -374,7 +375,7 @@ const AccountPage: FC = () => {
             >
               <AssetsTab account={account} />
 
-              <AccountNftsTab />
+              <NFTsTab account={account} />
 
               <ActivityTab
                 account={account}

@@ -5,7 +5,7 @@ import { IBaseOptions } from '@common/types';
 import { INetwork, INode } from '@extension/types';
 
 // utils
-import getRandomNode from '../getRandomNode';
+import getRandomItem from '@common/utils/getRandomItem';
 
 /**
  * Gets a random indexer node from the given network.
@@ -17,7 +17,7 @@ export default function getIndexerClient(
   network: INetwork,
   { logger }: IBaseOptions = { logger: undefined }
 ): Indexer {
-  const indexer: INode = getRandomNode(network.indexers);
+  const indexer: INode = getRandomItem<INode>(network.indexers);
 
   logger &&
     logger.debug(

@@ -1,12 +1,4 @@
-import {
-  Button,
-  ColorMode,
-  HStack,
-  Icon,
-  Text,
-  Tooltip,
-  VStack,
-} from '@chakra-ui/react';
+import { Button, HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC } from 'react';
 import { IoChevronForward } from 'react-icons/io5';
@@ -19,7 +11,6 @@ import AssetIcon from '@extension/components/AssetIcon';
 
 // constants
 import {
-  ACCOUNTS_ROUTE,
   ASSETS_ROUTE,
   DEFAULT_GAP,
   TAB_ITEM_HEIGHT,
@@ -34,25 +25,20 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
-import { IAccount, INetwork, IStandardAsset } from '@extension/types';
+import type { INetwork, IStandardAsset } from '@extension/types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 
 interface IProps {
-  account: IAccount;
   amount: string;
   network: INetwork;
   standardAsset: IStandardAsset;
 }
 
 const AssetTabStandardAssetItem: FC<IProps> = ({
-  account,
   amount,
   network,
   standardAsset,

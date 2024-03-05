@@ -17,7 +17,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // services
@@ -27,7 +27,7 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import { IAccount, IExplorer, INetwork } from '@extension/types';
+import { IAccount, IBlockExplorer, INetwork } from '@extension/types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
@@ -51,7 +51,8 @@ const SignTxnsChangeAddressItem: FC<IProps> = ({
   const { t } = useTranslation();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const preferredExplorer: IExplorer | null = useSelectPreferredBlockExplorer();
+  const preferredExplorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
@@ -68,9 +69,11 @@ const SignTxnsChangeAddressItem: FC<IProps> = ({
         AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
         newAddress
     ) || null;
-  const explorer: IExplorer | null =
-    network.explorers.find((value) => value.id === preferredExplorer?.id) ||
-    network.explorers[0] ||
+  const explorer: IBlockExplorer | null =
+    network.blockExplorers.find(
+      (value) => value.id === preferredExplorer?.id
+    ) ||
+    network.blockExplorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const renderAccount = (address: string, account: IAccount | null) => {
     return (
