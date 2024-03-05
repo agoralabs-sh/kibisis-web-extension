@@ -388,6 +388,7 @@ const translation: IResourceLanguage = {
     symbol: 'Symbol',
     theme: 'Theme',
     to: 'To',
+    tokenId: 'Token ID',
     totalSupply: 'Total Supply',
     type: 'Type',
     unitName: 'Unit Name',

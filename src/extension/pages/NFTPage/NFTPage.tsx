@@ -19,6 +19,7 @@ import CopyIconButton from '@extension/components/CopyIconButton';
 import LoadingPage from '@extension/components/LoadingPage';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
+import PageItem from '@extension/components/PageItem';
 
 // constants
 import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
@@ -33,7 +34,6 @@ import nftPlaceholderImage from '@extension/images/placeholder_nft.png';
 
 // selectors
 import {
-  useSelectARC0072AssetsFetching,
   useSelectSettingsPreferredBlockExplorer,
   useSelectSettingsPreferredNFTExplorer,
 } from '@extension/selectors';
@@ -56,9 +56,8 @@ const NFTPage: FC = () => {
     useSelectSettingsPreferredBlockExplorer();
   const nftExplorer: INFTExplorer | null =
     useSelectSettingsPreferredNFTExplorer();
-  const fetchingARC0072Assets: boolean = useSelectARC0072AssetsFetching();
   // hooks
-  const { account, accountInformation, assetHolding } = useNFTPage({
+  const { account, accountInformation, asset, assetHolding } = useNFTPage({
     appId: appId || null,
     onError: () =>
       navigate(ACCOUNTS_ROUTE, {
@@ -127,12 +126,7 @@ const NFTPage: FC = () => {
     }
   }, []);
 
-  if (
-    !account ||
-    !accountInformation ||
-    !assetHolding ||
-    fetchingARC0072Assets
-  ) {
+  if (!account || !accountInformation || !assetHolding) {
     return <LoadingPage />;
   }
 
@@ -169,49 +163,58 @@ const NFTPage: FC = () => {
           {/*image*/}
           {renderImage()}
 
-          {/*token id/type*/}
-          <HStack
-            alignItems="center"
-            justifyContent="center"
-            spacing={DEFAULT_GAP / 3}
-            w="full"
-          >
-            {/*name*/}
-            {assetHolding.metadata.name && (
-              <Tooltip
-                aria-label="Name of NFT"
-                label={assetHolding.metadata.name}
+          {/*name (or id)*/}
+          {assetHolding.metadata.name ? (
+            <Tooltip
+              aria-label="Name of NFT"
+              label={assetHolding.metadata.name}
+            >
+              <Heading
+                color={defaultTextColor}
+                maxW={250}
+                noOfLines={1}
+                size="lg"
+                textAlign="center"
               >
-                <Heading
-                  color={defaultTextColor}
-                  maxW={250}
-                  noOfLines={1}
-                  size="lg"
-                  textAlign="center"
-                >
-                  {assetHolding.metadata.name}
-                </Heading>
-              </Tooltip>
-            )}
-
-            {/*token id*/}
-            <Text color={subTextColor} fontSize="md" textAlign="center">
+                {assetHolding.metadata.name}
+              </Heading>
+            </Tooltip>
+          ) : (
+            <Heading color={defaultTextColor} size="lg" textAlign="center">
               {`#${assetHolding.tokenId}`}
+            </Heading>
+          )}
+
+          {/*description*/}
+          {assetHolding.metadata.description && (
+            <Tooltip
+              aria-label="NFT description"
+              label={assetHolding.metadata.description}
+            >
+              <Text
+                color={defaultTextColor}
+                fontSize="sm"
+                maxW={250}
+                noOfLines={4}
+                textAlign="center"
+              >
+                {assetHolding.metadata.description}
+              </Text>
+            </Tooltip>
+          )}
+
+          {/*token id/total supply*/}
+          <PageItem fontSize="sm" label={t<string>('labels.tokenId')}>
+            <Text color={subTextColor} fontSize="sm">
+              {asset
+                ? `${assetHolding.tokenId}/${asset.totalSupply}`
+                : assetHolding.tokenId}
             </Text>
-          </HStack>
+          </PageItem>
 
-          {/*app id/type*/}
-          <HStack
-            alignItems="center"
-            justifyContent="center"
-            spacing={DEFAULT_GAP / 3}
-            w="full"
-          >
-            {/*type*/}
-            <AssetBadge type={assetHolding.type} />
-
-            {/*app id*/}
-            <HStack alignItems="center" justifyContent="center" spacing={0}>
+          {/*application id*/}
+          <PageItem fontSize="sm" label={t<string>('labels.applicationId')}>
+            <HStack spacing={0}>
               <Code
                 borderRadius="md"
                 color={defaultTextColor}
@@ -238,19 +241,12 @@ const NFTPage: FC = () => {
                 />
               )}
             </HStack>
-          </HStack>
+          </PageItem>
 
-          {/*description*/}
-          {assetHolding.metadata.description && (
-            <Tooltip
-              aria-label="NFT description"
-              label={assetHolding.metadata.description}
-            >
-              <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-                {assetHolding.metadata.description}
-              </Text>
-            </Tooltip>
-          )}
+          {/*type*/}
+          <PageItem fontSize="sm" label={t<string>('labels.type')}>
+            <AssetBadge type={assetHolding.type} />
+          </PageItem>
         </VStack>
       </VStack>
     </>
