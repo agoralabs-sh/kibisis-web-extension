@@ -31,7 +31,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // types
@@ -65,7 +65,7 @@ const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IBlockExplorer | null =
-    useSelectPreferredBlockExplorer();
+    useSelectSettingsPreferredBlockExplorer();
   // hooks
   const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();

@@ -23,7 +23,7 @@ import {
   useSelectAccounts,
   useSelectLogger,
   useSelectNetworks,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsByGenesisHash,
   useSelectUpdatingStandardAssets,
 } from '@extension/selectors';
@@ -56,7 +56,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
   const preferredExplorer: IBlockExplorer | null =
-    useSelectPreferredBlockExplorer();
+    useSelectSettingsPreferredBlockExplorer();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsByGenesisHash(encodedGenesisHash);
   const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();

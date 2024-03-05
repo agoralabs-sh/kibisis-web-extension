@@ -17,7 +17,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // services
@@ -52,7 +52,7 @@ const SignTxnsChangeAddressItem: FC<IProps> = ({
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IBlockExplorer | null =
-    useSelectPreferredBlockExplorer();
+    useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();

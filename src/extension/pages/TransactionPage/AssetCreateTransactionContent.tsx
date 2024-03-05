@@ -30,7 +30,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // types
@@ -59,7 +59,8 @@ const AssetCreateTransactionContent: FC<IProps> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();

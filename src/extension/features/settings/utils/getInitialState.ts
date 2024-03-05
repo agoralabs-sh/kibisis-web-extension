@@ -18,6 +18,7 @@ export default function getInitialState(): ISettingsState {
     fetching: false,
     general: {
       preferredBlockExplorerIds: {},
+      preferredNFTExplorerIds: {},
       selectedNetworkGenesisHash: null,
     },
     saving: false,

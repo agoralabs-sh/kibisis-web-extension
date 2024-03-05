@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { filterSettingsFromState } from '@extension/features/settings';
 
 // types
-import { IMainRootState, ISettings } from '@extension/types';
+import type { IMainRootState, ISettings } from '@extension/types';
 
 export default function useSelectSettings(): ISettings {
   return useSelector<IMainRootState, ISettings>((state) =>

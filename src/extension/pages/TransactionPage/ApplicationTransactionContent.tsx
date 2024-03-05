@@ -32,7 +32,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import { useSelectPreferredBlockExplorer } from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
 import {
@@ -60,7 +60,8 @@ const ApplicationTransactionContent: FC<IProps> = ({
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();

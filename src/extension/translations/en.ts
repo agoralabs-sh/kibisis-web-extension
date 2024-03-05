@@ -143,6 +143,7 @@ const translation: IResourceLanguage = {
       'You can create a new account or import an existing account.',
     noAssetsFound: 'You have not added any assets. Try adding one now.',
     noBlockExplorersAvailable: 'No block explorers available',
+    noNFTExplorersAvailable: 'No NFT explorers available',
     noNFTsFound: `You don't have any NFTs.`,
     noSessionsFound: 'Enabled dApps will appear here.',
     noThemesAvailable: 'No themes available',
@@ -155,6 +156,7 @@ const translation: IResourceLanguage = {
     passwordScoreInfo:
       'To conform with our <2>Strong Password Policy</2>, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',
+    preferredNFTExplorer: 'Used when opening NFTs.',
     removeAccount: 'Are you sure you want to remove account "{{address}}"?',
     removeAccountWarning:
       'To add this account back you will need the seed phrase',
@@ -370,6 +372,7 @@ const translation: IResourceLanguage = {
     passwordLockDuration_1800000: '30 minutes',
     passwordLockTimeout: 'Password lock timeout',
     preferredBlockExplorer: 'Preferred Block Explorer',
+    preferredNFTExplorer: 'Preferred NFT Explorer',
     removeAccount: 'Remove Account',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',

@@ -1,13 +1,19 @@
 import { useSelector } from 'react-redux';
 
 // types
-import { IBlockExplorer, IMainRootState, INetwork } from '@extension/types';
+import type {
+  IBlockExplorer,
+  IMainRootState,
+  INetwork,
+} from '@extension/types';
+
+// utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 /**
  * Gets the currently preferred block explorer from the settings. If the block explorer cannot be found, the default
  * explorer is used (first index), or null.
- * @returns {IExplorer | null} the current preferred block explorer from settings, or the default explorer, or null.
+ * @returns {IBlockExplorer | null} the current preferred block explorer from settings, or the default explorer, or null.
  */
 export default function useSelectPreferredBlockExplorer(): IBlockExplorer | null {
   return useSelector<IMainRootState, IBlockExplorer | null>((state) => {

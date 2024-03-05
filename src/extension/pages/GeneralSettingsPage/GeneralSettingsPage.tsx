@@ -18,9 +18,10 @@ import { setConfirmModal } from '@extension/features/system';
 
 // selectors
 import {
-  useSelectPreferredBlockExplorer,
   useSelectSelectedNetwork,
   useSelectSettings,
+  useSelectSettingsPreferredBlockExplorer,
+  useSelectSettingsPreferredNFTExplorer,
 } from '@extension/selectors';
 
 // types
@@ -28,6 +29,7 @@ import type {
   IAppThunkDispatch,
   IBlockExplorer,
   INetwork,
+  INFTExplorer,
   ISettings,
 } from '@extension/types';
 
@@ -39,12 +41,19 @@ const GeneralSettingsPage: FC = () => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const preferredBlockExplorer: IBlockExplorer | null =
-    useSelectPreferredBlockExplorer();
+    useSelectSettingsPreferredBlockExplorer();
+  const preferredNFTExplorer: INFTExplorer | null =
+    useSelectSettingsPreferredNFTExplorer();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
   // misc
   const blockExplorerOptions: IOption<string>[] =
     selectedNetwork?.blockExplorers.map((value) => ({
+      label: value.canonicalName,
+      value: value.id,
+    })) || [];
+  const nftExplorerOptions: IOption<string>[] =
+    selectedNetwork?.nftExplorers.map((value) => ({
       label: value.canonicalName,
       value: value.id,
     })) || [];
@@ -85,6 +94,33 @@ const GeneralSettingsPage: FC = () => {
       }
     }
   };
+  const handlePreferredNFTExplorerChange = (option: IOption<string>) => {
+    let explorer: INFTExplorer | null;
+
+    if (selectedNetwork) {
+      explorer =
+        selectedNetwork.nftExplorers.find(
+          (value) => value.id === option.value
+        ) || null;
+
+      if (explorer) {
+        dispatch(
+          saveSettingsToStorageThunk({
+            ...settings,
+            general: {
+              ...settings.general,
+              preferredNFTExplorerIds: {
+                ...settings.general.preferredNFTExplorerIds,
+                [convertGenesisHashToHex(
+                  selectedNetwork.genesisHash
+                ).toUpperCase()]: explorer.id,
+              },
+            },
+          })
+        );
+      }
+    }
+  };
 
   return (
     <>
@@ -108,6 +144,20 @@ const GeneralSettingsPage: FC = () => {
               blockExplorerOptions.find(
                 (value) => value.value === preferredBlockExplorer?.id
               ) || blockExplorerOptions[0]
+            }
+          />
+
+          {/* preferred nft explorer */}
+          <SettingsSelectItem
+            description={t<string>('captions.preferredNFTExplorer')}
+            emptyOptionLabel={t<string>('captions.noNFTExplorersAvailable')}
+            label={t<string>('labels.preferredNFTExplorer')}
+            onChange={handlePreferredNFTExplorerChange}
+            options={nftExplorerOptions}
+            value={
+              nftExplorerOptions.find(
+                (value) => value.value === preferredNFTExplorer?.id
+              ) || nftExplorerOptions[0]
             }
           />
         </VStack>

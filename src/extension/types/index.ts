@@ -81,6 +81,7 @@ export type { default as IMainRootState } from './IMainRootState';
 export type { default as INativeCurrency } from './INativeCurrency';
 export type { default as INetwork } from './INetwork';
 export type { default as INetworkWithTransactionParams } from './INetworkWithTransactionParams';
+export type { default as INFTExplorer } from './INFTExplorer';
 export type { default as INode } from './INode';
 export type { default as INotification } from './INotification';
 export type { default as INotificationType } from './INotificationType';

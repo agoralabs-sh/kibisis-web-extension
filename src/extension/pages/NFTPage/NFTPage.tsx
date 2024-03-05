@@ -30,7 +30,7 @@ import useNFTPage from './hooks/useNFTPage';
 // selectors
 import {
   useSelectARC0072AssetsFetching,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // services
@@ -47,7 +47,8 @@ const NFTPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { appId, tokenId } = useParams();
   // selectors
-  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   const fetchingARC0072Assets: boolean = useSelectARC0072AssetsFetching();
   // hooks
   const { account, accountInformation, assetHolding } = useNFTPage({

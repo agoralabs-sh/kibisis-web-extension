@@ -72,10 +72,10 @@ import {
   useSelectActiveAccountInformation,
   useSelectActiveAccountTransactions,
   useSelectFetchingAccounts,
-  useSelectFetchingSettings,
+  useSelectSettingsFetching,
   useSelectIsOnline,
   useSelectNetworks,
-  useSelectPreferredBlockExplorer,
+  useSelectSettingsPreferredBlockExplorer,
   useSelectSavingAccounts,
   useSelectSelectedNetwork,
   useSelectSettings,
@@ -117,10 +117,11 @@ const AccountPage: FC = () => {
   const activeAccountDetails: IActiveAccountDetails | null =
     useSelectActiveAccountDetails();
   const fetchingAccounts: boolean = useSelectFetchingAccounts();
-  const fetchingSettings: boolean = useSelectFetchingSettings();
+  const fetchingSettings: boolean = useSelectSettingsFetching();
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
-  const explorer: IBlockExplorer | null = useSelectPreferredBlockExplorer();
+  const explorer: IBlockExplorer | null =
+    useSelectSettingsPreferredBlockExplorer();
   const savingAccounts: boolean = useSelectSavingAccounts();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
