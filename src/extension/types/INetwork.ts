@@ -5,6 +5,7 @@ import { NetworkTypeEnum } from '../enums';
 import IChainNamespace from './IChainNamespace';
 import IExplorer from './IExplorer';
 import INativeCurrency from './INativeCurrency';
+import INFTIndexer from './INFTIndexer';
 import INode from './INode';
 
 interface INetwork {
@@ -16,6 +17,7 @@ interface INetwork {
   genesisId: string;
   namespace: IChainNamespace;
   nativeCurrency: INativeCurrency;
+  nftIndexers: INFTIndexer[];
   indexers: INode[];
   algods: INode[];
   type: NetworkTypeEnum;

@@ -1,19 +1,13 @@
 // types
-import type { IBaseOptions } from '@common/types';
 import type {
   IARC0200AssetInformation,
   IARC0200Asset,
-  INetwork,
+  IUpdateAssetInformationByIdOptions,
 } from '@extension/types';
 
 // utils
 import fetchARC0200AssetInformationWithDelay from '../fetchARC0200AssetInformationWithDelay';
 import mapARC0200AssetFromARC0200AssetInformation from '../mapARC0200AssetFromARC0200AssetInformation';
-
-interface IOptions extends IBaseOptions {
-  delay?: number;
-  network: INetwork;
-}
 
 /**
  * Gets the ARC-0200 asset information.
@@ -23,7 +17,7 @@ interface IOptions extends IBaseOptions {
  */
 export default async function updateARC0200AssetInformationById(
   id: string,
-  { delay = 0, logger, network }: IOptions
+  { delay = 0, logger, network }: IUpdateAssetInformationByIdOptions
 ): Promise<IARC0200Asset | null> {
   const _functionName: string = 'updateARC0200AssetInformationById';
   let assetInformation: IARC0200AssetInformation | null;
@@ -47,10 +41,9 @@ export default async function updateARC0200AssetInformationById(
       false
     );
   } catch (error) {
-    logger &&
-      logger.error(
-        `${_functionName}: failed to get arc-0200 asset information for arc-0200 asset "${id}" on ${network.genesisId}: ${error.message}`
-      );
+    logger?.error(
+      `${_functionName}: failed to get arc-0200 asset information for arc-0200 asset "${id}" on ${network.genesisId}: ${error.message}`
+    );
 
     return null;
   }

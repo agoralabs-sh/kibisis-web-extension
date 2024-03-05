@@ -41,6 +41,11 @@ export default function createCommonConfig(): Configuration {
           'features',
           'add-asset'
         ),
+        ['@extension/features/arc0072-assets']: resolve(
+          extensionPath,
+          'features',
+          'arc0072-assets'
+        ),
         ['@extension/features/arc200-assets']: resolve(
           extensionPath,
           'features',

@@ -32,6 +32,9 @@
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
       "@extension/features/add-asset": ["src/extension/features/add-asset"],
+      "@extension/features/arc0072-assets": [
+        "src/extension/features/arc0072-assets"
+      ],
       "@extension/features/arc200-assets": [
         "src/extension/features/arc200-assets"
       ],

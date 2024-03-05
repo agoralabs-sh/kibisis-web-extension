@@ -19,6 +19,7 @@ import {
   fetchAccountsFromStorageThunk,
   startPollingForAccountsThunk,
 } from '@extension/features/accounts';
+import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc200-assets';
 import {
   setEnableRequest,
@@ -99,6 +100,7 @@ const Root: FC = () => {
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());
+    dispatch(fetchARC0072AssetsFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
     dispatch(initializeWalletConnectThunk());
     dispatch(startPollingForAccountsThunk());

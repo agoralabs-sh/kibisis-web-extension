@@ -9,5 +9,6 @@ export * from './Links';
 export * from './Limits';
 export * from './Routes';
 export * from './Styles';
-export * from './Urls';
+export * from './URIs';
+export * from './URLs';
 export * from './Validation';

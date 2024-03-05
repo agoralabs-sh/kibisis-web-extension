@@ -4,39 +4,41 @@ import BigNumber from 'bignumber.js';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // contracts
-import ARC0200Contract from '@extension/contracts/ARC0200Contract';
+import ARC0072Contract from '@extension/contracts/ARC0072Contract';
 
 // types
 import type {
-  IARC0200AssetInformation,
+  IARC0072AssetInformation,
   IFetchAssetWithDelayOptions,
 } from '@extension/types';
 
 /**
- * Fetches ARC-0200 asset information from the node with a delay.
+ * Fetches ARC-0072 asset information from the node with a delay.
  * @param {IFetchAssetWithDelayOptions} options - options needed to send the request.
- * @returns {IARC0200AssetInformation | null} ARC-0200 asset information or null if the asset is not an ARC-0200 asset.
+ * @returns {IARC0072AssetInformation | null} ARC-0072 asset information or null if the asset is not an ARC-0072 asset.
  */
 export default async function fetchARC0200AssetInformationWithDelay({
   delay,
   id,
   logger,
   network,
-}: IFetchAssetWithDelayOptions): Promise<IARC0200AssetInformation | null> {
+}: IFetchAssetWithDelayOptions): Promise<IARC0072AssetInformation | null> {
   return new Promise((resolve, reject) =>
     setTimeout(async () => {
-      let contract: ARC0200Contract;
-      let result: IARC0200AssetInformation;
+      let contract: ARC0072Contract;
+      let totalSupply: BigNumber;
 
       try {
-        contract = new ARC0200Contract({
+        contract = new ARC0072Contract({
           appId: new BigNumber(id),
           network,
           logger,
         });
-        result = await contract.metadata();
+        totalSupply = await contract.totalSupply();
 
-        resolve(result);
+        resolve({
+          totalSupply: BigInt(totalSupply.toString()),
+        });
       } catch (error) {
         switch (error.code) {
           case ErrorCodeEnum.InvalidABIContractError:

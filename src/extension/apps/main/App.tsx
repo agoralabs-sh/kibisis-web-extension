@@ -26,6 +26,7 @@ import {
 // features
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as addAssetReducer } from '@extension/features/add-asset';
+import { reducer as arc0072AssetsReducer } from '@extension/features/arc0072-assets';
 import { reducer as arc200AssetsReducer } from '@extension/features/arc200-assets';
 import { reducer as eventsReducer } from '@extension/features/events';
 import { reducer as messagesReducer } from '@extension/features/messages';
@@ -164,6 +165,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     combineReducers({
       accounts: accountsReducer,
       addAsset: addAssetReducer,
+      arc0072Assets: arc0072AssetsReducer,
       arc200Assets: arc200AssetsReducer,
       events: eventsReducer,
       messages: messagesReducer,
