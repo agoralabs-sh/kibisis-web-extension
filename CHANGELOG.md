@@ -1,3 +1,10 @@
+# [1.14.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0...v1.14.0-beta.1) (2024-03-05)
+
+
+### Features
+
+* display arc-0072 nft asset ([#198](https://github.com/agoralabs-sh/kibisis-web-extension/issues/198)) ([2bb3d28](https://github.com/agoralabs-sh/kibisis-web-extension/commit/2bb3d28e87a8f07ff6eeb3e2f0058710e1c1867f))
+
 # [1.13.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.12.1...v1.13.0) (2024-03-03)
 
 
