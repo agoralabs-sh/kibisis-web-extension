@@ -1,5 +1,3 @@
-import { Indexer } from 'algosdk';
-
 // constants
 import {
   DEFAULT_TRANSACTION_INDEXER_LIMIT,
@@ -7,25 +5,15 @@ import {
 } from '@extension/constants';
 
 // types
-import { IBaseOptions } from '@common/types';
-import {
+import type {
   IAlgorandAccountTransaction,
-  INetwork,
   ITransactions,
 } from '@extension/types';
+import type { IOptions } from './types';
 
 // utils
-import mapAlgorandTransactionToTransaction from '@extension/utils/mapAlgorandTransactionToTransaction';
-import lookupAlgorandAccountTransactionsWithDelay from './lookupAlgorandAccountTransactionsWithDelay';
-
-interface IOptions extends IBaseOptions {
-  address: string;
-  afterTime: number;
-  client: Indexer;
-  delay?: number;
-  next: string | null;
-  network: INetwork;
-}
+import lookupAlgorandAccountTransactionsWithDelay from '../lookupAlgorandAccountTransactionsWithDelay';
+import mapAlgorandTransactionToTransaction from '../mapAlgorandTransactionToTransaction';
 
 /**
  * Fetches all latest transactions from a given time. This function runs recursively until the 'next-token' is

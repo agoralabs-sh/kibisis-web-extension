@@ -5,7 +5,7 @@ import type { IBaseOptions } from '@common/types';
 import type { INetwork, INode } from '@extension/types';
 
 // utils
-import getRandomNode from '../getRandomNode';
+import getRandomItem from '@common/utils/getRandomItem';
 
 /**
  * Gets a random algod node from the given network.
@@ -18,7 +18,7 @@ export default function createAlgodClient(
   { logger }: IBaseOptions = { logger: undefined }
 ): Algodv2 {
   const _functionName: string = 'createAlgodClient';
-  const algod: INode = getRandomNode(network.algods);
+  const algod: INode = getRandomItem<INode>(network.algods);
 
   logger?.debug(
     `${_functionName}: selected algod node "${algod.canonicalName}"`

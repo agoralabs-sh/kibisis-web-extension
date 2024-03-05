@@ -2,16 +2,8 @@ import { Indexer, IntDecoding } from 'algosdk';
 import LookupAccountTransactions from 'algosdk/dist/types/client/v2/indexer/lookupAccountTransactions';
 
 // types
-import { IAlgorandAccountTransaction } from '@extension/types';
-
-interface IOptions {
-  address: string;
-  afterTime: number | null;
-  client: Indexer;
-  delay: number;
-  limit: number;
-  next: string | null;
-}
+import type { IAlgorandAccountTransaction } from '@extension/types';
+import type { IOptions } from './types';
 
 /**
  * Looks up the account transactions for a given address with a delay.

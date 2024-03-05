@@ -8,6 +8,7 @@ export { default as FailedToSendTransactionError } from './FailedToSendTransacti
 export { default as InvalidABIContractError } from './InvalidABIContractError';
 export { default as InvalidPasswordError } from './InvalidPasswordError';
 export { default as MalformedDataError } from './MalformedDataError';
+export { default as NetworkConnectionError } from './NetworkConnectionError';
 export { default as NetworkNotSelectedError } from './NetworkNotSelectedError';
 export { default as OfflineError } from './OfflineError';
 export { default as ParsingError } from './ParsingError';

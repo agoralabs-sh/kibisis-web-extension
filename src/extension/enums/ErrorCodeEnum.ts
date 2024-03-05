@@ -4,6 +4,7 @@ enum ErrorCodeEnum {
   MalformedDataError = 1001,
   ParsingError = 1002,
   NetworkNotSelectedError = 1003,
+  NetworkConnectionError = 1004,
 
   // private key
   InvalidPasswordError = 2000,

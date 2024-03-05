@@ -12,6 +12,9 @@ import { AssetTypeEnum, NetworkTypeEnum } from '@extension/enums';
 // types
 import type { INetwork } from '@extension/types';
 
+// utils
+import fetchVoiARC0072TokensByOwner from '@extension/utils/fetchVoiARC0072TokensByOwner';
+
 const networks: INetwork[] = [
   /**
    * voi networks
@@ -22,6 +25,13 @@ const networks: INetwork[] = [
         canonicalName: 'AlgoNode',
         port: '',
         url: 'https://testnet-api.voi.nodly.io',
+      },
+    ],
+    arc0072Indexers: [
+      {
+        canonicalName: 'NFT Navigator',
+        fetchTokensByOwner: fetchVoiARC0072TokensByOwner,
+        id: 'nft-navigator',
       },
     ],
     canonicalName: 'Voi',
@@ -63,14 +73,6 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    nftIndexers: [
-      {
-        baseUrl: 'https://arc72-idx.nftnavigator.xyz/nft-indexer/v1',
-        canonicalName: 'NFT Navigator',
-        createOwnerHoldingsURL: (address: string) => `/tokens?owner=${address}`,
-        id: 'nft-navigator',
-      },
-    ],
     type: NetworkTypeEnum.Test,
   },
   /**
@@ -84,6 +86,7 @@ const networks: INetwork[] = [
         url: 'https://mainnet-api.algonode.cloud',
       },
     ],
+    arc0072Indexers: [],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
     explorers: [
@@ -134,7 +137,6 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    nftIndexers: [],
     type: NetworkTypeEnum.Stable,
   },
   {
@@ -172,7 +174,7 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    nftIndexers: [],
+    arc0072Indexers: [],
     type: NetworkTypeEnum.Beta,
   },
   {
@@ -183,6 +185,7 @@ const networks: INetwork[] = [
         url: 'https://testnet-api.algonode.cloud',
       },
     ],
+    arc0072Indexers: [],
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
     explorers: [
@@ -222,7 +225,6 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    nftIndexers: [],
     type: NetworkTypeEnum.Test,
   },
 ];

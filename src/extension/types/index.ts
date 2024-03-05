@@ -38,6 +38,8 @@ export type { default as IARC0003TokenMetadataLocalization } from './IARC0003Tok
 export type { default as IARC0072Asset } from './IARC0072Asset';
 export type { default as IARC0072AssetHolding } from './IARC0072AssetHolding';
 export type { default as IARC0072AssetInformation } from './IARC0072AssetInformation';
+export type { default as IARC0072Indexer } from './IARC0072Indexer';
+export type { default as IARC0072IndexerFetchTokensByOwnerOptions } from './IARC0072IndexerFetchTokensByOwnerOptions';
 export type { default as IARC0200Asset } from './IARC0200Asset';
 export type { default as IARC0200AssetHolding } from './IARC0200AssetHolding';
 export type { default as IARC0200AssetInformation } from './IARC0200AssetInformation';
@@ -79,7 +81,6 @@ export type { default as IMainRootState } from './IMainRootState';
 export type { default as INativeCurrency } from './INativeCurrency';
 export type { default as INetwork } from './INetwork';
 export type { default as INetworkWithTransactionParams } from './INetworkWithTransactionParams';
-export type { default as INFTIndexer } from './INFTIndexer';
 export type { default as INode } from './INode';
 export type { default as INotification } from './INotification';
 export type { default as INotificationType } from './INotificationType';

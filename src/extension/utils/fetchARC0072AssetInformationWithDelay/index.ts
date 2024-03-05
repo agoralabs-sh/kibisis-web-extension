@@ -1,1 +1,1 @@
-export { default } from './fetchARC0200AssetInformationWithDelay';
+export { default } from './fetchARC0072AssetInformationWithDelay';

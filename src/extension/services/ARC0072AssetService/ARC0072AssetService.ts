@@ -30,7 +30,7 @@ export default class ARC0072AssetService {
 
   public static initializeDefaultARC0072Asset(): IARC0072Asset {
     return {
-      appId: '0',
+      id: '0',
       totalSupply: '0',
       type: AssetTypeEnum.ARC0072,
       verified: false,

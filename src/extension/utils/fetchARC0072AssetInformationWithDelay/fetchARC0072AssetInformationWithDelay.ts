@@ -17,7 +17,7 @@ import type {
  * @param {IFetchAssetWithDelayOptions} options - options needed to send the request.
  * @returns {IARC0072AssetInformation | null} ARC-0072 asset information or null if the asset is not an ARC-0072 asset.
  */
-export default async function fetchARC0200AssetInformationWithDelay({
+export default async function fetchARC0072AssetInformationWithDelay({
   delay,
   id,
   logger,

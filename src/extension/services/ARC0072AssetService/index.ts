@@ -1,1 +1,1 @@
-export { default } from './ARC0200AssetService';
+export { default } from './ARC0072AssetService';
