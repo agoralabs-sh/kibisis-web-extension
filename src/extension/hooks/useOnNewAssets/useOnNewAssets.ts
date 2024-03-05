@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 // features
 import { updateARC0072AssetInformationThunk } from '@extension/features/arc0072-assets';
-import { updateARC0200AssetInformationThunk } from '@extension/features/arc200-assets';
+import { updateARC0200AssetInformationThunk } from '@extension/features/arc0200-assets';
 import { updateStandardAssetInformationThunk } from '@extension/features/standard-assets';
 
 // selectors

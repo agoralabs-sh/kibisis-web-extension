@@ -2,7 +2,7 @@ enum StoreNameEnum {
   Accounts = 'accounts',
   AddAsset = 'add-asset',
   ARC0072Assets = 'arc0072-assets',
-  ARC0200Assets = 'arc200-assets',
+  ARC0200Assets = 'arc0200-assets',
   Events = 'events',
   Messages = 'messages',
   Networks = 'networks',

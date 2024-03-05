@@ -20,7 +20,7 @@ import {
   startPollingForAccountsThunk,
 } from '@extension/features/accounts';
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
-import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc200-assets';
+import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import {
   setEnableRequest,
   setSignBytesRequest,

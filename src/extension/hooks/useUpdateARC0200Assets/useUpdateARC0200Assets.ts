@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 // features
-import { updateARC0200AssetInformationThunk } from '@extension/features/arc200-assets';
+import { updateARC0200AssetInformationThunk } from '@extension/features/arc0200-assets';
 
 // selectors
 import {

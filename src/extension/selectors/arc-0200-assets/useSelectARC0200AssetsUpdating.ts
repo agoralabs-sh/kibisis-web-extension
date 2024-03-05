@@ -5,6 +5,6 @@ import type { IMainRootState } from '@extension/types';
 
 export default function useSelectARC0200AssetsUpdating(): boolean {
   return useSelector<IMainRootState, boolean>(
-    (state) => state.arc200Assets.updating
+    (state) => state.arc0200Assets.updating
   );
 }

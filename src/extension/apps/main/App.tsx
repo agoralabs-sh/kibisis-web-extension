@@ -28,7 +28,7 @@ import {
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as addAssetReducer } from '@extension/features/add-asset';
 import { reducer as arc0072AssetsReducer } from '@extension/features/arc0072-assets';
-import { reducer as arc200AssetsReducer } from '@extension/features/arc200-assets';
+import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
 import { reducer as eventsReducer } from '@extension/features/events';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
@@ -177,7 +177,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       accounts: accountsReducer,
       addAsset: addAssetReducer,
       arc0072Assets: arc0072AssetsReducer,
-      arc200Assets: arc200AssetsReducer,
+      arc0200Assets: arc200AssetsReducer,
       events: eventsReducer,
       messages: messagesReducer,
       networks: networksReducer,

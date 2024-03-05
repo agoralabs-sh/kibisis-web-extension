@@ -102,7 +102,7 @@ const queryARC0200AssetThunk: AsyncThunk<
     }
 
     arc200Assets = selectAssetsForNetwork(
-      getState().arc200Assets.items,
+      getState().arc0200Assets.items,
       selectedNetwork.genesisHash
     );
     arc200AssetHoldings =

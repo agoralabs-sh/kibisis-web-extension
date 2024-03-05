@@ -7,7 +7,7 @@ import { Outlet } from 'react-router-dom';
 import { BODY_BACKGROUND_COLOR } from '@extension/constants';
 
 // features
-import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc200-assets';
+import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 
 // types
