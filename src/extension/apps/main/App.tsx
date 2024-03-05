@@ -18,6 +18,7 @@ import {
   ACCOUNTS_ROUTE,
   ADD_ACCOUNT_ROUTE,
   ASSETS_ROUTE,
+  NFTS_ROUTE,
   SETTINGS_ROUTE,
   PASSWORD_LOCK_ROUTE,
   TRANSACTIONS_ROUTE,
@@ -49,6 +50,7 @@ import {
 import AccountPage from '@extension/pages/AccountPage';
 import AssetPage from '@extension/pages/AssetPage';
 import LoadingPage from '@extension/pages/LoadingPage';
+import NFTPage from '@extension/pages/NFTPage';
 import PasswordLockPage from '@extension/pages/PasswordLockPage';
 import TransactionPage from '@extension/pages/TransactionPage';
 
@@ -107,6 +109,15 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
                 return null;
               },
               path: `${ASSETS_ROUTE}/:assetId`,
+            },
+            {
+              element: <NFTPage />,
+              loader: () => {
+                dispatch(setSideBar(true));
+
+                return null;
+              },
+              path: `${NFTS_ROUTE}/:appId/:tokenId`,
             },
             {
               element: <SettingsRouter />,
