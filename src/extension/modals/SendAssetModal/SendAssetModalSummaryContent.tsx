@@ -70,8 +70,8 @@ const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
     new BigNumber(amountInStandardUnits),
     asset.decimals
   );
-  const isNotEnoughMinimumBalance: boolean =
-    doesAccountFallBelowMinimumBalanceRequirementForTransactions({
+  const isEnoughMinimumBalance: boolean =
+    !doesAccountFallBelowMinimumBalanceRequirementForTransactions({
       account: fromAccount,
       logger,
       network,
@@ -209,7 +209,7 @@ const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
       spacing={DEFAULT_GAP - 2}
       w="full"
     >
-      {isNotEnoughMinimumBalance && (
+      {!isEnoughMinimumBalance && (
         <Warning
           message={t<string>('captions.minimumBalanceTooLow', {
             balance: formatCurrencyUnit(

@@ -33,18 +33,17 @@ import { AssetTypeEnum } from '@extension/enums';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+import useAddAssetStandardAssetSummaryContent from './hooks/useAddAssetStandardAssetSummaryContent';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IAccountInformation } from '@extension/types';
 import type { IAddAssetModalStandardAssetSummaryContentProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
-import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
@@ -54,30 +53,29 @@ const AddAssetModalStandardAssetSummaryContent: FC<
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // hooks
+  const {
+    accountBalanceInAtomicUnits,
+    minimumBalanceRequirementInAtomicUnits,
+    minimumTransactionFeesInAtomicUnits,
+  } = useAddAssetStandardAssetSummaryContent({
+    account,
+    network,
+  });
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const accountInformation: IAccountInformation | null =
-    AccountService.extractAccountInformationForNetwork(account, network);
-  const accountBalanceInAtomicUnits: BigNumber = new BigNumber(
-    accountInformation?.atomicBalance || '0'
-  );
-  const minimumTransactionFee: BigNumber = new BigNumber(network.minFee);
+  const accountAddress: string =
+    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
     new BigNumber(asset.total),
     asset.decimals
   );
-  const minimumBalanceRequirement: BigNumber =
-    calculateMinimumBalanceRequirementForStandardAssets({
-      account,
-      network,
-    });
   const isEnoughMinimumBalance: boolean = accountBalanceInAtomicUnits.gte(
-    minimumBalanceRequirement.plus(minimumTransactionFee)
+    minimumBalanceRequirementInAtomicUnits.plus(
+      minimumTransactionFeesInAtomicUnits
+    )
   );
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
@@ -138,7 +136,9 @@ const AddAssetModalStandardAssetSummaryContent: FC<
                 ),
                 cost: formatCurrencyUnit(
                   convertToStandardUnit(
-                    minimumBalanceRequirement.plus(minimumTransactionFee),
+                    minimumBalanceRequirementInAtomicUnits.plus(
+                      minimumTransactionFeesInAtomicUnits
+                    ),
                     network.nativeCurrency.decimals
                   ),
                   {
@@ -249,7 +249,7 @@ const AddAssetModalStandardAssetSummaryContent: FC<
             <HStack spacing={1}>
               {/*fee display*/}
               <AssetDisplay
-                atomicUnitAmount={minimumTransactionFee}
+                atomicUnitAmount={minimumTransactionFeesInAtomicUnits}
                 amountColor={subTextColor}
                 decimals={network.nativeCurrency.decimals}
                 fontSize="sm"
