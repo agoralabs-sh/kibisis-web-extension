@@ -1,3 +1,10 @@
+# [1.14.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0-beta.2...v1.14.0-beta.3) (2024-03-07)
+
+
+### Features
+
+* dont allow sending of assets if account is below the minimum balance ([#200](https://github.com/agoralabs-sh/kibisis-web-extension/issues/200)) ([093db24](https://github.com/agoralabs-sh/kibisis-web-extension/commit/093db247c18ffee90185a6a1228c511968539057))
+
 # [1.14.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0-beta.1...v1.14.0-beta.2) (2024-03-05)
 
 
