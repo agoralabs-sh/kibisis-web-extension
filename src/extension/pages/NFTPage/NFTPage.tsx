@@ -59,10 +59,6 @@ const NFTPage: FC = () => {
   // hooks
   const { account, accountInformation, asset, assetHolding } = useNFTPage({
     appId: appId || null,
-    onError: () =>
-      navigate(ACCOUNTS_ROUTE, {
-        replace: true,
-      }),
     tokenId: tokenId || null,
   });
   const defaultTextColor: string = useDefaultTextColor();
