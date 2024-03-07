@@ -121,7 +121,7 @@ const translation: IResourceLanguage = {
     maximumNativeCurrencyTransactionAmount:
       'The maximum {{nativeCurrencyCode}} amount is calculated by: the balance ({{balance}}), minus the minimum balance needed to keep the account open ({{minBalance}}), minus the minimum transaction fee ({{minFee}})',
     minimumBalance: `Minimum balance is {{amount}} {{code}}. Based on the account configuration, this is the minimum balance needed to keep the account open.`,
-    minimumBalanceTooLow: `You do not have enough balance to complete this transaction. You need at least {{cost}} {{symbol}}. Your current balance is {{balance}} {{symbol}}.`,
+    minimumBalanceTooLow: `Your current balance will fall below the minimum balance requirement with this transaction. You need at least {{cost}} {{symbol}} to complete this transaction. Your current balance is {{balance}} {{symbol}}.`,
     mustEnterPasswordToAuthorizeOptIn:
       'You must enter your password to authorize an opt-in transaction.',
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',

@@ -70,6 +70,7 @@ const addStandardAssetThunk: AsyncThunk<
     let address: string;
     let algodClient: Algodv2;
     let decodedAddress: Address;
+    let errorMessage: string;
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
     let privateKey: Uint8Array | null;
     let privateKeyService: PrivateKeyService;
@@ -164,11 +165,11 @@ const addStandardAssetThunk: AsyncThunk<
     if (
       accountBalanceInAtomicUnits.lt(minimumBalanceRequirementInAtomicUnits)
     ) {
-      logger.debug(
-        `${AddAssetThunkEnum.AddStandardAsset}: the required minimum balance to add asset "${asset.id}" is "${minimumBalanceRequirementInAtomicUnits}", but the current balance is "${accountBalanceInAtomicUnits}"`
-      );
+      errorMessage = `the required minimum balance to add asset "${asset.id}" is "${minimumBalanceRequirementInAtomicUnits}", but the current balance is "${accountBalanceInAtomicUnits}"`;
 
-      return rejectWithValue(new NotEnoughMinimumBalanceError(``));
+      logger.debug(`${AddAssetThunkEnum.AddStandardAsset}: ${errorMessage}`);
+
+      return rejectWithValue(new NotEnoughMinimumBalanceError(errorMessage));
     }
 
     algodClient = createAlgodClient(selectedNetwork, {

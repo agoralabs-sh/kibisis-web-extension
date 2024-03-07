@@ -24,7 +24,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoCloseOutline } from 'react-icons/io5';
+import { IoArrowBackOutline, IoCloseOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -118,7 +118,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   // selectors
   const account: IAccount | null = useSelectAddAssetAccount();
   const accounts: IAccount[] = useSelectAccounts();
-  const arc200Assets: IARC0200Asset[] = useSelectAddAssetARC0200Assets();
+  const arc0200Assets: IARC0200Asset[] = useSelectAddAssetARC0200Assets();
   const confirming: boolean = useSelectAddAssetConfirming();
   const explorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
@@ -144,7 +144,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const primaryColorScheme: string = usePrimaryColorScheme();
   // state
   const [query, setQuery] = useState<string>('');
-  const [queryArc200AssetDispatch, setQueryArc200AssetDispatch] =
+  const [queryARC0200AssetDispatch, setQueryARC0200AssetDispatch] =
     useState<IAppThunkDispatchReturn<
       IQueryARC0200AssetPayload,
       IQueryByIdAsyncThunkConfig,
@@ -157,10 +157,10 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       IAssetsWithNextToken<IStandardAsset>
     > | null>(null);
   // misc
-  const allAssets: IAssetTypes[] = [...arc200Assets, ...standardAssets];
+  const allAssets: IAssetTypes[] = [...arc0200Assets, ...standardAssets];
   const isOpen: boolean = !!account;
   // handlers
-  const handleAddArc200AssetClick = async () => {
+  const handleAddARC0200AssetClick = async () => {
     let updatedAccount: IAccount | null;
 
     if (
@@ -324,7 +324,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleClose = () => {
     resetPassword();
     setQuery('');
-    setQueryArc200AssetDispatch(null);
+    setQueryARC0200AssetDispatch(null);
     setQueryStandardAssetDispatch(null);
     onClose();
   };
@@ -343,11 +343,11 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       // if we have only numbers, we have an asset/app id
       if (isNumericString(query)) {
         // abort the previous arc200 assets request
-        if (queryArc200AssetDispatch) {
-          queryArc200AssetDispatch.abort();
+        if (queryARC0200AssetDispatch) {
+          queryARC0200AssetDispatch.abort();
         }
 
-        setQueryArc200AssetDispatch(
+        setQueryARC0200AssetDispatch(
           dispatch(
             queryARC0200AssetThunk({
               accountId: account.id,
@@ -552,6 +552,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
     if (selectedAsset) {
       previousButtonNode = (
         <Button
+          leftIcon={<IoArrowBackOutline />}
           onClick={handlePreviousClick}
           size="lg"
           variant="outline"
@@ -597,7 +598,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {previousButtonNode}
 
           <Button
-            onClick={handleAddArc200AssetClick}
+            onClick={handleAddARC0200AssetClick}
             size="lg"
             variant="solid"
             w="full"
