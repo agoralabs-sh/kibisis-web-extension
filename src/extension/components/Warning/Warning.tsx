@@ -2,14 +2,16 @@ import { HStack, Icon, Text } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 
-interface IProps {
-  message: string;
-  size?: 'lg' | 'md' | 'sm' | 'xs';
-}
+// hooks
+import useColorModeValue from '@extension/hooks/useColorModeValue';
 
-const Warning: FC<IProps> = ({ message, size = 'md' }: IProps) => {
+// types
+import type { IProps } from './types';
+
+const Warning: FC<IProps> = ({ message, size = 'md' }) => {
+  // hooks
+  const color: string = useColorModeValue('orange.500', 'yellow.500');
   // misc
-  const color: string = 'red.500';
   let iconSize: number = 8;
 
   switch (size) {
@@ -32,7 +34,6 @@ const Warning: FC<IProps> = ({ message, size = 'md' }: IProps) => {
 
   return (
     <HStack
-      backgroundColor={color}
       borderColor={color}
       borderRadius="md"
       borderStyle="solid"
@@ -42,10 +43,10 @@ const Warning: FC<IProps> = ({ message, size = 'md' }: IProps) => {
       spacing={2}
     >
       {/*icon*/}
-      <Icon as={IoWarningOutline} color="white" h={iconSize} w={iconSize} />
+      <Icon as={IoWarningOutline} color={color} h={iconSize} w={iconSize} />
 
       {/*message*/}
-      <Text as="b" color="white" fontSize={size} textAlign="left">
+      <Text as="b" color={color} fontSize={size} textAlign="left">
         {message}
       </Text>
     </HStack>

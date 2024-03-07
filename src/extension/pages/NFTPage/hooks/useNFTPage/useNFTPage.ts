@@ -18,7 +18,6 @@ import type { IUseNFTPageOptions, IUseNFTPageState } from './types';
 
 export default function useNFTPage({
   appId,
-  onError,
   tokenId,
 }: IUseNFTPageOptions): IUseNFTPageState {
   // selectors
@@ -52,11 +51,6 @@ export default function useNFTPage({
         accountInformation.arc0072AssetHoldings.find(
           (value) => value.id === appId && value.tokenId === tokenId
         ) || null;
-
-      // if the account does not have the asset holding, we have an error
-      if (!selectedAssetHolding) {
-        return onError();
-      }
 
       setAssetHolding(selectedAssetHolding);
     }

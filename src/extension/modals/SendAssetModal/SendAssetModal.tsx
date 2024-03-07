@@ -22,6 +22,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowBackOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -101,7 +102,6 @@ import type {
 
 // utils
 import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransactionAmount';
-import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
   onClose: () => void;
@@ -489,7 +489,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     if (transactions && transactions.length > 0) {
       return (
-        <VStack alignItems="flex-start" spacing={4} w="full">
+        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
           {!settings.security.enablePasswordLock && !passwordLockPassword && (
             <PasswordInput
               error={passwordError}
@@ -501,8 +501,9 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
             />
           )}
 
-          <HStack spacing={4} w="full">
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
             <Button
+              leftIcon={<IoArrowBackOutline />}
               onClick={handlePreviousClick}
               size="lg"
               variant="outline"
@@ -538,6 +539,7 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
         <Button
           isLoading={creating}
           onClick={handleNextClick}
+          rightIcon={<IoArrowForwardOutline />}
           size="lg"
           variant="solid"
           w="full"

@@ -21,6 +21,7 @@ import InfoIconTooltip from '@extension/components/InfoIconTooltip';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
+import Warning from '@extension/components/Warning';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -32,21 +33,19 @@ import { AssetTypeEnum } from '@extension/enums';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+import useAddAssetStandardAssetSummaryContent from './hooks/useAddAssetStandardAssetSummaryContent';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IAccountInformation } from '@extension/types';
 import type { IAddAssetModalStandardAssetSummaryContentProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
-import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import isAccountKnown from '@extension/utils/isAccountKnown';
-import WarningIcon from '@extension/components/WarningIcon';
 
 const AddAssetModalStandardAssetSummaryContent: FC<
   IAddAssetModalStandardAssetSummaryContentProps
@@ -54,30 +53,29 @@ const AddAssetModalStandardAssetSummaryContent: FC<
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // hooks
+  const {
+    accountBalanceInAtomicUnits,
+    minimumBalanceRequirementInAtomicUnits,
+    minimumTransactionFeesInAtomicUnits,
+  } = useAddAssetStandardAssetSummaryContent({
+    account,
+    network,
+  });
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const accountInformation: IAccountInformation | null =
-    AccountService.extractAccountInformationForNetwork(account, network);
-  const accountBalanceInAtomicUnits: BigNumber = new BigNumber(
-    accountInformation?.atomicBalance || '0'
-  );
-  const minimumTransactionFee: BigNumber = new BigNumber(network.minFee);
+  const accountAddress: string =
+    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
     new BigNumber(asset.total),
     asset.decimals
   );
-  const minimumBalanceRequirement: BigNumber =
-    calculateMinimumBalanceRequirementForStandardAssets({
-      account,
-      network,
-    });
   const isEnoughMinimumBalance: boolean = accountBalanceInAtomicUnits.gte(
-    minimumBalanceRequirement.plus(minimumTransactionFee)
+    minimumBalanceRequirementInAtomicUnits.plus(
+      minimumTransactionFeesInAtomicUnits
+    )
   );
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
@@ -123,6 +121,36 @@ const AddAssetModalStandardAssetSummaryContent: FC<
           spacing={DEFAULT_GAP - 2}
           w="full"
         >
+          {/*not enough funds warning*/}
+          {!isEnoughMinimumBalance && (
+            <Warning
+              message={t<string>('captions.minimumBalanceTooLow', {
+                balance: formatCurrencyUnit(
+                  convertToStandardUnit(
+                    accountBalanceInAtomicUnits,
+                    network.nativeCurrency.decimals
+                  ),
+                  {
+                    decimals: network.nativeCurrency.decimals,
+                  }
+                ),
+                cost: formatCurrencyUnit(
+                  convertToStandardUnit(
+                    minimumBalanceRequirementInAtomicUnits.plus(
+                      minimumTransactionFeesInAtomicUnits
+                    ),
+                    network.nativeCurrency.decimals
+                  ),
+                  {
+                    decimals: network.nativeCurrency.decimals,
+                  }
+                ),
+                symbol: network.nativeCurrency.symbol,
+              })}
+              size="sm"
+            />
+          )}
+
           {/*asset id*/}
           <PageItem fontSize="sm" label={t<string>('labels.assetId')}>
             <HStack spacing={0}>
@@ -221,7 +249,7 @@ const AddAssetModalStandardAssetSummaryContent: FC<
             <HStack spacing={1}>
               {/*fee display*/}
               <AssetDisplay
-                atomicUnitAmount={minimumTransactionFee}
+                atomicUnitAmount={minimumTransactionFeesInAtomicUnits}
                 amountColor={subTextColor}
                 decimals={network.nativeCurrency.decimals}
                 fontSize="sm"
@@ -238,33 +266,6 @@ const AddAssetModalStandardAssetSummaryContent: FC<
                 color={subTextColor}
                 label={t<string>('captions.optInFee')}
               />
-
-              {/*not enough funds warning*/}
-              {!isEnoughMinimumBalance && (
-                <WarningIcon
-                  tooltipLabel={t<string>('captions.minimumBalanceTooLow', {
-                    balance: formatCurrencyUnit(
-                      convertToStandardUnit(
-                        accountBalanceInAtomicUnits,
-                        network.nativeCurrency.decimals
-                      ),
-                      {
-                        decimals: network.nativeCurrency.decimals,
-                      }
-                    ),
-                    cost: formatCurrencyUnit(
-                      convertToStandardUnit(
-                        minimumBalanceRequirement.plus(minimumTransactionFee),
-                        network.nativeCurrency.decimals
-                      ),
-                      {
-                        decimals: network.nativeCurrency.decimals,
-                      }
-                    ),
-                    symbol: network.nativeCurrency.symbol,
-                  })}
-                />
-              )}
             </HStack>
           </PageItem>
 

@@ -1,5 +1,4 @@
 import { Code, HStack, VStack } from '@chakra-ui/react';
-import { Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +9,7 @@ import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
 import AssetDisplay from '@extension/components/AssetDisplay';
 import AssetIcon from '@extension/components/AssetIcon';
+import Warning from '@extension/components/Warning';
 import WarningIcon from '@extension/components/WarningIcon';
 import SendAssetSummaryItem from './SendAssetSummaryItem';
 
@@ -22,33 +22,26 @@ import { AssetTypeEnum } from '@extension/enums';
 // hooks
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+import useSendAssetSummaryContent from './hooks/useSendAssetSummaryContent';
+
+// selectors
+import { useSelectLogger } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import {
-  IAccount,
-  IAssetTypes,
-  INativeCurrency,
-  INetworkWithTransactionParams,
-} from '@extension/types';
+import type { ILogger } from '@common/types';
+import type { SendAssetModalSummaryContentProps } from './types';
 
 // utils
-import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 
-interface IProps {
-  amountInStandardUnits: string;
-  asset: IAssetTypes | INativeCurrency;
-  fromAccount: IAccount;
-  network: INetworkWithTransactionParams;
-  note: string | null;
-  toAddress: string;
-  transactions: Transaction[];
-}
-
-const SendAssetModalSummaryContent: FC<IProps> = ({
+const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
   amountInStandardUnits,
   asset,
   fromAccount,
@@ -56,16 +49,34 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
   note,
   toAddress,
   transactions,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
+  // selectors
+  const logger: ILogger = useSelectLogger();
   // hooks
+  const {
+    accountBalanceInAtomicUnits,
+    minimumBalanceRequirementInAtomicUnits,
+    totalCostInAtomicUnits,
+  } = useSendAssetSummaryContent({
+    account: fromAccount,
+    network,
+    transactions,
+  });
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const atomicUnitAmount: BigNumber = convertToAtomicUnit(
+  const amountInAtomicUnits: BigNumber = convertToAtomicUnit(
     new BigNumber(amountInStandardUnits),
     asset.decimals
   );
+  const isEnoughMinimumBalance: boolean =
+    !doesAccountFallBelowMinimumBalanceRequirementForTransactions({
+      account: fromAccount,
+      logger,
+      network,
+      transactions,
+    });
   const totalFee: BigNumber = new BigNumber(
     transactions.reduce((acc, value) => acc + value.fee, 0)
   );
@@ -75,7 +86,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       case AssetTypeEnum.ARC0200:
         return (
           <AssetDisplay
-            atomicUnitAmount={atomicUnitAmount}
+            atomicUnitAmount={amountInAtomicUnits}
             amountColor={subTextColor}
             decimals={asset.decimals}
             displayUnit={true}
@@ -100,7 +111,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       case AssetTypeEnum.Native:
         return (
           <AssetDisplay
-            atomicUnitAmount={atomicUnitAmount}
+            atomicUnitAmount={amountInAtomicUnits}
             amountColor={subTextColor}
             decimals={asset.decimals}
             displayUnit={false}
@@ -116,7 +127,7 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       case AssetTypeEnum.Standard:
         return (
           <AssetDisplay
-            atomicUnitAmount={atomicUnitAmount}
+            atomicUnitAmount={amountInAtomicUnits}
             amountColor={subTextColor}
             decimals={asset.decimals}
             displayUnit={true}
@@ -198,6 +209,35 @@ const SendAssetModalSummaryContent: FC<IProps> = ({
       spacing={DEFAULT_GAP - 2}
       w="full"
     >
+      {!isEnoughMinimumBalance && (
+        <Warning
+          message={t<string>('captions.minimumBalanceTooLow', {
+            balance: formatCurrencyUnit(
+              convertToStandardUnit(
+                accountBalanceInAtomicUnits,
+                network.nativeCurrency.decimals
+              ),
+              {
+                decimals: network.nativeCurrency.decimals,
+              }
+            ),
+            cost: formatCurrencyUnit(
+              convertToStandardUnit(
+                minimumBalanceRequirementInAtomicUnits.plus(
+                  totalCostInAtomicUnits
+                ),
+                network.nativeCurrency.decimals
+              ),
+              {
+                decimals: network.nativeCurrency.decimals,
+              }
+            ),
+            symbol: network.nativeCurrency.symbol,
+          })}
+          size="sm"
+        />
+      )}
+
       {/*amount/asset*/}
       <SendAssetSummaryItem
         fontSize="sm"
