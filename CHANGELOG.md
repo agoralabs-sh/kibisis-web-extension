@@ -1,3 +1,10 @@
+# [1.14.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0-beta.3...v1.14.0-beta.4) (2024-03-08)
+
+
+### Bug Fixes
+
+* set focus to new app window upon creation ([#202](https://github.com/agoralabs-sh/kibisis-web-extension/issues/202)) ([f7b7577](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f7b757785c0df8bec6da6b5e08c3ddbd421e0649))
+
 # [1.14.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0-beta.2...v1.14.0-beta.3) (2024-03-07)
 
 
