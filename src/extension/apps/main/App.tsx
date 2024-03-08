@@ -34,6 +34,7 @@ import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as notificationsReducer } from '@extension/features/notifications';
 import { reducer as passwordLockReducer } from '@extension/features/password-lock';
+import { reducer as removeAssetsReducer } from '@extension/features/remove-assets';
 import { reducer as sendAssetsReducer } from '@extension/features/send-assets';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
 import {
@@ -183,6 +184,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       networks: networksReducer,
       notifications: notificationsReducer,
       passwordLock: passwordLockReducer,
+      removeAssets: removeAssetsReducer,
       sendAssets: sendAssetsReducer,
       sessions: sessionsReducer,
       settings: settingsReducer,

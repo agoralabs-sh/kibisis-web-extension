@@ -11,7 +11,7 @@ import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // types
-import { IProps } from './types';
+import type { IProps } from './types';
 
 const ModalItem: FC<IProps> = ({
   label,

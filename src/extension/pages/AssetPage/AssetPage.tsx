@@ -1,12 +1,14 @@
 import {
-  Box,
+  Code,
   Heading,
   HStack,
+  IconButton,
   Text,
   Tooltip,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import BigNumber from 'bignumber.js';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -23,27 +25,30 @@ import AssetIcon from '@extension/components/AssetIcon';
 import AssetBadge from '@extension/components/AssetBadge';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
-import IconButton from '@extension/components/IconButton';
 import LoadingPage from '@extension/components/LoadingPage';
+import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
+import PageItem from '@extension/components/PageItem';
 
 // constants
-import { ACCOUNTS_ROUTE, DEFAULT_GAP } from '@extension/constants';
+import {
+  ACCOUNTS_ROUTE,
+  DEFAULT_GAP,
+  PAGE_ITEM_HEIGHT,
+} from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
 
 // features
-import { removeARC0200AssetHoldingsThunk } from '@extension/features/accounts';
+import { initializeRemoveAssets } from '@extension/features/remove-assets';
 import { initializeSendAsset } from '@extension/features/send-assets';
-import { setConfirmModal } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import useAssetPage from './hooks/useAssetPage';
 
 // modals
@@ -52,20 +57,22 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 // selectors
 import {
   useSelectFetchingStandardAssets,
-  useSelectSettingsPreferredBlockExplorer,
   useSelectSelectedNetwork,
+  useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
-// theme
-import { theme } from '@extension/theme';
-
 // types
-import { IAppThunkDispatch, IBlockExplorer, INetwork } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IBlockExplorer,
+  INetwork,
+} from '@extension/types';
 
 // utils
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
@@ -78,6 +85,11 @@ const AssetPage: FC = () => {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
+  } = useDisclosure();
+  const {
+    isOpen: isMoreInformationToggleOpen,
+    onOpen: onMoreInformationOpen,
+    onClose: onMoreInformationClose,
   } = useDisclosure();
   // selectors
   const fetchingAssets: boolean = useSelectFetchingStandardAssets();
@@ -101,8 +113,9 @@ const AssetPage: FC = () => {
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
   // handlers
+  const handleMoreInformationToggle = (value: boolean) =>
+    value ? onMoreInformationOpen() : onMoreInformationClose();
   const handleReceiveClick = () => onShareAddressModalOpen();
   const handleSendClick = () => {
     if (asset && account) {
@@ -117,38 +130,14 @@ const AssetPage: FC = () => {
     }
   };
   const handleRemoveAssetClick = () => {
-    if (
-      !account ||
-      !asset ||
-      !selectedNetwork ||
-      asset.type !== AssetTypeEnum.ARC0200
-    ) {
+    if (!account || !asset || !selectedNetwork) {
       return;
     }
 
     dispatch(
-      setConfirmModal({
-        description: t<string>('captions.hideAssetConfirm', {
-          symbol: asset.symbol,
-        }),
-        onConfirm: () => {
-          // remove the asset
-          dispatch(
-            removeARC0200AssetHoldingsThunk({
-              accountId: account.id,
-              assets: [asset],
-              genesisHash: selectedNetwork.genesisHash,
-            })
-          );
-
-          // navigate to the accounts page
-          navigate(ACCOUNTS_ROUTE, {
-            replace: true,
-          });
-        },
-        title: t<string>('headings.hideAssetConfirm', {
-          symbol: asset.symbol,
-        }),
+      initializeRemoveAssets({
+        accountId: account.id,
+        selectedAsset: asset,
       })
     );
   };
@@ -206,7 +195,7 @@ const AssetPage: FC = () => {
         alignItems="center"
         justifyContent="flex-start"
         px={DEFAULT_GAP - 2}
-        spacing={4}
+        spacing={DEFAULT_GAP - 2}
         w="full"
       >
         <VStack
@@ -232,7 +221,7 @@ const AssetPage: FC = () => {
           <HStack
             alignItems="center"
             justifyContent="center"
-            spacing={2}
+            spacing={DEFAULT_GAP / 3}
             w="full"
           >
             {/*amount*/}
@@ -261,16 +250,24 @@ const AssetPage: FC = () => {
                 {asset.unitName}
               </Text>
             )}
+
+            {/*remove asset*/}
+            <Tooltip
+              label={t<string>('labels.removeAsset', { context: asset.type })}
+            >
+              <IconButton
+                aria-label="Remove Asset"
+                icon={<IoTrashOutline />}
+                onClick={handleRemoveAssetClick}
+                size="sm"
+                variant="ghost"
+              />
+            </Tooltip>
           </HStack>
 
-          <HStack
-            alignItems="center"
-            justifyContent="center"
-            spacing={2}
-            w="full"
-          >
-            {/*name*/}
-            {asset.name && (
+          {/*name*/}
+          {asset.name && (
+            <PageItem fontSize="sm" label={t<string>('labels.name')}>
               <Tooltip aria-label="Asset name" label={asset.name}>
                 <Text
                   color={defaultTextColor}
@@ -282,30 +279,27 @@ const AssetPage: FC = () => {
                   {asset.name}
                 </Text>
               </Tooltip>
-            )}
+            </PageItem>
+          )}
 
-            {/*type*/}
-            <AssetBadge type={asset.type} />
-          </HStack>
-
-          <HStack
-            alignItems="center"
-            justifyContent="center"
-            spacing={2}
-            w="full"
+          {/*asset id*/}
+          <PageItem
+            fontSize="sm"
+            label={
+              asset.type === AssetTypeEnum.Standard
+                ? t<string>('labels.assetId')
+                : t<string>('labels.applicationId')
+            }
           >
-            <HStack alignItems="center" justifyContent="center" spacing={0}>
-              {/*id*/}
-              <Box
-                backgroundColor={textBackgroundColor}
-                borderRadius={theme.radii['3xl']}
-                px={DEFAULT_GAP / 3}
-                py={1}
+            <HStack spacing={1}>
+              <Code
+                borderRadius="md"
+                color={defaultTextColor}
+                fontSize="sm"
+                wordBreak="break-word"
               >
-                <Text color={subTextColor} fontSize="sm">
-                  {asset.id}
-                </Text>
-              </Box>
+                {asset.id}
+              </Code>
 
               {/*copy asset*/}
               <CopyIconButton
@@ -335,28 +329,66 @@ const AssetPage: FC = () => {
                   }/${asset.id}`}
                 />
               )}
-
-              {/*remove asset*/}
-              {asset.type === AssetTypeEnum.ARC0200 && (
-                <Tooltip label={t<string>('labels.hideAsset')}>
-                  <IconButton
-                    aria-label="Hide Asset"
-                    icon={IoTrashOutline}
-                    onClick={handleRemoveAssetClick}
-                    size="sm"
-                    variant="ghost"
-                  />
-                </Tooltip>
-              )}
             </HStack>
-          </HStack>
+          </PageItem>
+
+          {/*type*/}
+          <PageItem fontSize="sm" label={t<string>('labels.type')}>
+            <AssetBadge type={asset.type} />
+          </PageItem>
+
+          <MoreInformationAccordion
+            color={defaultTextColor}
+            fontSize="sm"
+            isOpen={isMoreInformationToggleOpen}
+            minButtonHeight={PAGE_ITEM_HEIGHT}
+            onChange={handleMoreInformationToggle}
+          >
+            <VStack spacing={DEFAULT_GAP - 2} w="full">
+              {/*decimals*/}
+              <PageItem fontSize="sm" label={t<string>('labels.decimals')}>
+                <Text color={subTextColor} fontSize="sm">
+                  {asset.decimals.toString()}
+                </Text>
+              </PageItem>
+
+              {/*total supply*/}
+              {asset.type === AssetTypeEnum.ARC0200 && (
+                <PageItem fontSize="sm" label={t<string>('labels.totalSupply')}>
+                  <Tooltip
+                    aria-label="Asset amount with unrestricted decimals"
+                    label={formatCurrencyUnit(
+                      convertToStandardUnit(
+                        new BigNumber(asset.totalSupply),
+                        asset.decimals
+                      ),
+                      {
+                        decimals: asset.decimals,
+                        thousandSeparatedOnly: true,
+                      }
+                    )}
+                  >
+                    <Text color={subTextColor} fontSize="sm">
+                      {formatCurrencyUnit(
+                        convertToStandardUnit(
+                          new BigNumber(asset.totalSupply),
+                          asset.decimals
+                        ),
+                        { decimals: asset.decimals }
+                      )}
+                    </Text>
+                  </Tooltip>
+                </PageItem>
+              )}
+            </VStack>
+          </MoreInformationAccordion>
         </VStack>
 
         {/*send/receive buttons*/}
         <HStack
           alignItems="center"
           justifyContent="center"
-          spacing={2}
+          spacing={DEFAULT_GAP / 3}
           w="full"
         >
           <Button

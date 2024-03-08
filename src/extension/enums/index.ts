@@ -18,6 +18,7 @@ export { default as NetworksThunkEnum } from './NetworksThunkEnum';
 export { default as NetworkTypeEnum } from './NetworkTypeEnum';
 export { default as PasswordLockThunkEnum } from './PasswordLockThunkEnum';
 export { default as RegisterThunkEnum } from './RegisterThunkEnum';
+export { default as RemoveAssetsThunkEnum } from './RemoveAssetsThunkEnum';
 export { default as ScanModeEnum } from './ScanModeEnum';
 export { default as SendAssetsThunkEnum } from './SendAssetsThunkEnum';
 export { default as SessionsThunkEnum } from './SessionsThunkEnum';

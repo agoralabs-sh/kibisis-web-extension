@@ -30,6 +30,7 @@ import {
   fetchTransactionParamsFromStorageThunk,
   startPollingForTransactionsParamsThunk,
 } from '@extension/features/networks';
+import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
 import {
   closeWalletConnectModal,
@@ -54,6 +55,7 @@ import useNotifications from '@extension/hooks/useNotifications';
 import AddAssetModal from '@extension/modals/AddAssetModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
+import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
 import ScanQRCodeModal from '@extension/modals/ScanQRCodeModal';
 import SendAssetModal from '@extension/modals/SendAssetModal';
 import SignBytesModal from '@extension/modals/SignBytesModal';
@@ -85,9 +87,10 @@ const Root: FC = () => {
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
   // handlers
-  const handleAddAssetClose = () => dispatch(resetAddAsset());
+  const handleAddAssetModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
+  const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
   const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
@@ -141,7 +144,8 @@ const Root: FC = () => {
       <EnableModal onClose={handleEnableModalClose} />
       <SignTxnsModal onClose={handleSignTxnsModalClose} />
       <SignBytesModal onClose={handleSignBytesModalClose} />
-      <AddAssetModal onClose={handleAddAssetClose} />
+      <AddAssetModal onClose={handleAddAssetModalClose} />
+      <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />
       <WalletConnectModal onClose={handleWalletConnectModalClose} />

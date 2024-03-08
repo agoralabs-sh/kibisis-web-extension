@@ -50,6 +50,9 @@
       "@extension/features/registration": [
         "src/extension/features/registration"
       ],
+      "@extension/features/remove-assets": [
+        "src/extension/features/remove-assets"
+      ],
       "@extension/features/send-assets": ["src/extension/features/send-assets"],
       "@extension/features/sessions": ["src/extension/features/sessions"],
       "@extension/features/settings": ["src/extension/features/settings"],

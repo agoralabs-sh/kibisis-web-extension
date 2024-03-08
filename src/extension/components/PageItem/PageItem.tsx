@@ -1,30 +1,21 @@
-import {
-  Box,
-  HStack,
-  ResponsiveValue,
-  StackProps,
-  Text,
-} from '@chakra-ui/react';
-import * as CSS from 'csstype';
-import React, { FC, PropsWithChildren } from 'react';
+import { Box, HStack, Text } from '@chakra-ui/react';
+import React, { FC } from 'react';
 
 // constants
-import { ITEM_HEIGHT } from './constants';
+import { DEFAULT_GAP, PAGE_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-interface IProps extends PropsWithChildren<StackProps> {
-  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
-  label: string;
-}
+// types
+import type { IProps } from './types';
 
 const PageItem: FC<IProps> = ({
   children,
   fontSize = 'sm',
   label,
   ...stackProps
-}: IProps) => {
+}) => {
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
 
@@ -32,8 +23,8 @@ const PageItem: FC<IProps> = ({
     <HStack
       alignItems="center"
       justifyContent="space-between"
-      minH={ITEM_HEIGHT}
-      spacing={2}
+      minH={PAGE_ITEM_HEIGHT}
+      spacing={DEFAULT_GAP / 3}
       w="full"
       {...stackProps}
     >

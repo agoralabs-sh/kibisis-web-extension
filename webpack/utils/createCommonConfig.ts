@@ -81,6 +81,11 @@ export default function createCommonConfig(): Configuration {
           'features',
           'registration'
         ),
+        ['@extension/features/remove-assets']: resolve(
+          extensionPath,
+          'features',
+          'remove-assets'
+        ),
         ['@extension/features/send-assets']: resolve(
           extensionPath,
           'features',

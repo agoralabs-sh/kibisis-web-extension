@@ -36,6 +36,7 @@ export * from './accounts';
 export * from './arc-0072-assets';
 export * from './arc-0200-assets';
 export * from './registration';
+export * from './remove-assets';
 export * from './send-assets';
 export * from './settings';
 export * from './system';

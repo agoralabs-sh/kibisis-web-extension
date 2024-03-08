@@ -210,7 +210,7 @@ const NFTPage: FC = () => {
 
           {/*application id*/}
           <PageItem fontSize="sm" label={t<string>('labels.applicationId')}>
-            <HStack spacing={0}>
+            <HStack spacing={1}>
               <Code
                 borderRadius="md"
                 color={defaultTextColor}
