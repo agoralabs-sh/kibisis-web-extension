@@ -1,7 +1,11 @@
 import browser, { Windows } from 'webextension-polyfill';
 
 // constants
-import { APP_WINDOW_KEY_PREFIX } from '@extension/constants';
+import {
+  APP_WINDOW_KEY_PREFIX,
+  DEFAULT_POPUP_HEIGHT,
+  DEFAULT_POPUP_WIDTH,
+} from '@extension/constants';
 
 // enums
 import { AppTypeEnum } from '@extension/enums';
@@ -12,7 +16,7 @@ import StorageManager from '../StorageManager';
 // types
 import type { ILogger } from '@common/types';
 import type { IAppWindow } from '@extension/types';
-import type { ICreateOptions } from './types';
+import type { ICreateOptions, ICreateWindowOptions } from './types';
 
 /**
  * Manages app windows in storage.
@@ -44,6 +48,77 @@ export default class AppWindowManagerService {
   /**
    * public functions
    */
+
+  public async createWindow({
+    left,
+    searchParams,
+    top,
+    type,
+  }: ICreateWindowOptions): Promise<Windows.Window | null> {
+    const _functionName: string = 'createWindow';
+    const currentWindow: Windows.Window = await browser.windows.getCurrent();
+    let appWindow: Windows.Window;
+    let defaultLeftPosition: number | undefined;
+    let defaultTopPosition: number | undefined;
+    let windowURL: string | null = null;
+
+    switch (type) {
+      case AppTypeEnum.BackgroundApp:
+        windowURL = 'background-app.html';
+        break;
+      case AppTypeEnum.MainApp:
+        windowURL = 'main-app.html';
+        break;
+      case AppTypeEnum.RegistrationApp:
+        windowURL = 'registration-app.html';
+        break;
+      default:
+        break;
+    }
+
+    if (!windowURL) {
+      this.logger?.debug(
+        `${AppWindowManagerService.name}#${_functionName}: unknown app type "${type}"`
+      );
+
+      return null;
+    }
+
+    defaultLeftPosition = currentWindow.width
+      ? Math.round(currentWindow.width / 2 - DEFAULT_POPUP_WIDTH / 2)
+      : undefined;
+    defaultTopPosition = currentWindow.height
+      ? Math.round(currentWindow.height / 2 - DEFAULT_POPUP_HEIGHT / 2)
+      : undefined;
+    appWindow = await browser.windows.create({
+      focused: true,
+      height: DEFAULT_POPUP_HEIGHT,
+      left: left ?? defaultLeftPosition,
+      top: top ?? defaultTopPosition,
+      type: 'popup',
+      url: `${windowURL}${searchParams ? `?${searchParams.toString()}` : ''}`,
+      width: DEFAULT_POPUP_WIDTH,
+    });
+
+    if (!appWindow.id) {
+      this.logger?.debug(
+        `${AppWindowManagerService.name}#${_functionName}: no window id for window "${type}"`
+      );
+
+      return null;
+    }
+
+    await this.storageManager.setItems({
+      [this.createAppWindowItemKey(appWindow.id)]: {
+        left: appWindow.left || 0,
+        top: appWindow.top || 0,
+        type,
+        windowId: appWindow.id,
+      },
+    });
+
+    return appWindow;
+  }
 
   public async getAll(): Promise<IAppWindow[]> {
     const items: Record<string, unknown> =
@@ -103,23 +178,5 @@ export default class AppWindowManagerService {
     return await this.storageManager.remove(
       appWindows.map((value) => this.createAppWindowItemKey(value.windowId))
     );
-  }
-
-  public async saveByBrowserWindowAndType(
-    window: Windows.Window,
-    type: AppTypeEnum
-  ): Promise<void> {
-    if (!window.id) {
-      return;
-    }
-
-    return await this.storageManager.setItems({
-      [this.createAppWindowItemKey(window.id)]: {
-        left: window.left || 0,
-        top: window.top || 0,
-        type,
-        windowId: window.id,
-      },
-    });
   }
 }

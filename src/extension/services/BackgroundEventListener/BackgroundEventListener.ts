@@ -1,11 +1,7 @@
 import browser, { Alarms, Tabs, Windows } from 'webextension-polyfill';
 
 // constants
-import {
-  DEFAULT_POPUP_HEIGHT,
-  DEFAULT_POPUP_WIDTH,
-  PASSWORD_LOCK_ALARM,
-} from '@extension/constants';
+import { PASSWORD_LOCK_ALARM } from '@extension/constants';
 
 // enums
 import { AppTypeEnum } from '@extension/enums';
@@ -119,9 +115,7 @@ export default class BackgroundEventListener {
     const _functionName: string = 'onExtensionClick';
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
     let mainAppWindows: IAppWindow[];
-    let mainWindow: Windows.Window;
     let registrationAppWindows: IAppWindow[];
-    let registrationWindow: Windows.Window;
 
     this.logger?.debug(
       `${BackgroundEventListener.name}#${_functionName}(): browser extension clicked`
@@ -156,18 +150,9 @@ export default class BackgroundEventListener {
       await this.storageManager.removeAll();
 
       // if there is no registration app window up, we can open a new one
-      registrationWindow = await browser.windows.create({
-        height: DEFAULT_POPUP_HEIGHT,
-        type: 'popup',
-        url: 'registration-app.html',
-        width: DEFAULT_POPUP_WIDTH,
+      await this.appWindowManagerService.createWindow({
+        type: AppTypeEnum.RegistrationApp,
       });
-
-      // save the registration window to storage
-      return await this.appWindowManagerService.saveByBrowserWindowAndType(
-        registrationWindow,
-        AppTypeEnum.RegistrationApp
-      );
     }
 
     mainAppWindows = await this.appWindowManagerService.getByType(
@@ -192,18 +177,9 @@ export default class BackgroundEventListener {
     );
 
     // if there is no main app window up, we can open the app
-    mainWindow = await browser.windows.create({
-      height: DEFAULT_POPUP_HEIGHT,
-      type: 'popup',
-      url: 'main-app.html',
-      width: DEFAULT_POPUP_WIDTH,
+    await this.appWindowManagerService.createWindow({
+      type: AppTypeEnum.MainApp,
     });
-
-    // save the main app window to storage
-    await this.appWindowManagerService.saveByBrowserWindowAndType(
-      mainWindow,
-      AppTypeEnum.MainApp
-    );
   }
 
   public async onFocusChanged(windowId: number): Promise<void> {

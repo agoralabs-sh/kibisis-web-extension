@@ -12,10 +12,6 @@ import { networks } from '@extension/config';
 
 // constants
 import { HOST, ICON_URI } from '@common/constants';
-import {
-  DEFAULT_POPUP_HEIGHT,
-  DEFAULT_POPUP_WIDTH,
-} from '@extension/constants';
 
 // enums
 import {
@@ -75,7 +71,6 @@ import type {
   IInternalRequestMessage,
   INetwork,
   ISession,
-  ISettings,
 } from '@extension/types';
 
 // utils
@@ -341,26 +336,16 @@ export default class BackgroundMessageHandler {
       await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
     const registrationAppWindows: IAppWindow[] =
       await this.appWindowManagerService.getByType(AppTypeEnum.RegistrationApp);
-    let mainWindow: Windows.Window;
 
     // if there is no main app windows, create a new one
     if (mainAppWindows.length <= 0) {
-      mainWindow = await browser.windows.create({
-        height: DEFAULT_POPUP_HEIGHT,
-        type: 'popup',
-        url: 'main-app.html',
-        width: DEFAULT_POPUP_WIDTH,
+      await this.appWindowManagerService.createWindow({
+        type: AppTypeEnum.MainApp,
         ...(registrationAppWindows[0] && {
           left: registrationAppWindows[0].left,
           top: registrationAppWindows[0].top,
         }),
       });
-
-      // save to storage
-      await this.appWindowManagerService.saveByBrowserWindowAndType(
-        mainWindow,
-        AppTypeEnum.MainApp
-      );
     }
 
     // if registration app windows exist remove them
@@ -602,8 +587,6 @@ export default class BackgroundMessageHandler {
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
     const mainAppWindows: IAppWindow[] =
       await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
-    let backgroundWindow: Windows.Window;
-    let searchParams: URLSearchParams;
 
     // not initialized, ignore it
     if (!isInitialized) {
@@ -635,21 +618,12 @@ export default class BackgroundMessageHandler {
       `${BackgroundMessageHandler.name}#${_functionName}(): main app window not open, opening background app window for "${event.type}" event`
     );
 
-    searchParams = new URLSearchParams({
-      eventId: encodeURIComponent(event.id), // add the event id to the url search params, so the app knows which event to use
+    await this.appWindowManagerService.createWindow({
+      searchParams: new URLSearchParams({
+        eventId: encodeURIComponent(event.id), // add the event id to the url search params, so the app knows which event to use
+      }),
+      type: AppTypeEnum.BackgroundApp,
     });
-    backgroundWindow = await browser.windows.create({
-      height: DEFAULT_POPUP_HEIGHT,
-      type: 'popup',
-      url: `background-app.html?${searchParams.toString()}`,
-      width: DEFAULT_POPUP_WIDTH,
-    });
-
-    // save to app window storage
-    await this.appWindowManagerService.saveByBrowserWindowAndType(
-      backgroundWindow,
-      AppTypeEnum.BackgroundApp
-    );
   }
 
   private async sendResponse(
