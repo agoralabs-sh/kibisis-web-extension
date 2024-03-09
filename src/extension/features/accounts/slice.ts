@@ -9,6 +9,7 @@ import {
   fetchAccountsFromStorageThunk,
   removeAccountByIdThunk,
   removeARC0200AssetHoldingsThunk,
+  removeStandardAssetHoldingsThunk,
   saveAccountNameThunk,
   saveActiveAccountDetails,
   saveNewAccountThunk,
@@ -19,7 +20,12 @@ import {
 
 // types
 import type { IAccount, IActiveAccountDetails } from '@extension/types';
-import type { IAccountsState, IFetchAccountsFromStorageResult } from './types';
+import type {
+  IAccountsState,
+  IFetchAccountsFromStorageResult,
+  IUpdateAssetHoldingsResult,
+  IUpdateStandardAssetHoldingsResult,
+} from './types';
 
 // utils
 import upsertItemsById from '@extension/utils/upsertItemsById';
@@ -112,19 +118,21 @@ const slice = createSlice({
         state.saving = false;
       }
     );
-    /** remove arc200 asset holdings **/
+    /** remove arc-0200 asset holdings **/
     builder.addCase(
       removeARC0200AssetHoldingsThunk.fulfilled,
-      (state: IAccountsState, action: PayloadAction<IAccount | null>) => {
-        if (action.payload) {
-          state.items = state.items.map((value) =>
-            value.id === action.payload?.id ? action.payload : value
-          );
-        }
-
+      (
+        state: IAccountsState,
+        action: PayloadAction<IUpdateAssetHoldingsResult>
+      ) => {
+        state.items = state.items.map((value) =>
+          value.id === action.payload?.account.id
+            ? action.payload.account
+            : value
+        );
         // remove updated account from the account update list
         state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.payload?.id
+          (value) => value.id !== action.payload?.account.id
         );
       }
     );
@@ -147,6 +155,50 @@ const slice = createSlice({
     );
     builder.addCase(
       removeARC0200AssetHoldingsThunk.rejected,
+      (state: IAccountsState, action) => {
+        // remove updated account from the account update list
+        state.updatingAccounts = state.updatingAccounts.filter(
+          (value) => value.id !== action.meta.arg.accountId
+        );
+      }
+    );
+    /** remove standard asset holdings **/
+    builder.addCase(
+      removeStandardAssetHoldingsThunk.fulfilled,
+      (
+        state: IAccountsState,
+        action: PayloadAction<IUpdateStandardAssetHoldingsResult>
+      ) => {
+        state.items = state.items.map((value) =>
+          value.id === action.payload?.account.id
+            ? action.payload.account
+            : value
+        );
+        // remove updated account from the account update list
+        state.updatingAccounts = state.updatingAccounts.filter(
+          (value) => value.id !== action.payload?.account.id
+        );
+      }
+    );
+    builder.addCase(
+      removeStandardAssetHoldingsThunk.pending,
+      (state: IAccountsState, action) => {
+        state.updatingAccounts = [
+          // filter the unrelated updating account ids
+          ...(state.updatingAccounts = state.updatingAccounts.filter(
+            (value) => value.id !== action.meta.arg.accountId
+          )),
+          // re-add the account being updated
+          {
+            id: action.meta.arg.accountId,
+            information: true,
+            transactions: false,
+          },
+        ];
+      }
+    );
+    builder.addCase(
+      removeStandardAssetHoldingsThunk.rejected,
       (state: IAccountsState, action) => {
         // remove updated account from the account update list
         state.updatingAccounts = state.updatingAccounts.filter(

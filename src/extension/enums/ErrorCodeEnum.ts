@@ -5,6 +5,8 @@ enum ErrorCodeEnum {
   ParsingError = 1002,
   NetworkNotSelectedError = 1003,
   NetworkConnectionError = 1004,
+  EncodingError = 1005,
+  DecodingError = 1006,
 
   // private key
   InvalidPasswordError = 2000,

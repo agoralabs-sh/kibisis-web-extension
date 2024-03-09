@@ -10,10 +10,10 @@ import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
+import PageItem from '@extension/components/PageItem';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { DEFAULT_GAP, PAGE_ITEM_HEIGHT } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
@@ -151,7 +151,7 @@ const AddAssetModalARC0200AssetSummaryContent: FC<IProps> = ({
             color={defaultTextColor}
             fontSize="sm"
             isOpen={isOpen}
-            minButtonHeight={ITEM_HEIGHT}
+            minButtonHeight={PAGE_ITEM_HEIGHT}
             onChange={handleMoreInformationToggle}
           >
             <VStack spacing={DEFAULT_GAP - 2} w="full">

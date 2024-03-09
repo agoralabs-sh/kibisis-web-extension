@@ -21,10 +21,10 @@ import CopyIconButton from '@extension/components/CopyIconButton';
 import InnerTransactionAccordion from '@extension/components/InnerTransactionAccordion';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
+import PageItem from '@extension/components/PageItem';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { DEFAULT_GAP, PAGE_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -165,7 +165,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
           color={defaultTextColor}
           fontSize="sm"
           isOpen={isOpen}
-          minButtonHeight={ITEM_HEIGHT}
+          minButtonHeight={PAGE_ITEM_HEIGHT}
           onChange={handleMoreInformationToggle}
         >
           <VStack spacing={4} w="full">
@@ -275,7 +275,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
                     fontSize="sm"
                     isOpen={openInnerTransactionAccordions[index]}
                     key={`transaction-page-application-inner-transaction-item-${index}`}
-                    minButtonHeight={ITEM_HEIGHT}
+                    minButtonHeight={PAGE_ITEM_HEIGHT}
                     network={network}
                     onChange={handleInnerTransactionsAccordionToggle(index)}
                     transaction={value}

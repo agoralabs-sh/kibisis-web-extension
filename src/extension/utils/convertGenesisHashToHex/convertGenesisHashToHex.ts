@@ -7,5 +7,5 @@ import { encode as encodeHex } from '@stablelib/hex';
  * @returns {string} a hex encoded version of the genesis hash.
  */
 export default function convertGenesisHashToHex(input: string): string {
-  return encodeHex(decodeBase64(input));
+  return encodeHex(decodeBase64(input)).toUpperCase();
 }

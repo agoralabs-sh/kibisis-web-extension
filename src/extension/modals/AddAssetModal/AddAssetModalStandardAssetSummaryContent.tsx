@@ -20,11 +20,11 @@ import CopyIconButton from '@extension/components/CopyIconButton';
 import InfoIconTooltip from '@extension/components/InfoIconTooltip';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import PageItem, { ITEM_HEIGHT } from '@extension/components/PageItem';
+import PageItem from '@extension/components/PageItem';
 import Warning from '@extension/components/Warning';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { DEFAULT_GAP, PAGE_ITEM_HEIGHT } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
@@ -273,7 +273,7 @@ const AddAssetModalStandardAssetSummaryContent: FC<
             color={defaultTextColor}
             fontSize="sm"
             isOpen={isOpen}
-            minButtonHeight={ITEM_HEIGHT}
+            minButtonHeight={PAGE_ITEM_HEIGHT}
             onChange={handleMoreInformationToggle}
           >
             <VStack spacing={DEFAULT_GAP - 2} w="full">

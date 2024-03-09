@@ -45,9 +45,8 @@ import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 // features
 import {
   removeARC0200AssetHoldingsThunk,
-  updateAccountsThunk,
+  removeStandardAssetHoldingsThunk,
 } from '@extension/features/accounts';
-import { addStandardAssetThunk } from '@extension/features/add-asset';
 import { create as createNotification } from '@extension/features/notifications';
 import { setConfirming } from '@extension/features/remove-assets';
 
@@ -120,8 +119,6 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
   const isOpen: boolean = !!account && !!selectedAsset;
   // handlers
   const handleRemoveARC0200AssetClick = async () => {
-    let updatedAccount: IAccount | null;
-
     if (
       !selectedNetwork ||
       !account ||
@@ -133,33 +130,44 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
 
     dispatch(setConfirming(true));
 
-    updatedAccount = await dispatch(
-      removeARC0200AssetHoldingsThunk({
-        accountId: account.id,
-        assets: [selectedAsset],
-        genesisHash: selectedNetwork.genesisHash,
-      })
-    ).unwrap();
+    try {
+      await dispatch(
+        removeARC0200AssetHoldingsThunk({
+          accountId: account.id,
+          assets: [selectedAsset],
+          genesisHash: selectedNetwork.genesisHash,
+        })
+      ).unwrap();
 
-    if (updatedAccount && selectedAsset) {
       dispatch(
         createNotification({
-          title: t<string>('headings.hiddenAsset', {
+          title: t<string>('headings.removedAsset', {
             symbol: selectedAsset.symbol,
           }),
           type: 'success',
         })
       );
+
+      handleClose();
+    } catch (error) {
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
     }
 
     dispatch(setConfirming(false));
-
-    handleClose();
   };
   const handleRemoveStandardAssetClick = async () => {
     const _functionName: string = 'handleAddStandardAssetClick';
     let _password: string | null;
-    let transactionId: string | null;
 
     if (
       !selectedNetwork ||
@@ -194,33 +202,29 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
       return;
     }
 
+    dispatch(setConfirming(true));
+
     try {
-      transactionId = await dispatch(addStandardAssetThunk(_password)).unwrap();
+      await dispatch(
+        removeStandardAssetHoldingsThunk({
+          accountId: account.id,
+          assets: [selectedAsset],
+          genesisHash: selectedNetwork.genesisHash,
+          password: _password,
+        })
+      ).unwrap();
 
-      if (transactionId) {
-        dispatch(
-          createNotification({
-            title: t<string>('headings.addedAsset', {
-              symbol:
-                selectedAsset.unitName ||
-                selectedAsset.name ||
-                selectedAsset.id,
-            }),
-            type: 'success',
-          })
-        );
+      dispatch(
+        createNotification({
+          title: t<string>('headings.removedAsset', {
+            symbol:
+              selectedAsset.unitName || selectedAsset.name || selectedAsset.id,
+          }),
+          type: 'success',
+        })
+      );
 
-        // force an update of account information and transactions
-        dispatch(
-          updateAccountsThunk({
-            accountIds: [account.id],
-            forceInformationUpdate: true,
-            refreshTransactions: true,
-          })
-        );
-
-        handleClose();
-      }
+      handleClose();
     } catch (error) {
       switch (error.code) {
         case ErrorCodeEnum.InvalidPasswordError:
@@ -251,6 +255,8 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
           break;
       }
     }
+
+    dispatch(setConfirming(false));
   };
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
