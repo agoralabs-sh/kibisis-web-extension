@@ -39,7 +39,7 @@ import useAddAssetStandardAssetSummaryContent from './hooks/useAddAssetStandardA
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IAddAssetModalStandardAssetSummaryContentProps } from './types';
+import type { IAddAssetsModalStandardAssetSummaryContentProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
@@ -47,8 +47,8 @@ import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
-const AddAssetModalStandardAssetSummaryContent: FC<
-  IAddAssetModalStandardAssetSummaryContentProps
+const AddAssetsStandardAssetSummaryModalContent: FC<
+  IAddAssetsModalStandardAssetSummaryContentProps
 > = ({ account, accounts, asset, blockExplorer, network }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -465,4 +465,4 @@ const AddAssetModalStandardAssetSummaryContent: FC<
   );
 };
 
-export default AddAssetModalStandardAssetSummaryContent;
+export default AddAssetsStandardAssetSummaryModalContent;

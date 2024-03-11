@@ -13,11 +13,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { BaseExtensionError } from '@extension/errors';
 
 // thunks
-import {
-  addStandardAssetThunk,
-  queryARC0200AssetThunk,
-  queryStandardAssetThunk,
-} from './thunks';
+import { queryARC0200AssetThunk, queryStandardAssetThunk } from './thunks';
 
 // types
 import {
@@ -27,10 +23,10 @@ import {
   IStandardAsset,
 } from '@extension/types';
 import {
-  IAddAssetState,
   IAssetsWithNextToken,
   IQueryARC0200AssetPayload,
   IQueryStandardAssetPayload,
+  IState,
 } from './types';
 
 // utils
@@ -38,37 +34,24 @@ import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** add standard asset **/
-    builder.addCase(
-      addStandardAssetThunk.fulfilled,
-      (state: IAddAssetState, action: PayloadAction<string | null>) => {
-        state.confirming = false;
-      }
-    );
-    builder.addCase(addStandardAssetThunk.pending, (state: IAddAssetState) => {
-      state.confirming = true;
-    });
-    builder.addCase(addStandardAssetThunk.rejected, (state: IAddAssetState) => {
-      state.confirming = false;
-    });
     /** query arc200 asset **/
     builder.addCase(
       queryARC0200AssetThunk.fulfilled,
       (
-        state: IAddAssetState,
+        state: IState,
         action: PayloadAction<IAssetsWithNextToken<IARC0200Asset>>
       ) => {
         state.arc200Assets = action.payload;
         state.fetching = false;
       }
     );
-    builder.addCase(queryARC0200AssetThunk.pending, (state: IAddAssetState) => {
+    builder.addCase(queryARC0200AssetThunk.pending, (state: IState) => {
       state.fetching = true;
     });
     builder.addCase(
       queryARC0200AssetThunk.rejected,
       (
-        state: IAddAssetState,
+        state: IState,
         action: PayloadAction<
           BaseExtensionError,
           string,
@@ -86,23 +69,20 @@ const slice = createSlice({
     builder.addCase(
       queryStandardAssetThunk.fulfilled,
       (
-        state: IAddAssetState,
+        state: IState,
         action: PayloadAction<IAssetsWithNextToken<IStandardAsset>>
       ) => {
         state.standardAssets = action.payload;
         state.fetching = false;
       }
     );
-    builder.addCase(
-      queryStandardAssetThunk.pending,
-      (state: IAddAssetState) => {
-        state.fetching = true;
-      }
-    );
+    builder.addCase(queryStandardAssetThunk.pending, (state: IState) => {
+      state.fetching = true;
+    });
     builder.addCase(
       queryStandardAssetThunk.rejected,
       (
-        state: IAddAssetState,
+        state: IState,
         action: PayloadAction<
           BaseExtensionError,
           string,
@@ -118,9 +98,9 @@ const slice = createSlice({
     );
   },
   initialState: getInitialState(),
-  name: StoreNameEnum.AddAsset,
+  name: StoreNameEnum.AddAssets,
   reducers: {
-    clearAssets: (state: Draft<IAddAssetState>) => {
+    clearAssets: (state: Draft<IState>) => {
       state.arc200Assets = {
         items: [],
         next: null,
@@ -130,7 +110,7 @@ const slice = createSlice({
         next: null,
       };
     },
-    reset: (state: Draft<IAddAssetState>) => {
+    reset: (state: Draft<IState>) => {
       state.accountId = null;
       state.arc200Assets = {
         items: [],
@@ -144,13 +124,16 @@ const slice = createSlice({
       };
     },
     setAccountId: (
-      state: Draft<IAddAssetState>,
+      state: Draft<IState>,
       action: PayloadAction<string | null>
     ) => {
       state.accountId = action.payload;
     },
+    setConfirming: (state: Draft<IState>, action: PayloadAction<boolean>) => {
+      state.confirming = action.payload;
+    },
     setSelectedAsset: (
-      state: Draft<IAddAssetState>,
+      state: Draft<IState>,
       action: PayloadAction<IAssetTypes | null>
     ) => {
       state.selectedAsset = action.payload;
@@ -159,5 +142,10 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { clearAssets, reset, setAccountId, setSelectedAsset } =
-  slice.actions;
+export const {
+  clearAssets,
+  reset,
+  setAccountId,
+  setConfirming,
+  setSelectedAsset,
+} = slice.actions;

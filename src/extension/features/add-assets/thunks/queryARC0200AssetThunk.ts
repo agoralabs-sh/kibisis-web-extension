@@ -54,7 +54,7 @@ const queryARC0200AssetThunk: AsyncThunk<
     const account: IAccount | null =
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentArc200Assets: IAssetsWithNextToken<IARC0200Asset> =
-      getState().addAsset.arc200Assets;
+      getState().addAssets.arc200Assets;
     const logger: ILogger = getState().system.logger;
     const online: boolean = getState().system.online;
     const selectedNetwork: INetworkWithTransactionParams | null =

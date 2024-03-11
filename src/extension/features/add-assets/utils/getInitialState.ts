@@ -1,7 +1,7 @@
 // types
-import { IAddAssetState } from '../types';
+import type { IState } from '../types';
 
-export default function getInitialState(): IAddAssetState {
+export default function getInitialState(): IState {
   return {
     accountId: null,
     arc200Assets: {

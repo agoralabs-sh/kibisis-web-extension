@@ -40,7 +40,7 @@ interface IProps {
   network: INetworkWithTransactionParams;
 }
 
-const AddAssetModalARC0200AssetSummaryContent: FC<IProps> = ({
+const AddAssetsARC0200AssetSummaryModalContent: FC<IProps> = ({
   asset,
   explorer,
   network,
@@ -190,4 +190,4 @@ const AddAssetModalARC0200AssetSummaryContent: FC<IProps> = ({
   );
 };
 
-export default AddAssetModalARC0200AssetSummaryContent;
+export default AddAssetsARC0200AssetSummaryModalContent;

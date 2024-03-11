@@ -46,6 +46,9 @@ const translation: IResourceLanguage = {
     accountAlreadyAdded: 'Account already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
+    addAssetConfirming:
+      'Please wait while we confirm the opt-in of the asset {{symbol}} with the network.',
+    [`addAssetConfirming_${AssetTypeEnum.ARC0200}`]: 'Adding asset {{symbol}}.',
     addAssetURI:
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
@@ -189,8 +192,6 @@ const translation: IResourceLanguage = {
       'An application is requesting to sign a transaction.',
     signTransactionsRequest:
       'An application is requesting to sign multiple transactions.',
-    standardAssetOptIn:
-      'Please wait while we confirm the opt-in of the asset {{asset}} with the network.',
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
     transactionIdCopied: 'Transaction ID copied!',

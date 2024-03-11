@@ -1,6 +1,6 @@
 // features
 import type { IAccountsState } from '@extension/features/accounts';
-import type { IAddAssetState } from '@extension/features/add-asset';
+import type { IState as IAddAssetsState } from '@extension/features/add-assets';
 import type { IState as IARC0072AssetsState } from '@extension/features/arc0072-assets';
 import type { IEventsState } from '@extension/features/events';
 import type { INetworksState } from '@extension/features/networks';
@@ -17,7 +17,7 @@ import IBaseRootState from './IBaseRootState';
 
 interface IMainRootState extends IBaseRootState {
   accounts: IAccountsState;
-  addAsset: IAddAssetState;
+  addAssets: IAddAssetsState;
   arc0072Assets: IARC0072AssetsState;
   events: IEventsState;
   networks: INetworksState;

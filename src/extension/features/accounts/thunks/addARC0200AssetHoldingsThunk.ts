@@ -9,6 +9,9 @@ import { updateAccountInformation } from '@extension/features/accounts';
 // enums
 import { AccountsThunkEnum } from '@extension/enums';
 
+// errors
+import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
+
 // services
 import AccountService from '@extension/services/AccountService';
 
@@ -17,28 +20,32 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAccountInformation,
+  IARC0200Asset,
   IARC0200AssetHolding,
   IBaseAsyncThunkConfig,
   IMainRootState,
   INetwork,
 } from '@extension/types';
-import type { IUpdateARC0200AssetHoldingsPayload } from '../types';
+import type {
+  IUpdateAssetHoldingsPayload,
+  IUpdateAssetHoldingsResult,
+} from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import initializeARC0200AssetHoldingFromARC0200Asset from '@extension/utils/initializeARC0200AssetHoldingFromARC0200Asset';
 
 const addARC0200AssetHoldingsThunk: AsyncThunk<
-  IAccount | null, // return
-  IUpdateARC0200AssetHoldingsPayload, // args
+  IUpdateAssetHoldingsResult, // return
+  IUpdateAssetHoldingsPayload<IARC0200Asset>, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
-  IAccount | null,
-  IUpdateARC0200AssetHoldingsPayload,
+  IUpdateAssetHoldingsResult,
+  IUpdateAssetHoldingsPayload<IARC0200Asset>,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
-  AccountsThunkEnum.AddARC0200AssetHolding,
-  async ({ accountId, assets, genesisHash }, { getState }) => {
+  AccountsThunkEnum.AddARC0200AssetHoldings,
+  async ({ accountId, assets, genesisHash }, { getState, rejectWithValue }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetwork[] = getState().networks.items;
     const accounts: IAccount[] = getState().accounts.items;
@@ -52,10 +59,10 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${AccountsThunkEnum.AddARC0200AssetHolding}: no account for "${accountId}" found`
+        `${AccountsThunkEnum.AddARC0200AssetHoldings}: no account for "${accountId}" found`
       );
 
-      return null;
+      return rejectWithValue(new MalformedDataError('no account found'));
     }
 
     network =
@@ -63,10 +70,16 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
 
     if (!network) {
       logger.debug(
-        `${AccountsThunkEnum.AddARC0200AssetHolding}: no network found for "${genesisHash}" found`
+        `${AccountsThunkEnum.AddARC0200AssetHoldings}: no network found for "${genesisHash}" found`
       );
 
-      return null;
+      return rejectWithValue(
+        new NetworkNotSelectedError(
+          `attempted to add arc-0200 assets [${assets
+            .map(({ id }) => `"${id}"`)
+            .join(',')}], but network "${genesisHash}" not found`
+        )
+      );
     }
 
     encodedGenesisHash = convertGenesisHashToHex(
@@ -111,13 +124,15 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     };
 
     logger.debug(
-      `${AccountsThunkEnum.AddARC0200AssetHolding}: saving account "${account.id}" to storage`
+      `${AccountsThunkEnum.AddARC0200AssetHoldings}: saving account "${account.id}" to storage`
     );
 
     // save the account to storage
     await accountService.saveAccounts([account]);
 
-    return account;
+    return {
+      account,
+    };
   }
 );
 

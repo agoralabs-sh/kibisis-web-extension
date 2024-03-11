@@ -36,7 +36,7 @@ interface IProps {
   onClick: (asset: IStandardAsset) => void;
 }
 
-const AddAssetStandardAssetItem: FC<IProps> = ({
+const AddAssetsStandardAssetItem: FC<IProps> = ({
   asset,
   network,
   onClick,
@@ -230,4 +230,4 @@ const AddAssetStandardAssetItem: FC<IProps> = ({
   );
 };
 
-export default AddAssetStandardAssetItem;
+export default AddAssetsStandardAssetItem;

@@ -6,7 +6,7 @@ import type {
   IStandardAsset,
 } from '@extension/types';
 
-interface IAddAssetModalStandardAssetSummaryContentProps {
+interface IAddAssetsModalStandardAssetSummaryContentProps {
   account: IAccount;
   accounts: IAccount[];
   asset: IStandardAsset;
@@ -14,4 +14,4 @@ interface IAddAssetModalStandardAssetSummaryContentProps {
   network: INetworkWithTransactionParams;
 }
 
-export default IAddAssetModalStandardAssetSummaryContentProps;
+export default IAddAssetsModalStandardAssetSummaryContentProps;

@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 // types
 import { IMainRootState } from '@extension/types';
 
-export default function useSelectAddAssetFetching(): boolean {
+export default function useSelectAddAssetsFetching(): boolean {
   return useSelector<IMainRootState, boolean>(
-    (state) => state.addAsset.fetching
+    (state) => state.addAssets.fetching
   );
 }

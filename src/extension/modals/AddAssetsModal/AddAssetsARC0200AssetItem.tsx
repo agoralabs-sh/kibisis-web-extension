@@ -28,7 +28,7 @@ interface IProps {
   onClick: (asset: IARC0200Asset) => void;
 }
 
-const AddAssetARC0200AssetItem: FC<IProps> = ({
+const AddAssetsARC0200AssetItem: FC<IProps> = ({
   asset,
   network,
   onClick,
@@ -122,4 +122,4 @@ const AddAssetARC0200AssetItem: FC<IProps> = ({
   );
 };
 
-export default AddAssetARC0200AssetItem;
+export default AddAssetsARC0200AssetItem;

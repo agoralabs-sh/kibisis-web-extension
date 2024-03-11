@@ -51,6 +51,7 @@ import {
 // features
 import {
   addARC0200AssetHoldingsThunk,
+  IUpdateAssetHoldingsResult,
   saveActiveAccountDetails,
   saveNewAccountThunk,
 } from '@extension/features/accounts';
@@ -146,6 +147,7 @@ const AccountImportModalContent: FC<IProps> = ({
     let _password: string | null;
     let account: IAccount | null;
     let privateKey: Uint8Array | null;
+    let result: IUpdateAssetHoldingsResult;
 
     // if there is no password lock
     if (!settings.security.enablePasswordLock && !passwordLockPassword) {
@@ -222,13 +224,15 @@ const AccountImportModalContent: FC<IProps> = ({
 
       // if there are assets, add them to the new account
       if (assets.length > 0 && network) {
-        account = await dispatch(
+        result = await dispatch(
           addARC0200AssetHoldingsThunk({
             accountId: account.id,
             assets,
             genesisHash: network.genesisHash,
           })
         ).unwrap();
+
+        account = result.account;
       }
     } catch (error) {
       switch (error.code) {

@@ -33,11 +33,11 @@ import IconButton from '@extension/components/IconButton';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
-import AddAssetARC0200AssetItem from './AddAssetARC0200AssetItem';
-import AddAssetModalARC0200AssetSummaryContent from './AddAssetModalARC0200AssetSummaryContent';
-import AddAssetModalStandardAssetConfirmingContent from './AddAssetModalStandardAssetConfirmingContent';
-import AddAssetModalStandardAssetSummaryContent from './AddAssetModalStandardAssetSummaryContent';
-import AddAssetStandardAssetItem from './AddAssetStandardAssetItem';
+import AddAssetsARC0200AssetItem from './AddAssetsARC0200AssetItem';
+import AddAssetsARC0200AssetSummaryModalContent from './AddAssetsARC0200AssetSummaryModalContent';
+import AddAssetsConfirmingModalContent from './AddAssetsConfirmingModalContent';
+import AddAssetsStandardAssetSummaryModalContent from './AddAssetsStandardAssetSummaryModalContent';
+import AddAssetsStandardAssetItem from './AddAssetsStandardAssetItem';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -48,10 +48,9 @@ import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
 // features
 import {
   addARC0200AssetHoldingsThunk,
-  updateAccountsThunk,
+  addStandardAssetHoldingsThunk,
 } from '@extension/features/accounts';
 import {
-  addStandardAssetThunk,
   clearAssets,
   IAssetsWithNextToken,
   IQueryARC0200AssetPayload,
@@ -59,8 +58,9 @@ import {
   IQueryStandardAssetPayload,
   queryARC0200AssetThunk,
   queryStandardAssetThunk,
+  setConfirming,
   setSelectedAsset,
-} from '@extension/features/add-asset';
+} from '@extension/features/add-assets';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
@@ -71,12 +71,12 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 // selectors
 import {
   useSelectAccounts,
-  useSelectAddAssetAccount,
-  useSelectAddAssetARC0200Assets,
-  useSelectAddAssetConfirming,
-  useSelectAddAssetFetching,
-  useSelectAddAssetSelectedAsset,
-  useSelectAddAssetStandardAssets,
+  useSelectAddAssetsAccount,
+  useSelectAddAssetsARC0200Assets,
+  useSelectAddAssetsConfirming,
+  useSelectAddAssetsFetching,
+  useSelectAddAssetsSelectedAsset,
+  useSelectAddAssetsStandardAssets,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSettingsPreferredBlockExplorer,
@@ -100,15 +100,12 @@ import type {
   ISettings,
   IStandardAsset,
 } from '@extension/types';
+import type { IAddAssetsModalProps } from './types';
 
 // utils
 import isNumericString from '@extension/utils/isNumericString';
 
-interface IProps {
-  onClose: () => void;
-}
-
-const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
+const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
@@ -116,20 +113,20 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const assetContainerRef: MutableRefObject<HTMLDivElement | null> =
     useRef<HTMLDivElement | null>(null);
   // selectors
-  const account: IAccount | null = useSelectAddAssetAccount();
+  const account: IAccount | null = useSelectAddAssetsAccount();
   const accounts: IAccount[] = useSelectAccounts();
-  const arc0200Assets: IARC0200Asset[] = useSelectAddAssetARC0200Assets();
-  const confirming: boolean = useSelectAddAssetConfirming();
+  const arc0200Assets: IARC0200Asset[] = useSelectAddAssetsARC0200Assets();
+  const confirming: boolean = useSelectAddAssetsConfirming();
   const explorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
-  const fetching: boolean = useSelectAddAssetFetching();
+  const fetching: boolean = useSelectAddAssetsFetching();
   const logger: ILogger = useSelectLogger();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
   const selectedNetwork: INetworkWithTransactionParams | null =
     useSelectSelectedNetwork();
-  const selectedAsset: IAssetTypes | null = useSelectAddAssetSelectedAsset();
+  const selectedAsset: IAssetTypes | null = useSelectAddAssetsSelectedAsset();
   const settings: ISettings = useSelectSettings();
-  const standardAssets: IStandardAsset[] = useSelectAddAssetStandardAssets();
+  const standardAssets: IStandardAsset[] = useSelectAddAssetsStandardAssets();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const {
@@ -161,8 +158,6 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const isOpen: boolean = !!account;
   // handlers
   const handleAddARC0200AssetClick = async () => {
-    let updatedAccount: IAccount | null;
-
     if (
       !selectedNetwork ||
       !account ||
@@ -172,8 +167,10 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       return;
     }
 
+    dispatch(setConfirming(true));
+
     try {
-      updatedAccount = await dispatch(
+      await dispatch(
         addARC0200AssetHoldingsThunk({
           accountId: account.id,
           assets: [selectedAsset],
@@ -181,16 +178,14 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
         })
       ).unwrap();
 
-      if (updatedAccount && selectedAsset) {
-        dispatch(
-          createNotification({
-            title: t<string>('headings.addedAsset', {
-              symbol: selectedAsset.symbol,
-            }),
-            type: 'success',
-          })
-        );
-      }
+      dispatch(
+        createNotification({
+          title: t<string>('headings.addedAsset', {
+            symbol: selectedAsset.symbol,
+          }),
+          type: 'success',
+        })
+      );
 
       handleClose();
     } catch (error) {
@@ -219,11 +214,12 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           break;
       }
     }
+
+    dispatch(setConfirming(false));
   };
   const handleAddStandardAssetClick = async () => {
     const _functionName: string = 'handleAddStandardAssetClick';
     let _password: string | null;
-    let transactionId: string | null;
 
     if (
       !selectedNetwork ||
@@ -239,7 +235,7 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       // validate the password input
       if (validatePassword()) {
         logger.debug(
-          `${AddAssetModal.name}#${_functionName}: password not valid`
+          `${AddAssetsModal.name}#${_functionName}: password not valid`
         );
 
         return;
@@ -252,39 +248,35 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
 
     if (!_password) {
       logger.debug(
-        `${AddAssetModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
+        `${AddAssetsModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
       );
 
       return;
     }
 
+    dispatch(setConfirming(true));
+
     try {
-      transactionId = await dispatch(addStandardAssetThunk(_password)).unwrap();
+      await dispatch(
+        addStandardAssetHoldingsThunk({
+          accountId: account.id,
+          assets: [selectedAsset],
+          genesisHash: selectedNetwork.genesisHash,
+          password: _password,
+        })
+      ).unwrap();
 
-      if (transactionId) {
-        dispatch(
-          createNotification({
-            title: t<string>('headings.addedAsset', {
-              symbol:
-                selectedAsset.unitName ||
-                selectedAsset.name ||
-                selectedAsset.id,
-            }),
-            type: 'success',
-          })
-        );
+      dispatch(
+        createNotification({
+          title: t<string>('headings.addedAsset', {
+            symbol:
+              selectedAsset.unitName || selectedAsset.name || selectedAsset.id,
+          }),
+          type: 'success',
+        })
+      );
 
-        // force an update of account information and transactions
-        dispatch(
-          updateAccountsThunk({
-            accountIds: [account.id],
-            forceInformationUpdate: true,
-            refreshTransactions: true,
-          })
-        );
-
-        handleClose();
-      }
+      handleClose();
     } catch (error) {
       switch (error.code) {
         case ErrorCodeEnum.InvalidPasswordError:
@@ -315,6 +307,8 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           break;
       }
     }
+
+    dispatch(setConfirming(false));
   };
   const handleCancelClick = () => handleClose();
   const handleClearQuery = () => {
@@ -431,26 +425,22 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const renderContent = () => {
     if (selectedNetwork && account) {
       if (selectedAsset) {
+        if (confirming) {
+          return <AddAssetsConfirmingModalContent asset={selectedAsset} />;
+        }
+
         switch (selectedAsset.type) {
           case AssetTypeEnum.ARC0200:
             return (
-              <AddAssetModalARC0200AssetSummaryContent
+              <AddAssetsARC0200AssetSummaryModalContent
                 asset={selectedAsset}
                 explorer={explorer}
                 network={selectedNetwork}
               />
             );
           case AssetTypeEnum.Standard:
-            if (confirming) {
-              return (
-                <AddAssetModalStandardAssetConfirmingContent
-                  asset={selectedAsset}
-                />
-              );
-            }
-
             return (
-              <AddAssetModalStandardAssetSummaryContent
+              <AddAssetsStandardAssetSummaryModalContent
                 account={account}
                 accounts={accounts}
                 asset={selectedAsset}
@@ -523,14 +513,14 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           {selectedNetwork &&
             allAssets.map((value, index) =>
               value.type === AssetTypeEnum.Standard ? (
-                <AddAssetStandardAssetItem
+                <AddAssetsStandardAssetItem
                   asset={value}
                   key={`add-asset-modal-item-${index}`}
                   network={selectedNetwork}
                   onClick={handleSelectAssetClick}
                 />
               ) : (
-                <AddAssetARC0200AssetItem
+                <AddAssetsARC0200AssetItem
                   asset={value}
                   key={`add-asset-modal-item-${index}`}
                   network={selectedNetwork}
@@ -656,4 +646,4 @@ const AddAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   );
 };
 
-export default AddAssetModal;
+export default AddAssetsModal;

@@ -14,7 +14,7 @@ import MainLayout from '@extension/components/MainLayout';
 import { PASSWORD_LOCK_ROUTE } from '@extension/constants';
 
 // features
-import { reset as resetAddAsset } from '@extension/features/add-asset';
+import { reset as resetAddAsset } from '@extension/features/add-assets';
 import {
   fetchAccountsFromStorageThunk,
   startPollingForAccountsThunk,
@@ -52,7 +52,7 @@ import useOnNewAssets from '@extension/hooks/useOnNewAssets';
 import useNotifications from '@extension/hooks/useNotifications';
 
 // modals
-import AddAssetModal from '@extension/modals/AddAssetModal';
+import AddAssetsModal from '@extension/modals/AddAssetsModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
 import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
@@ -87,7 +87,7 @@ const Root: FC = () => {
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
   // handlers
-  const handleAddAssetModalClose = () => dispatch(resetAddAsset());
+  const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
   const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
@@ -144,7 +144,7 @@ const Root: FC = () => {
       <EnableModal onClose={handleEnableModalClose} />
       <SignTxnsModal onClose={handleSignTxnsModalClose} />
       <SignBytesModal onClose={handleSignBytesModalClose} />
-      <AddAssetModal onClose={handleAddAssetModalClose} />
+      <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />

@@ -55,7 +55,7 @@ const queryStandardAssetThunk: AsyncThunk<
     const account: IAccount | null =
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentStandardAssets: IAssetsWithNextToken<IStandardAsset> =
-      getState().addAsset.standardAssets;
+      getState().addAssets.standardAssets;
     const logger: ILogger = getState().system.logger;
     const online: boolean = getState().system.online;
     const selectedNetwork: INetworkWithTransactionParams | null =

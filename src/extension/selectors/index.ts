@@ -1,10 +1,3 @@
-export { default as useSelectAccountTransactionsByAddress } from './accounts/useSelectActiveAccountTransactions';
-export { default as useSelectAddAssetARC0200Assets } from './useSelectAddAssetARC0200Assets';
-export { default as useSelectAddAssetConfirming } from './useSelectAddAssetConfirming';
-export { default as useSelectAddAssetAccount } from './useSelectAddAssetAccount';
-export { default as useSelectAddAssetFetching } from './useSelectAddAssetFetching';
-export { default as useSelectAddAssetSelectedAsset } from './useSelectAddAssetSelectedAsset';
-export { default as useSelectAddAssetStandardAssets } from './useSelectAddAssetStandardAssets';
 export { default as useSelectColorMode } from './useSelectColorMode';
 export { default as useSelectDebugLogging } from './useSelectDebugLogging';
 export { default as useSelectEnableRequest } from './useSelectEnableRequest';
@@ -33,6 +26,7 @@ export { default as useSelectUpdatingStandardAssets } from './useSelectUpdatingS
 export { default as useSelectWalletConnectModalOpen } from './useSelectWalletConnectModalOpen';
 export { default as useSelectWeb3Wallet } from './useSelectWeb3Wallet';
 export * from './accounts';
+export * from './add-assets';
 export * from './arc-0072-assets';
 export * from './arc-0200-assets';
 export * from './registration';
