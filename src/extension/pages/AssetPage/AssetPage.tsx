@@ -105,10 +105,6 @@ const AssetPage: FC = () => {
     amountInStandardUnits,
   } = useAssetPage({
     assetId: assetId || null,
-    onError: () =>
-      navigate(ACCOUNTS_ROUTE, {
-        replace: true,
-      }),
   });
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();

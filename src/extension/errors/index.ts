@@ -12,6 +12,7 @@ export { default as InvalidPasswordError } from './InvalidPasswordError';
 export { default as MalformedDataError } from './MalformedDataError';
 export { default as NetworkConnectionError } from './NetworkConnectionError';
 export { default as NetworkNotSelectedError } from './NetworkNotSelectedError';
+export { default as NotAZeroBalanceError } from './NotAZeroBalanceError';
 export { default as NotEnoughMinimumBalanceError } from './NotEnoughMinimumBalanceError';
 export { default as OfflineError } from './OfflineError';
 export { default as ParsingError } from './ParsingError';

@@ -173,7 +173,7 @@ const translation: IResourceLanguage = {
     [`removeAsset_${AssetTypeEnum.ARC0200}`]:
       'Are you sure you want to hide {{symbol}}? You can re-add it back to your asset holdings again.',
     removeAssetConfirming:
-      'Please wait while we confirm the removing asset {{symbol}} with the network.',
+      'Please wait while we confirm the opt-out of the asset {{symbol}} with the network.',
     [`removeAssetConfirming_${AssetTypeEnum.ARC0200}`]:
       'Hiding asset {{symbol}}.',
     saveMnemonicPhrase1:
@@ -190,7 +190,7 @@ const translation: IResourceLanguage = {
     signTransactionsRequest:
       'An application is requesting to sign multiple transactions.',
     standardAssetOptIn:
-      'Please wait while we confirm the adding asset {{asset}} with the network.',
+      'Please wait while we confirm the opt-in of the asset {{asset}} with the network.',
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
     transactionIdCopied: 'Transaction ID copied!',
@@ -208,6 +208,7 @@ const translation: IResourceLanguage = {
       code_2000: 'The password seems to be invalid.',
       code_2003: 'This account already exists.',
       code_4001: 'Your balance will fall below the minimum balance required.',
+      code_4002: 'Standard assets must have a zero balance.',
       code_6000: 'There was an error starting the camera.',
     },
     inputs: {
@@ -227,6 +228,7 @@ const translation: IResourceLanguage = {
       code_2000: '2000 Invalid Password',
       code_2003: '2003 Account Already Exists',
       code_4001: '4001 Minimum Balance Required',
+      code_4002: '4002 Assets Need A Zero Balance',
       code_6000: '6000 Camera Error',
     },
   },

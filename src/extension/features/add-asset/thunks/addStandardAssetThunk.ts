@@ -159,6 +159,7 @@ const addStandardAssetThunk: AsyncThunk<
       calculateMinimumBalanceRequirementForStandardAssets({
         account,
         network: selectedNetwork,
+        numOfStandardAssets: 1,
       }).plus(new BigNumber(selectedNetwork.minFee)); // current minimum account balance + minimum balance required to add the asset + the transaction fee
 
     // if the account balance is below the minimum required for adding a standard asset, error
@@ -216,7 +217,7 @@ const addStandardAssetThunk: AsyncThunk<
       // on success, return the transaction id
       return sentRawTransaction.txId;
     } catch (error) {
-      logger.debug(`${AddAssetThunkEnum.AddStandardAsset}(): ${error.message}`);
+      logger.debug(`${AddAssetThunkEnum.AddStandardAsset}: `, error);
 
       return rejectWithValue(new FailedToSendTransactionError(error.message));
     }

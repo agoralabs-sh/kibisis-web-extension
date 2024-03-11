@@ -1,14 +1,24 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+  Algodv2,
+  makeAssetTransferTxnWithSuggestedParams,
+  SuggestedParams,
+  Transaction,
+} from 'algosdk';
+import BigNumber from 'bignumber.js';
 import browser from 'webextension-polyfill';
 
 // enums
-import { AccountsThunkEnum, AddAssetThunkEnum } from '@extension/enums';
+import { AccountsThunkEnum } from '@extension/enums';
 
 // errors
 import {
   DecryptionError,
+  FailedToSendTransactionError,
   MalformedDataError,
   NetworkNotSelectedError,
+  NotAZeroBalanceError,
+  NotEnoughMinimumBalanceError,
   OfflineError,
 } from '@extension/errors';
 
@@ -23,7 +33,9 @@ import type {
   IAccountInformation,
   IBaseAsyncThunkConfig,
   IMainRootState,
-  INetwork,
+  INetworkWithTransactionParams,
+  IStandardAsset,
+  IStandardAssetHolding,
 } from '@extension/types';
 import type {
   IUpdateStandardAssetHoldingsPayload,
@@ -31,7 +43,12 @@ import type {
 } from '../types';
 
 // utils
+import createAlgodClient from '@common/utils/createAlgodClient';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
+import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
+import { updateAccountInformation, updateAccountTransactions } from '../utils';
+import { NODE_REQUEST_DELAY } from '@extension/constants';
 
 const removeStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return
@@ -49,18 +66,26 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
   ) => {
     const accounts: IAccount[] = getState().accounts.items;
     const logger: ILogger = getState().system.logger;
-    const networks: INetwork[] = getState().networks.items;
+    const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const online: boolean = getState().system.online;
     let account: IAccount | null =
       accounts.find((value) => value.id === accountId) || null;
+    let accountInformation: IAccountInformation;
+    let accountBalanceInAtomicUnits: BigNumber;
     let accountService: AccountService;
     let address: string;
-    let currentAccountInformation: IAccountInformation;
+    let algodClient: Algodv2;
+    let assetHoldingsAboveZeroBalance: IStandardAssetHolding[];
     let encodedGenesisHash: string;
     let errorMessage: string;
-    let network: INetwork | null;
+    let filteredAssets: IStandardAsset[];
+    let minimumBalanceRequirementInAtomicUnits: BigNumber;
+    let network: INetworkWithTransactionParams | null;
     let privateKey: Uint8Array | null;
     let privateKeyService: PrivateKeyService;
+    let transactionIds: string[];
+    let suggestedParams: SuggestedParams;
+    let unsignedTransactions: Transaction[];
 
     if (!account) {
       logger.debug(
@@ -71,7 +96,9 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     }
 
     if (!online) {
-      logger.debug(`${AddAssetThunkEnum.AddStandardAsset}: extension offline`);
+      logger.debug(
+        `${AccountsThunkEnum.RemoveStandardAssetHoldings}: extension offline`
+      );
 
       return rejectWithValue(
         new OfflineError(
@@ -128,12 +155,103 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       return rejectWithValue(error);
     }
 
-    encodedGenesisHash = convertGenesisHashToHex(
-      network.genesisHash
-    ).toUpperCase();
-    currentAccountInformation =
-      account.networkInformation[encodedGenesisHash] ||
+    accountInformation =
+      AccountService.extractAccountInformationForNetwork(account, network) ||
       AccountService.initializeDefaultAccountInformation();
+    filteredAssets = assets.filter((asset) =>
+      accountInformation.standardAssetHoldings.some(
+        (value) => value.id === asset.id
+      )
+    );
+    accountBalanceInAtomicUnits = new BigNumber(
+      accountInformation.atomicBalance
+    );
+    minimumBalanceRequirementInAtomicUnits =
+      calculateMinimumBalanceRequirementForStandardAssets({
+        account,
+        network,
+        numOfStandardAssets: -filteredAssets.length,
+      }).plus(
+        new BigNumber(network.minFee).multipliedBy(filteredAssets.length)
+      ); // current minimum account balance + minimum balance requirement of the removed assets + the transaction fees of each remove asset transaction
+
+    // if the account balance is below the minimum required for adding a standard asset, error
+    if (
+      accountBalanceInAtomicUnits.lt(minimumBalanceRequirementInAtomicUnits)
+    ) {
+      errorMessage = `the required minimum balance to remove assets [${filteredAssets
+        .map(({ id }) => `"${id}"`)
+        .join(
+          ','
+        )}] is "${minimumBalanceRequirementInAtomicUnits}", but the current balance is "${accountBalanceInAtomicUnits}"`;
+
+      logger.debug(
+        `${AccountsThunkEnum.RemoveStandardAssetHoldings}: ${errorMessage}`
+      );
+
+      return rejectWithValue(new NotEnoughMinimumBalanceError(errorMessage));
+    }
+
+    // check that the asset holdings are zero
+    assetHoldingsAboveZeroBalance =
+      accountInformation.standardAssetHoldings.filter(
+        (assetHolding) =>
+          filteredAssets.some((value) => value.id === assetHolding.id) &&
+          new BigNumber(assetHolding.amount).gt(0)
+      );
+
+    if (assetHoldingsAboveZeroBalance.length > 0) {
+      errorMessage = `assets [${assetHoldingsAboveZeroBalance
+        .map(({ id }) => `"${id}"`)
+        .join(',')}] do not have a zero balance`;
+
+      logger.debug(
+        `${AccountsThunkEnum.RemoveStandardAssetHoldings}: ${errorMessage}`
+      );
+
+      return rejectWithValue(new NotAZeroBalanceError(errorMessage));
+    }
+
+    algodClient = createAlgodClient(network, {
+      logger,
+    });
+
+    try {
+      suggestedParams = await algodClient.getTransactionParams().do();
+      unsignedTransactions = filteredAssets.map((value) =>
+        makeAssetTransferTxnWithSuggestedParams(
+          address,
+          address,
+          address,
+          undefined,
+          0,
+          undefined,
+          parseInt(value.id),
+          suggestedParams
+        )
+      );
+
+      logger.debug(
+        `${
+          AccountsThunkEnum.RemoveStandardAssetHoldings
+        }: sending opt-out transactions to the network for assets [${filteredAssets
+          .map(({ id }) => `"${id}"`)
+          .join(',')}]`
+      );
+
+      transactionIds = await signAndSendTransactions({
+        logger,
+        network,
+        privateKey,
+        unsignedTransactions,
+      });
+    } catch (error) {
+      logger.debug(`${AccountsThunkEnum.RemoveStandardAssetHoldings}: `, error);
+
+      return rejectWithValue(new FailedToSendTransactionError(error.message));
+    }
+
+    encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
     accountService = new AccountService({
       logger,
     });
@@ -141,14 +259,27 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       ...account,
       networkInformation: {
         ...account.networkInformation,
-        [encodedGenesisHash]: {
-          ...currentAccountInformation,
-          arc200AssetHoldings:
-            currentAccountInformation.arc200AssetHoldings.filter(
-              (assetHolding) =>
-                !assets.find((value) => value.id === assetHolding.id) // filter the assets holdings that are not in the assets to be removed
-            ),
-        },
+        [encodedGenesisHash]: await updateAccountInformation({
+          address,
+          currentAccountInformation: accountInformation,
+          delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          forceUpdate: true,
+          logger,
+          network,
+        }),
+      },
+      networkTransactions: {
+        ...account.networkTransactions,
+        [encodedGenesisHash]: await updateAccountTransactions({
+          address,
+          currentAccountTransactions:
+            account.networkTransactions[encodedGenesisHash] ||
+            AccountService.initializeDefaultAccountTransactions(),
+          delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          logger,
+          network,
+          refresh: true,
+        }),
       },
     };
 
@@ -159,7 +290,10 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     // save the account to storage
     await accountService.saveAccounts([account]);
 
-    return account;
+    return {
+      account,
+      transactionIds,
+    };
   }
 );
 

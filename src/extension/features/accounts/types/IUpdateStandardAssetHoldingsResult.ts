@@ -3,7 +3,7 @@ import type IUpdateAssetHoldingsResult from './IUpdateAssetHoldingsResult';
 
 interface IUpdateStandardAssetHoldingsResult
   extends IUpdateAssetHoldingsResult {
-  transactionId: string;
+  transactionIds: string[];
 }
 
 export default IUpdateStandardAssetHoldingsResult;

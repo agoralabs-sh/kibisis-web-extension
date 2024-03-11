@@ -20,6 +20,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
@@ -37,7 +38,11 @@ import PasswordInput, {
 import RemoveAssetsConfirmingModalContent from './RemoveAssetsConfirmingModalContent';
 
 // constants
-import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
+import {
+  ACCOUNTS_ROUTE,
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+} from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
@@ -92,6 +97,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const navigate: NavigateFunction = useNavigate();
   // selectors
   const account: IAccount | null = useSelectRemoveAssetsAccount();
   const confirming: boolean = useSelectRemoveAssetsConfirming();
@@ -147,6 +153,11 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
           type: 'success',
         })
       );
+
+      // go to the accounts page
+      navigate(ACCOUNTS_ROUTE, {
+        replace: true,
+      });
 
       handleClose();
     } catch (error) {
@@ -223,6 +234,11 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
           type: 'success',
         })
       );
+
+      // go to the accounts page
+      navigate(ACCOUNTS_ROUTE, {
+        replace: true,
+      });
 
       handleClose();
     } catch (error) {

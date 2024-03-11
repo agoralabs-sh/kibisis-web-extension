@@ -18,21 +18,40 @@ import type { IOptions } from './types';
 export default function calculateMinimumBalanceRequirementForStandardAssets({
   account,
   network,
-  numOfStandardAssets = 1,
+  numOfStandardAssets = 0,
 }: IOptions): BigNumber {
   const accountInformation: IAccountInformation | null =
     AccountService.extractAccountInformationForNetwork(account, network);
+  const roundedNumberOfAssets: number = Math.round(numOfStandardAssets);
   let accountMinimumBalance: BigNumber = new BigNumber(
     MINIMUM_BALANCE_REQUIREMENT
   );
+  let minimumBalanceToRemoveInAtomicUnits: BigNumber;
 
   // if we can't get the account information, return the minimum amount without standard assets
   if (accountInformation) {
     accountMinimumBalance = new BigNumber(accountInformation.minAtomicBalance);
   }
 
+  // if we are removing assets, find out how much we need to remove
+  if (numOfStandardAssets < 0) {
+    minimumBalanceToRemoveInAtomicUnits = new BigNumber(
+      MINIMUM_BALANCE_REQUIREMENT
+    ).multipliedBy(Math.abs(roundedNumberOfAssets));
+    accountMinimumBalance = accountMinimumBalance.minus(
+      minimumBalanceToRemoveInAtomicUnits
+    );
+
+    // if the account balance falls below the minimum balance requirement, just return the minimum balance requirement
+    return accountMinimumBalance.lt(new BigNumber(MINIMUM_BALANCE_REQUIREMENT))
+      ? new BigNumber(MINIMUM_BALANCE_REQUIREMENT)
+      : accountMinimumBalance;
+  }
+
   // minimum account balance + (minimum balance requirement * number of standard assets)
   return accountMinimumBalance.plus(
-    new BigNumber(MINIMUM_BALANCE_REQUIREMENT).multipliedBy(numOfStandardAssets)
+    new BigNumber(MINIMUM_BALANCE_REQUIREMENT).multipliedBy(
+      roundedNumberOfAssets
+    )
   );
 }

@@ -29,7 +29,6 @@ import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 
 export default function useAssetPage({
   assetId,
-  onError,
 }: IUseAssetPageOptions): IUseAssetPageState {
   // selectors
   const account: IAccount | null = useSelectActiveAccount();
@@ -63,11 +62,6 @@ export default function useAssetPage({
           standardAssets.find((value) => value.id === assetId) || null;
       }
 
-      // if there is no asset, we have an error
-      if (!selectedAsset) {
-        return onError();
-      }
-
       setAsset(selectedAsset);
     }
   }, [arc200Assets, assetId, standardAssets]);
@@ -95,11 +89,6 @@ export default function useAssetPage({
         default:
           selectedAssetHolding = null;
           break;
-      }
-
-      // if the account does not have the asset holding, we have an error
-      if (!selectedAssetHolding) {
-        return onError();
       }
 
       setAssetHolding(selectedAssetHolding);
