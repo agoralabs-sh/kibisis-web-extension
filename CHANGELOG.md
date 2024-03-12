@@ -1,3 +1,18 @@
+# [1.14.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0...v1.14.0) (2024-03-12)
+
+
+### Bug Fixes
+
+* set focus to new app window upon creation ([#202](https://github.com/agoralabs-sh/kibisis-web-extension/issues/202)) ([f7b7577](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f7b757785c0df8bec6da6b5e08c3ddbd421e0649))
+
+
+### Features
+
+* display arc-0072 nft asset ([#198](https://github.com/agoralabs-sh/kibisis-web-extension/issues/198)) ([2bb3d28](https://github.com/agoralabs-sh/kibisis-web-extension/commit/2bb3d28e87a8f07ff6eeb3e2f0058710e1c1867f))
+* dont allow adding of standard asset if account balance is below the minimum balance requirement ([#199](https://github.com/agoralabs-sh/kibisis-web-extension/issues/199)) ([272a01a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/272a01a752fb9977fe50add2cdb0142e8ce57714))
+* dont allow sending of assets if account is below the minimum balance ([#200](https://github.com/agoralabs-sh/kibisis-web-extension/issues/200)) ([093db24](https://github.com/agoralabs-sh/kibisis-web-extension/commit/093db247c18ffee90185a6a1228c511968539057))
+* remove standard asset ([#203](https://github.com/agoralabs-sh/kibisis-web-extension/issues/203)) ([7d7c258](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7d7c258f44847c4d4a170ee2517ab9a2139d30ba))
+
 # [1.14.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0-beta.4...v1.14.0-beta.5) (2024-03-12)
 
 
