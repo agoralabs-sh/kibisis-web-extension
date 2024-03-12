@@ -5,6 +5,7 @@ import { AssetTypeEnum } from '@extension/enums';
 import IBaseAsset from './IBaseAsset';
 
 interface INativeCurrency extends IBaseAsset {
+  decimals: number;
   iconUrl: string;
   listingUri: string;
   symbol: string;

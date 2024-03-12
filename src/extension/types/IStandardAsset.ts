@@ -7,6 +7,7 @@ import IBaseAsset from './IBaseAsset';
 /**
  * @property {string | null} clawbackAddress - the address of the account used to clawback holdings of this asset.
  * @property {string} creator - the address of the account that created this asset.
+ * @property {number} decimals - the number of digits to use after the decimal point when displaying this asset.
  * @property {boolean} defaultFrozen - whether holdings of this asset are frozen by default.
  * @property {boolean} deleted - whether this asset is deleted or not.
  * @property {string | null} freezeAddress - the address of the account that can freeze this asset.
@@ -30,6 +31,7 @@ import IBaseAsset from './IBaseAsset';
 interface IStandardAsset extends IBaseAsset {
   clawbackAddress: string | null;
   creator: string;
+  decimals: number;
   defaultFrozen: boolean;
   deleted: boolean;
   freezeAddress: string | null;
