@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/use-dependencies
 
   ##
-  # lint, build and test
+  # lint, type-check and test
   ##
 
   lint:
@@ -33,9 +33,37 @@ jobs:
       - name: "👕 Lint"
         run: yarn lint
 
+  type_check:
+    name: "Type Check"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "🔍 Type Check"
+        run: yarn type-check
+
+  test:
+    name: "Test"
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "🧪 Test"
+        run: yarn test
+
+  ##
+  # build
+  ##
+
   build_chrome:
     name: "Build Chrome"
-    needs: install
+    needs: [install, type_check]
     runs-on: ubuntu-latest
     environment: development
     steps:
@@ -60,7 +88,7 @@ jobs:
 
   build_edge:
     name: "Build Edge"
-    needs: install
+    needs: [install, type_check]
     runs-on: ubuntu-latest
     environment: development
     steps:
@@ -85,7 +113,7 @@ jobs:
 
   build_firefox:
     name: "Build Firefox"
-    needs: install
+    needs: [install, type_check]
     runs-on: ubuntu-latest
     environment: development
     steps:
@@ -107,18 +135,6 @@ jobs:
         with:
           name: firefox_build
           path: firefox_build.zip
-
-  test:
-    name: "Test"
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - name: "🛎 Checkout"
-        uses: actions/checkout@v4
-      - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
-      - name: "🧪 Test"
-        run: yarn test
 
   ##
   # build validation
