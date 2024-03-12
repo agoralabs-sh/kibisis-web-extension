@@ -434,7 +434,7 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
             return (
               <AddAssetsARC0200AssetSummaryModalContent
                 asset={selectedAsset}
-                explorer={explorer}
+                blockExplorer={explorer}
                 network={selectedNetwork}
               />
             );

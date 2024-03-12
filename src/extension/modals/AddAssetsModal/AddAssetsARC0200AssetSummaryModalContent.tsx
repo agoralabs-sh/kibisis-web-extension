@@ -8,12 +8,13 @@ import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import ModalItem from '@extension/components/ModalItem';
+import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import PageItem from '@extension/components/PageItem';
 
 // constants
-import { DEFAULT_GAP, PAGE_ITEM_HEIGHT } from '@extension/constants';
+import { DEFAULT_GAP, MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
@@ -21,36 +22,22 @@ import { AssetTypeEnum } from '@extension/enums';
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import {
-  IARC0200Asset,
-  IBlockExplorer,
-  INetworkWithTransactionParams,
-} from '@extension/types';
+import type { IAddAssetsARC0200SummaryModalContentProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 
-interface IProps {
-  asset: IARC0200Asset;
-  explorer: IBlockExplorer | null;
-  network: INetworkWithTransactionParams;
-}
-
-const AddAssetsARC0200AssetSummaryModalContent: FC<IProps> = ({
-  asset,
-  explorer,
-  network,
-}: IProps) => {
+const AddAssetsARC0200AssetSummaryModalContent: FC<
+  IAddAssetsARC0200SummaryModalContentProps
+> = ({ asset, blockExplorer, network }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const subTextColor: string = useSubTextColor();
   // misc
   const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
     new BigNumber(asset.totalSupply),
@@ -104,84 +91,75 @@ const AddAssetsARC0200AssetSummaryModalContent: FC<IProps> = ({
         <VStack
           alignItems="flex-start"
           justifyContent="flex-start"
-          spacing={DEFAULT_GAP - 2}
+          spacing={0}
           w="full"
         >
           {/*application id*/}
-          <PageItem fontSize="sm" label={t<string>('labels.applicationId')}>
-            <HStack spacing={0}>
-              <Text color={subTextColor} fontSize="sm">
-                {asset.id}
-              </Text>
+          <HStack spacing={1} w="full">
+            <ModalTextItem
+              flexGrow={1}
+              label={`${t<string>('labels.applicationId')}:`}
+              value={asset.id}
+            />
 
-              <CopyIconButton
-                ariaLabel={t<string>('labels.copyApplicationId')}
-                tooltipLabel={t<string>('labels.copyApplicationId')}
-                size="sm"
-                value={asset.id}
+            <CopyIconButton
+              ariaLabel={t<string>('labels.copyApplicationId')}
+              tooltipLabel={t<string>('labels.copyApplicationId')}
+              value={asset.id}
+            />
+
+            {blockExplorer && (
+              <OpenTabIconButton
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: blockExplorer.canonicalName,
+                })}
+                url={`${blockExplorer.baseUrl}${blockExplorer.applicationPath}/${asset.id}`}
               />
-
-              {explorer && (
-                <OpenTabIconButton
-                  size="sm"
-                  tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
-                  })}
-                  url={`${explorer.baseUrl}${explorer.applicationPath}/${asset.id}`}
-                />
-              )}
-            </HStack>
-          </PageItem>
+            )}
+          </HStack>
 
           {/*name*/}
-          <PageItem fontSize="sm" label={t<string>('labels.name')}>
-            <Tooltip aria-label="Asset full name" label={asset.name}>
-              <Text color={subTextColor} fontSize="sm" maxW={150} noOfLines={1}>
-                {asset.name}
-              </Text>
-            </Tooltip>
-          </PageItem>
+          <ModalTextItem
+            label={`${t<string>('labels.name')}:`}
+            tooltipLabel={asset.name}
+            value={asset.name}
+          />
 
           {/*type*/}
-          <PageItem fontSize="sm" label={t<string>('labels.type')}>
-            <AssetBadge type={AssetTypeEnum.ARC0200} />
-          </PageItem>
+          <ModalItem
+            label={`${t<string>('labels.type')}:`}
+            value={<AssetBadge type={AssetTypeEnum.ARC0200} />}
+          />
 
           <MoreInformationAccordion
             color={defaultTextColor}
-            fontSize="sm"
+            fontSize="xs"
             isOpen={isOpen}
-            minButtonHeight={PAGE_ITEM_HEIGHT}
+            minButtonHeight={MODAL_ITEM_HEIGHT}
             onChange={handleMoreInformationToggle}
           >
-            <VStack spacing={DEFAULT_GAP - 2} w="full">
+            <VStack spacing={0} w="full">
               {/*decimals*/}
-              <PageItem fontSize="sm" label={t<string>('labels.decimals')}>
-                <Text color={subTextColor} fontSize="sm">
-                  {asset.decimals.toString()}
-                </Text>
-              </PageItem>
+              <ModalTextItem
+                label={`${t<string>('labels.decimals')}:`}
+                value={asset.decimals.toString()}
+              />
 
               {/*total supply*/}
-              <PageItem fontSize="sm" label={t<string>('labels.totalSupply')}>
-                <Tooltip
-                  aria-label="Asset amount with unrestricted decimals"
-                  label={formatCurrencyUnit(totalSupplyInStandardUnits, {
-                    decimals: asset.decimals,
-                    thousandSeparatedOnly: true,
-                  })}
-                >
-                  <Text color={subTextColor} fontSize="sm">
-                    {formatCurrencyUnit(
-                      convertToStandardUnit(
-                        new BigNumber(asset.totalSupply),
-                        asset.decimals
-                      ),
-                      { decimals: asset.decimals }
-                    )}
-                  </Text>
-                </Tooltip>
-              </PageItem>
+              <ModalTextItem
+                label={`${t<string>('labels.totalSupply')}:`}
+                tooltipLabel={formatCurrencyUnit(totalSupplyInStandardUnits, {
+                  decimals: asset.decimals,
+                  thousandSeparatedOnly: true,
+                })}
+                value={formatCurrencyUnit(
+                  convertToStandardUnit(
+                    new BigNumber(asset.totalSupply),
+                    asset.decimals
+                  ),
+                  { decimals: asset.decimals }
+                )}
+              />
             </VStack>
           </MoreInformationAccordion>
         </VStack>

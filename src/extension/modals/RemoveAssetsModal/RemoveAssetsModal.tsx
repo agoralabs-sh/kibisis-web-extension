@@ -25,10 +25,10 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetBadge from '@extension/components/AssetBadge';
-import AssetDisplay from '@extension/components/AssetDisplay';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import InfoIconTooltip from '@extension/components/InfoIconTooltip';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
@@ -402,34 +402,27 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
 
           {/*fee*/}
           {selectedAsset.type === AssetTypeEnum.Standard && (
-            <ModalItem
-              label={`${t<string>('labels.fee')}:`}
-              value={
-                <HStack spacing={1}>
-                  <AssetDisplay
-                    atomicUnitAmount={new BigNumber(selectedNetwork.minFee)}
-                    amountColor={subTextColor}
-                    decimals={selectedNetwork.nativeCurrency.decimals}
-                    fontSize="sm"
-                    icon={createIconFromDataUri(
-                      selectedNetwork.nativeCurrency.iconUrl,
-                      {
-                        color: subTextColor,
-                        h: 3,
-                        w: 3,
-                      }
-                    )}
-                    unit={selectedNetwork.nativeCurrency.symbol}
-                  />
+            <HStack spacing={1} w="full">
+              <ModalAssetItem
+                amountInAtomicUnits={new BigNumber(selectedNetwork.minFee)}
+                decimals={selectedNetwork.nativeCurrency.decimals}
+                icon={createIconFromDataUri(
+                  selectedNetwork.nativeCurrency.iconUrl,
+                  {
+                    color: subTextColor,
+                    h: 3,
+                    w: 3,
+                  }
+                )}
+                label={`${t<string>('labels.fee')}:`}
+              />
 
-                  {/*info*/}
-                  <InfoIconTooltip
-                    color={subTextColor}
-                    label={t<string>('captions.optOutFee')}
-                  />
-                </HStack>
-              }
-            />
+              {/*info*/}
+              <InfoIconTooltip
+                color={subTextColor}
+                label={t<string>('captions.optOutFee')}
+              />
+            </HStack>
           )}
 
           <HStack spacing={1} w="full">
