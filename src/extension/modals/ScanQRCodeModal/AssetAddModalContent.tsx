@@ -53,6 +53,7 @@ import {
 // features
 import {
   addARC0200AssetHoldingsThunk,
+  IUpdateAssetHoldingsResult,
   saveActiveAccountDetails,
 } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
@@ -139,7 +140,7 @@ const AssetAddModalContent: FC<IProps> = ({
   // handlers
   const handleAddClick = async () => {
     const _functionName: string = 'handleAddClick';
-    let updatedAccount: IAccount | null;
+    let result: IUpdateAssetHoldingsResult;
 
     if (!account || !asset || !network) {
       return;
@@ -159,7 +160,7 @@ const AssetAddModalContent: FC<IProps> = ({
     setSaving(true);
 
     try {
-      updatedAccount = await dispatch(
+      result = await dispatch(
         addARC0200AssetHoldingsThunk({
           accountId: account.id,
           assets: [asset],
@@ -167,25 +168,23 @@ const AssetAddModalContent: FC<IProps> = ({
         })
       ).unwrap();
 
-      if (updatedAccount) {
-        dispatch(
-          createNotification({
-            title: t<string>('headings.addedAsset', {
-              symbol: asset.symbol,
-            }),
-            type: 'success',
-          })
-        );
+      dispatch(
+        createNotification({
+          title: t<string>('headings.addedAsset', {
+            symbol: asset.symbol,
+          }),
+          type: 'success',
+        })
+      );
 
-        // go to the updated account and the assets tab
-        dispatch(
-          saveActiveAccountDetails({
-            accountId: updatedAccount.id,
-            tabIndex: AccountTabEnum.Assets,
-          })
-        );
-        navigate(ACCOUNTS_ROUTE);
-      }
+      // go to the updated account and the assets tab
+      dispatch(
+        saveActiveAccountDetails({
+          accountId: result.account.id,
+          tabIndex: AccountTabEnum.Assets,
+        })
+      );
+      navigate(ACCOUNTS_ROUTE);
 
       // clean up and close
       handleOnComplete();

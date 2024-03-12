@@ -53,7 +53,7 @@ export default class ARC0200AssetService {
   private createItemKey(genesisHash: string): string {
     return `${ARC0200_ASSETS_KEY_PREFIX}${convertGenesisHashToHex(
       genesisHash
-    ).toUpperCase()}`;
+    )}`;
   }
 
   /**

@@ -1,5 +1,5 @@
 // enums
-import { TransactionTypeEnum } from '@extension/enums';
+import { AssetTypeEnum, TransactionTypeEnum } from '@extension/enums';
 
 // types
 import { IResourceLanguage } from '@extension/types';
@@ -23,6 +23,7 @@ const translation: IResourceLanguage = {
     dismiss: 'Dismiss',
     download: 'Download',
     getStarted: 'Get Started',
+    hide: 'Hide',
     import: 'Import',
     moreDetails: 'More Details',
     next: 'Next',
@@ -30,6 +31,7 @@ const translation: IResourceLanguage = {
     previous: 'Previous',
     receive: 'Receive',
     reject: 'Reject',
+    remove: 'Remove',
     removeAllSessions: 'Remove All Sessions',
     reset: 'Reset',
     save: 'Save',
@@ -44,6 +46,9 @@ const translation: IResourceLanguage = {
     accountAlreadyAdded: 'Account already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
+    addAssetConfirming:
+      'Please wait while we confirm the opt-in of the asset {{symbol}} with the network.',
+    [`addAssetConfirming_${AssetTypeEnum.ARC0200}`]: 'Adding asset {{symbol}}.',
     addAssetURI:
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
@@ -103,8 +108,6 @@ const translation: IResourceLanguage = {
     freezeManagerAddressDoesNotMatch:
       'This account does not have the authority to freeze/unfreeze this asset. This transaction will likely fail.',
     groupIdCopied: 'Group ID copied!',
-    hideAssetConfirm:
-      'Are you sure you want to hide {{symbol}}? You can re-add it back to your asset holdings again.',
     higherFee:
       'The fee is higher as this is the first time the recipient has interacted with the {{symbol}} asset.',
     importAccount: 'You are about to import the following account.',
@@ -124,6 +127,8 @@ const translation: IResourceLanguage = {
     minimumBalanceTooLow: `Your current balance will fall below the minimum balance requirement with this transaction. You need at least {{cost}} {{symbol}} to complete this transaction. Your current balance is {{balance}} {{symbol}}.`,
     mustEnterPasswordToAuthorizeOptIn:
       'You must enter your password to authorize an opt-in transaction.',
+    mustEnterPasswordToAuthorizeOptOut:
+      'You must enter your password to authorize an opt-out transaction.',
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
     mustEnterPasswordToImportAccount:
       'You must enter your password to import this account.',
@@ -153,6 +158,8 @@ const translation: IResourceLanguage = {
     openUrl: 'Open URL in your browser',
     optInFee:
       'Standard assets require an "opt-in" fee. This is a transaction of the asset with a "0" amount sent to yourself.',
+    optOutFee:
+      'Standard assets require an "opt-out" fee. This is a transaction of the asset with a "0" amount sent to yourself.',
     passwordLockDescription: 'Please re-enter your password to unlock.',
     passwordScoreInfo:
       'To conform with our <2>Strong Password Policy</2>, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
@@ -164,6 +171,14 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Are you sure you want to remove all sessions?',
     removeAllAccountsWarning:
       'Removing all accounts will also remove this session',
+    removeAsset:
+      'Are you sure you want to remove {{symbol}}? You will have to opt-in to this asset again.',
+    [`removeAsset_${AssetTypeEnum.ARC0200}`]:
+      'Are you sure you want to hide {{symbol}}? You can re-add it back to your asset holdings again.',
+    removeAssetConfirming:
+      'Please wait while we confirm the opt-out of the asset {{symbol}} with the network.',
+    [`removeAssetConfirming_${AssetTypeEnum.ARC0200}`]:
+      'Hiding asset {{symbol}}.',
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
@@ -177,8 +192,6 @@ const translation: IResourceLanguage = {
       'An application is requesting to sign a transaction.',
     signTransactionsRequest:
       'An application is requesting to sign multiple transactions.',
-    standardAssetOptIn:
-      'Please wait while we confirm the adding asset {{asset}} with the network.',
     support:
       'Please <2>contact us</2> for further assistance so we can resolve this issue for you.',
     transactionIdCopied: 'Transaction ID copied!',
@@ -196,6 +209,7 @@ const translation: IResourceLanguage = {
       code_2000: 'The password seems to be invalid.',
       code_2003: 'This account already exists.',
       code_4001: 'Your balance will fall below the minimum balance required.',
+      code_4002: 'Standard assets must have a zero balance.',
       code_6000: 'There was an error starting the camera.',
     },
     inputs: {
@@ -215,6 +229,7 @@ const translation: IResourceLanguage = {
       code_2000: '2000 Invalid Password',
       code_2003: '2003 Account Already Exists',
       code_4001: '4001 Minimum Balance Required',
+      code_4002: '4002 Assets Need A Zero Balance',
       code_6000: '6000 Camera Error',
     },
   },
@@ -236,7 +251,6 @@ const translation: IResourceLanguage = {
     enterYourSeedPhrase: 'Enter your seed phrase',
     factoryReset: 'Factory Reset',
     generateSeedPhrase: 'Generate seed phrase',
-    hideAssetConfirm: 'Hide {{symbol}}',
     importAccount: 'Import Account',
     importAccountViaQRCode: 'Create A Pre-Funded Account',
     importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',
@@ -255,6 +269,10 @@ const translation: IResourceLanguage = {
     passwordLock: 'Welcome back',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
+    removeAsset: 'Remove {{symbol}}',
+    [`removeAsset_${AssetTypeEnum.ARC0200}`]: 'Hide {{symbol}}',
+    removedAsset: 'Asset {{symbol}} Removed!',
+    [`removedAsset_${AssetTypeEnum.ARC0200}`]: 'Asset {{symbol}} Hidden!',
     scanningForQRCode: 'Scanning For QR Code',
     scanQrCode: 'Scan QR Code',
     selectAccount: 'Select Account',
@@ -344,7 +362,6 @@ const translation: IResourceLanguage = {
     frozenAccountBalance: 'Frozen Account Balance',
     from: 'From',
     groupId: 'Group ID',
-    hideAsset: 'Hide Asset',
     id: 'ID',
     information: 'Information',
     innerTransactions: 'Inner Transactions',
@@ -377,6 +394,8 @@ const translation: IResourceLanguage = {
     preferredBlockExplorer: 'Preferred Block Explorer',
     preferredNFTExplorer: 'Preferred NFT Explorer',
     removeAccount: 'Remove Account',
+    removeAsset: 'Remove Asset',
+    [`removeAsset_${AssetTypeEnum.ARC0200}`]: 'Hide Asset',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
     scanQRCode: 'Scan QR Code',

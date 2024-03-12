@@ -35,7 +35,6 @@ const AddressDisplay: FC<IProps> = ({
   ariaLabel,
   color,
   fontSize = 'sm',
-  network,
 }: IProps) => {
   // selectors
   const accounts: IAccount[] = useSelectAccounts();

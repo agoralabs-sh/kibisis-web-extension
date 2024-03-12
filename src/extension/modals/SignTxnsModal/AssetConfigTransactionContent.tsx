@@ -148,7 +148,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
           <>
             {/*total supply*/}
             <SignTxnsAssetItem
-              atomicUnitAmount={new BigNumber(asset.total)}
+              atomicUnitAmount={new BigNumber(asset.totalSupply)}
               decimals={asset.decimals}
               displayUnit={true}
               icon={icon}

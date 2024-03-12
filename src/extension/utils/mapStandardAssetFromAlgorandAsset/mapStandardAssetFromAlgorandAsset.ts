@@ -27,7 +27,7 @@ export default function mapStandardAssetFromAlgorandAsset(
     name: algorandAsset.params.name || null,
     nameBase64: algorandAsset.params['name-b64'] || null,
     reserveAddress: algorandAsset.params.reserve || null,
-    total: new BigNumber(
+    totalSupply: new BigNumber(
       String(algorandAsset.params.total as bigint)
     ).toString(),
     type: AssetTypeEnum.Standard,

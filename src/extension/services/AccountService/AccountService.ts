@@ -14,6 +14,9 @@ import {
 // enums
 import { AssetTypeEnum } from '@extension/enums';
 
+// errors
+import { DecodingError } from '@extension/errors';
+
 // services
 import StorageManager from '../StorageManager';
 
@@ -52,7 +55,7 @@ export default class AccountService {
    * @returns {string} a hexadecimal encoded public key from the Algrand address.
    */
   public static convertAlgorandAddressToPublicKey(address: string): string {
-    return encodeHex(decodeAddress(address).publicKey).toUpperCase();
+    return AccountService.encodePublicKey(decodeAddress(address).publicKey);
   }
 
   /**
@@ -63,7 +66,30 @@ export default class AccountService {
   public static convertPublicKeyToAlgorandAddress(
     encodedPublicKey: string
   ): string {
-    return encodeAddress(decodeAsHex(encodedPublicKey.toUpperCase()));
+    return encodeAddress(AccountService.decodePublicKey(encodedPublicKey));
+  }
+
+  /**
+   * Convenience function that simply decodes a hexadecimal encoded public key and returns it as bytes.
+   * @param {string} encodedPublicKey - a hexadecimal encoded public key.
+   * @returns {Uint8Array} the decoded public key.
+   * @throws {DecodingError} if the supplied string is not hexadecimal.
+   */
+  public static decodePublicKey(encodedPublicKey: string): Uint8Array {
+    try {
+      return decodeAsHex(encodedPublicKey.toUpperCase());
+    } catch (error) {
+      throw new DecodingError(`failed to decode public key: ${error.message}`);
+    }
+  }
+
+  /**
+   * Convenience function that simply encodes a raw public key to hexadecimal in uppercase.
+   * @param {Uint8Array} publicKey - the raw public key.
+   * @returns {string} a hexadecimal encoded public key.
+   */
+  public static encodePublicKey(publicKey: Uint8Array): string {
+    return encodeHex(publicKey).toUpperCase();
   }
 
   /**
@@ -77,7 +103,7 @@ export default class AccountService {
     { genesisHash }: INetwork
   ): IAccountInformation | null {
     const accountInformation: IAccountInformation | null =
-      networkInformation[convertGenesisHashToHex(genesisHash).toUpperCase()];
+      networkInformation[convertGenesisHashToHex(genesisHash)];
 
     if (!accountInformation) {
       return null;
@@ -99,10 +125,7 @@ export default class AccountService {
     { networkTransactions }: IAccount,
     { genesisHash }: INetwork
   ): IAccountTransactions | null {
-    return (
-      networkTransactions[convertGenesisHashToHex(genesisHash).toUpperCase()] ||
-      null
-    );
+    return networkTransactions[convertGenesisHashToHex(genesisHash)] || null;
   }
 
   /**
@@ -125,7 +148,7 @@ export default class AccountService {
       networkInformation: networks.reduce<Record<string, IAccountInformation>>(
         (acc, { genesisHash }) => ({
           ...acc,
-          [convertGenesisHashToHex(genesisHash).toUpperCase()]:
+          [convertGenesisHashToHex(genesisHash)]:
             AccountService.initializeDefaultAccountInformation(),
         }),
         {}
@@ -135,7 +158,7 @@ export default class AccountService {
       >(
         (acc, { genesisHash }) => ({
           ...acc,
-          [convertGenesisHashToHex(genesisHash).toUpperCase()]:
+          [convertGenesisHashToHex(genesisHash)]:
             AccountService.initializeDefaultAccountTransactions(),
         }),
         {}
@@ -298,7 +321,7 @@ export default class AccountService {
       networkInformation: networks.reduce<Record<string, IAccountInformation>>(
         (acc, { genesisHash }) => {
           const encodedGenesisHash: string =
-            convertGenesisHashToHex(genesisHash).toUpperCase();
+            convertGenesisHashToHex(genesisHash);
           const accountInformation: IAccountInformation = {
             ...AccountService.initializeDefaultAccountInformation(), // initialize with any new values
             ...account.networkInformation[encodedGenesisHash],
@@ -330,8 +353,7 @@ export default class AccountService {
       networkTransactions: networks.reduce<
         Record<string, IAccountTransactions>
       >((acc, { genesisHash }) => {
-        const encodedGenesisHash: string =
-          convertGenesisHashToHex(genesisHash).toUpperCase();
+        const encodedGenesisHash: string = convertGenesisHashToHex(genesisHash);
         const accountTransactions: IAccountTransactions = {
           ...AccountService.initializeDefaultAccountTransactions(), // initialize with any new values
           ...account.networkTransactions[encodedGenesisHash],
@@ -393,7 +415,7 @@ export default class AccountService {
               networkTransactions: networks.reduce(
                 (acc, { genesisHash }) => ({
                   ...acc,
-                  [convertGenesisHashToHex(genesisHash).toUpperCase()]:
+                  [convertGenesisHashToHex(genesisHash)]:
                     AccountService.initializeDefaultAccountTransactions(),
                 }),
                 {}

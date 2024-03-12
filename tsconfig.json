@@ -31,7 +31,7 @@
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
-      "@extension/features/add-asset": ["src/extension/features/add-asset"],
+      "@extension/features/add-assets": ["src/extension/features/add-assets"],
       "@extension/features/arc0072-assets": [
         "src/extension/features/arc0072-assets"
       ],
@@ -49,6 +49,9 @@
       ],
       "@extension/features/registration": [
         "src/extension/features/registration"
+      ],
+      "@extension/features/remove-assets": [
+        "src/extension/features/remove-assets"
       ],
       "@extension/features/send-assets": ["src/extension/features/send-assets"],
       "@extension/features/sessions": ["src/extension/features/sessions"],

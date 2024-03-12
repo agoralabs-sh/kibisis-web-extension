@@ -36,10 +36,10 @@ export default function createCommonConfig(): Configuration {
           'features',
           'accounts'
         ),
-        ['@extension/features/add-asset']: resolve(
+        ['@extension/features/add-assets']: resolve(
           extensionPath,
           'features',
-          'add-asset'
+          'add-assets'
         ),
         ['@extension/features/arc0072-assets']: resolve(
           extensionPath,
@@ -80,6 +80,11 @@ export default function createCommonConfig(): Configuration {
           extensionPath,
           'features',
           'registration'
+        ),
+        ['@extension/features/remove-assets']: resolve(
+          extensionPath,
+          'features',
+          'remove-assets'
         ),
         ['@extension/features/send-assets']: resolve(
           extensionPath,

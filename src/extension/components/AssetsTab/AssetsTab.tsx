@@ -22,7 +22,7 @@ import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { setAccountId as setAddAssetAccountId } from '@extension/features/add-asset';
+import { setAccountId as setAddAssetAccountId } from '@extension/features/add-assets';
 
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
