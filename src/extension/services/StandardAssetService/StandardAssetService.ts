@@ -43,7 +43,7 @@ export default class StandardAssetService {
       name: null,
       nameBase64: null,
       reserveAddress: null,
-      total: '0',
+      totalSupply: '0',
       type: AssetTypeEnum.Standard,
       unitName: null,
       unitNameBase64: null,
@@ -65,7 +65,7 @@ export default class StandardAssetService {
   private createItemKey(genesisHash: string): string {
     return `${STANDARD_ASSETS_KEY_PREFIX}${convertGenesisHashToHex(
       genesisHash
-    ).toUpperCase()}`;
+    )}`;
   }
 
   /**
@@ -88,9 +88,13 @@ export default class StandardAssetService {
       return [];
     }
 
-    return assets.map((value) => ({
+    return assets.map(({ total, ...currentProps }) => ({
       ...StandardAssetService.initializeDefaultStandardAsset(), // add any new properties
-      ...value,
+      ...currentProps,
+      // parse the deprecated props
+      ...(total && {
+        totalSupply: total,
+      }),
     }));
   }
 

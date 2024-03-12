@@ -69,7 +69,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
   const accountAddress: string =
     AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
   const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
-    new BigNumber(asset.total),
+    new BigNumber(asset.totalSupply),
     asset.decimals
   );
   const isEnoughMinimumBalance: boolean = accountBalanceInAtomicUnits.gte(
@@ -283,6 +283,16 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                 })}
               />
 
+              {/*default frozen*/}
+              <ModalTextItem
+                label={`${t<string>('labels.defaultFrozen')}:`}
+                value={
+                  asset.defaultFrozen
+                    ? t<string>('labels.yes')
+                    : t<string>('labels.no')
+                }
+              />
+
               {/*creator account*/}
               <HStack spacing={1} w="full">
                 <ModalItem
@@ -309,16 +319,6 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                   />
                 )}
               </HStack>
-
-              {/*default frozen*/}
-              <ModalTextItem
-                label={`${t<string>('labels.defaultFrozen')}:`}
-                value={
-                  asset.defaultFrozen
-                    ? t<string>('labels.yes')
-                    : t<string>('labels.no')
-                }
-              />
 
               {/*clawback address*/}
               {asset.clawbackAddress && (

@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
 import AssetBadge from '@extension/components/AssetBadge';
@@ -56,6 +57,7 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectFetchingStandardAssets,
   useSelectSelectedNetwork,
   useSelectSettingsPreferredBlockExplorer,
@@ -66,6 +68,7 @@ import AccountService from '@extension/services/AccountService';
 
 // types
 import type {
+  IAccount,
   IAppThunkDispatch,
   IBlockExplorer,
   INetwork,
@@ -75,6 +78,7 @@ import type {
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
@@ -92,8 +96,9 @@ const AssetPage: FC = () => {
     onClose: onMoreInformationClose,
   } = useDisclosure();
   // selectors
+  const accounts: IAccount[] = useSelectAccounts();
   const fetchingAssets: boolean = useSelectFetchingStandardAssets();
-  const explorer: IBlockExplorer | null =
+  const blockExplorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // hooks
@@ -261,96 +266,96 @@ const AssetPage: FC = () => {
             </Tooltip>
           </HStack>
 
-          {/*name*/}
-          {asset.name && (
-            <PageItem fontSize="sm" label={t<string>('labels.name')}>
-              <Tooltip aria-label="Asset name" label={asset.name}>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  maxW={200}
-                  noOfLines={1}
-                  textAlign="center"
-                >
-                  {asset.name}
-                </Text>
-              </Tooltip>
-            </PageItem>
-          )}
-
-          {/*asset id*/}
-          <PageItem
-            fontSize="sm"
-            label={
-              asset.type === AssetTypeEnum.Standard
-                ? t<string>('labels.assetId')
-                : t<string>('labels.applicationId')
-            }
-          >
-            <HStack spacing={1}>
-              <Code
-                borderRadius="md"
-                color={defaultTextColor}
-                fontSize="sm"
-                wordBreak="break-word"
-              >
-                {asset.id}
-              </Code>
-
-              {/*copy asset*/}
-              <CopyIconButton
-                ariaLabel={
-                  asset.type === AssetTypeEnum.Standard
-                    ? t<string>('labels.copyAssetId')
-                    : t<string>('labels.copyApplicationId')
-                }
-                tooltipLabel={
-                  asset.type === AssetTypeEnum.Standard
-                    ? t<string>('labels.copyAssetId')
-                    : t<string>('labels.copyApplicationId')
-                }
-                value={asset.id}
-              />
-
-              {/*open asset on explorer*/}
-              {explorer && (
-                <OpenTabIconButton
-                  tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
-                  })}
-                  url={`${explorer.baseUrl}${
-                    asset.type === AssetTypeEnum.Standard
-                      ? explorer.assetPath
-                      : explorer.applicationPath
-                  }/${asset.id}`}
-                />
-              )}
-            </HStack>
-          </PageItem>
-
-          {/*type*/}
-          <PageItem fontSize="sm" label={t<string>('labels.type')}>
-            <AssetBadge type={asset.type} />
-          </PageItem>
-
-          <MoreInformationAccordion
-            color={defaultTextColor}
-            fontSize="sm"
-            isOpen={isMoreInformationToggleOpen}
-            minButtonHeight={PAGE_ITEM_HEIGHT}
-            onChange={handleMoreInformationToggle}
-          >
-            <VStack spacing={DEFAULT_GAP - 2} w="full">
-              {/*decimals*/}
-              <PageItem fontSize="sm" label={t<string>('labels.decimals')}>
-                <Text color={subTextColor} fontSize="sm">
-                  {asset.decimals.toString()}
-                </Text>
+          <VStack spacing={0} w="full">
+            {/*name*/}
+            {asset.name && (
+              <PageItem fontSize="xs" label={t<string>('labels.name')}>
+                <Tooltip aria-label="Asset name" label={asset.name}>
+                  <Text
+                    color={defaultTextColor}
+                    fontSize="xs"
+                    maxW={200}
+                    noOfLines={1}
+                    textAlign="center"
+                  >
+                    {asset.name}
+                  </Text>
+                </Tooltip>
               </PageItem>
+            )}
 
-              {/*total supply*/}
-              {asset.type === AssetTypeEnum.ARC0200 && (
-                <PageItem fontSize="sm" label={t<string>('labels.totalSupply')}>
+            {/*asset id*/}
+            <PageItem
+              fontSize="xs"
+              label={
+                asset.type === AssetTypeEnum.Standard
+                  ? t<string>('labels.assetId')
+                  : t<string>('labels.applicationId')
+              }
+            >
+              <HStack spacing={1}>
+                <Code
+                  borderRadius="md"
+                  color={defaultTextColor}
+                  fontSize="xs"
+                  wordBreak="break-word"
+                >
+                  {asset.id}
+                </Code>
+
+                {/*copy asset*/}
+                <CopyIconButton
+                  ariaLabel={
+                    asset.type === AssetTypeEnum.Standard
+                      ? t<string>('labels.copyAssetId')
+                      : t<string>('labels.copyApplicationId')
+                  }
+                  tooltipLabel={
+                    asset.type === AssetTypeEnum.Standard
+                      ? t<string>('labels.copyAssetId')
+                      : t<string>('labels.copyApplicationId')
+                  }
+                  value={asset.id}
+                />
+
+                {/*open asset on explorer*/}
+                {blockExplorer && (
+                  <OpenTabIconButton
+                    tooltipLabel={t<string>('captions.openOn', {
+                      name: blockExplorer.canonicalName,
+                    })}
+                    url={`${blockExplorer.baseUrl}${
+                      asset.type === AssetTypeEnum.Standard
+                        ? blockExplorer.assetPath
+                        : blockExplorer.applicationPath
+                    }/${asset.id}`}
+                  />
+                )}
+              </HStack>
+            </PageItem>
+
+            {/*type*/}
+            <PageItem fontSize="xs" label={t<string>('labels.type')}>
+              <AssetBadge type={asset.type} />
+            </PageItem>
+
+            <MoreInformationAccordion
+              color={defaultTextColor}
+              fontSize="xs"
+              isOpen={isMoreInformationToggleOpen}
+              minButtonHeight={PAGE_ITEM_HEIGHT}
+              onChange={handleMoreInformationToggle}
+            >
+              <VStack spacing={0} w="full">
+                {/*decimals*/}
+                <PageItem fontSize="xs" label={t<string>('labels.decimals')}>
+                  <Text color={subTextColor} fontSize="xs">
+                    {asset.decimals.toString()}
+                  </Text>
+                </PageItem>
+
+                {/*total supply*/}
+                <PageItem fontSize="xs" label={t<string>('labels.totalSupply')}>
                   <Tooltip
                     aria-label="Asset amount with unrestricted decimals"
                     label={formatCurrencyUnit(
@@ -364,7 +369,7 @@ const AssetPage: FC = () => {
                       }
                     )}
                   >
-                    <Text color={subTextColor} fontSize="sm">
+                    <Text color={subTextColor} fontSize="xs">
                       {formatCurrencyUnit(
                         convertToStandardUnit(
                           new BigNumber(asset.totalSupply),
@@ -375,9 +380,181 @@ const AssetPage: FC = () => {
                     </Text>
                   </Tooltip>
                 </PageItem>
-              )}
-            </VStack>
-          </MoreInformationAccordion>
+
+                {asset.type === AssetTypeEnum.Standard && (
+                  <>
+                    {/*default frozen*/}
+                    <PageItem
+                      fontSize="xs"
+                      label={t<string>('labels.defaultFrozen')}
+                    >
+                      <Text color={subTextColor} fontSize="xs">
+                        {asset.defaultFrozen
+                          ? t<string>('labels.yes')
+                          : t<string>('labels.no')}
+                      </Text>
+                    </PageItem>
+
+                    {selectedNetwork && (
+                      <>
+                        {/*creator account*/}
+                        <HStack spacing={1} w="full">
+                          <PageItem
+                            fontSize="xs"
+                            label={t<string>('labels.creatorAccount')}
+                          >
+                            <AddressDisplay
+                              address={asset.creator}
+                              ariaLabel="Creator address"
+                              color={subTextColor}
+                              fontSize="xs"
+                              network={selectedNetwork}
+                            />
+
+                            {/*open in explorer button*/}
+                            {!isAccountKnown(accounts, asset.creator) &&
+                              blockExplorer && (
+                                <OpenTabIconButton
+                                  tooltipLabel={t<string>('captions.openOn', {
+                                    name: blockExplorer.canonicalName,
+                                  })}
+                                  url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.creator}`}
+                                />
+                              )}
+                          </PageItem>
+                        </HStack>
+
+                        {/*clawback account*/}
+                        {asset.clawbackAddress && (
+                          <HStack spacing={1} w="full">
+                            <PageItem
+                              fontSize="xs"
+                              label={t<string>('labels.clawbackAccount')}
+                            >
+                              <AddressDisplay
+                                address={asset.clawbackAddress}
+                                ariaLabel="Clawback address"
+                                color={subTextColor}
+                                fontSize="xs"
+                                network={selectedNetwork}
+                              />
+
+                              {/*open in explorer button*/}
+                              {!isAccountKnown(
+                                accounts,
+                                asset.clawbackAddress
+                              ) &&
+                                blockExplorer && (
+                                  <OpenTabIconButton
+                                    tooltipLabel={t<string>('captions.openOn', {
+                                      name: blockExplorer.canonicalName,
+                                    })}
+                                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.clawbackAddress}`}
+                                  />
+                                )}
+                            </PageItem>
+                          </HStack>
+                        )}
+
+                        {/*freeze account*/}
+                        {asset.freezeAddress && (
+                          <HStack spacing={1} w="full">
+                            <PageItem
+                              fontSize="xs"
+                              label={t<string>('labels.freezeAccount')}
+                            >
+                              <AddressDisplay
+                                address={asset.freezeAddress}
+                                ariaLabel="Freeze address"
+                                color={subTextColor}
+                                fontSize="xs"
+                                network={selectedNetwork}
+                              />
+
+                              {/*open in explorer button*/}
+                              {!isAccountKnown(accounts, asset.freezeAddress) &&
+                                blockExplorer && (
+                                  <OpenTabIconButton
+                                    tooltipLabel={t<string>('captions.openOn', {
+                                      name: blockExplorer.canonicalName,
+                                    })}
+                                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.freezeAddress}`}
+                                  />
+                                )}
+                            </PageItem>
+                          </HStack>
+                        )}
+
+                        {/*manager account*/}
+                        {asset.managerAddress && (
+                          <HStack spacing={1} w="full">
+                            <PageItem
+                              fontSize="xs"
+                              label={t<string>('labels.managerAccount')}
+                            >
+                              <AddressDisplay
+                                address={asset.managerAddress}
+                                ariaLabel="Manager address"
+                                color={subTextColor}
+                                fontSize="xs"
+                                network={selectedNetwork}
+                              />
+
+                              {/*open in explorer button*/}
+                              {!isAccountKnown(
+                                accounts,
+                                asset.managerAddress
+                              ) &&
+                                blockExplorer && (
+                                  <OpenTabIconButton
+                                    tooltipLabel={t<string>('captions.openOn', {
+                                      name: blockExplorer.canonicalName,
+                                    })}
+                                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.managerAddress}`}
+                                  />
+                                )}
+                            </PageItem>
+                          </HStack>
+                        )}
+
+                        {/*reserve account*/}
+                        {asset.reserveAddress && (
+                          <HStack spacing={1} w="full">
+                            <PageItem
+                              fontSize="xs"
+                              label={t<string>('labels.reserveAccount')}
+                            >
+                              <AddressDisplay
+                                address={asset.reserveAddress}
+                                ariaLabel="Reserve address"
+                                color={subTextColor}
+                                fontSize="xs"
+                                network={selectedNetwork}
+                              />
+
+                              {/*open in explorer button*/}
+                              {!isAccountKnown(
+                                accounts,
+                                asset.reserveAddress
+                              ) &&
+                                blockExplorer && (
+                                  <OpenTabIconButton
+                                    tooltipLabel={t<string>('captions.openOn', {
+                                      name: blockExplorer.canonicalName,
+                                    })}
+                                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.reserveAddress}`}
+                                  />
+                                )}
+                            </PageItem>
+                          </HStack>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+              </VStack>
+            </MoreInformationAccordion>
+          </VStack>
         </VStack>
 
         {/*send/receive buttons*/}

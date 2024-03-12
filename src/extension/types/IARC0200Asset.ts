@@ -14,7 +14,6 @@ import IBaseAsset from './IBaseAsset';
  * @property {AssetTypeEnum.ARC0200} type - indicates the asset type is of "arc200".
  */
 interface IARC0200Asset extends IBaseAsset {
-  decimals: number;
   iconUrl: string | null;
   id: string;
   name: string;

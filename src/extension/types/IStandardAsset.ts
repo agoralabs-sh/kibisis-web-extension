@@ -7,7 +7,6 @@ import IBaseAsset from './IBaseAsset';
 /**
  * @property {string | null} clawbackAddress - the address of the account used to clawback holdings of this asset.
  * @property {string} creator - the address of the account that created this asset.
- * @property {number} decimals - the number of digits to use after the decimal point when displaying this asset.
  * @property {boolean} defaultFrozen - whether holdings of this asset are frozen by default.
  * @property {boolean} deleted - whether this asset is deleted or not.
  * @property {string | null} freezeAddress - the address of the account that can freeze this asset.
@@ -20,7 +19,7 @@ import IBaseAsset from './IBaseAsset';
  * @property {string | null} nameBase64 - the base64 encoded name of this asset.
  * @property {string | null} reserveAddress - the address of the account holding reserve (non-minted) units of this
  * asset.
- * @property {string} total - the total number of units of this asset.
+ * @property {string} totalSupply - the total number of units of this asset.
  * @property {AssetTypeEnum.Standard} type - indicates the asset type is of "standard".
  * @property {string | null} unitName - the utf-8 name of a unit of this asset.
  * @property {string | null} unitNameBase64 - the base64 encoded name of a unit of this asset.
@@ -31,7 +30,6 @@ import IBaseAsset from './IBaseAsset';
 interface IStandardAsset extends IBaseAsset {
   clawbackAddress: string | null;
   creator: string;
-  decimals: number;
   defaultFrozen: boolean;
   deleted: boolean;
   freezeAddress: string | null;
@@ -42,12 +40,14 @@ interface IStandardAsset extends IBaseAsset {
   name: string | null;
   nameBase64: string | null;
   reserveAddress: string | null;
-  total: string;
+  totalSupply: string;
   type: AssetTypeEnum.Standard;
   unitName: string | null;
   unitNameBase64: string | null;
   url: string | null;
   urlBase64: string | null;
+  /* @deprecated */
+  total?: string;
 }
 
 export default IStandardAsset;
