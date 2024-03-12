@@ -1,3 +1,10 @@
+# [1.14.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0-beta.4...v1.14.0-beta.5) (2024-03-12)
+
+
+### Features
+
+* remove standard asset ([#203](https://github.com/agoralabs-sh/kibisis-web-extension/issues/203)) ([7d7c258](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7d7c258f44847c4d4a170ee2517ab9a2139d30ba))
+
 # [1.14.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0-beta.3...v1.14.0-beta.4) (2024-03-08)
 
 
