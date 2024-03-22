@@ -4,7 +4,7 @@ import { encode as encodeBase64 } from '@stablelib/base64';
 /**
  * Convenience function to iterate over a flat array of transactions and groups them into a two-dimensional array where
  * each element is a group of transactions. An element can be a group of atomic transactions, or a single transaction.
- * @param { Transaction[]} transactions - a flat array of multiple transactions
+ * @param {Transaction[]} transactions - a flat array of multiple transactions
  * @returns {Transaction[][]} a two-dimensional array containing groups of atomic/single transactions
  */
 export default function groupTransactions(

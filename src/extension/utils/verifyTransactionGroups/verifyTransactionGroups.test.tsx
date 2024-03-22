@@ -193,5 +193,33 @@ describe(`${__dirname}/verifyTransactionGroups()`, () => {
       // assert
       expect(result).toBe(true);
     });
+
+    it('should return true if there are more than 16 groups of multiple atomic transactions and single transactions', () => {
+      // arrange
+      const singleTransaction: Transaction | null =
+        createTransactions(1, fromAccount.addr, toAccount.addr).pop() || null;
+      let atomicTransactions: Transaction[][] = Array.from({ length: 16 }, () =>
+        createTransactions(16, fromAccount.addr, toAccount.addr)
+      );
+      let result: boolean;
+
+      if (!singleTransaction) {
+        throw new Error('unable to create a single transaction');
+      }
+
+      // assign group ids for each atomic transactions
+      atomicTransactions = atomicTransactions.map((value) =>
+        assignGroupID(value)
+      );
+
+      // act
+      result = verifyTransactionGroups([
+        ...atomicTransactions.flat(),
+        singleTransaction,
+      ]);
+
+      // assert
+      expect(result).toBe(true);
+    });
   });
 });

@@ -143,7 +143,7 @@ export default class ExternalMessageBroker {
       case ARC0027MessageReferenceEnum.SignBytesRequest:
       case ARC0027MessageReferenceEnum.SignTxnsRequest:
         this.logger?.debug(
-          `${ExternalMessageBroker.name}#${_functionName}(): request message "${message.data.reference}" received`
+          `${ExternalMessageBroker.name}#${_functionName} request message "${message.data.reference}" received`
         );
 
         // send the message to the main app (popup) or the background service
@@ -167,7 +167,7 @@ export default class ExternalMessageBroker {
       case ARC0027MessageReferenceEnum.SignBytesResponse:
       case ARC0027MessageReferenceEnum.SignTxnsResponse:
         this.logger?.debug(
-          `${ExternalMessageBroker.name}#${_functionName}(): response message "${message.reference}" received`
+          `${ExternalMessageBroker.name}#${_functionName} response message "${message.reference}" received`
         );
 
         // broadcast the response to the webpage

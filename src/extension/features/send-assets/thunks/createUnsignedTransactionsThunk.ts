@@ -152,7 +152,8 @@ const createUnsignedTransactionsThunk: AsyncThunk<
       }
     } catch (error) {
       logger.debug(
-        `${SendAssetsThunkEnum.CreateUnsignedTransactions}(): ${error.message}`
+        `${SendAssetsThunkEnum.CreateUnsignedTransactions}: `,
+        error
       );
 
       return rejectWithValue(new FailedToSendTransactionError(error.message));
