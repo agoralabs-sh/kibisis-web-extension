@@ -138,6 +138,7 @@ export default class ExternalMessageBroker {
     const _functionName: string = 'onARC0027RequestMessage';
 
     switch (message.data.reference) {
+      case ARC0027MessageReferenceEnum.DisableRequest:
       case ARC0027MessageReferenceEnum.EnableRequest:
       case ARC0027MessageReferenceEnum.GetProvidersRequest:
       case ARC0027MessageReferenceEnum.SignBytesRequest:
@@ -162,6 +163,7 @@ export default class ExternalMessageBroker {
     const _functionName: string = 'onARC0027ResponseMessage';
 
     switch (message.reference) {
+      case ARC0027MessageReferenceEnum.DisableResponse:
       case ARC0027MessageReferenceEnum.EnableResponse:
       case ARC0027MessageReferenceEnum.GetProvidersResponse:
       case ARC0027MessageReferenceEnum.SignBytesResponse:

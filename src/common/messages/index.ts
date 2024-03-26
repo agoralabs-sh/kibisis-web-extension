@@ -1,3 +1,5 @@
+export { default as ARC0027DisableRequestMessage } from './ARC0027DisableRequestMessage';
+export { default as ARC0027DisableResponseMessage } from './ARC0027DisableResponseMessage';
 export { default as ARC0027EnableRequestMessage } from './ARC0027EnableRequestMessage';
 export { default as ARC0027EnableResponseMessage } from './ARC0027EnableResponseMessage';
 export { default as ARC0027GetProvidersRequestMessage } from './ARC0027GetProvidersRequestMessage';

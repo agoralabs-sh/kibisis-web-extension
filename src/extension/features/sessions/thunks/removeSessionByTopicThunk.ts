@@ -34,7 +34,7 @@ const removeSessionByTopicThunk: AsyncThunk<
       `${removeSessionByTopicThunk.name}: removing session "${session.id}" from storage`
     );
 
-    await sessionService.removeById(session.id);
+    await sessionService.removeByIds([session.id]);
 
     // disconnect the session with walletconnect
     if (web3Wallet) {

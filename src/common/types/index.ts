@@ -1,5 +1,7 @@
 export type { default as IARC0001SignTxns } from './IARC0001SignTxns';
 export type { default as IARC0027Account } from './IARC0027Account';
+export type { default as IARC0027DisableParams } from './IARC0027DisableParams';
+export type { default as IARC0027DisableResult } from './IARC0027DisableResult';
 export type { default as IARC0027EnableParams } from './IARC0027EnableParams';
 export type { default as IARC0027EnableResult } from './IARC0027EnableResult';
 export type { default as IARC0027GetProvidersParams } from './IARC0027GetProvidersParams';

@@ -31,6 +31,8 @@ import {
 
 // messages
 import {
+  ARC0027DisableRequestMessage,
+  ARC0027DisableResponseMessage,
   ARC0027EnableRequestMessage,
   ARC0027EnableResponseMessage,
   ARC0027GetProvidersRequestMessage,
@@ -80,6 +82,7 @@ import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import isNetworkSupported from '@extension/utils/isNetworkSupported';
 import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
+import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
 export default class BackgroundMessageHandler {
   // private variables
@@ -152,6 +155,99 @@ export default class BackgroundMessageHandler {
     }
 
     return sessions.filter(filterPredicate);
+  }
+
+  private async handleDisableRequestMessage(
+    clientInfo: IClientInformation,
+    message: ARC0027DisableRequestMessage,
+    originTabId: number
+  ): Promise<void> {
+    const _functionName: string = 'handleDisableRequestMessage';
+    let network: INetwork | null;
+    let sessionIds: string[];
+    let sessions: ISession[];
+
+    if (!message.params) {
+      return await this.sendResponse(
+        new ARC0027DisableResponseMessage(
+          message.id,
+          new SerializableARC0027InvalidInputError(
+            __PROVIDER_ID__,
+            `no parameters supplied`
+          ),
+          null
+        ),
+        originTabId
+      );
+    }
+
+    network = selectDefaultNetwork(networks);
+
+    if (message.params.genesisHash) {
+      network =
+        networks.find(
+          (value) => value.genesisHash === message.params?.genesisHash
+        ) || network;
+    }
+
+    // get the network if a genesis hash is present
+    if (!network) {
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}: network not found`
+      );
+
+      // send the response to the web page (via the content script)
+      return await this.sendResponse(
+        new ARC0027EnableResponseMessage(
+          message.id,
+          new SerializableARC0027NetworkNotSupportedError(
+            message.params?.genesisHash ? [message.params.genesisHash] : [],
+            __PROVIDER_ID__
+          ),
+          null
+        ),
+        originTabId
+      );
+    }
+
+    sessions = await this.fetchSessions(
+      (value) =>
+        value.host === clientInfo.host &&
+        value.genesisHash === network?.genesisHash
+    );
+
+    // if session ids has been specified, filter the sessions
+    if (message.params.sessionIds && message.params.sessionIds.length > 0) {
+      sessions = sessions.filter((value) =>
+        message.params?.sessionIds?.includes(value.id)
+      );
+    }
+
+    sessionIds = sessions.map((value) => value.id);
+
+    this.logger?.debug(
+      `${
+        BackgroundMessageHandler.name
+      }#${_functionName}: removing sessions [${sessionIds
+        .map((value) => `"${value}"`)
+        .join(',')}] on host "${clientInfo.host}" for network "${
+        network.genesisId
+      }"`
+    );
+
+    // remove the sessions
+    await this.sessionService.removeByIds(sessionIds);
+
+    // send the response to the web page (via the content script)
+    return await this.sendResponse(
+      new ARC0027DisableResponseMessage(message.id, null, {
+        genesisHash: network.genesisHash,
+        genesisId: network.genesisId,
+        providerId: __PROVIDER_ID__,
+        sessionIds,
+      }),
+      originTabId
+    );
   }
 
   private async handleEnableRequestMessage(
@@ -251,7 +347,7 @@ export default class BackgroundMessageHandler {
       }
 
       // if the network is unrecognized, remove the session, it is no longer valid
-      await this.sessionService.removeById(session.id);
+      await this.sessionService.removeByIds([session.id]);
     }
 
     return await this.sendExtensionEvent({
@@ -640,7 +736,7 @@ export default class BackgroundMessageHandler {
     return await browser.tabs.sendMessage(originTabId, message);
   }
 
-  private async onArc0027RequestMessage(
+  private async onARC0027RequestMessage(
     message: BaseARC0027RequestMessage<IARC0027ParamTypes>,
     clientInfo: IClientInformation,
     originTabId?: number
@@ -660,6 +756,12 @@ export default class BackgroundMessageHandler {
     }
 
     switch (message.reference) {
+      case ARC0027MessageReferenceEnum.DisableRequest:
+        return await this.handleDisableRequestMessage(
+          clientInfo,
+          message as ARC0027DisableRequestMessage,
+          originTabId
+        );
       case ARC0027MessageReferenceEnum.EnableRequest:
         return await this.handleEnableRequestMessage(
           clientInfo,
@@ -719,7 +821,7 @@ export default class BackgroundMessageHandler {
       return await this.onInternalMessage(message as BaseInternalMessage);
     }
 
-    return await this.onArc0027RequestMessage(
+    return await this.onARC0027RequestMessage(
       (message as IInternalRequestMessage).data,
       (message as IInternalRequestMessage).clientInfo,
       sender.tab?.id

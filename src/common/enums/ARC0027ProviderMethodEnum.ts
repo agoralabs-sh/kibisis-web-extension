@@ -1,4 +1,5 @@
 enum ARC0027ProviderMethodEnum {
+  Disable = 'disable',
   Enable = 'enable',
   GetProviders = 'getProviders',
   PostTxns = 'postTxns',
