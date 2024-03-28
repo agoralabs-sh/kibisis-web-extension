@@ -165,7 +165,13 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
 
     await provider.connect();
   };
-  const handleReset = async () => {
+  const handleDisconnect = async () => {
+    const provider: Provider | null =
+      providers?.find((value) => value.metadata.id === PROVIDER_ID.KIBISIS) ||
+      null;
+
+    await provider?.disconnect();
+
     setUseWalletNetwork(null);
     onReset();
   };
@@ -248,9 +254,9 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
 
         <MenuDivider />
 
-        <MenuItem onClick={handleReset}>
+        <MenuItem onClick={handleDisconnect}>
           <Text size="sm" w="full">
-            Reset Connection
+            Disconnect
           </Text>
         </MenuItem>
       </MenuList>
