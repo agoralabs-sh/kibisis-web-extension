@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0...v1.14.1) (2024-03-28)
+
+
+### Bug Fixes
+
+* only registration window open on first time use ([#210](https://github.com/agoralabs-sh/kibisis-web-extension/issues/210)) ([1e1eea9](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1e1eea9596de4c56a6252e9786457fcab7668e70))
+
 # [1.14.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.13.0...v1.14.0) (2024-03-12)
 
 

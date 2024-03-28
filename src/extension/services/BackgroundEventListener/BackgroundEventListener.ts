@@ -153,6 +153,8 @@ export default class BackgroundEventListener {
       await this.appWindowManagerService.createWindow({
         type: AppTypeEnum.RegistrationApp,
       });
+
+      return;
     }
 
     mainAppWindows = await this.appWindowManagerService.getByType(
