@@ -111,6 +111,7 @@
   },
   "dependencies": {
     "@agoralabs-sh/algorand-provider": "^1.1.0",
+    "@agoralabs-sh/avm-web-provider": "^1.0.0",
     "@chakra-ui/anatomy": "^2.2.2",
     "@chakra-ui/color-mode": "^2.2.0",
     "@chakra-ui/icons": "^2.1.1",

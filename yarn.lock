@@ -14,6 +14,13 @@
   dependencies:
     algosdk "^2.1.0"
 
+"@agoralabs-sh/avm-web-provider@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@agoralabs-sh/avm-web-provider/-/avm-web-provider-1.0.0.tgz#a5bdb290c83636c0a55d03886331c1fd6be84d0c"
+  integrity sha512-VgecX6vtuC0jws/C3FBnx15r09jKVqNq3xu0Y/1SAuVNjRC3qst99E5drZP636791XlAqo7TqJ5c6nKiy5NhyA==
+  dependencies:
+    uuid "^9.0.1"
+
 "@ampproject/remapping@^2.2.0":
   version "2.2.0"
   resolved "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.2.0.tgz"
@@ -12613,6 +12620,11 @@ uuid@^9.0.0:
   version "9.0.0"
   resolved "https://registry.npmjs.org/uuid/-/uuid-9.0.0.tgz"
   integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
+
+uuid@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
+  integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
 v8-compile-cache-lib@^3.0.1:
   version "3.0.1"
