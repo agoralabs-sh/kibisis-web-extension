@@ -121,6 +121,7 @@ const App: FC = () => {
 
                 {/*connect menu*/}
                 <ConnectMenu
+                  connectionType={connectionType}
                   onConnect={handleConnectProvider}
                   onReset={handleResetProvider}
                 />

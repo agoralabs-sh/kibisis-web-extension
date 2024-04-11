@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { PasswordLockThunkEnum } from '@extension/enums';
 
 // messages
-import { InternalPasswordLockClearMessage } from '@common/messages';
+import { ProviderPasswordLockClearMessage } from '@common/messages';
 
 // types
 import { IBaseAsyncThunkConfig } from '@extension/types';
@@ -21,7 +21,7 @@ const savePasswordLockThunk: AsyncThunk<
 > = createAsyncThunk<string | null, string | null, IBaseAsyncThunkConfig>(
   PasswordLockThunkEnum.SavePasswordLock,
   async (password) => {
-    await browser.runtime.sendMessage(new InternalPasswordLockClearMessage());
+    await browser.runtime.sendMessage(new ProviderPasswordLockClearMessage());
 
     return password;
   }

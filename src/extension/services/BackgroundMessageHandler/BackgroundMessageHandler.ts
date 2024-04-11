@@ -1,11 +1,28 @@
-import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
+import {
+  ARC0027InvalidGroupIdError,
+  ARC0027InvalidInputError,
+  ARC0027MethodEnum,
+  ARC0027NetworkNotSupportedError,
+  ARC0027UnauthorizedSignerError,
+  IAccount as IAVMProviderAccount,
+  IDisableParams,
+  IDisableResult,
+  IDiscoverParams,
+  IDiscoverResult,
+  IEnableParams,
+  IEnableResult,
+  ISignTransactionsParams,
+  ISignTransactionsResult,
+  TRequestParams,
+  TResponseResults,
+} from '@agoralabs-sh/avm-web-provider';
 import {
   decode as decodeBase64,
   encode as encodeBase64,
 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
 import { v4 as uuid } from 'uuid';
-import browser, { Runtime, Windows } from 'webextension-polyfill';
+import browser, { Runtime } from 'webextension-polyfill';
 
 // config
 import { networks } from '@extension/config';
@@ -14,37 +31,18 @@ import { networks } from '@extension/config';
 import { HOST, ICON_URI } from '@common/constants';
 
 // enums
-import {
-  ARC0027MessageReferenceEnum,
-  ARC0027ProviderMethodEnum,
-  InternalMessageReferenceEnum,
-} from '@common/enums';
+import { ProviderMessageReferenceEnum } from '@common/enums';
 import { AppTypeEnum, EventTypeEnum } from '@extension/enums';
 
-// errors
-import {
-  SerializableARC0027InvalidGroupIdError,
-  SerializableARC0027InvalidInputError,
-  SerializableARC0027NetworkNotSupportedError,
-  SerializableARC0027UnauthorizedSignerError,
-} from '@common/errors';
+// events
+import { Event } from '@extension/events';
 
 // messages
 import {
-  ARC0027DisableRequestMessage,
-  ARC0027DisableResponseMessage,
-  ARC0027EnableRequestMessage,
-  ARC0027EnableResponseMessage,
-  ARC0027GetProvidersRequestMessage,
-  ARC0027GetProvidersResponseMessage,
-  ARC0027SignBytesRequestMessage,
-  ARC0027SignBytesResponseMessage,
-  ARC0027SignTxnsRequestMessage,
-  ARC0027SignTxnsResponseMessage,
-  BaseARC0027RequestMessage,
-  BaseARC0027ResponseMessage,
-  BaseInternalMessage,
-  InternalEventAddedMessage,
+  BaseProviderMessage,
+  ClientRequestMessage,
+  ClientResponseMessage,
+  ProviderEventAddedMessage,
 } from '@common/messages';
 
 // services
@@ -58,19 +56,12 @@ import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
 
 // types
-import type {
-  IARC0027ParamTypes,
-  IARC0027ResultTypes,
-  IBaseOptions,
-  IClientInformation,
-  ILogger,
-} from '@common/types';
+import type { IBaseOptions, ILogger } from '@common/types';
 import type {
   IAccount,
   IAppWindow,
-  IClientEventPayload,
+  IClientRequestEventPayload,
   IEvent,
-  IInternalRequestMessage,
   INetwork,
   ISession,
 } from '@extension/types';
@@ -79,7 +70,6 @@ import type {
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
-import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import isNetworkSupported from '@extension/utils/isNetworkSupported';
 import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
@@ -158,8 +148,7 @@ export default class BackgroundMessageHandler {
   }
 
   private async handleDisableRequestMessage(
-    clientInfo: IClientInformation,
-    message: ARC0027DisableRequestMessage,
+    message: ClientRequestMessage<IDisableParams>,
     originTabId: number
   ): Promise<void> {
     const _functionName: string = 'handleDisableRequestMessage';
@@ -169,14 +158,14 @@ export default class BackgroundMessageHandler {
 
     if (!message.params) {
       return await this.sendResponse(
-        new ARC0027DisableResponseMessage(
-          message.id,
-          new SerializableARC0027InvalidInputError(
-            __PROVIDER_ID__,
-            `no parameters supplied`
-          ),
-          null
-        ),
+        new ClientResponseMessage<IDisableResult>({
+          error: new ARC0027InvalidInputError({
+            message: `no parameters supplied`,
+            providerId: __PROVIDER_ID__,
+          }),
+          method: message.method,
+          requestId: message.id,
+        }),
         originTabId
       );
     }
@@ -198,21 +187,24 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new ARC0027EnableResponseMessage(
-          message.id,
-          new SerializableARC0027NetworkNotSupportedError(
-            message.params?.genesisHash ? [message.params.genesisHash] : [],
-            __PROVIDER_ID__
-          ),
-          null
-        ),
+        new ClientResponseMessage<IDisableResult>({
+          error: new ARC0027NetworkNotSupportedError({
+            genesisHashes: message.params?.genesisHash
+              ? [message.params.genesisHash]
+              : [],
+            message: `no parameters supplied`,
+            providerId: __PROVIDER_ID__,
+          }),
+          method: message.method,
+          requestId: message.id,
+        }),
         originTabId
       );
     }
 
     sessions = await this.fetchSessions(
       (value) =>
-        value.host === clientInfo.host &&
+        value.host === message.clientInfo.host &&
         value.genesisHash === network?.genesisHash
     );
 
@@ -230,7 +222,7 @@ export default class BackgroundMessageHandler {
         BackgroundMessageHandler.name
       }#${_functionName}: removing sessions [${sessionIds
         .map((value) => `"${value}"`)
-        .join(',')}] on host "${clientInfo.host}" for network "${
+        .join(',')}] on host "${message.clientInfo.host}" for network "${
         network.genesisId
       }"`
     );
@@ -240,19 +232,54 @@ export default class BackgroundMessageHandler {
 
     // send the response to the web page (via the content script)
     return await this.sendResponse(
-      new ARC0027DisableResponseMessage(message.id, null, {
-        genesisHash: network.genesisHash,
-        genesisId: network.genesisId,
-        providerId: __PROVIDER_ID__,
-        sessionIds,
+      new ClientResponseMessage<IDisableResult>({
+        method: message.method,
+        requestId: message.id,
+        result: {
+          genesisHash: network.genesisHash,
+          genesisId: network.genesisId,
+          providerId: __PROVIDER_ID__,
+          sessionIds,
+        },
+      }),
+      originTabId
+    );
+  }
+
+  private async handleDiscoverRequestMessage(
+    message: ClientRequestMessage<IDiscoverParams>,
+    originTabId: number
+  ): Promise<void> {
+    const supportedNetworks: INetwork[] = await fetchSupportedNetworks(
+      this.settingsService
+    );
+
+    return await this.sendResponse(
+      new ClientResponseMessage<IDiscoverResult>({
+        method: message.method,
+        requestId: message.id,
+        result: {
+          host: HOST,
+          icon: ICON_URI,
+          name: __APP_TITLE__,
+          networks: supportedNetworks.map(({ genesisHash, genesisId }) => ({
+            genesisHash,
+            genesisId,
+            methods: [
+              ARC0027MethodEnum.Enable,
+              ARC0027MethodEnum.Disable,
+              ARC0027MethodEnum.SignTransactions,
+            ],
+          })),
+          providerId: __PROVIDER_ID__,
+        },
       }),
       originTabId
     );
   }
 
   private async handleEnableRequestMessage(
-    clientInfo: IClientInformation,
-    message: ARC0027EnableRequestMessage,
+    message: ClientRequestMessage<IEnableParams>,
     originTabId: number
   ): Promise<void> {
     const _functionName: string = 'handleEnableRequestMessage';
@@ -276,14 +303,15 @@ export default class BackgroundMessageHandler {
 
         // send the response to the web page (via the content script)
         return await this.sendResponse(
-          new ARC0027EnableResponseMessage(
-            message.id,
-            new SerializableARC0027NetworkNotSupportedError(
-              [message.params.genesisHash],
-              __PROVIDER_ID__
-            ),
-            null
-          ),
+          new ClientResponseMessage<IEnableResult>({
+            error: new ARC0027NetworkNotSupportedError({
+              genesisHashes: [message.params.genesisHash],
+              message: `no parameters supplied`,
+              providerId: __PROVIDER_ID__,
+            }),
+            method: message.method,
+            requestId: message.id,
+          }),
           originTabId
         );
       }
@@ -294,7 +322,8 @@ export default class BackgroundMessageHandler {
     }
 
     sessions = await this.fetchSessions(sessionFilterPredicate);
-    session = sessions.find((value) => value.host === clientInfo.host) || null;
+    session =
+      sessions.find((value) => value.host === message.clientInfo.host) || null;
 
     // if we have a session, update its use and return it
     if (session) {
@@ -318,29 +347,33 @@ export default class BackgroundMessageHandler {
 
         // send the response to the web page (via the content script)
         return await this.sendResponse(
-          new ARC0027EnableResponseMessage(message.id, null, {
-            accounts: session.authorizedAddresses.map<IWalletAccount>(
-              (address) => {
-                const account: IAccount | null =
-                  accounts.find(
-                    (value) =>
-                      AccountService.convertPublicKeyToAlgorandAddress(
-                        value.publicKey
-                      ) === address
-                  ) || null;
+          new ClientResponseMessage<IEnableResult>({
+            method: message.method,
+            requestId: message.id,
+            result: {
+              accounts: session.authorizedAddresses.map<IAVMProviderAccount>(
+                (address) => {
+                  const account: IAccount | null =
+                    accounts.find(
+                      (value) =>
+                        AccountService.convertPublicKeyToAlgorandAddress(
+                          value.publicKey
+                        ) === address
+                    ) || null;
 
-                return {
-                  address,
-                  ...(account?.name && {
-                    name: account.name,
-                  }),
-                };
-              }
-            ),
-            genesisHash: session.genesisHash,
-            genesisId: session.genesisId,
-            providerId: __PROVIDER_ID__,
-            sessionId: session.id,
+                  return {
+                    address,
+                    ...(account?.name && {
+                      name: account.name,
+                    }),
+                  };
+                }
+              ),
+              genesisHash: session.genesisHash,
+              genesisId: session.genesisId,
+              providerId: __PROVIDER_ID__,
+              sessionId: session.id,
+            },
           }),
           originTabId
         );
@@ -350,15 +383,16 @@ export default class BackgroundMessageHandler {
       await this.sessionService.removeByIds([session.id]);
     }
 
-    return await this.sendExtensionEvent({
-      id: uuid(),
-      payload: {
-        clientInfo,
-        originMessage: message,
-        originTabId,
-      },
-      type: EventTypeEnum.EnableRequest,
-    });
+    return await this.sendExtensionEvent(
+      new Event({
+        id: uuid(),
+        payload: {
+          message,
+          originTabId,
+        },
+        type: EventTypeEnum.ClientRequest,
+      })
+    );
   }
 
   private async handleFactoryResetMessage(): Promise<void> {
@@ -387,34 +421,6 @@ export default class BackgroundMessageHandler {
 
     // remove everything from storage
     await this.storageManager.removeAll();
-  }
-
-  private async handleGetProvidersMessage(
-    message: ARC0027GetProvidersRequestMessage,
-    originTabId: number
-  ): Promise<void> {
-    const supportedNetworks: INetwork[] = await fetchSupportedNetworks(
-      this.settingsService
-    );
-
-    return await this.sendResponse(
-      new ARC0027GetProvidersResponseMessage(message.id, null, {
-        host: HOST,
-        icon: ICON_URI,
-        name: __APP_TITLE__,
-        networks: supportedNetworks.map(({ genesisHash, genesisId }) => ({
-          genesisHash,
-          genesisId,
-          methods: [
-            ARC0027ProviderMethodEnum.Enable,
-            ARC0027ProviderMethodEnum.SignBytes,
-            ARC0027ProviderMethodEnum.SignTxns,
-          ],
-        })),
-        providerId: __PROVIDER_ID__,
-      }),
-      originTabId
-    );
   }
 
   private async handlePasswordLockClearMessage(): Promise<void> {
@@ -454,84 +460,83 @@ export default class BackgroundMessageHandler {
     }
   }
 
-  private async handleSignBytesRequestMessage(
-    clientInfo: IClientInformation,
-    message: ARC0027SignBytesRequestMessage,
+  // private async handleSignBytesRequestMessage(
+  //   clientInfo: IClientInformation,
+  //   message: ARC0027SignBytesRequestMessage,
+  //   originTabId: number
+  // ): Promise<void> {
+  //   const _functionName: string = 'handleSignBytesRequestMessage';
+  //   const filteredSessions: ISession[] = await this.fetchSessions(
+  //     (value) => value.host === clientInfo.host
+  //   );
+  //   let authorizedAddresses: string[];
+  //
+  //   // if the app has not been enabled
+  //   if (filteredSessions.length <= 0) {
+  //     this.logger?.debug(
+  //       `${BackgroundMessageHandler.name}#${_functionName}(): no sessions found for sign bytes request`
+  //     );
+  //
+  //     // send the response to the web page (via the content script)
+  //     return await this.sendResponse(
+  //       new ARC0027SignBytesResponseMessage(
+  //         message.id,
+  //         new SerializableARC0027UnauthorizedSignerError(
+  //           message.params?.signer || null,
+  //           __PROVIDER_ID__,
+  //           `"${clientInfo.appName}" has not been authorized`
+  //         ),
+  //         null
+  //       ),
+  //       originTabId
+  //     );
+  //   }
+  //
+  //   authorizedAddresses = getAuthorizedAddressesForHost(
+  //     clientInfo.host,
+  //     filteredSessions
+  //   );
+  //
+  //   // if the requested signer has not been authorized
+  //   if (
+  //     message.params?.signer &&
+  //     !authorizedAddresses.find((value) => value === message.params?.signer)
+  //   ) {
+  //     this.logger?.debug(
+  //       `${BackgroundMessageHandler.name}#${_functionName}(): signer "${message.params?.signer}" is not authorized`
+  //     );
+  //
+  //     // send the response to the web page (via the content script)
+  //     return await this.sendResponse(
+  //       new ARC0027SignBytesResponseMessage(
+  //         message.id,
+  //         new SerializableARC0027UnauthorizedSignerError(
+  //           message.params?.signer || null,
+  //           __PROVIDER_ID__,
+  //           `"${message.params?.signer}" has not been authorized`
+  //         ),
+  //         null
+  //       ),
+  //       originTabId
+  //     );
+  //   }
+  //
+  //   return await this.sendExtensionEvent({
+  //     id: uuid(),
+  //     payload: {
+  //       clientInfo,
+  //       originMessage: message,
+  //       originTabId,
+  //     },
+  //     type: EventTypeEnum.SignBytesRequest,
+  //   });
+  // }
+
+  private async handleSignTransactionsRequestMessage(
+    message: ClientRequestMessage<ISignTransactionsParams>,
     originTabId: number
   ): Promise<void> {
-    const _functionName: string = 'handleSignBytesRequestMessage';
-    const filteredSessions: ISession[] = await this.fetchSessions(
-      (value) => value.host === clientInfo.host
-    );
-    let authorizedAddresses: string[];
-
-    // if the app has not been enabled
-    if (filteredSessions.length <= 0) {
-      this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): no sessions found for sign bytes request`
-      );
-
-      // send the response to the web page (via the content script)
-      return await this.sendResponse(
-        new ARC0027SignBytesResponseMessage(
-          message.id,
-          new SerializableARC0027UnauthorizedSignerError(
-            message.params?.signer || null,
-            __PROVIDER_ID__,
-            `"${clientInfo.appName}" has not been authorized`
-          ),
-          null
-        ),
-        originTabId
-      );
-    }
-
-    authorizedAddresses = getAuthorizedAddressesForHost(
-      clientInfo.host,
-      filteredSessions
-    );
-
-    // if the requested signer has not been authorized
-    if (
-      message.params?.signer &&
-      !authorizedAddresses.find((value) => value === message.params?.signer)
-    ) {
-      this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): signer "${message.params?.signer}" is not authorized`
-      );
-
-      // send the response to the web page (via the content script)
-      return await this.sendResponse(
-        new ARC0027SignBytesResponseMessage(
-          message.id,
-          new SerializableARC0027UnauthorizedSignerError(
-            message.params?.signer || null,
-            __PROVIDER_ID__,
-            `"${message.params?.signer}" has not been authorized`
-          ),
-          null
-        ),
-        originTabId
-      );
-    }
-
-    return await this.sendExtensionEvent({
-      id: uuid(),
-      payload: {
-        clientInfo,
-        originMessage: message,
-        originTabId,
-      },
-      type: EventTypeEnum.SignBytesRequest,
-    });
-  }
-
-  private async handleSignTxnsRequestMessage(
-    clientInfo: IClientInformation,
-    message: ARC0027SignTxnsRequestMessage,
-    originTabId: number
-  ): Promise<void> {
-    const _functionName: string = 'handleSignTxnsRequestMessage';
+    const _functionName: string = 'handleSignTransactionsRequestMessage';
     let decodedUnsignedTransactions: Transaction[];
     let errorMessage: string;
     let filteredSessions: ISession[];
@@ -541,14 +546,14 @@ export default class BackgroundMessageHandler {
 
     if (!message.params) {
       return await this.sendResponse(
-        new ARC0027SignTxnsResponseMessage(
-          message.id,
-          new SerializableARC0027InvalidInputError(
-            __PROVIDER_ID__,
-            `no transactions supplied`
-          ),
-          null
-        ),
+        new ClientResponseMessage<ISignTransactionsResult>({
+          error: new ARC0027InvalidInputError({
+            message: `no transactions supplied`,
+            providerId: __PROVIDER_ID__,
+          }),
+          method: message.method,
+          requestId: message.id,
+        }),
         originTabId
       );
     }
@@ -562,19 +567,19 @@ export default class BackgroundMessageHandler {
       errorMessage = `failed to decode transactions: ${error.message}`;
 
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
+        `${BackgroundMessageHandler.name}#${_functionName}: ${errorMessage}`
       );
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new ARC0027SignTxnsResponseMessage(
-          message.id,
-          new SerializableARC0027InvalidInputError(
-            __PROVIDER_ID__,
-            errorMessage
-          ),
-          null
-        ),
+        new ClientResponseMessage<ISignTransactionsResult>({
+          error: new ARC0027InvalidInputError({
+            message: errorMessage,
+            providerId: __PROVIDER_ID__,
+          }),
+          method: message.method,
+          requestId: message.id,
+        }),
         originTabId
       );
     }
@@ -584,19 +589,19 @@ export default class BackgroundMessageHandler {
       errorMessage = `the supplied transactions are invalid and do not conform to the arc-0001 group validation, please https://arc.algorand.foundation/ARCs/arc-0001#group-validation on how to correctly build transactions`;
 
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): ${errorMessage}`
+        `${BackgroundMessageHandler.name}#${_functionName}: ${errorMessage}`
       );
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new ARC0027SignTxnsResponseMessage(
-          message.id,
-          new SerializableARC0027InvalidGroupIdError(
-            __PROVIDER_ID__,
-            errorMessage
-          ),
-          null
-        ),
+        new ClientResponseMessage<ISignTransactionsResult>({
+          error: new ARC0027InvalidGroupIdError({
+            message: errorMessage,
+            providerId: __PROVIDER_ID__,
+          }),
+          method: message.method,
+          requestId: message.id,
+        }),
         originTabId
       );
     }
@@ -621,16 +626,16 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page (via the content script)
       return await this.sendResponse(
-        new ARC0027SignTxnsResponseMessage(
-          message.id,
-          new SerializableARC0027NetworkNotSupportedError(
-            uniqueGenesisHashesFromTransactions(
+        new ClientResponseMessage<ISignTransactionsResult>({
+          error: new ARC0027NetworkNotSupportedError({
+            genesisHashes: uniqueGenesisHashesFromTransactions(
               unsupportedTransactionsByNetwork
             ),
-            __PROVIDER_ID__
-          ),
-          null
-        ),
+            providerId: __PROVIDER_ID__,
+          }),
+          method: message.method,
+          requestId: message.id,
+        }),
         originTabId
       );
     }
@@ -640,7 +645,7 @@ export default class BackgroundMessageHandler {
     );
     filteredSessions = await this.fetchSessions(
       (session) =>
-        session.host === clientInfo.host &&
+        session.host === message.clientInfo.host &&
         genesisHashes.some((value) => value === session.genesisHash)
     );
 
@@ -652,32 +657,32 @@ export default class BackgroundMessageHandler {
 
       // send the response to the web page
       return await this.sendResponse(
-        new ARC0027SignTxnsResponseMessage(
-          message.id,
-          new SerializableARC0027UnauthorizedSignerError(
-            null,
-            __PROVIDER_ID__,
-            `"${clientInfo.appName}" has not been authorized`
-          ),
-          null
-        ),
+        new ClientResponseMessage<ISignTransactionsResult>({
+          error: new ARC0027UnauthorizedSignerError({
+            message: `client "${message.clientInfo.appName}" has not been authorized`,
+            providerId: __PROVIDER_ID__,
+          }),
+          method: message.method,
+          requestId: message.id,
+        }),
         originTabId
       );
     }
 
-    return await this.sendExtensionEvent({
-      id: uuid(),
-      payload: {
-        clientInfo,
-        originMessage: message,
-        originTabId,
-      },
-      type: EventTypeEnum.SignTxnsRequest,
-    });
+    return await this.sendExtensionEvent(
+      new Event({
+        id: uuid(),
+        payload: {
+          message,
+          originTabId,
+        },
+        type: EventTypeEnum.ClientRequest,
+      })
+    );
   }
 
   private async sendExtensionEvent(
-    event: IEvent<IClientEventPayload>
+    event: IEvent<IClientRequestEventPayload>
   ): Promise<void> {
     const _functionName: string = 'sendExtensionEvent';
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
@@ -706,7 +711,7 @@ export default class BackgroundMessageHandler {
       );
 
       return await browser.runtime.sendMessage(
-        new InternalEventAddedMessage(event.id)
+        new ProviderEventAddedMessage(event.id)
       );
     }
 
@@ -723,66 +728,56 @@ export default class BackgroundMessageHandler {
   }
 
   private async sendResponse(
-    message: BaseARC0027ResponseMessage<IARC0027ResultTypes>,
+    message: ClientResponseMessage<TResponseResults>,
     originTabId: number
   ): Promise<void> {
     const _functionName: string = 'sendResponse';
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}(): sending "${message.reference}" to the web page`
+      `${BackgroundMessageHandler.name}#${_functionName}(): sending "${message.method}" response to tab "${originTabId}"`
     );
 
     // send the response to the web page, via the content script
     return await browser.tabs.sendMessage(originTabId, message);
   }
 
-  private async onARC0027RequestMessage(
-    message: BaseARC0027RequestMessage<IARC0027ParamTypes>,
-    clientInfo: IClientInformation,
+  private async onClientRequestMessage(
+    message: ClientRequestMessage<TRequestParams>,
     originTabId?: number
   ): Promise<void> {
-    const _functionName: string = 'onArc0027RequestMessage';
+    const _functionName: string = 'onClientRequestMessage';
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.reference}" received`
+      `${BackgroundMessageHandler.name}#${_functionName}: "${message.method}" message received`
     );
 
     if (!originTabId) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): unknown sender for message "${message.reference}", ignoring`
+        `${BackgroundMessageHandler.name}#${_functionName}: unknown sender for "${message.method}" message, ignoring`
       );
 
       return;
     }
 
-    switch (message.reference) {
-      case ARC0027MessageReferenceEnum.DisableRequest:
+    switch (message.method) {
+      case ARC0027MethodEnum.Disable:
         return await this.handleDisableRequestMessage(
-          clientInfo,
-          message as ARC0027DisableRequestMessage,
+          message as ClientRequestMessage<IDisableParams>,
           originTabId
         );
-      case ARC0027MessageReferenceEnum.EnableRequest:
+      case ARC0027MethodEnum.Discover:
+        return await this.handleDiscoverRequestMessage(
+          message as ClientRequestMessage<IDiscoverParams>,
+          originTabId
+        );
+      case ARC0027MethodEnum.Enable:
         return await this.handleEnableRequestMessage(
-          clientInfo,
-          message as ARC0027EnableRequestMessage,
+          message as ClientRequestMessage<IEnableParams>,
           originTabId
         );
-      case ARC0027MessageReferenceEnum.GetProvidersRequest:
-        return await this.handleGetProvidersMessage(
-          message as ARC0027GetProvidersRequestMessage,
-          originTabId
-        );
-      case ARC0027MessageReferenceEnum.SignBytesRequest:
-        return await this.handleSignBytesRequestMessage(
-          clientInfo,
-          message as ARC0027SignBytesRequestMessage,
-          originTabId
-        );
-      case ARC0027MessageReferenceEnum.SignTxnsRequest:
-        return await this.handleSignTxnsRequestMessage(
-          clientInfo,
-          message as ARC0027SignTxnsRequestMessage,
+      case ARC0027MethodEnum.SignTransactions:
+        return await this.handleSignTransactionsRequestMessage(
+          message as ClientRequestMessage<ISignTransactionsParams>,
           originTabId
         );
       default:
@@ -790,19 +785,19 @@ export default class BackgroundMessageHandler {
     }
   }
 
-  private async onInternalMessage(message: BaseInternalMessage): Promise<void> {
-    const _functionName: string = 'onInternalMessage';
+  private async onProviderMessage(message: BaseProviderMessage): Promise<void> {
+    const _functionName: string = 'onProviderMessage';
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}(): message "${message.reference}" received`
+      `${BackgroundMessageHandler.name}#${_functionName}: message "${message.reference}" received`
     );
 
     switch (message.reference) {
-      case InternalMessageReferenceEnum.FactoryReset:
+      case ProviderMessageReferenceEnum.FactoryReset:
         return await this.handleFactoryResetMessage();
-      case InternalMessageReferenceEnum.PasswordLockClear:
+      case ProviderMessageReferenceEnum.PasswordLockClear:
         return this.handlePasswordLockClearMessage();
-      case InternalMessageReferenceEnum.RegistrationCompleted:
+      case ProviderMessageReferenceEnum.RegistrationCompleted:
         return await this.handleRegistrationCompletedMessage();
       default:
         break;
@@ -814,16 +809,15 @@ export default class BackgroundMessageHandler {
    */
 
   public async onMessage(
-    message: IInternalRequestMessage | BaseInternalMessage,
+    message: ClientRequestMessage<TRequestParams> | BaseProviderMessage,
     sender: Runtime.MessageSender
   ): Promise<void> {
-    if ((message as BaseInternalMessage).reference) {
-      return await this.onInternalMessage(message as BaseInternalMessage);
+    if ((message as BaseProviderMessage).reference) {
+      return await this.onProviderMessage(message as BaseProviderMessage);
     }
 
-    return await this.onARC0027RequestMessage(
-      (message as IInternalRequestMessage).data,
-      (message as IInternalRequestMessage).clientInfo,
+    return await this.onClientRequestMessage(
+      message as ClientRequestMessage<TRequestParams>,
       sender.tab?.id
     );
   }

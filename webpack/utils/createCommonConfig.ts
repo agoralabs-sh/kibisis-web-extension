@@ -31,6 +31,7 @@ export default function createCommonConfig(): Configuration {
         ['@extension/contracts']: resolve(extensionPath, 'contracts'),
         ['@extension/enums']: resolve(extensionPath, 'enums'),
         ['@extension/errors']: resolve(extensionPath, 'errors'),
+        ['@extension/events']: resolve(extensionPath, 'events'),
         ['@extension/features/accounts']: resolve(
           extensionPath,
           'features',

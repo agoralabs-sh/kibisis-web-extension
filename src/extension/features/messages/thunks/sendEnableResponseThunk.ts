@@ -1,19 +1,19 @@
-import { IWalletAccount } from '@agoralabs-sh/algorand-provider';
+import {
+  ARC0027MethodEnum,
+  IAccount as IAVMWebProvideAccount,
+  IEnableResult,
+} from '@agoralabs-sh/avm-web-provider';
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
 // enums
-import { ARC0027MessageReferenceEnum } from '@common/enums';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // features
 import { removeEventByIdThunk } from '@extension/features/events';
 
 // messages
-import {
-  ARC0027EnableRequestMessage,
-  ARC0027EnableResponseMessage,
-} from '@common/messages';
+import { ClientResponseMessage } from '@common/messages';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -24,41 +24,40 @@ import type {
   IAccount,
   IBaseAsyncThunkConfig,
   IMainRootState,
-  ISession,
 } from '@extension/types';
-import type { IBaseResponseThunkPayload } from '../types';
-
-interface IPayload extends IBaseResponseThunkPayload {
-  originMessage: ARC0027EnableRequestMessage;
-  session: ISession | null;
-}
+import type { IEnableResponseThunkPayload } from '../types';
 
 const sendEnableResponseThunk: AsyncThunk<
   void, // return
-  IPayload, // args
+  IEnableResponseThunkPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
-> = createAsyncThunk<void, IPayload, IBaseAsyncThunkConfig<IMainRootState>>(
+> = createAsyncThunk<
+  void,
+  IEnableResponseThunkPayload,
+  IBaseAsyncThunkConfig<IMainRootState>
+>(
   MessagesThunkEnum.SendEnableResponse,
-  async (
-    { error, eventId, originMessage, originTabId, session },
-    { dispatch, getState }
-  ) => {
+  async ({ error, event, session }, { dispatch, getState }) => {
     const accounts: IAccount[] = getState().accounts.items;
     const logger: ILogger = getState().system.logger;
 
     logger.debug(
-      `${MessagesThunkEnum.SendEnableResponse}: sending "${ARC0027MessageReferenceEnum.EnableResponse}" message to the content script`
+      `${MessagesThunkEnum.SendEnableResponse}: sending "${ARC0027MethodEnum.Enable}" message to the content script`
     );
 
     // send the error the webpage (via the content script)
     if (error) {
       await browser.tabs.sendMessage(
-        originTabId,
-        new ARC0027EnableResponseMessage(originMessage.id, error, null)
+        event.payload.originTabId,
+        new ClientResponseMessage<IEnableResult>({
+          error,
+          method: event.payload.message.method,
+          requestId: event.payload.message.id,
+        })
       );
 
       // remove the event
-      dispatch(removeEventByIdThunk(eventId));
+      dispatch(removeEventByIdThunk(event.id));
 
       return;
     }
@@ -66,36 +65,40 @@ const sendEnableResponseThunk: AsyncThunk<
     // if there is a session, send it back to the webpage (via the content script)
     if (session) {
       await browser.tabs.sendMessage(
-        originTabId,
-        new ARC0027EnableResponseMessage(originMessage.id, null, {
-          accounts: session.authorizedAddresses.map<IWalletAccount>(
-            (address) => {
-              const account: IAccount | null =
-                accounts.find(
-                  (value) =>
-                    AccountService.convertPublicKeyToAlgorandAddress(
-                      value.publicKey
-                    ) === address
-                ) || null;
+        event.payload.originTabId,
+        new ClientResponseMessage<IEnableResult>({
+          method: event.payload.message.method,
+          requestId: event.payload.message.id,
+          result: {
+            accounts: session.authorizedAddresses.map<IAVMWebProvideAccount>(
+              (address) => {
+                const account: IAccount | null =
+                  accounts.find(
+                    (value) =>
+                      AccountService.convertPublicKeyToAlgorandAddress(
+                        value.publicKey
+                      ) === address
+                  ) || null;
 
-              return {
-                address,
-                ...(account?.name && {
-                  name: account.name,
-                }),
-              };
-            }
-          ),
-          genesisHash: session.genesisHash,
-          genesisId: session.genesisId,
-          providerId: __PROVIDER_ID__,
-          sessionId: session.id,
+                return {
+                  address,
+                  ...(account?.name && {
+                    name: account.name,
+                  }),
+                };
+              }
+            ),
+            genesisHash: session.genesisHash,
+            genesisId: session.genesisId,
+            providerId: __PROVIDER_ID__,
+            sessionId: session.id,
+          },
         })
       );
     }
 
     // remove the event
-    dispatch(removeEventByIdThunk(eventId));
+    dispatch(removeEventByIdThunk(event.id));
   }
 );
 

@@ -7,14 +7,14 @@ import { EventsThunkEnum } from '@extension/enums';
 import EventQueueService from '@extension/services/EventQueueService';
 
 // types
-import { ILogger } from '@common/types';
-import { IMainRootState } from '@extension/types';
+import type { ILogger } from '@common/types';
+import type { IBaseAsyncThunkConfig } from '@extension/types';
 
 const removeEventByIdThunk: AsyncThunk<
   void, // return
   string, // args
-  Record<string, never>
-> = createAsyncThunk<void, string, { state: IMainRootState }>(
+  IBaseAsyncThunkConfig
+> = createAsyncThunk<void, string, IBaseAsyncThunkConfig>(
   EventsThunkEnum.RemoveEventById,
   async (eventId, { getState }) => {
     const logger: ILogger = getState().system.logger;

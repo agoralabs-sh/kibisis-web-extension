@@ -1,10 +1,9 @@
 // types
-import { IEventsState } from '../types';
+import type { IState } from '../types';
 
-export default function getInitialState(): IEventsState {
+export default function getInitialState(): IState {
   return {
     enableRequest: null,
-    signBytesRequest: null,
-    signTxnsRequest: null,
+    signTransactionsRequest: null,
   };
 }

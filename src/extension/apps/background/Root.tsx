@@ -9,8 +9,7 @@ import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
 import {
   handleNewEventByIdThunk,
   setEnableRequest,
-  setSignBytesRequest,
-  setSignTxnsRequest,
+  setSignTransactionsRequest,
 } from '@extension/features/events';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
@@ -22,14 +21,13 @@ import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
 
 // modals
 import EnableModal from '@extension/modals/EnableModal';
-import SignTxnsModal from '@extension/modals/SignTxnsModal';
-import SignBytesModal from '@extension/modals/SignBytesModal';
+import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 
 // selectors
 import { useSelectSelectedNetwork } from '@extension/selectors';
 
 // types
-import { IAppThunkDispatch, INetwork } from '@extension/types';
+import type { IAppThunkDispatch, INetwork } from '@extension/types';
 
 // utils
 import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
@@ -54,12 +52,8 @@ const Root: FC = () => {
         dispatch(setEnableRequest(null));
 
         break;
-      case ModalTypeEnum.SignBytes:
-        dispatch(setSignBytesRequest(null));
-
-        break;
       case ModalTypeEnum.SignTransactions:
-        dispatch(setSignTxnsRequest(null));
+        dispatch(setSignTransactionsRequest(null));
 
         break;
       default:
@@ -98,8 +92,7 @@ const Root: FC = () => {
   return (
     <>
       <EnableModal onClose={handleModalClose(ModalTypeEnum.Enable)} />
-      <SignBytesModal onClose={handleModalClose(ModalTypeEnum.SignBytes)} />
-      <SignTxnsModal
+      <SignTransactionsModal
         onClose={handleModalClose(ModalTypeEnum.SignTransactions)}
       />
       <LoadingPage />

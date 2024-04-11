@@ -1,4 +1,9 @@
 import {
+  ARC0027MethodCanceledError,
+  ARC0027MethodEnum,
+  ISignTransactionsParams,
+} from '@agoralabs-sh/avm-web-provider';
+import {
   Avatar,
   Box,
   Heading,
@@ -8,7 +13,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Stack,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -42,14 +46,11 @@ import { DEFAULT_GAP } from '@extension/constants';
 import { MultipleTransactionsContext } from './contexts';
 
 // enums
-import { ARC0027ErrorCodeEnum, ARC0027ProviderMethodEnum } from '@common/enums';
+import { ARC0027ErrorCodeEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
-// errors
-import { SerializableARC0027MethodCanceledError } from '@common/errors';
-
 // features
-import { sendSignTxnsResponseThunk } from '@extension/features/messages';
+import { sendSignTransactionsResponseThunk } from '@extension/features/messages';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
@@ -59,13 +60,10 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import useAuthorizedAccounts from './hooks/useAuthorizedAccounts';
 import useUpdateStandardAssetInformation from './hooks/useUpdateStandardAssetInformation';
 
-// messages
-import { ARC0027SignTxnsRequestMessage } from '@common/messages';
-
 // selectors
 import {
   useSelectLogger,
-  useSelectSignTxnsRequest,
+  useSelectSignTransactionsRequest,
 } from '@extension/selectors';
 
 // services
@@ -79,7 +77,8 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAppThunkDispatch,
-  IClientRequest,
+  IClientRequestEventPayload,
+  IEvent,
 } from '@extension/types';
 
 // utils
@@ -91,17 +90,20 @@ interface IProps {
   onClose: () => void;
 }
 
-const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
+const SignTransactionsModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const logger: ILogger = useSelectLogger();
-  const signTxnsRequest: IClientRequest<ARC0027SignTxnsRequestMessage> | null =
-    useSelectSignTxnsRequest();
+  const signTransactionsRequest: IEvent<
+    IClientRequestEventPayload<ISignTransactionsParams>
+  > | null = useSelectSignTransactionsRequest();
   // hooks
-  const authorizedAccounts: IAccount[] = useAuthorizedAccounts(signTxnsRequest);
+  const authorizedAccounts: IAccount[] = useAuthorizedAccounts(
+    signTransactionsRequest
+  );
   const defaultTextColor: string = useDefaultTextColor();
   const {
     error: passwordError,
@@ -119,17 +121,15 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   >(null);
   // handlers
   const handleCancelClick = () => {
-    if (signTxnsRequest) {
+    if (signTransactionsRequest) {
       dispatch(
-        sendSignTxnsResponseThunk({
-          error: new SerializableARC0027MethodCanceledError(
-            ARC0027ProviderMethodEnum.SignTxns,
-            __PROVIDER_ID__,
-            `user dismissed sign transaction modal`
-          ),
-          eventId: signTxnsRequest.eventId,
-          originMessage: signTxnsRequest.originMessage,
-          originTabId: signTxnsRequest.originTabId,
+        sendSignTransactionsResponseThunk({
+          error: new ARC0027MethodCanceledError({
+            message: `user dismissed sign transaction modal`,
+            method: ARC0027MethodEnum.SignTransactions,
+            providerId: __PROVIDER_ID__,
+          }),
+          event: signTransactionsRequest,
           stxns: null,
         })
       );
@@ -154,8 +154,8 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
 
     if (
       validatePassword() ||
-      !signTxnsRequest ||
-      !signTxnsRequest.originMessage.params
+      !signTransactionsRequest ||
+      !signTransactionsRequest.payload.message.params
     ) {
       return;
     }
@@ -167,15 +167,13 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
         ),
         logger,
         password,
-        txns: signTxnsRequest.originMessage.params.txns,
+        txns: signTransactionsRequest.payload.message.params.txns,
       });
 
       dispatch(
-        sendSignTxnsResponseThunk({
+        sendSignTransactionsResponseThunk({
           error: null,
-          eventId: signTxnsRequest.eventId,
-          originMessage: signTxnsRequest.originMessage,
-          originTabId: signTxnsRequest.originTabId,
+          event: signTransactionsRequest,
           stxns,
         })
       );
@@ -189,11 +187,9 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           break;
         case ARC0027ErrorCodeEnum.UnauthorizedSignerError:
           dispatch(
-            sendSignTxnsResponseThunk({
+            sendSignTransactionsResponseThunk({
               error,
-              eventId: signTxnsRequest.eventId,
-              originMessage: signTxnsRequest.originMessage,
-              originTabId: signTxnsRequest.originTabId,
+              event: signTransactionsRequest,
               stxns: null,
             })
           );
@@ -219,13 +215,17 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     let decodedTransactions: Transaction[];
     let groupsOfTransactions: Transaction[][];
 
-    if (!signTxnsRequest || !signTxnsRequest.originMessage.params) {
+    if (
+      !signTransactionsRequest ||
+      !signTransactionsRequest.payload.message.params
+    ) {
       return <VStack spacing={4} w="full"></VStack>;
     }
 
-    decodedTransactions = signTxnsRequest.originMessage.params.txns.map(
-      (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
-    );
+    decodedTransactions =
+      signTransactionsRequest.payload.message.params.txns.map((value) =>
+        decodeUnsignedTransaction(decodeBase64(value.txn))
+      );
     groupsOfTransactions = groupTransactions(decodedTransactions);
 
     // if we have multiple groups/single transactions
@@ -257,7 +257,10 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
   const renderHeader = () => {
-    if (!signTxnsRequest || !signTxnsRequest.originMessage.params) {
+    if (
+      !signTransactionsRequest ||
+      !signTransactionsRequest.payload.message.params
+    ) {
       return <SignTxnsHeaderSkeleton />;
     }
 
@@ -271,9 +274,12 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
         >
           {/*app icon*/}
           <Avatar
-            name={signTxnsRequest.clientInfo.appName}
+            name={signTransactionsRequest.payload.message.clientInfo.appName}
             size="md"
-            src={signTxnsRequest.clientInfo.iconUrl || undefined}
+            src={
+              signTransactionsRequest.payload.message.clientInfo.iconUrl ||
+              undefined
+            }
           />
 
           <VStack
@@ -284,7 +290,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
           >
             {/*app name*/}
             <Heading color={defaultTextColor} size="md" textAlign="center">
-              {signTxnsRequest.clientInfo.appName}
+              {signTransactionsRequest.payload.message.clientInfo.appName}
             </Heading>
 
             {/*host*/}
@@ -295,7 +301,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
               py={1}
             >
               <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-                {signTxnsRequest.clientInfo.host}
+                {signTransactionsRequest.payload.message.clientInfo.host}
               </Text>
             </Box>
           </VStack>
@@ -304,7 +310,7 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
         {/*caption*/}
         <Text color={subTextColor} fontSize="md" textAlign="center">
           {t<string>(
-            signTxnsRequest.originMessage.params.txns.length > 1
+            signTransactionsRequest.payload.message.params.txns.length > 1
               ? 'captions.signTransactionsRequest'
               : 'captions.signTransactionRequest'
           )}
@@ -313,12 +319,12 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
     );
   };
 
-  useUpdateStandardAssetInformation(signTxnsRequest);
+  useUpdateStandardAssetInformation(signTransactionsRequest);
 
   return (
     <Modal
       initialFocusRef={passwordInputRef}
-      isOpen={!!signTxnsRequest}
+      isOpen={!!signTransactionsRequest}
       motionPreset="slideInBottom"
       onClose={handleClose}
       size="full"
@@ -343,9 +349,11 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
             <PasswordInput
               error={passwordError}
               hint={
-                signTxnsRequest && signTxnsRequest.originMessage.params
+                signTransactionsRequest &&
+                signTransactionsRequest.payload.message.params
                   ? t<string>(
-                      signTxnsRequest.originMessage.params.txns.length > 1
+                      signTransactionsRequest.payload.message.params.txns
+                        .length > 1
                         ? 'captions.mustEnterPasswordToSignTransactions'
                         : 'captions.mustEnterPasswordToSignTransaction'
                     )
@@ -399,4 +407,4 @@ const SignTxnsModal: FC<IProps> = ({ onClose }: IProps) => {
   );
 };
 
-export default SignTxnsModal;
+export default SignTransactionsModal;

@@ -1,16 +1,14 @@
+import {
+  ARC0027UnknownError,
+  ISignTransactionsParams,
+} from '@agoralabs-sh/avm-web-provider';
 import { decode as decodeBase64 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-// errors
-import { SerializableARC0027UnknownError } from '@common/errors';
-
 // features
-import { sendSignTxnsResponseThunk } from '@extension/features/messages';
-
-// messages
-import { ARC0027SignTxnsRequestMessage } from '@common/messages';
+import { sendSignTransactionsResponseThunk } from '@extension/features/messages';
 
 // selectors
 import {
@@ -27,7 +25,8 @@ import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAppThunkDispatch,
-  IClientRequest,
+  IClientRequestEventPayload,
+  IEvent,
   ISession,
 } from '@extension/types';
 
@@ -37,7 +36,9 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 
 export default function useAuthorizedAccounts(
-  signTxnsRequest: IClientRequest<ARC0027SignTxnsRequestMessage> | null
+  signTransactionsRequest: IEvent<
+    IClientRequestEventPayload<ISignTransactionsParams>
+  > | null
 ): IAccount[] {
   const _functionName: string = 'useAuthorizedAccounts';
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -55,10 +56,13 @@ export default function useAuthorizedAccounts(
     let filteredSessions: ISession[];
     let genesisHashes: string[];
 
-    if (signTxnsRequest && signTxnsRequest.originMessage.params) {
+    if (
+      signTransactionsRequest &&
+      signTransactionsRequest.payload.message.params
+    ) {
       try {
         decodedUnsignedTransactions =
-          signTxnsRequest.originMessage.params.txns.map((value) =>
+          signTransactionsRequest.payload.message.params.txns.map((value) =>
             decodeUnsignedTransaction(decodeBase64(value.txn))
           );
       } catch (error) {
@@ -67,14 +71,12 @@ export default function useAuthorizedAccounts(
         logger?.debug(`${_functionName}: ${errorMessage}`);
 
         dispatch(
-          sendSignTxnsResponseThunk({
-            error: new SerializableARC0027UnknownError(
-              __PROVIDER_ID__,
-              errorMessage
-            ),
-            eventId: signTxnsRequest.eventId,
-            originMessage: signTxnsRequest.originMessage,
-            originTabId: signTxnsRequest.originTabId,
+          sendSignTransactionsResponseThunk({
+            error: new ARC0027UnknownError({
+              message: errorMessage,
+              providerId: __PROVIDER_ID__,
+            }),
+            event: signTransactionsRequest,
             stxns: null,
           })
         );
@@ -91,7 +93,7 @@ export default function useAuthorizedAccounts(
         genesisHashes.some((value) => value === session.genesisHash)
       );
       authorizedAddresses = getAuthorizedAddressesForHost(
-        signTxnsRequest.clientInfo.host,
+        signTransactionsRequest.payload.message.clientInfo.host,
         filteredSessions
       );
 
@@ -108,7 +110,7 @@ export default function useAuthorizedAccounts(
         )
       );
     }
-  }, [accounts, sessions, signTxnsRequest]);
+  }, [accounts, sessions, signTransactionsRequest]);
 
   return authorizedAccounts;
 }

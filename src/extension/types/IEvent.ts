@@ -2,9 +2,9 @@
 import { EventTypeEnum } from '@extension/enums';
 
 // types
-import IClientEventPayload from './IClientEventPayload';
+import type TEventPayloads from './TEventPayloads';
 
-interface IEvent<Payload = IClientEventPayload> {
+interface IEvent<Payload = TEventPayloads> {
   id: string;
   payload: Payload;
   type: EventTypeEnum;

@@ -2,7 +2,7 @@
 import type { IAccountsState } from '@extension/features/accounts';
 import type { IState as IAddAssetsState } from '@extension/features/add-assets';
 import type { IState as IARC0072AssetsState } from '@extension/features/arc0072-assets';
-import type { IEventsState } from '@extension/features/events';
+import type { IState as IEventsState } from '@extension/features/events';
 import type { INetworksState } from '@extension/features/networks';
 import type { INotificationsState } from '@extension/features/notifications';
 import type { IPasswordLockState } from '@extension/features/password-lock';

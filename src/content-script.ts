@@ -1,3 +1,7 @@
+import {
+  ARC0027MethodEnum,
+  AVMWebProvider,
+} from '@agoralabs-sh/avm-web-provider';
 import browser from 'webextension-polyfill';
 
 // constants
@@ -14,17 +18,38 @@ import createLogger from '@common/utils/createLogger';
 import injectScript from '@external/utils/injectScript';
 
 (() => {
+  const debug: boolean = __ENV__ === 'development';
+  const avmWebProvider: AVMWebProvider = AVMWebProvider.init(__PROVIDER_ID__, {
+    debug,
+  });
   const channel: BroadcastChannel = new BroadcastChannel(ARC_0027_CHANNEL_NAME);
-  const logger: ILogger = createLogger(
-    __ENV__ === 'development' ? 'debug' : 'error'
-  );
+  const logger: ILogger = createLogger(debug ? 'debug' : 'error');
   const externalMessageBroker: ExternalMessageBroker =
     new ExternalMessageBroker({
       channel,
       logger,
     });
 
-  // listen to broadcast messages from the webpage
+  // handle requests from the webpage
+  avmWebProvider.onDisable(
+    externalMessageBroker.onRequestMessage.bind(externalMessageBroker)
+  );
+  avmWebProvider.onDiscover(
+    externalMessageBroker.onRequestMessage.bind(externalMessageBroker)
+  );
+  avmWebProvider.onEnable(
+    externalMessageBroker.onRequestMessage.bind(externalMessageBroker)
+  );
+  avmWebProvider.onPostTransactions(
+    externalMessageBroker.onRequestMessage.bind(externalMessageBroker)
+  );
+  avmWebProvider.onSignAndPostTransactions(
+    externalMessageBroker.onRequestMessage.bind(externalMessageBroker)
+  );
+  avmWebProvider.onSignTransactions(
+    externalMessageBroker.onRequestMessage.bind(externalMessageBroker)
+  );
+
   channel.onmessage = externalMessageBroker.onARC0027RequestMessage.bind(
     externalMessageBroker
   );

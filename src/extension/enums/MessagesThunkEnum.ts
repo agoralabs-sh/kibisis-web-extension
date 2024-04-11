@@ -3,7 +3,7 @@ enum MessagesThunkEnum {
   SendFactoryReset = 'messages/sendFactoryReset',
   SendRegistrationCompleted = 'messages/sendRegistrationCompleted',
   SendSignBytesResponse = 'messages/sendSignBytesResponse',
-  SendSignTxnsResponse = 'messages/sendSignTxnsResponse',
+  SendSignTransactionsResponse = 'messages/sendSignTransactionsResponse',
 }
 
 export default MessagesThunkEnum;

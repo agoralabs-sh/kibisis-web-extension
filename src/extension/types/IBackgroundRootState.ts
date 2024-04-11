@@ -1,6 +1,6 @@
 // features
 import type { IAccountsState } from '@extension/features/accounts';
-import type { IEventsState } from '@extension/features/events';
+import type { IState as IEventsState } from '@extension/features/events';
 import type { INetworksState } from '@extension/features/networks';
 import type { ISessionsState } from '@extension/features/sessions';
 import type { ISettingsState } from '@extension/features/settings';

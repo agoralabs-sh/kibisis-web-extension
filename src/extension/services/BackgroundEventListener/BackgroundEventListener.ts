@@ -7,7 +7,7 @@ import { PASSWORD_LOCK_ALARM } from '@extension/constants';
 import { AppTypeEnum } from '@extension/enums';
 
 // messages
-import { InternalPasswordLockTimeoutMessage } from '@common/messages';
+import { ProviderPasswordLockTimeoutMessage } from '@common/messages';
 
 // services
 import AppWindowManagerService from '../AppWindowManagerService';
@@ -102,7 +102,7 @@ export default class BackgroundEventListener {
       case PASSWORD_LOCK_ALARM:
         // send a message to the popups to remove password from store
         await browser.runtime.sendMessage(
-          new InternalPasswordLockTimeoutMessage()
+          new ProviderPasswordLockTimeoutMessage()
         );
 
         break;

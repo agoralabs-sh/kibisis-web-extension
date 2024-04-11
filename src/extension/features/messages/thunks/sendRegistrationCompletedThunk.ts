@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // messages
-import { InternalRegistrationCompletedMessage } from '@common/messages';
+import { ProviderRegistrationCompletedMessage } from '@common/messages';
 
 // types
 import { IMainRootState } from '@extension/types';
@@ -19,7 +19,7 @@ const sendRegistrationCompletedThunk: AsyncThunk<
   async () => {
     // send the message
     await browser.runtime.sendMessage(
-      new InternalRegistrationCompletedMessage()
+      new ProviderRegistrationCompletedMessage()
     );
   }
 );

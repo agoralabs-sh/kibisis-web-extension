@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { SerializableARC0027UnknownError } from '@common/errors';
 
 // features
-import { sendSignTxnsResponseThunk } from '@extension/features/messages';
+import { sendSignTransactionsResponseThunk } from '@extension/features/messages';
 import { updateStandardAssetInformationThunk } from '@extension/features/standard-assets';
 
 // messages
@@ -66,7 +66,7 @@ export default function useUpdateStandardAssetInformation(
         logger?.debug(`${_functionName}: ${errorMessage}`);
 
         dispatch(
-          sendSignTxnsResponseThunk({
+          sendSignTransactionsResponseThunk({
             error: new SerializableARC0027UnknownError(
               __PROVIDER_ID__,
               errorMessage

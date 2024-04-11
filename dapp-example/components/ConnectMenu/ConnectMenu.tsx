@@ -53,11 +53,16 @@ export interface IConnectResult {
 }
 
 interface IProps {
+  connectionType: ConnectionTypeEnum | null;
   onConnect: (result: IConnectResult) => void;
   onReset: () => void;
 }
 
-const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
+const ConnectMenu: FC<IProps> = ({
+  connectionType,
+  onConnect,
+  onReset,
+}: IProps) => {
   const toast: CreateToastFnReturn = useToast({
     duration: 3000,
     isClosable: true,
@@ -166,13 +171,23 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onReset }: IProps) => {
     await provider.connect();
   };
   const handleDisconnect = async () => {
-    const provider: Provider | null =
-      providers?.find((value) => value.metadata.id === PROVIDER_ID.KIBISIS) ||
-      null;
+    let provider: Provider | null;
 
-    await provider?.disconnect();
+    switch (connectionType) {
+      case ConnectionTypeEnum.UseWallet:
+        provider =
+          providers?.find(
+            (value) => value.metadata.id === PROVIDER_ID.KIBISIS
+          ) || null;
 
-    setUseWalletNetwork(null);
+        await provider?.disconnect();
+
+        setUseWalletNetwork(null);
+        break;
+      default:
+        break;
+    }
+
     onReset();
   };
   // renders

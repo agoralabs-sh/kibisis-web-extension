@@ -1,1 +1,1 @@
-export type { default as IEventsState } from './IEventsState';
+export type { default as IState } from './IState';
