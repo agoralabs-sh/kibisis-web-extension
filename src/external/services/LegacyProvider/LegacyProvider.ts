@@ -6,7 +6,6 @@ import {
   IEnableResult,
   InvalidGroupIdError,
   InvalidInputError,
-  IPostTxnsOptions,
   IPostTxnsResult,
   ISignBytesOptions,
   ISignBytesResult,
@@ -19,26 +18,26 @@ import {
   WalletOperationNotSupportedError,
 } from '@agoralabs-sh/algorand-provider';
 import {
+  ARC0027ErrorCodeEnum,
+  createChannelName,
+  DEFAULT_REQUEST_TIMEOUT,
+  UPPER_REQUEST_TIMEOUT,
+} from '@agoralabs-sh/avm-web-provider';
+import {
   decode as decodeBase64,
   encode as encodeBase64,
 } from '@stablelib/base64';
 
 // constants
-import {
-  ARC_0027_CHANNEL_NAME,
-  ARC_0027_DEFAULT_REQUEST_TIMEOUT,
-  ARC_0027_UPPER_REQUEST_TIMEOUT,
-} from '@common/constants';
 import { LEGACY_WALLET_ID } from '@external/constants';
 
 // enums
-import { ARC0027ErrorCodeEnum, ARC0027ProviderMethodEnum } from '@common/enums';
+import { ARC0027ProviderMethodEnum } from '@common/enums';
 
 // errors
 import {
   BaseSerializableARC0027Error,
   SerializableARC0027FailedToPostSomeTransactionsError,
-  SerializableARC0027InvalidGroupIdError,
   SerializableARC0027MethodNotSupportedError,
   SerializableARC0027MethodTimedOutError,
   SerializableARC0027NetworkNotSupportedError,
@@ -90,12 +89,12 @@ export default class LegacyProvider extends BaseWalletManager {
     const _functionName: string = 'handleEvent';
 
     return new Promise<Result>((resolve, reject) => {
-      const channel = new BroadcastChannel(ARC_0027_CHANNEL_NAME);
+      const channel = new BroadcastChannel(createChannelName());
       let timer: number;
 
       this.logger &&
         this.logger.debug(
-          `${LegacyProvider.name}#${_functionName}(): handling event "${message.reference}"`
+          `${LegacyProvider.name}#${_functionName}: handling event "${message.reference}"`
         );
 
       channel.onmessage = (
@@ -157,7 +156,7 @@ export default class LegacyProvider extends BaseWalletManager {
             `no response from wallet for "${message.reference}"`
           )
         );
-      }, timeout || ARC_0027_DEFAULT_REQUEST_TIMEOUT);
+      }, timeout || DEFAULT_REQUEST_TIMEOUT);
 
       // send the event
       channel.postMessage(message);
@@ -238,7 +237,7 @@ export default class LegacyProvider extends BaseWalletManager {
     }
   }
 
-  public async postTxns(options: IPostTxnsOptions): Promise<IPostTxnsResult> {
+  public async postTxns(): Promise<IPostTxnsResult> {
     throw new WalletOperationNotSupportedError(this.id, 'postTxns');
   }
 
@@ -259,7 +258,7 @@ export default class LegacyProvider extends BaseWalletManager {
           providerId: __PROVIDER_ID__,
           signer,
         }),
-        ARC_0027_UPPER_REQUEST_TIMEOUT
+        UPPER_REQUEST_TIMEOUT
       );
 
       return {
@@ -283,7 +282,7 @@ export default class LegacyProvider extends BaseWalletManager {
           providerId: __PROVIDER_ID__,
           txns,
         }),
-        ARC_0027_UPPER_REQUEST_TIMEOUT
+        UPPER_REQUEST_TIMEOUT
       );
 
       return {

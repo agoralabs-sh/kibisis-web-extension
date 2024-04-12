@@ -1,3 +1,4 @@
+import type { ISignTransactionsParams } from '@agoralabs-sh/avm-web-provider';
 import { decode as decodeBase64 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
 import { useEffect } from 'react';
@@ -10,9 +11,6 @@ import { SerializableARC0027UnknownError } from '@common/errors';
 import { sendSignTransactionsResponseThunk } from '@extension/features/messages';
 import { updateStandardAssetInformationThunk } from '@extension/features/standard-assets';
 
-// messages
-import { ARC0027SignTxnsRequestMessage } from '@common/messages';
-
 // selectors
 import {
   useSelectLogger,
@@ -24,7 +22,8 @@ import {
 import type { ILogger } from '@common/types';
 import type {
   IAppThunkDispatch,
-  IClientRequest,
+  IClientRequestEventPayload,
+  IEvent,
   INetwork,
   IStandardAsset,
 } from '@extension/types';
@@ -35,7 +34,9 @@ import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransactio
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
 export default function useUpdateStandardAssetInformation(
-  signTxnsRequest: IClientRequest<ARC0027SignTxnsRequestMessage> | null
+  signTransactionsRequest: IEvent<
+    IClientRequestEventPayload<ISignTransactionsParams>
+  > | null
 ): void {
   const _functionName: string = 'useUpdateStandardAssetsForTransactions';
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -50,14 +51,14 @@ export default function useUpdateStandardAssetInformation(
     let errorMessage: string;
 
     if (
-      signTxnsRequest &&
-      signTxnsRequest.originMessage.params &&
+      signTransactionsRequest &&
+      signTransactionsRequest.payload.message.params &&
       standardAssets &&
       networks.length > 0
     ) {
       try {
         decodedUnsignedTransactions =
-          signTxnsRequest.originMessage.params.txns.map((value) =>
+          signTransactionsRequest.payload.message.params.txns.map((value) =>
             decodeUnsignedTransaction(decodeBase64(value.txn))
           );
       } catch (error) {
@@ -71,9 +72,7 @@ export default function useUpdateStandardAssetInformation(
               __PROVIDER_ID__,
               errorMessage
             ),
-            eventId: signTxnsRequest.eventId,
-            originMessage: signTxnsRequest.originMessage,
-            originTabId: signTxnsRequest.originTabId,
+            event: signTransactionsRequest,
             stxns: null,
           })
         );
@@ -118,5 +117,5 @@ export default function useUpdateStandardAssetInformation(
         }
       );
     }
-  }, [signTxnsRequest, standardAssets, networks]);
+  }, [signTransactionsRequest, standardAssets, networks]);
 }

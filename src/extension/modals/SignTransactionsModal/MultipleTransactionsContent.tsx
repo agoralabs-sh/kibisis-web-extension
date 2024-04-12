@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { IoArrowForwardOutline } from 'react-icons/io5';
 
 // components
-import AtomicTransactionsContent from '@extension/modals/SignTxnsModal/AtomicTransactionsContent';
 import ChainBadge from '@extension/components/ChainBadge';
 import ModalItem from '@extension/components/ModalItem';
 import ModalSubHeading from '@extension/components/ModalSubHeading';
 import ModalTextItem from '@extension/components/ModalTextItem';
-import SingleTransactionContent from '@extension/modals/SignTxnsModal/SingleTransactionContent';
+import AtomicTransactionsContent from './AtomicTransactionsContent';
+import SingleTransactionContent from './SingleTransactionContent';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';

@@ -1,4 +1,5 @@
 import {
+  ARC0027ErrorCodeEnum,
   ARC0027MethodCanceledError,
   ARC0027MethodEnum,
   ISignTransactionsParams,
@@ -46,7 +47,6 @@ import { DEFAULT_GAP } from '@extension/constants';
 import { MultipleTransactionsContext } from './contexts';
 
 // enums
-import { ARC0027ErrorCodeEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // features
@@ -80,17 +80,16 @@ import type {
   IClientRequestEventPayload,
   IEvent,
 } from '@extension/types';
+import type { ISignTransactionsModalProps } from './types';
 
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import groupTransactions from '@extension/utils/groupTransactions';
 import signTxns from '@extension/utils/signTxns';
 
-interface IProps {
-  onClose: () => void;
-}
-
-const SignTransactionsModal: FC<IProps> = ({ onClose }: IProps) => {
+const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
+  onClose,
+}) => {
   const { t } = useTranslation();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
