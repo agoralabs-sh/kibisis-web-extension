@@ -1,17 +1,19 @@
 import {
   Center,
   ChakraProvider,
+  CreateToastFnReturn,
   Flex,
   Heading,
-  Tab,
-  TabList,
-  Tabs,
-  TabPanels,
-  VStack,
   HStack,
-  Text,
   Select,
   Spacer,
+  Tab,
+  TabList,
+  TabPanels,
+  Tabs,
+  Text,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
 import {
   PROVIDER_ID,
@@ -25,7 +27,7 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import ApplicationActionsTab from '../ApplicationActionsTab';
 import AssetActionsTab from '../AssetActionsTab';
 import AtomicTransactionActionsTab from '../AtomicTransactionActionsTab';
-import ConnectMenu, { IConnectResult } from '../ConnectMenu';
+import ConnectMenu, { IOnConnectParams } from '../ConnectMenu';
 import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountTab from '../ImportAccountTab';
 import KeyRegistrationActionsTab from '../KeyRegistrationActionsTab';
@@ -38,6 +40,11 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { ConnectionTypeEnum } from '../../enums';
+
+// hooks
+import useAlgorandProviderConnector from '../../hooks/useAlgorandProviderConnector';
+import useAVMWebProviderConnector from '../../hooks/useAVMWebProviderConnector';
+import useUseWalletConnector from '../../hooks/useUseWalletConnector';
 
 // theme
 import { theme } from '@extension/theme';
@@ -56,6 +63,24 @@ const App: FC = () => {
     },
     providers: [{ id: PROVIDER_ID.KIBISIS }],
   });
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
+  // hooks
+  const {
+    connectAction: algorandProviderConnectAction,
+    disconnectAction: algorandProviderDisconnectAction,
+  } = useAlgorandProviderConnector({ toast });
+  const {
+    connectAction: avmWebProviderConnectAction,
+    disconnectAction: avmWebProviderDisconnectAction,
+  } = useAVMWebProviderConnector({ toast });
+  const {
+    connectAction: useWalletConnectAction,
+    disconnectAction: useWalletDisconnectAction,
+  } = useUseWalletConnector({ toast });
   // states
   const [connectionType, setConnectionType] =
     useState<ConnectionTypeEnum | null>(null);
@@ -75,19 +100,38 @@ const App: FC = () => {
       setSelectedAccount(account);
     }
   };
-  const handleConnectProvider = ({
-    accounts,
+  const handleConnect = async ({
     connectionType,
     network,
-  }: IConnectResult) => {
-    setEnabledAccounts(accounts);
+  }: IOnConnectParams) => {
     setConnectionType(connectionType);
     setSelectedNetwork(network);
+
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        return algorandProviderConnectAction(network);
+      case ConnectionTypeEnum.AVMWebProvider:
+        return avmWebProviderConnectAction(network);
+      case ConnectionTypeEnum.UseWallet:
+        return useWalletConnectAction(network);
+      default:
+        break;
+    }
   };
-  const handleResetProvider = () => {
-    setEnabledAccounts([]);
+  const handleDisconnect = () => {
     setConnectionType(null);
     setSelectedNetwork(null);
+
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        return algorandProviderDisconnectAction();
+      case ConnectionTypeEnum.AVMWebProvider:
+        return avmWebProviderDisconnectAction();
+      case ConnectionTypeEnum.UseWallet:
+        return useWalletDisconnectAction();
+      default:
+        break;
+    }
   };
 
   useEffect(() => {
@@ -121,9 +165,9 @@ const App: FC = () => {
 
                 {/*connect menu*/}
                 <ConnectMenu
-                  connectionType={connectionType}
-                  onConnect={handleConnectProvider}
-                  onReset={handleResetProvider}
+                  onConnect={handleConnect}
+                  onDisconnect={handleDisconnect}
+                  toast={toast}
                 />
               </HStack>
 
