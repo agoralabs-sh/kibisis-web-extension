@@ -1,4 +1,9 @@
-import { AVMWebClient, IEnableResult } from '@agoralabs-sh/avm-web-provider';
+import {
+  AVMWebClient,
+  IARC0001Transaction,
+  IEnableResult,
+} from '@agoralabs-sh/avm-web-provider';
+import { Transaction } from 'algosdk';
 import { useState } from 'react';
 
 // types
@@ -56,6 +61,17 @@ export default function useAVMWebProviderConnector({
     });
     _avmWebClient.disable({
       providerId: __PROVIDER__,
+    });
+  };
+  const signTransactionsAction = async (
+    transactions: IARC0001Transaction[]
+  ) => {
+    return new Promise(async () => {
+      let _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
+
+      _avmWebClient.signTransactions(() => {});
+
+      await _avmWebClient.signTransactions({});
     });
   };
   // misc

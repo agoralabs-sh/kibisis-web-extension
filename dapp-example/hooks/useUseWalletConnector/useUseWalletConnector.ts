@@ -1,3 +1,8 @@
+import type { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
 import {
   Provider,
   PROVIDER_ID,
@@ -6,6 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 
 // types
+import type { INetwork } from '@extension/types';
 import type {
   IAccountInformation,
   IConnectorParams,
@@ -13,13 +19,12 @@ import type {
 } from '../../types';
 
 // utils
-import { INetwork } from '@extension/types';
 import { getAccountInformation } from '../../utils';
 
 export default function useUseWalletConnector({
   toast,
 }: IConnectorParams): IConnectorState {
-  const { connectedAccounts, providers } = useUseWallet();
+  const { connectedAccounts, providers, signTransactions } = useUseWallet();
   // state
   const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
     []
@@ -70,6 +75,17 @@ export default function useUseWalletConnector({
       });
     }
   };
+  const signTransactionsAction = async (
+    transactions: IARC0001Transaction[]
+  ) => {
+    const result = await signTransactions(
+      transactions.map(({ txn }) => decodeBase64(txn)),
+      transactions.map((_, index) => index),
+      true
+    );
+
+    return result.map(encodeBase64);
+  };
 
   useEffect(() => {
     if (network) {
@@ -90,5 +106,6 @@ export default function useUseWalletConnector({
     connectAction,
     disconnectAction,
     enabledAccounts,
+    signTransactionsAction,
   };
 }

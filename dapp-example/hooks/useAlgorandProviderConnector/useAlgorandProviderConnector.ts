@@ -3,7 +3,9 @@ import {
   BaseError,
   IBaseResult,
   IEnableResult,
+  ISignTxnsResult,
 } from '@agoralabs-sh/algorand-provider';
+import { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
 import { useState } from 'react';
 
 // types
@@ -76,10 +78,27 @@ export default function useAlgorandProviderConnector({
       title: 'Disconnected!',
     });
   };
+  const signTransactionsAction = async (
+    transactions: IARC0001Transaction[]
+  ) => {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
+    let result: ISignTxnsResult;
+
+    if (!algorand) {
+      throw new Error('window.algorand not found');
+    }
+
+    result = await algorand.signTxns({
+      txns: transactions,
+    });
+
+    return result.stxns;
+  };
 
   return {
     connectAction,
     disconnectAction,
     enabledAccounts,
+    signTransactionsAction,
   };
 }
