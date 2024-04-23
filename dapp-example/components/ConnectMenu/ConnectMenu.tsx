@@ -155,6 +155,8 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
           }
         })}
 
+        <MenuDivider />
+
         <MenuItem onClick={handleDisconnect}>
           <Text size="sm" w="full">
             Disconnect

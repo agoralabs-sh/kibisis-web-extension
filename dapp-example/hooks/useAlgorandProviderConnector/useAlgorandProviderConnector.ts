@@ -5,7 +5,7 @@ import {
   IEnableResult,
   ISignTxnsResult,
 } from '@agoralabs-sh/algorand-provider';
-import { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
+import type { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
 import { useState } from 'react';
 
 // types

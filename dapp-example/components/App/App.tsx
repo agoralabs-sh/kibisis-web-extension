@@ -50,8 +50,8 @@ import useUseWalletConnector from '../../hooks/useUseWalletConnector';
 import { theme } from '@extension/theme';
 
 // types
-import { INetwork } from '@extension/types';
-import { IAccountInformation } from '../../types';
+import type { INetwork } from '@extension/types';
+import type { IAccountInformation } from '../../types';
 
 const App: FC = () => {
   const providers: SupportedProviders | null = useInitializeProviders({
@@ -72,14 +72,17 @@ const App: FC = () => {
   const {
     connectAction: algorandProviderConnectAction,
     disconnectAction: algorandProviderDisconnectAction,
+    enabledAccounts: algorandProviderEnabledAccounts,
   } = useAlgorandProviderConnector({ toast });
   const {
     connectAction: avmWebProviderConnectAction,
     disconnectAction: avmWebProviderDisconnectAction,
+    enabledAccounts: avmWebProviderEnabledAccounts,
   } = useAVMWebProviderConnector({ toast });
   const {
     connectAction: useWalletConnectAction,
     disconnectAction: useWalletDisconnectAction,
+    enabledAccounts: useWalletEnabledAccounts,
   } = useUseWalletConnector({ toast });
   // states
   const [connectionType, setConnectionType] =
@@ -104,41 +107,66 @@ const App: FC = () => {
     connectionType,
     network,
   }: IOnConnectParams) => {
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        await algorandProviderConnectAction(network);
+        break;
+      case ConnectionTypeEnum.AVMWebProvider:
+        await avmWebProviderConnectAction(network);
+        break;
+      case ConnectionTypeEnum.UseWallet:
+        await useWalletConnectAction(network);
+        break;
+      default:
+        break;
+    }
+
     setConnectionType(connectionType);
     setSelectedNetwork(network);
-
+  };
+  const handleDisconnect = async () => {
     switch (connectionType) {
       case ConnectionTypeEnum.AlgorandProvider:
-        return algorandProviderConnectAction(network);
+        await algorandProviderDisconnectAction();
+        break;
       case ConnectionTypeEnum.AVMWebProvider:
-        return avmWebProviderConnectAction(network);
+        await avmWebProviderDisconnectAction();
+        break;
       case ConnectionTypeEnum.UseWallet:
-        return useWalletConnectAction(network);
+        await useWalletDisconnectAction();
+        break;
       default:
         break;
     }
-  };
-  const handleDisconnect = () => {
+
     setConnectionType(null);
     setSelectedNetwork(null);
-
-    switch (connectionType) {
-      case ConnectionTypeEnum.AlgorandProvider:
-        return algorandProviderDisconnectAction();
-      case ConnectionTypeEnum.AVMWebProvider:
-        return avmWebProviderDisconnectAction();
-      case ConnectionTypeEnum.UseWallet:
-        return useWalletDisconnectAction();
-      default:
-        break;
-    }
   };
 
   useEffect(() => {
-    if (enabledAccounts) {
-      setSelectedAccount(enabledAccounts[0] || null);
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        setEnabledAccounts(algorandProviderEnabledAccounts);
+        break;
+      case ConnectionTypeEnum.AVMWebProvider:
+        setEnabledAccounts(avmWebProviderEnabledAccounts);
+        break;
+      case ConnectionTypeEnum.UseWallet:
+        setEnabledAccounts(useWalletEnabledAccounts);
+        break;
+      default:
+        setEnabledAccounts([]);
+        break;
     }
-  }, [enabledAccounts]);
+  }, [
+    algorandProviderEnabledAccounts,
+    avmWebProviderEnabledAccounts,
+    useWalletEnabledAccounts,
+  ]);
+  useEffect(
+    () => setSelectedAccount(enabledAccounts[0] || null),
+    [enabledAccounts]
+  );
 
   return (
     <UseWalletProvider value={providers}>

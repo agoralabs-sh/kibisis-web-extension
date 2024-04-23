@@ -84,6 +84,8 @@ export default function useAVMWebProviderConnector({
         return;
       }
 
+      setEnabledAccounts([]);
+
       toast({
         description: `Successfully disconnected via AVM Web Provider.`,
         status: 'success',

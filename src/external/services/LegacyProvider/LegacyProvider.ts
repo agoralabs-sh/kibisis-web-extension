@@ -19,7 +19,6 @@ import {
 } from '@agoralabs-sh/algorand-provider';
 import {
   ARC0027ErrorCodeEnum,
-  createChannelName,
   DEFAULT_REQUEST_TIMEOUT,
   UPPER_REQUEST_TIMEOUT,
 } from '@agoralabs-sh/avm-web-provider';
@@ -89,7 +88,7 @@ export default class LegacyProvider extends BaseWalletManager {
     const _functionName: string = 'handleEvent';
 
     return new Promise<Result>((resolve, reject) => {
-      const channel = new BroadcastChannel(createChannelName());
+      const channel = new BroadcastChannel(`arc0027:channel:name`);
       let timer: number;
 
       this.logger &&
@@ -252,7 +251,7 @@ export default class LegacyProvider extends BaseWalletManager {
         IARC0027SignBytesParams,
         IARC0027SignBytesResult
       >(
-        ARC0027ProviderMethodEnum.SignTxns,
+        ARC0027ProviderMethodEnum.SignBytes,
         new ARC0027SignBytesRequestMessage({
           data: encodeBase64(data),
           providerId: __PROVIDER_ID__,
@@ -277,7 +276,7 @@ export default class LegacyProvider extends BaseWalletManager {
         IARC0027SignTxnsParams,
         IARC0027SignTxnsResult
       >(
-        ARC0027ProviderMethodEnum.SignBytes,
+        ARC0027ProviderMethodEnum.SignTxns,
         new ARC0027SignTxnsRequestMessage({
           providerId: __PROVIDER_ID__,
           txns,
