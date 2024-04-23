@@ -28,6 +28,7 @@ import ApplicationActionsTab from '../ApplicationActionsTab';
 import AssetActionsTab from '../AssetActionsTab';
 import AtomicTransactionActionsTab from '../AtomicTransactionActionsTab';
 import ConnectMenu, { IOnConnectParams } from '../ConnectMenu';
+import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
 import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountTab from '../ImportAccountTab';
 import KeyRegistrationActionsTab from '../KeyRegistrationActionsTab';
@@ -51,7 +52,7 @@ import { theme } from '@extension/theme';
 
 // types
 import type { INetwork } from '@extension/types';
-import type { IAccountInformation } from '../../types';
+import type { IAccountInformation, IBaseTransactionProps } from '../../types';
 
 const App: FC = () => {
   const providers: SupportedProviders | null = useInitializeProviders({
@@ -73,16 +74,19 @@ const App: FC = () => {
     connectAction: algorandProviderConnectAction,
     disconnectAction: algorandProviderDisconnectAction,
     enabledAccounts: algorandProviderEnabledAccounts,
+    signTransactionsAction: algorandProviderSignTransactionsAction,
   } = useAlgorandProviderConnector({ toast });
   const {
     connectAction: avmWebProviderConnectAction,
     disconnectAction: avmWebProviderDisconnectAction,
     enabledAccounts: avmWebProviderEnabledAccounts,
+    signTransactionsAction: avmWebProviderSignTransactionsAction,
   } = useAVMWebProviderConnector({ toast });
   const {
     connectAction: useWalletConnectAction,
     disconnectAction: useWalletDisconnectAction,
     enabledAccounts: useWalletEnabledAccounts,
+    signTransactionsAction: useWalletSignTransactionsAction,
   } = useUseWalletConnector({ toast });
   // states
   const [connectionType, setConnectionType] =
@@ -141,6 +145,145 @@ const App: FC = () => {
 
     setConnectionType(null);
     setSelectedNetwork(null);
+  };
+  // renders
+  const renderContent = () => {
+    let signTransactionProps: IBaseTransactionProps;
+
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        signTransactionProps = {
+          account: selectedAccount,
+          connectionType,
+          network: selectedNetwork,
+          signTransactionsAction: algorandProviderSignTransactionsAction,
+        };
+
+        return (
+          <Tabs colorScheme="primaryLight" w="full">
+            <TabList>
+              <Tab>Payments</Tab>
+              <Tab>Assets</Tab>
+              <Tab>Atomic Txns</Tab>
+              <Tab>Apps</Tab>
+              <Tab>Keys</Tab>
+              <Tab>Sign Bytes</Tab>
+              <Tab>Sign JWT</Tab>
+              <Tab>Import Account</Tab>
+            </TabList>
+
+            <TabPanels>
+              <PaymentActionsTab {...signTransactionProps} />
+
+              <AssetActionsTab {...signTransactionProps} />
+
+              <AtomicTransactionActionsTab {...signTransactionProps} />
+
+              <ApplicationActionsTab {...signTransactionProps} />
+
+              <KeyRegistrationActionsTab {...signTransactionProps} />
+
+              <SignDataTab
+                account={selectedAccount}
+                connectionType={connectionType}
+              />
+
+              <SignJwtTab
+                account={selectedAccount}
+                connectionType={connectionType}
+              />
+
+              <ImportAccountTab />
+            </TabPanels>
+          </Tabs>
+        );
+      case ConnectionTypeEnum.AVMWebProvider:
+        signTransactionProps = {
+          account: selectedAccount,
+          connectionType,
+          network: selectedNetwork,
+          signTransactionsAction: avmWebProviderSignTransactionsAction,
+        };
+
+        return (
+          <Tabs colorScheme="primaryLight" w="full">
+            <TabList>
+              <Tab>Payments</Tab>
+              <Tab>Assets</Tab>
+              <Tab>Atomic Txns</Tab>
+              <Tab>Apps</Tab>
+              <Tab>Keys</Tab>
+              <Tab>Sign Bytes</Tab>
+              <Tab>Sign JWT</Tab>
+              <Tab>Import Account</Tab>
+            </TabList>
+
+            <TabPanels>
+              <PaymentActionsTab {...signTransactionProps} />
+
+              <AssetActionsTab {...signTransactionProps} />
+
+              <AtomicTransactionActionsTab {...signTransactionProps} />
+
+              <ApplicationActionsTab {...signTransactionProps} />
+
+              <KeyRegistrationActionsTab {...signTransactionProps} />
+
+              <SignDataTab
+                account={selectedAccount}
+                connectionType={connectionType}
+              />
+
+              <SignJwtTab
+                account={selectedAccount}
+                connectionType={connectionType}
+              />
+
+              <ImportAccountTab />
+            </TabPanels>
+          </Tabs>
+        );
+      case ConnectionTypeEnum.UseWallet:
+        signTransactionProps = {
+          account: selectedAccount,
+          connectionType,
+          network: selectedNetwork,
+          signTransactionsAction: useWalletSignTransactionsAction,
+        };
+
+        return (
+          <Tabs colorScheme="primaryLight" w="full">
+            <TabList>
+              <Tab>Payments</Tab>
+              <Tab>Assets</Tab>
+              <Tab>Atomic Txns</Tab>
+              <Tab>Apps</Tab>
+              <Tab>Keys</Tab>
+              <Tab>Sign Bytes</Tab>
+              <Tab>Sign JWT</Tab>
+              <Tab>Import Account</Tab>
+            </TabList>
+
+            <TabPanels>
+              <PaymentActionsTab {...signTransactionProps} />
+
+              <AssetActionsTab {...signTransactionProps} />
+
+              <AtomicTransactionActionsTab {...signTransactionProps} />
+
+              <ApplicationActionsTab {...signTransactionProps} />
+
+              <KeyRegistrationActionsTab {...signTransactionProps} />
+
+              <ImportAccountTab />
+            </TabPanels>
+          </Tabs>
+        );
+      default:
+        break;
+    }
+
+    return <ConnectionNotInitializedContent />;
   };
 
   useEffect(() => {
@@ -226,62 +369,7 @@ const App: FC = () => {
               </HStack>
 
               {/*tabs*/}
-              <Tabs colorScheme="primaryLight" w="full">
-                <TabList>
-                  <Tab>Payments</Tab>
-                  <Tab>Assets</Tab>
-                  <Tab>Atomic Txns</Tab>
-                  <Tab>Apps</Tab>
-                  <Tab>Keys</Tab>
-                  <Tab>Sign Bytes</Tab>
-                  <Tab>Sign JWT</Tab>
-                  <Tab>Import Account</Tab>
-                </TabList>
-
-                <TabPanels>
-                  <PaymentActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <AssetActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <AtomicTransactionActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <ApplicationActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <KeyRegistrationActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <SignDataTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                  />
-
-                  <SignJwtTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                  />
-
-                  <ImportAccountTab />
-                </TabPanels>
-              </Tabs>
+              {renderContent()}
             </VStack>
           </Flex>
         </Center>

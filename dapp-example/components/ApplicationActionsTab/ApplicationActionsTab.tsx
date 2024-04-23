@@ -1,4 +1,4 @@
-import { BaseError } from '@agoralabs-sh/algorand-provider';
+import { BaseARC0027Error } from '@agoralabs-sh/avm-web-provider';
 import {
   Button,
   Code,
@@ -13,8 +13,10 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { useWallet } from '@txnlab/use-wallet';
-import { decode as decodeBase64 } from '@stablelib/base64';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
 import {
   decodeSignedTransaction,
@@ -24,45 +26,30 @@ import {
 } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
-// components
-import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
-
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
-import { ConnectionTypeEnum } from '../../enums';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import { INetwork } from '@extension/types';
-import { IAccountInformation } from '../../types';
+import type { IBaseTransactionProps } from '../../types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
-import {
-  signAlgorandProviderTransactions,
-  createAppCallTransaction,
-  useUseWalletSignTxns,
-} from '../../utils';
+import { createAppCallTransaction } from '../../utils';
 
-interface IProps {
-  account: IAccountInformation | null;
-  connectionType: ConnectionTypeEnum | null;
-  network: INetwork | null;
-}
-
-const ApplicationActionsTab: FC<IProps> = ({
+const ApplicationActionsTab: FC<IBaseTransactionProps> = ({
   account,
   connectionType,
   network,
-}: IProps) => {
+  signTransactionsAction,
+}) => {
   const toast: CreateToastFnReturn = useToast({
     duration: 3000,
     isClosable: true,
     position: 'top',
   });
-  const { signTransactions } = useWallet();
   // states
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
@@ -102,41 +89,17 @@ const ApplicationActionsTab: FC<IProps> = ({
           return;
         }
 
-        switch (connectionType) {
-          case ConnectionTypeEnum.AlgorandProvider:
-            result = await signAlgorandProviderTransactions([
-              unsignedTransaction,
-            ]);
-
-            if (!result) {
-              toast({
-                description:
-                  'Algorand Provider has been intialized; there is no supported wallet.',
-                status: 'error',
-                title: 'window.algorand Not Found!',
-              });
-
-              return;
-            }
-
-            break;
-          case ConnectionTypeEnum.UseWallet:
-            result = await useUseWalletSignTxns(
-              signTransactions,
-              [0],
-              [encodeUnsignedTransaction(unsignedTransaction)]
-            );
-
-            break;
-          default:
-            break;
-        }
+        result = await signTransactionsAction([
+          {
+            txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
+          },
+        ]);
 
         if (result && result[0]) {
           toast({
-            description: `Successfully signed payment transaction for provider "${connectionType}".`,
+            description: `Successfully signed application transaction for provider "${connectionType}".`,
             status: 'success',
-            title: 'Payment Transaction Signed!',
+            title: 'Application Transaction Signed!',
           });
 
           setSignedTransaction(
@@ -145,19 +108,17 @@ const ApplicationActionsTab: FC<IProps> = ({
         }
       } catch (error) {
         toast({
-          description: (error as BaseError).message,
+          description: (error as BaseARC0027Error).message,
           status: 'error',
-          title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
+          title: `${(error as BaseARC0027Error).code}: ${
+            (error as BaseARC0027Error).name
+          }`,
         });
       }
     };
-  // renders
-  const renderContent = () => {
-    if (!connectionType) {
-      return <ConnectionNotInitializedContent />;
-    }
 
-    return (
+  return (
+    <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
         {/*balance*/}
         <HStack spacing={2} w="full">
@@ -249,10 +210,8 @@ const ApplicationActionsTab: FC<IProps> = ({
           ))}
         </Grid>
       </VStack>
-    );
-  };
-
-  return <TabPanel w="full">{renderContent()}</TabPanel>;
+    </TabPanel>
+  );
 };
 
 export default ApplicationActionsTab;

@@ -1,4 +1,4 @@
-import { BaseError } from '@agoralabs-sh/algorand-provider';
+import { BaseARC0027Error } from '@agoralabs-sh/avm-web-provider';
 import {
   Button,
   Checkbox,
@@ -28,9 +28,11 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { decode as decodeBase64 } from '@stablelib/base64';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
-import { useWallet as useUseWallet } from '@txnlab/use-wallet';
 import {
   assignGroupID,
   decodeSignedTransaction,
@@ -41,19 +43,14 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { FC, useEffect, useState } from 'react';
 
-// components
-import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
-
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
-import { ConnectionTypeEnum } from '../../enums';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import { INetwork } from '@extension/types';
-import { IAccountInformation, IAssetInformation } from '../../types';
+import type { IAssetInformation, IBaseTransactionProps } from '../../types';
 
 // utils
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
@@ -63,31 +60,24 @@ import {
   createAppCallTransaction,
   createAssetTransferTransaction,
   createPaymentTransaction,
-  signAlgorandProviderTransactions,
-  useUseWalletSignTxns,
 } from '../../utils';
 
 interface IAssetValue extends IAssetInformation {
   amount: BigNumber;
   isChecked: boolean;
 }
-interface IProps {
-  account: IAccountInformation | null;
-  connectionType: ConnectionTypeEnum | null;
-  network: INetwork | null;
-}
 
-const AtomicTransactionActionsTab: FC<IProps> = ({
+const AtomicTransactionActionsTab: FC<IBaseTransactionProps> = ({
   account,
   connectionType,
   network,
-}: IProps) => {
+  signTransactionsAction,
+}) => {
   const toast: CreateToastFnReturn = useToast({
     duration: 3000,
     isClosable: true,
     position: 'top',
   });
-  const { signTransactions: signUseWalletTransactions } = useUseWallet();
   // states
   const [assetValues, setAssetValues] = useState<IAssetValue[]>([]);
   const [includeApplicationCall, setIncludeApplicationCall] =
@@ -96,7 +86,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
     (SignedTransaction | null)[]
   >([]);
   // misc
-  const createUnsignedAtomicTxns = async (
+  const createUnsignedAtomicTransactions = async (
     extraTransactions?: Transaction[]
   ): Promise<Transaction[] | null> => {
     const unsignedTransactions: Transaction[] = [];
@@ -162,43 +152,17 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
       ...(extraTransactions ? extraTransactions : []),
     ]);
   };
-  const handleSigningTxns = async (unsignedTxns: Transaction[]) => {
+  const handleSigningTransactions = async (
+    unsignedTransactions: Transaction[]
+  ) => {
     let result: (string | null)[] | null = null;
 
     try {
-      switch (connectionType) {
-        case ConnectionTypeEnum.AlgorandProvider:
-          result = await signAlgorandProviderTransactions(unsignedTxns);
-
-          if (!result) {
-            toast({
-              description:
-                'Algorand Provider has been intialized; there is no supported wallet.',
-              status: 'error',
-              title: 'window.algorand Not Found!',
-            });
-
-            return;
-          }
-
-          break;
-        case ConnectionTypeEnum.UseWallet:
-          result = await useUseWalletSignTxns(
-            signUseWalletTransactions,
-            unsignedTxns.map((_, index) => index),
-            unsignedTxns.map((value) => encodeUnsignedTransaction(value))
-          );
-
-          break;
-        default:
-          toast({
-            description: 'You must first enable the dApp with the wallet.',
-            status: 'error',
-            title: 'No Account Not Found!',
-          });
-
-          return;
-      }
+      result = await signTransactionsAction(
+        unsignedTransactions.map((value) => ({
+          txn: encodeBase64(encodeUnsignedTransaction(value)),
+        }))
+      );
 
       if (result) {
         toast({
@@ -215,9 +179,11 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
       }
     } catch (error) {
       toast({
-        description: (error as BaseError).message,
+        description: error.message,
         status: 'error',
-        title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
+        title: `${(error as BaseARC0027Error).code}: ${
+          (error as BaseARC0027Error).name
+        }`,
       });
 
       setSignedTransactions([]);
@@ -258,9 +224,9 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
   };
   const handleIncludeApplicationCallCheckChange = () =>
     setIncludeApplicationCall(!includeApplicationCall);
-  const handleSignAGroupOfAtomicTxnsClick = async () => {
-    let unsignedTxnsOne: Transaction[] | null;
-    let unsignedTxnsTwo: Transaction[] | null;
+  const handleSignAGroupOfAtomicTransactionsClick = async () => {
+    let unsignedTransactionsOne: Transaction[] | null;
+    let unsignedTransactionsTwo: Transaction[] | null;
 
     if (!account || !network) {
       toast({
@@ -272,8 +238,8 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
       return;
     }
 
-    unsignedTxnsOne = await createUnsignedAtomicTxns();
-    unsignedTxnsTwo = await createUnsignedAtomicTxns([
+    unsignedTransactionsOne = await createUnsignedAtomicTransactions();
+    unsignedTransactionsTwo = await createUnsignedAtomicTransactions([
       // add an extra payment transaction to make this unique
       await createPaymentTransaction({
         amount: new BigNumber('0'),
@@ -284,15 +250,18 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
       }),
     ]);
 
-    if (!unsignedTxnsOne || !unsignedTxnsTwo) {
+    if (!unsignedTransactionsOne || !unsignedTransactionsTwo) {
       return;
     }
 
     // add a group of atomic transactions; a group of groups
-    await handleSigningTxns([...unsignedTxnsOne, ...unsignedTxnsTwo]);
+    await handleSigningTransactions([
+      ...unsignedTransactionsOne,
+      ...unsignedTransactionsTwo,
+    ]);
   };
-  const handleSignAtomicTxnsAndASingleTxnClick = async () => {
-    let unsignedTxns: Transaction[] | null;
+  const handleSignAtomicTransactionsAndASingleTransactionClick = async () => {
+    let unsignedTransactions: Transaction[] | null;
 
     if (!account || !network) {
       toast({
@@ -304,15 +273,15 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
       return;
     }
 
-    unsignedTxns = await createUnsignedAtomicTxns();
+    unsignedTransactions = await createUnsignedAtomicTransactions();
 
-    if (!unsignedTxns) {
+    if (!unsignedTransactions) {
       return;
     }
 
     // add atomic transactions and a single (non-group) transaction
-    return await handleSigningTxns([
-      ...unsignedTxns,
+    return await handleSigningTransactions([
+      ...unsignedTransactions,
       await createPaymentTransaction({
         amount: new BigNumber('0'),
         from: account.address,
@@ -322,23 +291,43 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
       }),
     ]);
   };
-  const handleSignAtomicTxnsClick = async () => {
-    const unsignedTxns: Transaction[] | null = await createUnsignedAtomicTxns();
+  const handleSignAtomicTransactionsClick = async () => {
+    const unsignedTransactions: Transaction[] | null =
+      await createUnsignedAtomicTransactions();
 
-    if (!unsignedTxns) {
+    if (!unsignedTransactions) {
       return;
     }
 
     // add atomic transactions
-    await handleSigningTxns(unsignedTxns);
+    await handleSigningTransactions(unsignedTransactions);
   };
-  // renders
-  const renderContent = () => {
-    if (!connectionType) {
-      return <ConnectionNotInitializedContent />;
-    }
 
-    return (
+  useEffect(() => {
+    if (account && network) {
+      setAssetValues([
+        // just add algorand as an asset for simplicity
+        {
+          amount: new BigNumber('0'),
+          balance: account.balance,
+          decimals: network.nativeCurrency.decimals,
+          id: '0',
+          isChecked: false,
+          name: network.canonicalName,
+          symbol: network.nativeCurrency.symbol,
+        },
+        ...account.assets.map((value) => ({
+          ...value,
+          amount: new BigNumber('0'),
+          isChecked: false,
+        })),
+      ]);
+      setIncludeApplicationCall(true);
+    }
+  }, [account, network]);
+
+  return (
+    <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
         {/*signed transactions table*/}
         <TableContainer
@@ -493,7 +482,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
               borderRadius={theme.radii['3xl']}
               colorScheme="primaryLight"
               minW={250}
-              onClick={handleSignAtomicTxnsClick}
+              onClick={handleSignAtomicTransactionsClick}
               size="lg"
             >
               Send Atomic Txns
@@ -506,7 +495,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
               borderRadius={theme.radii['3xl']}
               colorScheme="primaryLight"
               minW={250}
-              onClick={handleSignAGroupOfAtomicTxnsClick}
+              onClick={handleSignAGroupOfAtomicTransactionsClick}
               size="lg"
             >
               Send A Group Of Atomic Txns
@@ -519,7 +508,7 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
               borderRadius={theme.radii['3xl']}
               colorScheme="primaryLight"
               minW={250}
-              onClick={handleSignAtomicTxnsAndASingleTxnClick}
+              onClick={handleSignAtomicTransactionsAndASingleTransactionClick}
               size="lg"
             >
               Send Atomic Txns And A Single Txn
@@ -527,33 +516,8 @@ const AtomicTransactionActionsTab: FC<IProps> = ({
           </GridItem>
         </Grid>
       </VStack>
-    );
-  };
-
-  useEffect(() => {
-    if (account && network) {
-      setAssetValues([
-        // just add algorand as an asset for simplicity
-        {
-          amount: new BigNumber('0'),
-          balance: account.balance,
-          decimals: network.nativeCurrency.decimals,
-          id: '0',
-          isChecked: false,
-          name: network.canonicalName,
-          symbol: network.nativeCurrency.symbol,
-        },
-        ...account.assets.map((value) => ({
-          ...value,
-          amount: new BigNumber('0'),
-          isChecked: false,
-        })),
-      ]);
-      setIncludeApplicationCall(true);
-    }
-  }, [account, network]);
-
-  return <TabPanel w="full">{renderContent()}</TabPanel>;
+    </TabPanel>
+  );
 };
 
 export default AtomicTransactionActionsTab;

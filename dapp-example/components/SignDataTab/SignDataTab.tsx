@@ -20,10 +20,6 @@ import { encode as encodeHex } from '@stablelib/hex';
 import { verifyBytes } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
-// components
-import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
-import ConnectionNotSupportedContent from '../ConnectionNotSupportedContent';
-
 // enums
 import { ConnectionTypeEnum } from '../../enums';
 
@@ -151,17 +147,9 @@ const SignDataTab: FC<IProps> = ({ account, connectionType }: IProps) => {
       title: 'Signed Data is Valid!',
     });
   };
-  // renders
-  const renderContent = () => {
-    if (!connectionType) {
-      return <ConnectionNotInitializedContent />;
-    }
 
-    if (connectionType === ConnectionTypeEnum.UseWallet) {
-      return <ConnectionNotSupportedContent connectionType={connectionType} />;
-    }
-
-    return (
+  return (
+    <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
         <Textarea
           onChange={handleTextareaOnChange}
@@ -221,10 +209,8 @@ const SignDataTab: FC<IProps> = ({ account, connectionType }: IProps) => {
           </Button>
         </Grid>
       </VStack>
-    );
-  };
-
-  return <TabPanel w="full">{renderContent()}</TabPanel>;
+    </TabPanel>
+  );
 };
 
 export default SignDataTab;

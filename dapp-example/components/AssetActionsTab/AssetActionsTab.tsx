@@ -1,4 +1,4 @@
-import { BaseError } from '@agoralabs-sh/algorand-provider';
+import { BaseARC0027Error } from '@agoralabs-sh/avm-web-provider';
 import {
   Button,
   Code,
@@ -22,8 +22,10 @@ import {
   UseToastOptions,
   VStack,
 } from '@chakra-ui/react';
-import { useWallet } from '@txnlab/use-wallet';
-import { decode as decodeBase64 } from '@stablelib/base64';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
 import {
   decodeSignedTransaction,
@@ -34,50 +36,37 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
-// components
-import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
-
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
-import { ConnectionTypeEnum } from '../../enums';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import { INetwork } from '@extension/types';
-import { IAccountInformation, IAssetInformation } from '../../types';
+import type { IAssetInformation, IBaseTransactionProps } from '../../types';
 
 // utils
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import {
-  signAlgorandProviderTransactions,
   createAssetConfigTransaction,
   createAssetCreateTransaction,
   createAssetDestroyTransaction,
   createAssetFreezeTransaction,
   createAssetTransferTransaction,
-  useUseWalletSignTxns,
 } from '../../utils';
 
-interface IProps {
-  account: IAccountInformation | null;
-  connectionType: ConnectionTypeEnum | null;
-  network: INetwork | null;
-}
-
-const AssetActionsTab: FC<IProps> = ({
+const AssetActionsTab: FC<IBaseTransactionProps> = ({
   account,
   connectionType,
   network,
-}: IProps) => {
+  signTransactionsAction,
+}) => {
   const toast: CreateToastFnReturn = useToast({
     duration: 3000,
     isClosable: true,
     position: 'top',
   });
-  const { signTransactions } = useWallet();
   // states
   const [amount, setAmount] = useState<BigNumber>(new BigNumber('0'));
   const [signedTransaction, setSignedTransaction] =
@@ -227,35 +216,11 @@ const AssetActionsTab: FC<IProps> = ({
           return;
         }
 
-        switch (connectionType) {
-          case ConnectionTypeEnum.AlgorandProvider:
-            result = await signAlgorandProviderTransactions([
-              unsignedTransaction,
-            ]);
-
-            if (!result) {
-              toast({
-                description:
-                  'Algorand Provider has been intialized; there is no supported wallet.',
-                status: 'error',
-                title: 'window.algorand Not Found!',
-              });
-
-              return;
-            }
-
-            break;
-          case ConnectionTypeEnum.UseWallet:
-            result = await useUseWalletSignTxns(
-              signTransactions,
-              [0],
-              [encodeUnsignedTransaction(unsignedTransaction)]
-            );
-
-            break;
-          default:
-            break;
-        }
+        result = await signTransactionsAction([
+          {
+            txn: encodeBase64(encodeUnsignedTransaction(unsignedTransaction)),
+          },
+        ]);
 
         if (result && result[0]) {
           toast({
@@ -270,9 +235,11 @@ const AssetActionsTab: FC<IProps> = ({
         }
       } catch (error) {
         toast({
-          description: (error as BaseError).message,
+          description: error.message,
           status: 'error',
-          title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
+          title: `${(error as BaseARC0027Error).code}: ${
+            (error as BaseARC0027Error).name
+          }`,
         });
       }
     };
@@ -287,13 +254,15 @@ const AssetActionsTab: FC<IProps> = ({
     setSelectedAsset(newSelectedAsset);
     setAmount(amount.gt(maximumAmount) ? maximumAmount : amount);
   };
-  // renders
-  const renderContent = () => {
-    if (!connectionType) {
-      return <ConnectionNotInitializedContent />;
-    }
 
-    return (
+  useEffect(() => {
+    if (account && !selectedAsset) {
+      setSelectedAsset(account.assets[0] || null);
+    }
+  }, [account]);
+
+  return (
+    <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
         {/*amount*/}
         <HStack w="full">
@@ -442,16 +411,8 @@ const AssetActionsTab: FC<IProps> = ({
           ))}
         </Grid>
       </VStack>
-    );
-  };
-
-  useEffect(() => {
-    if (account && !selectedAsset) {
-      setSelectedAsset(account.assets[0] || null);
-    }
-  }, [account]);
-
-  return <TabPanel w="full">{renderContent()}</TabPanel>;
+    </TabPanel>
+  );
 };
 
 export default AssetActionsTab;

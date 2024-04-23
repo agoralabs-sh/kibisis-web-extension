@@ -7,7 +7,6 @@ import {
   InvalidGroupIdError,
   InvalidInputError,
   IPostTxnsResult,
-  ISignBytesOptions,
   ISignBytesResult,
   ISignTxnsOptions,
   ISignTxnsResult,
@@ -19,121 +18,41 @@ import {
 } from '@agoralabs-sh/algorand-provider';
 import {
   ARC0027ErrorCodeEnum,
-  DEFAULT_REQUEST_TIMEOUT,
+  ARC0027FailedToPostSomeTransactionsError,
+  ARC0027MethodNotSupportedError,
+  ARC0027NetworkNotSupportedError,
+  ARC0027UnauthorizedSignerError,
+  AVMWebClient,
+  BaseARC0027Error,
   UPPER_REQUEST_TIMEOUT,
 } from '@agoralabs-sh/avm-web-provider';
 
 // constants
 import { LEGACY_WALLET_ID } from '@external/constants';
 
-// types
-import type { IBaseOptions, ILogger } from '@common/types';
-
 export default class LegacyProvider extends BaseWalletManager {
-  private readonly logger: ILogger | null;
+  private readonly avmWebClient: AVMWebClient;
 
-  constructor({ logger }: IBaseOptions) {
+  constructor() {
     super({
       id: LEGACY_WALLET_ID,
     });
 
-    this.logger = logger || null;
+    this.avmWebClient = AVMWebClient.init();
   }
 
   /**
-   * private functions
+   * public static functions
    */
 
-  private async handleEvent<Params, Result>(
-    method: ARC0027ProviderMethodEnum,
-    message: BaseARC0027RequestMessage<Params>,
-    timeout?: number
-  ): Promise<Result> {
-    const _functionName: string = 'handleEvent';
-
-    return new Promise<Result>((resolve, reject) => {
-      const channel = new BroadcastChannel(`arc0027:channel:name`);
-      let timer: number;
-
-      this.logger &&
-        this.logger.debug(
-          `${LegacyProvider.name}#${_functionName}: handling event "${message.reference}"`
-        );
-
-      channel.onmessage = (
-        event: MessageEvent<BaseARC0027ResponseMessage<Result>>
-      ) => {
-        if (!event.data || event.data.requestId !== message.id) {
-          return;
-        }
-
-        this.logger &&
-          this.logger.debug(
-            `${LegacyProvider.name}#${_functionName}(): handling response event "${event.data.reference}"`
-          );
-
-        // clear the timer, we can handle it from here
-        window.clearTimeout(timer);
-
-        // if there was an error, throw it
-        if (event.data.error) {
-          reject(event.data.error);
-
-          // close the channel, we are done here
-          return channel.close();
-        }
-
-        if (!event.data.result) {
-          reject(
-            new SerializableARC0027UnknownError(
-              'no result was returned from the provider and no error was thrown',
-              __PROVIDER_ID__
-            )
-          );
-
-          // close the channel, we are done here
-          return channel.close();
-        }
-
-        // return the payload
-        resolve(event.data.result);
-
-        // close the channel, we are done here
-        channel.close();
-      };
-
-      // close at the requested timeout, or after 3 minutes
-      timer = window.setTimeout(() => {
-        // close the channel, we are done here
-        channel.close();
-
-        this.logger &&
-          this.logger.debug(
-            `${LegacyProvider.name}#${_functionName}(): event "${message.reference}" timed out`
-          );
-
-        reject(
-          new SerializableARC0027MethodTimedOutError(
-            method,
-            __PROVIDER_ID__,
-            `no response from wallet for "${message.reference}"`
-          )
-        );
-      }, timeout || DEFAULT_REQUEST_TIMEOUT);
-
-      // send the event
-      channel.postMessage(message);
-    });
-  }
-
   private static mapARC0027ErrorToLegacyError(
-    error: BaseSerializableARC0027Error
+    error: BaseARC0027Error
   ): BaseError {
     switch (error.code) {
       case ARC0027ErrorCodeEnum.FailedToPostSomeTransactionsError:
         return new FailedToPostSomeTransactionsError(
           (
-            error as SerializableARC0027FailedToPostSomeTransactionsError
+            error as ARC0027FailedToPostSomeTransactionsError
           ).data.successTxnIDs,
           error.message
         );
@@ -146,20 +65,17 @@ export default class LegacyProvider extends BaseWalletManager {
         return new OperationCanceledError(error.message);
       case ARC0027ErrorCodeEnum.MethodNotSupportedError:
         return new WalletOperationNotSupportedError(
-          (error as SerializableARC0027MethodNotSupportedError).data.method,
+          (error as ARC0027MethodNotSupportedError).data.method,
           error.message
         );
       case ARC0027ErrorCodeEnum.NetworkNotSupportedError:
         return new NetworkNotSupportedError(
-          (
-            error as SerializableARC0027NetworkNotSupportedError
-          ).data.genesisHashes[0],
+          (error as ARC0027NetworkNotSupportedError).data.genesisHashes[0],
           error.message
         );
       case ARC0027ErrorCodeEnum.UnauthorizedSignerError:
         return new UnauthorizedSignerError(
-          (error as SerializableARC0027UnauthorizedSignerError).data.signer ||
-            '',
+          (error as ARC0027UnauthorizedSignerError).data.signer || '',
           error.message
         );
       default:
@@ -172,32 +88,48 @@ export default class LegacyProvider extends BaseWalletManager {
    */
 
   public async enable(options?: IEnableOptions): Promise<IEnableResult> {
-    let result: IARC0027EnableResult;
+    return new Promise<IEnableResult>((resolve, reject) => {
+      let listenerId: string;
+      let timeoutId = window.setTimeout(() => {
+        // remove the listener, it is not needed
+        if (listenerId) {
+          this.avmWebClient.removeListener(listenerId);
+        }
 
-    try {
-      result = await this.handleEvent<
-        IARC0027EnableParams,
-        IARC0027EnableResult
-      >(
-        ARC0027ProviderMethodEnum.Enable,
-        new ARC0027EnableRequestMessage({
-          providerId: __PROVIDER_ID__,
-          genesisHash: options?.genesisHash || null,
-        })
-      );
+        return reject(
+          new OperationCanceledError(`operation "enable" timed out`)
+        );
+      }, UPPER_REQUEST_TIMEOUT);
+      listenerId = this.avmWebClient.onEnable(({ error, result }) => {
+        // remove the listener, it is not needed
+        this.avmWebClient.removeListener(listenerId);
 
-      return {
-        accounts: result.accounts.map(({ address, name }) => ({
-          address,
-          name,
-        })),
-        genesisHash: result.genesisHash,
-        genesisId: result.genesisId,
-        sessionId: result.sessionId,
-      };
-    } catch (error) {
-      throw LegacyProvider.mapARC0027ErrorToLegacyError(error);
-    }
+        if (error) {
+          window.clearTimeout(timeoutId);
+
+          return reject(LegacyProvider.mapARC0027ErrorToLegacyError(error));
+        }
+
+        if (result) {
+          window.clearTimeout(timeoutId);
+
+          return resolve({
+            accounts: result.accounts.map(({ address, name }) => ({
+              address,
+              name,
+            })),
+            genesisHash: result.genesisHash,
+            genesisId: result.genesisId,
+            sessionId: result.sessionId,
+          });
+        }
+      });
+
+      this.avmWebClient.enable({
+        genesisHash: options?.genesisHash,
+        providerId: __PROVIDER_ID__,
+      });
+    });
   }
 
   public async postTxns(): Promise<IPostTxnsResult> {
@@ -209,26 +141,41 @@ export default class LegacyProvider extends BaseWalletManager {
   }
 
   public async signTxns({ txns }: ISignTxnsOptions): Promise<ISignTxnsResult> {
-    let result: IARC0027SignTxnsResult;
+    return new Promise<ISignTxnsResult>((resolve, reject) => {
+      let listenerId: string;
+      let timeoutId = window.setTimeout(() => {
+        // remove the listener, it is not needed
+        if (listenerId) {
+          this.avmWebClient.removeListener(listenerId);
+        }
 
-    try {
-      result = await this.handleEvent<
-        IARC0027SignTxnsParams,
-        IARC0027SignTxnsResult
-      >(
-        ARC0027ProviderMethodEnum.SignTxns,
-        new ARC0027SignTxnsRequestMessage({
-          providerId: __PROVIDER_ID__,
-          txns,
-        }),
-        UPPER_REQUEST_TIMEOUT
-      );
+        return reject(
+          new OperationCanceledError(`operation "signTxns" timed out`)
+        );
+      }, UPPER_REQUEST_TIMEOUT);
+      listenerId = this.avmWebClient.onSignTransactions(({ error, result }) => {
+        // remove the listener, it is not needed
+        this.avmWebClient.removeListener(listenerId);
 
-      return {
-        stxns: result.stxns,
-      };
-    } catch (error) {
-      throw LegacyProvider.mapARC0027ErrorToLegacyError(error);
-    }
+        if (error) {
+          window.clearTimeout(timeoutId);
+
+          return reject(LegacyProvider.mapARC0027ErrorToLegacyError(error));
+        }
+
+        if (result) {
+          window.clearTimeout(timeoutId);
+
+          return resolve({
+            stxns: result.stxns,
+          });
+        }
+      });
+
+      this.avmWebClient.signTransactions({
+        providerId: __PROVIDER_ID__,
+        txns,
+      });
+    });
   }
 }

@@ -2,8 +2,8 @@ import {
   ARC0027MethodEnum,
   ARC0027MethodTimedOutError,
   AVMWebClient,
-  DEFAULT_REQUEST_TIMEOUT,
   IARC0001Transaction,
+  UPPER_REQUEST_TIMEOUT,
 } from '@agoralabs-sh/avm-web-provider';
 import { useState } from 'react';
 
@@ -121,7 +121,7 @@ export default function useAVMWebProviderConnector({
         }
 
         return reject(error);
-      }, DEFAULT_REQUEST_TIMEOUT);
+      }, UPPER_REQUEST_TIMEOUT);
       listenerId = _avmWebClient.onSignTransactions(({ error, result }) => {
         // remove the listener, it is not needed
         _avmWebClient.removeListener(listenerId);
