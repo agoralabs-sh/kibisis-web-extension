@@ -340,7 +340,7 @@ export default class BackgroundMessageHandler {
         };
 
         this.logger?.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}(): found session "${session.id}" updating`
+          `${BackgroundMessageHandler.name}#${_functionName}: found session "${session.id}" updating`
         );
 
         session = await this.sessionService.save(session);
@@ -474,7 +474,7 @@ export default class BackgroundMessageHandler {
   //   // if the app has not been enabled
   //   if (filteredSessions.length <= 0) {
   //     this.logger?.debug(
-  //       `${BackgroundMessageHandler.name}#${_functionName}(): no sessions found for sign bytes request`
+  //       `${BackgroundMessageHandler.name}#${_functionName}: no sessions found for sign bytes request`
   //     );
   //
   //     // send the response to the web page (via the content script)
@@ -503,7 +503,7 @@ export default class BackgroundMessageHandler {
   //     !authorizedAddresses.find((value) => value === message.params?.signer)
   //   ) {
   //     this.logger?.debug(
-  //       `${BackgroundMessageHandler.name}#${_functionName}(): signer "${message.params?.signer}" is not authorized`
+  //       `${BackgroundMessageHandler.name}#${_functionName}: signer "${message.params?.signer}" is not authorized`
   //     );
   //
   //     // send the response to the web page (via the content script)
@@ -688,9 +688,27 @@ export default class BackgroundMessageHandler {
     const isInitialized: boolean = await this.privateKeyService.isInitialized();
     const mainAppWindows: IAppWindow[] =
       await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+    let events: IEvent<IClientRequestEventPayload>[];
 
     // not initialized, ignore it
     if (!isInitialized) {
+      return;
+    }
+
+    events = await this.eventQueueService.getByType(
+      EventTypeEnum.ClientRequest
+    );
+
+    // if the client request already exists, ignore it
+    if (
+      events.find(
+        (value) => value.payload.message.id === event.payload.message.id
+      )
+    ) {
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}: client request "${event.payload.message.id}" already exists ignoring`
+      );
+
       return;
     }
 
@@ -698,7 +716,7 @@ export default class BackgroundMessageHandler {
     await this.appWindowManagerService.hydrateAppWindows();
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}(): saving event "${event.type}" to event queue`
+      `${BackgroundMessageHandler.name}#${_functionName}: saving event "${event.type}" to event queue`
     );
 
     // save event to the queue
@@ -707,7 +725,7 @@ export default class BackgroundMessageHandler {
     // if a main app is open, post that a new event has been added to the queue
     if (mainAppWindows.length > 0) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}(): main app window open, posting that event "${event.id}" has been added to the queue`
+        `${BackgroundMessageHandler.name}#${_functionName}: main app window open, posting that event "${event.id}" has been added to the queue`
       );
 
       return await browser.runtime.sendMessage(
@@ -716,7 +734,7 @@ export default class BackgroundMessageHandler {
     }
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}(): main app window not open, opening background app window for "${event.type}" event`
+      `${BackgroundMessageHandler.name}#${_functionName}: main app window not open, opening background app window for "${event.type}" event`
     );
 
     await this.appWindowManagerService.createWindow({
@@ -734,7 +752,7 @@ export default class BackgroundMessageHandler {
     const _functionName: string = 'sendResponse';
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}(): sending "${message.method}" response to tab "${originTabId}"`
+      `${BackgroundMessageHandler.name}#${_functionName}: sending "${message.method}" response to tab "${originTabId}"`
     );
 
     // send the response to the web page, via the content script

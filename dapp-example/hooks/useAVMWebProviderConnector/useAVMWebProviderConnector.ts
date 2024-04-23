@@ -1,9 +1,10 @@
 import {
+  ARC0027MethodEnum,
+  ARC0027MethodTimedOutError,
   AVMWebClient,
+  DEFAULT_REQUEST_TIMEOUT,
   IARC0001Transaction,
-  IEnableResult,
 } from '@agoralabs-sh/avm-web-provider';
-import { Transaction } from 'algosdk';
 import { useState } from 'react';
 
 // types
@@ -28,50 +29,124 @@ export default function useAVMWebProviderConnector({
   // actions
   const connectAction = (network: INetwork) => {
     let _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
+    const listenerId: string = _avmWebClient.onEnable(
+      async ({ error, result }) => {
+        // remove the listener, it is not needed
+        _avmWebClient.removeListener(listenerId);
 
-    _avmWebClient.onEnable(async ({ accounts }: IEnableResult) => {
-      setEnabledAccounts(
-        await Promise.all(
-          accounts.map<Promise<IAccountInformation>>(({ address, name }) =>
-            getAccountInformation({ address, name }, network)
-          )
-        )
-      );
+        if (error) {
+          console.error(error.message);
 
-      toast({
-        description: `Successfully connected via AVM Web Provider.`,
-        status: 'success',
-        title: 'Connected!',
-      });
-    });
+          toast({
+            description: error.message,
+            status: 'error',
+            title: 'Failed To Connect',
+          });
+        }
+
+        if (result) {
+          setEnabledAccounts(
+            await Promise.all(
+              result.accounts.map<Promise<IAccountInformation>>(
+                ({ address, name }) =>
+                  getAccountInformation({ address, name }, network)
+              )
+            )
+          );
+
+          toast({
+            description: `Successfully connected via AVM Web Provider.`,
+            status: 'success',
+            title: 'Connected!',
+          });
+        }
+      }
+    );
+
     _avmWebClient.enable({
       genesisHash: network.genesisHash,
-      providerId: __PROVIDER__,
+      providerId: __PROVIDER_ID__,
     });
   };
   const disconnectAction = () => {
     let _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
+    let listenerId: string = _avmWebClient.onDisable(({ error }) => {
+      // remove the listener, it is not needed
+      _avmWebClient.removeListener(listenerId);
 
-    _avmWebClient.onDisable(() => {
+      if (error) {
+        toast({
+          description: error.message,
+          status: 'error',
+          title: 'Failed To Disconnect',
+        });
+
+        return;
+      }
+
       toast({
         description: `Successfully disconnected via AVM Web Provider.`,
         status: 'success',
         title: 'Disconnected!',
       });
     });
+
     _avmWebClient.disable({
-      providerId: __PROVIDER__,
+      providerId: __PROVIDER_ID__,
     });
   };
   const signTransactionsAction = async (
     transactions: IARC0001Transaction[]
   ) => {
-    return new Promise(async () => {
+    return new Promise<(string | null)[]>(async (resolve, reject) => {
       let _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
+      let listenerId: string;
+      let timeoutId = window.setTimeout(() => {
+        const error = new ARC0027MethodTimedOutError({
+          method: ARC0027MethodEnum.SignTransactions,
+          providerId: __PROVIDER_ID__,
+        });
 
-      _avmWebClient.signTransactions(() => {});
+        toast({
+          description: error.message,
+          status: 'error',
+          title: 'Sign Transactions Request Timeout',
+        });
 
-      await _avmWebClient.signTransactions({});
+        // remove the listener, it is not needed
+        if (listenerId) {
+          _avmWebClient.removeListener(listenerId);
+        }
+
+        return reject(error);
+      }, DEFAULT_REQUEST_TIMEOUT);
+      listenerId = _avmWebClient.onSignTransactions(({ error, result }) => {
+        // remove the listener, it is not needed
+        _avmWebClient.removeListener(listenerId);
+
+        if (error) {
+          toast({
+            description: error.message,
+            status: 'error',
+            title: 'Failed To Sign Transactions',
+          });
+
+          window.clearTimeout(timeoutId);
+
+          return reject(error);
+        }
+
+        if (result) {
+          window.clearTimeout(timeoutId);
+
+          return resolve(result.stxns);
+        }
+      });
+
+      _avmWebClient.signTransactions({
+        providerId: __PROVIDER_ID__,
+        txns: transactions,
+      });
     });
   };
   // misc
@@ -95,5 +170,6 @@ export default function useAVMWebProviderConnector({
     connectAction,
     disconnectAction,
     enabledAccounts,
+    signTransactionsAction,
   };
 }

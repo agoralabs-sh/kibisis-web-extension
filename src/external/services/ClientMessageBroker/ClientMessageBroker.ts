@@ -2,7 +2,7 @@ import {
   ARC0027MethodEnum,
   ARC0027MethodNotSupportedError,
   ARC0027UnknownError,
-  IAVMWebProviderListenerOptions as IAVMWebProviderRequestMessage,
+  IAVMWebProviderCallbackOptions,
   DEFAULT_REQUEST_TIMEOUT,
   TResponseResults,
 } from '@agoralabs-sh/avm-web-provider';
@@ -30,34 +30,32 @@ export default class ClientMessageBroker {
    */
 
   private async sendRequestToExtensionWithTimeout(
-    requestMessage: IAVMWebProviderRequestMessage
+    requestMessage: IAVMWebProviderCallbackOptions
   ): Promise<TResponseResults> {
     return new Promise<TResponseResults>(async (resolve, reject) => {
-      const listener = (
-        message: MessageEvent<ClientResponseMessage<TResponseResults>>
-      ) => {
+      const listener = (message: ClientResponseMessage<TResponseResults>) => {
         // if the response's request id does not match the intended request, just ignore
-        if (!message.data || message.data.requestId !== requestMessage.id) {
+        if (message.requestId !== requestMessage.id) {
           return;
         }
 
         // clear the timer, we can handle it from here
         window.clearTimeout(timer);
 
-        if (message.data.error) {
-          return reject(message.data.error);
+        if (message.error) {
+          return reject(message.error);
         }
 
-        if (!message.data.result) {
+        if (!message.result) {
           return reject(
             new ARC0027UnknownError({
-              message: `failed to get a result from "${message.data.method}" request`,
+              message: `failed to get a result from "${message.method}" request`,
               providerId: __PROVIDER_ID__,
             })
           );
         }
 
-        resolve(message.data.result);
+        resolve(message.result);
 
         // clean up
         browser.runtime.onMessage.removeListener(listener.bind(this));
@@ -90,7 +88,7 @@ export default class ClientMessageBroker {
    */
 
   public async onRequestMessage(
-    message: IAVMWebProviderRequestMessage
+    message: IAVMWebProviderCallbackOptions
   ): Promise<TResponseResults> {
     const _functionName: string = 'onRequestMessage';
 

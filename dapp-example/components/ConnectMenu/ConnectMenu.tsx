@@ -11,7 +11,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 
 // constants
 import {
@@ -100,7 +100,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
             case ConnectionTypeEnum.AlgorandProvider:
             case ConnectionTypeEnum.AVMWebProvider:
               return (
-                <>
+                <Fragment key={`connect-menu-item=${index}`}>
                   {dividerElement}
 
                   <MenuGroup title={connectionType}>
@@ -132,11 +132,11 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
                   </MenuGroup>
 
                   {dividerElement}
-                </>
+                </Fragment>
               );
             case ConnectionTypeEnum.UseWallet:
               return (
-                <>
+                <Fragment key={`connect-menu-item=${index}`}>
                   <MenuGroup title={connectionType}>
                     <MenuItem onClick={handleConnect({ connectionType })}>
                       <HStack alignItems="center" w="full">
@@ -148,7 +148,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
                   </MenuGroup>
 
                   {dividerElement}
-                </>
+                </Fragment>
               );
             default:
               return null;

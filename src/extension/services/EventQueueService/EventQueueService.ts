@@ -1,12 +1,15 @@
 // constants
 import { EVENT_QUEUE_ITEM_KEY } from '@extension/constants';
 
+// enums
+import { EventTypeEnum } from '@extension/enums';
+
 // services
 import StorageManager from '../StorageManager';
 
 // types
-import { IBaseOptions, ILogger } from '@common/types';
-import { IEvent } from '@extension/types';
+import type { IBaseOptions, ILogger } from '@common/types';
+import type { IEvent } from '@extension/types';
 
 export default class EventQueueService {
   // private variables
@@ -31,6 +34,17 @@ export default class EventQueueService {
       await this.storageManager.getAllItems();
 
     return (items[EVENT_QUEUE_ITEM_KEY] as IEvent[]) || [];
+  }
+
+  /**
+   * Gets the events for a given type.
+   * @param {EventTypeEnum} type - the event type.
+   * @returns {Promise<IEvent[]>} a promise that resolves to all the events by type.
+   */
+  public async getByType(type: EventTypeEnum): Promise<IEvent[]> {
+    const events: IEvent[] = await this.getAll();
+
+    return events.filter((value) => value.type === type);
   }
 
   /**

@@ -90,7 +90,5 @@
     "strictPropertyInitialization": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "ES5"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/**/*.test.*"]
+  }
 }

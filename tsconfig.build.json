@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*"],
+  "exclude": ["dapp-example/**/*", "node_modules", "src/**/*.test.*"]
+}

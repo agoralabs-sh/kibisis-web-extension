@@ -1,4 +1,3 @@
-import { createChannelName } from '@agoralabs-sh/avm-web-provider';
 import browser from 'webextension-polyfill';
 
 // messages
@@ -41,7 +40,9 @@ export default class LegacyClientMessageBroker {
    */
 
   public static init(options: IBaseOptions): LegacyClientMessageBroker {
-    const channel: BroadcastChannel = new BroadcastChannel(createChannelName());
+    const channel: BroadcastChannel = new BroadcastChannel(
+      'arc0027:channel:name'
+    );
     const legacyClientMessageBroker: LegacyClientMessageBroker =
       new LegacyClientMessageBroker({
         ...options,
