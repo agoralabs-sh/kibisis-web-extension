@@ -1,20 +1,22 @@
+import {
+  ARC0027MethodEnum,
+  TRequestParams,
+  TResponseResults,
+} from '@agoralabs-sh/avm-web-provider';
 import browser from 'webextension-polyfill';
 
+// enums
+import { LegacyMessageReferenceEnum } from './enums';
+
 // messages
+import { ClientRequestMessage, ClientResponseMessage } from '@common/messages';
 import {
-  BaseARC0027RequestMessage,
-  BaseARC0027ResponseMessage,
-  ClientRequestMessage,
-  ClientResponseMessage,
-} from '@common/messages';
+  LegacyClientRequestMessage,
+  LegacyClientResponseMessage,
+} from './messages';
 
 // types
-import type {
-  IARC0027ParamTypes,
-  IARC0027ResultTypes,
-  IBaseOptions,
-  ILogger,
-} from '@common/types';
+import type { IBaseOptions, ILogger } from '@common/types';
 import type { IInitOptions } from './types';
 
 // utils
@@ -31,8 +33,45 @@ export default class LegacyClientMessageBroker {
   private constructor({ channel, logger }: IInitOptions) {
     this.channel = channel;
     this.logger = logger || null;
+    this.channel.onmessage = this.onClientRequestMessage.bind(this);
+  }
 
-    this.channel.onmessage = this.onARC0027RequestMessage.bind(this);
+  private convertToLegacyResponse({
+    error,
+    id,
+    method,
+    requestId,
+    result,
+  }: ClientResponseMessage<TResponseResults>): LegacyClientResponseMessage<TResponseResults> | null {
+    const reference: LegacyMessageReferenceEnum | null =
+      this.createResponseMessageReference(method);
+
+    if (!reference) {
+      return null;
+    }
+
+    return new LegacyClientResponseMessage<TResponseResults>({
+      error: error || null,
+      id,
+      reference,
+      requestId,
+      result: result || null,
+    });
+  }
+
+  private createResponseMessageReference(
+    method: ARC0027MethodEnum
+  ): LegacyMessageReferenceEnum | null {
+    switch (method) {
+      case ARC0027MethodEnum.Discover:
+        return LegacyMessageReferenceEnum.GetProvidersResponse;
+      case ARC0027MethodEnum.Enable:
+        return LegacyMessageReferenceEnum.EnableResponse;
+      case ARC0027MethodEnum.SignTransactions:
+        return LegacyMessageReferenceEnum.SignTxnsResponse;
+      default:
+        return null;
+    }
   }
 
   /**
@@ -50,13 +89,13 @@ export default class LegacyClientMessageBroker {
       });
 
     // listen to requests from the webpage
-    channel.onmessage = legacyClientMessageBroker.onARC0027RequestMessage.bind(
+    channel.onmessage = legacyClientMessageBroker.onClientRequestMessage.bind(
       legacyClientMessageBroker
     );
 
-    // listen to incoming extension messages (from the background script / popup)
+    // listen to incoming messages from the background script/popups
     browser.runtime.onMessage.addListener(
-      legacyClientMessageBroker.onARC0027ResponseMessage.bind(
+      legacyClientMessageBroker.onProviderResponseMessage.bind(
         legacyClientMessageBroker
       )
     );
@@ -64,42 +103,65 @@ export default class LegacyClientMessageBroker {
     return legacyClientMessageBroker;
   }
 
-  public async onARC0027RequestMessage(
-    message: MessageEvent<BaseARC0027RequestMessage<IARC0027ParamTypes>>
+  public async onClientRequestMessage(
+    message: MessageEvent<LegacyClientRequestMessage<TRequestParams>>
   ): Promise<void> {
-    const _functionName: string = 'onARC0027RequestMessage';
+    const _functionName: string = 'onClientRequestMessage';
+    let method: ARC0027MethodEnum | null = null;
 
     switch (message.data.reference) {
+      case 'arc0027:enable:request':
+        method = ARC0027MethodEnum.Enable;
+        break;
       case 'arc0027:get_providers:request':
+        method = ARC0027MethodEnum.Discover;
+        break;
       case 'arc0027:sign_txns:request':
-        this.logger?.debug(
-          `${LegacyClientMessageBroker.name}#${_functionName}: legacy request message "${message.data.reference}" received`
-        );
-
-        // send the message to the main app (popup) or the background service
-        return await browser.runtime.sendMessage({
-          clientInfo: createClientInformation(),
-          data: message.data,
-        });
+        method = ARC0027MethodEnum.SignTransactions;
+        break;
       default:
         break;
     }
+
+    if (method) {
+      this.logger?.debug(
+        `${LegacyClientMessageBroker.name}#${_functionName}: legacy request message "${message.data.reference}" received`
+      );
+
+      // send the message to the background script/popups
+      return await browser.runtime.sendMessage(
+        new ClientRequestMessage({
+          clientInfo: createClientInformation(),
+          id: message.data.id,
+          method,
+          params: message.data.params,
+        })
+      );
+    }
   }
 
-  public onARC0027ResponseMessage(
-    message: BaseARC0027ResponseMessage<IARC0027ResultTypes>
+  public onProviderResponseMessage(
+    message: ClientResponseMessage<TResponseResults>
   ): void {
-    const _functionName: string = 'onARC0027ResponseMessage';
+    const _functionName: string = 'onProviderResponseMessage';
+    let legacyResponse: LegacyClientResponseMessage<TResponseResults> | null;
 
-    switch (message.reference) {
-      case 'arc0027:get_providers:response':
-      case 'arc0027:sign_txns:response':
+    switch (message.method) {
+      case ARC0027MethodEnum.Discover:
+      case ARC0027MethodEnum.Enable:
+      case ARC0027MethodEnum.SignTransactions:
         this.logger?.debug(
-          `${LegacyClientMessageBroker.name}#${_functionName}: legacy response message "${message.reference}" received`
+          `${LegacyClientMessageBroker.name}#${_functionName}: legacy response message "${message.method}" received`
         );
 
-        // broadcast the response to the webpage
-        return this.channel.postMessage(message);
+        legacyResponse = this.convertToLegacyResponse(message);
+
+        // broadcast to the webpage
+        if (legacyResponse) {
+          this.channel.postMessage(legacyResponse);
+        }
+
+        break;
       default:
         break;
     }

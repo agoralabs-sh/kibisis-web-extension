@@ -1,11 +1,11 @@
-import type { ISignTransactionsParams } from '@agoralabs-sh/avm-web-provider';
+import {
+  ARC0027UnknownError,
+  ISignTransactionsParams,
+} from '@agoralabs-sh/avm-web-provider';
 import { decode as decodeBase64 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-
-// errors
-import { SerializableARC0027UnknownError } from '@common/errors';
 
 // features
 import { sendSignTransactionsResponseThunk } from '@extension/features/messages';
@@ -68,10 +68,10 @@ export default function useUpdateStandardAssetInformation(
 
         dispatch(
           sendSignTransactionsResponseThunk({
-            error: new SerializableARC0027UnknownError(
-              __PROVIDER_ID__,
-              errorMessage
-            ),
+            error: new ARC0027UnknownError({
+              message: errorMessage,
+              providerId: __PROVIDER_ID__,
+            }),
             event: signTransactionsRequest,
             stxns: null,
           })

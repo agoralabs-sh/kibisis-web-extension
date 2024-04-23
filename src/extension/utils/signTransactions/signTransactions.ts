@@ -1,3 +1,4 @@
+import { ARC0027UnauthorizedSignerError } from '@agoralabs-sh/avm-web-provider';
 import {
   decode as decodeBase64,
   encode as encodeBase64,
@@ -10,7 +11,6 @@ import {
 import browser from 'webextension-polyfill';
 
 // errors
-import { SerializableARC0027UnauthorizedSignerError } from '@common/errors';
 import {
   DecryptionError,
   InvalidPasswordError,
@@ -34,7 +34,7 @@ import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransactio
  * @throws {DecryptionError} if there was a problem decrypting the private keys with the password.
  * @throws {InvalidPasswordError} if the password is not valid.
  */
-export default async function signTxns({
+export default async function signTransactions({
   authorizedSigners,
   logger,
   password,
@@ -85,11 +85,11 @@ export default async function signTxns({
       if (!authorizedSigners.some((value) => value === signer)) {
         // if there is no signed transaction, we have been instructed to sign, so error
         if (!txn.stxn) {
-          throw new SerializableARC0027UnauthorizedSignerError(
+          throw new ARC0027UnauthorizedSignerError({
+            message: `signer "${signer}" not authorized to sign transaction "${unsignedTransaction.txID()}"`,
+            providerId: __PROVIDER_ID__,
             signer,
-            __PROVIDER_ID__,
-            `signer "${signer}" not authorized to sign transaction "${unsignedTransaction.txID()}"`
-          );
+          });
         }
 
         logger?.debug(

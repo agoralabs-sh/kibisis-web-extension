@@ -4,6 +4,7 @@ import {
   IEnableResult,
 } from '@agoralabs-sh/avm-web-provider';
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { v4 as uuid } from 'uuid';
 import browser from 'webextension-polyfill';
 
 // enums
@@ -51,6 +52,7 @@ const sendEnableResponseThunk: AsyncThunk<
         event.payload.originTabId,
         new ClientResponseMessage<IEnableResult>({
           error,
+          id: uuid(),
           method: event.payload.message.method,
           requestId: event.payload.message.id,
         })
@@ -67,6 +69,7 @@ const sendEnableResponseThunk: AsyncThunk<
       await browser.tabs.sendMessage(
         event.payload.originTabId,
         new ClientResponseMessage<IEnableResult>({
+          id: uuid(),
           method: event.payload.message.method,
           requestId: event.payload.message.id,
           result: {

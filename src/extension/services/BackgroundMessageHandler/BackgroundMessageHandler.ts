@@ -163,6 +163,7 @@ export default class BackgroundMessageHandler {
             message: `no parameters supplied`,
             providerId: __PROVIDER_ID__,
           }),
+          id: uuid(),
           method: message.method,
           requestId: message.id,
         }),
@@ -195,6 +196,7 @@ export default class BackgroundMessageHandler {
             message: `no parameters supplied`,
             providerId: __PROVIDER_ID__,
           }),
+          id: uuid(),
           method: message.method,
           requestId: message.id,
         }),
@@ -233,6 +235,7 @@ export default class BackgroundMessageHandler {
     // send the response to the web page (via the content script)
     return await this.sendResponse(
       new ClientResponseMessage<IDisableResult>({
+        id: uuid(),
         method: message.method,
         requestId: message.id,
         result: {
@@ -256,6 +259,7 @@ export default class BackgroundMessageHandler {
 
     return await this.sendResponse(
       new ClientResponseMessage<IDiscoverResult>({
+        id: uuid(),
         method: message.method,
         requestId: message.id,
         result: {
@@ -309,6 +313,7 @@ export default class BackgroundMessageHandler {
               message: `no parameters supplied`,
               providerId: __PROVIDER_ID__,
             }),
+            id: uuid(),
             method: message.method,
             requestId: message.id,
           }),
@@ -348,6 +353,7 @@ export default class BackgroundMessageHandler {
         // send the response to the web page (via the content script)
         return await this.sendResponse(
           new ClientResponseMessage<IEnableResult>({
+            id: uuid(),
             method: message.method,
             requestId: message.id,
             result: {
@@ -551,6 +557,7 @@ export default class BackgroundMessageHandler {
             message: `no transactions supplied`,
             providerId: __PROVIDER_ID__,
           }),
+          id: uuid(),
           method: message.method,
           requestId: message.id,
         }),
@@ -577,6 +584,7 @@ export default class BackgroundMessageHandler {
             message: errorMessage,
             providerId: __PROVIDER_ID__,
           }),
+          id: uuid(),
           method: message.method,
           requestId: message.id,
         }),
@@ -599,6 +607,7 @@ export default class BackgroundMessageHandler {
             message: errorMessage,
             providerId: __PROVIDER_ID__,
           }),
+          id: uuid(),
           method: message.method,
           requestId: message.id,
         }),
@@ -633,6 +642,7 @@ export default class BackgroundMessageHandler {
             ),
             providerId: __PROVIDER_ID__,
           }),
+          id: uuid(),
           method: message.method,
           requestId: message.id,
         }),
@@ -662,6 +672,7 @@ export default class BackgroundMessageHandler {
             message: `client "${message.clientInfo.appName}" has not been authorized`,
             providerId: __PROVIDER_ID__,
           }),
+          id: uuid(),
           method: message.method,
           requestId: message.id,
         }),

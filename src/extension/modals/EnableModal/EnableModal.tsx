@@ -32,12 +32,6 @@ import SessionRequestHeader, {
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// enums
-import { ARC0027ProviderMethodEnum } from '@common/enums';
-
-// errors
-import { SerializableARC0027MethodCanceledError } from '@common/errors';
-
 // features
 import { sendEnableResponseThunk } from '@extension/features/messages';
 import { setSessionThunk } from '@extension/features/sessions';
@@ -103,7 +97,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
         sendEnableResponseThunk({
           error: new ARC0027MethodCanceledError({
             message: `user dismissed connect modal`,
-            method: ARC0027ProviderMethodEnum.Enable,
+            method: enableRequestEvent.payload.message.method,
             providerId: __PROVIDER_ID__,
           }),
           event: enableRequestEvent,

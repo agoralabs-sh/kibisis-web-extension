@@ -43,7 +43,7 @@ import injectScript from '@external/utils/injectScript';
   );
 
   /**
-   * deprecated - older versions of use-wallet will still use `get_providers` and `sign_txns` messages
+   * deprecated - older versions of use-wallet will still use broadcastchannel messages
    */
   LegacyClientMessageBroker.init({ logger });
 

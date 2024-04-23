@@ -85,7 +85,7 @@ import type { ISignTransactionsModalProps } from './types';
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import groupTransactions from '@extension/utils/groupTransactions';
-import signTxns from '@extension/utils/signTxns';
+import signTransactions from '@extension/utils/signTransactions';
 
 const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
   onClose,
@@ -160,7 +160,7 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
     }
 
     try {
-      stxns = await signTxns({
+      stxns = await signTransactions({
         authorizedSigners: authorizedAccounts.map((value) =>
           AccountService.convertPublicKeyToAlgorandAddress(value.publicKey)
         ),

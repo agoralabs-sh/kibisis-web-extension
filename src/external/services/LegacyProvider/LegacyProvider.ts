@@ -22,48 +22,12 @@ import {
   DEFAULT_REQUEST_TIMEOUT,
   UPPER_REQUEST_TIMEOUT,
 } from '@agoralabs-sh/avm-web-provider';
-import {
-  decode as decodeBase64,
-  encode as encodeBase64,
-} from '@stablelib/base64';
 
 // constants
 import { LEGACY_WALLET_ID } from '@external/constants';
 
-// enums
-import { ARC0027ProviderMethodEnum } from '@common/enums';
-
-// errors
-import {
-  BaseSerializableARC0027Error,
-  SerializableARC0027FailedToPostSomeTransactionsError,
-  SerializableARC0027MethodNotSupportedError,
-  SerializableARC0027MethodTimedOutError,
-  SerializableARC0027NetworkNotSupportedError,
-  SerializableARC0027UnauthorizedSignerError,
-  SerializableARC0027UnknownError,
-} from '@common/errors';
-
-// messages
-import {
-  ARC0027EnableRequestMessage,
-  ARC0027SignBytesRequestMessage,
-  ARC0027SignTxnsRequestMessage,
-  BaseARC0027RequestMessage,
-  BaseARC0027ResponseMessage,
-} from '@common/messages';
-
 // types
-import type {
-  IARC0027EnableParams,
-  IARC0027EnableResult,
-  IARC0027SignBytesParams,
-  IARC0027SignBytesResult,
-  IARC0027SignTxnsParams,
-  IARC0027SignTxnsResult,
-  IBaseOptions,
-  ILogger,
-} from '@common/types';
+import type { IBaseOptions, ILogger } from '@common/types';
 
 export default class LegacyProvider extends BaseWalletManager {
   private readonly logger: ILogger | null;
@@ -240,32 +204,8 @@ export default class LegacyProvider extends BaseWalletManager {
     throw new WalletOperationNotSupportedError(this.id, 'postTxns');
   }
 
-  public async signBytes({
-    data,
-    signer,
-  }: ISignBytesOptions): Promise<ISignBytesResult> {
-    let result: IARC0027SignBytesResult;
-
-    try {
-      result = await this.handleEvent<
-        IARC0027SignBytesParams,
-        IARC0027SignBytesResult
-      >(
-        ARC0027ProviderMethodEnum.SignBytes,
-        new ARC0027SignBytesRequestMessage({
-          data: encodeBase64(data),
-          providerId: __PROVIDER_ID__,
-          signer,
-        }),
-        UPPER_REQUEST_TIMEOUT
-      );
-
-      return {
-        signature: decodeBase64(result.signature),
-      };
-    } catch (error) {
-      throw LegacyProvider.mapARC0027ErrorToLegacyError(error);
-    }
+  public async signBytes(): Promise<ISignBytesResult> {
+    throw new WalletOperationNotSupportedError(this.id, 'signBytes');
   }
 
   public async signTxns({ txns }: ISignTxnsOptions): Promise<ISignTxnsResult> {

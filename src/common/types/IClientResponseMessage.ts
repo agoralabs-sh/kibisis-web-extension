@@ -6,6 +6,7 @@ import {
 
 interface IClientResponseMessage<Result = TResponseResults> {
   error?: BaseARC0027Error;
+  id: string;
   method: ARC0027MethodEnum;
   result?: Result;
   requestId: string;

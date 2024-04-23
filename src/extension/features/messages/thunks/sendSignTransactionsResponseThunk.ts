@@ -3,6 +3,7 @@ import {
   ISignTransactionsResult,
 } from '@agoralabs-sh/avm-web-provider';
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { v4 as uuid } from 'uuid';
 import browser from 'webextension-polyfill';
 
 // enums
@@ -42,6 +43,7 @@ const sendSignTransactionsResponseThunk: AsyncThunk<
         event.payload.originTabId,
         new ClientResponseMessage<ISignTransactionsResult>({
           error,
+          id: uuid(),
           method: event.payload.message.method,
           requestId: event.payload.message.id,
         })
@@ -58,6 +60,7 @@ const sendSignTransactionsResponseThunk: AsyncThunk<
       await browser.tabs.sendMessage(
         event.payload.originTabId,
         new ClientResponseMessage<ISignTransactionsResult>({
+          id: uuid(),
           method: event.payload.message.method,
           requestId: event.payload.message.id,
           result: {
