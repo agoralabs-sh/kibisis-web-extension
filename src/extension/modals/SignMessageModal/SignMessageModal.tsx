@@ -1,4 +1,10 @@
 import {
+  ARC0027MethodCanceledError,
+  ARC0027MethodEnum,
+  ISignMessageParams,
+  ISignTransactionsParams,
+} from '@agoralabs-sh/avm-web-provider';
+import {
   Avatar,
   Box,
   Code,
@@ -30,7 +36,7 @@ import Button from '@extension/components/Button';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
-import SignBytesContentSkeleton from './SignBytesContentSkeleton';
+import SignMessageContentSkeleton from './SignMessageContentSkeleton';
 import SignBytesJwtContent from './SignBytesJwtContent';
 
 // constants
@@ -44,7 +50,7 @@ import { ErrorCodeEnum } from '@extension/enums';
 import { SerializableARC0027MethodCanceledError } from '@common/errors';
 
 // features
-import { sendSignBytesResponseThunk } from '@extension/features/messages';
+import { sendSignMessageResponseThunk } from '@extension/features/messages';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
@@ -53,7 +59,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // messages
-import { ARC0027SignBytesRequestMessage } from '@common/messages';
+import { ClientRequestMessage } from '@common/messages';
 
 // selectors
 import {
@@ -61,7 +67,7 @@ import {
   useSelectFetchingAccounts,
   useSelectLogger,
   useSelectSessions,
-  useSelectSignBytesRequest,
+  useSelectSignMessageRequest,
 } from '@extension/selectors';
 
 // services
@@ -71,25 +77,21 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type { ILogger } from '@common/types';
+import type {
   IAccount,
   IAppThunkDispatch,
-  IClientRequest,
-  IDecodedJwt,
+  IClientRequestEventPayload,
+  IEvent,
   ISession,
 } from '@extension/types';
+import type { ISignMessageModalProps } from './types';
 
 // utils
-import decodeJwt from '@extension/utils/decodeJwt';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import signBytes from '@extension/utils/signBytes';
 
-interface IProps {
-  onClose: () => void;
-}
-
-const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
+const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
@@ -99,8 +101,9 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   const fetching: boolean = useSelectFetchingAccounts();
   const logger: ILogger = useSelectLogger();
   const sessions: ISession[] = useSelectSessions();
-  const signBytesRequest: IClientRequest<ARC0027SignBytesRequestMessage> | null =
-    useSelectSignBytesRequest();
+  const signMessageRequest: IEvent<
+    IClientRequestEventPayload<ISignMessageParams>
+  > | null = useSelectSignMessageRequest();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const {
@@ -120,17 +123,15 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   // handlers
   const handleAccountSelect = (account: IAccount) => setSelectedSigner(account);
   const handleCancelClick = () => {
-    if (signBytesRequest) {
+    if (signMessageRequest) {
       dispatch(
-        sendSignBytesResponseThunk({
-          error: new SerializableARC0027MethodCanceledError(
-            ARC0027ProviderMethodEnum.SignBytes,
-            __PROVIDER_ID__,
-            `user dismissed sign bytes modal`
-          ),
-          eventId: signBytesRequest.eventId,
-          originMessage: signBytesRequest.originMessage,
-          originTabId: signBytesRequest.originTabId,
+        sendSignMessageResponseThunk({
+          error: new ARC0027MethodCanceledError({
+            message: `user dismissed sign message modal`,
+            method: ARC0027MethodEnum.SignMessage,
+            providerId: __PROVIDER_ID__,
+          }),
+          event: signMessageRequest,
           signature: null,
           signer: null,
         })
@@ -156,7 +157,7 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
 
     if (
       validatePassword() ||
-      !signBytesRequest ||
+      !signMessageRequest ||
       !signBytesRequest.originMessage.params?.data ||
       !selectedSigner
     ) {
@@ -176,13 +177,10 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
       });
 
       dispatch(
-        sendSignBytesResponseThunk({
+        sendSignMessageResponseThunk({
           error: null,
-          eventId: signBytesRequest.eventId,
-          originMessage: signBytesRequest.originMessage,
-          originTabId: signBytesRequest.originTabId,
+          event: signMessageRequest,
           signature,
-          signer,
         })
       );
 
@@ -211,8 +209,8 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     }
   };
   const renderContent = () => {
-    if (fetching || !signBytesRequest || !selectedSigner) {
-      return <SignBytesContentSkeleton />;
+    if (fetching || !signMessageRequest || !selectedSigner) {
+      return <SignMessageContentSkeleton />;
     }
 
     return (
@@ -275,9 +273,9 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
     let authorizedAddresses: string[];
     let signerAccount: IAccount | null = null;
 
-    if (accounts.length >= 0 && sessions.length > 0 && signBytesRequest) {
+    if (accounts.length >= 0 && sessions.length > 0 && signMessageRequest) {
       authorizedAddresses = getAuthorizedAddressesForHost(
-        signBytesRequest.clientInfo.host,
+        signMessageRequest.payload.message.clientInfo.host,
         sessions
       );
       _authorizedAccounts = accounts.filter((account) =>
@@ -292,24 +290,17 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
           (value) =>
             AccountService.convertPublicKeyToAlgorandAddress(
               value.publicKey
-            ) === signBytesRequest?.originMessage.params?.signer
+            ) === signMessageRequest?.payload.message.params?.signer
         ) || null;
 
       setAuthorizedAccounts(_authorizedAccounts);
       setSelectedSigner(signerAccount || _authorizedAccounts[0]);
     }
-  }, [accounts, sessions, signBytesRequest]);
-  useEffect(() => {
-    if (signBytesRequest && signBytesRequest.originMessage.params) {
-      setDecodedJwt(
-        decodeJwt(window.atob(signBytesRequest.originMessage.params.data))
-      );
-    }
-  }, [signBytesRequest]);
+  }, [accounts, sessions, signMessageRequest]);
 
   return (
     <Modal
-      isOpen={!!signBytesRequest}
+      isOpen={!!signMessageRequest}
       motionPreset="slideInBottom"
       onClose={handleClose}
       size="full"
@@ -321,11 +312,17 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          {signBytesRequest && (
+          {signMessageRequest && (
             <VStack alignItems="center" spacing={4} w="full">
               <Avatar
-                name={signBytesRequest.clientInfo.appName || 'unknown'}
-                src={signBytesRequest.clientInfo.iconUrl || undefined}
+                name={
+                  signMessageRequest.payload.message.clientInfo.appName ||
+                  'unknown'
+                }
+                src={
+                  signMessageRequest.payload.message.clientInfo.iconUrl ||
+                  undefined
+                }
               />
 
               <VStack
@@ -334,7 +331,8 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
                 spacing={2}
               >
                 <Heading color={defaultTextColor} size="md" textAlign="center">
-                  {signBytesRequest.clientInfo.appName || 'Unknown'}
+                  {signMessageRequest.payload.message.clientInfo.appName ||
+                    'Unknown'}
                 </Heading>
 
                 <Box
@@ -348,7 +346,8 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
                     fontSize="xs"
                     textAlign="center"
                   >
-                    {signBytesRequest.clientInfo.host || 'unknown host'}
+                    {signMessageRequest.payload.message.clientInfo.host ||
+                      'unknown host'}
                   </Text>
                 </Box>
 
@@ -409,4 +408,4 @@ const SignBytesModal: FC<IProps> = ({ onClose }: IProps) => {
   );
 };
 
-export default SignBytesModal;
+export default SignMessageModal;

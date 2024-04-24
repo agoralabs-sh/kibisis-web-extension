@@ -27,9 +27,7 @@ import createLogger from '@common/utils/createLogger';
     (window as IWindow).algorand = new AlgorandProvider();
   }
 
-  legacyProvider = new LegacyProvider({
-    logger,
-  });
+  legacyProvider = new LegacyProvider();
 
   // add the wallet manager
   (window as IWindow).algorand?.addWallet(legacyProvider, {

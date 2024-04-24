@@ -11,6 +11,8 @@ import {
   IDiscoverResult,
   IEnableParams,
   IEnableResult,
+  ISignMessageParams,
+  ISignMessageResult,
   ISignTransactionsParams,
   ISignTransactionsResult,
   TRequestParams,
@@ -70,6 +72,7 @@ import type {
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
+import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import isNetworkSupported from '@extension/utils/isNetworkSupported';
 import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
@@ -272,6 +275,7 @@ export default class BackgroundMessageHandler {
             methods: [
               ARC0027MethodEnum.Enable,
               ARC0027MethodEnum.Disable,
+              ARC0027MethodEnum.SignMessage,
               ARC0027MethodEnum.SignTransactions,
             ],
           })),
@@ -466,77 +470,94 @@ export default class BackgroundMessageHandler {
     }
   }
 
-  // private async handleSignBytesRequestMessage(
-  //   clientInfo: IClientInformation,
-  //   message: ARC0027SignBytesRequestMessage,
-  //   originTabId: number
-  // ): Promise<void> {
-  //   const _functionName: string = 'handleSignBytesRequestMessage';
-  //   const filteredSessions: ISession[] = await this.fetchSessions(
-  //     (value) => value.host === clientInfo.host
-  //   );
-  //   let authorizedAddresses: string[];
-  //
-  //   // if the app has not been enabled
-  //   if (filteredSessions.length <= 0) {
-  //     this.logger?.debug(
-  //       `${BackgroundMessageHandler.name}#${_functionName}: no sessions found for sign bytes request`
-  //     );
-  //
-  //     // send the response to the web page (via the content script)
-  //     return await this.sendResponse(
-  //       new ARC0027SignBytesResponseMessage(
-  //         message.id,
-  //         new SerializableARC0027UnauthorizedSignerError(
-  //           message.params?.signer || null,
-  //           __PROVIDER_ID__,
-  //           `"${clientInfo.appName}" has not been authorized`
-  //         ),
-  //         null
-  //       ),
-  //       originTabId
-  //     );
-  //   }
-  //
-  //   authorizedAddresses = getAuthorizedAddressesForHost(
-  //     clientInfo.host,
-  //     filteredSessions
-  //   );
-  //
-  //   // if the requested signer has not been authorized
-  //   if (
-  //     message.params?.signer &&
-  //     !authorizedAddresses.find((value) => value === message.params?.signer)
-  //   ) {
-  //     this.logger?.debug(
-  //       `${BackgroundMessageHandler.name}#${_functionName}: signer "${message.params?.signer}" is not authorized`
-  //     );
-  //
-  //     // send the response to the web page (via the content script)
-  //     return await this.sendResponse(
-  //       new ARC0027SignBytesResponseMessage(
-  //         message.id,
-  //         new SerializableARC0027UnauthorizedSignerError(
-  //           message.params?.signer || null,
-  //           __PROVIDER_ID__,
-  //           `"${message.params?.signer}" has not been authorized`
-  //         ),
-  //         null
-  //       ),
-  //       originTabId
-  //     );
-  //   }
-  //
-  //   return await this.sendExtensionEvent({
-  //     id: uuid(),
-  //     payload: {
-  //       clientInfo,
-  //       originMessage: message,
-  //       originTabId,
-  //     },
-  //     type: EventTypeEnum.SignBytesRequest,
-  //   });
-  // }
+  private async handleSignMessageRequestMessage(
+    message: ClientRequestMessage<ISignMessageParams>,
+    originTabId: number
+  ): Promise<void> {
+    const _functionName: string = 'handleSignMessageRequestMessage';
+    const filteredSessions: ISession[] = await this.fetchSessions(
+      (value) => value.host === message.clientInfo.host
+    );
+    let authorizedAddresses: string[];
+
+    if (!message.params) {
+      return await this.sendResponse(
+        new ClientResponseMessage<ISignMessageResult>({
+          error: new ARC0027InvalidInputError({
+            message: `no message or signer supplied`,
+            providerId: __PROVIDER_ID__,
+          }),
+          id: uuid(),
+          method: message.method,
+          requestId: message.id,
+        }),
+        originTabId
+      );
+    }
+
+    // if the app has not been enabled
+    if (filteredSessions.length <= 0) {
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}: no sessions found for the "${message.method}" request`
+      );
+
+      // send the response to the web page (via the content script)
+      return await this.sendResponse(
+        new ClientResponseMessage<ISignMessageResult>({
+          error: new ARC0027UnauthorizedSignerError({
+            message: `"${message.clientInfo.appName}" has not been authorized`,
+            providerId: __PROVIDER_ID__,
+            signer: message.params.signer,
+          }),
+          id: uuid(),
+          method: message.method,
+          requestId: message.id,
+        }),
+        originTabId
+      );
+    }
+
+    authorizedAddresses = getAuthorizedAddressesForHost(
+      message.clientInfo.host,
+      filteredSessions
+    );
+
+    // if the requested signer has not been authorized
+    if (
+      message.params.signer &&
+      !authorizedAddresses.find((value) => value === message.params?.signer)
+    ) {
+      this.logger?.debug(
+        `${BackgroundMessageHandler.name}#${_functionName}: signer "${message.params.signer}" is not authorized`
+      );
+
+      // send the response to the web page (via the content script)
+      return await this.sendResponse(
+        new ClientResponseMessage<ISignMessageResult>({
+          error: new ARC0027UnauthorizedSignerError({
+            message: `"${message.params.signer}" has not been authorized`,
+            providerId: __PROVIDER_ID__,
+            signer: message.params.signer,
+          }),
+          id: uuid(),
+          method: message.method,
+          requestId: message.id,
+        }),
+        originTabId
+      );
+    }
+
+    return await this.sendExtensionEvent(
+      new Event({
+        id: uuid(),
+        payload: {
+          message,
+          originTabId,
+        },
+        type: EventTypeEnum.ClientRequest,
+      })
+    );
+  }
 
   private async handleSignTransactionsRequestMessage(
     message: ClientRequestMessage<ISignTransactionsParams>,
@@ -802,6 +823,11 @@ export default class BackgroundMessageHandler {
       case ARC0027MethodEnum.Enable:
         return await this.handleEnableRequestMessage(
           message as ClientRequestMessage<IEnableParams>,
+          originTabId
+        );
+      case ARC0027MethodEnum.SignMessage:
+        return await this.handleSignMessageRequestMessage(
+          message as ClientRequestMessage<ISignMessageParams>,
           originTabId
         );
       case ARC0027MethodEnum.SignTransactions:

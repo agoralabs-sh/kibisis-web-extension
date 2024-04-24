@@ -229,16 +229,6 @@ const App: FC = () => {
 
               <KeyRegistrationActionsTab {...signTransactionProps} />
 
-              <SignDataTab
-                account={selectedAccount}
-                connectionType={connectionType}
-              />
-
-              <SignJwtTab
-                account={selectedAccount}
-                connectionType={connectionType}
-              />
-
               <ImportAccountTab />
             </TabPanels>
           </Tabs>

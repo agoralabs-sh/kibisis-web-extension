@@ -15,7 +15,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import { DEFAULT_GAP } from '@extension/constants';
 
-const SignBytesContentSkeleton: FC = () => {
+const SignMessageContentSkeleton: FC = () => {
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
 
@@ -48,4 +48,4 @@ const SignBytesContentSkeleton: FC = () => {
   );
 };
 
-export default SignBytesContentSkeleton;
+export default SignMessageContentSkeleton;

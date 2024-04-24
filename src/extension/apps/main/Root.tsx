@@ -18,6 +18,7 @@ import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import {
   setEnableRequest,
+  setSignMessageRequest,
   setSignTransactionsRequest,
 } from '@extension/features/events';
 import {
@@ -52,6 +53,7 @@ import EnableModal from '@extension/modals/EnableModal';
 import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
 import ScanQRCodeModal from '@extension/modals/ScanQRCodeModal';
 import SendAssetModal from '@extension/modals/SendAssetModal';
+import SignMessageModal from '@extension/modals/SignMessageModal';
 import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 import WalletConnectModal from '@extension/modals/WalletConnectModal';
 
@@ -86,7 +88,9 @@ const Root: FC = () => {
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
-  const handleSignTxnsModalClose = () =>
+  const handleSignMessageModalClose = () =>
+    dispatch(setSignMessageRequest(null));
+  const handleSignTransactionsModalClose = () =>
     dispatch(setSignTransactionsRequest(null));
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
@@ -135,7 +139,8 @@ const Root: FC = () => {
     <>
       <ConfirmModal onClose={handleConfirmClose} />
       <EnableModal onClose={handleEnableModalClose} />
-      <SignTransactionsModal onClose={handleSignTxnsModalClose} />
+      <SignMessageModal onClose={handleSignMessageModalClose} />
+      <SignTransactionsModal onClose={handleSignTransactionsModalClose} />
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />

@@ -9,6 +9,7 @@ import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
 import {
   handleNewEventByIdThunk,
   setEnableRequest,
+  setSignMessageRequest,
   setSignTransactionsRequest,
 } from '@extension/features/events';
 import { fetchSessionsThunk } from '@extension/features/sessions';
@@ -21,6 +22,7 @@ import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
 
 // modals
 import EnableModal from '@extension/modals/EnableModal';
+import SignMessageModal from '@extension/modals/SignMessageModal';
 import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 
 // selectors
@@ -34,7 +36,7 @@ import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
 
 enum ModalTypeEnum {
   Enable,
-  SignBytes,
+  SignMessage,
   SignTransactions,
 }
 
@@ -50,6 +52,10 @@ const Root: FC = () => {
     switch (type) {
       case ModalTypeEnum.Enable:
         dispatch(setEnableRequest(null));
+
+        break;
+      case ModalTypeEnum.SignMessage:
+        dispatch(setSignMessageRequest(null));
 
         break;
       case ModalTypeEnum.SignTransactions:
@@ -92,6 +98,7 @@ const Root: FC = () => {
   return (
     <>
       <EnableModal onClose={handleModalClose(ModalTypeEnum.Enable)} />
+      <SignMessageModal onClose={handleModalClose(ModalTypeEnum.SignMessage)} />
       <SignTransactionsModal
         onClose={handleModalClose(ModalTypeEnum.SignTransactions)}
       />

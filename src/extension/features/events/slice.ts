@@ -1,5 +1,6 @@
 import type {
   IEnableParams,
+  ISignMessageParams,
   ISignTransactionsParams,
 } from '@agoralabs-sh/avm-web-provider';
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
@@ -26,6 +27,14 @@ const slice = createSlice({
     ) => {
       state.enableRequest = action.payload;
     },
+    setSignMessageRequest: (
+      state: Draft<IState>,
+      action: PayloadAction<IEvent<
+        IClientRequestEventPayload<ISignMessageParams>
+      > | null>
+    ) => {
+      state.signMessageRequest = action.payload;
+    },
     setSignTransactionsRequest: (
       state: Draft<IState>,
       action: PayloadAction<IEvent<
@@ -38,4 +47,8 @@ const slice = createSlice({
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setEnableRequest, setSignTransactionsRequest } = slice.actions;
+export const {
+  setEnableRequest,
+  setSignMessageRequest,
+  setSignTransactionsRequest,
+} = slice.actions;

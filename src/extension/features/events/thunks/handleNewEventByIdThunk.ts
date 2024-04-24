@@ -1,6 +1,7 @@
 import {
   ARC0027MethodEnum,
   IEnableParams,
+  ISignMessageParams,
   ISignTransactionsParams,
 } from '@agoralabs-sh/avm-web-provider';
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
@@ -9,7 +10,11 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { EventsThunkEnum, EventTypeEnum } from '@extension/enums';
 
 // features
-import { setEnableRequest, setSignTransactionsRequest } from '../slice';
+import {
+  setEnableRequest,
+  setSignMessageRequest,
+  setSignTransactionsRequest,
+} from '../slice';
 
 // services
 import EventQueueService from '@extension/services/EventQueueService';
@@ -51,6 +56,16 @@ const handleNewEventByIdThunk: AsyncThunk<
           dispatch(
             setEnableRequest(
               event as IEvent<IClientRequestEventPayload<IEnableParams>>
+            )
+          );
+
+          return;
+        }
+
+        if (event.payload.message.method === ARC0027MethodEnum.SignMessage) {
+          dispatch(
+            setSignMessageRequest(
+              event as IEvent<IClientRequestEventPayload<ISignMessageParams>>
             )
           );
 

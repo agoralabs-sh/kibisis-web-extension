@@ -100,6 +100,7 @@ export default class ClientMessageBroker {
       case ARC0027MethodEnum.Disable:
       case ARC0027MethodEnum.Discover:
       case ARC0027MethodEnum.Enable:
+      case ARC0027MethodEnum.SignMessage:
       case ARC0027MethodEnum.SignTransactions:
         return await this.sendRequestToExtensionWithTimeout(message);
       default:
