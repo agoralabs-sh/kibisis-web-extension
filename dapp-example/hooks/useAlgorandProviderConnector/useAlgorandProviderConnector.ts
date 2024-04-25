@@ -3,9 +3,11 @@ import {
   BaseError,
   IBaseResult,
   IEnableResult,
+  ISignBytesResult,
   ISignTxnsResult,
 } from '@agoralabs-sh/algorand-provider';
 import type { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
+import { encode as encodeBase64 } from '@stablelib/base64';
 import { useState } from 'react';
 
 // types
@@ -15,6 +17,7 @@ import type {
   IAccountInformation,
   IConnectorParams,
   IConnectorState,
+  ISignMessageActionResult,
 } from '../../types';
 
 // utils
@@ -78,13 +81,58 @@ export default function useAlgorandProviderConnector({
       title: 'Disconnected!',
     });
   };
+  const signMessageAction = async (
+    message: string,
+    signer?: string
+  ): Promise<ISignMessageActionResult> => {
+    const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
+    let result: IBaseResult & ISignBytesResult;
+
+    if (!algorand) {
+      toast({
+        description:
+          'Algorand Provider has been intialized; there is no supported wallet',
+        status: 'error',
+        title: 'window.algorand not found!',
+      });
+
+      throw new Error('window.algorand not found');
+    }
+
+    if (!signer) {
+      toast({
+        description: 'Algorand Provider requires a signer',
+        status: 'error',
+        title: 'No Signer Ser!',
+      });
+
+      throw new Error('a signer is required');
+    }
+
+    result = await algorand.signBytes({
+      data: new TextEncoder().encode(message),
+      signer,
+    });
+
+    return {
+      signature: encodeBase64(result.signature),
+      signer,
+    };
+  };
   const signTransactionsAction = async (
     transactions: IARC0001Transaction[]
   ) => {
     const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
-    let result: ISignTxnsResult;
+    let result: IBaseResult & ISignTxnsResult;
 
     if (!algorand) {
+      toast({
+        description:
+          'Algorand Provider has been intialized; there is no supported wallet',
+        status: 'error',
+        title: 'window.algorand not found!',
+      });
+
       throw new Error('window.algorand not found');
     }
 
@@ -99,6 +147,7 @@ export default function useAlgorandProviderConnector({
     connectAction,
     disconnectAction,
     enabledAccounts,
+    signMessageAction,
     signTransactionsAction,
   };
 }

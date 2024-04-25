@@ -2,7 +2,6 @@ import {
   ARC0027MethodCanceledError,
   ARC0027MethodEnum,
   ISignMessageParams,
-  ISignTransactionsParams,
 } from '@agoralabs-sh/avm-web-provider';
 import {
   Avatar,
@@ -18,6 +17,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { encode as encodeBase64 } from '@stablelib/base64';
 import React, {
   FC,
   KeyboardEvent,
@@ -37,17 +37,12 @@ import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
 import SignMessageContentSkeleton from './SignMessageContentSkeleton';
-import SignBytesJwtContent from './SignBytesJwtContent';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { ARC0027ProviderMethodEnum } from '@common/enums';
 import { ErrorCodeEnum } from '@extension/enums';
-
-// errors
-import { SerializableARC0027MethodCanceledError } from '@common/errors';
 
 // features
 import { sendSignMessageResponseThunk } from '@extension/features/messages';
@@ -57,9 +52,6 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
-
-// messages
-import { ClientRequestMessage } from '@common/messages';
 
 // selectors
 import {
@@ -118,7 +110,6 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
   const textBackgroundColor: string = useTextBackgroundColor();
   // state
   const [authorizedAccounts, setAuthorizedAccounts] = useState<IAccount[]>([]);
-  const [decodedJwt, setDecodedJwt] = useState<IDecodedJwt | null>(null);
   const [selectedSigner, setSelectedSigner] = useState<IAccount | null>(null);
   // handlers
   const handleAccountSelect = (account: IAccount) => setSelectedSigner(account);
@@ -152,13 +143,14 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
     }
   };
   const handleSignClick = async () => {
-    let signature: string;
+    const _functionName: string = 'handleSignClick';
+    let signature: Uint8Array;
     let signer: string;
 
     if (
       validatePassword() ||
       !signMessageRequest ||
-      !signBytesRequest.originMessage.params?.data ||
+      !signMessageRequest.payload.message.params ||
       !selectedSigner
     ) {
       return;
@@ -168,19 +160,30 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       selectedSigner.publicKey
     );
 
+    logger.debug(
+      `${SignMessageModal.name}#${_functionName}: signing message for signer "${signer}"`
+    );
+
     try {
       signature = await signBytes({
-        encodedData: signBytesRequest.originMessage.params.data,
+        bytes: new TextEncoder().encode(
+          signMessageRequest.payload.message.params.message
+        ),
         logger,
         password,
-        signer,
+        publicKey: AccountService.decodePublicKey(selectedSigner.publicKey),
       });
+
+      logger.debug(
+        `${SignMessageModal.name}#${_functionName}: signed message for signer "${signer}"`
+      );
 
       dispatch(
         sendSignMessageResponseThunk({
           error: null,
           event: signMessageRequest,
-          signature,
+          signature: encodeBase64(signature),
+          signer,
         })
       );
 
@@ -209,7 +212,11 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
     }
   };
   const renderContent = () => {
-    if (fetching || !signMessageRequest || !selectedSigner) {
+    if (
+      fetching ||
+      !signMessageRequest?.payload.message.params ||
+      !selectedSigner
+    ) {
       return <SignMessageContentSkeleton />;
     }
 
@@ -217,7 +224,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       <VStack spacing={4} w="full">
         {/*account select*/}
         <VStack spacing={2} w="full">
-          {signBytesRequest.originMessage.params?.signer ? (
+          {signMessageRequest.payload.message.params.signer ? (
             <>
               <Text textAlign="left" w="full">{`${t<string>(
                 'labels.addressToSign'
@@ -238,25 +245,15 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
           )}
         </VStack>
 
-        {/*data display*/}
-        {decodedJwt ? (
-          <SignBytesJwtContent
-            decodedJwt={decodedJwt}
-            host={signBytesRequest.clientInfo.host}
-            signer={selectedSigner}
-          />
-        ) : (
-          <VStack spacing={2} w="full">
-            <Text textAlign="left" w="full">{`${t<string>(
-              'labels.message'
-            )}:`}</Text>
-            {signBytesRequest.originMessage.params && (
-              <Code borderRadius="md" w="full">
-                {window.atob(signBytesRequest.originMessage.params.data)}
-              </Code>
-            )}
-          </VStack>
-        )}
+        {/*message*/}
+        <VStack spacing={2} w="full">
+          <Text textAlign="left" w="full">{`${t<string>(
+            'labels.message'
+          )}:`}</Text>
+          <Code borderRadius="md" w="full">
+            {signMessageRequest.payload.message.params.message}
+          </Code>
+        </VStack>
       </VStack>
     );
   };
@@ -351,15 +348,9 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
                   </Text>
                 </Box>
 
-                {decodedJwt ? (
-                  <Text color={subTextColor} fontSize="md" textAlign="center">
-                    {t<string>('captions.signJwtRequest')}
-                  </Text>
-                ) : (
-                  <Text color={subTextColor} fontSize="md" textAlign="center">
-                    {t<string>('captions.signMessageRequest')}
-                  </Text>
-                )}
+                <Text color={subTextColor} fontSize="md" textAlign="center">
+                  {t<string>('captions.signMessageRequest')}
+                </Text>
               </VStack>
             </VStack>
           )}
@@ -371,11 +362,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
           <VStack alignItems="flex-start" spacing={4} w="full">
             <PasswordInput
               error={passwordError}
-              hint={t<string>(
-                decodedJwt
-                  ? 'captions.mustEnterPasswordToSignSecurityToken'
-                  : 'captions.mustEnterPasswordToSign'
-              )}
+              hint={t<string>('captions.mustEnterPasswordToSign')}
               inputRef={passwordInputRef}
               onChange={onPasswordChange}
               onKeyUp={handleKeyUpPasswordInput}

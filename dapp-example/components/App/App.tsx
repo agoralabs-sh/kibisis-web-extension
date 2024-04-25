@@ -33,8 +33,7 @@ import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountTab from '../ImportAccountTab';
 import KeyRegistrationActionsTab from '../KeyRegistrationActionsTab';
 import PaymentActionsTab from '../PaymentActionsTab';
-import SignDataTab from '../SignDataTab';
-import SignJwtTab from '../SignJwtTab';
+import SignMessageTab from '../SignMessageTab';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -74,12 +73,14 @@ const App: FC = () => {
     connectAction: algorandProviderConnectAction,
     disconnectAction: algorandProviderDisconnectAction,
     enabledAccounts: algorandProviderEnabledAccounts,
+    signMessageAction: algorandProviderSignMessageAction,
     signTransactionsAction: algorandProviderSignTransactionsAction,
   } = useAlgorandProviderConnector({ toast });
   const {
     connectAction: avmWebProviderConnectAction,
     disconnectAction: avmWebProviderDisconnectAction,
     enabledAccounts: avmWebProviderEnabledAccounts,
+    signMessageAction: avmWebProviderSignMessageAction,
     signTransactionsAction: avmWebProviderSignTransactionsAction,
   } = useAVMWebProviderConnector({ toast });
   const {
@@ -167,8 +168,7 @@ const App: FC = () => {
               <Tab>Atomic Txns</Tab>
               <Tab>Apps</Tab>
               <Tab>Keys</Tab>
-              <Tab>Sign Bytes</Tab>
-              <Tab>Sign JWT</Tab>
+              <Tab>Sign Message</Tab>
               <Tab>Import Account</Tab>
             </TabList>
 
@@ -183,14 +183,9 @@ const App: FC = () => {
 
               <KeyRegistrationActionsTab {...signTransactionProps} />
 
-              <SignDataTab
+              <SignMessageTab
                 account={selectedAccount}
-                connectionType={connectionType}
-              />
-
-              <SignJwtTab
-                account={selectedAccount}
-                connectionType={connectionType}
+                signMessageAction={algorandProviderSignMessageAction}
               />
 
               <ImportAccountTab />
@@ -213,8 +208,7 @@ const App: FC = () => {
               <Tab>Atomic Txns</Tab>
               <Tab>Apps</Tab>
               <Tab>Keys</Tab>
-              <Tab>Sign Bytes</Tab>
-              <Tab>Sign JWT</Tab>
+              <Tab>Sign Message</Tab>
               <Tab>Import Account</Tab>
             </TabList>
 
@@ -228,6 +222,11 @@ const App: FC = () => {
               <ApplicationActionsTab {...signTransactionProps} />
 
               <KeyRegistrationActionsTab {...signTransactionProps} />
+
+              <SignMessageTab
+                account={selectedAccount}
+                signMessageAction={avmWebProviderSignMessageAction}
+              />
 
               <ImportAccountTab />
             </TabPanels>
@@ -249,8 +248,6 @@ const App: FC = () => {
               <Tab>Atomic Txns</Tab>
               <Tab>Apps</Tab>
               <Tab>Keys</Tab>
-              <Tab>Sign Bytes</Tab>
-              <Tab>Sign JWT</Tab>
               <Tab>Import Account</Tab>
             </TabList>
 

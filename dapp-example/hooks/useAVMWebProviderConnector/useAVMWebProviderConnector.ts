@@ -13,6 +13,7 @@ import type {
   IAccountInformation,
   IConnectorParams,
   IConnectorState,
+  ISignMessageActionResult,
 } from '../../types';
 
 // utils
@@ -97,6 +98,65 @@ export default function useAVMWebProviderConnector({
       providerId: __PROVIDER_ID__,
     });
   };
+  const signMessageAction = (
+    message: string,
+    signer?: string
+  ): Promise<ISignMessageActionResult> => {
+    return new Promise<ISignMessageActionResult>(async (resolve, reject) => {
+      let _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
+      let listenerId: string;
+      let timeoutId = window.setTimeout(() => {
+        const error = new ARC0027MethodTimedOutError({
+          method: ARC0027MethodEnum.SignTransactions,
+          providerId: __PROVIDER_ID__,
+        });
+
+        toast({
+          description: error.message,
+          status: 'error',
+          title: 'Sign Message Request Timeout',
+        });
+
+        // remove the listener, it is not needed
+        if (listenerId) {
+          _avmWebClient.removeListener(listenerId);
+        }
+
+        return reject(error);
+      }, UPPER_REQUEST_TIMEOUT);
+      listenerId = _avmWebClient.onSignMessage(({ error, result }) => {
+        // remove the listener, it is not needed
+        _avmWebClient.removeListener(listenerId);
+
+        if (error) {
+          toast({
+            description: error.message,
+            status: 'error',
+            title: 'Failed To Sign Message',
+          });
+
+          window.clearTimeout(timeoutId);
+
+          return reject(error);
+        }
+
+        if (result) {
+          window.clearTimeout(timeoutId);
+
+          return resolve({
+            signature: result.signature,
+            signer: result.signer,
+          });
+        }
+      });
+
+      _avmWebClient.signMessage({
+        message,
+        providerId: __PROVIDER_ID__,
+        signer,
+      });
+    });
+  };
   const signTransactionsAction = async (
     transactions: IARC0001Transaction[]
   ) => {
@@ -172,6 +232,7 @@ export default function useAVMWebProviderConnector({
     connectAction,
     disconnectAction,
     enabledAccounts,
+    signMessageAction,
     signTransactionsAction,
   };
 }

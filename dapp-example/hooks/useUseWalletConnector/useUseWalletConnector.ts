@@ -75,6 +75,15 @@ export default function useUseWalletConnector({
       });
     }
   };
+  const signMessageAction = () => {
+    toast({
+      description: `UseWallet does not support signing of messages.`,
+      status: 'error',
+      title: 'Not Supported!',
+    });
+
+    throw new Error(`signing a message not supported by use-wallet`);
+  };
   const signTransactionsAction = async (
     transactions: IARC0001Transaction[]
   ) => {
@@ -106,6 +115,7 @@ export default function useUseWalletConnector({
     connectAction,
     disconnectAction,
     enabledAccounts,
+    signMessageAction,
     signTransactionsAction,
   };
 }
