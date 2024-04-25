@@ -4,8 +4,8 @@ import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 import LegacyProvider from '@external/services/LegacyProvider';
 
 // types
-import { ILogger } from '@common/types';
-import { IWindow } from '@external/types';
+import type { ILogger } from '@common/types';
+import type { IWindow } from '@external/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';

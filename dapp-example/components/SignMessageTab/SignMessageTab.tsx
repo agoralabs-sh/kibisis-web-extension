@@ -12,11 +12,9 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { decode as decodeBase64 } from '@stablelib/base64';
+import { decodeAddress } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { sign } from 'tweetnacl';
-
-// services
-import AccountService from '@extension/services/AccountService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -105,9 +103,7 @@ const SignMessageTab: FC<IProps> = ({ account, signMessageAction }) => {
     verified = sign.detached.verify(
       new TextEncoder().encode(message),
       decodeBase64(signature),
-      AccountService.decodePublicKey(
-        AccountService.convertAlgorandAddressToPublicKey(signer)
-      )
+      decodeAddress(signer).publicKey
     );
 
     if (!verified) {
@@ -138,7 +134,7 @@ const SignMessageTab: FC<IProps> = ({ account, signMessageAction }) => {
 
         {/*encoded data*/}
         <HStack spacing={2} w="full">
-          <Text>Encoded signed data (hex):</Text>
+          <Text>Encoded signature (base64):</Text>
           {signature && (
             <Code fontSize="sm" wordBreak="break-word">
               {signature}

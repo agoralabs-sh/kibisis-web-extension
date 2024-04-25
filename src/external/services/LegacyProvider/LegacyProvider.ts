@@ -7,6 +7,7 @@ import {
   InvalidGroupIdError,
   InvalidInputError,
   IPostTxnsResult,
+  ISignBytesOptions,
   ISignBytesResult,
   ISignTxnsOptions,
   ISignTxnsResult,
@@ -26,6 +27,7 @@ import {
   BaseARC0027Error,
   UPPER_REQUEST_TIMEOUT,
 } from '@agoralabs-sh/avm-web-provider';
+import { decode as decodeBase64 } from '@stablelib/base64';
 
 // constants
 import { LEGACY_WALLET_ID } from '@external/constants';
@@ -136,8 +138,47 @@ export default class LegacyProvider extends BaseWalletManager {
     throw new WalletOperationNotSupportedError(this.id, 'postTxns');
   }
 
-  public async signBytes(): Promise<ISignBytesResult> {
-    throw new WalletOperationNotSupportedError(this.id, 'signBytes');
+  public async signBytes({
+    data,
+    signer,
+  }: ISignBytesOptions): Promise<ISignBytesResult> {
+    return new Promise<ISignBytesResult>((resolve, reject) => {
+      let listenerId: string;
+      let timeoutId = window.setTimeout(() => {
+        // remove the listener, it is not needed
+        if (listenerId) {
+          this.avmWebClient.removeListener(listenerId);
+        }
+
+        return reject(
+          new OperationCanceledError(`operation "signBytes" timed out`)
+        );
+      }, UPPER_REQUEST_TIMEOUT);
+      listenerId = this.avmWebClient.onSignMessage(({ error, result }) => {
+        // remove the listener, it is not needed
+        this.avmWebClient.removeListener(listenerId);
+
+        if (error) {
+          window.clearTimeout(timeoutId);
+
+          return reject(LegacyProvider.mapARC0027ErrorToLegacyError(error));
+        }
+
+        if (result) {
+          window.clearTimeout(timeoutId);
+
+          return resolve({
+            signature: decodeBase64(result.signature),
+          });
+        }
+      });
+
+      this.avmWebClient.signMessage({
+        message: new TextDecoder().decode(data),
+        providerId: __PROVIDER_ID__,
+        signer,
+      });
+    });
   }
 
   public async signTxns({ txns }: ISignTxnsOptions): Promise<ISignTxnsResult> {

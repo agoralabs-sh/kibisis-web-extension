@@ -38,6 +38,9 @@ import injectScript from '@external/utils/injectScript';
   avmWebProvider.onSignAndPostTransactions(
     clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
   );
+  avmWebProvider.onSignMessage(
+    clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
+  );
   avmWebProvider.onSignTransactions(
     clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
   );
