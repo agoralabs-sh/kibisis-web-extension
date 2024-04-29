@@ -10,6 +10,7 @@ import type IBlockExplorer from './IBlockExplorer';
 import type INativeCurrency from './INativeCurrency';
 import type INFTExplorer from './INFTExplorer';
 import type INode from './INode';
+import type IUmamiConfig from './IUmamiConfig';
 
 interface INetwork {
   algods: INode[];
@@ -26,6 +27,7 @@ interface INetwork {
   nativeCurrency: INativeCurrency;
   nftExplorers: INFTExplorer[];
   type: NetworkTypeEnum;
+  umami?: IUmamiConfig;
 }
 
 export default INetwork;

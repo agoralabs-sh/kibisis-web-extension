@@ -77,12 +77,13 @@ import {
   useSelectSendAssetFromAccount,
   useSelectSendAssetNote,
   useSelectSendAssetSelectedAsset,
-  useSelectStandardAssetsBySelectedNetwork,
   useSelectSettings,
+  useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
+import ActionTrackingService from '@extension/services/ActionTrackingService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -251,6 +252,8 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
+    let actionTrackingService: ActionTrackingService;
+    let fromAddress: string;
     let transactionIds: string[];
     let toAccount: IAccount | null;
 
@@ -304,6 +307,41 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           .map((value) => `"${value}"`)
           .join(',')}] to the network`
       );
+
+      fromAddress = AccountService.convertPublicKeyToAlgorandAddress(
+        fromAccount.publicKey
+      );
+
+      // track the action if it qualifies (different from/to accounts and amount is greater than 0)
+      if (
+        new BigNumber(amountInStandardUnits).gt(new BigNumber('0')) &&
+        toAddress !== fromAddress
+      ) {
+        actionTrackingService = new ActionTrackingService({
+          logger,
+        });
+        switch (selectedAsset?.type) {
+          case AssetTypeEnum.ARC0200:
+            await actionTrackingService.sendARC0200AssetAction(network, {
+              account: fromAddress,
+              appID: selectedAsset.id,
+            });
+            break;
+          case AssetTypeEnum.Native:
+            await actionTrackingService.sendNativeCurrencyAction(network, {
+              account: fromAddress,
+            });
+            break;
+          case AssetTypeEnum.Standard:
+            await actionTrackingService.sendStandardAssetAction(network, {
+              account: fromAddress,
+              assetID: selectedAsset.id,
+            });
+            break;
+          default:
+            break;
+        }
+      }
 
       // send a success transaction
       dispatch(
