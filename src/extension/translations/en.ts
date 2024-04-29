@@ -53,7 +53,8 @@ const translation: IResourceLanguage = {
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
-    allowActionTracking: 'See what <2>actions</2> will be tracked.',
+    allowActionTracking:
+      'By tracking certain actions, you can earn rewards. See <2>here</2> for more information.',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',

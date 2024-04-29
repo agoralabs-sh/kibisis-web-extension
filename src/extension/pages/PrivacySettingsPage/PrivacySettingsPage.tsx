@@ -10,7 +10,10 @@ import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 
 // constants
-import { ANALYTICS_AND_TRACKING_LINK, DEFAULT_GAP } from '@extension/constants';
+import {
+  DEFAULT_GAP,
+  VOIAGE_TO_MAINNET_BLOG_POST_LINK,
+} from '@extension/constants';
 
 // features
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
@@ -63,19 +66,19 @@ const PrivacySettingsPage: FC = () => {
             checked={settings.privacy.allowActionTracking}
             description={
               <Trans i18nKey="captions.allowActionTracking">
-                See what{' '}
+                By tracking certain actions, you can earn rewards. See{' '}
                 <Button
                   as={Link}
                   colorScheme={primaryColorScheme}
                   fontSize="xs"
-                  href={ANALYTICS_AND_TRACKING_LINK}
+                  href={VOIAGE_TO_MAINNET_BLOG_POST_LINK}
                   rightIcon={<IoOpenOutline />}
                   target="_blank"
                   variant="link"
                 >
-                  actions
+                  here
                 </Button>
-                {` `}will be tracked.
+                {` `}for more information.
               </Trans>
             }
             label={t<string>('labels.allowActionTracking')}
