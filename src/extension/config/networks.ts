@@ -1,4 +1,5 @@
 // constants
+import { SUPPORTED_METHODS } from '@common/constants';
 import {
   ALGORAND_ICON_URI,
   ALGORAND_LISTING_ICON_URI,
@@ -60,6 +61,7 @@ const networks: INetwork[] = [
         url: 'https://testnet-idx.voi.nodly.io',
       },
     ],
+    methods: SUPPORTED_METHODS,
     namespace: {
       key: 'voi',
       methods: ['signTransaction', 'signMessage'],
@@ -134,6 +136,7 @@ const networks: INetwork[] = [
         url: 'https://mainnet-idx.algonode.cloud',
       },
     ],
+    methods: SUPPORTED_METHODS,
     namespace: {
       key: 'algorand',
       methods: ['signTransaction', 'signMessage'],
@@ -173,6 +176,7 @@ const networks: INetwork[] = [
         url: 'https://betanet-idx.algonode.cloud',
       },
     ],
+    methods: SUPPORTED_METHODS,
     namespace: {
       key: 'algorand',
       methods: ['signTransaction', 'signMessage'],
@@ -224,6 +228,7 @@ const networks: INetwork[] = [
         url: 'https://testnet-idx.algonode.cloud',
       },
     ],
+    methods: SUPPORTED_METHODS,
     namespace: {
       key: 'algorand',
       methods: ['signTransaction', 'signMessage'],

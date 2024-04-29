@@ -76,11 +76,13 @@ export default class SessionService {
   }
 
   /**
-   * Removes a session by its ID.
-   * @param {string} id - the session ID.
+   * Removes the sessions by the IDs.
+   * @param {string[]} ids - the session IDs to remove.
    */
-  public async removeById(id: string): Promise<void> {
-    await this.storageManager.remove(this.createItemKey(id));
+  public async removeByIds(ids: string[]): Promise<void> {
+    await this.storageManager.remove(
+      ids.map((value) => this.createItemKey(value))
+    );
   }
 
   public async save(session: ISession): Promise<ISession> {

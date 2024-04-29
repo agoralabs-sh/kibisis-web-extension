@@ -1,4 +1,8 @@
 import {
+  IEnableParams,
+  ARC0027MethodCanceledError,
+} from '@agoralabs-sh/avm-web-provider';
+import {
   Avatar,
   Checkbox,
   HStack,
@@ -28,12 +32,6 @@ import SessionRequestHeader, {
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-// enums
-import { ARC0027ProviderMethodEnum } from '@common/enums';
-
-// errors
-import { SerializableARC0027MethodCanceledError } from '@common/errors';
-
 // features
 import { sendEnableResponseThunk } from '@extension/features/messages';
 import { setSessionThunk } from '@extension/features/sessions';
@@ -42,9 +40,6 @@ import { setSessionThunk } from '@extension/features/sessions';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-
-// messages
-import { ARC0027EnableRequestMessage } from '@common/messages';
 
 // selectors
 import {
@@ -62,30 +57,29 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import {
+import type {
   IAccount,
   IAppThunkDispatch,
-  IClientRequest,
+  IClientRequestEventPayload,
+  IEvent,
   INetwork,
   ISession,
 } from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import mapSessionFromEnableRequest from '@extension/utils/mapSessionFromEnableRequest';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
-interface IProps {
-  onClose: () => void;
-}
-
 const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const enableRequest: IClientRequest<ARC0027EnableRequestMessage> | null =
-    useSelectEnableRequest();
+  const enableRequestEvent: IEvent<
+    IClientRequestEventPayload<IEnableParams>
+  > | null = useSelectEnableRequest();
   const fetching: boolean = useSelectFetchingAccounts();
   const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
@@ -98,17 +92,15 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const [network, setNetwork] = useState<INetwork | null>(null);
   // handlers
   const handleCancelClick = () => {
-    if (enableRequest) {
+    if (enableRequestEvent) {
       dispatch(
         sendEnableResponseThunk({
-          error: new SerializableARC0027MethodCanceledError(
-            ARC0027ProviderMethodEnum.Enable,
-            __PROVIDER_ID__,
-            `user dismissed connect modal`
-          ),
-          eventId: enableRequest.eventId,
-          originMessage: enableRequest.originMessage,
-          originTabId: enableRequest.originTabId,
+          error: new ARC0027MethodCanceledError({
+            message: `user dismissed connect modal`,
+            method: enableRequestEvent.payload.message.method,
+            providerId: __PROVIDER_ID__,
+          }),
+          event: enableRequestEvent,
           session: null,
         })
       );
@@ -124,13 +116,13 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleConnectClick = () => {
     let session: ISession;
 
-    if (!enableRequest || !network || authorizedAddresses.length <= 0) {
+    if (!enableRequestEvent || !network || authorizedAddresses.length <= 0) {
       return;
     }
 
     session = mapSessionFromEnableRequest({
       authorizedAddresses,
-      clientInfo: enableRequest.clientInfo,
+      clientInfo: enableRequestEvent.payload.message.clientInfo,
       network,
     });
 
@@ -139,9 +131,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
     dispatch(
       sendEnableResponseThunk({
         error: null,
-        eventId: enableRequest.eventId,
-        originMessage: enableRequest.originMessage,
-        originTabId: enableRequest.originTabId,
+        event: enableRequestEvent,
         session,
       })
     );
@@ -150,7 +140,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   };
   const handleOnAccountCheckChange =
     (address: string) => (event: ChangeEvent<HTMLInputElement>) => {
-      if (!enableRequest) {
+      if (!event) {
         return;
       }
 
@@ -170,7 +160,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const renderContent = () => {
     let accountNodes: ReactNode[];
 
-    if (!enableRequest || fetching) {
+    if (!enableRequestEvent || fetching) {
       return Array.from({ length: 3 }, (_, index) => (
         <HStack
           key={`enable-modal-fetching-item-${index}`}
@@ -261,13 +251,13 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   };
 
   useEffect(() => {
-    if (enableRequest) {
+    if (enableRequestEvent) {
       // find the selected network, or use the default one
       setNetwork(
         networks.find(
           (value) =>
             value.genesisHash ===
-            enableRequest.originMessage.params?.genesisHash
+            enableRequestEvent.payload.message.params?.genesisHash
         ) || selectDefaultNetwork(networks)
       );
 
@@ -280,11 +270,11 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
         ]);
       }
     }
-  }, [enableRequest]);
+  }, [enableRequestEvent]);
 
   return (
     <Modal
-      isOpen={!!enableRequest}
+      isOpen={!!enableRequestEvent}
       motionPreset="slideInBottom"
       onClose={handleClose}
       size="full"
@@ -296,13 +286,19 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          {enableRequest ? (
+          {enableRequestEvent ? (
             <SessionRequestHeader
               caption={t<string>('captions.enableRequest')}
-              description={enableRequest.clientInfo.description || undefined}
-              host={enableRequest.clientInfo.host}
-              iconUrl={enableRequest.clientInfo.iconUrl || undefined}
-              name={enableRequest.clientInfo.appName}
+              description={
+                enableRequestEvent.payload.message.clientInfo.description ||
+                undefined
+              }
+              host={enableRequestEvent.payload.message.clientInfo.host}
+              iconUrl={
+                enableRequestEvent.payload.message.clientInfo.iconUrl ||
+                undefined
+              }
+              name={enableRequestEvent.payload.message.clientInfo.appName}
               network={network || undefined}
             />
           ) : (

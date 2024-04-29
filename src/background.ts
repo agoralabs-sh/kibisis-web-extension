@@ -1,27 +1,29 @@
 import browser, { Action, BrowserAction } from 'webextension-polyfill';
 
 // services
-import BackgroundEventListener from '@extension/services/BackgroundEventListener';
-import BackgroundMessageHandler from '@extension/services/BackgroundMessageHandler';
+import ClientMessageHandler from '@extension/services/ClientMessageHandler';
+import HeartbeatService from '@extension/services/HeartbeatService';
+import ProviderActionListener from '@extension/services/ProviderActionListener';
+import ProviderMessageHandler from '@extension/services/ProviderMessageHandler';
 import SettingsService from '@extension/services/SettingsService';
 
 // types
-import { ILogger } from '@common/types';
-import { ISettings } from '@extension/types';
+import type { ILogger } from '@common/types';
+import type { ISettings } from '@extension/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';
-import HeartbeatService from '@extension/services/HeartbeatService';
 
 (async () => {
   const browserAction: Action.Static | BrowserAction.Static =
     browser.action || browser.browserAction; // TODO: use browser.action for v3
-  let backgroundEventListener: BackgroundEventListener;
-  let backgroundMessageHandler: BackgroundMessageHandler;
+  let clientMessageHandler: ClientMessageHandler;
   let logger: ILogger = createLogger(
     __ENV__ === 'development' ? 'debug' : 'error'
   );
   let heartbeatService: HeartbeatService;
+  let providerActionListener: ProviderActionListener;
+  let providerMessageHandler: ProviderMessageHandler;
   let settingsService: SettingsService = new SettingsService({ logger });
   let settings: ISettings = await settingsService.getAll();
 
@@ -31,33 +33,39 @@ import HeartbeatService from '@extension/services/HeartbeatService';
   }
 
   heartbeatService = new HeartbeatService({ logger });
-
-  backgroundEventListener = new BackgroundEventListener({
+  clientMessageHandler = new ClientMessageHandler({
     logger,
   });
-  backgroundMessageHandler = new BackgroundMessageHandler({
+  providerActionListener = new ProviderActionListener({
+    logger,
+  });
+  providerMessageHandler = new ProviderMessageHandler({
     logger,
   });
 
   // create an alarm to "tick" that will keep the extension from going idle
   await heartbeatService.createOrGetAlarm();
 
-  // listen to incoming messages from the content scripts and apps (pop-ups)
+  // listen to incoming messages from clients (content scripts)
   browser.runtime.onMessage.addListener(
-    backgroundMessageHandler.onMessage.bind(backgroundMessageHandler)
+    clientMessageHandler.onMessage.bind(clientMessageHandler)
+  );
+  // listen to incoming messages from the provider (popups)
+  browser.runtime.onMessage.addListener(
+    providerMessageHandler.onMessage.bind(providerMessageHandler)
   );
 
-  // listen to special events
+  // listen to special extension events
   browserAction.onClicked.addListener(
-    backgroundEventListener.onExtensionClick.bind(backgroundEventListener)
+    providerActionListener.onExtensionClick.bind(providerActionListener)
   );
   browser.alarms.onAlarm.addListener(
-    backgroundEventListener.onAlarm.bind(backgroundEventListener)
+    providerActionListener.onAlarm.bind(providerActionListener)
   );
   browser.windows.onFocusChanged.addListener(
-    backgroundEventListener.onFocusChanged.bind(backgroundEventListener)
+    providerActionListener.onFocusChanged.bind(providerActionListener)
   );
   browser.windows.onRemoved.addListener(
-    backgroundEventListener.onWindowRemove.bind(backgroundEventListener)
+    providerActionListener.onWindowRemove.bind(providerActionListener)
   );
 })();

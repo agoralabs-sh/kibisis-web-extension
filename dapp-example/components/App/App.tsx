@@ -1,17 +1,19 @@
 import {
   Center,
   ChakraProvider,
+  CreateToastFnReturn,
   Flex,
   Heading,
-  Tab,
-  TabList,
-  Tabs,
-  TabPanels,
-  VStack,
   HStack,
-  Text,
   Select,
   Spacer,
+  Tab,
+  TabList,
+  TabPanels,
+  Tabs,
+  Text,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
 import {
   PROVIDER_ID,
@@ -25,13 +27,13 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import ApplicationActionsTab from '../ApplicationActionsTab';
 import AssetActionsTab from '../AssetActionsTab';
 import AtomicTransactionActionsTab from '../AtomicTransactionActionsTab';
-import ConnectMenu, { IConnectResult } from '../ConnectMenu';
+import ConnectMenu, { IOnConnectParams } from '../ConnectMenu';
+import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
 import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountTab from '../ImportAccountTab';
 import KeyRegistrationActionsTab from '../KeyRegistrationActionsTab';
 import PaymentActionsTab from '../PaymentActionsTab';
-import SignDataTab from '../SignDataTab';
-import SignJwtTab from '../SignJwtTab';
+import SignMessageTab from '../SignMessageTab';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -39,12 +41,17 @@ import { DEFAULT_GAP } from '@extension/constants';
 // enums
 import { ConnectionTypeEnum } from '../../enums';
 
+// hooks
+import useAlgorandProviderConnector from '../../hooks/useAlgorandProviderConnector';
+import useAVMWebProviderConnector from '../../hooks/useAVMWebProviderConnector';
+import useUseWalletConnector from '../../hooks/useUseWalletConnector';
+
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import { INetwork } from '@extension/types';
-import { IAccountInformation } from '../../types';
+import type { INetwork } from '@extension/types';
+import type { IAccountInformation, IBaseTransactionProps } from '../../types';
 
 const App: FC = () => {
   const providers: SupportedProviders | null = useInitializeProviders({
@@ -56,6 +63,32 @@ const App: FC = () => {
     },
     providers: [{ id: PROVIDER_ID.KIBISIS }],
   });
+  const toast: CreateToastFnReturn = useToast({
+    duration: 3000,
+    isClosable: true,
+    position: 'top',
+  });
+  // hooks
+  const {
+    connectAction: algorandProviderConnectAction,
+    disconnectAction: algorandProviderDisconnectAction,
+    enabledAccounts: algorandProviderEnabledAccounts,
+    signMessageAction: algorandProviderSignMessageAction,
+    signTransactionsAction: algorandProviderSignTransactionsAction,
+  } = useAlgorandProviderConnector({ toast });
+  const {
+    connectAction: avmWebProviderConnectAction,
+    disconnectAction: avmWebProviderDisconnectAction,
+    enabledAccounts: avmWebProviderEnabledAccounts,
+    signMessageAction: avmWebProviderSignMessageAction,
+    signTransactionsAction: avmWebProviderSignTransactionsAction,
+  } = useAVMWebProviderConnector({ toast });
+  const {
+    connectAction: useWalletConnectAction,
+    disconnectAction: useWalletDisconnectAction,
+    enabledAccounts: useWalletEnabledAccounts,
+    signTransactionsAction: useWalletSignTransactionsAction,
+  } = useUseWalletConnector({ toast });
   // states
   const [connectionType, setConnectionType] =
     useState<ConnectionTypeEnum | null>(null);
@@ -75,26 +108,195 @@ const App: FC = () => {
       setSelectedAccount(account);
     }
   };
-  const handleConnectProvider = ({
-    accounts,
+  const handleConnect = async ({
     connectionType,
     network,
-  }: IConnectResult) => {
-    setEnabledAccounts(accounts);
+  }: IOnConnectParams) => {
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        await algorandProviderConnectAction(network);
+        break;
+      case ConnectionTypeEnum.AVMWebProvider:
+        await avmWebProviderConnectAction(network);
+        break;
+      case ConnectionTypeEnum.UseWallet:
+        await useWalletConnectAction(network);
+        break;
+      default:
+        break;
+    }
+
     setConnectionType(connectionType);
     setSelectedNetwork(network);
   };
-  const handleResetProvider = () => {
-    setEnabledAccounts([]);
+  const handleDisconnect = async () => {
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        await algorandProviderDisconnectAction();
+        break;
+      case ConnectionTypeEnum.AVMWebProvider:
+        await avmWebProviderDisconnectAction();
+        break;
+      case ConnectionTypeEnum.UseWallet:
+        await useWalletDisconnectAction();
+        break;
+      default:
+        break;
+    }
+
     setConnectionType(null);
     setSelectedNetwork(null);
   };
+  // renders
+  const renderContent = () => {
+    let signTransactionProps: IBaseTransactionProps;
+
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        signTransactionProps = {
+          account: selectedAccount,
+          connectionType,
+          network: selectedNetwork,
+          signTransactionsAction: algorandProviderSignTransactionsAction,
+        };
+
+        return (
+          <Tabs colorScheme="primaryLight" w="full">
+            <TabList>
+              <Tab>Payments</Tab>
+              <Tab>Assets</Tab>
+              <Tab>Atomic Txns</Tab>
+              <Tab>Apps</Tab>
+              <Tab>Keys</Tab>
+              <Tab>Sign Message</Tab>
+              <Tab>Import Account</Tab>
+            </TabList>
+
+            <TabPanels>
+              <PaymentActionsTab {...signTransactionProps} />
+
+              <AssetActionsTab {...signTransactionProps} />
+
+              <AtomicTransactionActionsTab {...signTransactionProps} />
+
+              <ApplicationActionsTab {...signTransactionProps} />
+
+              <KeyRegistrationActionsTab {...signTransactionProps} />
+
+              <SignMessageTab
+                account={selectedAccount}
+                signMessageAction={algorandProviderSignMessageAction}
+              />
+
+              <ImportAccountTab />
+            </TabPanels>
+          </Tabs>
+        );
+      case ConnectionTypeEnum.AVMWebProvider:
+        signTransactionProps = {
+          account: selectedAccount,
+          connectionType,
+          network: selectedNetwork,
+          signTransactionsAction: avmWebProviderSignTransactionsAction,
+        };
+
+        return (
+          <Tabs colorScheme="primaryLight" w="full">
+            <TabList>
+              <Tab>Payments</Tab>
+              <Tab>Assets</Tab>
+              <Tab>Atomic Txns</Tab>
+              <Tab>Apps</Tab>
+              <Tab>Keys</Tab>
+              <Tab>Sign Message</Tab>
+              <Tab>Import Account</Tab>
+            </TabList>
+
+            <TabPanels>
+              <PaymentActionsTab {...signTransactionProps} />
+
+              <AssetActionsTab {...signTransactionProps} />
+
+              <AtomicTransactionActionsTab {...signTransactionProps} />
+
+              <ApplicationActionsTab {...signTransactionProps} />
+
+              <KeyRegistrationActionsTab {...signTransactionProps} />
+
+              <SignMessageTab
+                account={selectedAccount}
+                signMessageAction={avmWebProviderSignMessageAction}
+              />
+
+              <ImportAccountTab />
+            </TabPanels>
+          </Tabs>
+        );
+      case ConnectionTypeEnum.UseWallet:
+        signTransactionProps = {
+          account: selectedAccount,
+          connectionType,
+          network: selectedNetwork,
+          signTransactionsAction: useWalletSignTransactionsAction,
+        };
+
+        return (
+          <Tabs colorScheme="primaryLight" w="full">
+            <TabList>
+              <Tab>Payments</Tab>
+              <Tab>Assets</Tab>
+              <Tab>Atomic Txns</Tab>
+              <Tab>Apps</Tab>
+              <Tab>Keys</Tab>
+              <Tab>Import Account</Tab>
+            </TabList>
+
+            <TabPanels>
+              <PaymentActionsTab {...signTransactionProps} />
+
+              <AssetActionsTab {...signTransactionProps} />
+
+              <AtomicTransactionActionsTab {...signTransactionProps} />
+
+              <ApplicationActionsTab {...signTransactionProps} />
+
+              <KeyRegistrationActionsTab {...signTransactionProps} />
+
+              <ImportAccountTab />
+            </TabPanels>
+          </Tabs>
+        );
+      default:
+        break;
+    }
+
+    return <ConnectionNotInitializedContent />;
+  };
 
   useEffect(() => {
-    if (enabledAccounts) {
-      setSelectedAccount(enabledAccounts[0] || null);
+    switch (connectionType) {
+      case ConnectionTypeEnum.AlgorandProvider:
+        setEnabledAccounts(algorandProviderEnabledAccounts);
+        break;
+      case ConnectionTypeEnum.AVMWebProvider:
+        setEnabledAccounts(avmWebProviderEnabledAccounts);
+        break;
+      case ConnectionTypeEnum.UseWallet:
+        setEnabledAccounts(useWalletEnabledAccounts);
+        break;
+      default:
+        setEnabledAccounts([]);
+        break;
     }
-  }, [enabledAccounts]);
+  }, [
+    algorandProviderEnabledAccounts,
+    avmWebProviderEnabledAccounts,
+    useWalletEnabledAccounts,
+  ]);
+  useEffect(
+    () => setSelectedAccount(enabledAccounts[0] || null),
+    [enabledAccounts]
+  );
 
   return (
     <UseWalletProvider value={providers}>
@@ -121,8 +323,9 @@ const App: FC = () => {
 
                 {/*connect menu*/}
                 <ConnectMenu
-                  onConnect={handleConnectProvider}
-                  onReset={handleResetProvider}
+                  onConnect={handleConnect}
+                  onDisconnect={handleDisconnect}
+                  toast={toast}
                 />
               </HStack>
 
@@ -153,62 +356,7 @@ const App: FC = () => {
               </HStack>
 
               {/*tabs*/}
-              <Tabs colorScheme="primaryLight" w="full">
-                <TabList>
-                  <Tab>Payments</Tab>
-                  <Tab>Assets</Tab>
-                  <Tab>Atomic Txns</Tab>
-                  <Tab>Apps</Tab>
-                  <Tab>Keys</Tab>
-                  <Tab>Sign Bytes</Tab>
-                  <Tab>Sign JWT</Tab>
-                  <Tab>Import Account</Tab>
-                </TabList>
-
-                <TabPanels>
-                  <PaymentActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <AssetActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <AtomicTransactionActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <ApplicationActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <KeyRegistrationActionsTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                    network={selectedNetwork}
-                  />
-
-                  <SignDataTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                  />
-
-                  <SignJwtTab
-                    account={selectedAccount}
-                    connectionType={connectionType}
-                  />
-
-                  <ImportAccountTab />
-                </TabPanels>
-              </Tabs>
+              {renderContent()}
             </VStack>
           </Flex>
         </Center>

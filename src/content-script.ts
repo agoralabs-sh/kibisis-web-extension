@@ -1,10 +1,9 @@
+import { AVMWebProvider } from '@agoralabs-sh/avm-web-provider';
 import browser from 'webextension-polyfill';
 
-// constants
-import { ARC_0027_CHANNEL_NAME } from '@common/constants';
-
 // services
-import ExternalMessageBroker from '@external/services/ExternalMessageBroker';
+import ClientMessageBroker from '@external/services/ClientMessageBroker';
+import LegacyClientMessageBroker from '@external/services/LegacyClientMessageBroker';
 
 // types
 import type { ILogger } from '@common/types';
@@ -14,30 +13,46 @@ import createLogger from '@common/utils/createLogger';
 import injectScript from '@external/utils/injectScript';
 
 (() => {
-  const channel: BroadcastChannel = new BroadcastChannel(ARC_0027_CHANNEL_NAME);
-  const logger: ILogger = createLogger(
-    __ENV__ === 'development' ? 'debug' : 'error'
-  );
-  const externalMessageBroker: ExternalMessageBroker =
-    new ExternalMessageBroker({
-      channel,
-      logger,
-    });
+  const debug: boolean = __ENV__ === 'development';
+  const avmWebProvider: AVMWebProvider = AVMWebProvider.init(__PROVIDER_ID__, {
+    debug,
+  });
+  const logger: ILogger = createLogger(debug ? 'debug' : 'error');
+  const clientMessageBroker: ClientMessageBroker = new ClientMessageBroker({
+    logger,
+  });
 
-  // listen to broadcast messages from the webpage
-  channel.onmessage = externalMessageBroker.onARC0027RequestMessage.bind(
-    externalMessageBroker
+  // handle requests from the webpage
+  avmWebProvider.onDisable(
+    clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
   );
-
-  // listen to incoming extension messages (from the background script / popup)
-  browser.runtime.onMessage.addListener(
-    externalMessageBroker.onARC0027ResponseMessage.bind(externalMessageBroker)
+  avmWebProvider.onDiscover(
+    clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
+  );
+  avmWebProvider.onEnable(
+    clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
+  );
+  avmWebProvider.onPostTransactions(
+    clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
+  );
+  avmWebProvider.onSignAndPostTransactions(
+    clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
+  );
+  avmWebProvider.onSignMessage(
+    clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
+  );
+  avmWebProvider.onSignTransactions(
+    clientMessageBroker.onRequestMessage.bind(clientMessageBroker)
   );
 
   /**
-   * deprecated - this is using algorand-provider, but will be phased out in favour of the broadcastchannel api
+   * deprecated - older versions of use-wallet will still use broadcastchannel messages
    */
+  LegacyClientMessageBroker.init({ logger });
 
+  /**
+   * deprecated - this is using algorand-provider, but will be phased out in favour of the new avm-web-provider
+   */
   // inject the web resources into the web page to initialize the window.algorand object
   injectScript(browser.runtime.getURL('legacy-provider.js'));
 })();

@@ -4,8 +4,8 @@ import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 import LegacyProvider from '@external/services/LegacyProvider';
 
 // types
-import { ILogger } from '@common/types';
-import { IWindow } from '@external/types';
+import type { ILogger } from '@common/types';
+import type { IWindow } from '@external/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';
@@ -27,9 +27,7 @@ import createLogger from '@common/utils/createLogger';
     (window as IWindow).algorand = new AlgorandProvider();
   }
 
-  legacyProvider = new LegacyProvider({
-    logger,
-  });
+  legacyProvider = new LegacyProvider();
 
   // add the wallet manager
   (window as IWindow).algorand?.addWallet(legacyProvider, {

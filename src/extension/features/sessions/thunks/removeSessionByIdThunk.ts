@@ -26,7 +26,7 @@ const removeSessionByIdThunk: AsyncThunk<
       `${removeSessionByIdThunk.name}: removing session "${id}" from storage`
     );
 
-    await sessionService.removeById(id);
+    await sessionService.removeByIds([id]);
 
     return id;
   }

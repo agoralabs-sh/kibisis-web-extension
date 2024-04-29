@@ -1,3 +1,5 @@
+import { ARC0027MethodEnum } from '@agoralabs-sh/avm-web-provider';
+
 // enums
 import { NetworkTypeEnum } from '../enums';
 
@@ -19,6 +21,7 @@ interface INetwork {
   genesisHash: string;
   genesisId: string;
   indexers: INode[];
+  methods: ARC0027MethodEnum[];
   namespace: IChainNamespace;
   nativeCurrency: INativeCurrency;
   nftExplorers: INFTExplorer[];

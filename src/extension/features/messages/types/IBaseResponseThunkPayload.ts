@@ -1,10 +1,14 @@
-// errors
-import { BaseSerializableARC0027Error } from '@common/errors';
+import {
+  BaseARC0027Error,
+  TRequestParams,
+} from '@agoralabs-sh/avm-web-provider';
 
-interface IBaseResponseThunkPayload {
-  error: BaseSerializableARC0027Error | null;
-  eventId: string;
-  originTabId: number;
+// types
+import type { IClientRequestEventPayload, IEvent } from '@extension/types';
+
+interface IBaseResponseThunkPayload<Params = TRequestParams> {
+  error: BaseARC0027Error | null;
+  event: IEvent<IClientRequestEventPayload<Params>>;
 }
 
 export default IBaseResponseThunkPayload;

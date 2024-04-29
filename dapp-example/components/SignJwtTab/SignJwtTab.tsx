@@ -24,10 +24,6 @@ import React, { ChangeEvent, FC, useState } from 'react';
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from 'react-icons/io5';
 import { v4 as uuid } from 'uuid';
 
-// components
-import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
-import ConnectionNotSupportedContent from '../ConnectionNotSupportedContent';
-
 // enums
 import { ConnectionTypeEnum } from '../../enums';
 
@@ -213,17 +209,9 @@ const SignJwtTab: FC<IProps> = ({ account, connectionType }: IProps) => {
   "sub": "${account.address}"
 }`);
   };
-  // renders
-  const renderContent = () => {
-    if (!connectionType) {
-      return <ConnectionNotInitializedContent />;
-    }
 
-    if (connectionType === ConnectionTypeEnum.UseWallet) {
-      return <ConnectionNotSupportedContent connectionType={connectionType} />;
-    }
-
-    return (
+  return (
+    <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
         {/*header*/}
         <VStack alignItems="flex-start" spacing={2} w="full">
@@ -353,10 +341,8 @@ const SignJwtTab: FC<IProps> = ({ account, connectionType }: IProps) => {
           </Button>
         </Grid>
       </VStack>
-    );
-  };
-
-  return <TabPanel w="full">{renderContent()}</TabPanel>;
+    </TabPanel>
+  );
 };
 
 export default SignJwtTab;

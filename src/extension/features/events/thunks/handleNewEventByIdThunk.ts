@@ -1,41 +1,45 @@
+import {
+  ARC0027MethodEnum,
+  IEnableParams,
+  ISignMessageParams,
+  ISignTransactionsParams,
+} from '@agoralabs-sh/avm-web-provider';
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
-import { EventTypeEnum, EventsThunkEnum } from '@extension/enums';
+import { EventsThunkEnum, EventTypeEnum } from '@extension/enums';
 
 // features
 import {
   setEnableRequest,
-  setSignBytesRequest,
-  setSignTxnsRequest,
+  setSignMessageRequest,
+  setSignTransactionsRequest,
 } from '../slice';
-
-// messages
-import {
-  ARC0027EnableRequestMessage,
-  ARC0027SignBytesRequestMessage,
-  ARC0027SignTxnsRequestMessage,
-} from '@common/messages';
 
 // services
 import EventQueueService from '@extension/services/EventQueueService';
 
 // types
-import { ILogger } from '@common/types';
-import { IClientEventPayload, IEvent, IMainRootState } from '@extension/types';
+import type { ILogger } from '@common/types';
+import type {
+  IBaseAsyncThunkConfig,
+  IClientRequestEventPayload,
+  IEvent,
+  TEventPayloads,
+} from '@extension/types';
 
 const handleNewEventByIdThunk: AsyncThunk<
   void, // return
   string, // args
-  Record<string, never>
-> = createAsyncThunk<void, string, { state: IMainRootState }>(
+  IBaseAsyncThunkConfig
+> = createAsyncThunk<void, string, IBaseAsyncThunkConfig>(
   EventsThunkEnum.HandleNewEventById,
   async (eventId, { dispatch, getState }) => {
     const logger: ILogger = getState().system.logger;
     const eventQueueService: EventQueueService = new EventQueueService({
       logger,
     });
-    const event: IEvent<IClientEventPayload> | null =
+    const event: IEvent<TEventPayloads> | null =
       await eventQueueService.getById(eventId);
 
     if (!event) {
@@ -47,40 +51,40 @@ const handleNewEventByIdThunk: AsyncThunk<
     }
 
     switch (event.type) {
-      case EventTypeEnum.EnableRequest:
-        dispatch(
-          setEnableRequest({
-            clientInfo: event.payload.clientInfo,
-            eventId: event.id,
-            originMessage: event.payload
-              .originMessage as ARC0027EnableRequestMessage,
-            originTabId: event.payload.originTabId,
-          })
-        );
+      case EventTypeEnum.ClientRequest:
+        if (event.payload.message.method === ARC0027MethodEnum.Enable) {
+          dispatch(
+            setEnableRequest(
+              event as IEvent<IClientRequestEventPayload<IEnableParams>>
+            )
+          );
 
-        break;
-      case EventTypeEnum.SignBytesRequest:
-        dispatch(
-          setSignBytesRequest({
-            clientInfo: event.payload.clientInfo,
-            eventId: event.id,
-            originMessage: event.payload
-              .originMessage as ARC0027SignBytesRequestMessage,
-            originTabId: event.payload.originTabId,
-          })
-        );
+          return;
+        }
 
-        break;
-      case EventTypeEnum.SignTxnsRequest:
-        dispatch(
-          setSignTxnsRequest({
-            clientInfo: event.payload.clientInfo,
-            eventId: event.id,
-            originMessage: event.payload
-              .originMessage as ARC0027SignTxnsRequestMessage,
-            originTabId: event.payload.originTabId,
-          })
-        );
+        if (event.payload.message.method === ARC0027MethodEnum.SignMessage) {
+          dispatch(
+            setSignMessageRequest(
+              event as IEvent<IClientRequestEventPayload<ISignMessageParams>>
+            )
+          );
+
+          return;
+        }
+
+        if (
+          event.payload.message.method === ARC0027MethodEnum.SignTransactions
+        ) {
+          dispatch(
+            setSignTransactionsRequest(
+              event as IEvent<
+                IClientRequestEventPayload<ISignTransactionsParams>
+              >
+            )
+          );
+
+          return;
+        }
 
         break;
       default:

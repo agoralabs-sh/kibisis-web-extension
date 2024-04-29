@@ -1,18 +1,16 @@
+import type {
+  IEnableParams,
+  ISignMessageParams,
+  ISignTransactionsParams,
+} from '@agoralabs-sh/avm-web-provider';
 import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
-// messages
-import {
-  ARC0027EnableRequestMessage,
-  ARC0027SignBytesRequestMessage,
-  ARC0027SignTxnsRequestMessage,
-} from '@common/messages';
-
 // types
-import { IClientRequest } from '@extension/types';
-import { IEventsState } from './types';
+import type { IClientRequestEventPayload, IEvent } from '@extension/types';
+import type { IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -22,26 +20,35 @@ const slice = createSlice({
   name: StoreNameEnum.Events,
   reducers: {
     setEnableRequest: (
-      state: Draft<IEventsState>,
-      action: PayloadAction<IClientRequest<ARC0027EnableRequestMessage> | null>
+      state: Draft<IState>,
+      action: PayloadAction<IEvent<
+        IClientRequestEventPayload<IEnableParams>
+      > | null>
     ) => {
       state.enableRequest = action.payload;
     },
-    setSignBytesRequest: (
-      state: Draft<IEventsState>,
-      action: PayloadAction<IClientRequest<ARC0027SignBytesRequestMessage> | null>
+    setSignMessageRequest: (
+      state: Draft<IState>,
+      action: PayloadAction<IEvent<
+        IClientRequestEventPayload<ISignMessageParams>
+      > | null>
     ) => {
-      state.signBytesRequest = action.payload;
+      state.signMessageRequest = action.payload;
     },
-    setSignTxnsRequest: (
-      state: Draft<IEventsState>,
-      action: PayloadAction<IClientRequest<ARC0027SignTxnsRequestMessage> | null>
+    setSignTransactionsRequest: (
+      state: Draft<IState>,
+      action: PayloadAction<IEvent<
+        IClientRequestEventPayload<ISignTransactionsParams>
+      > | null>
     ) => {
-      state.signTxnsRequest = action.payload;
+      state.signTransactionsRequest = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setEnableRequest, setSignBytesRequest, setSignTxnsRequest } =
-  slice.actions;
+export const {
+  setEnableRequest,
+  setSignMessageRequest,
+  setSignTransactionsRequest,
+} = slice.actions;

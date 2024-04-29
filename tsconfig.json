@@ -30,6 +30,7 @@
       "@extension/contracts/*": ["src/extension/contracts/*"],
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
+      "@extension/events": ["src/extension/events"],
       "@extension/features/accounts": ["src/extension/features/accounts"],
       "@extension/features/add-assets": ["src/extension/features/add-assets"],
       "@extension/features/arc0072-assets": [
@@ -89,7 +90,5 @@
     "strictPropertyInitialization": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "ES5"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/**/*.test.*"]
+  }
 }

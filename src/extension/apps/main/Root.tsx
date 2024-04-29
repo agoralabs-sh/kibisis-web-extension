@@ -1,11 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  NavigateFunction,
-  Outlet,
-  useLoaderData,
-  useNavigate,
-} from 'react-router-dom';
+import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
 
 // components
 import MainLayout from '@extension/components/MainLayout';
@@ -23,8 +18,8 @@ import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import {
   setEnableRequest,
-  setSignBytesRequest,
-  setSignTxnsRequest,
+  setSignMessageRequest,
+  setSignTransactionsRequest,
 } from '@extension/features/events';
 import {
   fetchTransactionParamsFromStorageThunk,
@@ -58,8 +53,8 @@ import EnableModal from '@extension/modals/EnableModal';
 import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
 import ScanQRCodeModal from '@extension/modals/ScanQRCodeModal';
 import SendAssetModal from '@extension/modals/SendAssetModal';
-import SignBytesModal from '@extension/modals/SignBytesModal';
-import SignTxnsModal from '@extension/modals/SignTxnsModal';
+import SignMessageModal from '@extension/modals/SignMessageModal';
+import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 import WalletConnectModal from '@extension/modals/WalletConnectModal';
 
 // selectors
@@ -71,7 +66,7 @@ import {
 } from '@extension/selectors';
 
 // types
-import {
+import type {
   IAccount,
   IAppThunkDispatch,
   INetwork,
@@ -93,8 +88,10 @@ const Root: FC = () => {
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
-  const handleSignBytesModalClose = () => dispatch(setSignBytesRequest(null));
-  const handleSignTxnsModalClose = () => dispatch(setSignTxnsRequest(null));
+  const handleSignMessageModalClose = () =>
+    dispatch(setSignMessageRequest(null));
+  const handleSignTransactionsModalClose = () =>
+    dispatch(setSignTransactionsRequest(null));
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
 
@@ -142,8 +139,8 @@ const Root: FC = () => {
     <>
       <ConfirmModal onClose={handleConfirmClose} />
       <EnableModal onClose={handleEnableModalClose} />
-      <SignTxnsModal onClose={handleSignTxnsModalClose} />
-      <SignBytesModal onClose={handleSignBytesModalClose} />
+      <SignMessageModal onClose={handleSignMessageModalClose} />
+      <SignTransactionsModal onClose={handleSignTransactionsModalClose} />
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />

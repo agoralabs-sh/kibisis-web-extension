@@ -211,7 +211,7 @@ const configs: (
           {
             loader: 'ts-loader',
             options: {
-              configFile: resolve(process.cwd(), 'tsconfig.json'),
+              configFile: resolve(process.cwd(), 'tsconfig.build.json'),
             },
           },
         ],
@@ -239,7 +239,7 @@ const configs: (
           {
             loader: 'ts-loader',
             options: {
-              configFile: resolve(process.cwd(), 'tsconfig.json'),
+              configFile: resolve(process.cwd(), 'tsconfig.build.json'),
               transpileOnly: true,
             },
           },
@@ -379,7 +379,7 @@ const configs: (
               {
                 loader: 'ts-loader',
                 options: {
-                  configFile: resolve(process.cwd(), 'tsconfig.json'),
+                  configFile: resolve(process.cwd(), 'tsconfig.example.json'),
                   transpileOnly: true,
                 },
               },

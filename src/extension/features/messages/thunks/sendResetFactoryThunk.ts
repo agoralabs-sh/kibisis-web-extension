@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { MessagesThunkEnum } from '@extension/enums';
 
 // messages
-import { InternalFactoryResetMessage } from '@common/messages';
+import { ProviderFactoryResetMessage } from '@common/messages';
 
 // types
 import { IMainRootState } from '@extension/types';
@@ -17,7 +17,7 @@ const sendResetFactoryThunk: AsyncThunk<
 > = createAsyncThunk<void, undefined, { state: IMainRootState }>(
   MessagesThunkEnum.SendFactoryReset,
   async () => {
-    await browser.runtime.sendMessage(new InternalFactoryResetMessage());
+    await browser.runtime.sendMessage(new ProviderFactoryResetMessage());
   }
 );
 
