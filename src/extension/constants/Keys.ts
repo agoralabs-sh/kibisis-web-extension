@@ -12,6 +12,7 @@ export const PRIVATE_KEY_ITEM_KEY_PREFIX: string = 'private_key_';
 export const SETTINGS_ADVANCED_KEY: string = 'settings_advanced';
 export const SETTINGS_APPEARANCE_KEY: string = 'settings_appearance';
 export const SETTINGS_GENERAL_KEY: string = 'settings_general';
+export const SETTINGS_PRIVACY_KEY: string = 'settings_privacy';
 export const SETTINGS_SECURITY_KEY: string = 'settings_security';
 export const SESSION_ITEM_KEY_PREFIX: string = 'session_';
 export const STANDARD_ASSETS_KEY_PREFIX: string = 'standard_assets_';

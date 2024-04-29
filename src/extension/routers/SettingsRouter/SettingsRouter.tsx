@@ -7,6 +7,7 @@ import {
   ADVANCED_ROUTE,
   APPEARANCE_ROUTE,
   GENERAL_ROUTE,
+  PRIVACY_ROUTE,
   SECURITY_ROUTE,
   SESSIONS_ROUTE,
 } from '@extension/constants';
@@ -16,6 +17,7 @@ import AboutSettingsPage from '@extension/pages/AboutSettingsPage';
 import AdvancedSettingsPage from '@extension/pages/AdvancedSettingsPage';
 import AppearanceSettingsPage from '@extension/pages/AppearanceSettingsPage';
 import GeneralSettingsPage from '@extension/pages/GeneralSettingsPage';
+import PrivacySettingsPage from '@extension/pages/PrivacySettingsPage';
 import SettingsIndexPage from '@extension/pages/SettingsIndexPage';
 import SessionsSettingsPage from '@extension/pages/SessionsSettingsPage';
 
@@ -27,6 +29,7 @@ const SettingsRouter: FC = () => (
     <Route element={<SettingsIndexPage />} path="/" />
     <Route element={<GeneralSettingsPage />} path={GENERAL_ROUTE} />
     <Route element={<SecuritySettingsRouter />} path={`${SECURITY_ROUTE}/*`} />
+    <Route element={<PrivacySettingsPage />} path={PRIVACY_ROUTE} />
     <Route element={<AppearanceSettingsPage />} path={APPEARANCE_ROUTE} />
     <Route element={<SessionsSettingsPage />} path={SESSIONS_ROUTE} />
     <Route element={<AdvancedSettingsPage />} path={ADVANCED_ROUTE} />

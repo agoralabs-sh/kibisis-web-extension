@@ -87,6 +87,7 @@ export type { default as IPasswordLock } from './IPasswordLock';
 export type { default as IPasswordTag } from './IPasswordTag';
 export type { default as IPaymentTransaction } from './IPaymentTransaction';
 export type { default as IPendingActionMeta } from './IPendingActionMeta';
+export type { default as IPrivacySettings } from './IPrivacySettings';
 export type { default as IPrivateKey } from './IPrivateKey';
 export type { default as IRegistrationAddAccountCompleteResult } from './IRegistrationAddAccountCompleteResult';
 export type { default as IRegistrationRootState } from './IRegistrationRootState';

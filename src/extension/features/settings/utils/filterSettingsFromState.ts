@@ -11,12 +11,14 @@ export default function filterSettingsFromState({
   advanced,
   appearance,
   general,
+  privacy,
   security,
 }: ISettingsState): ISettings {
   return {
     advanced,
     appearance,
     general,
+    privacy,
     security,
   };
 }
