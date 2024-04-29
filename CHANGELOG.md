@@ -1,3 +1,10 @@
+# [1.15.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.1...v1.15.0-beta.1) (2024-04-29)
+
+
+### Features
+
+*  allow dapp to remove sessions ([#211](https://github.com/agoralabs-sh/kibisis-web-extension/issues/211)) ([c3c45fb](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3c45fb6cd36d725ea00464eac58327c5116567f))
+
 ## [1.14.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.0...v1.14.1) (2024-03-28)
 
 
