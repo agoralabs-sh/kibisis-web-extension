@@ -1,12 +1,15 @@
 import {
-  ARC0027MethodEnum,
   ARC0027MethodNotSupportedError,
+  ARC0027MethodTimedOutError,
   ARC0027UnknownError,
   IAVMWebProviderCallbackOptions,
   DEFAULT_REQUEST_TIMEOUT,
   TResponseResults,
 } from '@agoralabs-sh/avm-web-provider';
 import browser from 'webextension-polyfill';
+
+// constants
+import { SUPPORTED_METHODS } from '@common/constants';
 
 // messages
 import { ClientRequestMessage, ClientResponseMessage } from '@common/messages';
@@ -32,7 +35,7 @@ export default class ClientMessageBroker {
   private async sendRequestToExtensionWithTimeout(
     requestMessage: IAVMWebProviderCallbackOptions
   ): Promise<TResponseResults> {
-    return new Promise<TResponseResults>(async (resolve, reject) => {
+    return new Promise<TResponseResults>((resolve, reject) => {
       const listener = (message: ClientResponseMessage<TResponseResults>) => {
         // if the response's request id does not match the intended request, just ignore
         if (message.requestId !== requestMessage.id) {
@@ -66,13 +69,19 @@ export default class ClientMessageBroker {
       browser.runtime.onMessage.addListener(listener.bind(this));
 
       // remove listener after a timeout
-      timer = window.setTimeout(
-        () => browser.runtime.onMessage.removeListener(listener.bind(this)),
-        DEFAULT_REQUEST_TIMEOUT
-      );
+      timer = window.setTimeout(() => {
+        browser.runtime.onMessage.removeListener(listener.bind(this));
+
+        return reject(
+          new ARC0027MethodTimedOutError({
+            method: requestMessage.method,
+            providerId: __PROVIDER_ID__,
+          })
+        );
+      }, DEFAULT_REQUEST_TIMEOUT);
 
       // send the message to the background script/popups
-      await browser.runtime.sendMessage(
+      browser.runtime.sendMessage(
         new ClientRequestMessage({
           clientInfo: createClientInformation(),
           id: requestMessage.id,
@@ -96,18 +105,13 @@ export default class ClientMessageBroker {
       `${ClientMessageBroker.name}#${_functionName} "${message.method}" request received`
     );
 
-    switch (message.method) {
-      case ARC0027MethodEnum.Disable:
-      case ARC0027MethodEnum.Discover:
-      case ARC0027MethodEnum.Enable:
-      case ARC0027MethodEnum.SignMessage:
-      case ARC0027MethodEnum.SignTransactions:
-        return await this.sendRequestToExtensionWithTimeout(message);
-      default:
-        throw new ARC0027MethodNotSupportedError({
-          method: message.method,
-          providerId: __PROVIDER_ID__,
-        });
+    if (!SUPPORTED_METHODS.includes(message.method)) {
+      throw new ARC0027MethodNotSupportedError({
+        method: message.method,
+        providerId: __PROVIDER_ID__,
+      });
     }
+
+    return await this.sendRequestToExtensionWithTimeout(message);
   }
 }

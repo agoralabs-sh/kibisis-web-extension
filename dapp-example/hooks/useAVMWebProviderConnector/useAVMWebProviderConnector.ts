@@ -102,7 +102,7 @@ export default function useAVMWebProviderConnector({
     message: string,
     signer?: string
   ): Promise<ISignMessageActionResult> => {
-    return new Promise<ISignMessageActionResult>(async (resolve, reject) => {
+    return new Promise<ISignMessageActionResult>((resolve, reject) => {
       let _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
       let listenerId: string;
       let timeoutId = window.setTimeout(() => {
@@ -160,7 +160,7 @@ export default function useAVMWebProviderConnector({
   const signTransactionsAction = async (
     transactions: IARC0001Transaction[]
   ) => {
-    return new Promise<(string | null)[]>(async (resolve, reject) => {
+    return new Promise<(string | null)[]>((resolve, reject) => {
       let _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
       let listenerId: string;
       let timeoutId = window.setTimeout(() => {

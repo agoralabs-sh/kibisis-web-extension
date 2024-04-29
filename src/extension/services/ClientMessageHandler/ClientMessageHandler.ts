@@ -33,7 +33,6 @@ import { networks } from '@extension/config';
 import { HOST, ICON_URI } from '@common/constants';
 
 // enums
-import { ProviderMessageReferenceEnum } from '@common/enums';
 import { AppTypeEnum, EventTypeEnum } from '@extension/enums';
 
 // events
@@ -41,7 +40,6 @@ import { Event } from '@extension/events';
 
 // messages
 import {
-  BaseProviderMessage,
   ClientRequestMessage,
   ClientResponseMessage,
   ProviderEventAddedMessage,
@@ -51,7 +49,6 @@ import {
 import AccountService from '../AccountService';
 import AppWindowManagerService from '../AppWindowManagerService';
 import EventQueueService from '../EventQueueService';
-import PasswordLockService from '../PasswordLockService';
 import PrivateKeyService from '../PrivateKeyService';
 import SessionService from '../SessionService';
 import SettingsService from '../SettingsService';
@@ -77,17 +74,15 @@ import isNetworkSupported from '@extension/utils/isNetworkSupported';
 import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
-export default class BackgroundMessageHandler {
+export default class ClientMessageHandler {
   // private variables
   private readonly accountService: AccountService;
   private readonly appWindowManagerService: AppWindowManagerService;
   private readonly logger: ILogger | null;
   private readonly eventQueueService: EventQueueService;
-  private readonly passwordLockService: PasswordLockService;
   private readonly privateKeyService: PrivateKeyService;
   private readonly sessionService: SessionService;
   private readonly settingsService: SettingsService;
-  private readonly storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
     const storageManager: StorageManager = new StorageManager();
@@ -103,9 +98,6 @@ export default class BackgroundMessageHandler {
       logger,
     });
     this.logger = logger || null;
-    this.passwordLockService = new PasswordLockService({
-      logger,
-    });
     this.privateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
@@ -118,7 +110,6 @@ export default class BackgroundMessageHandler {
       logger,
       storageManager,
     });
-    this.storageManager = storageManager;
   }
 
   /**
@@ -186,7 +177,7 @@ export default class BackgroundMessageHandler {
     // get the network if a genesis hash is present
     if (!network) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: network not found`
+        `${ClientMessageHandler.name}#${_functionName}: network not found`
       );
 
       // send the response to the web page (via the content script)
@@ -224,7 +215,7 @@ export default class BackgroundMessageHandler {
 
     this.logger?.debug(
       `${
-        BackgroundMessageHandler.name
+        ClientMessageHandler.name
       }#${_functionName}: removing sessions [${sessionIds
         .map((value) => `"${value}"`)
         .join(',')}] on host "${message.clientInfo.host}" for network "${
@@ -269,16 +260,13 @@ export default class BackgroundMessageHandler {
           host: HOST,
           icon: ICON_URI,
           name: __APP_TITLE__,
-          networks: supportedNetworks.map(({ genesisHash, genesisId }) => ({
-            genesisHash,
-            genesisId,
-            methods: [
-              ARC0027MethodEnum.Enable,
-              ARC0027MethodEnum.Disable,
-              ARC0027MethodEnum.SignMessage,
-              ARC0027MethodEnum.SignTransactions,
-            ],
-          })),
+          networks: supportedNetworks.map(
+            ({ genesisHash, genesisId, methods }) => ({
+              genesisHash,
+              genesisId,
+              methods,
+            })
+          ),
           providerId: __PROVIDER_ID__,
         },
       }),
@@ -306,7 +294,7 @@ export default class BackgroundMessageHandler {
         ))
       ) {
         this.logger?.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}: genesis hash "${message.params.genesisHash}" is not supported`
+          `${ClientMessageHandler.name}#${_functionName}: genesis hash "${message.params.genesisHash}" is not supported`
         );
 
         // send the response to the web page (via the content script)
@@ -349,7 +337,7 @@ export default class BackgroundMessageHandler {
         };
 
         this.logger?.debug(
-          `${BackgroundMessageHandler.name}#${_functionName}: found session "${session.id}" updating`
+          `${ClientMessageHandler.name}#${_functionName}: found session "${session.id}" updating`
         );
 
         session = await this.sessionService.save(session);
@@ -405,71 +393,6 @@ export default class BackgroundMessageHandler {
     );
   }
 
-  private async handleFactoryResetMessage(): Promise<void> {
-    const backgroundAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.BackgroundApp);
-    const mainAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
-
-    // remove the main app if it exists
-    if (mainAppWindows.length > 0) {
-      await Promise.all(
-        mainAppWindows.map(
-          async (value) => await browser.windows.remove(value.windowId)
-        )
-      );
-    }
-
-    // remove the background apps if they exist
-    if (backgroundAppWindows.length > 0) {
-      await Promise.all(
-        backgroundAppWindows.map(
-          async (value) => await browser.windows.remove(value.windowId)
-        )
-      );
-    }
-
-    // remove everything from storage
-    await this.storageManager.removeAll();
-  }
-
-  private async handlePasswordLockClearMessage(): Promise<void> {
-    const _functionName: string = 'handlePasswordLockClearMessage';
-
-    await this.passwordLockService.clearAlarm();
-
-    this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}: password lock cleared`
-    );
-  }
-
-  private async handleRegistrationCompletedMessage(): Promise<void> {
-    const mainAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
-    const registrationAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.RegistrationApp);
-
-    // if there is no main app windows, create a new one
-    if (mainAppWindows.length <= 0) {
-      await this.appWindowManagerService.createWindow({
-        type: AppTypeEnum.MainApp,
-        ...(registrationAppWindows[0] && {
-          left: registrationAppWindows[0].left,
-          top: registrationAppWindows[0].top,
-        }),
-      });
-    }
-
-    // if registration app windows exist remove them
-    if (registrationAppWindows.length > 0) {
-      await Promise.all(
-        registrationAppWindows.map(
-          async (value) => await browser.windows.remove(value.windowId)
-        )
-      );
-    }
-  }
-
   private async handleSignMessageRequestMessage(
     message: ClientRequestMessage<ISignMessageParams>,
     originTabId: number
@@ -498,7 +421,7 @@ export default class BackgroundMessageHandler {
     // if the app has not been enabled
     if (filteredSessions.length <= 0) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: no sessions found for the "${message.method}" request`
+        `${ClientMessageHandler.name}#${_functionName}: no sessions found for the "${message.method}" request`
       );
 
       // send the response to the web page (via the content script)
@@ -528,7 +451,7 @@ export default class BackgroundMessageHandler {
       !authorizedAddresses.find((value) => value === message.params?.signer)
     ) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: signer "${message.params.signer}" is not authorized`
+        `${ClientMessageHandler.name}#${_functionName}: signer "${message.params.signer}" is not authorized`
       );
 
       // send the response to the web page (via the content script)
@@ -595,7 +518,7 @@ export default class BackgroundMessageHandler {
       errorMessage = `failed to decode transactions: ${error.message}`;
 
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: ${errorMessage}`
+        `${ClientMessageHandler.name}#${_functionName}: ${errorMessage}`
       );
 
       // send the response to the web page (via the content script)
@@ -618,7 +541,7 @@ export default class BackgroundMessageHandler {
       errorMessage = `the supplied transactions are invalid and do not conform to the arc-0001 group validation, please https://arc.algorand.foundation/ARCs/arc-0001#group-validation on how to correctly build transactions`;
 
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: ${errorMessage}`
+        `${ClientMessageHandler.name}#${_functionName}: ${errorMessage}`
       );
 
       // send the response to the web page (via the content script)
@@ -648,7 +571,7 @@ export default class BackgroundMessageHandler {
     if (unsupportedTransactionsByNetwork.length > 0) {
       this.logger?.debug(
         `${
-          BackgroundMessageHandler.name
+          ClientMessageHandler.name
         }#${_functionName}: transactions [${unsupportedTransactionsByNetwork
           .map((value) => `"${value.txID()}"`)
           .join(',')}] contain genesis hashes that are not supported`
@@ -683,7 +606,7 @@ export default class BackgroundMessageHandler {
     // if the app has not been enabled
     if (filteredSessions.length <= 0) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: no sessions found for sign txns request`
+        `${ClientMessageHandler.name}#${_functionName}: no sessions found for sign txns request`
       );
 
       // send the response to the web page
@@ -738,7 +661,7 @@ export default class BackgroundMessageHandler {
       )
     ) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: client request "${event.payload.message.id}" already exists ignoring`
+        `${ClientMessageHandler.name}#${_functionName}: client request "${event.payload.message.id}" already exists ignoring`
       );
 
       return;
@@ -748,7 +671,7 @@ export default class BackgroundMessageHandler {
     await this.appWindowManagerService.hydrateAppWindows();
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}: saving event "${event.type}" to event queue`
+      `${ClientMessageHandler.name}#${_functionName}: saving event "${event.type}" to event queue`
     );
 
     // save event to the queue
@@ -757,7 +680,7 @@ export default class BackgroundMessageHandler {
     // if a main app is open, post that a new event has been added to the queue
     if (mainAppWindows.length > 0) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: main app window open, posting that event "${event.id}" has been added to the queue`
+        `${ClientMessageHandler.name}#${_functionName}: main app window open, posting that event "${event.id}" has been added to the queue`
       );
 
       return await browser.runtime.sendMessage(
@@ -766,7 +689,7 @@ export default class BackgroundMessageHandler {
     }
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}: main app window not open, opening background app window for "${event.type}" event`
+      `${ClientMessageHandler.name}#${_functionName}: main app window not open, opening background app window for "${event.type}" event`
     );
 
     await this.appWindowManagerService.createWindow({
@@ -784,26 +707,30 @@ export default class BackgroundMessageHandler {
     const _functionName: string = 'sendResponse';
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}: sending "${message.method}" response to tab "${originTabId}"`
+      `${ClientMessageHandler.name}#${_functionName}: sending "${message.method}" response to tab "${originTabId}"`
     );
 
     // send the response to the web page, via the content script
     return await browser.tabs.sendMessage(originTabId, message);
   }
 
-  private async onClientRequestMessage(
+  /**
+   * public functions
+   */
+
+  public async onMessage(
     message: ClientRequestMessage<TRequestParams>,
-    originTabId?: number
+    sender: Runtime.MessageSender
   ): Promise<void> {
-    const _functionName: string = 'onClientRequestMessage';
+    const _functionName: string = 'onMessage';
 
     this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}: "${message.method}" message received`
+      `${ClientMessageHandler.name}#${_functionName}: "${message.method}" message received`
     );
 
-    if (!originTabId) {
+    if (!sender.tab?.id) {
       this.logger?.debug(
-        `${BackgroundMessageHandler.name}#${_functionName}: unknown sender for "${message.method}" message, ignoring`
+        `${ClientMessageHandler.name}#${_functionName}: unknown sender for "${message.method}" message, ignoring`
       );
 
       return;
@@ -813,67 +740,30 @@ export default class BackgroundMessageHandler {
       case ARC0027MethodEnum.Disable:
         return await this.handleDisableRequestMessage(
           message as ClientRequestMessage<IDisableParams>,
-          originTabId
+          sender.tab.id
         );
       case ARC0027MethodEnum.Discover:
         return await this.handleDiscoverRequestMessage(
           message as ClientRequestMessage<IDiscoverParams>,
-          originTabId
+          sender.tab.id
         );
       case ARC0027MethodEnum.Enable:
         return await this.handleEnableRequestMessage(
           message as ClientRequestMessage<IEnableParams>,
-          originTabId
+          sender.tab.id
         );
       case ARC0027MethodEnum.SignMessage:
         return await this.handleSignMessageRequestMessage(
           message as ClientRequestMessage<ISignMessageParams>,
-          originTabId
+          sender.tab.id
         );
       case ARC0027MethodEnum.SignTransactions:
         return await this.handleSignTransactionsRequestMessage(
           message as ClientRequestMessage<ISignTransactionsParams>,
-          originTabId
+          sender.tab.id
         );
       default:
         break;
     }
-  }
-
-  private async onProviderMessage(message: BaseProviderMessage): Promise<void> {
-    const _functionName: string = 'onProviderMessage';
-
-    this.logger?.debug(
-      `${BackgroundMessageHandler.name}#${_functionName}: message "${message.reference}" received`
-    );
-
-    switch (message.reference) {
-      case ProviderMessageReferenceEnum.FactoryReset:
-        return await this.handleFactoryResetMessage();
-      case ProviderMessageReferenceEnum.PasswordLockClear:
-        return this.handlePasswordLockClearMessage();
-      case ProviderMessageReferenceEnum.RegistrationCompleted:
-        return await this.handleRegistrationCompletedMessage();
-      default:
-        break;
-    }
-  }
-
-  /**
-   * public functions
-   */
-
-  public async onMessage(
-    message: ClientRequestMessage<TRequestParams> | BaseProviderMessage,
-    sender: Runtime.MessageSender
-  ): Promise<void> {
-    if ((message as BaseProviderMessage).reference) {
-      return await this.onProviderMessage(message as BaseProviderMessage);
-    }
-
-    return await this.onClientRequestMessage(
-      message as ClientRequestMessage<TRequestParams>,
-      sender.tab?.id
-    );
   }
 }

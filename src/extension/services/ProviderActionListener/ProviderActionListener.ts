@@ -20,7 +20,7 @@ import StorageManager from '../StorageManager';
 import type { IBaseOptions, ILogger } from '@common/types';
 import type { IAppWindow, ISettings } from '@extension/types';
 
-export default class BackgroundEventListener {
+export default class ProviderActionListener {
   // private variables
   private readonly appWindowManagerService: AppWindowManagerService;
   private isClearingPasswordLockAlarm: boolean;
@@ -95,7 +95,7 @@ export default class BackgroundEventListener {
     const _functionName: string = 'onAlarm';
 
     this.logger?.debug(
-      `${BackgroundEventListener.name}#${_functionName}(): alarm "${PASSWORD_LOCK_ALARM}" fired`
+      `${ProviderActionListener.name}#${_functionName}(): alarm "${PASSWORD_LOCK_ALARM}" fired`
     );
 
     switch (alarm.name) {
@@ -118,7 +118,7 @@ export default class BackgroundEventListener {
     let registrationAppWindows: IAppWindow[];
 
     this.logger?.debug(
-      `${BackgroundEventListener.name}#${_functionName}(): browser extension clicked`
+      `${ProviderActionListener.name}#${_functionName}(): browser extension clicked`
     );
 
     // remove any closed windows
@@ -132,7 +132,7 @@ export default class BackgroundEventListener {
       // if there is a registration app window open, bring it to focus
       if (registrationAppWindows.length > 0) {
         this.logger?.debug(
-          `${BackgroundEventListener.name}#${_functionName}(): no account detected and previous registration app window "${registrationAppWindows[0].windowId}" already open, bringing to focus`
+          `${ProviderActionListener.name}#${_functionName}(): no account detected and previous registration app window "${registrationAppWindows[0].windowId}" already open, bringing to focus`
         );
 
         await browser.windows.update(registrationAppWindows[0].windowId, {
@@ -143,7 +143,7 @@ export default class BackgroundEventListener {
       }
 
       this.logger?.debug(
-        `${BackgroundEventListener.name}#${_functionName}(): no account detected and no main app window open, creating an new one`
+        `${ProviderActionListener.name}#${_functionName}(): no account detected and no main app window open, creating an new one`
       );
 
       // remove everything from storage
@@ -164,7 +164,7 @@ export default class BackgroundEventListener {
     // if there is a main app window open, bring it to focus
     if (mainAppWindows.length > 0) {
       this.logger?.debug(
-        `${BackgroundEventListener.name}#${_functionName}(): previous account detected and previous main app window "${mainAppWindows[0].windowId}" already open, bringing to focus`
+        `${ProviderActionListener.name}#${_functionName}(): previous account detected and previous main app window "${mainAppWindows[0].windowId}" already open, bringing to focus`
       );
 
       await browser.windows.update(mainAppWindows[0].windowId, {
@@ -175,7 +175,7 @@ export default class BackgroundEventListener {
     }
 
     this.logger?.debug(
-      `${BackgroundEventListener.name}#${_functionName}(): previous account detected and no main app window open, creating an new one`
+      `${ProviderActionListener.name}#${_functionName}(): previous account detected and no main app window open, creating an new one`
     );
 
     // if there is no main app window up, we can open the app
@@ -193,7 +193,7 @@ export default class BackgroundEventListener {
     if (mainWindow) {
       if (windowId === mainWindow.id) {
         this.logger?.debug(
-          `${BackgroundEventListener.name}#${_functionName}: main window with id "${windowId}" has focus`
+          `${ProviderActionListener.name}#${_functionName}: main window with id "${windowId}" has focus`
         );
 
         if (!this.isClearingPasswordLockAlarm) {
@@ -209,7 +209,7 @@ export default class BackgroundEventListener {
       }
 
       this.logger?.debug(
-        `${BackgroundEventListener.name}#${_functionName}: main window has lost focus to window with id "${windowId}"`
+        `${ProviderActionListener.name}#${_functionName}: main window has lost focus to window with id "${windowId}"`
       );
 
       passwordLockAlarm = await this.passwordLockService.getAlarm();
@@ -245,7 +245,7 @@ export default class BackgroundEventListener {
     // remove the app window from storage
     if (appWindow) {
       this.logger?.debug(
-        `${BackgroundEventListener.name}#${_functionName}(): removed "${appWindow.type}" window`
+        `${ProviderActionListener.name}#${_functionName}(): removed "${appWindow.type}" window`
       );
 
       await this.appWindowManagerService.removeById(windowId);
