@@ -64,6 +64,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+import ActionTrackingService from '@extension/services/ActionTrackingService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -144,6 +145,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
   };
   const handleSignClick = async () => {
     const _functionName: string = 'handleSignClick';
+    let actionTrackingService: ActionTrackingService;
     let signature: Uint8Array;
     let signer: string;
 
@@ -177,6 +179,13 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       logger.debug(
         `${SignMessageModal.name}#${_functionName}: signed message for signer "${signer}"`
       );
+
+      actionTrackingService = new ActionTrackingService({
+        logger,
+      });
+
+      // track the action
+      await actionTrackingService.signMessageAction(signer);
 
       dispatch(
         sendSignMessageResponseThunk({

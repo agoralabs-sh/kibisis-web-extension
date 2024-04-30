@@ -67,6 +67,7 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
+import useIsNewSelectedAsset from './hooks/useIsNewSelectedAsset';
 
 // selectors
 import {
@@ -83,6 +84,10 @@ import {
   useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
+
+// services
+import AccountService from '@extension/services/AccountService';
+import ActionTrackingService from '@extension/services/ActionTrackingService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -129,6 +134,7 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
   const standardAssets: IStandardAsset[] = useSelectAddAssetsStandardAssets();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
+  const isNewSelectedAsset = useIsNewSelectedAsset(selectedAsset);
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -158,6 +164,8 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
   const isOpen: boolean = !!account;
   // handlers
   const handleAddARC0200AssetClick = async () => {
+    let actionTrackingService: ActionTrackingService;
+
     if (
       !selectedNetwork ||
       !account ||
@@ -177,6 +185,21 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
           genesisHash: selectedNetwork.genesisHash,
         })
       ).unwrap();
+
+      actionTrackingService = new ActionTrackingService({
+        logger,
+      });
+
+      // track the action if this is a new asset
+      if (isNewSelectedAsset) {
+        await actionTrackingService.addARC0200AssetAction(
+          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
+          {
+            appID: selectedAsset.id,
+            genesisHash: selectedNetwork.genesisHash,
+          }
+        );
+      }
 
       dispatch(
         createNotification({
@@ -219,6 +242,7 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
   };
   const handleAddStandardAssetClick = async () => {
     const _functionName: string = 'handleAddStandardAssetClick';
+    let actionTrackingService: ActionTrackingService;
     let _password: string | null;
 
     if (
@@ -265,6 +289,21 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
           password: _password,
         })
       ).unwrap();
+
+      actionTrackingService = new ActionTrackingService({
+        logger,
+      });
+
+      // track the action if this is a new asset
+      if (isNewSelectedAsset) {
+        await actionTrackingService.addStandardAssetAction(
+          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
+          {
+            assetID: selectedAsset.id,
+            genesisHash: selectedNetwork.genesisHash,
+          }
+        );
+      }
 
       dispatch(
         createNotification({

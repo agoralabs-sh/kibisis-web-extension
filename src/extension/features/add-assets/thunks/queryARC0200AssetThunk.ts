@@ -169,7 +169,7 @@ const queryARC0200AssetThunk: AsyncThunk<
         next: algorandSearchApplicationResult['next-token'] || null,
       };
     } catch (error) {
-      logger.debug(`${AddAssetThunkEnum.QueryArc200Asset}(): ${error.message}`);
+      logger.debug(`${AddAssetThunkEnum.QueryArc200Asset}: ${error.message}`);
 
       return rejectWithValue(error);
     }
