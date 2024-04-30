@@ -11,6 +11,7 @@ import SettingsService from '@extension/services/SettingsService';
 import type { IBaseOptions, ILogger } from '@common/types';
 import type { INetwork } from '@extension/types';
 import type {
+  IImportAccountViaQRCodeActionData,
   ISendARC0200AssetActionData,
   ISendNativeCurrencyActionData,
   ISendStandardAssetActionData,
@@ -98,6 +99,16 @@ export default class ActionTrackingService {
    * public functions
    */
 
+  public async importAccountViaQRCodeAction(
+    network: INetwork,
+    data: IImportAccountViaQRCodeActionData
+  ): Promise<void> {
+    return await this.track({
+      data,
+      name: ActionNameEnum.ImportAccountViaQRCodeAction,
+      network,
+    });
+  }
   public async sendARC0200AssetAction(
     network: INetwork,
     data: ISendARC0200AssetActionData

@@ -74,6 +74,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+import ActionTrackingService from '@extension/services/ActionTrackingService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -84,23 +85,17 @@ import type {
   IAccount,
   IActiveAccountDetails,
   IAppThunkDispatch,
-  IARC0300AccountImportSchema,
   INetwork,
   ISettings,
 } from '@extension/types';
+import type { IAccountImportModalContentProps } from './types';
 
 // utils
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
-interface IProps {
-  onComplete: () => void;
-  onPreviousClick: () => void;
-  schema: IARC0300AccountImportSchema;
-}
-
-const AccountImportModalContent: FC<IProps> = ({
+const AccountImportModalContent: FC<IAccountImportModalContentProps> = ({
   onComplete,
   onPreviousClick,
   schema,
@@ -146,6 +141,7 @@ const AccountImportModalContent: FC<IProps> = ({
     const _functionName: string = 'handleImportClick';
     let _password: string | null;
     let account: IAccount | null;
+    let actionTrackingService: ActionTrackingService;
     let privateKey: Uint8Array | null;
     let result: IUpdateAssetHoldingsResult;
 
@@ -284,6 +280,19 @@ const AccountImportModalContent: FC<IProps> = ({
           type: 'success',
         })
       );
+
+      actionTrackingService = new ActionTrackingService({
+        logger,
+      });
+
+      // track the action
+      if (network) {
+        await actionTrackingService.importAccountViaQRCodeAction(network, {
+          account: AccountService.convertPublicKeyToAlgorandAddress(
+            account.publicKey
+          ),
+        });
+      }
 
       // go to the account and the assets tab
       dispatch(
