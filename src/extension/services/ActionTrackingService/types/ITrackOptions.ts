@@ -2,13 +2,12 @@
 import { ActionNameEnum } from '../enums';
 
 // types
-import type { INetwork } from '@extension/types';
 import type TActionData from './TActionData';
 
 interface ITrackOptions {
-  data: TActionData;
+  account: string;
+  data?: TActionData;
   name: ActionNameEnum;
-  network: INetwork;
 }
 
 export default ITrackOptions;

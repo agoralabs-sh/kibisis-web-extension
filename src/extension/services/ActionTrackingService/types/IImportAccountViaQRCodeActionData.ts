@@ -1,5 +1,8 @@
-interface IImportAccountViaQRCodeAction {
-  account: string;
-}
+// types
+import type ISetOnce from './ISetOnce';
 
-export default IImportAccountViaQRCodeAction;
+type IImportAccountViaQRCodeActionData = ISetOnce<{
+  featOfStrengthImportWalletViaQRCode: true;
+}>;
+
+export default IImportAccountViaQRCodeActionData;

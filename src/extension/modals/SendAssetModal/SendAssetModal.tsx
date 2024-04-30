@@ -311,36 +311,46 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
       fromAddress = AccountService.convertPublicKeyToAlgorandAddress(
         fromAccount.publicKey
       );
+      actionTrackingService = new ActionTrackingService({
+        logger,
+      });
 
-      // track the action if it qualifies (different from/to accounts and amount is greater than 0)
-      if (
-        new BigNumber(amountInStandardUnits).gt(new BigNumber('0')) &&
-        toAddress !== fromAddress
-      ) {
-        actionTrackingService = new ActionTrackingService({
-          logger,
-        });
-        switch (selectedAsset?.type) {
-          case AssetTypeEnum.ARC0200:
-            await actionTrackingService.sendARC0200AssetAction(network, {
-              account: fromAddress,
+      // track the action
+      switch (selectedAsset?.type) {
+        case AssetTypeEnum.ARC0200:
+          await actionTrackingService.sendARC0200AssetAction(
+            fromAddress,
+            toAddress,
+            amountInStandardUnits,
+            {
               appID: selectedAsset.id,
-            });
-            break;
-          case AssetTypeEnum.Native:
-            await actionTrackingService.sendNativeCurrencyAction(network, {
-              account: fromAddress,
-            });
-            break;
-          case AssetTypeEnum.Standard:
-            await actionTrackingService.sendStandardAssetAction(network, {
-              account: fromAddress,
+              genesisHash: network.genesisHash,
+            }
+          );
+          break;
+        case AssetTypeEnum.Native:
+          await actionTrackingService.sendNativeCurrencyAction(
+            fromAddress,
+            toAddress,
+            amountInStandardUnits,
+            {
+              genesisHash: network.genesisHash,
+            }
+          );
+          break;
+        case AssetTypeEnum.Standard:
+          await actionTrackingService.sendStandardAssetAction(
+            fromAddress,
+            toAddress,
+            amountInStandardUnits,
+            {
               assetID: selectedAsset.id,
-            });
-            break;
-          default:
-            break;
-        }
+              genesisHash: network.genesisHash,
+            }
+          );
+          break;
+        default:
+          break;
       }
 
       // send a success transaction

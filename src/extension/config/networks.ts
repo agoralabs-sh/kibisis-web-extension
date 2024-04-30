@@ -86,11 +86,6 @@ const networks: INetwork[] = [
       },
     ],
     type: NetworkTypeEnum.Test,
-    umami: {
-      domain: 'is.kibis.web-ext.voi-testnet',
-      url: 'https://kibisis-actions.vercel.app',
-      websiteID: 'f1bd28e5-0c71-4f54-9803-2bc385a71024',
-    },
   },
   /**
    * algorand networks
@@ -249,11 +244,6 @@ const networks: INetwork[] = [
     },
     nftExplorers: [],
     type: NetworkTypeEnum.Test,
-    umami: {
-      domain: 'is.kibis.web-ext.algorand-testnet',
-      url: 'https://kibisis-actions.vercel.app',
-      websiteID: '549467b9-7d04-4013-8ad5-2bcbaeb63f12',
-    },
   },
 ];
 

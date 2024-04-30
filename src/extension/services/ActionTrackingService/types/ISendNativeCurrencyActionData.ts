@@ -1,5 +1,5 @@
 interface ISendNativeCurrencyActionData {
-  account: string;
+  genesisHash: string;
 }
 
 export default ISendNativeCurrencyActionData;

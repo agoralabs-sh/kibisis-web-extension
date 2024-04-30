@@ -1,6 +1,6 @@
 interface ISendStandardAssetActionData {
-  account: string;
   assetID: string;
+  genesisHash: string;
 }
 
 export default ISendStandardAssetActionData;

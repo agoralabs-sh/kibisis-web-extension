@@ -103,7 +103,6 @@ export type { default as IStorageItemTypes } from './IStorageItemTypes';
 export type { default as ITinyManAssetResponse } from './ITinyManAssetResponse';
 export type { default as ITransactionParams } from './ITransactionParams';
 export type { default as ITransactions } from './ITransactions';
-export type { default as IUmamiConfig } from './IUmamiConfig';
 export type { default as IUnknownTransaction } from './IUnknownTransaction';
 export type { default as IUpdateAssetInformationByIdOptions } from './IUpdateAssetInformationByIdOptions';
 export type { default as IVestigeFiAssetResponse } from './IVestigeFiAssetResponse';

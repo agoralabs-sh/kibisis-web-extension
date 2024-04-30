@@ -286,13 +286,9 @@ const AccountImportModalContent: FC<IAccountImportModalContentProps> = ({
       });
 
       // track the action
-      if (network) {
-        await actionTrackingService.importAccountViaQRCodeAction(network, {
-          account: AccountService.convertPublicKeyToAlgorandAddress(
-            account.publicKey
-          ),
-        });
-      }
+      await actionTrackingService.importAccountViaQRCodeAction(
+        AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+      );
 
       // go to the account and the assets tab
       dispatch(

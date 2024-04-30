@@ -1,5 +1,4 @@
-// actions
-import { Action } from './actions';
+import { PostHog } from 'posthog-node';
 
 // enums
 import { ActionNameEnum } from './enums';
@@ -9,22 +8,28 @@ import SettingsService from '@extension/services/SettingsService';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
-import type { INetwork } from '@extension/types';
 import type {
-  IImportAccountViaQRCodeActionData,
   ISendARC0200AssetActionData,
   ISendNativeCurrencyActionData,
   ISendStandardAssetActionData,
   ITrackOptions,
 } from './types';
+import BigNumber from 'bignumber.js';
 
 export default class ActionTrackingService {
   // private variables
   private readonly logger: ILogger | null;
+  private readonly posthog: PostHog | null;
   private readonly settingsService: SettingsService;
 
   constructor({ logger }: IBaseOptions) {
     this.logger = logger || null;
+    this.posthog =
+      __POSTHOG_API_HOST__ && __POSTHOG_PROJECT_ID__
+        ? new PostHog(__POSTHOG_PROJECT_ID__, {
+            host: __POSTHOG_API_HOST__,
+          })
+        : null;
     this.settingsService = new SettingsService({
       logger,
     });
@@ -45,13 +50,12 @@ export default class ActionTrackingService {
     return privacy.allowActionTracking;
   }
 
-  private async track({ data, name, network }: ITrackOptions): Promise<void> {
+  private async track({ account, data, name }: ITrackOptions): Promise<void> {
     const __functionName: string = 'track';
 
-    // check if it there is a config
-    if (!network.umami) {
+    if (!this.posthog) {
       this.logger?.debug(
-        `${ActionTrackingService.name}#${__functionName}: action tracking not initialized for "${network.canonicalName}", ignoring`
+        `${ActionTrackingService.name}#${__functionName}: tracking not initialized, ignoring`
       );
 
       return;
@@ -67,21 +71,13 @@ export default class ActionTrackingService {
     }
 
     try {
-      await fetch(`${network.umami.url}/api/send`, {
-        body: JSON.stringify({
-          payload: new Action({
-            data,
-            hostname: network.umami.domain,
-            language: window.navigator.language,
-            name,
-            website: network.umami.websiteID,
-          }),
-          type: 'event',
+      this.posthog.capture({
+        disableGeoip: true,
+        distinctId: account,
+        event: name,
+        ...(data && {
+          properties: data,
         }),
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
 
       this.logger?.debug(
@@ -99,46 +95,100 @@ export default class ActionTrackingService {
    * public functions
    */
 
-  public async importAccountViaQRCodeAction(
-    network: INetwork,
-    data: IImportAccountViaQRCodeActionData
-  ): Promise<void> {
+  /**
+   * Tracks an import account via QR code action.
+   * @param {string} account - the address of the account that was imported.
+   */
+  public async importAccountViaQRCodeAction(account: string): Promise<void> {
     return await this.track({
-      data,
+      account,
+      data: {
+        $set_once: {
+          featOfStrengthImportWalletViaQRCode: true,
+        },
+      },
       name: ActionNameEnum.ImportAccountViaQRCodeAction,
-      network,
     });
   }
+
+  /**
+   * Tracks a send ARC-0200 asset action. This action is only tracked when >=1 unit is sent to a different account.
+   * @param {string} fromAddress - the address of the account the asset was sent from.
+   * @param {string} toAddress - the address of the account the asset was sent to.
+   * @param {string} amountInStandardUnits - the amount that was sent in standard units.
+   * @param {ISendARC0200AssetActionData} data - the ID of the asset and the network.
+   */
   public async sendARC0200AssetAction(
-    network: INetwork,
+    fromAddress: string,
+    toAddress: string,
+    amountInStandardUnits: string,
     data: ISendARC0200AssetActionData
   ): Promise<void> {
+    if (
+      fromAddress === toAddress ||
+      new BigNumber(amountInStandardUnits).lt(new BigNumber('1'))
+    ) {
+      return;
+    }
+
     return await this.track({
+      account: fromAddress,
       data,
       name: ActionNameEnum.SendARC0200AssetAction,
-      network,
     });
   }
 
+  /**
+   * Tracks a send native currency action. This action is only tracked when >=0.1 unit is sent to a different account.
+   * @param {string} fromAddress - the address of the account the amount was sent from.
+   * @param {string} toAddress - the address of the account the amount was sent to.
+   * @param {string} amountInStandardUnits - the amount that was sent in standard units.
+   * @param {ISendARC0200AssetActionData} data - the network.
+   */
   public async sendNativeCurrencyAction(
-    network: INetwork,
+    fromAddress: string,
+    toAddress: string,
+    amountInStandardUnits: string,
     data: ISendNativeCurrencyActionData
   ): Promise<void> {
+    if (
+      fromAddress === toAddress ||
+      new BigNumber(amountInStandardUnits).lt(new BigNumber('0.1'))
+    ) {
+      return;
+    }
+
     return await this.track({
+      account: fromAddress,
       data,
       name: ActionNameEnum.SendNativeCurrencyAction,
-      network,
     });
   }
 
+  /**
+   * Tracks a send standard asset action. This action is only tracked when >=1 unit is sent to a different account.
+   * @param {string} fromAddress - the address of the account the asset was sent from.
+   * @param {string} toAddress - the address of the account the asset was sent to.
+   * @param {string} amountInStandardUnits - the amount that was sent in standard units.
+   * @param {ISendARC0200AssetActionData} data - the ID of the asset and the network.
+   */
   public async sendStandardAssetAction(
-    network: INetwork,
+    fromAddress: string,
+    toAddress: string,
+    amountInStandardUnits: string,
     data: ISendStandardAssetActionData
   ): Promise<void> {
+    if (
+      fromAddress === toAddress ||
+      new BigNumber(amountInStandardUnits).lt(new BigNumber('1'))
+    ) {
+      return;
+    }
+
     return await this.track({
+      account: fromAddress,
       data,
       name: ActionNameEnum.SendStandardAssetAction,
-      network,
     });
   }
 }

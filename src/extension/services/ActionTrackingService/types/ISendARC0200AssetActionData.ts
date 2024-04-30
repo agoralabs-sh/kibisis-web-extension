@@ -1,6 +1,6 @@
 interface ISendARC0200AssetActionData {
-  account: string;
   appID: string;
+  genesisHash: string;
 }
 
 export default ISendARC0200AssetActionData;
