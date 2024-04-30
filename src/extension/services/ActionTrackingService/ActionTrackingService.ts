@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { PostHog } from 'posthog-node';
 
 // enums
@@ -9,12 +10,14 @@ import SettingsService from '@extension/services/SettingsService';
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
 import type {
+  IAcquireARC0072ActionData,
+  IAddARC0200AssetActionData,
+  IAddStandardAssetActionData,
   ISendARC0200AssetActionData,
   ISendNativeCurrencyActionData,
   ISendStandardAssetActionData,
   ITrackOptions,
 } from './types';
-import BigNumber from 'bignumber.js';
 
 export default class ActionTrackingService {
   // private variables
@@ -94,6 +97,54 @@ export default class ActionTrackingService {
   /**
    * public functions
    */
+
+  /**
+   * Tracks an acquire ARC-0072 action.
+   * @param {string} fromAddress - the address of the account that added the asset.
+   * @param {IAcquireARC0072ActionData} data - the ID of the asset and the network.
+   */
+  public async acquireARC0072Action(
+    fromAddress: string,
+    data: IAcquireARC0072ActionData
+  ): Promise<void> {
+    return await this.track({
+      account: fromAddress,
+      data,
+      name: ActionNameEnum.AcquireARC0072Action,
+    });
+  }
+
+  /**
+   * Tracks an add ARC-0200 asset action.
+   * @param {string} fromAddress - the address of the account that added the asset.
+   * @param {IAddARC0200AssetActionData} data - the ID of the asset and the network.
+   */
+  public async addARC0200AssetAction(
+    fromAddress: string,
+    data: IAddARC0200AssetActionData
+  ): Promise<void> {
+    return await this.track({
+      account: fromAddress,
+      data,
+      name: ActionNameEnum.AddARC0200AssetAction,
+    });
+  }
+
+  /**
+   * Tracks an add standard asset action.
+   * @param {string} fromAddress - the address of the account that added the asset.
+   * @param {IAddStandardAssetActionData} data - the ID of the asset and the network.
+   */
+  public async addStandardAssetAction(
+    fromAddress: string,
+    data: IAddStandardAssetActionData
+  ): Promise<void> {
+    return await this.track({
+      account: fromAddress,
+      data,
+      name: ActionNameEnum.AddStandardAssetAction,
+    });
+  }
 
   /**
    * Tracks an import account via QR code action.
@@ -189,6 +240,22 @@ export default class ActionTrackingService {
       account: fromAddress,
       data,
       name: ActionNameEnum.SendStandardAssetAction,
+    });
+  }
+
+  /**
+   * Tracks a sign message action.
+   * @param {string} account - the address of the account that was as a signer.
+   */
+  public async signMessageAction(account: string): Promise<void> {
+    return await this.track({
+      account,
+      data: {
+        $set_once: {
+          featOfStrengthSignMessage: true,
+        },
+      },
+      name: ActionNameEnum.SignAMessageAction,
     });
   }
 }
