@@ -76,6 +76,7 @@ export type { default as IInitializeAccountOptions } from './IInitializeAccountO
 export type { default as IKeyRegistrationOfflineTransaction } from './IKeyRegistrationOfflineTransaction';
 export type { default as IKeyRegistrationOnlineTransaction } from './IKeyRegistrationOnlineTransaction';
 export type { default as IMainRootState } from './IMainRootState';
+export type { default as IModalProps } from './IModalProps';
 export type { default as INativeCurrency } from './INativeCurrency';
 export type { default as INetwork } from './INetwork';
 export type { default as INetworkWithTransactionParams } from './INetworkWithTransactionParams';

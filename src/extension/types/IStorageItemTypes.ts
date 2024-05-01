@@ -1,4 +1,5 @@
 // types
+import type { INewsItem } from '@extension/services/NewsService';
 import type IAccount from './IAccount';
 import type IActiveAccountDetails from './IActiveAccountDetails';
 import type IAdvancedSettings from './IAdvancedSettings';
@@ -27,6 +28,7 @@ type IStorageItemTypes =
   | IARC0200Asset[]
   | IGeneralSettings
   | IEvent[]
+  | INewsItem[]
   | IPasswordLock
   | IPasswordTag
   | IPrivacySettings

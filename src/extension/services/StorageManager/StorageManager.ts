@@ -8,9 +8,7 @@ export default class StorageManager {
    * Public functions
    */
 
-  public async getAllItems(): Promise<
-    Record<string, IStorageItemTypes | unknown>
-  > {
+  public async getAllItems(): Promise<Record<string, IStorageItemTypes>> {
     return await browser.storage.local.get();
   }
 
