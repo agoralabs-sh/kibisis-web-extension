@@ -1,3 +1,11 @@
+# [1.15.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.1...v1.15.0) (2024-05-01)
+
+
+### Features
+
+*  allow dapp to remove sessions ([#211](https://github.com/agoralabs-sh/kibisis-web-extension/issues/211)) ([c3c45fb](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3c45fb6cd36d725ea00464eac58327c5116567f))
+* implement optional actions tracking for voi mainnet quests ([#213](https://github.com/agoralabs-sh/kibisis-web-extension/issues/213)) ([9b31cb7](https://github.com/agoralabs-sh/kibisis-web-extension/commit/9b31cb7ee6a1aeb145eef3dc00232b32f166df94))
+
 # [1.15.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.15.0-beta.1...v1.15.0-beta.2) (2024-05-01)
 
 
