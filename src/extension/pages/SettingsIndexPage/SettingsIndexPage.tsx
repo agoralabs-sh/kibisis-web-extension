@@ -1,6 +1,7 @@
-import { Heading, Spacer, Text, VStack } from '@chakra-ui/react';
+import { Heading, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import {
+  IoEyeOutline,
   IoCogOutline,
   IoColorPaletteOutline,
   IoConstructOutline,
@@ -20,6 +21,7 @@ import {
   APPEARANCE_ROUTE,
   DEFAULT_GAP,
   GENERAL_ROUTE,
+  PRIVACY_ROUTE,
   SECURITY_ROUTE,
   SESSIONS_ROUTE,
   SETTINGS_ROUTE,
@@ -59,6 +61,11 @@ const SettingsIndexPage: FC = () => {
         icon={IoColorPaletteOutline}
         label={t<string>('titles.page', { context: 'appearance' })}
         to={`${SETTINGS_ROUTE}${APPEARANCE_ROUTE}`}
+      />
+      <SettingsLinkItem
+        icon={IoEyeOutline}
+        label={t<string>('titles.page', { context: 'privacy' })}
+        to={`${SETTINGS_ROUTE}${PRIVACY_ROUTE}`}
       />
       <SettingsLinkItem
         icon={IoLinkOutline}

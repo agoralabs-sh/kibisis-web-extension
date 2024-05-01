@@ -3,6 +3,12 @@ name: "Create Env File"
 description: "Creates an .env file"
 
 inputs:
+  posthog_api_host:
+    description: "The PostHog API host"
+    required: true
+  posthog_project_id:
+    description: "The PostHog project ID"
+    required: true
   provider_id:
     description: "The provider ID used for connections to dapps"
     required: true
@@ -16,6 +22,8 @@ runs:
     - name: "📝 Create .env file"
       run: |
         rm -f .env
+        echo "POSTHOG_API_HOST=${{ inputs.posthog_api_host }}" >> .env
+        echo "POSTHOG_PROJECT_ID=${{ inputs.posthog_project_id }}" >> .env
         echo "PROVIDER_ID=${{ inputs.provider_id }}" >> .env
         echo "WALLET_CONNECT_PROJECT_ID=${{ inputs.walletconnect_project_id }}" >> .env
       shell: bash

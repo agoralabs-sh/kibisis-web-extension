@@ -31,36 +31,7 @@
       "@extension/enums": ["src/extension/enums"],
       "@extension/errors": ["src/extension/errors"],
       "@extension/events": ["src/extension/events"],
-      "@extension/features/accounts": ["src/extension/features/accounts"],
-      "@extension/features/add-assets": ["src/extension/features/add-assets"],
-      "@extension/features/arc0072-assets": [
-        "src/extension/features/arc0072-assets"
-      ],
-      "@extension/features/arc0200-assets": [
-        "src/extension/features/arc0200-assets"
-      ],
-      "@extension/features/events": ["src/extension/features/events"],
-      "@extension/features/messages": ["src/extension/features/messages"],
-      "@extension/features/networks": ["src/extension/features/networks"],
-      "@extension/features/notifications": [
-        "src/extension/features/notifications"
-      ],
-      "@extension/features/password-lock": [
-        "src/extension/features/password-lock"
-      ],
-      "@extension/features/registration": [
-        "src/extension/features/registration"
-      ],
-      "@extension/features/remove-assets": [
-        "src/extension/features/remove-assets"
-      ],
-      "@extension/features/send-assets": ["src/extension/features/send-assets"],
-      "@extension/features/sessions": ["src/extension/features/sessions"],
-      "@extension/features/settings": ["src/extension/features/settings"],
-      "@extension/features/standard-assets": [
-        "src/extension/features/standard-assets"
-      ],
-      "@extension/features/system": ["src/extension/features/system"],
+      "@extension/features/*": ["src/extension/features/*"],
       "@extension/fonts/*": ["src/extension/fonts/*"],
       "@extension/hooks/*": ["src/extension/hooks/*"],
       "@extension/images/*": ["src/extension/images/*"],

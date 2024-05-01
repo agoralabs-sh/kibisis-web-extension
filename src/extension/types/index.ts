@@ -76,6 +76,7 @@ export type { default as IInitializeAccountOptions } from './IInitializeAccountO
 export type { default as IKeyRegistrationOfflineTransaction } from './IKeyRegistrationOfflineTransaction';
 export type { default as IKeyRegistrationOnlineTransaction } from './IKeyRegistrationOnlineTransaction';
 export type { default as IMainRootState } from './IMainRootState';
+export type { default as IModalProps } from './IModalProps';
 export type { default as INativeCurrency } from './INativeCurrency';
 export type { default as INetwork } from './INetwork';
 export type { default as INetworkWithTransactionParams } from './INetworkWithTransactionParams';
@@ -87,6 +88,7 @@ export type { default as IPasswordLock } from './IPasswordLock';
 export type { default as IPasswordTag } from './IPasswordTag';
 export type { default as IPaymentTransaction } from './IPaymentTransaction';
 export type { default as IPendingActionMeta } from './IPendingActionMeta';
+export type { default as IPrivacySettings } from './IPrivacySettings';
 export type { default as IPrivateKey } from './IPrivateKey';
 export type { default as IRegistrationAddAccountCompleteResult } from './IRegistrationAddAccountCompleteResult';
 export type { default as IRegistrationRootState } from './IRegistrationRootState';

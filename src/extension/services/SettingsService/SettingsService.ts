@@ -7,6 +7,7 @@ import {
   SETTINGS_ADVANCED_KEY,
   SETTINGS_APPEARANCE_KEY,
   SETTINGS_GENERAL_KEY,
+  SETTINGS_PRIVACY_KEY,
   SETTINGS_SECURITY_KEY,
 } from '@extension/constants';
 
@@ -20,6 +21,7 @@ import type {
   IAppearanceSettings,
   IGeneralSettings,
   INetwork,
+  IPrivacySettings,
   ISecuritySettings,
   ISettings,
 } from '@extension/types';
@@ -59,6 +61,9 @@ export default class SettingsService {
         preferredBlockExplorerIds: {},
         preferredNFTExplorerIds: {},
         selectedNetworkGenesisHash: defaultNetwork.genesisHash,
+      },
+      privacy: {
+        allowActionTracking: false,
       },
       security: {
         passwordLockTimeoutDuration: PASSWORD_LOCK_DURATION_NORMAL,
@@ -105,6 +110,14 @@ export default class SettingsService {
               ...(storageItems[SETTINGS_GENERAL_KEY] as IGeneralSettings),
             },
           };
+        case SETTINGS_PRIVACY_KEY:
+          return {
+            ...acc,
+            privacy: {
+              ...acc.privacy,
+              ...(storageItems[SETTINGS_PRIVACY_KEY] as IPrivacySettings),
+            },
+          };
         case SETTINGS_SECURITY_KEY:
           return {
             ...acc,
@@ -129,6 +142,7 @@ export default class SettingsService {
       [SETTINGS_ADVANCED_KEY]: settings.advanced,
       [SETTINGS_APPEARANCE_KEY]: settings.appearance,
       [SETTINGS_GENERAL_KEY]: settings.general,
+      [SETTINGS_PRIVACY_KEY]: settings.privacy,
       [SETTINGS_SECURITY_KEY]: settings.security,
     });
 

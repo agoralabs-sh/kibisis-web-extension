@@ -6,6 +6,7 @@ enum StoreNameEnum {
   Events = 'events',
   Messages = 'messages',
   Networks = 'networks',
+  News = 'news',
   Notifications = 'notifications',
   PasswordLock = 'password-lock',
   Register = 'register',

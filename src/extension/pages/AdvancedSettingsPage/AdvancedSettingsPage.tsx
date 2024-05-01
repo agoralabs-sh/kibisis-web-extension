@@ -19,7 +19,7 @@ import { setConfirmModal } from '@extension/features/system';
 import { useSelectSettings } from '@extension/selectors';
 
 // types
-import {
+import type {
   IAdvancedSettings,
   IAppThunkDispatch,
   ISettings,

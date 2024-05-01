@@ -41,6 +41,7 @@ const translation: IResourceLanguage = {
     sign: 'Sign',
     tryAgain: 'Try Again',
     view: 'View',
+    yesImIn: `Yes, I'm In`,
   },
   captions: {
     accountAlreadyAdded: 'Account already added.',
@@ -53,6 +54,8 @@ const translation: IResourceLanguage = {
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
+    allowActionTracking:
+      'By tracking certain actions, you can earn rewards. See <2>here</2> for more information.',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
@@ -238,6 +241,7 @@ const translation: IResourceLanguage = {
     addedAccount: 'Added Account!',
     addedAsset: 'Added Asset {{symbol}}!',
     allowMainNetConfirm: 'Allow MainNet Networks',
+    analyticsAndTracking: 'Analytics & Tracking',
     assetDetails: 'Asset Details',
     authentication: 'Authentication',
     beta: 'Beta',
@@ -318,6 +322,7 @@ const translation: IResourceLanguage = {
     accountToFreeze: 'Account To Freeze',
     accountToUnfreeze: 'Account To Unfreeze',
     addAccount: 'Add Account',
+    allowActionTracking: 'Allow certain actions to be tracked?',
     allowBetaNet: 'Allow BetaNet networks?',
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
     allowMainNet: 'Allow MainNet networks?',
@@ -446,6 +451,7 @@ const translation: IResourceLanguage = {
     page_importAccountViaQRCode: 'Import An Account Via QR Code',
     page_importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',
     page_passwordLock: 'Enter Your Password',
+    page_privacy: 'Privacy',
     page_security: 'Security',
     page_sessions: 'Sessions',
     page_settings: 'Settings',

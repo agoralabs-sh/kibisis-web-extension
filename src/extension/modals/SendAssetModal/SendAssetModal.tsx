@@ -77,12 +77,13 @@ import {
   useSelectSendAssetFromAccount,
   useSelectSendAssetNote,
   useSelectSendAssetSelectedAsset,
-  useSelectStandardAssetsBySelectedNetwork,
   useSelectSettings,
+  useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
+import ActionTrackingService from '@extension/services/ActionTrackingService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -251,6 +252,8 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
+    let actionTrackingService: ActionTrackingService;
+    let fromAddress: string;
     let transactionIds: string[];
     let toAccount: IAccount | null;
 
@@ -304,6 +307,51 @@ const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
           .map((value) => `"${value}"`)
           .join(',')}] to the network`
       );
+
+      fromAddress = AccountService.convertPublicKeyToAlgorandAddress(
+        fromAccount.publicKey
+      );
+      actionTrackingService = new ActionTrackingService({
+        logger,
+      });
+
+      // track the action
+      switch (selectedAsset?.type) {
+        case AssetTypeEnum.ARC0200:
+          await actionTrackingService.sendARC0200AssetAction(
+            fromAddress,
+            toAddress,
+            amountInStandardUnits,
+            {
+              appID: selectedAsset.id,
+              genesisHash: network.genesisHash,
+            }
+          );
+          break;
+        case AssetTypeEnum.Native:
+          await actionTrackingService.sendNativeCurrencyAction(
+            fromAddress,
+            toAddress,
+            amountInStandardUnits,
+            {
+              genesisHash: network.genesisHash,
+            }
+          );
+          break;
+        case AssetTypeEnum.Standard:
+          await actionTrackingService.sendStandardAssetAction(
+            fromAddress,
+            toAddress,
+            amountInStandardUnits,
+            {
+              assetID: selectedAsset.id,
+              genesisHash: network.genesisHash,
+            }
+          );
+          break;
+        default:
+          break;
+      }
 
       // send a success transaction
       dispatch(

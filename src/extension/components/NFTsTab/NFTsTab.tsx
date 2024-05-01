@@ -1,5 +1,5 @@
 import { Spacer, TabPanel, VStack } from '@chakra-ui/react';
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
@@ -9,26 +9,40 @@ import NFTsTabARC0072AssetItem from './NFTsTabARC0072AssetItem';
 
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
+import usePrevious from '@extension/hooks/usePrevious';
 
 // selectors
 import {
   useSelectARC0072AssetsFetching,
+  useSelectLogger,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
+// services
+import AccountService from '@extension/services/AccountService';
+import ActionTrackingService from '@extension/services/ActionTrackingService';
+
 // types
-import type { IAccountInformation, INetwork } from '@extension/types';
+import type {
+  IAccountInformation,
+  IARC0072AssetHolding,
+  INetwork,
+} from '@extension/types';
 import type { INFTsTabProps } from './types';
 
 const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
   const { t } = useTranslation();
   // selectors
   const fetchingARC0072Assets: boolean = useSelectARC0072AssetsFetching();
+  const logger = useSelectLogger();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   // hooks
   const accountInformation: IAccountInformation | null = useAccountInformation(
     account.id
   );
+  const previousARC0027AssetHoldings = usePrevious<
+    IARC0072AssetHolding[] | null
+  >(accountInformation?.arc0072AssetHoldings || null);
   // renders
   const renderContent = () => {
     let assetNodes: ReactNode[] = [];
@@ -70,6 +84,39 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
       </VStack>
     );
   };
+
+  // check if there are new arc-0072 assets
+  useEffect(() => {
+    let actionTrackingService: ActionTrackingService;
+    let newARC0072AssetHoldings: IARC0072AssetHolding[];
+
+    if (
+      previousARC0027AssetHoldings &&
+      accountInformation?.arc0072AssetHoldings &&
+      selectedNetwork
+    ) {
+      actionTrackingService = new ActionTrackingService({
+        logger,
+      });
+      newARC0072AssetHoldings = accountInformation.arc0072AssetHoldings.filter(
+        (arc0072AssetHolding) =>
+          !previousARC0027AssetHoldings.find(
+            (value) => value.id === arc0072AssetHolding.id
+          )
+      );
+
+      // if there are new assets acquired, track an action for each new asset
+      newARC0072AssetHoldings.forEach(({ id }) =>
+        actionTrackingService.acquireARC0072Action(
+          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
+          {
+            appID: id,
+            genesisHash: selectedNetwork.genesisHash,
+          }
+        )
+      );
+    }
+  }, [accountInformation?.arc0072AssetHoldings]);
 
   return (
     <TabPanel

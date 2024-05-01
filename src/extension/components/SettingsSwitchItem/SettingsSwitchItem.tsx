@@ -1,5 +1,5 @@
 import { HStack, Switch, Text, VStack } from '@chakra-ui/react';
-import React, { ChangeEvent, FC } from 'react';
+import React, { ChangeEvent, FC, ReactElement } from 'react';
 
 // constants
 import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
@@ -11,7 +11,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 interface IProps {
   checked: boolean;
-  description?: string;
+  description?: string | ReactElement;
   label: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }

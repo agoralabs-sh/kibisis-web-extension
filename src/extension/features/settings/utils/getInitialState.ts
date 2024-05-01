@@ -21,6 +21,9 @@ export default function getInitialState(): ISettingsState {
       preferredNFTExplorerIds: {},
       selectedNetworkGenesisHash: null,
     },
+    privacy: {
+      allowActionTracking: false,
+    },
     saving: false,
     security: {
       passwordLockTimeoutDuration: PASSWORD_LOCK_DURATION_NORMAL,
