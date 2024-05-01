@@ -1,6 +1,7 @@
 import {
   Heading,
   HStack,
+  ListItem,
   Modal,
   ModalBody,
   ModalContent,
@@ -8,6 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  UnorderedList,
   VStack,
 } from '@chakra-ui/react';
 import React, { createRef, FC } from 'react';
@@ -16,6 +18,7 @@ import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
+import Warning from '@extension/components/Warning';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
@@ -26,6 +29,7 @@ import { saveToStorageThunk } from '@extension/features/news';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // selectors
 import {
@@ -54,7 +58,8 @@ const VoiageToMainnetModal: FC = () => {
   const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
   // misc
   const isOpen =
     !fetching &&
@@ -106,16 +111,152 @@ const VoiageToMainnetModal: FC = () => {
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} size="md" textAlign="center">
-            Voiage To Mainnet
+            The Voiage To Mainnet
           </Heading>
         </ModalHeader>
 
         <ModalBody>
           <VStack spacing={DEFAULT_GAP - 2} w="full">
-            {/*description*/}
-            <Text color={defaultTextColor} fontSize="sm" textAlign="left">
-              Yeah!!
+            <Heading color={primaryColor} size="sm" textAlign="left" w="full">
+              Voi mainnet is upon us!
+            </Heading>
+
+            {/*introduction*/}
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              Hello fellow Voiagers!
             </Text>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              As you may be aware, Voi will soon be releasing mainnet and as a
+              user of Kibisis you have been part of this extraordinary journey
+              so far.
+            </Text>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              Therefore, we at Kibisis would like to cordially invite you to
+              undertake a few quests to earn rewards that will be redeemable
+              once we enter mainnet.
+            </Text>
+
+            {/*repeatable quests*/}
+            <Heading color={primaryColor} size="sm" textAlign="left" w="full">
+              Repeatable quests
+            </Heading>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              Repeatable quests are simple, every day actions that have varying
+              reward multipliers depending on the ease of the task. These quests
+              can be repeated as many times as you like and include, but not
+              limited to:
+            </Text>
+
+            <UnorderedList>
+              <ListItem>
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  Sending some VOI to another account
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  Sending some VIA (or any ARC-0200 asset) to another account
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  Sending some standard assets to another account
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  Acquiring an NFT
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  ... and more!
+                </Text>
+              </ListItem>
+            </UnorderedList>
+
+            {/*feat of strength quests*/}
+            <Heading color={primaryColor} size="sm" textAlign="left" w="full">
+              "Feat Of Strength" quests
+            </Heading>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              "Feat Of Strength" quests are hidden quests that include not very
+              well known/used features. These quests have high multipliers and
+              can only be performed once but may earn extra special rewards!
+            </Text>
+
+            {/*extroduction*/}
+            <Heading color={primaryColor} size="sm" textAlign="left" w="full">
+              The choice is yours
+            </Heading>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              {`You can opt in/out at anytime by going to Settings > Privacy and switching on/off "Allow certain actions to be tracked?"`}
+            </Text>
+
+            <Warning
+              message={`Please note that we will be gathering and transmitting the quest data to a remote server. This data will only include the address and/or the asset ID used in the quest. Pressing "Cancel" or disabling the "Allow certain actions to be tracked?" switch, will stop sending this data.`}
+              size="xs"
+            />
           </VStack>
         </ModalBody>
 
@@ -133,7 +274,7 @@ const VoiageToMainnetModal: FC = () => {
               {t<string>('buttons.cancel')}
             </Button>
 
-            {/*confirm*/}
+            {/*yes i'm in*/}
             <Button
               isLoading={saving}
               onClick={handleConfirmClick}
@@ -141,7 +282,7 @@ const VoiageToMainnetModal: FC = () => {
               variant="solid"
               w="full"
             >
-              Yes, I'm in!
+              {t<string>('buttons.yesImIn')}
             </Button>
           </HStack>
         </ModalFooter>

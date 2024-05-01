@@ -41,6 +41,7 @@ const translation: IResourceLanguage = {
     sign: 'Sign',
     tryAgain: 'Try Again',
     view: 'View',
+    yesImIn: `Yes, I'm In`,
   },
   captions: {
     accountAlreadyAdded: 'Account already added.',
