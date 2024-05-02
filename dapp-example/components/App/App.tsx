@@ -24,15 +24,16 @@ import {
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // components
-import ApplicationActionsTab from '../ApplicationActionsTab';
-import AssetActionsTab from '../AssetActionsTab';
-import AtomicTransactionActionsTab from '../AtomicTransactionActionsTab';
 import ConnectMenu, { IOnConnectParams } from '../ConnectMenu';
 import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
 import EnabledAccountsTable from '../EnabledAccountsTable';
-import ImportAccountTab from '../ImportAccountTab';
-import KeyRegistrationActionsTab from '../KeyRegistrationActionsTab';
-import PaymentActionsTab from '../PaymentActionsTab';
+import ImportAccountViaQRCodeTab from '../ImportAccountViaQRCodeTab';
+import SendKeyRegistrationViaQRCodeTab from '../SendKeyRegistrationViaQRCodeTab';
+import SignApplicationTransactionTab from '../SignApplicationTransactionTab';
+import SignAssetTransactionTab from '../SignAssetTransactionTab';
+import SignAtomicTransactionsTab from '../SignAtomicTransactionsTab';
+import SignKeyRegistrationTransactionTab from '../SignKeyRegistrationTransactionTab';
+import SignPaymentTransactionTab from '../SignPaymentTransactionTab';
 import SignMessageTab from '../SignMessageTab';
 
 // constants
@@ -163,32 +164,54 @@ const App: FC = () => {
         return (
           <Tabs colorScheme="primaryLight" w="full">
             <TabList>
-              <Tab>Payments</Tab>
-              <Tab>Assets</Tab>
-              <Tab>Atomic Txns</Tab>
-              <Tab>Apps</Tab>
-              <Tab>Keys</Tab>
-              <Tab>Sign Message</Tab>
-              <Tab>Import Account</Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Payment Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Asset Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Atomic Transactions</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Application Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Key Registration Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Message</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Import Account Via QR Code</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Send Key Registration Via QR Code</Text>
+              </Tab>
             </TabList>
 
             <TabPanels>
-              <PaymentActionsTab {...signTransactionProps} />
+              <SignPaymentTransactionTab {...signTransactionProps} />
 
-              <AssetActionsTab {...signTransactionProps} />
+              <SignAssetTransactionTab {...signTransactionProps} />
 
-              <AtomicTransactionActionsTab {...signTransactionProps} />
+              <SignAtomicTransactionsTab {...signTransactionProps} />
 
-              <ApplicationActionsTab {...signTransactionProps} />
+              <SignApplicationTransactionTab {...signTransactionProps} />
 
-              <KeyRegistrationActionsTab {...signTransactionProps} />
+              <SignKeyRegistrationTransactionTab {...signTransactionProps} />
 
               <SignMessageTab
                 account={selectedAccount}
                 signMessageAction={algorandProviderSignMessageAction}
               />
 
-              <ImportAccountTab />
+              <ImportAccountViaQRCodeTab />
+
+              <SendKeyRegistrationViaQRCodeTab
+                account={selectedAccount}
+                network={selectedNetwork}
+              />
             </TabPanels>
           </Tabs>
         );
@@ -201,34 +224,56 @@ const App: FC = () => {
         };
 
         return (
-          <Tabs colorScheme="primaryLight" w="full">
+          <Tabs colorScheme="primaryLight">
             <TabList>
-              <Tab>Payments</Tab>
-              <Tab>Assets</Tab>
-              <Tab>Atomic Txns</Tab>
-              <Tab>Apps</Tab>
-              <Tab>Keys</Tab>
-              <Tab>Sign Message</Tab>
-              <Tab>Import Account</Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Payment Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Asset Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Atomic Transactions</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Application Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Key Registration Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Message</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Import Account Via QR Code</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Send Key Registration Via QR Code</Text>
+              </Tab>
             </TabList>
 
             <TabPanels>
-              <PaymentActionsTab {...signTransactionProps} />
+              <SignPaymentTransactionTab {...signTransactionProps} />
 
-              <AssetActionsTab {...signTransactionProps} />
+              <SignAssetTransactionTab {...signTransactionProps} />
 
-              <AtomicTransactionActionsTab {...signTransactionProps} />
+              <SignAtomicTransactionsTab {...signTransactionProps} />
 
-              <ApplicationActionsTab {...signTransactionProps} />
+              <SignApplicationTransactionTab {...signTransactionProps} />
 
-              <KeyRegistrationActionsTab {...signTransactionProps} />
+              <SignKeyRegistrationTransactionTab {...signTransactionProps} />
 
               <SignMessageTab
                 account={selectedAccount}
                 signMessageAction={avmWebProviderSignMessageAction}
               />
 
-              <ImportAccountTab />
+              <ImportAccountViaQRCodeTab />
+
+              <SendKeyRegistrationViaQRCodeTab
+                account={selectedAccount}
+                network={selectedNetwork}
+              />
             </TabPanels>
           </Tabs>
         );
@@ -243,26 +288,46 @@ const App: FC = () => {
         return (
           <Tabs colorScheme="primaryLight" w="full">
             <TabList>
-              <Tab>Payments</Tab>
-              <Tab>Assets</Tab>
-              <Tab>Atomic Txns</Tab>
-              <Tab>Apps</Tab>
-              <Tab>Keys</Tab>
-              <Tab>Import Account</Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Payment Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Asset Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Atomic Transactions</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Application Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Key Registration Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Import Account Via QR Code</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Send Key Registration Via QR Code</Text>
+              </Tab>
             </TabList>
 
             <TabPanels>
-              <PaymentActionsTab {...signTransactionProps} />
+              <SignPaymentTransactionTab {...signTransactionProps} />
 
-              <AssetActionsTab {...signTransactionProps} />
+              <SignAssetTransactionTab {...signTransactionProps} />
 
-              <AtomicTransactionActionsTab {...signTransactionProps} />
+              <SignAtomicTransactionsTab {...signTransactionProps} />
 
-              <ApplicationActionsTab {...signTransactionProps} />
+              <SignApplicationTransactionTab {...signTransactionProps} />
 
-              <KeyRegistrationActionsTab {...signTransactionProps} />
+              <SignKeyRegistrationTransactionTab {...signTransactionProps} />
 
-              <ImportAccountTab />
+              <ImportAccountViaQRCodeTab />
+
+              <SendKeyRegistrationViaQRCodeTab
+                account={selectedAccount}
+                network={selectedNetwork}
+              />
             </TabPanels>
           </Tabs>
         );

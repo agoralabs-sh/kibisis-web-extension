@@ -32,7 +32,7 @@ import { IAccountImportAsset } from './types';
 // utils
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
 
-const ImportAccountTab: FC = () => {
+const ImportAccountViaQRCodeTab: FC = () => {
   const toast: CreateToastFnReturn = useToast({
     duration: 3000,
     isClosable: true,
@@ -216,4 +216,4 @@ const ImportAccountTab: FC = () => {
   );
 };
 
-export default ImportAccountTab;
+export default ImportAccountViaQRCodeTab;

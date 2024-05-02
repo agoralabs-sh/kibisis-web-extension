@@ -67,7 +67,7 @@ interface IAssetValue extends IAssetInformation {
   isChecked: boolean;
 }
 
-const AtomicTransactionActionsTab: FC<IBaseTransactionProps> = ({
+const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
   account,
   connectionType,
   network,
@@ -520,4 +520,4 @@ const AtomicTransactionActionsTab: FC<IBaseTransactionProps> = ({
   );
 };
 
-export default AtomicTransactionActionsTab;
+export default SignAtomicTransactionsTab;

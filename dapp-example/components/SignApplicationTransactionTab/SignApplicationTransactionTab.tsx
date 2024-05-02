@@ -39,7 +39,7 @@ import type { IBaseTransactionProps } from '../../types';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import { createAppCallTransaction } from '../../utils';
 
-const ApplicationActionsTab: FC<IBaseTransactionProps> = ({
+const SignApplicationTransactionTab: FC<IBaseTransactionProps> = ({
   account,
   connectionType,
   network,
@@ -214,4 +214,4 @@ const ApplicationActionsTab: FC<IBaseTransactionProps> = ({
   );
 };
 
-export default ApplicationActionsTab;
+export default SignApplicationTransactionTab;

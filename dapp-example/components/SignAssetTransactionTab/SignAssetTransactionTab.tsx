@@ -56,7 +56,7 @@ import {
   createAssetTransferTransaction,
 } from '../../utils';
 
-const AssetActionsTab: FC<IBaseTransactionProps> = ({
+const SignAssetTransactionTab: FC<IBaseTransactionProps> = ({
   account,
   connectionType,
   network,
@@ -415,4 +415,4 @@ const AssetActionsTab: FC<IBaseTransactionProps> = ({
   );
 };
 
-export default AssetActionsTab;
+export default SignAssetTransactionTab;

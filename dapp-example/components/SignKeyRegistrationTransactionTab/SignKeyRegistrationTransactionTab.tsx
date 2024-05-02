@@ -5,11 +5,6 @@ import {
   CreateToastFnReturn,
   HStack,
   Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   Spacer,
   TabPanel,
   Text,
@@ -27,7 +22,6 @@ import {
   SignedTransaction,
   Transaction,
 } from 'algosdk';
-import BigNumber from 'bignumber.js';
 import React, { ChangeEvent, FC, useState } from 'react';
 
 // theme
@@ -37,11 +31,10 @@ import { theme } from '@extension/theme';
 import type { IBaseTransactionProps } from '../../types';
 
 // utils
-import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
-import { createPaymentTransaction } from '../../utils';
+import { createKeyRegistrationTransaction } from '../../utils';
 
-const PaymentActionsTab: FC<IBaseTransactionProps> = ({
+const SignKeyRegistrationTransactionTab: FC<IBaseTransactionProps> = ({
   account,
   connectionType,
   network,
@@ -52,17 +45,12 @@ const PaymentActionsTab: FC<IBaseTransactionProps> = ({
     isClosable: true,
     position: 'top',
   });
-  // states
-  const [amount, setAmount] = useState<BigNumber>(new BigNumber('0'));
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
   const [note, setNote] = useState<string>('');
-  // handlers
-  const handleAmountChange = (valueAsString: string) =>
-    setAmount(new BigNumber(valueAsString));
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
-  const handleSignTransactionClick = async () => {
+  const handleSignTransactionClick = (online: boolean) => async () => {
     let result: (string | null)[] | null = null;
     let unsignedTransaction: Transaction | null = null;
 
@@ -77,12 +65,11 @@ const PaymentActionsTab: FC<IBaseTransactionProps> = ({
     }
 
     try {
-      unsignedTransaction = await createPaymentTransaction({
-        amount: convertToAtomicUnit(amount, network.nativeCurrency.decimals),
+      unsignedTransaction = await createKeyRegistrationTransaction({
         from: account.address,
         network,
         note: note.length > 0 ? note : null,
-        to: null,
+        online,
       });
       result = await signTransactionsAction([
         {
@@ -92,16 +79,16 @@ const PaymentActionsTab: FC<IBaseTransactionProps> = ({
 
       if (result && result[0]) {
         toast({
-          description: `Successfully signed payment transaction for provider "${connectionType}".`,
+          description: `Successfully signed key registration transaction for provider "${connectionType}".`,
           status: 'success',
-          title: 'Payment Transaction Signed!',
+          title: 'Key Reg Transaction Signed!',
         });
 
         setSignedTransaction(decodeSignedTransaction(decodeBase64(result[0])));
       }
     } catch (error) {
       toast({
-        description: (error as BaseARC0027Error).message,
+        description: error.message,
         status: 'error',
         title: `${(error as BaseARC0027Error).code}: ${
           (error as BaseARC0027Error).name
@@ -127,36 +114,6 @@ const PaymentActionsTab: FC<IBaseTransactionProps> = ({
                 )} ${network.nativeCurrency.symbol}`
               : 'N/A'}
           </Text>
-        </HStack>
-
-        {/*amount*/}
-        <HStack w="full">
-          <Text size="md" textAlign="left">
-            Amount:
-          </Text>
-          <NumberInput
-            flexGrow={1}
-            min={0}
-            max={
-              account && network
-                ? parseFloat(
-                    convertToStandardUnit(
-                      account.balance,
-                      network.nativeCurrency.decimals
-                    ).toString()
-                  )
-                : 0
-            }
-            precision={network ? network.nativeCurrency.decimals : 0}
-            onChange={handleAmountChange}
-            value={amount.toString()}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
         </HStack>
 
         {/*note*/}
@@ -185,19 +142,28 @@ const PaymentActionsTab: FC<IBaseTransactionProps> = ({
           </HStack>
         </VStack>
 
-        {/*sign payment transaction button*/}
-        <Button
-          borderRadius={theme.radii['3xl']}
-          colorScheme="primaryLight"
-          onClick={handleSignTransactionClick}
-          size="lg"
-          w={365}
-        >
-          Send Payment Transaction
-        </Button>
+        {/*sign transaction button*/}
+        <VStack spacing={2} w="full">
+          <Button
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
+            onClick={handleSignTransactionClick(true)}
+            size="lg"
+          >
+            Send Online Key Registration Transaction
+          </Button>
+          <Button
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
+            onClick={handleSignTransactionClick(false)}
+            size="lg"
+          >
+            Send Offline Key Registration Transaction
+          </Button>
+        </VStack>
       </VStack>
     </TabPanel>
   );
 };
 
-export default PaymentActionsTab;
+export default SignKeyRegistrationTransactionTab;
