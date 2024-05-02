@@ -1,6 +1,5 @@
 import {
   decode as decodeBase64,
-  encode as encodeBase64,
   encodeURLSafe as encodeBase64URLSafe,
 } from '@stablelib/base64';
 
@@ -14,7 +13,6 @@ import { networks } from '@extension/config';
 import {
   ARC0300AssetTypeEnum,
   ARC0300AuthorityEnum,
-  ARC0300EncodingEnum,
   ARC0300PathEnum,
   ARC0300QueryEnum,
 } from '@extension/enums';

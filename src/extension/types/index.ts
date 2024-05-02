@@ -46,6 +46,9 @@ export type { default as IARC0200AssetInformation } from './IARC0200AssetInforma
 export type { default as IARC0300AssetAddSchema } from './IARC0300AssetAddSchema';
 export type { default as IARC0300BaseSchema } from './IARC0300BaseSchema';
 export type { default as IARC0300AccountImportSchema } from './IARC0300AccountImportSchema';
+export type { default as IARC0300CommonTransactionSendQuery } from './IARC0300CommonTransactionSendQuery';
+export type { default as IARC0300OfflineKeyRegistrationTransactionSendSchema } from './IARC0300OfflineKeyRegistrationTransactionSendSchema';
+export type { default as IARC0300OnlineKeyRegistrationTransactionSendSchema } from './IARC0300OnlineKeyRegistrationTransactionSendSchema';
 export type { default as IAssetConfigTransaction } from './IAssetConfigTransaction';
 export type { default as IAssetCreateTransaction } from './IAssetCreateTransaction';
 export type { default as IAssetDestroyTransaction } from './IAssetDestroyTransaction';
