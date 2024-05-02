@@ -4,12 +4,12 @@ import { Transaction } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 
 // components
+import KeyRegistrationTransactionModalContent from '@extension/components/KeyRegistrationTransactionModalContent';
 import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetConfigTransactionContent from './AssetConfigTransactionContent';
 import AssetCreateTransactionContent from './AssetCreateTransactionContent';
 import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
-import KeyRegistrationTransactionContent from './KeyRegistrationTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 
 // enums
@@ -205,9 +205,10 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
       );
     case 'keyreg':
       return (
-        <KeyRegistrationTransactionContent
-          fromAccount={fromAccount}
+        <KeyRegistrationTransactionModalContent
+          account={fromAccount}
           network={network}
+          showHeader={true}
           transaction={transaction}
         />
       );

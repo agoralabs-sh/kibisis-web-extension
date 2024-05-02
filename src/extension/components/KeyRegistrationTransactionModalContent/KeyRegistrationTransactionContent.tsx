@@ -1,15 +1,20 @@
 import { Text, VStack } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
-import { encodeAddress, Transaction } from 'algosdk';
+import { encodeAddress } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
+import ChainBadge from '@extension/components/ChainBadge';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
-import SignTxnsAddressItem from './SignTxnsAddressItem';
-import SignTxnsAssetItem from './SignTxnsAssetItem';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -19,29 +24,19 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IAccount, INetwork } from '@extension/types';
-import type { ICondensedProps } from './types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
-import ModalItem from '@extension/components/ModalItem';
-import ChainBadge from '@extension/components/ChainBadge';
-import { DEFAULT_GAP } from '@extension/constants';
-
-interface IProps {
-  condensed?: ICondensedProps;
-  fromAccount: IAccount | null;
-  network: INetwork;
-  transaction: Transaction;
-}
 
 const KeyRegistrationTransactionContent: FC<IProps> = ({
+  account,
   condensed,
-  fromAccount,
   network,
+  showHeader = false,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
@@ -50,19 +45,11 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
   const feeAsAtomicUnit: BigNumber = new BigNumber(
     transaction.fee ? String(transaction.fee) : '0'
   );
-  const icon: ReactNode = createIconFromDataUri(
-    network.nativeCurrency.iconUrl,
-    {
-      color: subTextColor,
-      h: 3,
-      w: 3,
-    }
-  );
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction.get_obj_for_encoding(),
     {
       network,
-      sender: fromAccount,
+      sender: account,
     }
   );
   // renders
@@ -120,22 +107,28 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={condensed ? 2 : 4}
+      spacing={condensed ? DEFAULT_GAP / 3 : DEFAULT_GAP - 2}
       w="full"
     >
       {/*heading*/}
-      <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
-        {t<string>('headings.transaction', {
-          context: transactionType,
-        })}
-      </Text>
+      {showHeader && (
+        <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
+          {t<string>('headings.transaction', {
+            context: transactionType,
+          })}
+        </Text>
+      )}
 
       {/*account*/}
-      <SignTxnsAddressItem
-        address={encodeAddress(transaction.from.publicKey)}
-        ariaLabel="Account"
+      <ModalItem
         label={`${t<string>('labels.account')}:`}
-        network={network}
+        tooltipLabel={encodeAddress(transaction.from.publicKey)}
+        value={
+          <AddressDisplay
+            address={encodeAddress(transaction.from.publicKey)}
+            network={network}
+          />
+        }
       />
 
       {/*network*/}
@@ -145,12 +138,15 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
       />
 
       {/*fee*/}
-      <SignTxnsAssetItem
-        atomicUnitAmount={feeAsAtomicUnit}
+      <ModalAssetItem
+        amountInAtomicUnits={feeAsAtomicUnit}
         decimals={network.nativeCurrency.decimals}
-        icon={icon}
+        icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
+          color: subTextColor,
+          h: 3,
+          w: 3,
+        })}
         label={`${t<string>('labels.fee')}:`}
-        unit={network.nativeCurrency.symbol}
       />
 
       {/*vote key*/}

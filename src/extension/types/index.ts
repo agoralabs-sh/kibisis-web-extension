@@ -72,6 +72,7 @@ export type { default as IBaseTransaction } from './IBaseTransaction';
 export type { default as IBlockExplorer } from './IBlockExplorer';
 export type { default as IChainNamespace } from './IChainNamespace';
 export type { default as IClientRequestEventPayload } from './IClientRequestEventPayload';
+export type { default as ICondensedProps } from './ICondensedProps';
 export type { default as IDecodedJwt } from './IDecodedJwt';
 export type { default as IDecodedJwtHeader } from './IDecodedJwtHeader';
 export type { default as IDecodedJwtPayload } from './IDecodedJwtPayload';

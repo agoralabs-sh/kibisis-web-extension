@@ -10,36 +10,25 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import {
-  decode as decodeBase64,
   decodeURLSafe as decodeBase64URLSafe,
   encode as encodeBase64,
 } from '@stablelib/base64';
-import BigNumber from 'bignumber.js';
+import { Transaction } from 'algosdk';
 import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 // components
-import AddressDisplay from '@extension/components/AddressDisplay';
-import AssetDisplay from '@extension/components/AssetDisplay';
 import Button from '@extension/components/Button';
-import ChainBadge from '@extension/components/ChainBadge';
-import ModalItem from '@extension/components/ModalItem';
+import KeyRegistrationTransactionModalContent from '@extension/components/KeyRegistrationTransactionModalContent';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
-import ModalTextItem from '@extension/components/ModalTextItem';
-import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
 
 // constants
-import {
-  BODY_BACKGROUND_COLOR,
-  DEFAULT_GAP,
-  MODAL_ITEM_HEIGHT,
-} from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import {
@@ -54,7 +43,6 @@ import { create as createNotification } from '@extension/features/notifications'
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
@@ -64,9 +52,6 @@ import {
   useSelectPasswordLockPassword,
   useSelectSettings,
 } from '@extension/selectors';
-
-// services
-import AccountService from '@extension/services/AccountService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -80,13 +65,12 @@ import type {
 import type { IModalContentProps } from './types';
 
 // utils
-import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import createUnsignedKeyRegistrationTransactionFromSchema from '@extension/utils/createUnsignedKeyRegistrationTransactionFromSchema';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
 
-const KeyRegistrationTransactionSendModalContent: FC<
+const KeyRegistrationTransactionSendModal: FC<
   IModalContentProps<
     | IARC0300OfflineKeyRegistrationTransactionSendSchema
     | IARC0300OnlineKeyRegistrationTransactionSendSchema
@@ -95,7 +79,6 @@ const KeyRegistrationTransactionSendModalContent: FC<
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
   const account = useSelectAccountByAddress(
@@ -115,9 +98,10 @@ const KeyRegistrationTransactionSendModalContent: FC<
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const subTextColor: string = useSubTextColor();
   // states
   const [sending, setSending] = useState<boolean>(false);
+  const [unsignedTransaction, setUnsignedTransaction] =
+    useState<Transaction | null>(null);
   // misc
   const genesisHash = schema.query[ARC0300QueryEnum.GenesisHash];
   const isOnlineKeyRegistrationTransaction = (
@@ -141,6 +125,7 @@ const KeyRegistrationTransactionSendModalContent: FC<
   const reset = () => {
     resetPassword();
     setSending(false);
+    setUnsignedTransaction(null);
   };
   // handlers
   const handleKeyUpPasswordInput = async (
@@ -164,6 +149,10 @@ const KeyRegistrationTransactionSendModalContent: FC<
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
     let transactionIds: string[];
+
+    if (!unsignedTransaction) {
+      return;
+    }
 
     if (!account) {
       dispatch(
@@ -194,7 +183,7 @@ const KeyRegistrationTransactionSendModalContent: FC<
       // validate the password input
       if (validatePassword()) {
         logger.debug(
-          `${KeyRegistrationTransactionSendModalContent.name}#${_functionName}: password not valid`
+          `${KeyRegistrationTransactionSendModal.name}#${_functionName}: password not valid`
         );
 
         return;
@@ -207,7 +196,7 @@ const KeyRegistrationTransactionSendModalContent: FC<
 
     if (!_password) {
       logger.debug(
-        `${KeyRegistrationTransactionSendModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
+        `${KeyRegistrationTransactionSendModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
       );
 
       return;
@@ -220,17 +209,12 @@ const KeyRegistrationTransactionSendModalContent: FC<
         logger,
         network,
         password,
-        unsignedTransactions: [
-          await createUnsignedKeyRegistrationTransactionFromSchema({
-            network,
-            schema,
-          }),
-        ],
+        unsignedTransactions: [unsignedTransaction],
       });
 
       logger.debug(
         `${
-          KeyRegistrationTransactionSendModalContent.name
+          KeyRegistrationTransactionSendModal.name
         }#${_functionName}: sent transactions [${transactionIds
           .map((value) => `"${value}"`)
           .join(',')}] to the network`
@@ -296,6 +280,18 @@ const KeyRegistrationTransactionSendModalContent: FC<
       passwordInputRef.current.focus();
     }
   }, []);
+  useEffect(() => {
+    if (account && network) {
+      (async () =>
+        setUnsignedTransaction(
+          await createUnsignedKeyRegistrationTransactionFromSchema({
+            logger,
+            network,
+            schema,
+          })
+        ))();
+    }
+  }, [account, network, schema]);
 
   return (
     <ModalContent
@@ -325,135 +321,22 @@ const KeyRegistrationTransactionSendModalContent: FC<
             })}
           </Text>
 
-          {!account || !network ? (
+          {!account || !network || !unsignedTransaction ? (
             <VStack spacing={DEFAULT_GAP / 3} w="full">
               <ModalSkeletonItem />
               <ModalSkeletonItem />
               <ModalSkeletonItem />
             </VStack>
           ) : (
-            <VStack spacing={DEFAULT_GAP / 3} w="full">
-              {/*account*/}
-              <ModalItem
-                label={`${t<string>('labels.account')}:`}
-                tooltipLabel={schema.query[ARC0300QueryEnum.Sender]}
-                value={
-                  <AddressDisplay
-                    address={AccountService.convertPublicKeyToAlgorandAddress(
-                      account.publicKey
-                    )}
-                    network={network}
-                  />
-                }
-              />
-
-              {/*network*/}
-              <ModalItem
-                label={`${t<string>('labels.network')}:`}
-                value={<ChainBadge network={network} />}
-              />
-
-              {/*fee*/}
-              <ModalItem
-                label={`${t<string>('labels.fee')}:`}
-                tooltipLabel={schema.query[ARC0300QueryEnum.Fee] || network.fee}
-                value={
-                  <AssetDisplay
-                    atomicUnitAmount={
-                      new BigNumber(
-                        schema.query[ARC0300QueryEnum.Fee] || network.fee
-                      )
-                    }
-                    amountColor={subTextColor}
-                    decimals={network.nativeCurrency.decimals}
-                    fontSize="sm"
-                    icon={createIconFromDataUri(
-                      network.nativeCurrency.iconUrl,
-                      {
-                        color: subTextColor,
-                        h: 3,
-                        w: 3,
-                      }
-                    )}
-                    unit={network.nativeCurrency.symbol}
-                  />
-                }
-              />
-
-              {/*vote key*/}
-              {schema.query[ARC0300QueryEnum.VoteKey] && (
-                <ModalTextItem
-                  isCode={true}
-                  label={`${t<string>('labels.voteKey')}:`}
-                  value={schema.query[ARC0300QueryEnum.VoteKey]}
-                />
-              )}
-
-              {/*note*/}
-              {schema.query[ARC0300QueryEnum.Note] && (
-                <ModalTextItem
-                  isCode={true}
-                  label={`${t<string>('labels.note')}:`}
-                  value={new TextDecoder().decode(
-                    decodeBase64(schema.query[ARC0300QueryEnum.Note])
-                  )}
-                />
-              )}
-
-              {isOnlineKeyRegistrationTransaction(schema) && (
-                <MoreInformationAccordion
-                  color={defaultTextColor}
-                  fontSize="xs"
-                  isOpen={isOpen}
-                  minButtonHeight={MODAL_ITEM_HEIGHT}
-                  onChange={handleMoreInformationToggle}
-                >
-                  <VStack spacing={2} w="full">
-                    {/*selection key*/}
-                    {schema.query[ARC0300QueryEnum.SelectionKey] && (
-                      <ModalTextItem
-                        isCode={true}
-                        label={`${t<string>('labels.selectionKey')}:`}
-                        value={schema.query[ARC0300QueryEnum.SelectionKey]}
-                      />
-                    )}
-
-                    {/*state proof key*/}
-                    {schema.query[ARC0300QueryEnum.StateProofKey] && (
-                      <ModalTextItem
-                        isCode={true}
-                        label={`${t<string>('labels.stateProofKey')}:`}
-                        value={schema.query[ARC0300QueryEnum.StateProofKey]}
-                      />
-                    )}
-
-                    {/*vote key dilution*/}
-                    {schema.query[ARC0300QueryEnum.VoteKeyDilution] && (
-                      <ModalTextItem
-                        label={`${t<string>('labels.voteKeyDilution')}:`}
-                        value={schema.query[ARC0300QueryEnum.VoteKeyDilution]}
-                      />
-                    )}
-
-                    {/*first round*/}
-                    {schema.query[ARC0300QueryEnum.VoteFirst] && (
-                      <ModalTextItem
-                        label={`${t<string>('labels.firstRound')}:`}
-                        value={schema.query[ARC0300QueryEnum.VoteFirst]}
-                      />
-                    )}
-
-                    {/*last round*/}
-                    {schema.query[ARC0300QueryEnum.VoteLast] && (
-                      <ModalTextItem
-                        label={`${t<string>('labels.lastRound')}:`}
-                        value={schema.query[ARC0300QueryEnum.VoteLast]}
-                      />
-                    )}
-                  </VStack>
-                </MoreInformationAccordion>
-              )}
-            </VStack>
+            <KeyRegistrationTransactionModalContent
+              account={account}
+              condensed={{
+                expanded: isOpen,
+                onChange: handleMoreInformationToggle,
+              }}
+              network={network}
+              transaction={unsignedTransaction}
+            />
           )}
         </VStack>
       </ModalBody>
@@ -501,4 +384,4 @@ const KeyRegistrationTransactionSendModalContent: FC<
   );
 };
 
-export default KeyRegistrationTransactionSendModalContent;
+export default KeyRegistrationTransactionSendModal;

@@ -9,7 +9,7 @@ import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTab
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
 import AccountImportModalContent from './AccountImportModalContent';
 import AssetAddModalContent from './AssetAddModalContent';
-import KeyRegistrationTransactionSendModalContent from './KeyRegistrationTransactionSendModalContent';
+import KeyRegistrationTransactionSendModal from './KeyRegistrationTransactionSendModal';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
@@ -145,7 +145,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                 ) {
                   case TransactionType.keyreg:
                     return (
-                      <KeyRegistrationTransactionSendModalContent
+                      <KeyRegistrationTransactionSendModal
                         onComplete={handleClose}
                         onPreviousClick={handlePreviousClick}
                         schema={
