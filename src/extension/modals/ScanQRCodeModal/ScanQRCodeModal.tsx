@@ -1,4 +1,5 @@
 import { Modal } from '@chakra-ui/react';
+import { TransactionType } from 'algosdk';
 import React, { FC, useState } from 'react';
 
 // components
@@ -8,6 +9,7 @@ import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTab
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
 import AccountImportModalContent from './AccountImportModalContent';
 import AssetAddModalContent from './AssetAddModalContent';
+import KeyRegistrationTransactionSendModalContent from './KeyRegistrationTransactionSendModalContent';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
@@ -24,21 +26,21 @@ import {
 
 // types
 import type { ILogger } from '@common/types';
-import type {
+import {
   IARC0300AccountImportSchema,
   IARC0300AssetAddSchema,
   IARC0300BaseSchema,
+  IARC0300OfflineKeyRegistrationTransactionSendSchema,
+  IARC0300OnlineKeyRegistrationTransactionSendSchema,
+  IModalProps,
   INetwork,
+  TARC0300TransactionSendSchemas,
 } from '@extension/types';
 
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 
-interface IProps {
-  onClose: () => void;
-}
-
-const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
+const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   // selectors
   const logger: ILogger = useSelectLogger();
   const networks: INetwork[] = useSelectNetworks();
@@ -121,6 +123,41 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
                     schema={arc0300Schema as IARC0300AssetAddSchema}
                   />
                 );
+              }
+            }
+
+            break;
+          case ARC0300AuthorityEnum.Transaction:
+            if (
+              scanQRCodeModal.allowedAuthorities.length <= 0 ||
+              scanQRCodeModal.allowedAuthorities.includes(
+                ARC0300AuthorityEnum.Transaction
+              )
+            ) {
+              // send
+              if (
+                arc0300Schema.paths[0] === ARC0300PathEnum.Send &&
+                (scanQRCodeModal.allowedParams.length <= 0 ||
+                  scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Send))
+              ) {
+                switch (
+                  (arc0300Schema as TARC0300TransactionSendSchemas).query.type
+                ) {
+                  case TransactionType.keyreg:
+                    return (
+                      <KeyRegistrationTransactionSendModalContent
+                        onComplete={handleClose}
+                        onPreviousClick={handlePreviousClick}
+                        schema={
+                          arc0300Schema as
+                            | IARC0300OfflineKeyRegistrationTransactionSendSchema
+                            | IARC0300OnlineKeyRegistrationTransactionSendSchema
+                        }
+                      />
+                    );
+                  default:
+                    break;
+                }
               }
             }
 

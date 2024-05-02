@@ -24,7 +24,6 @@ import parseARC0300CommonTransactionSendQuery from './parseARC0300CommonTransact
 
 export default function parseARC0300KeyRegistrationTransactionSendSchema(
   scheme: string,
-  paths: string[],
   searchParams: URLSearchParams,
   options: IOptions
 ):

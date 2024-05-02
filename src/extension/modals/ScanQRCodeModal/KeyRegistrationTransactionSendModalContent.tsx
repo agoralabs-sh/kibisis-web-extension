@@ -82,7 +82,8 @@ import type {
   IActiveAccountDetails,
   IAppThunkDispatch,
   IARC0200Asset,
-  IARC0300AssetAddSchema,
+  IARC0300OfflineKeyRegistrationTransactionSendSchema,
+  IARC0300OnlineKeyRegistrationTransactionSendSchema,
   INetwork,
 } from '@extension/types';
 import type { IModalContentProps } from './types';
@@ -92,11 +93,12 @@ import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import isAssetInAccountHoldings from '@extension/utils/isAssetInAccountHoldings';
 
-const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
-  onComplete,
-  onPreviousClick,
-  schema,
-}) => {
+const KeyRegistrationTransactionSendModalContent: FC<
+  IModalContentProps<
+    | IARC0300OfflineKeyRegistrationTransactionSendSchema
+    | IARC0300OnlineKeyRegistrationTransactionSendSchema
+  >
+> = ({ onComplete, onPreviousClick, schema }) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
@@ -419,4 +421,4 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
   );
 };
 
-export default AssetAddModalContent;
+export default KeyRegistrationTransactionSendModalContent;

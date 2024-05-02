@@ -1,1 +1,1 @@
-export type { default as IAccountImportModalContentProps } from './IAccountImportModalContentProps';
+export type { default as IModalContentProps } from './IModalContentProps';

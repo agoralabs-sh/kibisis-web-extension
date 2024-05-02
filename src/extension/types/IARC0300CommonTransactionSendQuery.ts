@@ -3,7 +3,7 @@ import { TransactionType } from 'algosdk';
 // enums
 import { ARC0300QueryEnum } from '@extension/enums';
 
-interface IARC0300OnlineKeyRegistrationTransactionSendQuery {
+interface IARC0300CommonTransactionSendQuery {
   [ARC0300QueryEnum.Fee]?: string;
   [ARC0300QueryEnum.FirstValid]?: string;
   [ARC0300QueryEnum.GenesisHash]?: string;
@@ -16,4 +16,4 @@ interface IARC0300OnlineKeyRegistrationTransactionSendQuery {
   [ARC0300QueryEnum.Type]: TransactionType;
 }
 
-export default IARC0300OnlineKeyRegistrationTransactionSendQuery;
+export default IARC0300CommonTransactionSendQuery;

@@ -83,23 +83,22 @@ import { theme } from '@extension/theme';
 import type { ILogger } from '@common/types';
 import type {
   IAccount,
+  IARC0300AccountImportSchema,
   IActiveAccountDetails,
   IAppThunkDispatch,
   INetwork,
   ISettings,
 } from '@extension/types';
-import type { IAccountImportModalContentProps } from './types';
+import type { IModalContentProps } from './types';
 
 // utils
 import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
-const AccountImportModalContent: FC<IAccountImportModalContentProps> = ({
-  onComplete,
-  onPreviousClick,
-  schema,
-}) => {
+const AccountImportModalContent: FC<
+  IModalContentProps<IARC0300AccountImportSchema>
+> = ({ onComplete, onPreviousClick, schema }) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();

@@ -8,7 +8,8 @@ import {
 } from '@extension/enums';
 
 // types
-import type { IOptions, TTransactionSendSchemas } from './types';
+import type { TARC0300TransactionSendSchemas } from '@extension/types';
+import type { IOptions } from './types';
 
 // utils
 import parseARC0300KeyRegistrationTransactionSendSchema from './parseARC0300KeyRegistrationTransactionSendSchema';
@@ -18,7 +19,7 @@ export default function parseARC0300TransactionSendSchema(
   paths: string[],
   searchParams: URLSearchParams,
   options: IOptions
-): TTransactionSendSchemas | null {
+): TARC0300TransactionSendSchemas | null {
   const _functionName = 'parseARC0300TransactionSendSchema';
   const logger = options?.logger;
   let typeParam: string | null;
@@ -35,7 +36,6 @@ export default function parseARC0300TransactionSendSchema(
     case TransactionType.keyreg:
       return parseARC0300KeyRegistrationTransactionSendSchema(
         scheme,
-        paths,
         searchParams,
         options
       );
