@@ -121,6 +121,8 @@ const translation: IResourceLanguage = {
     initializingWalletConnect:
       'Putting the final touches into your WalletConnect interface.',
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
+    keyRegistrationURI:
+      'You are about to register a participation key {{status}}.',
     loadingCameraStream: 'Loading your camera stream.',
     managerAddressDoesNotMatch:
       'This account does not have the authority to alter this asset. This transaction will likely fail.',
@@ -311,6 +313,8 @@ const translation: IResourceLanguage = {
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
     transactionsSuccessful: 'Transaction(s) Successful!',
+    unknownAccount: 'Unknown Account',
+    unknownNetwork: 'Unknown Network',
     unknownQRCode: 'Unknown QR Code',
   },
   labels: {
@@ -375,9 +379,6 @@ const translation: IResourceLanguage = {
     lastRound: 'Last Round',
     light: 'Light',
     debugLogging: 'Debug Logging',
-    nfts: 'NFTs',
-    note: 'Note',
-    noteOptional: 'Note (optional)',
     managerAccount: 'Manager Account',
     manageAccounts: 'Manage Accounts',
     max: 'Max',
@@ -386,7 +387,10 @@ const translation: IResourceLanguage = {
     name: 'Name',
     network: 'Network',
     newPassword: 'New Password',
+    nfts: 'NFTs',
     no: 'No',
+    note: 'Note',
+    noteOptional: 'Note (optional)',
     password: 'Password',
     passwordLockDuration: 'Never',
     passwordLockDuration_60000: '1 minute',

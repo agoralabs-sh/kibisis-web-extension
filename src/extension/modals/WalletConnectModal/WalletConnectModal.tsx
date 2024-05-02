@@ -42,7 +42,7 @@ import useWalletConnect from '@extension/hooks/useWalletConnect';
 // selectors
 import {
   useSelectAccounts,
-  useSelectFetchingAccounts,
+  useSelectAccountsFetching,
   useSelectInitializingWalletConnect,
   useSelectSelectedNetwork,
   useSelectWalletConnectModalOpen,
@@ -68,7 +68,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
   const { t } = useTranslation();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const fetching: boolean = useSelectFetchingAccounts();
+  const fetching: boolean = useSelectAccountsFetching();
   const initializing: boolean = useSelectInitializingWalletConnect();
   const network: INetwork | null = useSelectSelectedNetwork();
   const isOpen: boolean = useSelectWalletConnectModalOpen();

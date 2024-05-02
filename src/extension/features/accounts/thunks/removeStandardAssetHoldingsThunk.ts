@@ -6,9 +6,8 @@ import {
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import browser from 'webextension-polyfill';
 
-// contants
+// constants
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
 // enums
@@ -16,6 +15,7 @@ import { AccountsThunkEnum } from '@extension/enums';
 
 // errors
 import {
+  BaseExtensionError,
   DecryptionError,
   FailedToSendTransactionError,
   MalformedDataError,
@@ -27,7 +27,6 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { ILogger } from '@common/types';
@@ -83,8 +82,6 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     let filteredAssets: IStandardAsset[];
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
     let network: INetworkWithTransactionParams | null;
-    let privateKey: Uint8Array | null;
-    let privateKeyService: PrivateKeyService;
     let transactionIds: string[];
     let suggestedParams: SuggestedParams;
     let unsignedTransactions: Transaction[];
@@ -128,35 +125,9 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       );
     }
 
-    privateKeyService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
     address = AccountService.convertPublicKeyToAlgorandAddress(
       account.publicKey
     );
-
-    try {
-      privateKey = await privateKeyService.getDecryptedPrivateKey(
-        AccountService.decodePublicKey(account.publicKey),
-        password
-      );
-
-      if (!privateKey) {
-        errorMessage = `failed to get private key for account "${address}"`;
-
-        logger.debug(
-          `${AccountsThunkEnum.RemoveStandardAssetHoldings}: ${errorMessage}`
-        );
-
-        return rejectWithValue(new DecryptionError(errorMessage));
-      }
-    } catch (error) {
-      logger.error(`${AccountsThunkEnum.RemoveStandardAssetHoldings}:`, error);
-
-      return rejectWithValue(error);
-    }
-
     accountInformation =
       AccountService.extractAccountInformationForNetwork(account, network) ||
       AccountService.initializeDefaultAccountInformation();
@@ -244,11 +215,15 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       transactionIds = await signAndSendTransactions({
         logger,
         network,
-        privateKey,
+        password,
         unsignedTransactions,
       });
     } catch (error) {
       logger.debug(`${AccountsThunkEnum.RemoveStandardAssetHoldings}: `, error);
+
+      if ((error as BaseExtensionError).code) {
+        return rejectWithValue(error);
+      }
 
       return rejectWithValue(new FailedToSendTransactionError(error.message));
     }

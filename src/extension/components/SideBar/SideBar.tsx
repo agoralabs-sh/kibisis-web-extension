@@ -54,7 +54,7 @@ import {
   useSelectAccounts,
   useSelectActiveAccount,
   useSelectActiveAccountDetails,
-  useSelectFetchingAccounts,
+  useSelectAccountsFetching,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -78,7 +78,7 @@ const SideBar: FC = () => {
   const activeAccount: IAccount | null = useSelectActiveAccount();
   const activeAccountDetails: IActiveAccountDetails | null =
     useSelectActiveAccountDetails();
-  const fetchingAccounts: boolean = useSelectFetchingAccounts();
+  const fetchingAccounts: boolean = useSelectAccountsFetching();
   const network: INetwork | null = useSelectSelectedNetwork();
   // hooks
   const borderColor: string = useBorderColor();

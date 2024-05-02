@@ -40,7 +40,7 @@ export default async function signTransactions({
   password,
   txns,
 }: IOptions): Promise<(string | null)[]> {
-  const _functionName: string = 'signTxns';
+  const _functionName: string = 'signTransactions';
   const privateKeyService: PrivateKeyService = new PrivateKeyService({
     logger,
     passwordTag: browser.runtime.id,
@@ -67,7 +67,7 @@ export default async function signTransactions({
       // {@link https://algorand-provider.agoralabs.sh/getting-started/dapps/signing-transactions#non-wallet-signed-transactions}
       if (txn.signers && txn.signers.length <= 0) {
         logger?.debug(
-          `${_functionName}(): skipping transaction "${unsignedTransaction.txID()}" due to empty signers array`
+          `${_functionName}: skipping transaction "${unsignedTransaction.txID()}" due to empty signers array`
         );
 
         return txn.stxn || null; // if the signed transaction exists, return it, or null
@@ -76,7 +76,7 @@ export default async function signTransactions({
       try {
         signer = encodeAddress(unsignedTransaction.from.publicKey);
       } catch (error) {
-        logger?.error(`${_functionName}(): ${error.message}`);
+        logger?.error(`${_functionName}: ${error.message}`);
 
         throw new MalformedDataError(error.message);
       }
@@ -93,7 +93,7 @@ export default async function signTransactions({
         }
 
         logger?.debug(
-          `${_functionName}(): from address "${signer}" has not been authorized to sign transaction, skipping`
+          `${_functionName}: from address "${signer}" has not been authorized to sign transaction, skipping`
         );
 
         // this is a signed transaction, so ignore
@@ -108,7 +108,7 @@ export default async function signTransactions({
       if (!privateKey) {
         errorMessage = `failed to get private key for signer "${signer}"`;
 
-        logger?.error(`${_functionName}(): ${errorMessage}`);
+        logger?.error(`${_functionName}: ${errorMessage}`);
 
         throw new DecryptionError(errorMessage);
       }
@@ -120,12 +120,12 @@ export default async function signTransactions({
         );
 
         logger?.debug(
-          `${_functionName}(): successfully signed transaction "${txID}" with signer "${signer}"`
+          `${_functionName}: successfully signed transaction "${txID}" with signer "${signer}"`
         );
 
         return encodeBase64(blob);
       } catch (error) {
-        logger?.error(`${_functionName}(): ${error.message}`);
+        logger?.error(`${_functionName}: ${error.message}`);
 
         throw new MalformedDataError(error.message);
       }

@@ -71,12 +71,12 @@ import {
   useSelectActiveAccountDetails,
   useSelectActiveAccountInformation,
   useSelectActiveAccountTransactions,
-  useSelectFetchingAccounts,
+  useSelectAccountsFetching,
   useSelectSettingsFetching,
   useSelectIsOnline,
   useSelectNetworks,
   useSelectSettingsPreferredBlockExplorer,
-  useSelectSavingAccounts,
+  useSelectAccountsSaving,
   useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
@@ -116,13 +116,13 @@ const AccountPage: FC = () => {
     useSelectActiveAccountTransactions();
   const activeAccountDetails: IActiveAccountDetails | null =
     useSelectActiveAccountDetails();
-  const fetchingAccounts: boolean = useSelectFetchingAccounts();
+  const fetchingAccounts: boolean = useSelectAccountsFetching();
   const fetchingSettings: boolean = useSelectSettingsFetching();
   const online: boolean = useSelectIsOnline();
   const networks: INetwork[] = useSelectNetworks();
   const explorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
-  const savingAccounts: boolean = useSelectSavingAccounts();
+  const savingAccounts: boolean = useSelectAccountsSaving();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const settings: ISettings = useSelectSettings();
   // hooks

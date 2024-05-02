@@ -56,7 +56,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectFetchingAccounts,
+  useSelectAccountsFetching,
   useSelectLogger,
   useSelectSessions,
   useSelectSignMessageRequest,
@@ -91,7 +91,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const fetching: boolean = useSelectFetchingAccounts();
+  const fetching: boolean = useSelectAccountsFetching();
   const logger: ILogger = useSelectLogger();
   const sessions: ISession[] = useSelectSessions();
   const signMessageRequest: IEvent<

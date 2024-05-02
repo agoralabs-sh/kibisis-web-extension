@@ -8,6 +8,7 @@ import {
 
 /**
  * Gets a network by the genesis hash or null.
+ * @param {string} genesisHash - the genesis hash of the network to select.
  * @returns {INetworkWithTransactionParams | null} the network or null if the network does not exist.
  */
 export default function useSelectNetworkByGenesisHash(

@@ -46,7 +46,7 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 // selectors
 import {
   useSelectAccounts,
-  useSelectFetchingAccounts,
+  useSelectAccountsFetching,
   useSelectNetworks,
   useSelectSavingSessions,
 } from '@extension/selectors';
@@ -78,7 +78,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const fetching: boolean = useSelectFetchingAccounts();
+  const fetching: boolean = useSelectAccountsFetching();
   const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
   // hooks

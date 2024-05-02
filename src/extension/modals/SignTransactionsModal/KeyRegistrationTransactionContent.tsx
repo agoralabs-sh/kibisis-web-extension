@@ -25,6 +25,9 @@ import type { ICondensedProps } from './types';
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
+import ModalItem from '@extension/components/ModalItem';
+import ChainBadge from '@extension/components/ChainBadge';
+import { DEFAULT_GAP } from '@extension/constants';
 
 interface IProps {
   condensed?: ICondensedProps;
@@ -65,34 +68,8 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
   // renders
   const renderExtraInformation = () => (
     <>
-      {/*fee*/}
-      <SignTxnsAssetItem
-        atomicUnitAmount={feeAsAtomicUnit}
-        decimals={network.nativeCurrency.decimals}
-        icon={icon}
-        label={`${t<string>('labels.fee')}:`}
-        unit={network.nativeCurrency.symbol}
-      />
-
       {transactionType === TransactionTypeEnum.KeyRegistrationOnline && (
         <>
-          {/*vote key*/}
-          {transaction.voteKey && (
-            <ModalTextItem
-              isCode={true}
-              label={`${t<string>('labels.voteKey')}:`}
-              value={encodeBase64(transaction.voteKey)}
-            />
-          )}
-
-          {/*vote key dilution*/}
-          {transaction.voteKeyDilution && (
-            <ModalTextItem
-              label={`${t<string>('labels.voteKeyDilution')}:`}
-              value={String(transaction.voteKeyDilution)}
-            />
-          )}
-
           {/*selection key*/}
           {transaction.selectionKey && (
             <ModalTextItem
@@ -108,6 +85,14 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
               isCode={true}
               label={`${t<string>('labels.stateProofKey')}:`}
               value={encodeBase64(transaction.stateProofKey)}
+            />
+          )}
+
+          {/*vote key dilution*/}
+          {transaction.voteKeyDilution && (
+            <ModalTextItem
+              label={`${t<string>('labels.voteKeyDilution')}:`}
+              value={String(transaction.voteKeyDilution)}
             />
           )}
 
@@ -128,15 +113,6 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
           )}
         </>
       )}
-
-      {/*note*/}
-      {transaction.note && transaction.note.length > 0 && (
-        <ModalTextItem
-          isCode={true}
-          label={`${t<string>('labels.note')}:`}
-          value={new TextDecoder().decode(transaction.note)}
-        />
-      )}
     </>
   );
 
@@ -154,13 +130,46 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
         })}
       </Text>
 
-      {/*from*/}
+      {/*account*/}
       <SignTxnsAddressItem
         address={encodeAddress(transaction.from.publicKey)}
-        ariaLabel="From address"
-        label={`${t<string>('labels.from')}:`}
+        ariaLabel="Account"
+        label={`${t<string>('labels.account')}:`}
         network={network}
       />
+
+      {/*network*/}
+      <ModalItem
+        label={`${t<string>('labels.network')}:`}
+        value={<ChainBadge network={network} />}
+      />
+
+      {/*fee*/}
+      <SignTxnsAssetItem
+        atomicUnitAmount={feeAsAtomicUnit}
+        decimals={network.nativeCurrency.decimals}
+        icon={icon}
+        label={`${t<string>('labels.fee')}:`}
+        unit={network.nativeCurrency.symbol}
+      />
+
+      {/*vote key*/}
+      {transaction.voteKey && (
+        <ModalTextItem
+          isCode={true}
+          label={`${t<string>('labels.voteKey')}:`}
+          value={encodeBase64(transaction.voteKey)}
+        />
+      )}
+
+      {/*note*/}
+      {transaction.note && transaction.note.length > 0 && (
+        <ModalTextItem
+          isCode={true}
+          label={`${t<string>('labels.note')}:`}
+          value={new TextDecoder().decode(transaction.note)}
+        />
+      )}
 
       {condensed ? (
         <MoreInformationAccordion
@@ -169,7 +178,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
           isOpen={condensed.expanded}
           onChange={condensed.onChange}
         >
-          <VStack spacing={2} w="full">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
             {renderExtraInformation()}
           </VStack>
         </MoreInformationAccordion>
