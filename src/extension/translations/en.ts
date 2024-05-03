@@ -428,8 +428,10 @@ const translation: IResourceLanguage = {
     url: 'URL',
     value: 'Value',
     version: 'Version',
+    voteFirst: 'Voting First Round',
     voteKey: 'Participation Public Key',
     voteKeyDilution: 'Key Dilution',
+    voteLast: 'Voting Last Round',
     yes: 'Yes',
   },
   placeholders: {

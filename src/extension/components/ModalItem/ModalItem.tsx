@@ -19,9 +19,9 @@ const ModalItem: FC<IProps> = ({
   value,
   warningLabel,
   ...stackProps
-}: IProps) => {
+}) => {
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
 
   return (
     <HStack

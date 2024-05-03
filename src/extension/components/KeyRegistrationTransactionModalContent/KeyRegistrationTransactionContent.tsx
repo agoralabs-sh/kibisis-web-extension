@@ -14,7 +14,7 @@ import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { DEFAULT_GAP, MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -66,56 +66,6 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
       network,
       sender: account,
     }
-  );
-  // renders
-  const renderExtraInformation = () => (
-    <>
-      {transactionType === TransactionTypeEnum.KeyRegistrationOnline && (
-        <>
-          {/*selection key*/}
-          {transaction.selectionKey && (
-            <ModalTextItem
-              isCode={true}
-              label={`${t<string>('labels.selectionKey')}:`}
-              value={encodeBase64(transaction.selectionKey)}
-            />
-          )}
-
-          {/*state proof key*/}
-          {transaction.stateProofKey && (
-            <ModalTextItem
-              isCode={true}
-              label={`${t<string>('labels.stateProofKey')}:`}
-              value={encodeBase64(transaction.stateProofKey)}
-            />
-          )}
-
-          {/*vote key dilution*/}
-          {transaction.voteKeyDilution && (
-            <ModalTextItem
-              label={`${t<string>('labels.voteKeyDilution')}:`}
-              value={String(transaction.voteKeyDilution)}
-            />
-          )}
-
-          {/*first round*/}
-          {transaction.voteFirst && (
-            <ModalTextItem
-              label={`${t<string>('labels.firstRound')}:`}
-              value={String(transaction.voteFirst)}
-            />
-          )}
-
-          {/*last round*/}
-          {transaction.voteLast && (
-            <ModalTextItem
-              label={`${t<string>('labels.lastRound')}:`}
-              value={String(transaction.voteLast)}
-            />
-          )}
-        </>
-      )}
-    </>
   );
 
   return (
@@ -207,20 +157,60 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
         />
       )}
 
-      {condensed ? (
-        <MoreInformationAccordion
-          color={defaultTextColor}
-          fontSize="xs"
-          isOpen={condensed.expanded}
-          onChange={condensed.onChange}
-        >
-          <VStack spacing={DEFAULT_GAP / 3} w="full">
-            {renderExtraInformation()}
-          </VStack>
-        </MoreInformationAccordion>
-      ) : (
-        renderExtraInformation()
-      )}
+      {condensed &&
+        transactionType === TransactionTypeEnum.KeyRegistrationOnline && (
+          <MoreInformationAccordion
+            color={defaultTextColor}
+            fontSize="xs"
+            isOpen={condensed.expanded}
+            minButtonHeight={MODAL_ITEM_HEIGHT}
+            onChange={condensed.onChange}
+          >
+            <VStack spacing={DEFAULT_GAP / 3} w="full">
+              {/*selection key*/}
+              {transaction.selectionKey && (
+                <ModalTextItem
+                  isCode={true}
+                  label={`${t<string>('labels.selectionKey')}:`}
+                  value={encodeBase64(transaction.selectionKey)}
+                />
+              )}
+
+              {/*state proof key*/}
+              {transaction.stateProofKey && (
+                <ModalTextItem
+                  isCode={true}
+                  label={`${t<string>('labels.stateProofKey')}:`}
+                  value={encodeBase64(transaction.stateProofKey)}
+                />
+              )}
+
+              {/*vote key dilution*/}
+              {transaction.voteKeyDilution && (
+                <ModalTextItem
+                  label={`${t<string>('labels.voteKeyDilution')}:`}
+                  value={String(transaction.voteKeyDilution)}
+                />
+              )}
+
+              {/*vote first*/}
+              {transaction.voteFirst && (
+                <ModalTextItem
+                  label={`${t<string>('labels.voteFirst')}:`}
+                  value={String(transaction.voteFirst)}
+                />
+              )}
+
+              {/*vote last*/}
+              {transaction.voteLast && (
+                <ModalTextItem
+                  label={`${t<string>('labels.voteLast')}:`}
+                  value={String(transaction.voteLast)}
+                />
+              )}
+            </VStack>
+          </MoreInformationAccordion>
+        )}
     </VStack>
   );
 };

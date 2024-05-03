@@ -7,7 +7,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { IconType } from 'react-icons';
 import {
   IoCheckmarkCircleOutline,
   IoCloseCircleOutline,
@@ -26,32 +25,20 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { INotificationType } from '@extension/types';
+import type { IProps } from './types';
 
-interface IProps {
-  description?: string;
-  title: string;
-  onClose: () => void;
-  type?: INotificationType;
-}
-
-const Toast: FC<IProps> = ({
-  description,
-  onClose,
-  title,
-  type = 'info',
-}: IProps) => {
+const Toast: FC<IProps> = ({ description, onClose, title, type = 'info' }) => {
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const backgroundColor: string = useColorModeValue('gray.200', 'gray.600');
-  const primaryColor: string = usePrimaryColor();
-  const subTextColor: string = useSubTextColor();
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const backgroundColor = useColorModeValue('gray.200', 'gray.600');
+  const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
   // misc
   // handlers
   const handleCloseClick = () => onClose();
-  let color: string = primaryColor;
-  let icon: IconType = IoInformationCircleOutline;
+  let color = primaryColor;
+  let icon = IoInformationCircleOutline;
 
   switch (type) {
     case 'error':
@@ -81,24 +68,12 @@ const Toast: FC<IProps> = ({
       <Icon as={icon} color={color} h={DEFAULT_GAP} w={DEFAULT_GAP} />
 
       <VStack spacing={DEFAULT_GAP / 3} w="full">
-        <Text
-          color={defaultTextColor}
-          fontSize="sm"
-          noOfLines={1}
-          textAlign="left"
-          w="full"
-        >
+        <Text color={defaultTextColor} fontSize="sm" textAlign="left" w="full">
           {title}
         </Text>
 
         {description && (
-          <Text
-            color={subTextColor}
-            fontSize="xs"
-            noOfLines={1}
-            textAlign="left"
-            w="full"
-          >
+          <Text color={subTextColor} fontSize="xs" textAlign="left" w="full">
             {description}
           </Text>
         )}
