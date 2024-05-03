@@ -35,7 +35,8 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Remove All Sessions',
     reset: 'Reset',
     save: 'Save',
-    scanBrowserWindow: 'Scan Browser Window',
+    scanAWindow: 'Scan A Window',
+    scanCurrentTab: 'Scan Current Tab',
     scanUsingCamera: 'Scan Using Camera',
     send: 'Send',
     sign: 'Sign',
@@ -121,6 +122,8 @@ const translation: IResourceLanguage = {
     initializingWalletConnect:
       'Putting the final touches into your WalletConnect interface.',
     invalidAlgorithm: `The suggested signing method does not match the method that will be used to sign this token`,
+    keyRegistrationURI:
+      'You are about to register a participation key {{status}}.',
     loadingCameraStream: 'Loading your camera stream.',
     managerAddressDoesNotMatch:
       'This account does not have the authority to alter this asset. This transaction will likely fail.',
@@ -187,6 +190,10 @@ const translation: IResourceLanguage = {
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
     scanningForQrCode:
       'Scanning for a QR Code. Make sure the QR code is visible in the background.',
+    screenCaptureViaQRCodeScanNotAllowed1:
+      'Screen capture access has been denied.',
+    screenCaptureViaQRCodeScanNotAllowed2:
+      'You will need to go into your settings and allow access.',
     selectScanLocation: 'Choose how you would like to scan the QR code.',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
@@ -282,6 +289,8 @@ const translation: IResourceLanguage = {
     selectAccount: 'Select Account',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
+    screenCaptureDenied: 'Screen Capture Denied',
+    screenCaptureLoading: 'Screen Capture Loading',
     transaction: 'Unknown Transaction 💀',
     [`transaction_${TransactionTypeEnum.ApplicationClearState}`]:
       'Application Interaction ⚙️',
@@ -311,6 +320,8 @@ const translation: IResourceLanguage = {
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
     transactionsSuccessful: 'Transaction(s) Successful!',
+    unknownAccount: 'Unknown Account',
+    unknownNetwork: 'Unknown Network',
     unknownQRCode: 'Unknown QR Code',
   },
   labels: {
@@ -375,9 +386,6 @@ const translation: IResourceLanguage = {
     lastRound: 'Last Round',
     light: 'Light',
     debugLogging: 'Debug Logging',
-    nfts: 'NFTs',
-    note: 'Note',
-    noteOptional: 'Note (optional)',
     managerAccount: 'Manager Account',
     manageAccounts: 'Manage Accounts',
     max: 'Max',
@@ -386,7 +394,10 @@ const translation: IResourceLanguage = {
     name: 'Name',
     network: 'Network',
     newPassword: 'New Password',
+    nfts: 'NFTs',
     no: 'No',
+    note: 'Note',
+    noteOptional: 'Note (optional)',
     password: 'Password',
     passwordLockDuration: 'Never',
     passwordLockDuration_60000: '1 minute',
@@ -424,8 +435,10 @@ const translation: IResourceLanguage = {
     url: 'URL',
     value: 'Value',
     version: 'Version',
+    voteFirst: 'Voting First Round',
     voteKey: 'Participation Public Key',
     voteKeyDilution: 'Key Dilution',
+    voteLast: 'Voting Last Round',
     yes: 'Yes',
   },
   placeholders: {

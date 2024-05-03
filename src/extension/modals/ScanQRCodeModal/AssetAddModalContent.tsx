@@ -85,23 +85,18 @@ import type {
   IARC0300AssetAddSchema,
   INetwork,
 } from '@extension/types';
+import type { IModalContentProps } from './types';
 
 // utils
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import isAssetInAccountHoldings from '@extension/utils/isAssetInAccountHoldings';
 
-interface IProps {
-  onComplete: () => void;
-  onPreviousClick: () => void;
-  schema: IARC0300AssetAddSchema;
-}
-
-const AssetAddModalContent: FC<IProps> = ({
+const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
   onComplete,
   onPreviousClick,
   schema,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const navigate: NavigateFunction = useNavigate();
@@ -254,7 +249,7 @@ const AssetAddModalContent: FC<IProps> = ({
           </Text>
 
           {!asset || !network || loading ? (
-            <VStack spacing={2} w="full">
+            <VStack spacing={DEFAULT_GAP / 3} w="full">
               <ModalSkeletonItem />
               <ModalSkeletonItem />
               <ModalSkeletonItem />

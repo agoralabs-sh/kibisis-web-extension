@@ -41,7 +41,7 @@ import {
   useSelectActiveAccountDetails,
   useSelectLogger,
   useSelectPasswordLockPassword,
-  useSelectSavingAccounts,
+  useSelectAccountsSaving,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -72,7 +72,7 @@ const AddAccountMainRouter: FC = () => {
     useSelectActiveAccountDetails();
   const logger: ILogger = useSelectLogger();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const saving: boolean = useSelectSavingAccounts();
+  const saving: boolean = useSelectAccountsSaving();
   const settings: ISettings = useSelectSettings();
   // states
   const [addAccountResult, setAddAccountResult] =

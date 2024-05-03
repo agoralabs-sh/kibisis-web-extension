@@ -10,16 +10,15 @@ import { ScanModeEnum } from '@extension/enums';
 import { useSelectLogger } from '@extension/selectors';
 
 // types
-import type { ILogger } from '@common/types';
 import type { IStartScanningOptions, IUseCaptureQrCodeState } from './types';
 
 // utils
-import captureQRCodeFromCamera from './utils/captureQRCodeFromCamera';
+import captureQRCodeFromStream from './utils/captureQRCodeFromStream';
 import captureQRCodeFromTab from './utils/captureQRCodeFromTab';
 
 export default function useCaptureQRCode(): IUseCaptureQrCodeState {
   // selectors
-  const logger: ILogger = useSelectLogger();
+  const logger = useSelectLogger();
   // states
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [scanning, setScanning] = useState<boolean>(false);
@@ -32,7 +31,8 @@ export default function useCaptureQRCode(): IUseCaptureQrCodeState {
     try {
       switch (options.mode) {
         case ScanModeEnum.Camera:
-          capturedURI = await captureQRCodeFromCamera(options.videoElement);
+        case ScanModeEnum.ScreenCapture:
+          capturedURI = await captureQRCodeFromStream(options.videoElement);
           break;
         case ScanModeEnum.Tab:
           capturedURI = await captureQRCodeFromTab();

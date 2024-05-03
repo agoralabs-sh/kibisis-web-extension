@@ -6,7 +6,6 @@ import {
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import browser from 'webextension-polyfill';
 
 // constants
 import { NODE_REQUEST_DELAY } from '@extension/constants';
@@ -16,7 +15,7 @@ import { AccountsThunkEnum } from '@extension/enums';
 
 // errors
 import {
-  DecryptionError,
+  BaseExtensionError,
   FailedToSendTransactionError,
   MalformedDataError,
   NetworkNotSelectedError,
@@ -26,12 +25,9 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
   IAccountInformation,
   IBaseAsyncThunkConfig,
   IMainRootState,
@@ -64,12 +60,11 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     { accountId, assets, genesisHash, password },
     { getState, rejectWithValue }
   ) => {
-    const accounts: IAccount[] = getState().accounts.items;
-    const logger: ILogger = getState().system.logger;
-    const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const online: boolean = getState().system.online;
-    let account: IAccount | null =
-      accounts.find((value) => value.id === accountId) || null;
+    const accounts = getState().accounts.items;
+    const logger = getState().system.logger;
+    const networks = getState().networks.items;
+    const online = getState().system.online;
+    let account = accounts.find((value) => value.id === accountId) || null;
     let accountBalanceInAtomicUnits: BigNumber;
     let accountInformation: IAccountInformation;
     let accountService: AccountService;
@@ -80,8 +75,6 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     let filteredAssets: IStandardAsset[];
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
     let network: INetworkWithTransactionParams | null;
-    let privateKey: Uint8Array | null;
-    let privateKeyService: PrivateKeyService;
     let suggestedParams: SuggestedParams;
     let transactionIds: string[];
     let unsignedTransactions: Transaction[];
@@ -125,35 +118,9 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       );
     }
 
-    privateKeyService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
     address = AccountService.convertPublicKeyToAlgorandAddress(
       account.publicKey
     );
-
-    try {
-      privateKey = await privateKeyService.getDecryptedPrivateKey(
-        AccountService.decodePublicKey(account.publicKey),
-        password
-      );
-
-      if (!privateKey) {
-        errorMessage = `failed to get private key for account "${address}"`;
-
-        logger.debug(
-          `${AccountsThunkEnum.AddStandardAssetHoldings}: ${errorMessage}`
-        );
-
-        return rejectWithValue(new DecryptionError(errorMessage));
-      }
-    } catch (error) {
-      logger.debug(`${AccountsThunkEnum.AddStandardAssetHoldings}: `, error);
-
-      return rejectWithValue(error);
-    }
-
     accountInformation =
       AccountService.extractAccountInformationForNetwork(account, network) ||
       AccountService.initializeDefaultAccountInformation();
@@ -224,11 +191,15 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       transactionIds = await signAndSendTransactions({
         logger,
         network,
-        privateKey,
+        password,
         unsignedTransactions,
       });
     } catch (error) {
       logger.debug(`${AccountsThunkEnum.AddStandardAssetHoldings}: `, error);
+
+      if ((error as BaseExtensionError).code) {
+        return rejectWithValue(error);
+      }
 
       return rejectWithValue(new FailedToSendTransactionError(error.message));
     }

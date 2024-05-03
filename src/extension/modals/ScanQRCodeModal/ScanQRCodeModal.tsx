@@ -1,19 +1,19 @@
 import { Modal } from '@chakra-ui/react';
+import { TransactionType } from 'algosdk';
 import React, { FC, useState } from 'react';
 
 // components
 import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
+import ScanQRCodeViaScreenCaptureModalContent from '@extension/components/ScanQRCodeViaScreenCaptureModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
 import AccountImportModalContent from './AccountImportModalContent';
 import AssetAddModalContent from './AssetAddModalContent';
+import KeyRegistrationTransactionSendModal from './KeyRegistrationTransactionSendModal';
 
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
-
-// features
-import type { IScanQRCodeModal } from '@extension/features/system';
 
 // selectors
 import {
@@ -23,34 +23,35 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { ILogger } from '@common/types';
-import type {
+import {
   IARC0300AccountImportSchema,
   IARC0300AssetAddSchema,
   IARC0300BaseSchema,
-  INetwork,
+  IARC0300OfflineKeyRegistrationTransactionSendSchema,
+  IARC0300OnlineKeyRegistrationTransactionSendSchema,
+  IModalProps,
+  TARC0300TransactionSendSchemas,
 } from '@extension/types';
 
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 
-interface IProps {
-  onClose: () => void;
-}
-
-const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
+const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   // selectors
-  const logger: ILogger = useSelectLogger();
-  const networks: INetwork[] = useSelectNetworks();
-  const scanQRCodeModal: IScanQRCodeModal | null = useSelectScanQRCodeModal();
+  const logger = useSelectLogger();
+  const networks = useSelectNetworks();
+  const scanQRCodeModal = useSelectScanQRCodeModal();
   // state
   const [scanViaCamera, setScanViaCamera] = useState<boolean>(false);
+  const [scanViaScreenCapture, setScanViaScreenCapture] =
+    useState<boolean>(false);
   const [scanViaTab, setScanViaTab] = useState<boolean>(false);
   const [uri, setURI] = useState<string | null>(null);
   // misc
   const reset = () => {
     setURI(null);
     setScanViaCamera(false);
+    setScanViaScreenCapture(false);
     setScanViaTab(false);
   };
   // handlers
@@ -62,6 +63,7 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
   const handleOnURI = (uri: string) => setURI(uri);
   const handlePreviousClick = () => reset();
   const handleScanViaCameraClick = () => setScanViaCamera(true);
+  const handleScanViaScreenCaptureClick = () => setScanViaScreenCapture(true);
   const handleScanViaTabClick = () => setScanViaTab(true);
   // renders
   const renderContent = () => {
@@ -125,6 +127,41 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
             }
 
             break;
+          case ARC0300AuthorityEnum.Transaction:
+            if (
+              scanQRCodeModal.allowedAuthorities.length <= 0 ||
+              scanQRCodeModal.allowedAuthorities.includes(
+                ARC0300AuthorityEnum.Transaction
+              )
+            ) {
+              // send
+              if (
+                arc0300Schema.paths[0] === ARC0300PathEnum.Send &&
+                (scanQRCodeModal.allowedParams.length <= 0 ||
+                  scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Send))
+              ) {
+                switch (
+                  (arc0300Schema as TARC0300TransactionSendSchemas).query.type
+                ) {
+                  case TransactionType.keyreg:
+                    return (
+                      <KeyRegistrationTransactionSendModal
+                        onComplete={handleClose}
+                        onPreviousClick={handlePreviousClick}
+                        schema={
+                          arc0300Schema as
+                            | IARC0300OfflineKeyRegistrationTransactionSendSchema
+                            | IARC0300OnlineKeyRegistrationTransactionSendSchema
+                        }
+                      />
+                    );
+                  default:
+                    break;
+                }
+              }
+            }
+
+            break;
           default:
             break;
         }
@@ -148,6 +185,15 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
       );
     }
 
+    if (scanViaScreenCapture) {
+      return (
+        <ScanQRCodeViaScreenCaptureModalContent
+          onPreviousClick={handlePreviousClick}
+          onURI={handleOnURI}
+        />
+      );
+    }
+
     if (scanViaTab) {
       return (
         <ScanQRCodeViaTabModalContent
@@ -160,8 +206,9 @@ const ScanQRCodeModal: FC<IProps> = ({ onClose }: IProps) => {
     return (
       <ScanModeModalContent
         onCancelClick={handleCancelClick}
-        onScanViaTabClick={handleScanViaTabClick}
         onScanViaCameraClick={handleScanViaCameraClick}
+        onScanViaScreenCaptureClick={handleScanViaScreenCaptureClick}
+        onScanViaTabClick={handleScanViaTabClick}
       />
     );
   };

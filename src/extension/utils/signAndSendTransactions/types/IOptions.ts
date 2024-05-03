@@ -6,7 +6,7 @@ import type { INetwork } from '@extension/types';
 
 interface IOptions extends IBaseOptions {
   network: INetwork;
-  privateKey: Uint8Array;
+  password: string;
   unsignedTransactions: Transaction[];
 }
 

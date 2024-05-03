@@ -21,17 +21,13 @@ import { AssetTypeEnum } from '@extension/enums';
 
 // hooks
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
+import useMinimumBalanceRequirementsForTransactions from '@extension/hooks/useMinimumBalanceRequirementsForTransactions';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useSendAssetSummaryContent from './hooks/useSendAssetSummaryContent';
-
-// selectors
-import { useSelectLogger } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import type { SendAssetModalSummaryContentProps } from './types';
 
 // utils
@@ -51,33 +47,27 @@ const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
   transactions,
 }) => {
   const { t } = useTranslation();
-  // selectors
-  const logger: ILogger = useSelectLogger();
   // hooks
   const {
     accountBalanceInAtomicUnits,
     minimumBalanceRequirementInAtomicUnits,
     totalCostInAtomicUnits,
-  } = useSendAssetSummaryContent({
+  } = useMinimumBalanceRequirementsForTransactions({
     account: fromAccount,
     network,
     transactions,
   });
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const subTextColor: string = useSubTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const subTextColor = useSubTextColor();
   // misc
-  const amountInAtomicUnits: BigNumber = convertToAtomicUnit(
+  const amountInAtomicUnits = convertToAtomicUnit(
     new BigNumber(amountInStandardUnits),
     asset.decimals
   );
-  const isEnoughMinimumBalance: boolean =
-    !doesAccountFallBelowMinimumBalanceRequirementForTransactions({
-      account: fromAccount,
-      logger,
-      network,
-      transactions,
-    });
-  const totalFee: BigNumber = new BigNumber(
+  const isBelowMinimumBalance = accountBalanceInAtomicUnits
+    .minus(totalCostInAtomicUnits)
+    .lt(minimumBalanceRequirementInAtomicUnits);
+  const totalFee = new BigNumber(
     transactions.reduce((acc, value) => acc + value.fee, 0)
   );
   // renders
@@ -209,7 +199,7 @@ const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
       spacing={DEFAULT_GAP - 2}
       w="full"
     >
-      {!isEnoughMinimumBalance && (
+      {isBelowMinimumBalance && (
         <Warning
           message={t<string>('captions.minimumBalanceTooLow', {
             balance: formatCurrencyUnit(

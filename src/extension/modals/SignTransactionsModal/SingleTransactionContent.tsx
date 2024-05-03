@@ -1,15 +1,15 @@
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
-import { Transaction } from 'algosdk';
+import { Transaction, encodeAddress } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 
 // components
+import KeyRegistrationTransactionModalContent from '@extension/components/KeyRegistrationTransactionModalContent';
 import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetConfigTransactionContent from './AssetConfigTransactionContent';
 import AssetCreateTransactionContent from './AssetCreateTransactionContent';
 import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
 import AssetTransferTransactionContent from './AssetTransferTransactionContent';
-import KeyRegistrationTransactionContent from './KeyRegistrationTransactionContent';
 import PaymentTransactionContent from './PaymentTransactionContent';
 
 // enums
@@ -22,7 +22,7 @@ import { updateAccountInformation } from '@extension/features/accounts';
 import {
   useSelectAccounts,
   useSelectLogger,
-  useSelectNetworks,
+  useSelectNetworkByGenesisHash,
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsByGenesisHash,
   useSelectUpdatingStandardAssets,
@@ -32,14 +32,7 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
-import type {
-  IAccount,
-  IAccountInformation,
-  IBlockExplorer,
-  INetwork,
-  IStandardAsset,
-} from '@extension/types';
+import type { IAccount, IAccountInformation } from '@extension/types';
 
 // utils
 import parseTransactionType from '@extension/utils/parseTransactionType';
@@ -53,31 +46,28 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
   const encodedGenesisHash: string = encodeBase64(transaction.genesisHash);
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
-  const logger: ILogger = useSelectLogger();
-  const networks: INetwork[] = useSelectNetworks();
-  const preferredExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
-  const standardAssets: IStandardAsset[] =
+  const logger = useSelectLogger();
+  const network = useSelectNetworkByGenesisHash(encodedGenesisHash);
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
+  const standardAssets =
     useSelectStandardAssetsByGenesisHash(encodedGenesisHash);
-  const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
+  const updatingStandardAssets = useSelectUpdatingStandardAssets();
   // states
   const [fetchingAccountInformation, setFetchingAccountInformation] =
     useState<boolean>(false);
   const [fromAccount, setFromAccount] = useState<IAccount | null>(null);
   // misc
-  const network: INetwork | null =
-    networks.find((value) => value.genesisHash === encodedGenesisHash) || null;
-  const explorer: IBlockExplorer | null =
+  const explorer =
     network?.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
     network?.blockExplorers[0] ||
     null; // get the preferred explorer, if it exists in the network, otherwise get the default one
-  const standardAsset: IStandardAsset | null =
+  const standardAsset =
     standardAssets.find(
       (value) => value.id === String(transaction?.assetIndex)
     ) || null;
-  const transactionType: TransactionTypeEnum = parseTransactionType(
+  const transactionType = parseTransactionType(
     transaction.get_obj_for_encoding(),
     {
       network,
@@ -150,6 +140,16 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
     return null;
   }
 
+  if (!fromAccount) {
+    logger.debug(
+      `${
+        SingleTransactionContent.name
+      }: from account not known "${encodeAddress(transaction.from.publicKey)}"`
+    );
+
+    return null;
+  }
+
   switch (transaction.type) {
     case 'acfg':
       if (transactionType === TransactionTypeEnum.AssetCreate) {
@@ -205,9 +205,10 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
       );
     case 'keyreg':
       return (
-        <KeyRegistrationTransactionContent
-          fromAccount={fromAccount}
+        <KeyRegistrationTransactionModalContent
+          account={fromAccount}
           network={network}
+          showHeader={true}
           transaction={transaction}
         />
       );

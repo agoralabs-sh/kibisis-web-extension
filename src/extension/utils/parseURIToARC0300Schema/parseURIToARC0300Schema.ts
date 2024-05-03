@@ -11,6 +11,7 @@ import type { IOptions } from './types';
 // utils
 import parseARC0300AccountImportSchema from './parseARC0300AccountImportSchema';
 import parseARC0300AssetAddSchema from './parseARC0300AssetAddSchema';
+import parseARC0300TransactionSendSchema from './parseARC0300TransactionSendSchema';
 
 /**
  * Parses an ARC-0300 URI to a schema object.
@@ -22,8 +23,8 @@ export default function parseURIToARC0300Schema<Schema = IARC0300BaseSchema>(
   uri: string,
   { logger, supportedNetworks }: IOptions
 ): Schema | null {
-  const _functionName: string = 'parseURIToARC0300Schema';
-  const [scheme, authorityPathsAndQuery]: string[] = uri
+  const _functionName = 'parseURIToARC0300Schema';
+  const [scheme, authorityPathsAndQuery] = uri
     .split(':')
     .filter((value) => value);
 
@@ -66,6 +67,17 @@ export default function parseURIToARC0300Schema<Schema = IARC0300BaseSchema>(
     case ARC0300AuthorityEnum.Asset:
       if (paths[0] === ARC0300PathEnum.Add) {
         return parseARC0300AssetAddSchema(
+          scheme,
+          paths,
+          new URLSearchParams(query),
+          { logger, supportedNetworks }
+        ) as Schema;
+      }
+
+      break;
+    case ARC0300AuthorityEnum.Transaction:
+      if (paths[0] === ARC0300PathEnum.Send) {
+        return parseARC0300TransactionSendSchema(
           scheme,
           paths,
           new URLSearchParams(query),

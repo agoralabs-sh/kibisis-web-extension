@@ -1,5 +1,5 @@
 import {
-  decodeURLSafe as decodeBase63URLSafe,
+  decodeURLSafe as decodeBase64URLSafe,
   encode as encodeBase64,
 } from '@stablelib/base64';
 
@@ -51,7 +51,7 @@ export default function parseARC0300AssetAddSchema(
   }
 
   // convert from base 64 url safe to standard base64
-  genesisHash = encodeBase64(decodeBase63URLSafe(genesisHashParam));
+  genesisHash = encodeBase64(decodeBase64URLSafe(genesisHashParam));
 
   if (!supportedNetworks.find((value) => value.genesisHash === genesisHash)) {
     logger?.debug(

@@ -95,6 +95,7 @@ import type {
   IAppThunkDispatch,
   IARC0200Asset,
   IAssetTypes,
+  IModalProps,
   INativeCurrency,
   INetworkWithTransactionParams,
   ISettings,
@@ -104,11 +105,7 @@ import type {
 // utils
 import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransactionAmount';
 
-interface IProps {
-  onClose: () => void;
-}
-
-const SendAssetModal: FC<IProps> = ({ onClose }: IProps) => {
+const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);

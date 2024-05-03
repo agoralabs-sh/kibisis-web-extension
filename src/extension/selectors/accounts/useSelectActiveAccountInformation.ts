@@ -1,5 +1,5 @@
 // selectors
-import useSelectSelectedNetwork from '../useSelectSelectedNetwork';
+import useSelectSelectedNetwork from '../networks/useSelectSelectedNetwork';
 import useSelectActiveAccount from './useSelectActiveAccount';
 
 // services

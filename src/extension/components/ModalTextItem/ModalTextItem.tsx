@@ -48,7 +48,7 @@ const ModalTextItem: FC<IProps> = ({
       {...stackProps}
     >
       {/*label*/}
-      <Text color={defaultTextColor} fontSize="xs" w="full">
+      <Text color={defaultTextColor} fontSize="xs" w="35%">
         {label}
       </Text>
 

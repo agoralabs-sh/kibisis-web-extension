@@ -45,7 +45,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import {
   useSelectAccounts,
   useSelectEnableRequest,
-  useSelectFetchingAccounts,
+  useSelectAccountsFetching,
   useSelectNetworks,
   useSelectSavingSessions,
 } from '@extension/selectors';
@@ -80,7 +80,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   const enableRequestEvent: IEvent<
     IClientRequestEventPayload<IEnableParams>
   > | null = useSelectEnableRequest();
-  const fetching: boolean = useSelectFetchingAccounts();
+  const fetching: boolean = useSelectAccountsFetching();
   const networks: INetwork[] = useSelectNetworks();
   const saving: boolean = useSelectSavingSessions();
   // hooks

@@ -1,13 +1,11 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Address, decodeAddress } from 'algosdk';
-import browser from 'webextension-polyfill';
 
 // enums
 import { SendAssetsThunkEnum } from '@extension/enums';
 
 // errors
 import {
-  DecryptionError,
+  BaseExtensionError,
   FailedToSendTransactionError,
   MalformedDataError,
   NetworkNotSelectedError,
@@ -17,10 +15,8 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAsyncThunkConfigWithRejectValue,
@@ -46,19 +42,16 @@ const submitTransactionThunk: AsyncThunk<
 >(
   SendAssetsThunkEnum.SubmitTransaction,
   async ({ password, transactions }, { getState, rejectWithValue }) => {
-    const accounts: IAccount[] = getState().accounts.items;
-    const fromAddress: string | null = getState().sendAssets.fromAddress;
-    const logger: ILogger = getState().system.logger;
-    const genesisHash: string | null =
+    const accounts = getState().accounts.items;
+    const fromAddress = getState().sendAssets.fromAddress;
+    const logger = getState().system.logger;
+    const genesisHash =
       uniqueGenesisHashesFromTransactions(transactions).pop() || null;
-    const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const online: boolean = getState().system.online;
-    let decodedFromAddress: Address;
+    const networks = getState().networks.items;
+    const online = getState().system.online;
     let errorMessage: string;
     let fromAccount: IAccount | null;
     let network: INetworkWithTransactionParams | null;
-    let privateKey: Uint8Array | null;
-    let privateKeyService: PrivateKeyService;
 
     if (!fromAddress) {
       errorMessage = `fromAddress field missing`;
@@ -125,34 +118,6 @@ const submitTransactionThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(errorMessage));
     }
 
-    privateKeyService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
-
-    // attempt to decrypt the key suing the password
-    try {
-      decodedFromAddress = decodeAddress(fromAddress);
-      privateKey = await privateKeyService.getDecryptedPrivateKey(
-        decodedFromAddress.publicKey,
-        password
-      );
-
-      if (!privateKey) {
-        return rejectWithValue(
-          new DecryptionError(
-            `failed to get private key for signer "${fromAddress}"`
-          )
-        );
-      }
-    } catch (error) {
-      logger.debug(
-        `${SendAssetsThunkEnum.SubmitTransaction}: ${error.message}`
-      );
-
-      return rejectWithValue(error);
-    }
-
     // ensure the transaction does not fall below the minimum balance requirement
     if (
       doesAccountFallBelowMinimumBalanceRequirementForTransactions({
@@ -173,11 +138,15 @@ const submitTransactionThunk: AsyncThunk<
       return await signAndSendTransactions({
         logger,
         network,
-        privateKey,
+        password,
         unsignedTransactions: transactions,
       });
     } catch (error) {
       logger.error(`${SendAssetsThunkEnum.SubmitTransaction}:`, error);
+
+      if ((error as BaseExtensionError).code) {
+        return rejectWithValue(error);
+      }
 
       return rejectWithValue(new FailedToSendTransactionError(error.message));
     }

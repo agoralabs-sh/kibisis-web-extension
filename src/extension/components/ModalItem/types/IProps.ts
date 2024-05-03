@@ -1,10 +1,10 @@
 import { StackProps } from '@chakra-ui/react';
-import { ReactNode } from 'react';
+import { ReactElement } from 'react';
 
 interface IProps extends StackProps {
   label: string;
   tooltipLabel?: string;
-  value: ReactNode;
+  value: ReactElement;
   warningLabel?: string;
 }
 

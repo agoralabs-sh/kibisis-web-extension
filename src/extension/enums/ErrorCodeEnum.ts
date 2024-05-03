@@ -30,6 +30,11 @@ enum ErrorCodeEnum {
   CameraError = 6000,
   CameraNotAllowedError = 6001,
   CameraNotFoundError = 6002,
+
+  // screen capture
+  ScreenCaptureError = 7000,
+  ScreenCaptureNotAllowedError = 7001,
+  ScreenCaptureNotFoundError = 7002,
 }
 
 export default ErrorCodeEnum;
