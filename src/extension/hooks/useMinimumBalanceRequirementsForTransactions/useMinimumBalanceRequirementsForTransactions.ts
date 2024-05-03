@@ -11,7 +11,7 @@ import AccountService from '@extension/services/AccountService';
 import type { IAccountInformation } from '@extension/types';
 import type { IOptions, IState } from './types';
 
-export default function useSendAssetSummaryContent({
+export default function useMinimumBalanceRequirementsForTransactions({
   account,
   network,
   transactions,

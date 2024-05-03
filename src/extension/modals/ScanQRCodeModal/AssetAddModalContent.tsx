@@ -249,7 +249,7 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
           </Text>
 
           {!asset || !network || loading ? (
-            <VStack spacing={2} w="full">
+            <VStack spacing={DEFAULT_GAP / 3} w="full">
               <ModalSkeletonItem />
               <ModalSkeletonItem />
               <ModalSkeletonItem />

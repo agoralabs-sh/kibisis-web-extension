@@ -67,7 +67,7 @@ export default async function createKeyRegistrationTransactionURI({
     ),
     [ARC0300QueryEnum.Sender]: from,
     [ARC0300QueryEnum.Type]: TransactionType.keyreg,
-    [ARC0300QueryEnum.VoteFirst]: '0',
+    [ARC0300QueryEnum.VoteFirst]: '1',
     [ARC0300QueryEnum.VoteKey]: encodeBase64URLSafe(
       decodeBase64('G/lqTV6MKspW6J8wH2d8ZliZ5XZVZsruqSBJMwLwlmo=')
     ),

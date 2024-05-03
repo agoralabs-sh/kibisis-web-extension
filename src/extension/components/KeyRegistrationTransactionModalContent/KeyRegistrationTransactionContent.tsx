@@ -21,12 +21,15 @@ import { TransactionTypeEnum } from '@extension/enums';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useMinimumBalanceRequirementsForTransactions from '@extension/hooks/useMinimumBalanceRequirementsForTransactions';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
 import type { IProps } from './types';
 
 // utils
+import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 
@@ -39,12 +42,24 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const {
+    accountBalanceInAtomicUnits,
+    minimumBalanceRequirementInAtomicUnits,
+    totalCostInAtomicUnits,
+  } = useMinimumBalanceRequirementsForTransactions({
+    account,
+    network,
+    transactions: [transaction],
+  });
+  const subTextColor = useSubTextColor();
   // misc
-  const feeAsAtomicUnit: BigNumber = new BigNumber(
-    transaction.fee ? String(transaction.fee) : '0'
+  const feeAsAtomicUnit = new BigNumber(
+    transaction.fee ? String(transaction.fee) : network.minFee
   );
+  const isBelowMinimumBalance = accountBalanceInAtomicUnits
+    .minus(totalCostInAtomicUnits)
+    .lt(minimumBalanceRequirementInAtomicUnits);
   const transactionType: TransactionTypeEnum = parseTransactionType(
     transaction.get_obj_for_encoding(),
     {
@@ -107,7 +122,7 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={condensed ? DEFAULT_GAP / 3 : DEFAULT_GAP - 2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {/*heading*/}
@@ -147,6 +162,31 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
           w: 3,
         })}
         label={`${t<string>('labels.fee')}:`}
+        {...(isBelowMinimumBalance && {
+          warningLabel: t<string>('captions.minimumBalanceTooLow', {
+            balance: formatCurrencyUnit(
+              convertToStandardUnit(
+                accountBalanceInAtomicUnits,
+                network.nativeCurrency.decimals
+              ),
+              {
+                decimals: network.nativeCurrency.decimals,
+              }
+            ),
+            cost: formatCurrencyUnit(
+              convertToStandardUnit(
+                minimumBalanceRequirementInAtomicUnits.plus(
+                  totalCostInAtomicUnits
+                ),
+                network.nativeCurrency.decimals
+              ),
+              {
+                decimals: network.nativeCurrency.decimals,
+              }
+            ),
+            symbol: network.nativeCurrency.symbol,
+          }),
+        })}
       />
 
       {/*vote key*/}

@@ -1,12 +1,16 @@
 import { Transaction } from 'algosdk';
 
 // types
-import type { IAccount, ICondensedProps, INetwork } from '@extension/types';
+import type {
+  IAccount,
+  ICondensedProps,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 
 interface IProps {
-  account: IAccount | null;
+  account: IAccount;
   condensed?: ICondensedProps;
-  network: INetwork;
+  network: INetworkWithTransactionParams;
   showHeader?: boolean;
   transaction: Transaction;
 }

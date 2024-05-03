@@ -353,7 +353,7 @@ const AccountImportModalContent: FC<
             {t<string>('captions.importAccount')}
           </Text>
 
-          <VStack spacing={2} w="full">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
             <ModalSubHeading text={t<string>('labels.account')} />
 
             {/*address*/}
@@ -373,14 +373,14 @@ const AccountImportModalContent: FC<
 
           {/*assets*/}
           {loading && (
-            <VStack spacing={2} w="full">
+            <VStack spacing={DEFAULT_GAP / 3} w="full">
               <ModalSkeletonItem />
               <ModalSkeletonItem />
               <ModalSkeletonItem />
             </VStack>
           )}
           {assets.length > 0 && !loading && (
-            <VStack spacing={2} w="full">
+            <VStack spacing={DEFAULT_GAP / 3} w="full">
               <ModalSubHeading text={t<string>('labels.assets')} />
 
               {assets.map((value, index) => (

@@ -37,6 +37,9 @@ import {
   TransactionTypeEnum,
 } from '@extension/enums';
 
+// errors
+import { NotEnoughMinimumBalanceError } from '@extension/errors';
+
 // features
 import { updateAccountsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
@@ -66,6 +69,7 @@ import type { IModalContentProps } from './types';
 
 // utils
 import createUnsignedKeyRegistrationTransactionFromSchema from '@extension/utils/createUnsignedKeyRegistrationTransactionFromSchema';
+import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
@@ -205,6 +209,19 @@ const KeyRegistrationTransactionSendModal: FC<
     setSending(true);
 
     try {
+      if (
+        doesAccountFallBelowMinimumBalanceRequirementForTransactions({
+          account,
+          logger,
+          network,
+          transactions: [unsignedTransaction],
+        })
+      ) {
+        throw new NotEnoughMinimumBalanceError(
+          `unable to send key registration transaction because the account will fall below the minimum balance`
+        );
+      }
+
       transactionIds = await signAndSendTransactions({
         logger,
         network,

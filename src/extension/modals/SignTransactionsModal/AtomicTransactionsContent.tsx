@@ -33,7 +33,7 @@ import useBorderColor from '@extension/hooks/useBorderColor';
 import {
   useSelectAccounts,
   useSelectLogger,
-  useSelectNetworks,
+  useSelectNetworkByGenesisHash,
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsByGenesisHash,
   useSelectUpdatingStandardAssets,
@@ -48,7 +48,6 @@ import type {
   IAccount,
   IAccountInformation,
   IBlockExplorer,
-  INetwork,
   IStandardAsset,
 } from '@extension/types';
 
@@ -71,7 +70,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   // selectors
   const accounts: IAccount[] = useSelectAccounts();
   const logger: ILogger = useSelectLogger();
-  const networks: INetwork[] = useSelectNetworks();
+  const network = useSelectNetworkByGenesisHash(genesisHash);
   const preferredExplorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
   const standardAssets: IStandardAsset[] =
@@ -88,8 +87,6 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   );
   // misc
   const computedGroupId: string = encodeBase64(computeGroupId(transactions));
-  const network: INetwork | null =
-    networks.find((value) => value.genesisHash === genesisHash) || null;
   const explorer: IBlockExplorer | null =
     network?.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
@@ -109,10 +106,11 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
     transaction: Transaction,
     transactionIndex: number
   ) => {
+    const sender = fromAccounts[transactionIndex] || null;
     let standardAsset: IStandardAsset | null;
     let transactionType: TransactionTypeEnum;
 
-    if (!network) {
+    if (!network || !sender) {
       return;
     }
 
@@ -122,7 +120,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
       ) || null;
     transactionType = parseTransactionType(transaction.get_obj_for_encoding(), {
       network,
-      sender: fromAccounts[transactionIndex] || null,
+      sender,
     });
 
     switch (transaction.type) {
@@ -134,7 +132,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
                 expanded: openAccordions[transactionIndex],
                 onChange: handleToggleAccordion(transactionIndex),
               }}
-              fromAccount={fromAccounts[transactionIndex] || null}
+              fromAccount={sender}
               loading={fetchingAccountInformation}
               network={network}
               transaction={transaction}
@@ -150,7 +148,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
               onChange: handleToggleAccordion(transactionIndex),
             }}
             explorer={explorer}
-            fromAccount={fromAccounts[transactionIndex] || null}
+            fromAccount={sender}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
@@ -165,7 +163,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
               onChange: handleToggleAccordion(transactionIndex),
             }}
             explorer={explorer}
-            fromAccount={fromAccounts[transactionIndex] || null}
+            fromAccount={sender}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
@@ -192,7 +190,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
               onChange: handleToggleAccordion(transactionIndex),
             }}
             explorer={explorer}
-            fromAccount={fromAccounts[transactionIndex] || null}
+            fromAccount={sender}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
@@ -205,7 +203,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            account={fromAccounts[transactionIndex] || null}
+            account={sender}
             network={network}
             showHeader={true}
             transaction={transaction}
@@ -214,11 +212,11 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
       case 'pay':
         return (
           <PaymentTransactionContent
-            fromAccount={fromAccounts[transactionIndex] || null}
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
+            fromAccount={sender}
             loading={fetchingAccountInformation}
             network={network}
             transaction={transaction}

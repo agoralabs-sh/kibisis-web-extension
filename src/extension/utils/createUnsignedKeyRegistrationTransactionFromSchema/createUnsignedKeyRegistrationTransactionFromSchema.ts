@@ -23,7 +23,7 @@ export default async function createUnsignedKeyRegistrationTransactionFromSchema
   schema,
 }: IOptions): Promise<Transaction> {
   const algodClient = createAlgodClient(network, { logger });
-  let suggestedParams = await algodClient.getTransactionParams().do();
+  const suggestedParams = await algodClient.getTransactionParams().do();
 
   return makeKeyRegistrationTxnWithSuggestedParamsFromObject({
     from: schema.query[ARC0300QueryEnum.Sender],
