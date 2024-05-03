@@ -1,3 +1,10 @@
+# [1.16.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.15.0...v1.16.0-beta.1) (2024-05-03)
+
+
+### Features
+
+* scan for key registration transaction qr codes ([#217](https://github.com/agoralabs-sh/kibisis-web-extension/issues/217)) ([ecd8f89](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ecd8f8911fcb4d057f91658f449495f7d7ec8ac1))
+
 # [1.15.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.14.1...v1.15.0) (2024-05-01)
 
 
