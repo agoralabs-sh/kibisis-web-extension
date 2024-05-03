@@ -35,7 +35,8 @@ const translation: IResourceLanguage = {
     removeAllSessions: 'Remove All Sessions',
     reset: 'Reset',
     save: 'Save',
-    scanBrowserWindow: 'Scan Browser Window',
+    scanAWindow: 'Scan A Window',
+    scanCurrentTab: 'Scan Current Tab',
     scanUsingCamera: 'Scan Using Camera',
     send: 'Send',
     sign: 'Sign',
@@ -189,6 +190,10 @@ const translation: IResourceLanguage = {
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
     scanningForQrCode:
       'Scanning for a QR Code. Make sure the QR code is visible in the background.',
+    screenCaptureViaQRCodeScanNotAllowed1:
+      'Screen capture access has been denied.',
+    screenCaptureViaQRCodeScanNotAllowed2:
+      'You will need to go into your settings and allow access.',
     selectScanLocation: 'Choose how you would like to scan the QR code.',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
@@ -284,6 +289,8 @@ const translation: IResourceLanguage = {
     selectAccount: 'Select Account',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
+    screenCaptureDenied: 'Screen Capture Denied',
+    screenCaptureLoading: 'Screen Capture Loading',
     transaction: 'Unknown Transaction 💀',
     [`transaction_${TransactionTypeEnum.ApplicationClearState}`]:
       'Application Interaction ⚙️',

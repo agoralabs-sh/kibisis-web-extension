@@ -5,6 +5,7 @@ import React, { FC, useState } from 'react';
 // components
 import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
+import ScanQRCodeViaScreenCaptureModalContent from '@extension/components/ScanQRCodeViaScreenCaptureModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
 import AccountImportModalContent from './AccountImportModalContent';
@@ -14,9 +15,6 @@ import KeyRegistrationTransactionSendModal from './KeyRegistrationTransactionSen
 // enums
 import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 
-// features
-import type { IScanQRCodeModal } from '@extension/features/system';
-
 // selectors
 import {
   useSelectLogger,
@@ -25,7 +23,6 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { ILogger } from '@common/types';
 import {
   IARC0300AccountImportSchema,
   IARC0300AssetAddSchema,
@@ -33,7 +30,6 @@ import {
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
   IARC0300OnlineKeyRegistrationTransactionSendSchema,
   IModalProps,
-  INetwork,
   TARC0300TransactionSendSchemas,
 } from '@extension/types';
 
@@ -42,17 +38,20 @@ import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 
 const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   // selectors
-  const logger: ILogger = useSelectLogger();
-  const networks: INetwork[] = useSelectNetworks();
-  const scanQRCodeModal: IScanQRCodeModal | null = useSelectScanQRCodeModal();
+  const logger = useSelectLogger();
+  const networks = useSelectNetworks();
+  const scanQRCodeModal = useSelectScanQRCodeModal();
   // state
   const [scanViaCamera, setScanViaCamera] = useState<boolean>(false);
+  const [scanViaScreenCapture, setScanViaScreenCapture] =
+    useState<boolean>(false);
   const [scanViaTab, setScanViaTab] = useState<boolean>(false);
   const [uri, setURI] = useState<string | null>(null);
   // misc
   const reset = () => {
     setURI(null);
     setScanViaCamera(false);
+    setScanViaScreenCapture(false);
     setScanViaTab(false);
   };
   // handlers
@@ -64,6 +63,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   const handleOnURI = (uri: string) => setURI(uri);
   const handlePreviousClick = () => reset();
   const handleScanViaCameraClick = () => setScanViaCamera(true);
+  const handleScanViaScreenCaptureClick = () => setScanViaScreenCapture(true);
   const handleScanViaTabClick = () => setScanViaTab(true);
   // renders
   const renderContent = () => {
@@ -185,6 +185,15 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
       );
     }
 
+    if (scanViaScreenCapture) {
+      return (
+        <ScanQRCodeViaScreenCaptureModalContent
+          onPreviousClick={handlePreviousClick}
+          onURI={handleOnURI}
+        />
+      );
+    }
+
     if (scanViaTab) {
       return (
         <ScanQRCodeViaTabModalContent
@@ -197,8 +206,9 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
     return (
       <ScanModeModalContent
         onCancelClick={handleCancelClick}
-        onScanViaTabClick={handleScanViaTabClick}
         onScanViaCameraClick={handleScanViaCameraClick}
+        onScanViaScreenCaptureClick={handleScanViaScreenCaptureClick}
+        onScanViaTabClick={handleScanViaTabClick}
       />
     );
   };

@@ -4,6 +4,7 @@ import React, { FC, useState } from 'react';
 // components
 import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
+import ScanQRCodeViaScreenCaptureModalContent from '@extension/components/ScanQRCodeViaScreenCaptureModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
 import ConfirmAccountModalContent from './ConfirmAccountModalContent';
@@ -15,11 +16,9 @@ import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 import { useSelectLogger, useSelectNetworks } from '@extension/selectors';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IARC0300AccountImportSchema,
   IARC0300BaseSchema,
-  INetwork,
   IRegistrationAddAccountCompleteResult,
 } from '@extension/types';
 import type { IProps } from './types';
@@ -34,16 +33,19 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
   saving,
 }) => {
   // selectors
-  const logger: ILogger = useSelectLogger();
-  const networks: INetwork[] = useSelectNetworks();
+  const logger = useSelectLogger();
+  const networks = useSelectNetworks();
   // state
   const [scanViaCamera, setScanViaCamera] = useState<boolean>(false);
+  const [scanViaScreenCapture, setScanViaScreenCapture] =
+    useState<boolean>(false);
   const [scanViaTab, setScanViaTab] = useState<boolean>(false);
   const [uri, setURI] = useState<string | null>(null);
   // misc
   const reset = () => {
     setURI(null);
     setScanViaCamera(false);
+    setScanViaScreenCapture(false);
     setScanViaTab(false);
   };
   // handlers
@@ -58,6 +60,7 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
   const handleOnURI = (uri: string) => setURI(uri);
   const handlePreviousClick = () => reset();
   const handleScanViaCameraClick = () => setScanViaCamera(true);
+  const handleScanViaScreenCaptureClick = () => setScanViaScreenCapture(true);
   const handleScanViaTabClick = () => setScanViaTab(true);
   // renders
   const renderContent = () => {
@@ -101,6 +104,15 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
       );
     }
 
+    if (scanViaScreenCapture) {
+      return (
+        <ScanQRCodeViaScreenCaptureModalContent
+          onPreviousClick={handlePreviousClick}
+          onURI={handleOnURI}
+        />
+      );
+    }
+
     if (scanViaTab) {
       return (
         <ScanQRCodeViaTabModalContent
@@ -114,6 +126,7 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
       <ScanModeModalContent
         onCancelClick={handleCancelClick}
         onScanViaCameraClick={handleScanViaCameraClick}
+        onScanViaScreenCaptureClick={handleScanViaScreenCaptureClick}
         onScanViaTabClick={handleScanViaTabClick}
       />
     );

@@ -3,7 +3,7 @@ import { ScanModeEnum } from '@extension/enums';
 
 type IStartScanningOptions =
   | {
-      mode: ScanModeEnum.Camera;
+      mode: ScanModeEnum.Camera | ScanModeEnum.ScreenCapture;
       videoElement: HTMLVideoElement;
     }
   | {

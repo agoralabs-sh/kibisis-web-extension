@@ -28,18 +28,21 @@ import type { IProps } from './types';
 
 // utils
 import isCameraAvailable from '@extension/utils/isCameraAvailable';
+import isScreenCaptureAvailable from '@extension/utils/isScreenCaptureAvailable';
 
 const ScanModeModalContent: FC<IProps> = ({
   onCancelClick,
   onScanViaCameraClick,
+  onScanViaScreenCaptureClick,
   onScanViaTabClick,
 }) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
   // handlers
   const handleCancelClick = () => onCancelClick();
   const handleScanViaCameraClick = () => onScanViaCameraClick();
+  const handleScanViaScreenCaptureClick = () => onScanViaScreenCaptureClick();
   const handleScanViaTabClick = () => onScanViaTabClick();
 
   return (
@@ -70,7 +73,20 @@ const ScanModeModalContent: FC<IProps> = ({
             spacing={DEFAULT_GAP}
             w="full"
           >
-            {/*scan via tab button*/}
+            {/*scan via a window button*/}
+            {isScreenCaptureAvailable() && (
+              <Button
+                onClick={handleScanViaScreenCaptureClick}
+                rightIcon={<IoBrowsersOutline />}
+                size="lg"
+                variant="solid"
+                w="full"
+              >
+                {t<string>('buttons.scanAWindow')}
+              </Button>
+            )}
+
+            {/*scan via current tab button*/}
             <Button
               onClick={handleScanViaTabClick}
               rightIcon={<IoBrowsersOutline />}
@@ -78,7 +94,7 @@ const ScanModeModalContent: FC<IProps> = ({
               variant="solid"
               w="full"
             >
-              {t<string>('buttons.scanBrowserWindow')}
+              {t<string>('buttons.scanCurrentTab')}
             </Button>
 
             {/*scan via camera button*/}

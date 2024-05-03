@@ -3,7 +3,7 @@ import jsQR, { QRCode } from 'jsqr';
 // utils
 import convertDataUriToImageData from '@extension/utils/convertDataUriToImageData';
 
-export default async function captureQRCodeFromCamera(
+export default async function captureQRCodeFromStream(
   videoElement: HTMLVideoElement
 ): Promise<string> {
   const canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -31,7 +31,7 @@ export default async function captureQRCodeFromCamera(
   result = jsQR(imageData.data, imageData.width, imageData.height);
 
   if (!result) {
-    throw new Error(`no qr code found in camera`);
+    throw new Error(`no qr code found in stream`);
   }
 
   return result.data;
