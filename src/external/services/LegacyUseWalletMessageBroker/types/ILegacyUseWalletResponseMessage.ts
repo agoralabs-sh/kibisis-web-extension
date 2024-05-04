@@ -3,7 +3,7 @@ import { BaseARC0027Error } from '@agoralabs-sh/avm-web-provider';
 // enums
 import { LegacyMessageReferenceEnum } from '../enums';
 
-interface ILegacyClientResponseMessage<Result> {
+interface ILegacyUseWalletResponseMessage<Result> {
   error: BaseARC0027Error | null;
   id: string;
   reference: LegacyMessageReferenceEnum;
@@ -11,4 +11,4 @@ interface ILegacyClientResponseMessage<Result> {
   requestId: string;
 }
 
-export default ILegacyClientResponseMessage;
+export default ILegacyUseWalletResponseMessage;

@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.15.0...v1.15.1) (2024-05-04)
+
+
+### Bug Fixes
+
+* usewallet not detecting kibisis ([#219](https://github.com/agoralabs-sh/kibisis-web-extension/issues/219)) ([4798058](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4798058ccba805eaa5b23401ac2ce02af27cd11b))
+
 # [1.16.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.15.0...v1.16.0-beta.1) (2024-05-03)
 
 

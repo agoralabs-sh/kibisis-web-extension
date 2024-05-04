@@ -1,21 +1,18 @@
 import { AlgorandProvider } from '@agoralabs-sh/algorand-provider';
 
 // services
-import LegacyProvider from '@external/services/LegacyProvider';
+import LegacyAlgorandProvider from '@external/services/LegacyAlgorandProvider';
 
 // types
-import type { ILogger } from '@common/types';
 import type { IWindow } from '@external/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';
 
 (() => {
-  const logger: ILogger = createLogger(
-    __ENV__ === 'development' ? 'debug' : 'error'
-  );
-  const script: string = 'kibisis';
-  let legacyProvider: LegacyProvider;
+  const logger = createLogger(__ENV__ === 'development' ? 'debug' : 'error');
+  const script = 'kibisis';
+  let algorandProvider: LegacyAlgorandProvider;
 
   // check for the algorand provider, if it doesn't exist, overwrite it
   if (
@@ -27,10 +24,10 @@ import createLogger from '@common/utils/createLogger';
     (window as IWindow).algorand = new AlgorandProvider();
   }
 
-  legacyProvider = new LegacyProvider();
+  algorandProvider = new LegacyAlgorandProvider();
 
   // add the wallet manager
-  (window as IWindow).algorand?.addWallet(legacyProvider, {
+  (window as IWindow).algorand?.addWallet(algorandProvider, {
     replace: true,
   });
 })();

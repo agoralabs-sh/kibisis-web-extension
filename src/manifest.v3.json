@@ -10,7 +10,7 @@
   "web_accessible_resources": [
     {
       "matches": ["*://*/*"],
-      "resources": ["legacy-provider.js"]
+      "resources": ["algorand-provider.js"]
     }
   ]
 }

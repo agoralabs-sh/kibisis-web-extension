@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 
 // services
 import ClientMessageBroker from '@external/services/ClientMessageBroker';
-import LegacyClientMessageBroker from '@external/services/LegacyClientMessageBroker';
+import LegacyUseWalletMessageBroker from '@external/services/LegacyUseWalletMessageBroker';
 
 // types
 import type { ILogger } from '@common/types';
@@ -48,11 +48,11 @@ import injectScript from '@external/utils/injectScript';
   /**
    * deprecated - older versions of use-wallet will still use broadcastchannel messages
    */
-  LegacyClientMessageBroker.init({ logger });
+  LegacyUseWalletMessageBroker.init({ logger });
 
   /**
    * deprecated - this is using algorand-provider, but will be phased out in favour of the new avm-web-provider
    */
   // inject the web resources into the web page to initialize the window.algorand object
-  injectScript(browser.runtime.getURL('legacy-provider.js'));
+  injectScript(browser.runtime.getURL('algorand-provider.js'));
 })();
