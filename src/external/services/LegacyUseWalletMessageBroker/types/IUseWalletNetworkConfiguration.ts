@@ -3,8 +3,8 @@ import {
   INetworkConfiguration,
 } from '@agoralabs-sh/avm-web-provider';
 
-type INetworkConfigurationWithLegacyMethods = INetworkConfiguration & {
+type IUseWalletNetworkConfiguration = INetworkConfiguration & {
   methods: (ARC0027MethodEnum | 'signTxns')[];
 };
 
-export default INetworkConfigurationWithLegacyMethods;
+export default IUseWalletNetworkConfiguration;

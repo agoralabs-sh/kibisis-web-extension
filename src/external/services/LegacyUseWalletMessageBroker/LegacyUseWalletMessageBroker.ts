@@ -11,8 +11,8 @@ import { LegacyMessageReferenceEnum } from './enums';
 // messages
 import { ClientRequestMessage, ClientResponseMessage } from '@common/messages';
 import {
-  LegacyClientRequestMessage,
-  LegacyClientResponseMessage,
+  LegacyUseWalletRequestMessage,
+  LegacyUseWalletResponseMessage,
 } from './messages';
 
 // types
@@ -20,7 +20,7 @@ import type { IBaseOptions, ILogger } from '@common/types';
 import {
   IInitOptions,
   ILegacyDiscoverResult,
-  INetworkConfigurationWithLegacyMethods,
+  IUseWalletNetworkConfiguration,
   TLegacyResponseResults,
 } from './types';
 
@@ -30,7 +30,7 @@ import createClientInformation from '@external/utils/createClientInformation';
 /**
  * @deprecated will be phased out in favour of the avm-web-provider
  */
-export default class LegacyClientMessageBroker {
+export default class LegacyUseWalletMessageBroker {
   // private variables
   private readonly channel: BroadcastChannel;
   private readonly logger: ILogger | null;
@@ -47,7 +47,7 @@ export default class LegacyClientMessageBroker {
     method,
     requestId,
     result,
-  }: ClientResponseMessage<TLegacyResponseResults>): LegacyClientResponseMessage<TLegacyResponseResults> | null {
+  }: ClientResponseMessage<TLegacyResponseResults>): LegacyUseWalletResponseMessage<TLegacyResponseResults> | null {
     const reference: LegacyMessageReferenceEnum | null =
       this.createResponseMessageReference(method);
 
@@ -57,7 +57,7 @@ export default class LegacyClientMessageBroker {
 
     // use the legacy method names for discover messages
     if (method === ARC0027MethodEnum.Discover && result) {
-      return new LegacyClientResponseMessage<ILegacyDiscoverResult>({
+      return new LegacyUseWalletResponseMessage<ILegacyDiscoverResult>({
         error: null,
         id,
         reference,
@@ -73,12 +73,12 @@ export default class LegacyClientMessageBroker {
                   : method
               ),
             })
-          ) as INetworkConfigurationWithLegacyMethods[],
+          ) as IUseWalletNetworkConfiguration[],
         } as ILegacyDiscoverResult,
       });
     }
 
-    return new LegacyClientResponseMessage<TLegacyResponseResults>({
+    return new LegacyUseWalletResponseMessage<TLegacyResponseResults>({
       error: error || null,
       id,
       reference,
@@ -106,10 +106,10 @@ export default class LegacyClientMessageBroker {
    * public functions
    */
 
-  public static init(options: IBaseOptions): LegacyClientMessageBroker {
+  public static init(options: IBaseOptions): LegacyUseWalletMessageBroker {
     const channel: BroadcastChannel = new BroadcastChannel('arc0027:channel');
-    const legacyClientMessageBroker: LegacyClientMessageBroker =
-      new LegacyClientMessageBroker({
+    const legacyClientMessageBroker: LegacyUseWalletMessageBroker =
+      new LegacyUseWalletMessageBroker({
         ...options,
         channel,
       });
@@ -130,7 +130,7 @@ export default class LegacyClientMessageBroker {
   }
 
   public async onClientRequestMessage(
-    message: MessageEvent<LegacyClientRequestMessage<TRequestParams>>
+    message: MessageEvent<LegacyUseWalletRequestMessage<TRequestParams>>
   ): Promise<void> {
     const _functionName: string = 'onClientRequestMessage';
     let method: ARC0027MethodEnum | null = null;
@@ -151,7 +151,7 @@ export default class LegacyClientMessageBroker {
 
     if (method) {
       this.logger?.debug(
-        `${LegacyClientMessageBroker.name}#${_functionName}: legacy request message "${message.data.reference}" received`
+        `${LegacyUseWalletMessageBroker.name}#${_functionName}: legacy request message "${message.data.reference}" received`
       );
 
       // send the message to the background script/popups
@@ -170,14 +170,14 @@ export default class LegacyClientMessageBroker {
     message: ClientResponseMessage<TLegacyResponseResults>
   ): void {
     const _functionName: string = 'onProviderResponseMessage';
-    let legacyResponse: LegacyClientResponseMessage<TLegacyResponseResults> | null;
+    let legacyResponse: LegacyUseWalletResponseMessage<TLegacyResponseResults> | null;
 
     switch (message.method) {
       case ARC0027MethodEnum.Discover:
       case ARC0027MethodEnum.Enable:
       case ARC0027MethodEnum.SignTransactions:
         this.logger?.debug(
-          `${LegacyClientMessageBroker.name}#${_functionName}: legacy response message "${message.method}" received`
+          `${LegacyUseWalletMessageBroker.name}#${_functionName}: legacy response message "${message.method}" received`
         );
 
         legacyResponse = this.convertToLegacyResponse(message);

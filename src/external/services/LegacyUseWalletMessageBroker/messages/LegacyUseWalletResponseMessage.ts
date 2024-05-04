@@ -4,10 +4,10 @@ import { BaseARC0027Error } from '@agoralabs-sh/avm-web-provider';
 import { LegacyMessageReferenceEnum } from '../enums';
 
 // types
-import type { ILegacyClientResponseMessage } from '../types';
+import type { ILegacyUseWalletResponseMessage } from '../types';
 
-export default class LegacyClientResponseMessage<Result>
-  implements ILegacyClientResponseMessage<Result>
+export default class LegacyUseWalletResponseMessage<Result>
+  implements ILegacyUseWalletResponseMessage<Result>
 {
   public readonly error: BaseARC0027Error | null;
   public readonly id: string;
@@ -21,7 +21,7 @@ export default class LegacyClientResponseMessage<Result>
     reference,
     requestId,
     result,
-  }: ILegacyClientResponseMessage<Result>) {
+  }: ILegacyUseWalletResponseMessage<Result>) {
     this.error = error;
     this.id = id;
     this.reference = reference;

@@ -32,7 +32,7 @@ import { decode as decodeBase64 } from '@stablelib/base64';
 // constants
 import { LEGACY_WALLET_ID } from '@external/constants';
 
-export default class LegacyProvider extends BaseWalletManager {
+export default class LegacyAlgorandProvider extends BaseWalletManager {
   private readonly avmWebClient: AVMWebClient;
 
   constructor() {
@@ -109,7 +109,9 @@ export default class LegacyProvider extends BaseWalletManager {
         if (error) {
           window.clearTimeout(timeoutId);
 
-          return reject(LegacyProvider.mapARC0027ErrorToLegacyError(error));
+          return reject(
+            LegacyAlgorandProvider.mapARC0027ErrorToLegacyError(error)
+          );
         }
 
         if (result) {
@@ -161,7 +163,9 @@ export default class LegacyProvider extends BaseWalletManager {
         if (error) {
           window.clearTimeout(timeoutId);
 
-          return reject(LegacyProvider.mapARC0027ErrorToLegacyError(error));
+          return reject(
+            LegacyAlgorandProvider.mapARC0027ErrorToLegacyError(error)
+          );
         }
 
         if (result) {
@@ -201,7 +205,9 @@ export default class LegacyProvider extends BaseWalletManager {
         if (error) {
           window.clearTimeout(timeoutId);
 
-          return reject(LegacyProvider.mapARC0027ErrorToLegacyError(error));
+          return reject(
+            LegacyAlgorandProvider.mapARC0027ErrorToLegacyError(error)
+          );
         }
 
         if (result) {
