@@ -1,7 +1,7 @@
 import {
   ARC0027MethodEnum,
+  IDiscoverResult,
   TRequestParams,
-  TResponseResults,
 } from '@agoralabs-sh/avm-web-provider';
 import browser from 'webextension-polyfill';
 
@@ -11,13 +11,18 @@ import { LegacyMessageReferenceEnum } from './enums';
 // messages
 import { ClientRequestMessage, ClientResponseMessage } from '@common/messages';
 import {
-  LegacyClientRequestMessage,
-  LegacyClientResponseMessage,
+  LegacyUseWalletRequestMessage,
+  LegacyUseWalletResponseMessage,
 } from './messages';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
-import type { IInitOptions } from './types';
+import {
+  IInitOptions,
+  ILegacyDiscoverResult,
+  IUseWalletNetworkConfiguration,
+  TLegacyResponseResults,
+} from './types';
 
 // utils
 import createClientInformation from '@external/utils/createClientInformation';
@@ -25,7 +30,7 @@ import createClientInformation from '@external/utils/createClientInformation';
 /**
  * @deprecated will be phased out in favour of the avm-web-provider
  */
-export default class LegacyClientMessageBroker {
+export default class LegacyUseWalletMessageBroker {
   // private variables
   private readonly channel: BroadcastChannel;
   private readonly logger: ILogger | null;
@@ -42,7 +47,7 @@ export default class LegacyClientMessageBroker {
     method,
     requestId,
     result,
-  }: ClientResponseMessage<TResponseResults>): LegacyClientResponseMessage<TResponseResults> | null {
+  }: ClientResponseMessage<TLegacyResponseResults>): LegacyUseWalletResponseMessage<TLegacyResponseResults> | null {
     const reference: LegacyMessageReferenceEnum | null =
       this.createResponseMessageReference(method);
 
@@ -50,7 +55,30 @@ export default class LegacyClientMessageBroker {
       return null;
     }
 
-    return new LegacyClientResponseMessage<TResponseResults>({
+    // use the legacy method names for discover messages
+    if (method === ARC0027MethodEnum.Discover && result) {
+      return new LegacyUseWalletResponseMessage<ILegacyDiscoverResult>({
+        error: null,
+        id,
+        reference,
+        requestId,
+        result: {
+          ...result,
+          networks: (result as IDiscoverResult).networks.map(
+            ({ methods, ...otherProps }) => ({
+              ...otherProps,
+              methods: methods.map((method) =>
+                method === ARC0027MethodEnum.SignTransactions
+                  ? 'signTxns'
+                  : method
+              ),
+            })
+          ) as IUseWalletNetworkConfiguration[],
+        } as ILegacyDiscoverResult,
+      });
+    }
+
+    return new LegacyUseWalletResponseMessage<TLegacyResponseResults>({
       error: error || null,
       id,
       reference,
@@ -78,12 +106,10 @@ export default class LegacyClientMessageBroker {
    * public functions
    */
 
-  public static init(options: IBaseOptions): LegacyClientMessageBroker {
-    const channel: BroadcastChannel = new BroadcastChannel(
-      'arc0027:channel:name'
-    );
-    const legacyClientMessageBroker: LegacyClientMessageBroker =
-      new LegacyClientMessageBroker({
+  public static init(options: IBaseOptions): LegacyUseWalletMessageBroker {
+    const channel: BroadcastChannel = new BroadcastChannel('arc0027:channel');
+    const legacyClientMessageBroker: LegacyUseWalletMessageBroker =
+      new LegacyUseWalletMessageBroker({
         ...options,
         channel,
       });
@@ -104,19 +130,19 @@ export default class LegacyClientMessageBroker {
   }
 
   public async onClientRequestMessage(
-    message: MessageEvent<LegacyClientRequestMessage<TRequestParams>>
+    message: MessageEvent<LegacyUseWalletRequestMessage<TRequestParams>>
   ): Promise<void> {
     const _functionName: string = 'onClientRequestMessage';
     let method: ARC0027MethodEnum | null = null;
 
     switch (message.data.reference) {
-      case 'arc0027:enable:request':
+      case LegacyMessageReferenceEnum.EnableRequest:
         method = ARC0027MethodEnum.Enable;
         break;
-      case 'arc0027:get_providers:request':
+      case LegacyMessageReferenceEnum.GetProvidersRequest:
         method = ARC0027MethodEnum.Discover;
         break;
-      case 'arc0027:sign_txns:request':
+      case LegacyMessageReferenceEnum.SignTxnsRequest:
         method = ARC0027MethodEnum.SignTransactions;
         break;
       default:
@@ -125,7 +151,7 @@ export default class LegacyClientMessageBroker {
 
     if (method) {
       this.logger?.debug(
-        `${LegacyClientMessageBroker.name}#${_functionName}: legacy request message "${message.data.reference}" received`
+        `${LegacyUseWalletMessageBroker.name}#${_functionName}: legacy request message "${message.data.reference}" received`
       );
 
       // send the message to the background script/popups
@@ -141,17 +167,17 @@ export default class LegacyClientMessageBroker {
   }
 
   public onProviderResponseMessage(
-    message: ClientResponseMessage<TResponseResults>
+    message: ClientResponseMessage<TLegacyResponseResults>
   ): void {
     const _functionName: string = 'onProviderResponseMessage';
-    let legacyResponse: LegacyClientResponseMessage<TResponseResults> | null;
+    let legacyResponse: LegacyUseWalletResponseMessage<TLegacyResponseResults> | null;
 
     switch (message.method) {
       case ARC0027MethodEnum.Discover:
       case ARC0027MethodEnum.Enable:
       case ARC0027MethodEnum.SignTransactions:
         this.logger?.debug(
-          `${LegacyClientMessageBroker.name}#${_functionName}: legacy response message "${message.method}" received`
+          `${LegacyUseWalletMessageBroker.name}#${_functionName}: legacy response message "${message.method}" received`
         );
 
         legacyResponse = this.convertToLegacyResponse(message);

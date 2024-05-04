@@ -259,7 +259,7 @@ const configs: (
       entry: {
         ['background']: resolve(SRC_PATH, 'background.ts'),
         ['content-script']: resolve(SRC_PATH, 'content-script.ts'),
-        ['legacy-provider']: resolve(SRC_PATH, 'legacy-provider.ts'),
+        ['algorand-provider']: resolve(SRC_PATH, 'algorand-provider.ts'),
       },
       mode: environment,
       module: {

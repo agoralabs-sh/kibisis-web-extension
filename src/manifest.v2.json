@@ -8,5 +8,5 @@
     "scripts": ["background.js"],
     "persistent": true
   },
-  "web_accessible_resources": ["legacy-provider.js"]
+  "web_accessible_resources": ["algorand-provider.js"]
 }
