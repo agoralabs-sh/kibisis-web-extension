@@ -136,13 +136,13 @@ export default class LegacyUseWalletMessageBroker {
     let method: ARC0027MethodEnum | null = null;
 
     switch (message.data.reference) {
-      case 'arc0027:enable:request':
+      case LegacyMessageReferenceEnum.EnableRequest:
         method = ARC0027MethodEnum.Enable;
         break;
-      case 'arc0027:get_providers:request':
+      case LegacyMessageReferenceEnum.GetProvidersRequest:
         method = ARC0027MethodEnum.Discover;
         break;
-      case 'arc0027:sign_txns:request':
+      case LegacyMessageReferenceEnum.SignTxnsRequest:
         method = ARC0027MethodEnum.SignTransactions;
         break;
       default:
