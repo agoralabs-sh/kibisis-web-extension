@@ -1,7 +1,7 @@
 import {
   ARC0027MethodEnum,
+  IDiscoverResult,
   TRequestParams,
-  TResponseResults,
 } from '@agoralabs-sh/avm-web-provider';
 import browser from 'webextension-polyfill';
 
@@ -17,7 +17,12 @@ import {
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
-import type { IInitOptions } from './types';
+import {
+  IInitOptions,
+  ILegacyDiscoverResult,
+  INetworkConfigurationWithLegacyMethods,
+  TLegacyResponseResults,
+} from './types';
 
 // utils
 import createClientInformation from '@external/utils/createClientInformation';
@@ -42,7 +47,7 @@ export default class LegacyClientMessageBroker {
     method,
     requestId,
     result,
-  }: ClientResponseMessage<TResponseResults>): LegacyClientResponseMessage<TResponseResults> | null {
+  }: ClientResponseMessage<TLegacyResponseResults>): LegacyClientResponseMessage<TLegacyResponseResults> | null {
     const reference: LegacyMessageReferenceEnum | null =
       this.createResponseMessageReference(method);
 
@@ -50,7 +55,30 @@ export default class LegacyClientMessageBroker {
       return null;
     }
 
-    return new LegacyClientResponseMessage<TResponseResults>({
+    // use the legacy method names for discover messages
+    if (method === ARC0027MethodEnum.Discover && result) {
+      return new LegacyClientResponseMessage<ILegacyDiscoverResult>({
+        error: null,
+        id,
+        reference,
+        requestId,
+        result: {
+          ...result,
+          networks: (result as IDiscoverResult).networks.map(
+            ({ methods, ...otherProps }) => ({
+              ...otherProps,
+              methods: methods.map((method) =>
+                method === ARC0027MethodEnum.SignTransactions
+                  ? 'signTxns'
+                  : method
+              ),
+            })
+          ) as INetworkConfigurationWithLegacyMethods[],
+        } as ILegacyDiscoverResult,
+      });
+    }
+
+    return new LegacyClientResponseMessage<TLegacyResponseResults>({
       error: error || null,
       id,
       reference,
@@ -79,9 +107,7 @@ export default class LegacyClientMessageBroker {
    */
 
   public static init(options: IBaseOptions): LegacyClientMessageBroker {
-    const channel: BroadcastChannel = new BroadcastChannel(
-      'arc0027:channel:name'
-    );
+    const channel: BroadcastChannel = new BroadcastChannel('arc0027:channel');
     const legacyClientMessageBroker: LegacyClientMessageBroker =
       new LegacyClientMessageBroker({
         ...options,
@@ -141,10 +167,10 @@ export default class LegacyClientMessageBroker {
   }
 
   public onProviderResponseMessage(
-    message: ClientResponseMessage<TResponseResults>
+    message: ClientResponseMessage<TLegacyResponseResults>
   ): void {
     const _functionName: string = 'onProviderResponseMessage';
-    let legacyResponse: LegacyClientResponseMessage<TResponseResults> | null;
+    let legacyResponse: LegacyClientResponseMessage<TLegacyResponseResults> | null;
 
     switch (message.method) {
       case ARC0027MethodEnum.Discover:
