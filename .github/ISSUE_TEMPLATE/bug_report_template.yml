@@ -26,6 +26,7 @@ body:
       label: Version
       description: What version of the software are you running?
       options:
+        - 1.15.1
         - 1.15.0
         - 1.14.1
         - 1.14.0
