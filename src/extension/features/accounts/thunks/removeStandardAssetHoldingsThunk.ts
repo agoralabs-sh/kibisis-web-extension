@@ -49,7 +49,8 @@ import createAlgodClient from '@common/utils/createAlgodClient';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
-import { updateAccountInformation, updateAccountTransactions } from '../utils';
+import updateAccountInformation from '@extension/utils/updateAccountInformation';
+import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 
 const removeStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return

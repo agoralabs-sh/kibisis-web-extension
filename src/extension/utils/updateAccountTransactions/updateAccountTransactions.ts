@@ -13,9 +13,9 @@ import {
 
 // utils
 import getIndexerClient from '@common/utils/getIndexerClient';
-import lookupAlgorandAccountTransactionsWithDelay from '@extension/utils/lookupAlgorandAccountTransactionsWithDelay';
-import mapAlgorandTransactionToTransaction from '@extension/utils/mapAlgorandTransactionToTransaction';
-import refreshTransactions from '@extension/utils/refreshTransactions';
+import lookupAlgorandAccountTransactionsWithDelay from '../lookupAlgorandAccountTransactionsWithDelay';
+import mapAlgorandTransactionToTransaction from '../mapAlgorandTransactionToTransaction';
+import refreshTransactions from '../refreshTransactions';
 
 interface IOptions extends IBaseOptions {
   address: string;

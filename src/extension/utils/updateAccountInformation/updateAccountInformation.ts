@@ -15,10 +15,10 @@ import type {
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
-import algorandAccountInformationWithDelay from '@extension/utils/algorandAccountInformationWithDelay';
-import fetchARC0072AssetHoldingsWithDelay from '@extension/utils/fetchARC0072AssetHoldingsWithDelay';
-import fetchARC0200AssetHoldingWithDelay from '@extension/utils/fetchARC0200AssetHoldingWithDelay';
-import mapAlgorandAccountInformationToAccount from '@extension/utils/mapAlgorandAccountInformationToAccount';
+import algorandAccountInformationWithDelay from '../algorandAccountInformationWithDelay';
+import fetchARC0072AssetHoldingsWithDelay from '../fetchARC0072AssetHoldingsWithDelay';
+import fetchARC0200AssetHoldingWithDelay from '../fetchARC0200AssetHoldingWithDelay';
+import mapAlgorandAccountInformationToAccount from '../mapAlgorandAccountInformationToAccount';
 
 interface IOptions extends IBaseOptions {
   address: string;

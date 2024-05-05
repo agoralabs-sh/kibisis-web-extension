@@ -21,7 +21,8 @@ import { IUpdateAccountsPayload } from '../types';
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import { updateAccountInformation, updateAccountTransactions } from '../utils';
+import updateAccountInformation from '@extension/utils/updateAccountInformation';
+import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 
 const updateAccountsThunk: AsyncThunk<
   IAccount[], // return
