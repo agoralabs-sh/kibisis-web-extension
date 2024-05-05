@@ -26,12 +26,12 @@ import AccountService from '@extension/services/AccountService';
 // types
 import type {
   IARC0200Asset,
-  IARC0200TransferTransaction,
+  IARC0200AssetTransferTransaction,
 } from '@extension/types';
 import type { IProps } from './types';
 
-const ARC0200TransferTransactionItemContent: FC<
-  IProps<IARC0200TransferTransaction>
+const ARC0200AssetTransferTransactionItemContent: FC<
+  IProps<IARC0200AssetTransferTransaction>
 > = ({ account, network, transaction }) => {
   const { t } = useTranslation();
   // selectors
@@ -126,4 +126,4 @@ const ARC0200TransferTransactionItemContent: FC<
   );
 };
 
-export default ARC0200TransferTransactionItemContent;
+export default ARC0200AssetTransferTransactionItemContent;

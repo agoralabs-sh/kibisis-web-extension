@@ -3,29 +3,40 @@ import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // components
-import PageHeader from '@extension/components/PageHeader';
-import ApplicationTransactionContent from './ApplicationTransactionContent';
-import AssetConfigTransactionContent from './AssetConfigTransactionContent';
-import AssetCreateTransactionContent from './AssetCreateTransactionContent';
-import AssetDestroyTransactionContent from './AssetDestroyTransactionContent';
+import ApplicationTransactionPage from './ApplicationTransactionPage';
+import ARC0200AssetTransferTransactionPage from './ARC0200AssetTransferTransactionPage';
+import AssetConfigTransactionPage from './AssetConfigTransactionPage';
+import AssetCreateTransactionPage from './AssetCreateTransactionPage';
+import AssetDestroyTransactionPage from './AssetDestroyTransactionPage';
 import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
-import AssetTransferTransactionContent from './AssetTransferTransactionContent';
-import LoadingTransactionContent from './LoadingTransactionContent';
-import PaymentTransactionContent from './PaymentTransactionContent';
+import AssetTransferTransactionPage from './AssetTransferTransactionPage';
+import LoadingTransactionPage from './LoadingTransactionPage';
+import PaymentTransactionPage from './PaymentTransactionPage';
 
 // constants
 import { ACCOUNTS_ROUTE } from '@extension/constants';
 
+// enums
+import { TransactionTypeEnum } from '@extension/enums';
+
 // hooks
 import useTransactionPage from './hooks/useTransactionPage';
 
+// selectors
+import { useSelectARC0200AssetsBySelectedNetwork } from '@extension/selectors';
+
+// types
+import type { IARC0200AssetTransferTransaction } from '@extension/types';
+
 // utils
-import { TransactionTypeEnum } from '@extension/enums';
+import parseARC0200Transaction from '@extension/utils/parseARC0200Transaction';
 
 const TransactionPage: FC = () => {
   const { t } = useTranslation();
   const navigate: NavigateFunction = useNavigate();
   const { transactionId } = useParams();
+  // selectors
+  const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   // hooks
   const { account, network, transaction } = useTransactionPage(
     transactionId || null
@@ -36,75 +47,7 @@ const TransactionPage: FC = () => {
       replace: true,
     });
   // renders
-  const renderContent = () => {
-    if (!account || !network || !transaction) {
-      return <LoadingTransactionContent />;
-    }
-
-    switch (transaction.type) {
-      case TransactionTypeEnum.ApplicationClearState:
-      case TransactionTypeEnum.ApplicationCloseOut:
-      case TransactionTypeEnum.ApplicationCreate:
-      case TransactionTypeEnum.ApplicationDelete:
-      case TransactionTypeEnum.ApplicationNoOp:
-      case TransactionTypeEnum.ApplicationOptIn:
-      case TransactionTypeEnum.ApplicationUpdate:
-        return (
-          <ApplicationTransactionContent
-            account={account}
-            network={network}
-            transaction={transaction}
-          />
-        );
-      case TransactionTypeEnum.AssetConfig:
-        return (
-          <AssetConfigTransactionContent
-            network={network}
-            transaction={transaction}
-          />
-        );
-      case TransactionTypeEnum.AssetCreate:
-        return (
-          <AssetCreateTransactionContent
-            network={network}
-            transaction={transaction}
-          />
-        );
-      case TransactionTypeEnum.AssetDestroy:
-        return (
-          <AssetDestroyTransactionContent
-            network={network}
-            transaction={transaction}
-          />
-        );
-      case TransactionTypeEnum.AssetFreeze:
-      case TransactionTypeEnum.AssetUnfreeze:
-        return (
-          <AssetFreezeTransactionContent
-            network={network}
-            transaction={transaction}
-          />
-        );
-      case TransactionTypeEnum.AssetTransfer:
-        return (
-          <AssetTransferTransactionContent
-            account={account}
-            network={network}
-            transaction={transaction}
-          />
-        );
-      case TransactionTypeEnum.Payment:
-        return (
-          <PaymentTransactionContent
-            account={account}
-            network={network}
-            transaction={transaction}
-          />
-        );
-      default:
-        return null;
-    }
-  };
+  let arc0200Transaction: IARC0200AssetTransferTransaction | null;
 
   // if we don't have the params, return to accounts page
   useEffect(() => {
@@ -113,18 +56,96 @@ const TransactionPage: FC = () => {
     }
   }, []);
 
-  if (!transaction) {
-    return <LoadingTransactionContent />;
+  if (!account || !network || !transaction) {
+    return <LoadingTransactionPage />;
   }
 
-  return (
-    <>
-      <PageHeader
-        title={t<string>('headings.transaction', { context: transaction.type })}
-      />
-      {renderContent()}
-    </>
-  );
+  switch (transaction.type) {
+    case TransactionTypeEnum.ApplicationClearState:
+    case TransactionTypeEnum.ApplicationCloseOut:
+    case TransactionTypeEnum.ApplicationCreate:
+    case TransactionTypeEnum.ApplicationDelete:
+    case TransactionTypeEnum.ApplicationOptIn:
+    case TransactionTypeEnum.ApplicationUpdate:
+      return (
+        <ApplicationTransactionPage
+          account={account}
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.ApplicationNoOp:
+      if (arc0200Assets.find(({ id }) => id === transaction.applicationId)) {
+        arc0200Transaction = parseARC0200Transaction(transaction);
+
+        if (
+          arc0200Transaction?.type === TransactionTypeEnum.ARC0200AssetTransfer
+        ) {
+          return (
+            <ARC0200AssetTransferTransactionPage
+              account={account}
+              network={network}
+              transaction={arc0200Transaction}
+            />
+          );
+        }
+      }
+
+      return (
+        <ApplicationTransactionPage
+          account={account}
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.AssetConfig:
+      return (
+        <AssetConfigTransactionPage
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.AssetCreate:
+      return (
+        <AssetCreateTransactionPage
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.AssetDestroy:
+      return (
+        <AssetDestroyTransactionPage
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.AssetFreeze:
+    case TransactionTypeEnum.AssetUnfreeze:
+      return (
+        <AssetFreezeTransactionContent
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.AssetTransfer:
+      return (
+        <AssetTransferTransactionPage
+          account={account}
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.Payment:
+      return (
+        <PaymentTransactionPage
+          account={account}
+          network={network}
+          transaction={transaction}
+        />
+      );
+    default:
+      return null;
+  }
 };
 
 export default TransactionPage;

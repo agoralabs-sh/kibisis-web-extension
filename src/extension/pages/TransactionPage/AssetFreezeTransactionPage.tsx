@@ -1,93 +1,87 @@
 import {
   Code,
   HStack,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Text,
   Tooltip,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetDisplay from '@extension/components/AssetDisplay';
 import CopyIconButton from '@extension/components/CopyIconButton';
-import InnerTransactionAccordion from '@extension/components/InnerTransactionAccordion';
+import LoadingTransactionPage from '@extension/pages/TransactionPage/LoadingTransactionPage';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
+import PageHeader from '@extension/components/PageHeader';
 import PageItem from '@extension/components/PageItem';
 
 // constants
 import { DEFAULT_GAP, PAGE_ITEM_HEIGHT } from '@extension/constants';
 
+// enums
+import { TransactionTypeEnum } from '@extension/enums';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
+import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
+import {
+  useSelectAccounts,
+  useSelectSettingsPreferredBlockExplorer,
+} from '@extension/selectors';
 
 // types
-import {
-  IAccount,
-  IApplicationTransaction,
-  IBlockExplorer,
-  INetwork,
+import type {
+  IAssetFreezeTransaction,
+  IAssetUnfreezeTransaction,
 } from '@extension/types';
+import type { IContentProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import isAccountKnown from '@extension/utils/isAccountKnown';
 
-interface IProps {
-  account: IAccount;
-  network: INetwork;
-  transaction: IApplicationTransaction;
-}
-
-const ApplicationTransactionContent: FC<IProps> = ({
-  account,
-  network,
-  transaction,
-}: IProps) => {
+const AssetTransferTransactionContent: FC<
+  IContentProps<IAssetFreezeTransaction | IAssetUnfreezeTransaction>
+> = ({ network, transaction }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const explorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
+  const accounts = useSelectAccounts();
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
-  // state
-  const [openInnerTransactionAccordions, setOpenInnerTransactionAccordions] =
-    useState<boolean[]>(
-      Array.from(
-        { length: transaction.innerTransactions?.length || 0 },
-        () => false
-      )
-    );
+  const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
+  // misc
+  const explorer =
+    network.blockExplorers.find(
+      (value) => value.id === preferredExplorer?.id
+    ) ||
+    network.blockExplorers[0] ||
+    null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   // handlers
-  const handleInnerTransactionsAccordionToggle =
-    (accordionIndex: number) => (open: boolean) => {
-      setOpenInnerTransactionAccordions(
-        openInnerTransactionAccordions.map((value, index) =>
-          index === accordionIndex ? open : value
-        )
-      );
-    };
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onOpen() : onClose();
 
+  if (!standardAsset || updating) {
+    return <LoadingTransactionPage />;
+  }
+
   return (
     <>
+      <PageHeader
+        title={t<string>('headings.transaction', { context: transaction.type })}
+      />
+
       <VStack
         alignItems="flex-start"
         justifyContent="flex-start"
@@ -95,31 +89,61 @@ const ApplicationTransactionContent: FC<IProps> = ({
         spacing={4}
         w="full"
       >
-        {/*app id*/}
-        {transaction.applicationId && (
-          <PageItem fontSize="sm" label={t<string>('labels.applicationId')}>
-            <HStack spacing={0}>
-              <Text color={subTextColor} fontSize="sm">
-                {transaction.applicationId}
-              </Text>
-              <CopyIconButton
-                ariaLabel={t<string>('labels.copyApplicationId')}
-                tooltipLabel={t<string>('labels.copyApplicationId')}
+        {/*asset id*/}
+        <PageItem fontSize="sm" label={t<string>('labels.assetId')}>
+          <HStack spacing={0}>
+            <Text color={subTextColor} fontSize="sm">
+              {standardAsset.id}
+            </Text>
+            <CopyIconButton
+              ariaLabel={t<string>('labels.copyAssetId')}
+              tooltipLabel={t<string>('labels.copyAssetId')}
+              size="sm"
+              value={standardAsset.id}
+            />
+            {explorer && (
+              <OpenTabIconButton
                 size="sm"
-                value={transaction.applicationId}
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: explorer.canonicalName,
+                })}
+                url={`${explorer.baseUrl}${explorer.assetPath}/${standardAsset.id}`}
               />
-              {explorer && (
+            )}
+          </HStack>
+        </PageItem>
+
+        {/*frozen account*/}
+        <PageItem
+          fontSize="sm"
+          label={t<string>(
+            transaction.type === TransactionTypeEnum.AssetFreeze
+              ? 'labels.accountToFreeze'
+              : 'labels.accountToUnfreeze'
+          )}
+        >
+          <HStack spacing={0}>
+            <AddressDisplay
+              address={transaction.frozenAddress}
+              ariaLabel="Address to freeze/unfreeze"
+              color={subTextColor}
+              fontSize="sm"
+              network={network}
+            />
+
+            {/*open in explorer button*/}
+            {!isAccountKnown(accounts, transaction.frozenAddress) &&
+              explorer && (
                 <OpenTabIconButton
                   size="sm"
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.applicationPath}/${transaction.applicationId}`}
+                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.frozenAddress}`}
                 />
               )}
-            </HStack>
-          </PageItem>
-        )}
+          </HStack>
+        </PageItem>
 
         {/*fee*/}
         <PageItem fontSize="sm" label={t<string>('labels.fee')}>
@@ -245,49 +269,8 @@ const ApplicationTransactionContent: FC<IProps> = ({
           </VStack>
         </MoreInformationAccordion>
       </VStack>
-
-      {/*inner transactions*/}
-      {transaction.innerTransactions && (
-        <Tabs
-          colorScheme={primaryColorScheme}
-          m={0}
-          sx={{ display: 'flex', flexDirection: 'column' }}
-          w="full"
-        >
-          <TabList>
-            <Tab>{t<string>('labels.innerTransactions')}</Tab>
-          </TabList>
-          <TabPanels
-            flexGrow={1}
-            sx={{ display: 'flex', flexDirection: 'column' }}
-          >
-            <TabPanel
-              m={0}
-              p={0}
-              sx={{ display: 'flex', flexDirection: 'column' }}
-              w="full"
-            >
-              <VStack pb={DEFAULT_GAP} pt={0} px={0} spacing={0} w="full">
-                {transaction.innerTransactions.map((value, index) => (
-                  <InnerTransactionAccordion
-                    account={account}
-                    color={defaultTextColor}
-                    fontSize="sm"
-                    isOpen={openInnerTransactionAccordions[index]}
-                    key={`transaction-page-application-inner-transaction-item-${index}`}
-                    minButtonHeight={PAGE_ITEM_HEIGHT}
-                    network={network}
-                    onChange={handleInnerTransactionsAccordionToggle(index)}
-                    transaction={value}
-                  />
-                ))}
-              </VStack>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      )}
     </>
   );
 };
 
-export default ApplicationTransactionContent;
+export default AssetTransferTransactionContent;

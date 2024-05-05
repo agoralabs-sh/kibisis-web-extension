@@ -9,6 +9,6 @@ type IApplicationTransactionTypes =
   | TransactionTypeEnum.ApplicationNoOp
   | TransactionTypeEnum.ApplicationOptIn
   | TransactionTypeEnum.ApplicationUpdate
-  | TransactionTypeEnum.ARC0200Transfer;
+  | TransactionTypeEnum.ARC0200AssetTransfer;
 
 export default IApplicationTransactionTypes;

@@ -41,6 +41,6 @@ describe(`${__dirname}/parseARC0200Transaction`, () => {
       throw new Error('unable to parse transaction');
     }
 
-    expect(result.type).toBe(TransactionTypeEnum.ARC0200Transfer);
+    expect(result.type).toBe(TransactionTypeEnum.ARC0200AssetTransfer);
   });
 });

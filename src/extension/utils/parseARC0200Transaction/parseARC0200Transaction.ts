@@ -12,7 +12,7 @@ import { TransactionTypeEnum } from '@extension/enums';
 // types
 import type {
   IApplicationTransaction,
-  IARC0200TransferTransaction,
+  IARC0200AssetTransferTransaction,
 } from '@extension/types';
 
 // utils
@@ -21,12 +21,12 @@ import isByteArrayEqual from '../isByteArrayEqual';
 /**
  * Convenience function that parses an application transaction to an ARC-0200 transaction.
  * @param {IApplicationTransaction} transaction - the application transaction.
- * @returns {IARC0200TransferTransaction | null} the parsed ARC-0200 transaction or null if it is an unknown ARC-0200
+ * @returns {IARC0200AssetTransferTransaction | null} the parsed ARC-0200 transaction or null if it is an unknown ARC-0200
  * transaction.
  */
 export default function parseARC0200Transaction(
   transaction: IApplicationTransaction
-): IARC0200TransferTransaction | null {
+): IARC0200AssetTransferTransaction | null {
   let abiContract: ABIContract;
   let method: Uint8Array;
 
@@ -57,7 +57,7 @@ export default function parseARC0200Transaction(
       receiver: ARC0200Contract.formatBase64EncodedAddressArg(
         transaction.applicationArgs[1]
       ),
-      type: TransactionTypeEnum.ARC0200Transfer,
+      type: TransactionTypeEnum.ARC0200AssetTransfer,
     };
   }
 

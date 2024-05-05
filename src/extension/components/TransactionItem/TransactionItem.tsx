@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 // components
 import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
-import ARC0200TransferTransactionItemContent from './ARC0200TransferTransactionItemContent';
+import ARC0200AssetTransferTransactionItemContent from './ARC0200AssetTransferTransactionItemContent';
 import AssetTransferTransactionItemContent from './AssetTransferTransactionItemContent';
 import DefaultTransactionItemContent from './DefaultTransactionItemContent';
 import PaymentTransactionItemContent from './PaymentTransactionItemContent';
@@ -28,7 +28,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import { useSelectARC0200AssetsBySelectedNetwork } from '@extension/selectors';
 
 // types
-import type { IARC0200TransferTransaction } from '@extension/types';
+import type { IARC0200AssetTransferTransaction } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
@@ -42,7 +42,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
   const defaultTextColor = useDefaultTextColor();
   // renders
   const renderContent = () => {
-    let arc0200Transaction: IARC0200TransferTransaction | null;
+    let arc0200Transaction: IARC0200AssetTransferTransaction | null;
 
     switch (transaction.type) {
       case TransactionTypeEnum.ApplicationClearState:
@@ -63,10 +63,11 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
           arc0200Transaction = parseARC0200Transaction(transaction);
 
           if (
-            arc0200Transaction?.type === TransactionTypeEnum.ARC0200Transfer
+            arc0200Transaction?.type ===
+            TransactionTypeEnum.ARC0200AssetTransfer
           ) {
             return (
-              <ARC0200TransferTransactionItemContent
+              <ARC0200AssetTransferTransactionItemContent
                 account={account}
                 network={network}
                 transaction={arc0200Transaction}

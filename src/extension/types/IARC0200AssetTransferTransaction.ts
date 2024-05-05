@@ -4,13 +4,10 @@ import { TransactionTypeEnum } from '@extension/enums';
 // types
 import IApplicationTransaction from './IApplicationTransaction';
 
-/**
- *
- */
-interface IARC0200TransferTransaction extends IApplicationTransaction {
+interface IARC0200AssetTransferTransaction extends IApplicationTransaction {
   amount: string;
   receiver: string;
-  type: TransactionTypeEnum.ARC0200Transfer;
+  type: TransactionTypeEnum.ARC0200AssetTransfer;
 }
 
-export default IARC0200TransferTransaction;
+export default IARC0200AssetTransferTransaction;
