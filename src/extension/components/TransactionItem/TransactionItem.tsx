@@ -1,11 +1,11 @@
 import { Button, HStack, Icon } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { useTranslation } from 'react-i18next';
 import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
 // components
 import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
+import ARC0200TransferTransactionItemContent from './ARC0200TransferTransactionItemContent';
 import AssetTransferTransactionItemContent from './AssetTransferTransactionItemContent';
 import DefaultTransactionItemContent from './DefaultTransactionItemContent';
 import PaymentTransactionItemContent from './PaymentTransactionItemContent';
@@ -24,34 +24,64 @@ import { TransactionTypeEnum } from '@extension/enums';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
+// selectors
+import { useSelectARC0200AssetsBySelectedNetwork } from '@extension/selectors';
+
 // types
-import type { IAccount, INetwork, ITransactions } from '@extension/types';
+import type { IARC0200TransferTransaction } from '@extension/types';
+import type { IProps } from './types';
 
-interface IProps {
-  account: IAccount;
-  network: INetwork;
-  transaction: ITransactions;
-}
+// utils
+import parseARC0200Transaction from '@extension/utils/parseARC0200Transaction';
 
-const TransactionItem: FC<IProps> = ({
-  account,
-  network,
-  transaction,
-}: IProps) => {
-  const { t } = useTranslation();
+const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
+  // selectors
+  const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  // renders
   const renderContent = () => {
+    let arc0200Transaction: IARC0200TransferTransaction | null;
+
     switch (transaction.type) {
       case TransactionTypeEnum.ApplicationClearState:
       case TransactionTypeEnum.ApplicationCloseOut:
       case TransactionTypeEnum.ApplicationCreate:
       case TransactionTypeEnum.ApplicationDelete:
-      case TransactionTypeEnum.ApplicationNoOp:
       case TransactionTypeEnum.ApplicationOptIn:
       case TransactionTypeEnum.ApplicationUpdate:
-        return <ApplicationTransactionItemContent transaction={transaction} />;
+        return (
+          <ApplicationTransactionItemContent
+            account={account}
+            network={network}
+            transaction={transaction}
+          />
+        );
+      case TransactionTypeEnum.ApplicationNoOp:
+        if (arc0200Assets.find(({ id }) => id === transaction.applicationId)) {
+          arc0200Transaction = parseARC0200Transaction(transaction);
+
+          if (
+            arc0200Transaction?.type === TransactionTypeEnum.ARC0200Transfer
+          ) {
+            return (
+              <ARC0200TransferTransactionItemContent
+                account={account}
+                network={network}
+                transaction={arc0200Transaction}
+              />
+            );
+          }
+        }
+
+        return (
+          <ApplicationTransactionItemContent
+            account={account}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case TransactionTypeEnum.AssetTransfer:
         return (
           <AssetTransferTransactionItemContent
@@ -72,6 +102,7 @@ const TransactionItem: FC<IProps> = ({
       default:
         return (
           <DefaultTransactionItemContent
+            account={account}
             network={network}
             transaction={transaction}
           />

@@ -6,6 +6,8 @@ enum TransactionTypeEnum {
   ApplicationNoOp = 'application_no_op',
   ApplicationOptIn = 'application_opt_in',
   ApplicationUpdate = 'application_update',
+  ARC0200Approve = 'arc0200_approve',
+  ARC0200Transfer = 'arc0200_transfer',
   AssetConfig = 'asset_config',
   AssetCreate = 'asset_create',
   AssetFreeze = 'asset_freeze',

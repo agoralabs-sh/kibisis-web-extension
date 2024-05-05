@@ -1,24 +1,21 @@
-import { HStack, Spacer, Text, VStack } from '@chakra-ui/react';
+import { HStack, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+
+// components
+import AddressDisplay from '@extension/components/AddressDisplay';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { INetwork, ITransactions } from '@extension/types';
-import AddressDisplay from '@extension/components/AddressDisplay';
-
-interface IProps {
-  network: INetwork;
-  transaction: ITransactions;
-}
+import type { IProps } from './types';
 
 const DefaultTransactionItemContent: FC<IProps> = ({
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();

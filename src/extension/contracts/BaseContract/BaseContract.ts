@@ -1,5 +1,9 @@
+import { decode as decodeBase64 } from '@stablelib/base64';
 import algosdk, {
+  ABIAddressType,
   ABIContract,
+  ABIStringType,
+  ABIUintType,
   Algodv2,
   assignGroupID,
   decodeObj,
@@ -49,6 +53,43 @@ export default class BaseContract {
       logger || createLogger(__ENV__ === 'development' ? 'debug' : 'error');
     this.algodClient = createAlgodClient(network, { logger });
     this.network = network;
+  }
+
+  /**
+   * public static functions
+   */
+
+  /**
+   * Convenience function that converts a base64 encoded address arg to a string.
+   * @param {string} arg - the base64 encoded application arg.
+   * @returns {string} the address.
+   */
+  public static formatBase64EncodedAddressArg(arg: string): string {
+    return new ABIAddressType().decode(decodeBase64(arg));
+  }
+
+  /**
+   * Convenience function that converts a base64 encoded string arg to a string.
+   * @param {string} arg - the base64 encoded application arg.
+   * @returns {string} the string.
+   */
+  public static formatBase64EncodedStringArg(arg: string): string {
+    return new ABIStringType().decode(decodeBase64(arg));
+  }
+
+  /**
+   * Convenience function that converts a base64 encoded integer arg to a bigint.
+   * @param {string} arg - the base64 encoded application arg.
+   * @param {number} size - the size of the integer, e.g. uint64 = 64, uint256 = 256.
+   * @returns {BigNumber} the integer as a BigNumber.
+   */
+  public static formatBase64EncodedUintArg(
+    arg: string,
+    size: number
+  ): BigNumber {
+    return new BigNumber(
+      String(new ABIUintType(size).decode(decodeBase64(arg)))
+    );
   }
 
   /**

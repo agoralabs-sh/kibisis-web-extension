@@ -15,22 +15,17 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount, INetwork, IPaymentTransaction } from '@extension/types';
+import type { IPaymentTransaction } from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
-interface IProps {
-  account: IAccount;
-  network: INetwork;
-  transaction: IPaymentTransaction;
-}
-
-const PaymentTransactionItemContent: FC<IProps> = ({
+const PaymentTransactionItemContent: FC<IProps<IPaymentTransaction>> = ({
   account,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
