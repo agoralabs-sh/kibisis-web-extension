@@ -1,3 +1,10 @@
+# [1.16.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.3...v1.16.0-beta.4) (2024-05-06)
+
+
+### Features
+
+* show already added assets to the search asset list ([#223](https://github.com/agoralabs-sh/kibisis-web-extension/issues/223)) ([5677066](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5677066e042a11b3ffd01dd78ccd4dde8e2e0471))
+
 # [1.16.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.2...v1.16.0-beta.3) (2024-05-06)
 
 
