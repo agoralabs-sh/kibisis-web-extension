@@ -7,15 +7,12 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { IApplicationTransaction } from '@extension/types';
+import type { IApplicationTransaction } from '@extension/types';
+import type { IProps } from './types';
 
-interface IProps {
-  transaction: IApplicationTransaction;
-}
-
-const ApplicationTransactionItemContent: FC<IProps> = ({
-  transaction,
-}: IProps) => {
+const ApplicationTransactionItemContent: FC<
+  IProps<IApplicationTransaction>
+> = ({ transaction }) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();

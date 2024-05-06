@@ -10,27 +10,27 @@ import { AccountsThunkEnum } from '@extension/enums';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { ILogger } from '@common/types';
 import {
   IAccount,
+  IBaseAsyncThunkConfig,
   IMainRootState,
-  INetworkWithTransactionParams,
 } from '@extension/types';
 import { IUpdateAccountsPayload } from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import { updateAccountInformation, updateAccountTransactions } from '../utils';
+import updateAccountInformation from '@extension/utils/updateAccountInformation';
+import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 
 const updateAccountsThunk: AsyncThunk<
   IAccount[], // return
   IUpdateAccountsPayload | undefined, // args
-  Record<string, never>
+  IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IAccount[],
   IUpdateAccountsPayload | undefined,
-  { state: IMainRootState }
+  IBaseAsyncThunkConfig<IMainRootState>
 >(
   AccountsThunkEnum.UpdateAccounts,
   async (
@@ -46,11 +46,13 @@ const updateAccountsThunk: AsyncThunk<
     },
     { getState }
   ) => {
-    const logger: ILogger = getState().system.logger;
-    const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const online: boolean = getState().system.online;
-    const selectedNetwork: INetworkWithTransactionParams | null =
-      selectNetworkFromSettings(networks, getState().settings);
+    const logger = getState().system.logger;
+    const networks = getState().networks.items;
+    const online = getState().system.online;
+    const selectedNetwork = selectNetworkFromSettings(
+      networks,
+      getState().settings
+    );
     let accountService: AccountService;
     let accounts: IAccount[] = getState().accounts.items;
     let encodedGenesisHash: string;

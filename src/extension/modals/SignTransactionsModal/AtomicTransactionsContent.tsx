@@ -23,9 +23,6 @@ import { DEFAULT_GAP, NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// features
-import { updateAccountInformation } from '@extension/features/accounts';
-
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
 
@@ -56,6 +53,7 @@ import computeGroupId from '@common/utils/computeGroupId';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
+import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
 interface IProps {
   transactions: Transaction[];

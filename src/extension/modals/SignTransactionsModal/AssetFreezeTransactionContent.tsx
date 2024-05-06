@@ -19,9 +19,6 @@ import SignTxnsAssetItem from './SignTxnsAssetItem';
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// features
-import { updateAccountInformation } from '@extension/features/accounts';
-
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
@@ -49,6 +46,7 @@ import type { ICondensedProps } from './types';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
+import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
 interface IProps {
   asset: IStandardAsset | null;

@@ -3,9 +3,6 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // constants
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
-// features
-import { updateAccountInformation } from '@extension/features/accounts';
-
 // enums
 import { AccountsThunkEnum } from '@extension/enums';
 
@@ -34,6 +31,7 @@ import type {
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import initializeARC0200AssetHoldingFromARC0200Asset from '@extension/utils/initializeARC0200AssetHoldingFromARC0200Asset';
+import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
 const addARC0200AssetHoldingsThunk: AsyncThunk<
   IUpdateAssetHoldingsResult, // return

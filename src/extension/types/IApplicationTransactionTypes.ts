@@ -8,6 +8,7 @@ type IApplicationTransactionTypes =
   | TransactionTypeEnum.ApplicationDelete
   | TransactionTypeEnum.ApplicationNoOp
   | TransactionTypeEnum.ApplicationOptIn
-  | TransactionTypeEnum.ApplicationUpdate;
+  | TransactionTypeEnum.ApplicationUpdate
+  | TransactionTypeEnum.ARC0200AssetTransfer;
 
 export default IApplicationTransactionTypes;

@@ -15,9 +15,6 @@ import PaymentTransactionContent from './PaymentTransactionContent';
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// features
-import { updateAccountInformation } from '@extension/features/accounts';
-
 // selectors
 import {
   useSelectAccounts,
@@ -37,6 +34,7 @@ import type { IAccount, IAccountInformation } from '@extension/types';
 // utils
 import parseTransactionType from '@extension/utils/parseTransactionType';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
 interface IProps {
   transaction: Transaction;

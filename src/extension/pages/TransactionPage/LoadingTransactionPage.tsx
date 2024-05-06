@@ -5,7 +5,7 @@ import React, { FC } from 'react';
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
-const LoadingTransactionContent: FC = () => (
+const LoadingTransactionPage: FC = () => (
   <VStack
     alignItems="flex-start"
     justifyContent="flex-start"
@@ -23,4 +23,4 @@ const LoadingTransactionContent: FC = () => (
   </VStack>
 );
 
-export default LoadingTransactionContent;
+export default LoadingTransactionPage;

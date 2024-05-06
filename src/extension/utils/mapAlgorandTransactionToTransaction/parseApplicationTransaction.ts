@@ -61,7 +61,7 @@ export default function parseApplicationTransaction(
     approvalProgram: algorandApplicationTransaction['approval-program'] || null,
     clearStateProgram:
       algorandApplicationTransaction['clear-state-program'] || null,
-    extraProgrampages: algorandApplicationTransaction['extra-program-pages']
+    extraProgramPages: algorandApplicationTransaction['extra-program-pages']
       ? Number(algorandApplicationTransaction['extra-program-pages'])
       : null,
     foreignApps:

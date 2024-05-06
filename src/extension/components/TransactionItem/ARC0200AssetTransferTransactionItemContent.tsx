@@ -1,39 +1,66 @@
 import { HStack, Skeleton, Spacer, Text, VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetDisplay from '@extension/components/AssetDisplay';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+
+// selectors
+import {
+  useSelectARC0200AssetsBySelectedNetwork,
+  useSelectARC0200AssetsUpdating,
+} from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IAssetTransferTransaction } from '@extension/types';
+import type {
+  IARC0200Asset,
+  IARC0200AssetTransferTransaction,
+} from '@extension/types';
 import type { IProps } from './types';
 
-const AssetTransferTransactionItemContent: FC<
-  IProps<IAssetTransferTransaction>
+const ARC0200AssetTransferTransactionItemContent: FC<
+  IProps<IARC0200AssetTransferTransaction>
 > = ({ account, network, transaction }) => {
   const { t } = useTranslation();
+  // selectors
+  const assets = useSelectARC0200AssetsBySelectedNetwork();
+  const updating = useSelectARC0200AssetsUpdating();
   // hooks
-  const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
-  const amount: BigNumber = new BigNumber(String(transaction.amount));
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
+  // state
+  const [asset, setAsset] = useState<IARC0200Asset | null>(null);
+  // misc
+  const amount = new BigNumber(String(transaction.amount));
+  const senderAddress = AccountService.convertPublicKeyToAlgorandAddress(
+    account.publicKey
+  );
+
+  useEffect(() => {
+    setAsset(
+      assets.find((value) => value.id === transaction.applicationId) || null
+    );
+  }, [assets]);
 
   return (
     <>
-      <VStack alignItems="flex-start" justifyContent="center" spacing={2}>
+      <VStack
+        alignItems="flex-start"
+        justifyContent="center"
+        spacing={DEFAULT_GAP / 3}
+      >
         {/*type*/}
         <Text color={defaultTextColor} fontSize="sm">
           {t<string>('headings.transaction', { context: transaction.type })}
@@ -50,9 +77,13 @@ const AssetTransferTransactionItemContent: FC<
 
       <Spacer />
 
-      <VStack alignItems="flex-end" justifyContent="center" spacing={2}>
+      <VStack
+        alignItems="flex-end"
+        justifyContent="center"
+        spacing={DEFAULT_GAP / 3}
+      >
         {/*amount*/}
-        {!standardAsset || updating ? (
+        {!asset || updating ? (
           <Skeleton>
             <HStack spacing={1}>
               <Text color={subTextColor} fontSize="sm">
@@ -66,21 +97,21 @@ const AssetTransferTransactionItemContent: FC<
             amountColor={
               amount.lte(0)
                 ? defaultTextColor
-                : transaction.receiver === accountAddress
+                : transaction.receiver === senderAddress
                 ? 'green.500'
                 : 'red.500'
             }
-            decimals={standardAsset.decimals}
+            decimals={asset.decimals}
             displayUnit={true}
             fontSize="sm"
             prefix={
               amount.lte(0)
                 ? undefined
-                : transaction.receiver === accountAddress
+                : transaction.receiver === senderAddress
                 ? '+'
                 : '-'
             }
-            unit={standardAsset.unitName || undefined}
+            unit={asset.symbol}
           />
         )}
 
@@ -95,4 +126,4 @@ const AssetTransferTransactionItemContent: FC<
   );
 };
 
-export default AssetTransferTransactionItemContent;
+export default ARC0200AssetTransferTransactionItemContent;

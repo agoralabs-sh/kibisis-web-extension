@@ -44,6 +44,14 @@ export default class ARC0200Contract extends BaseContract {
   }
 
   /**
+   * public static functions
+   */
+
+  public static getABI(): ABIContract {
+    return new ABIContract(abi);
+  }
+
+  /**
    * public functions
    */
 

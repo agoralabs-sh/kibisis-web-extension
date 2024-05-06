@@ -313,6 +313,8 @@ const translation: IResourceLanguage = {
     [`transaction_${TransactionTypeEnum.AssetFreeze}`]: 'Asset Freeze 🧊',
     [`transaction_${TransactionTypeEnum.AssetOptIn}`]: 'Asset Op-In 🎟️',
     [`transaction_${TransactionTypeEnum.AssetTransfer}`]: 'Asset Transfer 🪙',
+    [`transaction_${TransactionTypeEnum.ARC0200AssetTransfer}`]:
+      'Asset Transfer 🪙',
     [`transaction_${TransactionTypeEnum.AssetUnfreeze}`]: 'Asset Unfreeze 🚀',
     [`transaction_${TransactionTypeEnum.KeyRegistrationOffline}`]:
       'Offline Key Registration 🔑',
