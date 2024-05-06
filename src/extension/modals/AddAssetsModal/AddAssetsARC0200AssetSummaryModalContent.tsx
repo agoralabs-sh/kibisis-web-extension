@@ -36,10 +36,10 @@ const AddAssetsARC0200AssetSummaryModalContent: FC<
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
   // misc
-  const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
+  const totalSupplyInStandardUnits = convertToStandardUnit(
     new BigNumber(asset.totalSupply),
     asset.decimals
   );

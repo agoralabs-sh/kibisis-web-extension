@@ -1,6 +1,6 @@
 enum AddAssetThunkEnum {
   AddStandardAsset = 'addAsset/addStandardAsset',
-  QueryArc200Asset = 'addAsset/queryArc200Asset',
+  QueryARC200Asset = 'addAsset/queryARC200Asset',
   QueryStandardAsset = 'addAsset/queryStandardAsset',
 }
 

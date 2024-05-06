@@ -314,6 +314,7 @@ export default class BaseContract {
         }),
       ],
     });
+
     return await this.algodClient
       .simulateTransactions(request)
       .setIntDecoding(IntDecoding.BIGINT)
