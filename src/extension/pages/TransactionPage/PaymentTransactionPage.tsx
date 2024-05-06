@@ -37,13 +37,13 @@ import AccountService from '@extension/services/AccountService';
 
 // types
 import type { IPaymentTransaction } from '@extension/types';
-import type { IContentProps } from './types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-const PaymentTransactionPage: FC<IContentProps<IPaymentTransaction>> = ({
+const PaymentTransactionPage: FC<IProps<IPaymentTransaction>> = ({
   account,
   network,
   transaction,

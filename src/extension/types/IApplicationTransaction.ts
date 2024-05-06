@@ -15,7 +15,7 @@ import ITransactions from './ITransactions';
  * @property {string | null} clearStateProgram - (apsu) the base64 encoded teal program executed for application
  * transactions with on-completion set to "clear". It can read and write global state for the application, as well as
  * account-specific local state. Clear state programs cannot reject the transaction.
- * @property {number | null} extraProgram - (epp) specifies the additional app program len requested in pages.
+ * @property {number | null} extraProgramPages - (epp) specifies the additional app program len requested in pages.
  * @property {string[] | null} foreignApps - (apfa) a list of applications in addition to the application-id whose
  * global states may be accessed by this application's approval-program and clear-state-program. The access is read-only.
  * @property {string[] | null} foreignAssets - (apas) a list of the assets whose parameters may be accessed by this application's
@@ -29,7 +29,7 @@ interface IApplicationTransaction<T = IApplicationTransactionTypes>
   applicationId: string | null;
   approvalProgram: string | null;
   clearStateProgram: string | null;
-  extraProgram: number | null;
+  extraProgramPages: number | null;
   foreignApps: string[] | null;
   foreignAssets: string[] | null;
   innerTransactions: ITransactions[] | null;

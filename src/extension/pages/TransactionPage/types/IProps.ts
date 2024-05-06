@@ -1,10 +1,10 @@
 // types
 import type { IAccount, INetwork } from '@extension/types';
 
-interface IContentProps<Transaction> {
+interface IProps<Transaction> {
   account: IAccount;
   network: INetwork;
   transaction: Transaction;
 }
 
-export default IContentProps;
+export default IProps;

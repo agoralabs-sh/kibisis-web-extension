@@ -27,7 +27,7 @@ describe(`${__dirname}/parseARC0200Transaction`, () => {
       accounts: [],
       approvalProgram: null,
       clearStateProgram: null,
-      extraProgram: null,
+      extraProgramPages: null,
       foreignApps: [],
       foreignAssets: [],
       innerTransactions: null,

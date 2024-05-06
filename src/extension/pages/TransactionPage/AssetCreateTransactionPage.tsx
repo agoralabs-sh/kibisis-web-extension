@@ -36,16 +36,17 @@ import {
 
 // types
 import type { IAssetCreateTransaction } from '@extension/types';
-import type { IContentProps } from './types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
-const AssetCreateTransactionPage: FC<
-  IContentProps<IAssetCreateTransaction>
-> = ({ network, transaction }) => {
+const AssetCreateTransactionPage: FC<IProps<IAssetCreateTransaction>> = ({
+  network,
+  transaction,
+}) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors

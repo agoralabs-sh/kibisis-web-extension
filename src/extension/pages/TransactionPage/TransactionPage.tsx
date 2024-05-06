@@ -8,7 +8,7 @@ import ARC0200AssetTransferTransactionPage from './ARC0200AssetTransferTransacti
 import AssetConfigTransactionPage from './AssetConfigTransactionPage';
 import AssetCreateTransactionPage from './AssetCreateTransactionPage';
 import AssetDestroyTransactionPage from './AssetDestroyTransactionPage';
-import AssetFreezeTransactionContent from './AssetFreezeTransactionContent';
+import AssetFreezeTransactionPage from './AssetFreezeTransactionPage';
 import AssetTransferTransactionPage from './AssetTransferTransactionPage';
 import LoadingTransactionPage from './LoadingTransactionPage';
 import PaymentTransactionPage from './PaymentTransactionPage';
@@ -101,6 +101,7 @@ const TransactionPage: FC = () => {
     case TransactionTypeEnum.AssetConfig:
       return (
         <AssetConfigTransactionPage
+          account={account}
           network={network}
           transaction={transaction}
         />
@@ -108,6 +109,7 @@ const TransactionPage: FC = () => {
     case TransactionTypeEnum.AssetCreate:
       return (
         <AssetCreateTransactionPage
+          account={account}
           network={network}
           transaction={transaction}
         />
@@ -115,6 +117,7 @@ const TransactionPage: FC = () => {
     case TransactionTypeEnum.AssetDestroy:
       return (
         <AssetDestroyTransactionPage
+          account={account}
           network={network}
           transaction={transaction}
         />
@@ -122,7 +125,8 @@ const TransactionPage: FC = () => {
     case TransactionTypeEnum.AssetFreeze:
     case TransactionTypeEnum.AssetUnfreeze:
       return (
-        <AssetFreezeTransactionContent
+        <AssetFreezeTransactionPage
+          account={account}
           network={network}
           transaction={transaction}
         />

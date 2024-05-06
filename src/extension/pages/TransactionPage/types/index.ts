@@ -1,1 +1,1 @@
-export type { default as IContentProps } from './IContentProps';
+export type { default as IProps } from './IProps';

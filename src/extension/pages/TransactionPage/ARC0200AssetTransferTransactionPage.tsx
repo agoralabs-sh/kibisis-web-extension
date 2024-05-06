@@ -50,7 +50,7 @@ import type {
   IARC0200Asset,
   IARC0200AssetTransferTransaction,
 } from '@extension/types';
-import type { IContentProps } from './types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
@@ -58,7 +58,7 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const ARC0200AssetTransferTransactionPage: FC<
-  IContentProps<IARC0200AssetTransferTransaction>
+  IProps<IARC0200AssetTransferTransaction>
 > = ({ account, network, transaction }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();

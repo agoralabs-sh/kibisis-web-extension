@@ -37,15 +37,17 @@ import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
 import type { IApplicationTransaction } from '@extension/types';
-import type { IContentProps } from './types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-const ApplicationTransactionPage: FC<
-  IContentProps<IApplicationTransaction>
-> = ({ account, network, transaction }) => {
+const ApplicationTransactionPage: FC<IProps<IApplicationTransaction>> = ({
+  account,
+  network,
+  transaction,
+}) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors

@@ -34,16 +34,17 @@ import {
 
 // types
 import type { IAssetDestroyTransaction } from '@extension/types';
-import type { IContentProps } from './types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
-const AssetDestroyTransactionPage: FC<
-  IContentProps<IAssetDestroyTransaction>
-> = ({ network, transaction }) => {
+const AssetDestroyTransactionPage: FC<IProps<IAssetDestroyTransaction>> = ({
+  network,
+  transaction,
+}) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors

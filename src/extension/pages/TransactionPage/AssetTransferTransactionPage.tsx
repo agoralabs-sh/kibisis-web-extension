@@ -46,16 +46,18 @@ import AccountService from '@extension/services/AccountService';
 
 // types
 import type { IAssetTransferTransaction } from '@extension/types';
-import type { IContentProps } from './types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
-const AssetTransferTransactionPage: FC<
-  IContentProps<IAssetTransferTransaction>
-> = ({ account, network, transaction }) => {
+const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
+  account,
+  network,
+  transaction,
+}) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
