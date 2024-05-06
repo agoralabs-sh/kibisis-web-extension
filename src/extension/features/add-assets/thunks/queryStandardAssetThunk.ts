@@ -1,5 +1,5 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Indexer } from 'algosdk';
+import type { Indexer } from 'algosdk';
 
 // constants
 import {
@@ -14,17 +14,13 @@ import { AddAssetThunkEnum } from '@extension/enums';
 import { NetworkNotSelectedError, OfflineError } from '@extension/errors';
 
 // types
-import { ILogger } from '@common/types';
-import {
-  IAccount,
+import type {
   IAlgorandAsset,
   IAlgorandSearchAssetsResult,
-  INetworkWithTransactionParams,
   IStandardAsset,
-  IStandardAssetHolding,
   ITinyManAssetResponse,
 } from '@extension/types';
-import {
+import type {
   IAssetsWithNextToken,
   IQueryByIdAsyncThunkConfig,
   IQueryStandardAssetPayload,
@@ -32,11 +28,10 @@ import {
 
 // utils
 import getIndexerClient from '@common/utils/getIndexerClient';
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import fetchVerifiedStandardAssetList from '@extension/utils/fetchVerifiedStandardAssetList';
 import mapStandardAssetFromAlgorandAsset from '@extension/utils/mapStandardAssetFromAlgorandAsset';
+import searchAlgorandAssetsWithDelay from '@extension/utils/searchAlgorandAssetsWithDelay';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import { searchAlgorandAssetsWithDelay } from '../utils';
 
 const queryStandardAssetThunk: AsyncThunk<
   IAssetsWithNextToken<IStandardAsset>, // return
@@ -52,18 +47,17 @@ const queryStandardAssetThunk: AsyncThunk<
     { accountId, assetId, nameOrUnit, refresh = false },
     { getState, rejectWithValue }
   ) => {
-    const account: IAccount | null =
+    const account =
       getState().accounts.items.find((value) => value.id === accountId) || null;
-    const currentStandardAssets: IAssetsWithNextToken<IStandardAsset> =
-      getState().addAssets.standardAssets;
-    const logger: ILogger = getState().system.logger;
-    const online: boolean = getState().system.online;
-    const selectedNetwork: INetworkWithTransactionParams | null =
-      selectNetworkFromSettings(getState().networks.items, getState().settings);
+    const currentStandardAssets = getState().addAssets.standardAssets;
+    const logger = getState().system.logger;
+    const online = getState().system.online;
+    const selectedNetwork = selectNetworkFromSettings(
+      getState().networks.items,
+      getState().settings
+    );
     let algorandSearchAssetsResult: IAlgorandSearchAssetsResult;
-    let filteredAlgorandAssets: IAlgorandAsset[];
     let indexerClient: Indexer;
-    let standardAssetHoldings: IStandardAssetHolding[];
     let verifiedStandardAssets: ITinyManAssetResponse[];
     let updatedStandardAssets: IStandardAsset[] = [];
 
@@ -104,10 +98,6 @@ const queryStandardAssetThunk: AsyncThunk<
       return currentStandardAssets;
     }
 
-    standardAssetHoldings =
-      account?.networkInformation[
-        convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
-      ].standardAssetHoldings || [];
     indexerClient = getIndexerClient(selectedNetwork, {
       logger,
     });
@@ -122,14 +112,6 @@ const queryStandardAssetThunk: AsyncThunk<
         next: currentStandardAssets.next,
         unit: nameOrUnit,
       });
-
-      // filter out any assets the account already holds
-      filteredAlgorandAssets = algorandSearchAssetsResult.assets.filter(
-        (algorandAsset) =>
-          !standardAssetHoldings.find(
-            (value) => value.id === String(algorandAsset.index)
-          )
-      );
       verifiedStandardAssets = await fetchVerifiedStandardAssetList({
         logger,
         network: selectedNetwork,
@@ -137,10 +119,10 @@ const queryStandardAssetThunk: AsyncThunk<
 
       for (
         let index: number = 0;
-        index < filteredAlgorandAssets.length;
+        index < algorandSearchAssetsResult.assets.length;
         index++
       ) {
-        const asset: IAlgorandAsset = filteredAlgorandAssets[index];
+        const asset: IAlgorandAsset = algorandSearchAssetsResult.assets[index];
         const verifiedStandardAsset: ITinyManAssetResponse | null =
           verifiedStandardAssets.find(
             (value) => value.id === String(asset.index)

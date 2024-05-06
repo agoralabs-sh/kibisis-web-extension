@@ -93,24 +93,20 @@ import ActionTrackingService from '@extension/services/ActionTrackingService';
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
   IAppThunkDispatch,
   IAppThunkDispatchReturn,
   IARC0200Asset,
   IAssetTypes,
-  IBlockExplorer,
-  INetworkWithTransactionParams,
-  ISettings,
+  IModalProps,
   IStandardAsset,
 } from '@extension/types';
-import type { IAddAssetsModalProps } from './types';
 
 // utils
 import isNumericString from '@extension/utils/isNumericString';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
-const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
+const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
@@ -118,22 +114,20 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
   const assetContainerRef: MutableRefObject<HTMLDivElement | null> =
     useRef<HTMLDivElement | null>(null);
   // selectors
-  const account: IAccount | null = useSelectAddAssetsAccount();
-  const accounts: IAccount[] = useSelectAccounts();
-  const arc0200Assets: IARC0200Asset[] = useSelectAddAssetsARC0200Assets();
-  const confirming: boolean = useSelectAddAssetsConfirming();
-  const explorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
-  const fetching: boolean = useSelectAddAssetsFetching();
-  const logger: ILogger = useSelectLogger();
-  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const selectedNetwork: INetworkWithTransactionParams | null =
-    useSelectSelectedNetwork();
-  const selectedAsset: IAssetTypes | null = useSelectAddAssetsSelectedAsset();
-  const settings: ISettings = useSelectSettings();
-  const standardAssets: IStandardAsset[] = useSelectAddAssetsStandardAssets();
+  const account = useSelectAddAssetsAccount();
+  const accounts = useSelectAccounts();
+  const arc0200Assets = useSelectAddAssetsARC0200Assets();
+  const confirming = useSelectAddAssetsConfirming();
+  const explorer = useSelectSettingsPreferredBlockExplorer();
+  const fetching = useSelectAddAssetsFetching();
+  const logger = useSelectLogger();
+  const passwordLockPassword = useSelectPasswordLockPassword();
+  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedAsset = useSelectAddAssetsSelectedAsset();
+  const settings = useSelectSettings();
+  const standardAssets = useSelectAddAssetsStandardAssets();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
   const isNewSelectedAsset = useIsNewSelectedAsset(selectedAsset);
   const {
     error: passwordError,
@@ -143,8 +137,8 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const primaryColor: string = usePrimaryColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
+  const primaryColor = usePrimaryColor();
+  const primaryColorScheme = usePrimaryColorScheme();
   // state
   const [query, setQuery] = useState<string>('');
   const [queryARC0200AssetDispatch, setQueryARC0200AssetDispatch] =
@@ -160,8 +154,8 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
       IAssetsWithNextToken<IStandardAsset>
     > | null>(null);
   // misc
-  const allAssets: IAssetTypes[] = [...arc0200Assets, ...standardAssets];
-  const isOpen: boolean = !!account;
+  const allAssets = [...arc0200Assets, ...standardAssets];
+  const isOpen = !!account;
   // handlers
   const handleAddARC0200AssetClick = async () => {
     let actionTrackingService: ActionTrackingService;
@@ -550,17 +544,31 @@ const AddAssetsModal: FC<IAddAssetsModalProps> = ({ onClose }) => {
           w="full"
         >
           {selectedNetwork &&
-            allAssets.map((value, index) =>
-              value.type === AssetTypeEnum.Standard ? (
+            allAssets.map((asset, index) =>
+              asset.type === AssetTypeEnum.Standard ? (
                 <AddAssetsStandardAssetItem
-                  asset={value}
+                  added={
+                    selectedNetwork &&
+                    !!account?.networkInformation[
+                      convertGenesisHashToHex(selectedNetwork.genesisHash)
+                    ].standardAssetHoldings.find(
+                      (value) => value.id === asset.id
+                    )
+                  }
+                  asset={asset}
                   key={`add-asset-modal-item-${index}`}
                   network={selectedNetwork}
                   onClick={handleSelectAssetClick}
                 />
               ) : (
                 <AddAssetsARC0200AssetItem
-                  asset={value}
+                  added={
+                    selectedNetwork &&
+                    !!account?.networkInformation[
+                      convertGenesisHashToHex(selectedNetwork.genesisHash)
+                    ].arc200AssetHoldings.find((value) => value.id === asset.id)
+                  }
+                  asset={asset}
                   key={`add-asset-modal-item-${index}`}
                   network={selectedNetwork}
                   onClick={handleSelectAssetClick}

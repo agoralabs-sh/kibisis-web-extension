@@ -1,18 +1,9 @@
-import { Indexer, IntDecoding } from 'algosdk';
-import SearchForAssets from 'algosdk/dist/types/client/v2/indexer/searchForAssets';
+import { IntDecoding } from 'algosdk';
+import type SearchForAssets from 'algosdk/dist/types/client/v2/indexer/searchForAssets';
 
 // types
-import { IAlgorandSearchAssetsResult } from '@extension/types';
-
-interface IOptions {
-  assetId: string | null;
-  client: Indexer;
-  delay: number;
-  limit: number;
-  name: string | null;
-  next: string | null;
-  unit: string | null;
-}
+import type { IAlgorandSearchAssetsResult } from '@extension/types';
+import type { IOptions } from './types';
 
 /**
  * Searches for assets by the asset index, name or unit from the node with a delay.

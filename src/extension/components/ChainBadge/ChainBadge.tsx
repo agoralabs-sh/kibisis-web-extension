@@ -5,7 +5,7 @@ import React, { FC } from 'react';
 import { NetworkTypeEnum } from '@extension/enums';
 
 // selectors
-import { useSelectColorMode } from '@extension/selectors';
+import { useSelectSettingsColorMode } from '@extension/selectors';
 
 // types
 import { INetwork } from '@extension/types';
@@ -19,7 +19,7 @@ interface IProps {
 }
 
 const ChainBadge: FC<IProps> = ({ network, size = 'sm' }: IProps) => {
-  const colorMode: ColorMode = useSelectColorMode();
+  const colorMode: ColorMode = useSelectSettingsColorMode();
   const renderChainTag = () => (
     <Tag
       colorScheme={network.chakraTheme}

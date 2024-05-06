@@ -1,16 +1,9 @@
-import { Indexer, IntDecoding } from 'algosdk';
-import SearchForApplications from 'algosdk/dist/types/client/v2/indexer/searchForApplications';
+import { IntDecoding } from 'algosdk';
+import type SearchForApplications from 'algosdk/dist/types/client/v2/indexer/searchForApplications';
 
 // types
-import { IAlgorandSearchApplicationsResult } from '@extension/types';
-
-interface IOptions {
-  applicationId: string;
-  client: Indexer;
-  delay: number;
-  limit: number;
-  next: string | null;
-}
+import type { IAlgorandSearchApplicationsResult } from '@extension/types';
+import type { IOptions } from './types';
 
 /**
  * Searches for applications by the app ID from the node with a delay.

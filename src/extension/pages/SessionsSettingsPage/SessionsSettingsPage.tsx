@@ -37,7 +37,7 @@ import ManageSessionModal from '@extension/modals/ManageSessionModal';
 
 // selectors
 import {
-  useSelectFetchingSessions,
+  useSelectSessionsFetching,
   useSelectSessions,
 } from '@extension/selectors';
 
@@ -48,7 +48,7 @@ const SessionsSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const fetching: boolean = useSelectFetchingSessions();
+  const fetching: boolean = useSelectSessionsFetching();
   const sessions: ISession[] = useSelectSessions();
   // hooks
   const defaultSubTextColor: string = useSubTextColor();

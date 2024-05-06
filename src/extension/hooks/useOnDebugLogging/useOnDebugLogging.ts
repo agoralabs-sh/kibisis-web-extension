@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setLogger } from '@extension/features/system';
 
 // selectors
-import { useSelectDebugLogging } from '@extension/selectors';
+import { useSelectSettingsDebugLogging } from '@extension/selectors';
 
 // types
 import { ILogger } from '@common/types';
@@ -17,7 +17,7 @@ import createLogger from '@common/utils/createLogger';
 export default function useOnDebugLogging(): void {
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // hooks
-  const debugLogging: boolean = useSelectDebugLogging();
+  const debugLogging: boolean = useSelectSettingsDebugLogging();
 
   // if the debug logging is turned on, force debug logging by updating the system wide logger
   useEffect(() => {

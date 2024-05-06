@@ -47,7 +47,7 @@ import {
   useSelectEnableRequest,
   useSelectAccountsFetching,
   useSelectNetworks,
-  useSelectSavingSessions,
+  useSelectSessionsSaving,
 } from '@extension/selectors';
 
 // services
@@ -82,7 +82,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
   > | null = useSelectEnableRequest();
   const fetching: boolean = useSelectAccountsFetching();
   const networks: INetwork[] = useSelectNetworks();
-  const saving: boolean = useSelectSavingSessions();
+  const saving: boolean = useSelectSessionsSaving();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryColorScheme: string = usePrimaryColorScheme();

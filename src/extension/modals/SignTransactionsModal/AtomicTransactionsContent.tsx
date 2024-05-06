@@ -33,7 +33,7 @@ import {
   useSelectNetworkByGenesisHash,
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsByGenesisHash,
-  useSelectUpdatingStandardAssets,
+  useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
 
 // services
@@ -73,7 +73,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
     useSelectSettingsPreferredBlockExplorer();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsByGenesisHash(genesisHash);
-  const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
+  const updatingStandardAssets: boolean = useSelectStandardAssetsUpdating();
   // hooks
   const borderColor: string = useBorderColor();
   // state

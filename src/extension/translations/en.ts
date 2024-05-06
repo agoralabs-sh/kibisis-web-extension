@@ -339,6 +339,7 @@ const translation: IResourceLanguage = {
     allowBetaNet: 'Allow BetaNet networks?',
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
     allowMainNet: 'Allow MainNet networks?',
+    alreadyAdded: 'Already Added',
     amount: 'Amount',
     applicationId: 'Application ID',
     asset: 'Asset',
