@@ -33,7 +33,7 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import {
   useSelectLogger,
   useSelectPasswordLockPassword,
-  useSelectSavingPasswordLock,
+  useSelectPasswordLockSaving,
 } from '@extension/selectors';
 
 // services
@@ -52,7 +52,7 @@ const PasswordLockPage: FC = () => {
   // selectors
   const logger: ILogger = useSelectLogger();
   const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const saving: boolean = useSelectSavingPasswordLock();
+  const saving: boolean = useSelectPasswordLockSaving();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const {

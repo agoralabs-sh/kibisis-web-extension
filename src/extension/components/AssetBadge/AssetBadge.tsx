@@ -5,14 +5,14 @@ import React, { FC } from 'react';
 import { AssetTypeEnum } from '@extension/enums';
 
 // selectors
-import { useSelectColorMode } from '@extension/selectors';
+import { useSelectSettingsColorMode } from '@extension/selectors';
 
 // types
 import type { IProps } from './types';
 
 const AssetBadge: FC<IProps> = ({ size = 'sm', type }: IProps) => {
   // hooks
-  const colorMode: ColorMode = useSelectColorMode();
+  const colorMode: ColorMode = useSelectSettingsColorMode();
 
   switch (type) {
     case AssetTypeEnum.ARC0072:

@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // types
-import { IMainRootState, INotification } from '@extension/types';
+import type { IMainRootState, INotification } from '@extension/types';
 
 /**
  * Fetches all the notifications that are not currently showing.

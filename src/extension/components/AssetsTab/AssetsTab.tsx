@@ -33,10 +33,10 @@ import {
   useSelectARC0200AssetsBySelectedNetwork,
   useSelectARC0200AssetsFetching,
   useSelectARC0200AssetsUpdating,
-  useSelectFetchingStandardAssets,
+  useSelectStandardAssetsFetching,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectSelectedNetwork,
-  useSelectUpdatingStandardAssets,
+  useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
 
 // types
@@ -56,12 +56,12 @@ const AssetsTab: FC<IProps> = ({ account }) => {
   const arc0200Assets: IARC0200Asset[] =
     useSelectARC0200AssetsBySelectedNetwork();
   const fetchingARC0200Assets: boolean = useSelectARC0200AssetsFetching();
-  const fetchingStandardAssets: boolean = useSelectFetchingStandardAssets();
+  const fetchingStandardAssets: boolean = useSelectStandardAssetsFetching();
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
   const updatingARC0200Assets: boolean = useSelectARC0200AssetsUpdating();
-  const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
+  const updatingStandardAssets: boolean = useSelectStandardAssetsUpdating();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const accountInformation: IAccountInformation | null = useAccountInformation(

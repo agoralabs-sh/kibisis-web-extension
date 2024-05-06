@@ -34,7 +34,7 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import { useSelectColorMode } from '@extension/selectors';
+import { useSelectSettingsColorMode } from '@extension/selectors';
 
 // types
 import type { IARC0200Asset } from '@extension/types';
@@ -48,7 +48,7 @@ const AddAssetsARC0200AssetItem: FC<IItemProps<IARC0200Asset>> = ({
 }) => {
   const { t } = useTranslation();
   // selectors
-  const colorMode = useSelectColorMode();
+  const colorMode = useSelectSettingsColorMode();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();

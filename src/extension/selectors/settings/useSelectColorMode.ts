@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { ColorMode } from '@chakra-ui/react';
 
 // types
-import { IAppearanceSettings, IMainRootState } from '@extension/types';
+import type { IAppearanceSettings, IMainRootState } from '@extension/types';
 
 export default function useSelectColorMode(): ColorMode {
   const appearanceSettings: IAppearanceSettings = useSelector<

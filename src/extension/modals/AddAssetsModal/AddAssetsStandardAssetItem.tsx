@@ -33,7 +33,7 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import { useSelectColorMode } from '@extension/selectors';
+import { useSelectSettingsColorMode } from '@extension/selectors';
 
 // types
 import type { IStandardAsset } from '@extension/types';
@@ -47,7 +47,7 @@ const AddAssetsStandardAssetItem: FC<IItemProps<IStandardAsset>> = ({
 }) => {
   const { t } = useTranslation();
   // selectors
-  const colorMode = useSelectColorMode();
+  const colorMode = useSelectSettingsColorMode();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();

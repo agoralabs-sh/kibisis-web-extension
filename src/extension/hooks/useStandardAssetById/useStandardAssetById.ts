@@ -8,7 +8,7 @@ import { updateStandardAssetInformationThunk } from '@extension/features/standar
 import {
   useSelectSelectedNetwork,
   useSelectStandardAssetsBySelectedNetwork,
-  useSelectUpdatingStandardAssets,
+  useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
 
 // types
@@ -23,7 +23,7 @@ export default function useStandardAssetById(
   const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
   const standardAssets: IStandardAsset[] =
     useSelectStandardAssetsBySelectedNetwork();
-  const updatingStandardAssets: boolean = useSelectUpdatingStandardAssets();
+  const updatingStandardAssets: boolean = useSelectStandardAssetsUpdating();
   // state
   const [standardAsset, setStandardAsset] = useState<IStandardAsset | null>(
     null
