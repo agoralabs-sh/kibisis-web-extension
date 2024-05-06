@@ -1,3 +1,10 @@
+# [1.16.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.2...v1.16.0-beta.3) (2024-05-06)
+
+
+### Features
+
+* show outgoing arc-200 asset transfers ([#220](https://github.com/agoralabs-sh/kibisis-web-extension/issues/220)) ([2a5fadb](https://github.com/agoralabs-sh/kibisis-web-extension/commit/2a5fadb978736c247b8891839f0c433c6ffff83d))
+
 # [1.16.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.1...v1.16.0-beta.2) (2024-05-04)
 
 
