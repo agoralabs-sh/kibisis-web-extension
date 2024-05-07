@@ -15,7 +15,7 @@ import type { IARC0200AssetInformation, INetwork } from '@extension/types';
 import createLogger from '@common/utils/createLogger';
 
 describe.skip(`${__dirname}#ARC0200Contract`, () => {
-  const appId: BigNumber = new BigNumber('6779767');
+  const appId = '6779767';
   const decimals: BigNumber = new BigNumber('6');
   const name: string = 'Voi Incentive Asset';
   const options: IBaseOptions = {

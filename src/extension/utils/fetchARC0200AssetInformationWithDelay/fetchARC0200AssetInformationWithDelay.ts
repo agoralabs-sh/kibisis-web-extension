@@ -1,5 +1,3 @@
-import BigNumber from 'bignumber.js';
-
 // enums
 import { ErrorCodeEnum } from '@extension/enums';
 
