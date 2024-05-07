@@ -23,7 +23,7 @@ export default async function createUnsignedARC0200TransferTransactions({
   toAddress,
 }: IOptions): Promise<Transaction[]> {
   const contract: ARC0200Contract = new ARC0200Contract({
-    appId: new BigNumber(asset.id),
+    appId: asset.id,
     logger,
     network,
   });

@@ -1,5 +1,3 @@
-import BigNumber from 'bignumber.js';
-
 // enums
 import { ErrorCodeEnum } from '@extension/enums';
 
@@ -30,7 +28,7 @@ export default async function fetchARC0200AssetInformationWithDelay({
 
       try {
         contract = new ARC0200Contract({
-          appId: new BigNumber(id),
+          appId: id,
           network,
           logger,
         });

@@ -25,7 +25,7 @@ export default async function fetchARC0200AssetHoldingWithDelay({
   return new Promise((resolve, reject) =>
     setTimeout(async () => {
       const contract: ARC0200Contract = new ARC0200Contract({
-        appId: new BigNumber(appId),
+        appId,
         logger,
         network,
       });

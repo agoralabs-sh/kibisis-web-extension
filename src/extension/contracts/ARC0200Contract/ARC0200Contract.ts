@@ -198,7 +198,7 @@ export default class ARC0200Contract extends BaseContract {
         ...(boxReferences && {
           boxes: boxReferences.map(
             ({ name }: algosdk.modelsv2.BoxReference) => ({
-              appIndex: this.appId.toNumber(),
+              appIndex: new BigNumber(this.appId).toNumber(),
               name,
             })
           ),
@@ -329,10 +329,10 @@ export default class ARC0200Contract extends BaseContract {
       results;
 
     return {
-      decimals: BigInt((decimalResult as BigNumber).toString()),
+      decimals: (decimalResult as BigNumber).toNumber(),
       name: this.trimNullBytes(nameResult as string),
       symbol: this.trimNullBytes(symbolResult as string),
-      totalSupply: BigInt((totalSupplyResult as BigNumber).toString()),
+      totalSupply: (totalSupplyResult as BigNumber).toString(),
     };
   }
 

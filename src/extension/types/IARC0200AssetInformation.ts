@@ -1,8 +1,8 @@
 interface IARC0200AssetInformation {
+  decimals: number;
   name: string;
   symbol: string;
-  totalSupply: bigint;
-  decimals: bigint;
+  totalSupply: string;
 }
 
 export default IARC0200AssetInformation;
