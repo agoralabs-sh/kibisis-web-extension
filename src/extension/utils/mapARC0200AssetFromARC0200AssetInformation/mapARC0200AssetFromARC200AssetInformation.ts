@@ -1,10 +1,8 @@
-import { BigNumber } from 'bignumber.js';
-
 // types
 import { AssetTypeEnum } from '@extension/enums';
 
 // types
-import { IARC0200Asset, IARC0200AssetInformation } from '@extension/types';
+import type { IARC0200Asset, IARC0200AssetInformation } from '@extension/types';
 
 export default function mapARC0200AssetFromARC200AssetInformation(
   appId: string,
@@ -13,16 +11,12 @@ export default function mapARC0200AssetFromARC200AssetInformation(
   verified: boolean
 ): IARC0200Asset {
   return {
-    decimals: new BigNumber(
-      String(assetInformation.decimals as bigint)
-    ).toNumber(),
+    decimals: assetInformation.decimals,
     iconUrl,
     id: appId,
     name: assetInformation.name,
     symbol: assetInformation.symbol,
-    totalSupply: new BigNumber(
-      String(assetInformation.totalSupply as bigint)
-    ).toString(),
+    totalSupply: assetInformation.totalSupply,
     type: AssetTypeEnum.ARC0200,
     verified,
   };
