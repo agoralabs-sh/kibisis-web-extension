@@ -43,7 +43,7 @@ export default class BaseContract {
   // protected
   protected abi: ABIContract;
   protected algodClient: Algodv2;
-  protected appId: BigNumber;
+  protected appId: string;
   protected readonly logger: ILogger;
   protected network: INetwork;
 
@@ -115,7 +115,7 @@ export default class BaseContract {
         fee: SIMULATE_MINIMUM_FEE,
         flatFee: true,
       },
-      this.appId.toNumber(),
+      new BigNumber(this.appId).toNumber(),
       [
         abiMethod.getSelector(), // method name
         ...(appArgs ? appArgs : []), // the method parameters
@@ -134,7 +134,7 @@ export default class BaseContract {
     return makeApplicationNoOpTxn(
       fromAddress,
       suggestedParams ?? (await this.algodClient.getTransactionParams().do()),
-      this.appId.toNumber(),
+      new BigNumber(this.appId).toNumber(),
       [
         abiMethod.getSelector(), // method name
         ...(appArgs ? appArgs : []), // the method parameters
@@ -360,7 +360,7 @@ export default class BaseContract {
 
     try {
       return await this.algodClient
-        .getApplicationBoxByName(this.appId.toNumber(), name)
+        .getApplicationBoxByName(new BigNumber(this.appId).toNumber(), name)
         .do();
     } catch (error) {
       this.logger.debug(

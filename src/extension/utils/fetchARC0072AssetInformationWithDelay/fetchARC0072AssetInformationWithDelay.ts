@@ -30,7 +30,7 @@ export default async function fetchARC0072AssetInformationWithDelay({
 
       try {
         contract = new ARC0072Contract({
-          appId: new BigNumber(id),
+          appId: id,
           network,
           logger,
         });

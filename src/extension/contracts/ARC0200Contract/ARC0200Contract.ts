@@ -198,7 +198,7 @@ export default class ARC0200Contract extends BaseContract {
         ...(boxReferences && {
           boxes: boxReferences.map(
             ({ name }: algosdk.modelsv2.BoxReference) => ({
-              appIndex: this.appId.toNumber(),
+              appIndex: new BigNumber(this.appId).toNumber(),
               name,
             })
           ),
