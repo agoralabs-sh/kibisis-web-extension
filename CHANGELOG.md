@@ -1,3 +1,10 @@
+# [1.16.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.4...v1.16.0-beta.5) (2024-05-07)
+
+
+### Bug Fixes
+
+* arc-0200 assets with large total supplyies correctly parse ([#224](https://github.com/agoralabs-sh/kibisis-web-extension/issues/224)) ([e7f91f3](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e7f91f327c172749c8560273eea9533c87b6fe99))
+
 # [1.16.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.3...v1.16.0-beta.4) (2024-05-06)
 
 
