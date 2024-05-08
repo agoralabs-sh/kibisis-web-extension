@@ -1,3 +1,10 @@
+# [1.16.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.5...v1.16.0-beta.6) (2024-05-08)
+
+
+### Bug Fixes
+
+* refactor seed phrase UI to fit maximum mnemonic word to input ([#225](https://github.com/agoralabs-sh/kibisis-web-extension/issues/225)) ([5213348](https://github.com/agoralabs-sh/kibisis-web-extension/commit/52133483d0fe4ce2fb07c3f534ce9ade90daeeb1))
+
 # [1.16.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.4...v1.16.0-beta.5) (2024-05-07)
 
 
