@@ -28,6 +28,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // utils
 import { isPhrasesEmpty } from './utils';
+import { DEFAULT_GAP } from '@extension/constants';
 
 interface IProps {
   disabled?: boolean;
@@ -44,10 +45,10 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
 }: IProps) => {
   const { t } = useTranslation();
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const subTextColor: string = useSubTextColor();
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
   // states
   const [currentFocusIndex, setCurrentFocusIndex] = useState<number>(0);
   // handlers
@@ -81,7 +82,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
 
   return (
     <VStack>
-      <HStack alignItems="center" minH="2rem" spacing={2} w="full">
+      <HStack alignItems="center" minH={8} spacing={DEFAULT_GAP / 3} w="full">
         {/*label*/}
         <HStack alignItems="flex-end" justifyContent="space-between" w="full">
           <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
@@ -120,7 +121,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
               <InputLeftElement
                 color={subTextColor}
                 pointerEvents="none"
-                width="1.75rem"
+                width={5}
               >
                 <Text color={subTextColor} fontSize="xs">
                   {index + 1}
@@ -135,7 +136,10 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
                 onChange={handleOnChange(index)}
                 onFocus={handleOnFocus(index)}
                 onPaste={handleOnPaste}
-                pl="1.75rem"
+                pb={4}
+                pl={5}
+                pr={3}
+                pt={4}
                 type="text"
                 value={value}
               />

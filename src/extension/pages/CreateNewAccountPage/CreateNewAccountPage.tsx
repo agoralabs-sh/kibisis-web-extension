@@ -1,8 +1,5 @@
 import {
   Checkbox,
-  Code,
-  Grid,
-  GridItem,
   Heading,
   HStack,
   Input,
@@ -15,7 +12,7 @@ import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
 import { Step, useSteps } from 'chakra-ui-steps';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import Button from '@extension/components/Button';
@@ -41,15 +38,15 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   saving,
 }) => {
   const { t } = useTranslation();
-  const navigate: NavigateFunction = useNavigate();
+  const navigate = useNavigate();
   const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
   });
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // state
   const [account] = useState<Account>(generateAccount());
   const [error, setError] = useState<string | null>(null);

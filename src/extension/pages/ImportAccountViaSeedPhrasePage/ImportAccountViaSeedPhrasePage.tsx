@@ -12,7 +12,7 @@ import { Step, useSteps } from 'chakra-ui-steps';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import Button from '@extension/components/Button';
@@ -38,7 +38,6 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectLogger } from '@extension/selectors';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAddAccountPageProps,
   IAppThunkDispatch,
@@ -51,16 +50,16 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   saving,
 }) => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch<IMainRootState | IRegistrationRootState> =
+  const dispatch =
     useDispatch<IAppThunkDispatch<IMainRootState | IRegistrationRootState>>();
-  const navigate: NavigateFunction = useNavigate();
+  const navigate = useNavigate();
   // selectors
-  const logger: ILogger = useSelectLogger();
+  const logger = useSelectLogger();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // states
   const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
@@ -72,7 +71,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
     Array.from({ length: 25 }, () => '')
   );
   // misc
-  const stepsLabels: string[] = [
+  const stepsLabels = [
     t<string>('headings.enterYourSeedPhrase'),
     t<string>('headings.nameYourAccount'),
   ];
@@ -172,8 +171,13 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
         >
           {/*enter seed phrase inputs*/}
           <Step label={stepsLabels[0]}>
-            <VStack alignItems="flex-start" p={1} spacing={2} w="full">
-              <Text color={subTextColor} size="md" textAlign="left">
+            <VStack
+              alignItems="flex-start"
+              p={1}
+              spacing={DEFAULT_GAP / 3}
+              w="full"
+            >
+              <Text color={subTextColor} fontSize="sm" textAlign="left">
                 {t<string>('captions.enterSeedPhrase')}
               </Text>
 
@@ -188,8 +192,13 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
 
           {/*name account input*/}
           <Step label={stepsLabels[1]}>
-            <VStack alignItems="flex-start" p={1} spacing={2} w="full">
-              <Text color={subTextColor} size="md" textAlign="left">
+            <VStack
+              alignItems="flex-start"
+              p={1}
+              spacing={DEFAULT_GAP / 3}
+              w="full"
+            >
+              <Text color={subTextColor} fontSize="sm" textAlign="left">
                 {t<string>('captions.nameYourAccount')}
               </Text>
 
@@ -215,12 +224,12 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
 
         {/*confirm completed*/}
         {hasCompletedAllSteps && (
-          <VStack alignItems="flex-start" spacing={2} w="full">
+          <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
             <Heading color={defaultTextColor} fontSize="md" textAlign="left">
               {t<string>('headings.importAccountViaSeedPhraseComplete')}
             </Heading>
 
-            <Text color={subTextColor} fontSize="md" textAlign="left">
+            <Text color={subTextColor} fontSize="sm" textAlign="left">
               {t<string>('captions.importAccountViaSeedPhraseComplete')}
             </Text>
           </VStack>
@@ -228,7 +237,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
 
         <Spacer />
 
-        <HStack spacing={4} w="full">
+        <HStack spacing={DEFAULT_GAP - 2} w="full">
           {/*previous button*/}
           <Button
             isDisabled={saving}
