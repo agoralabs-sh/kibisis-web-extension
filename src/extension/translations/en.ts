@@ -263,7 +263,7 @@ const translation: IResourceLanguage = {
     factoryReset: 'Factory Reset',
     generateSeedPhrase: 'Generate seed phrase',
     importAccount: 'Import Account',
-    importAccountViaQRCode: 'Create A Pre-Funded Account',
+    importAccountViaQRCode: 'Import An Account Via A QR Code',
     importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',
     importAccountViaSeedPhraseComplete: 'Almost There...',
     nameYourAccount: 'Name your account',

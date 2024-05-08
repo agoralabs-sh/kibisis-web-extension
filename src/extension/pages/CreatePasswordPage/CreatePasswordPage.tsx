@@ -41,17 +41,15 @@ import type {
 
 const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch<IRegistrationRootState> =
-    useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
-  const createPasswordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
-  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
+  const createPasswordInputRef = useRef<HTMLInputElement | null>(null);
+  const navigate = useNavigate();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   // selectors
-  const password: string | null = useSelectRegistrationPassword();
-  const score: number = useSelectRegistrationScore();
+  const password = useSelectRegistrationPassword();
+  const score = useSelectRegistrationScore();
   // handlers
   const handleKeyUpCreatePasswordInput = (
     event: KeyboardEvent<HTMLInputElement>
