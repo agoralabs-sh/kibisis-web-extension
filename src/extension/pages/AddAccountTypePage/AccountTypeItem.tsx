@@ -8,52 +8,36 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { DEFAULT_GAP } from '@extension/constants';
 
-interface IProps {
-  description: string;
-  disabled?: boolean;
-  icon: ElementType;
-  onClick: () => void;
-  title: string;
-  tooltipText?: string;
-}
+// types
+import type { IItemProps } from './types';
 
-const AccountTypeItem: FC<IProps> = ({
+const AccountTypeItem: FC<IItemProps> = ({
   description,
   disabled = false,
   icon,
   onClick,
   title,
   tooltipText,
-}: IProps) => {
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+}) => {
+  // hooks
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
+  //renders
   const renderContent = () => {
     return (
-      <HStack alignItems="center" spacing={DEFAULT_GAP / 2} w="full">
+      <HStack alignItems="center" minH={32} spacing={DEFAULT_GAP / 2} w="full">
         {/*icon*/}
         <Icon as={icon} color={defaultTextColor} h={10} w={10} />
 
-        <VStack alignItems="flex-start" spacing={2} w="full">
+        <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
           {/*heading*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="md"
-            maxW={400}
-            noOfLines={1}
-            textAlign="left"
-          >
+          <Text color={defaultTextColor} fontSize="md" textAlign="left">
             {title}
           </Text>
 
           {/*description*/}
-          <Text
-            color={subTextColor}
-            fontSize="sm"
-            maxW={400}
-            noOfLines={2}
-            textAlign="left"
-          >
+          <Text color={subTextColor} fontSize="sm" textAlign="left">
             {description}
           </Text>
         </VStack>

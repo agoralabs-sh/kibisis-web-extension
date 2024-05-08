@@ -1,7 +1,7 @@
 import { Heading, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import KibisisIcon from '@extension/components/KibisisIcon';
@@ -17,10 +17,12 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 const GetStartedPage: FC = () => {
   const { t } = useTranslation();
-  const navigate: NavigateFunction = useNavigate();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const subTextColor: string = useSubTextColor();
+  const navigate = useNavigate();
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
+  // handlers
   const handleGetStartedClick = () => navigate(CREATE_PASSWORD_ROUTE);
 
   return (
