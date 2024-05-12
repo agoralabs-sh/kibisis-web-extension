@@ -38,7 +38,7 @@ import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 // selectors
 import {
   useSelectActiveAccount,
-  useSelectAccounts,
+  useSelectNonWatchAccounts,
   useSelectLogger,
 } from '@extension/selectors';
 
@@ -57,7 +57,7 @@ const ViewSeedPhrasePage: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const { isOpen, onClose, onOpen } = useDisclosure();
   // selectors
-  const accounts = useSelectAccounts();
+  const accounts = useSelectNonWatchAccounts();
   const activeAccount = useSelectActiveAccount();
   const logger = useSelectLogger();
   // hooks
@@ -69,7 +69,7 @@ const ViewSeedPhrasePage: FC = () => {
     createMaskedSeedPhrase()
   );
   const [selectedAccount, setSelectedAccount] =
-    useState<IAccountWithExtendedProps | null>(activeAccount);
+    useState<IAccountWithExtendedProps | null>(null);
   // misc
   const decryptSeedPhrase = async () => {
     const _functionName = 'decryptSeedPhrase';
@@ -144,8 +144,17 @@ const ViewSeedPhrasePage: FC = () => {
     }
   }, [password, selectedAccount]);
   useEffect(() => {
+    let _selectedAccount: IAccountWithExtendedProps;
+
     if (activeAccount && !selectedAccount) {
-      setSelectedAccount(activeAccount);
+      _selectedAccount = activeAccount;
+
+      // if the active account is a watch account, get the first non-watch account
+      if (_selectedAccount.watchAccount) {
+        _selectedAccount = accounts[0];
+      }
+
+      setSelectedAccount(_selectedAccount);
     }
   }, [activeAccount]);
 

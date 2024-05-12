@@ -42,8 +42,8 @@ import qrCodePlaceholderImage from '@extension/images/placeholder_qr_code.png';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectActiveAccount,
+  useSelectNonWatchAccounts,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSettings,
@@ -71,7 +71,7 @@ const ExportAccountPage: FC = () => {
     onOpen: onPasswordConfirmModalOpen,
   } = useDisclosure();
   // selectors
-  const accounts = useSelectAccounts();
+  const accounts = useSelectNonWatchAccounts();
   const activeAccount = useSelectActiveAccount();
   const logger = useSelectLogger();
   const passwordLockPassword = useSelectPasswordLockPassword();
@@ -81,8 +81,8 @@ const ExportAccountPage: FC = () => {
   const primaryColorScheme = usePrimaryColorScheme();
   // states
   const [password, setPassword] = useState<string | null>(null);
-  const [selectedAccount, setSelectAccount] =
-    useState<IAccountWithExtendedProps | null>(activeAccount);
+  const [selectedAccount, setSelectedAccount] =
+    useState<IAccountWithExtendedProps | null>(null);
   const [svgString, setSvgString] = useState<string | null>(null);
   const [uri, setURI] = useState<string | null>(null);
   // misc
@@ -161,7 +161,7 @@ const ExportAccountPage: FC = () => {
   };
   // handlers
   const handleOnAccountSelect = (account: IAccountWithExtendedProps) =>
-    setSelectAccount(account);
+    setSelectedAccount(account);
   const handleOnConfirmModalConfirm = (_password: string) => {
     onPasswordConfirmModalClose();
     setPassword(_password);
@@ -182,6 +182,20 @@ const ExportAccountPage: FC = () => {
       (async () => await createQRCode())();
     }
   }, [selectedAccount, password]);
+  useEffect(() => {
+    let _selectedAccount: IAccountWithExtendedProps;
+
+    if (activeAccount && !selectedAccount) {
+      _selectedAccount = activeAccount;
+
+      // if the active account is a watch account, get the first non-watch account
+      if (_selectedAccount.watchAccount) {
+        _selectedAccount = accounts[0];
+      }
+
+      setSelectedAccount(_selectedAccount);
+    }
+  }, [activeAccount]);
 
   return (
     <>
