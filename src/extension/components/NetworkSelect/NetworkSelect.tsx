@@ -37,8 +37,8 @@ const NetworkSelect: FC<IProps> = ({ network, networks, onSelect }: IProps) => {
         transition="all 0.2s"
       >
         <HStack justifyContent="space-between" w="full">
-          <ChainBadge network={network} />
           <Icon as={IoChevronDown} />
+          <ChainBadge network={network} />
         </HStack>
       </MenuButton>
       <MenuList>
