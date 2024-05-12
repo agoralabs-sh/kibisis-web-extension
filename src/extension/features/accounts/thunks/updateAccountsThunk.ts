@@ -10,25 +10,27 @@ import { AccountsThunkEnum } from '@extension/enums';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import {
-  IAccount,
+import type {
+  IAccountWithExtendedProps,
   IBaseAsyncThunkConfig,
   IMainRootState,
 } from '@extension/types';
-import { IUpdateAccountsPayload } from '../types';
+import type { IUpdateAccountsPayload } from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import isWatchAccount from '@extension/utils/isWatchAccount';
+import mapAccountWithExtendedPropsToAccount from '@extension/utils/mapAccountWithExtendedPropsToAccount';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 
 const updateAccountsThunk: AsyncThunk<
-  IAccount[], // return
+  IAccountWithExtendedProps[], // return
   IUpdateAccountsPayload | undefined, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
-  IAccount[],
+  IAccountWithExtendedProps[],
   IUpdateAccountsPayload | undefined,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
@@ -54,7 +56,9 @@ const updateAccountsThunk: AsyncThunk<
       getState().settings
     );
     let accountService: AccountService;
-    let accounts: IAccount[] = getState().accounts.items;
+    let accounts = getState().accounts.items.map((value) =>
+      mapAccountWithExtendedPropsToAccount(value)
+    );
     let encodedGenesisHash: string;
 
     if (!online) {
@@ -132,9 +136,14 @@ const updateAccountsThunk: AsyncThunk<
     }
 
     // save accounts to storage
-    accounts = await accountService.saveAccounts(accounts);
+    await accountService.saveAccounts(accounts);
 
-    return accounts;
+    return await Promise.all(
+      accounts.map(async (account) => ({
+        ...account,
+        watchAccount: await isWatchAccount({ account, logger }),
+      }))
+    );
   }
 );
 

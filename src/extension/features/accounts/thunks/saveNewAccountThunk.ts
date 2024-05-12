@@ -16,20 +16,19 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
+  IAccountWithExtendedProps,
   IAsyncThunkConfigWithRejectValue,
   IPrivateKey,
 } from '@extension/types';
-import { ISaveNewAccountPayload } from '../types';
+import type { ISaveNewAccountPayload } from '../types';
 
 const saveNewAccountThunk: AsyncThunk<
-  IAccount, // return
+  IAccountWithExtendedProps, // return
   ISaveNewAccountPayload, // args
   IAsyncThunkConfigWithRejectValue
 > = createAsyncThunk<
-  IAccount,
+  IAccountWithExtendedProps,
   ISaveNewAccountPayload,
   IAsyncThunkConfigWithRejectValue
 >(
@@ -38,8 +37,8 @@ const saveNewAccountThunk: AsyncThunk<
     const encodedPublicKey: string = encodeHex(
       PrivateKeyService.extractPublicKeyFromPrivateKey(privateKey)
     ).toUpperCase();
-    const logger: ILogger = getState().system.logger;
-    let account: IAccount;
+    const logger = getState().system.logger;
+    let account: IAccountWithExtendedProps;
     let accountService: AccountService;
     let errorMessage: string;
     let privateKeyItem: IPrivateKey | null;
@@ -92,15 +91,18 @@ const saveNewAccountThunk: AsyncThunk<
       `${AccountsThunkEnum.SaveNewAccount}: successfully saved private key "${encodedPublicKey}" to storage`
     );
 
-    account = AccountService.initializeDefaultAccount({
-      publicKey: encodedPublicKey,
-      ...(privateKeyItem && {
-        createdAt: privateKeyItem.createdAt,
+    account = {
+      ...AccountService.initializeDefaultAccount({
+        publicKey: encodedPublicKey,
+        ...(privateKeyItem && {
+          createdAt: privateKeyItem.createdAt,
+        }),
+        ...(name && {
+          name,
+        }),
       }),
-      ...(name && {
-        name,
-      }),
-    });
+      watchAccount: false,
+    };
     accountService = new AccountService({
       logger,
     });

@@ -29,9 +29,7 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
   IAccountInformation,
   IBaseAsyncThunkConfig,
   IMainRootState,
@@ -48,9 +46,11 @@ import type {
 import createAlgodClient from '@common/utils/createAlgodClient';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
+import isWatchAccount from '@extension/utils/isWatchAccount';
 import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
+import { findAccountWithoutExtendedProps } from '../utils';
 
 const removeStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return
@@ -66,12 +66,11 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     { accountId, assets, genesisHash, password },
     { getState, rejectWithValue }
   ) => {
-    const accounts: IAccount[] = getState().accounts.items;
-    const logger: ILogger = getState().system.logger;
-    const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const online: boolean = getState().system.online;
-    let account: IAccount | null =
-      accounts.find((value) => value.id === accountId) || null;
+    const accounts = getState().accounts.items;
+    const logger = getState().system.logger;
+    const networks = getState().networks.items;
+    const online = getState().system.online;
+    let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountInformation: IAccountInformation;
     let accountBalanceInAtomicUnits: BigNumber;
     let accountService: AccountService;
@@ -269,7 +268,10 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     await accountService.saveAccounts([account]);
 
     return {
-      account,
+      account: {
+        ...account,
+        watchAccount: await isWatchAccount({ account, logger }),
+      },
       transactionIds,
     };
   }

@@ -1,7 +1,7 @@
 // types
-import { IAccountsState } from '../types';
+import { IState } from '../types';
 
-export default function getInitialState(): IAccountsState {
+export default function getInitialState(): IState {
   return {
     activeAccountDetails: null,
     fetching: false,

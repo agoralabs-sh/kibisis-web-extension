@@ -7,9 +7,7 @@ import { AccountsThunkEnum } from '@extension/enums';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
   IActiveAccountDetails,
   IBaseAsyncThunkConfig,
   IMainRootState,
@@ -26,11 +24,11 @@ const saveActiveAccountDetails: AsyncThunk<
 >(
   AccountsThunkEnum.SaveActiveAccountDetails,
   async (activeAccountDetails, { getState }) => {
-    const accounts: IAccount[] = getState().accounts.items;
-    const account: IAccount | null =
+    const accounts = getState().accounts.items;
+    const account =
       accounts.find((value) => value.id === activeAccountDetails.accountId) ||
       null;
-    const logger: ILogger = getState().system.logger;
+    const logger = getState().system.logger;
     let accountService: AccountService;
 
     if (!account) {

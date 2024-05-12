@@ -1,8 +1,8 @@
 // types
-import type { IAccount } from '@extension/types';
+import type { IAccountWithExtendedProps } from '@extension/types';
 
 interface IUpdateAssetHoldingsPayload {
-  account: IAccount;
+  account: IAccountWithExtendedProps;
 }
 
 export default IUpdateAssetHoldingsPayload;

@@ -1,5 +1,5 @@
 // features
-import type { IAccountsState } from '@extension/features/accounts';
+import type { IState as IAccountsState } from '@extension/features/accounts';
 import type { IState as IAddAssetsState } from '@extension/features/add-assets';
 import type { IState as IARC0072AssetsState } from '@extension/features/arc0072-assets';
 import type { IState as IEventsState } from '@extension/features/events';
