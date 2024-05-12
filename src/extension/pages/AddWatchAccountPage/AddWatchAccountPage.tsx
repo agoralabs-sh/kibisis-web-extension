@@ -1,5 +1,4 @@
 import {
-  Checkbox,
   Heading,
   HStack,
   Input,
@@ -8,17 +7,15 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
+import { isValidAddress } from 'algosdk';
 import { Step, useSteps } from 'chakra-ui-steps';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 // components
 import Button from '@extension/components/Button';
-import CopyButton from '@extension/components/CopyButton';
 import PageHeader from '@extension/components/PageHeader';
-import SeedPhraseDisplay from '@extension/components/SeedPhraseDisplay';
 import Steps from '@extension/components/Steps';
 
 // constants
@@ -31,15 +28,12 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IAddAccountPageProps } from '@extension/types';
+import type { IProps } from './types';
 
-const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
-  onComplete,
-  saving,
-}) => {
+const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { nextStep, prevStep, activeStep } = useSteps({
+  const { activeStep, nextStep, prevStep, setStep } = useSteps({
     initialStep: 0,
   });
   // hooks
@@ -48,25 +42,38 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
-  const [account] = useState<Account>(generateAccount());
+  const [address, setAddress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState<string>(account.addr);
-  const [copySeedPhraseConfirm, setCopySeedPhraseConfirm] =
-    useState<boolean>(false);
+  const [name, setName] = useState<string | null>(null);
   // misc
   const stepsLabels: string[] = [
-    t<string>('headings.generateSeedPhrase'),
+    t<string>('headings.enterAnAddress'),
     t<string>('headings.nameYourAccount'),
   ];
   const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
   // handlers
-  const handleCopySeedPhraseConfirmChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleOnAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
     setError(null);
-    setCopySeedPhraseConfirm(event.target.checked);
+    setAddress(event.target.value);
   };
-  const handleNextClick = () => nextStep();
+  const handleNextClick = () => {
+    // if the step is the first step validate the address
+    if (activeStep <= 0) {
+      if (!address) {
+        setError(t<string>('errors.inputs.required', { name: 'Address' }));
+
+        return;
+      }
+
+      if (!isValidAddress(address)) {
+        setError(t<string>('errors.inputs.invalidAddress'));
+
+        return;
+      }
+    }
+
+    nextStep();
+  };
   const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
     setName(event.target.value);
   const handlePreviousClick = () => {
@@ -80,23 +87,37 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
     prevStep();
   };
   const handleSaveClick = async () => {
-    if (!copySeedPhraseConfirm) {
-      setError(t<string>('errors.inputs.copySeedPhraseRequired'));
+    if (!address) {
+      setError(t<string>('errors.inputs.required', { name: 'Address' }));
+      setStep(0);
+
+      return;
+    }
+
+    if (!isValidAddress(address)) {
+      setError(t<string>('errors.inputs.invalidAddress'));
+      setStep(0);
 
       return;
     }
 
     await onComplete({
-      name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
-      privateKey: account.sk,
+      address,
+      name,
     });
   };
+
+  useEffect(() => {
+    if (!name && address && isValidAddress(address)) {
+      setName(address);
+    }
+  }, [address]);
 
   return (
     <>
       {/*page title*/}
       <PageHeader
-        title={t<string>('titles.page', { context: 'createNewAccount' })}
+        title={t<string>('titles.page', { context: 'addWatchAccount' })}
       />
 
       <VStack
@@ -114,53 +135,59 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
           orientation="vertical"
           variant="circles"
         >
-          {/*save seed phrase*/}
+          {/*enter address*/}
           <Step label={stepsLabels[0]}>
             <VStack
               alignItems="flex-start"
               p={1}
-              spacing={DEFAULT_GAP}
+              spacing={DEFAULT_GAP / 2}
               w="full"
             >
-              <VStack
-                alignItems="flex-start"
-                spacing={DEFAULT_GAP / 2}
+              <Text
+                color={subTextColor}
+                fontSize="sm"
+                textAlign="left"
                 w="full"
               >
-                <Text
-                  color={subTextColor}
-                  fontSize="sm"
-                  textAlign="left"
+                {t<string>('captions.enterWatchAccountAddress')}
+              </Text>
+
+              <VStack w="full">
+                {/*label*/}
+                <HStack
+                  alignItems="center"
+                  justifyContent="space-between"
                   w="full"
                 >
-                  {t<string>('captions.saveMnemonicPhrase1')}
-                </Text>
+                  <Text
+                    color={error ? 'red.300' : defaultTextColor}
+                    fontSize="sm"
+                    textAlign="left"
+                  >
+                    {t<string>('labels.address')}
+                  </Text>
 
-                <Text
-                  color={subTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  {t<string>('captions.saveMnemonicPhrase2')}
-                </Text>
+                  <Text
+                    color="red.300"
+                    fontSize="xs"
+                    textAlign="right"
+                    w="full"
+                  >
+                    {error}
+                  </Text>
+                </HStack>
 
-                {/*seed phrase*/}
-                <SeedPhraseDisplay
-                  seedPhrase={secretKeyToMnemonic(account.sk)}
-                />
+                <InputGroup size="md">
+                  <Input
+                    focusBorderColor={primaryColor}
+                    isDisabled={saving}
+                    onChange={handleOnAddressChange}
+                    placeholder={t<string>('placeholders.enterAddress')}
+                    type="text"
+                    value={address || ''}
+                  />
+                </InputGroup>
               </VStack>
-
-              {/*copy seed phrase button*/}
-              <CopyButton
-                colorScheme={primaryColorScheme}
-                size="md"
-                value={secretKeyToMnemonic(account.sk)}
-                variant="solid"
-                w="full"
-              >
-                {t<string>('buttons.copySeedPhrase')}
-              </CopyButton>
             </VStack>
           </Step>
 
@@ -208,36 +235,14 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
 
         {/*confirm completed*/}
         {hasCompletedAllSteps && (
-          <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 2} w="full">
+          <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
             <Heading color={defaultTextColor} fontSize="md" textAlign="left">
-              {t<string>('headings.newAccountComplete')}
+              {t<string>('headings.almostThere')}
             </Heading>
 
-            <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
-              {t<string>('captions.newAccountComplete')}
+            <Text color={subTextColor} fontSize="sm" textAlign="left">
+              {t<string>('captions.addWatchAccountComplete')}
             </Text>
-
-            <Checkbox
-              colorScheme={error ? 'red' : primaryColorScheme}
-              isChecked={copySeedPhraseConfirm}
-              isDisabled={saving}
-              onChange={handleCopySeedPhraseConfirmChange}
-            >
-              <Text
-                color={subTextColor}
-                fontSize="xs"
-                textAlign="left"
-                w="full"
-              >
-                {t<string>('labels.copySeedPhraseConfirm')}
-              </Text>
-            </Checkbox>
-
-            {error && (
-              <Text color="red.500" fontSize="xs" textAlign="left" w="full">
-                {error}
-              </Text>
-            )}
           </VStack>
         )}
 
@@ -283,4 +288,4 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   );
 };
 
-export default CreateNewAccountPage;
+export default AddWatchAccountPage;

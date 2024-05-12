@@ -8,6 +8,7 @@ enum AccountsThunkEnum {
   SaveAccountName = 'accounts/saveAccountName',
   SaveActiveAccountDetails = 'accounts/saveActiveAccountDetails',
   SaveNewAccount = 'accounts/saveNewAccount',
+  SaveNewWatchAccount = 'accounts/saveNewWatchAccount',
   StartPollingForAccounts = 'accounts/startPollingForAccounts',
   StopPollingForAccounts = 'accounts/stopPollingForAccounts',
   UpdateAccounts = 'accounts/updateAccounts',

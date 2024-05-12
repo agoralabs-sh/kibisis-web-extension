@@ -1,7 +1,7 @@
 // features
 import type { INetworksState } from '@extension/features/networks';
 import type { INotificationsState } from '@extension/features/notifications';
-import type { IRegistrationState } from '@extension/features/registration';
+import type { IState as RegistrationState } from '@extension/features/registration';
 import type { ISettingsState } from '@extension/features/settings';
 import type { ISystemState } from '@extension/features/system';
 
@@ -11,7 +11,7 @@ import type IBaseRootState from './IBaseRootState';
 interface IRegistrationRootState extends IBaseRootState {
   networks: INetworksState;
   notifications: INotificationsState;
-  registration: IRegistrationState;
+  registration: RegistrationState;
   settings: ISettingsState;
   system: ISystemState;
 }

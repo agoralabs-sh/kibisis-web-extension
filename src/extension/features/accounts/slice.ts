@@ -14,6 +14,7 @@ import {
   saveAccountNameThunk,
   saveActiveAccountDetails,
   saveNewAccountThunk,
+  saveNewWatchAccountThunk,
   startPollingForAccountsThunk,
   stopPollingForAccountsThunk,
   updateAccountsThunk,
@@ -289,6 +290,26 @@ const slice = createSlice({
       state.saving = true;
     });
     builder.addCase(saveNewAccountThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
+    /** save new watch account **/
+    builder.addCase(
+      saveNewWatchAccountThunk.fulfilled,
+      (state: IState, action: PayloadAction<IAccountWithExtendedProps>) => {
+        if (action.payload) {
+          state.items = upsertItemsById<IAccountWithExtendedProps>(
+            state.items,
+            [action.payload]
+          );
+        }
+
+        state.saving = false;
+      }
+    );
+    builder.addCase(saveNewWatchAccountThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(saveNewWatchAccountThunk.rejected, (state: IState) => {
       state.saving = false;
     });
     /** start polling for account information **/

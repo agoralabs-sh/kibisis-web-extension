@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 // constants
 import {
@@ -45,13 +45,12 @@ import type {
 
 const AddAccountRegistrationRouter: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch<IRegistrationRootState> =
-    useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
-  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
+  const navigate = useNavigate();
   // selectors
-  const importAccountViaQRCodeOpen: boolean =
+  const importAccountViaQRCodeOpen =
     useSelectRegistrationImportAccountViaQRCodeOpen();
-  const saving: boolean = useSelectRegistrationSaving();
+  const saving = useSelectRegistrationSaving();
   // misc
   const saveNewAccount = async ({
     arc0200Assets,
@@ -121,6 +120,7 @@ const AddAccountRegistrationRouter: FC = () => {
         <Route
           element={
             <AddAccountTypePage
+              allowAddWatchAccount={false}
               onImportAccountViaQRCodeClick={handleOnImportAccountViaQRCodeOpen}
             />
           }

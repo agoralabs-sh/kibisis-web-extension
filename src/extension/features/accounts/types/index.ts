@@ -3,6 +3,7 @@ export type { default as IFetchAccountsFromStoragePayload } from './IFetchAccoun
 export type { default as IFetchAccountsFromStorageResult } from './IFetchAccountsFromStorageResult';
 export type { default as ISaveAccountNamePayload } from './ISaveAccountNamePayload';
 export type { default as ISaveNewAccountPayload } from './ISaveNewAccountPayload';
+export type { default as ISaveNewWatchAccountPayload } from './ISaveNewWatchAccountPayload';
 export type { default as IState } from './IState';
 export type { default as IUpdateAccountsPayload } from './IUpdateAccountsPayload';
 export type { default as IUpdateAssetHoldingsPayload } from './IUpdateAssetHoldingsPayload';

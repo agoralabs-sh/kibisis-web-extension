@@ -1,7 +1,7 @@
 // types
-import type { IRegistrationState } from '../types';
+import type { IState } from '../types';
 
-export default function getInitialState(): IRegistrationState {
+export default function getInitialState(): IState {
   return {
     importAccountViaQRCodeModalOpen: false,
     password: null,

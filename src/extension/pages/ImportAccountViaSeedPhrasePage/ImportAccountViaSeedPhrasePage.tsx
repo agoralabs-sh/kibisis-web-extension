@@ -203,7 +203,12 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
               </Text>
 
               <VStack w="full">
-                <Text color={defaultTextColor} textAlign="left" w="full">
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
                   {t<string>('labels.accountName')}
                 </Text>
 
@@ -230,7 +235,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
             </Heading>
 
             <Text color={subTextColor} fontSize="sm" textAlign="left">
-              {t<string>('captions.importAccountViaSeedPhraseComplete')}
+              {t<string>('captions.almostThere')}
             </Text>
           </VStack>
         )}

@@ -14,7 +14,6 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAsyncThunkConfigWithRejectValue,
@@ -41,11 +40,11 @@ const saveCredentialsThunk: AsyncThunk<
   RegisterThunkEnum.SaveCredentials,
   async (
     { arc0200Assets, name, privateKey },
-    { dispatch, getState, rejectWithValue }
+    { getState, rejectWithValue }
   ) => {
-    const logger: ILogger = getState().system.logger;
-    const networks: INetwork[] = getState().networks.items;
-    const password: string | null = getState().registration.password;
+    const logger = getState().system.logger;
+    const networks = getState().networks.items;
+    const password = getState().registration.password;
     let account: IAccount;
     let accountService: AccountService;
     let defaultNetwork: INetwork;

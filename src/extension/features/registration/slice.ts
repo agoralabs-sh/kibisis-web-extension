@@ -7,42 +7,33 @@ import { StoreNameEnum } from '@extension/enums';
 import { saveCredentialsThunk } from './thunks';
 
 // types
-import type { IRegistrationState, ISetPasswordPayload } from './types';
+import type { ISetPasswordPayload, IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** Save credentials **/
-    builder.addCase(
-      saveCredentialsThunk.fulfilled,
-      (state: IRegistrationState) => {
-        const initialState: IRegistrationState = getInitialState();
+    /** save credentials **/
+    builder.addCase(saveCredentialsThunk.fulfilled, (state: IState) => {
+      const initialState: IState = getInitialState();
 
-        state.password = initialState.password;
-        state.saving = initialState.saving;
-        state.score = initialState.score;
-      }
-    );
-    builder.addCase(
-      saveCredentialsThunk.pending,
-      (state: IRegistrationState) => {
-        state.saving = true;
-      }
-    );
-    builder.addCase(
-      saveCredentialsThunk.rejected,
-      (state: IRegistrationState) => {
-        state.saving = false;
-      }
-    );
+      state.password = initialState.password;
+      state.saving = initialState.saving;
+      state.score = initialState.score;
+    });
+    builder.addCase(saveCredentialsThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(saveCredentialsThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
   },
   initialState: getInitialState(),
   name: StoreNameEnum.Register,
   reducers: {
-    reset: (state: Draft<IRegistrationState>) => {
-      const initialState: IRegistrationState = getInitialState();
+    reset: (state: Draft<IState>) => {
+      const initialState: IState = getInitialState();
 
       state.importAccountViaQRCodeModalOpen =
         initialState.importAccountViaQRCodeModalOpen;
@@ -51,13 +42,13 @@ const slice = createSlice({
       state.score = initialState.score;
     },
     setImportAccountViaQRCodeOpen: (
-      state: Draft<IRegistrationState>,
+      state: Draft<IState>,
       action: PayloadAction<boolean>
     ) => {
       state.importAccountViaQRCodeModalOpen = action.payload;
     },
     setPassword: (
-      state: Draft<IRegistrationState>,
+      state: Draft<IState>,
       action: PayloadAction<ISetPasswordPayload>
     ) => {
       if (action.payload.password.length <= 0) {

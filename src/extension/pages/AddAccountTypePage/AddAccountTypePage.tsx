@@ -1,8 +1,8 @@
 import { VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoQrCodeOutline } from 'react-icons/io5';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { IoEyeOutline, IoQrCodeOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import CreateNewAccountIcon from '@extension/components/CreateNewAccountIcon';
@@ -13,40 +13,47 @@ import AccountTypeItem from './AccountTypeItem';
 // constants
 import {
   ADD_ACCOUNT_ROUTE,
+  ADD_WATCH_ACCOUNT_ROUTE,
   CREATE_NEW_ACCOUNT_ROUTE,
   DEFAULT_GAP,
   IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE,
 } from '@extension/constants';
 
+// enums
+import { AddAccountTypeEnum } from './enums';
+
 // types
 import type { IProps } from './types';
 
-const AddAccountTypePage: FC<IProps> = ({ onImportAccountViaQRCodeClick }) => {
+const AddAccountTypePage: FC<IProps> = ({
+  allowAddWatchAccount,
+  onImportAccountViaQRCodeClick,
+}) => {
   const { t } = useTranslation();
-  const navigate: NavigateFunction = useNavigate();
+  const navigate = useNavigate();
   // handlers
-  const handleAccountTypeClick =
-    (type: 'create' | 'import-via-seed-phrase' | 'import-via-qr-code') =>
-    () => {
-      switch (type) {
-        case 'create':
-          navigate(`${ADD_ACCOUNT_ROUTE}${CREATE_NEW_ACCOUNT_ROUTE}`);
+  const handleAccountTypeClick = (type: AddAccountTypeEnum) => () => {
+    switch (type) {
+      case AddAccountTypeEnum.AddWatch:
+        navigate(`${ADD_ACCOUNT_ROUTE}${ADD_WATCH_ACCOUNT_ROUTE}`);
 
-          break;
-        case 'import-via-seed-phrase':
-          navigate(
-            `${ADD_ACCOUNT_ROUTE}${IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE}`
-          );
+        break;
+      case AddAccountTypeEnum.CreateNew:
+        navigate(`${ADD_ACCOUNT_ROUTE}${CREATE_NEW_ACCOUNT_ROUTE}`);
 
-          break;
-        case 'import-via-qr-code':
-          onImportAccountViaQRCodeClick();
+        break;
+      case AddAccountTypeEnum.ImportViaQRCode:
+        onImportAccountViaQRCodeClick();
 
-          break;
-        default:
-          break;
-      }
-    };
+        break;
+      case AddAccountTypeEnum.ImportViaSeedPhrase:
+        navigate(`${ADD_ACCOUNT_ROUTE}${IMPORT_ACCOUNT_VIA_SEED_PHRASE_ROUTE}`);
+
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <>
@@ -65,7 +72,7 @@ const AddAccountTypePage: FC<IProps> = ({ onImportAccountViaQRCodeClick }) => {
         <AccountTypeItem
           description={t<string>('captions.createNewAccount')}
           icon={CreateNewAccountIcon}
-          onClick={handleAccountTypeClick('create')}
+          onClick={handleAccountTypeClick(AddAccountTypeEnum.CreateNew)}
           title={t<string>('headings.createNewAccount')}
         />
 
@@ -73,15 +80,27 @@ const AddAccountTypePage: FC<IProps> = ({ onImportAccountViaQRCodeClick }) => {
         <AccountTypeItem
           description={t<string>('captions.importAccountViaSeedPhrase')}
           icon={ImportAccountIcon}
-          onClick={handleAccountTypeClick('import-via-seed-phrase')}
+          onClick={handleAccountTypeClick(
+            AddAccountTypeEnum.ImportViaSeedPhrase
+          )}
           title={t<string>('headings.importAccountViaSeedPhrase')}
         />
+
+        {/*add watch account*/}
+        {allowAddWatchAccount && (
+          <AccountTypeItem
+            description={t<string>('captions.addWatchAccount')}
+            icon={IoEyeOutline}
+            onClick={handleAccountTypeClick(AddAccountTypeEnum.AddWatch)}
+            title={t<string>('headings.addWatchAccount')}
+          />
+        )}
 
         {/*import account via qr code*/}
         <AccountTypeItem
           description={t<string>('captions.importAccountViaQRCode')}
           icon={IoQrCodeOutline}
-          onClick={handleAccountTypeClick('import-via-qr-code')}
+          onClick={handleAccountTypeClick(AddAccountTypeEnum.ImportViaQRCode)}
           title={t<string>('headings.importAccountViaQRCode')}
         />
       </VStack>

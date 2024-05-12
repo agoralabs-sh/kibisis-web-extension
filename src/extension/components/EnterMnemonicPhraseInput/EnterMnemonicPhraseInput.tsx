@@ -85,7 +85,11 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
       <HStack alignItems="center" minH={8} spacing={DEFAULT_GAP / 3} w="full">
         {/*label*/}
         <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-          <Text color={error ? 'red.300' : defaultTextColor} textAlign="left">
+          <Text
+            color={error ? 'red.300' : defaultTextColor}
+            fontSize="sm"
+            textAlign="left"
+          >
             {t<string>('labels.seedPhrase')}
           </Text>
 
