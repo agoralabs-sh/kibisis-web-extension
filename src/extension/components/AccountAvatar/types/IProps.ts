@@ -1,8 +1,8 @@
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
 
-interface IOption {
-  value: IAccountWithExtendedProps;
+interface IProps {
+  account: IAccountWithExtendedProps;
 }
 
-export default IOption;
+export default IProps;

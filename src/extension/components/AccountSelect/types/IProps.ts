@@ -1,11 +1,11 @@
 // types
-import type { IAccount } from '@extension/types';
+import type { IAccountWithExtendedProps } from '@extension/types';
 
 interface IProps {
-  accounts: IAccount[];
+  accounts: IAccountWithExtendedProps[];
   disabled?: boolean;
-  onSelect: (account: IAccount) => void;
-  value: IAccount;
+  onSelect: (account: IAccountWithExtendedProps) => void;
+  value: IAccountWithExtendedProps;
   width?: string | number;
 }
 

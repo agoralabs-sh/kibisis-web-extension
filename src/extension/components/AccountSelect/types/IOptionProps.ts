@@ -1,10 +1,10 @@
 import type { ReactEventHandler } from 'react';
 
 // types
-import type { IAccount } from '@extension/types';
+import type { IAccountWithExtendedProps } from '@extension/types';
 
 interface IOptionProps {
-  account: IAccount;
+  account: IAccountWithExtendedProps;
   isSelected: boolean;
   onClick?: ReactEventHandler<HTMLDivElement>;
 }

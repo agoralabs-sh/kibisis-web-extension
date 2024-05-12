@@ -19,7 +19,7 @@ import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import AccountSelect from '@extension/components/AccountSelect';
@@ -67,7 +67,6 @@ import useUpdateARC0200Assets from '@extension/hooks/useUpdateARC0200Assets';
 import {
   useSelectAccounts,
   useSelectActiveAccount,
-  useSelectActiveAccountDetails,
   useSelectLogger,
   useSelectNetworks,
 } from '@extension/selectors';
@@ -76,10 +75,8 @@ import {
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
-  IActiveAccountDetails,
+  IAccountWithExtendedProps,
   IAppThunkDispatch,
   IARC0200Asset,
   IARC0300AssetAddSchema,
@@ -98,26 +95,26 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
   schema,
 }) => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const activeAccount: IAccount | null = useSelectActiveAccount();
-  const activeAccountDetails: IActiveAccountDetails | null =
-    useSelectActiveAccountDetails();
-  const logger: ILogger = useSelectLogger();
-  const networks: INetwork[] = useSelectNetworks();
+  const accounts = useSelectAccounts();
+  const activeAccount = useSelectActiveAccount();
+  const logger = useSelectLogger();
+  const networks = useSelectNetworks();
   // hooks
   const {
     assets,
     loading,
     reset: resetUpdateAssets,
   } = useUpdateARC0200Assets([schema.paths[1]]);
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
   // states
-  const [account, setAccount] = useState<IAccount | null>(activeAccount);
+  const [account, setAccount] = useState<IAccountWithExtendedProps | null>(
+    activeAccount
+  );
   const [saving, setSaving] = useState<boolean>(false);
   // misc
   const asset: IARC0200Asset | null = assets[0] || null;
@@ -218,7 +215,8 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
     reset();
     onComplete();
   };
-  const handleOnAccountSelect = (value: IAccount) => setAccount(value);
+  const handleOnAccountSelect = (value: IAccountWithExtendedProps) =>
+    setAccount(value);
   const handlePreviousClick = () => {
     reset();
     onPreviousClick();

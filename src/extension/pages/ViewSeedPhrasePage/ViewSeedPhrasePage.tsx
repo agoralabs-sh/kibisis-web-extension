@@ -47,32 +47,33 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { ILogger } from '@common/types';
-import type { IAccount, IAppThunkDispatch } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IAppThunkDispatch,
+} from '@extension/types';
 
 const ViewSeedPhrasePage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
   const { isOpen, onClose, onOpen } = useDisclosure();
   // selectors
-  const activeAccount: IAccount | null = useSelectActiveAccount();
-  const accounts: IAccount[] = useSelectAccounts();
-  const logger: ILogger = useSelectLogger();
+  const accounts = useSelectAccounts();
+  const activeAccount = useSelectActiveAccount();
+  const logger = useSelectLogger();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
   // state
   const [password, setPassword] = useState<string | null>(null);
   const [seedPhrase, setSeedPhrase] = useState<string>(
     createMaskedSeedPhrase()
   );
-  const [selectedAccount, setSelectedAccount] = useState<IAccount | null>(
-    activeAccount
-  );
+  const [selectedAccount, setSelectedAccount] =
+    useState<IAccountWithExtendedProps | null>(activeAccount);
   // misc
   const decryptSeedPhrase = async () => {
-    const _functionName: string = 'decryptSeedPhrase';
-    const privateKeyService: PrivateKeyService = new PrivateKeyService({
+    const _functionName = 'decryptSeedPhrase';
+    const privateKeyService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
     });
@@ -127,7 +128,7 @@ const ViewSeedPhrasePage: FC = () => {
     }
   };
   // handlers
-  const handleAccountSelect = (account: IAccount) =>
+  const handleAccountSelect = (account: IAccountWithExtendedProps) =>
     setSelectedAccount(account);
   const handleOnConfirmPasswordModalConfirm = async (password: string) => {
     // close the password modal

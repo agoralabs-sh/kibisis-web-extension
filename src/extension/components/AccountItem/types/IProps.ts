@@ -1,8 +1,8 @@
 // types
-import type { IAccount } from '@extension/types';
+import type { IAccountWithExtendedProps } from '@extension/types';
 
 interface IProps {
-  account: IAccount;
+  account: IAccountWithExtendedProps;
   subTextColor?: string;
   textColor?: string;
 }

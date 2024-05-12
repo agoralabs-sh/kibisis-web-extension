@@ -1,8 +1,8 @@
 // types
-import type { IAccount } from '@extension/types';
+import type { IAccountWithExtendedProps } from '@extension/types';
 
 interface ISingleValueProps {
-  account: IAccount;
+  account: IAccountWithExtendedProps;
 }
 
 export default ISingleValueProps;

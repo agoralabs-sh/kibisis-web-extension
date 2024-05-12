@@ -1,17 +1,16 @@
 import {
-  Avatar,
-  AvatarBadge,
   Button,
   ButtonProps,
   Center,
   HStack,
-  Icon,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { IoEyeOutline, IoWalletOutline } from 'react-icons/io5';
+
+// components
+import AccountAvatar from '@extension/components/AccountAvatar';
 
 // constants
 import {
@@ -24,8 +23,6 @@ import {
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
@@ -45,8 +42,6 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
-  const primaryButtonTextColor = usePrimaryButtonTextColor();
-  const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
   const activeBackground = useColorModeValue('gray.200', 'whiteAlpha.200');
   // misc
@@ -67,23 +62,6 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
       };
   // handlers
   const handleOnClick = () => onClick(account.id);
-  // renders
-  const renderAvatar = () => {
-    const icon = <Icon as={IoWalletOutline} color={primaryButtonTextColor} />;
-
-    // add an eye badge for watch accounts
-    if (account.watchAccount) {
-      return (
-        <Avatar bg={primaryColor} icon={icon} size="sm">
-          <AvatarBadge bg="blue.500" borderWidth={0} boxSize="1.25em" p={1}>
-            <Icon as={IoEyeOutline} color="white" h={3} w={3} />
-          </AvatarBadge>
-        </Avatar>
-      );
-    }
-
-    return <Avatar bg={primaryColor} icon={icon} size="sm" />;
-  };
 
   return (
     <Tooltip
@@ -103,7 +81,9 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
       >
         {/*icon*/}
         <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
-          <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>{renderAvatar()}</Center>
+          <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
+            <AccountAvatar account={account} />
+          </Center>
 
           {/*name/address*/}
           {account.name ? (

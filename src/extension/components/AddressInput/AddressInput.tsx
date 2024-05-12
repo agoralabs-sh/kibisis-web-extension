@@ -9,13 +9,7 @@ import {
   MenuButton,
   Tooltip,
 } from '@chakra-ui/react';
-import React, {
-  ChangeEvent,
-  FC,
-  FocusEvent,
-  MutableRefObject,
-  useRef,
-} from 'react';
+import React, { ChangeEvent, FC, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoChevronDown } from 'react-icons/io5';
 
@@ -34,17 +28,8 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IAccount } from '@extension/types';
-
-interface IProps {
-  accounts: IAccount[];
-  disabled?: boolean;
-  error: string | null;
-  label?: string;
-  onBlur: (event: FocusEvent<HTMLInputElement>) => void;
-  onChange: (value: string) => void;
-  value: string;
-}
+import type { IAccountWithExtendedProps } from '@extension/types';
+import type { IProps } from './types';
 
 const AddressInput: FC<IProps> = ({
   accounts,
@@ -54,15 +39,14 @@ const AddressInput: FC<IProps> = ({
   onBlur,
   onChange,
   value,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
-  const accountSelectRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
+  const accountSelectRef = useRef<HTMLInputElement | null>(null);
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
   // handlers
-  const handleAccountClick = (account: IAccount) => () =>
+  const handleAccountClick = (account: IAccountWithExtendedProps) => () =>
     onChange(
       AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
     );
