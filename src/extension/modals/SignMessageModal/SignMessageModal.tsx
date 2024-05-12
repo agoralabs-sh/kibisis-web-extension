@@ -227,6 +227,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
               <Text textAlign="left" w="full">{`${t<string>(
                 'labels.addressToSign'
               )}:`}</Text>
+
               <AccountItem account={selectedSigner} />
             </>
           ) : (
@@ -234,6 +235,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
               <Text textAlign="left" w="full">{`${t<string>(
                 'labels.authorizedAddresses'
               )}:`}</Text>
+
               <AccountSelect
                 accounts={authorizedAccounts}
                 onSelect={handleAccountSelect}
@@ -262,11 +264,10 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       passwordInputRef.current.focus();
     }
   }, []);
-  // when we have accounts, sessions and the request, update the authored accounts and get the signer, if it exists and is authorized
+  // when we have accounts, sessions and the request, update the authorized accounts
   useEffect(() => {
     let _authorizedAccounts: IAccountWithExtendedProps[];
     let authorizedAddresses: string[];
-    let signerAccount: IAccountWithExtendedProps | null = null;
 
     if (accounts.length >= 0 && sessions.length > 0 && signMessageRequest) {
       authorizedAddresses = getAuthorizedAddressesForHost(
@@ -280,18 +281,26 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
             AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
         )
       );
+
+      setAuthorizedAccounts(_authorizedAccounts);
+    }
+  }, [accounts, sessions, signMessageRequest]);
+  // once we have some authorized accounts, get the signer from the request or use the first account
+  useEffect(() => {
+    let signerAccount: IAccountWithExtendedProps | null = null;
+
+    if (authorizedAccounts.length > 0) {
       signerAccount =
-        _authorizedAccounts.find(
+        authorizedAccounts.find(
           (value) =>
             AccountService.convertPublicKeyToAlgorandAddress(
               value.publicKey
             ) === signMessageRequest?.payload.message.params?.signer
         ) || null;
 
-      setAuthorizedAccounts(_authorizedAccounts);
-      setSelectedSigner(signerAccount || _authorizedAccounts[0]);
+      setSelectedSigner(signerAccount || authorizedAccounts[0]);
     }
-  }, [accounts, sessions, signMessageRequest]);
+  }, [authorizedAccounts]);
 
   return (
     <Modal
