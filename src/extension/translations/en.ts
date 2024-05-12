@@ -56,7 +56,7 @@ const translation: IResourceLanguage = {
     addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
     addWatchAccount: 'Add a watch account by providing a valid address.',
-    addWatchAccountComplete: `Press save to confirm to complete adding the watch account.`,
+    addWatchAccountComplete: `Press save to confirm adding the watch account.`,
     allowActionTracking:
       'By tracking certain actions, you can earn rewards. See <2>here</2> for more information.',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',

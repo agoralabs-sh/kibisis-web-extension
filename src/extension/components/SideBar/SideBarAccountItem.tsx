@@ -1,5 +1,6 @@
 import {
   Avatar,
+  AvatarBadge,
   Button,
   ButtonProps,
   Center,
@@ -10,10 +11,14 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { IoWalletOutline } from 'react-icons/io5';
+import { IoEyeOutline, IoWalletOutline } from 'react-icons/io5';
 
 // constants
-import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
+import {
+  DEFAULT_GAP,
+  SIDEBAR_ITEM_HEIGHT,
+  SIDEBAR_MIN_WIDTH,
+} from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -27,34 +32,25 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount } from '@extension/types';
+import type { ISideBarAccountItemProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-interface IProps {
-  account: IAccount;
-  active: boolean;
-  onClick: (id: string) => void;
-}
-
-const SideBarAccountItem: FC<IProps> = ({
+const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
   account,
   active,
   onClick,
-}: IProps) => {
+}) => {
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const subTextColor: string = useSubTextColor();
-  const activeBackground: string = useColorModeValue(
-    'gray.200',
-    'whiteAlpha.200'
-  );
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
+  const activeBackground = useColorModeValue('gray.200', 'whiteAlpha.200');
   // misc
-  const address: string = AccountService.convertPublicKeyToAlgorandAddress(
+  const address = AccountService.convertPublicKeyToAlgorandAddress(
     account.publicKey
   );
   const activeProps: Partial<ButtonProps> = active
@@ -71,6 +67,23 @@ const SideBarAccountItem: FC<IProps> = ({
       };
   // handlers
   const handleOnClick = () => onClick(account.id);
+  // renders
+  const renderAvatar = () => {
+    const icon = <Icon as={IoWalletOutline} color={primaryButtonTextColor} />;
+
+    // add an eye badge for watch accounts
+    if (account.watchAccount) {
+      return (
+        <Avatar bg={primaryColor} icon={icon} size="sm">
+          <AvatarBadge bg="blue.500" borderWidth={0} boxSize="1.25em" p={1}>
+            <Icon as={IoEyeOutline} color="white" h={3} w={3} />
+          </AvatarBadge>
+        </Avatar>
+      );
+    }
+
+    return <Avatar bg={primaryColor} icon={icon} size="sm" />;
+  };
 
   return (
     <Tooltip
@@ -88,17 +101,11 @@ const SideBarAccountItem: FC<IProps> = ({
         variant="ghost"
         w="full"
       >
-        <HStack m={0} p={0} spacing={0} w="full">
-          <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
-            <Avatar
-              bg={primaryColor}
-              icon={
-                <Icon as={IoWalletOutline} color={primaryButtonTextColor} />
-              }
-              size="sm"
-            />
-          </Center>
+        {/*icon*/}
+        <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
+          <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>{renderAvatar()}</Center>
 
+          {/*name/address*/}
           {account.name ? (
             <VStack
               alignItems="flex-start"

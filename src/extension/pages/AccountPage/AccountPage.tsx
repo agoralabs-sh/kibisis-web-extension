@@ -85,49 +85,36 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type {
-  IAccount,
-  IAccountInformation,
-  IAccountTransactions,
-  IActiveAccountDetails,
-  IAppThunkDispatch,
-  IBlockExplorer,
-  INetwork,
-  ISettings,
-} from '@extension/types';
+import type { IAppThunkDispatch, INetwork } from '@extension/types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
   const {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
   } = useDisclosure();
-  const navigate: NavigateFunction = useNavigate();
+  const navigate = useNavigate();
   // selectors
-  const account: IAccount | null = useSelectActiveAccount();
-  const accountInformation: IAccountInformation | null =
-    useSelectActiveAccountInformation();
-  const accountTransactions: IAccountTransactions | null =
-    useSelectActiveAccountTransactions();
-  const activeAccountDetails: IActiveAccountDetails | null =
-    useSelectActiveAccountDetails();
-  const fetchingAccounts: boolean = useSelectAccountsFetching();
-  const fetchingSettings: boolean = useSelectSettingsFetching();
-  const online: boolean = useSelectIsOnline();
-  const networks: INetwork[] = useSelectNetworks();
-  const explorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
-  const savingAccounts: boolean = useSelectAccountsSaving();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const settings: ISettings = useSelectSettings();
+  const account = useSelectActiveAccount();
+  const accountInformation = useSelectActiveAccountInformation();
+  const accountTransactions = useSelectActiveAccountTransactions();
+  const activeAccountDetails = useSelectActiveAccountDetails();
+  const fetchingAccounts = useSelectAccountsFetching();
+  const fetchingSettings = useSelectSettingsFetching();
+  const online = useSelectIsOnline();
+  const networks = useSelectNetworks();
+  const explorer = useSelectSettingsPreferredBlockExplorer();
+  const savingAccounts = useSelectAccountsSaving();
+  const selectedNetwork = useSelectSelectedNetwork();
+  const settings = useSelectSettings();
   // hooks
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // state
   const [isEditing, setIsEditing] = useState<boolean>(false);
   // handlers
@@ -183,7 +170,9 @@ const AccountPage: FC = () => {
           }),
           onConfirm: () => dispatch(removeAccountByIdThunk(account.id)),
           title: t<string>('headings.removeAccount'),
-          warningText: t<string>('captions.removeAccountWarning'),
+          ...(!account.watchAccount && {
+            warningText: t<string>('captions.removeAccountWarning'),
+          }),
         })
       );
     }
