@@ -2,7 +2,6 @@ import {
   ARC0027ErrorCodeEnum,
   ARC0027MethodCanceledError,
   ARC0027MethodEnum,
-  ISignTransactionsParams,
 } from '@agoralabs-sh/avm-web-provider';
 import {
   Avatar,
@@ -19,13 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { decode as decodeBase64 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
-import React, {
-  FC,
-  KeyboardEvent,
-  MutableRefObject,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, KeyboardEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -73,13 +66,7 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
-import type {
-  IAccount,
-  IAppThunkDispatch,
-  IClientRequestEventPayload,
-  IEvent,
-} from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 import type { ISignTransactionsModalProps } from './types';
 
 // utils
@@ -91,19 +78,14 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const logger: ILogger = useSelectLogger();
-  const signTransactionsRequest: IEvent<
-    IClientRequestEventPayload<ISignTransactionsParams>
-  > | null = useSelectSignTransactionsRequest();
+  const logger = useSelectLogger();
+  const signTransactionsRequest = useSelectSignTransactionsRequest();
   // hooks
-  const authorizedAccounts: IAccount[] = useAuthorizedAccounts(
-    signTransactionsRequest
-  );
-  const defaultTextColor: string = useDefaultTextColor();
+  const authorizedAccounts = useAuthorizedAccounts(signTransactionsRequest);
+  const defaultTextColor = useDefaultTextColor();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -112,8 +94,8 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
+  const subTextColor = useSubTextColor();
+  const textBackgroundColor = useTextBackgroundColor();
   // states
   const [moreDetailsTransactions, setMoreDetailsTransactions] = useState<
     Transaction[] | null
@@ -218,7 +200,7 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
       !signTransactionsRequest ||
       !signTransactionsRequest.payload.message.params
     ) {
-      return <VStack spacing={4} w="full"></VStack>;
+      return <VStack spacing={DEFAULT_GAP - 2} w="full"></VStack>;
     }
 
     decodedTransactions =
@@ -268,7 +250,7 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
         <HStack
           alignItems="center"
           justifyContent="center"
-          spacing={4}
+          spacing={DEFAULT_GAP - 2}
           w="full"
         >
           {/*app icon*/}
@@ -335,7 +317,7 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          <VStack alignItems="center" spacing={5} w="full">
+          <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
             {renderHeader()}
           </VStack>
         </ModalHeader>
@@ -343,7 +325,7 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
 
         <ModalFooter p={DEFAULT_GAP}>
-          <VStack alignItems="flex-start" spacing={4} w="full">
+          <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
             {/*password input*/}
             <PasswordInput
               error={passwordError}
@@ -365,7 +347,7 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
             />
 
             {/*buttons*/}
-            <HStack spacing={4} w="full">
+            <HStack spacing={DEFAULT_GAP - 2} w="full">
               {moreDetailsTransactions && moreDetailsTransactions.length > 0 ? (
                 // previous button
                 <Button

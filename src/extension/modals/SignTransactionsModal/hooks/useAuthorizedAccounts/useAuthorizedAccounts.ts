@@ -12,8 +12,8 @@ import { sendSignTransactionsResponseThunk } from '@extension/features/messages'
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectLogger,
+  useSelectNonWatchAccounts,
   useSelectSessions,
 } from '@extension/selectors';
 
@@ -21,9 +21,8 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
+  IAccountWithExtendedProps,
   IAppThunkDispatch,
   IClientRequestEventPayload,
   IEvent,
@@ -39,15 +38,17 @@ export default function useAuthorizedAccounts(
   signTransactionsRequest: IEvent<
     IClientRequestEventPayload<ISignTransactionsParams>
   > | null
-): IAccount[] {
-  const _functionName: string = 'useAuthorizedAccounts';
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+): IAccountWithExtendedProps[] {
+  const _functionName = 'useAuthorizedAccounts';
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const logger: ILogger = useSelectLogger();
-  const sessions: ISession[] = useSelectSessions();
+  const accounts = useSelectNonWatchAccounts();
+  const logger = useSelectLogger();
+  const sessions = useSelectSessions();
   // state
-  const [authorizedAccounts, setAuthorizedAccounts] = useState<IAccount[]>([]);
+  const [authorizedAccounts, setAuthorizedAccounts] = useState<
+    IAccountWithExtendedProps[]
+  >([]);
 
   useEffect(() => {
     let authorizedAddresses: string[];

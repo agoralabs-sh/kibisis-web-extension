@@ -47,8 +47,8 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectAccountsFetching,
+  useSelectNonWatchAccounts,
   useSelectLogger,
   useSelectSessions,
   useSelectSignMessageRequest,
@@ -77,7 +77,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts = useSelectAccounts();
+  const accounts = useSelectNonWatchAccounts();
   const fetching = useSelectAccountsFetching();
   const logger = useSelectLogger();
   const sessions = useSelectSessions();
@@ -219,9 +219,9 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
     }
 
     return (
-      <VStack spacing={4} w="full">
+      <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/*account select*/}
-        <VStack spacing={2} w="full">
+        <VStack spacing={DEFAULT_GAP / 3} w="full">
           {signMessageRequest.payload.message.params.signer ? (
             <>
               <Text textAlign="left" w="full">{`${t<string>(
@@ -244,7 +244,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
         </VStack>
 
         {/*message*/}
-        <VStack spacing={2} w="full">
+        <VStack spacing={DEFAULT_GAP / 3} w="full">
           <Text textAlign="left" w="full">{`${t<string>(
             'labels.message'
           )}:`}</Text>
@@ -308,7 +308,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           {signMessageRequest && (
-            <VStack alignItems="center" spacing={4} w="full">
+            <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
               <Avatar
                 name={
                   signMessageRequest.payload.message.clientInfo.appName ||
@@ -323,7 +323,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
               <VStack
                 alignItems="center"
                 justifyContent="flex-start"
-                spacing={2}
+                spacing={DEFAULT_GAP / 3}
               >
                 <Heading color={defaultTextColor} size="md" textAlign="center">
                   {signMessageRequest.payload.message.clientInfo.appName ||
@@ -357,7 +357,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
 
         <ModalFooter p={DEFAULT_GAP}>
-          <VStack alignItems="flex-start" spacing={4} w="full">
+          <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
             <PasswordInput
               error={passwordError}
               hint={t<string>('captions.mustEnterPasswordToSign')}
@@ -367,7 +367,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
               value={password}
             />
 
-            <HStack spacing={4} w="full">
+            <HStack spacing={DEFAULT_GAP / 3} w="full">
               <Button
                 onClick={handleCancelClick}
                 size="lg"

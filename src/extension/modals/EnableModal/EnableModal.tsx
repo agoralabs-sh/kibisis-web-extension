@@ -1,7 +1,4 @@
-import {
-  IEnableParams,
-  ARC0027MethodCanceledError,
-} from '@agoralabs-sh/avm-web-provider';
+import { ARC0027MethodCanceledError } from '@agoralabs-sh/avm-web-provider';
 import {
   Avatar,
   Checkbox,
@@ -23,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
+import AccountAvatar from '@extension/components/AccountAvatar';
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import SessionRequestHeader, {
@@ -43,9 +41,9 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
-  useSelectAccounts,
-  useSelectEnableRequest,
   useSelectAccountsFetching,
+  useSelectNonWatchAccounts,
+  useSelectEnableRequest,
   useSelectNetworks,
   useSelectSessionsSaving,
 } from '@extension/selectors';
@@ -58,35 +56,30 @@ import { theme } from '@extension/theme';
 
 // types
 import type {
-  IAccount,
   IAppThunkDispatch,
-  IClientRequestEventPayload,
-  IEvent,
   INetwork,
+  IModalProps,
   ISession,
 } from '@extension/types';
-import type { IProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import mapSessionFromEnableRequest from '@extension/utils/mapSessionFromEnableRequest';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
-const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
+const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const enableRequestEvent: IEvent<
-    IClientRequestEventPayload<IEnableParams>
-  > | null = useSelectEnableRequest();
-  const fetching: boolean = useSelectAccountsFetching();
-  const networks: INetwork[] = useSelectNetworks();
-  const saving: boolean = useSelectSessionsSaving();
+  const accounts = useSelectNonWatchAccounts();
+  const enableRequestEvent = useSelectEnableRequest();
+  const fetching = useSelectAccountsFetching();
+  const networks = useSelectNetworks();
+  const saving = useSelectSessionsSaving();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // state
   const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
   const [network, setNetwork] = useState<INetwork | null>(null);
@@ -165,10 +158,11 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
         <HStack
           key={`enable-modal-fetching-item-${index}`}
           py={4}
-          spacing={4}
+          spacing={DEFAULT_GAP - 2}
           w="full"
         >
           <SkeletonCircle size="12" />
+
           <Skeleton flexGrow={1}>
             <Text color={defaultTextColor} fontSize="md" textAlign="center">
               {ellipseAddress(generateAccount().addr, {
@@ -183,18 +177,22 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
 
     accountNodes = accounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
-        const address: string =
-          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
+        const address = AccountService.convertPublicKeyToAlgorandAddress(
+          account.publicKey
+        );
 
         return [
           ...acc,
           <HStack
             key={`enable-modal-account-information-${currentIndex}`}
             py={4}
-            spacing={4}
+            spacing={DEFAULT_GAP - 2}
             w="full"
           >
-            <Avatar name={account.name || address} />
+            {/*account icon*/}
+            <AccountAvatar account={account} />
+
+            {/*name/address*/}
             {account.name ? (
               <VStack
                 alignItems="flex-start"
@@ -242,9 +240,11 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
       accountNodes
     ) : (
       <>
-        {/*empty state*/}
         <Spacer />
+
+        {/*empty state*/}
         <EmptyState text={t<string>('headings.noAccountsFound')} />
+
         <Spacer />
       </>
     );
@@ -309,7 +309,7 @@ const EnableModal: FC<IProps> = ({ onClose }: IProps) => {
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
 
         <ModalFooter p={DEFAULT_GAP}>
-          <HStack spacing={4} w="full">
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
             <Button
               onClick={handleCancelClick}
               size="lg"
