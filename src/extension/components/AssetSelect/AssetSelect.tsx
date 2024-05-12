@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import Select, { GroupBase, OptionProps, SingleValueProps } from 'react-select';
-import { FilterOptionOption } from 'react-select/dist/declarations/src/filters';
+import type { FilterOptionOption } from 'react-select/dist/declarations/src/filters';
 
 // components
 import AssetSelectARC0200AssetOption from './AssetSelectARC0200AssetOption';
@@ -11,8 +11,7 @@ import AssetSelectStandardAssetOption from './AssetSelectStandardAssetOption';
 import AssetSelectStandardAssetSingleValue from './AssetSelectStandardAssetSingleValue';
 
 // constants
-import { BODY_BACKGROUND_COLOR } from '@extension/constants';
-import { OPTION_HEIGHT } from './constants';
+import { BODY_BACKGROUND_COLOR, OPTION_HEIGHT } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
@@ -20,31 +19,15 @@ import { AssetTypeEnum } from '@extension/enums';
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
+// services
+import AccountService from '@extension/services/AccountService';
+
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import {
-  IAccount,
-  IAccountInformation,
-  IAssetTypes,
-  INativeCurrency,
-  INetworkWithTransactionParams,
-} from '@extension/types';
-import { IOption } from './types';
-
-// utils
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-
-interface IProps {
-  account: IAccount;
-  assets: (IAssetTypes | INativeCurrency)[];
-  disabled?: boolean;
-  network: INetworkWithTransactionParams;
-  onAssetChange: (value: IAssetTypes | INativeCurrency) => void;
-  value: IAssetTypes | INativeCurrency;
-  width?: string | number;
-}
+import type { IAssetTypes, INativeCurrency } from '@extension/types';
+import type { IOption, IProps } from './types';
 
 const AssetSelect: FC<IProps> = ({
   account,
@@ -54,65 +37,66 @@ const AssetSelect: FC<IProps> = ({
   onAssetChange,
   value,
   width,
-}: IProps) => {
+}) => {
   // hooks
-  const primaryColor: string = useColorModeValue(
+  const primaryColor = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
   );
-  const primaryColor25: string = useColorModeValue(
+  const primaryColor25 = useColorModeValue(
     theme.colors.primaryLight['200'],
     theme.colors.primaryDark['200']
   );
-  const primaryColor50: string = useColorModeValue(
+  const primaryColor50 = useColorModeValue(
     theme.colors.primaryLight['300'],
     theme.colors.primaryDark['300']
   );
-  const primaryColor75: string = useColorModeValue(
+  const primaryColor75 = useColorModeValue(
     theme.colors.primaryLight['400'],
     theme.colors.primaryDark['400']
   );
   // misc
-  const accountInformation: IAccountInformation | null =
-    account.networkInformation[
-      convertGenesisHashToHex(network.genesisHash).toUpperCase()
-    ] || null;
-  const selectableAssets: (IAssetTypes | INativeCurrency)[] = assets.reduce<
-    (IAssetTypes | INativeCurrency)[]
-  >((acc, asset) => {
-    let selectedAsset: IAssetTypes | INativeCurrency | null;
+  const accountInformation = AccountService.extractAccountInformationForNetwork(
+    account,
+    network
+  );
+  const selectableAssets = assets.reduce<(IAssetTypes | INativeCurrency)[]>(
+    (acc, asset) => {
+      let selectedAsset: IAssetTypes | INativeCurrency | null;
 
-    switch (asset.type) {
-      // check if the asset exists in the asset holdings of the account; has it been "added"
-      case AssetTypeEnum.ARC0200:
-        selectedAsset = accountInformation?.arc200AssetHoldings.find(
-          (value) => value.id === asset.id
-        )
-          ? asset
-          : null;
-        break;
-      // native currency always exist
-      case AssetTypeEnum.Native:
-        selectedAsset = asset;
-        break;
-      // check if the asset exists in the standard asset holdings of the account; has it been opted-in
-      case AssetTypeEnum.Standard:
-        selectedAsset = accountInformation?.standardAssetHoldings.find(
-          (value) => value.id === asset.id
-        )
-          ? asset
-          : null;
-        break;
-      default:
-        selectedAsset = null;
-    }
+      switch (asset.type) {
+        // check if the asset exists in the asset holdings of the account; has it been "added"
+        case AssetTypeEnum.ARC0200:
+          selectedAsset = accountInformation?.arc200AssetHoldings.find(
+            (value) => value.id === asset.id
+          )
+            ? asset
+            : null;
+          break;
+        // native currency always exist
+        case AssetTypeEnum.Native:
+          selectedAsset = asset;
+          break;
+        // check if the asset exists in the standard asset holdings of the account; has it been opted-in
+        case AssetTypeEnum.Standard:
+          selectedAsset = accountInformation?.standardAssetHoldings.find(
+            (value) => value.id === asset.id
+          )
+            ? asset
+            : null;
+          break;
+        default:
+          selectedAsset = null;
+      }
 
-    if (!selectedAsset) {
-      return acc;
-    }
+      if (!selectedAsset) {
+        return acc;
+      }
 
-    return [...acc, selectedAsset];
-  }, []);
+      return [...acc, selectedAsset];
+    },
+    []
+  );
   // handlers
   const handleAssetChange = (option: IOption) => onAssetChange(option.value);
   const handleSearchFilter = (

@@ -1,10 +1,8 @@
-import { HStack, Spacer, Text, VStack } from '@chakra-ui/react';
-import React, { FC, ReactEventHandler, useState } from 'react';
+import { HStack } from '@chakra-ui/react';
+import React, { FC, useState } from 'react';
 
 // components
-import AssetAvatar from '@extension/components/AssetAvatar';
-import AssetBadge from '@extension/components/AssetBadge';
-import AssetIcon from '@extension/components/AssetIcon';
+import AccountItem from '@extension/components/AccountItem';
 
 // constants
 import {
@@ -24,24 +22,13 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { theme } from '@extension/theme';
 
 // types
-import type {
-  IARC0200Asset,
-  INetworkWithTransactionParams,
-} from '@extension/types';
+import type { IOptionProps } from './types';
 
-interface IProps {
-  asset: IARC0200Asset;
-  isSelected: boolean;
-  onClick?: ReactEventHandler<HTMLDivElement>;
-  network: INetworkWithTransactionParams;
-}
-
-const AssetSelectOption: FC<IProps> = ({
-  asset,
+const AccountSelectOption: FC<IOptionProps> = ({
+  account,
   isSelected,
   onClick,
-  network,
-}: IProps) => {
+}) => {
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
@@ -88,57 +75,13 @@ const AssetSelectOption: FC<IProps> = ({
       spacing={DEFAULT_GAP / 3}
       w="full"
     >
-      {/*icon*/}
-      <AssetAvatar
-        asset={asset}
-        fallbackIcon={
-          <AssetIcon
-            color={primaryButtonTextColor}
-            networkTheme={network.chakraTheme}
-            h={6}
-            w={6}
-          />
-        }
-        size="xs"
+      <AccountItem
+        account={account}
+        subTextColor={formattedSubTextColor}
+        textColor={formattedDefaultTextColor}
       />
-
-      {/*name/symbol*/}
-      <VStack
-        alignItems="flex-start"
-        justifyContent="space-between"
-        spacing={0}
-      >
-        <Text
-          color={formattedDefaultTextColor}
-          fontSize="sm"
-          maxW={175}
-          noOfLines={1}
-        >
-          {asset.name}
-        </Text>
-
-        <Text color={formattedSubTextColor} fontSize="xs">
-          {asset.symbol}
-        </Text>
-      </VStack>
-
-      <Spacer />
-
-      {/*id/type*/}
-      <VStack alignItems="flex-end" justifyContent="space-between" spacing={0}>
-        <AssetBadge type={asset.type} />
-
-        <Text
-          color={formattedSubTextColor}
-          fontSize="xs"
-          maxW={175}
-          noOfLines={1}
-        >
-          {asset.id}
-        </Text>
-      </VStack>
     </HStack>
   );
 };
 
-export default AssetSelectOption;
+export default AccountSelectOption;

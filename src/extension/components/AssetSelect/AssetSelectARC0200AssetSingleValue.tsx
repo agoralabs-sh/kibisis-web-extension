@@ -7,8 +7,7 @@ import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
-import { OPTION_HEIGHT } from './constants';
+import { DEFAULT_GAP, OPTION_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';

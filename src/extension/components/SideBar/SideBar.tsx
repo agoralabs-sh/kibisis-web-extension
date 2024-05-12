@@ -62,28 +62,22 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type {
-  IAccount,
-  IActiveAccountDetails,
-  IAppThunkDispatch,
-  INetwork,
-} from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const activeAccount: IAccount | null = useSelectActiveAccount();
-  const activeAccountDetails: IActiveAccountDetails | null =
-    useSelectActiveAccountDetails();
-  const fetchingAccounts: boolean = useSelectAccountsFetching();
-  const network: INetwork | null = useSelectSelectedNetwork();
+  const accounts = useSelectAccounts();
+  const activeAccount = useSelectActiveAccount();
+  const activeAccountDetails = useSelectActiveAccountDetails();
+  const fetchingAccounts = useSelectAccountsFetching();
+  const network = useSelectSelectedNetwork();
   // hooks
-  const borderColor: string = useBorderColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
+  const borderColor = useBorderColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
   // state
   const [width, setWidth] = useState<number>(SIDEBAR_MIN_WIDTH);
   const [isOpen, setIsOpen] = useState<boolean>(false);

@@ -2,6 +2,9 @@ import { Avatar, Center, HStack, Icon, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoWalletOutline } from 'react-icons/io5';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
@@ -12,32 +15,24 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount } from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-interface IProps {
-  account: IAccount;
-  subTextColor?: string;
-  textColor?: string;
-}
-
-const AccountItem: FC<IProps> = ({
-  account,
-  subTextColor,
-  textColor,
-}: IProps) => {
-  const defaultSubTextColor: string = useSubTextColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const address: string = AccountService.convertPublicKeyToAlgorandAddress(
+const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
+  // hooks
+  const defaultSubTextColor = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const primaryColor = usePrimaryColor();
+  // misc
+  const address = AccountService.convertPublicKeyToAlgorandAddress(
     account.publicKey
   );
 
   return (
-    <HStack m={0} p={0} spacing={2} w="full">
+    <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
       <Center>
         <Avatar
           bg={primaryColor}
