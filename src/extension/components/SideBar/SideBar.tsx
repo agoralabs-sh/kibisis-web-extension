@@ -16,7 +16,7 @@ import {
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import Divider from '@extension/components/Divider';
@@ -62,7 +62,10 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IAppThunkDispatch,
+} from '@extension/types';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
@@ -116,11 +119,24 @@ const SideBar: FC = () => {
       })
     );
   const handleSendAssetClick = () => {
+    let fromAccount: IAccountWithExtendedProps | null;
+
     if (activeAccount && network) {
+      fromAccount = activeAccount;
+
+      // if the active account is a watch account, get the first account that is not a watch account
+      if (activeAccount.watchAccount) {
+        fromAccount = accounts.find((value) => !value.watchAccount) || null;
+      }
+
+      if (!fromAccount) {
+        return;
+      }
+
       dispatch(
         initializeSendAsset({
           fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
-            activeAccount.publicKey
+            fromAccount.publicKey
           ),
           selectedAsset: network.nativeCurrency, // use native currency
         })
@@ -209,13 +225,15 @@ const SideBar: FC = () => {
       <Divider />
 
       {/*send asset*/}
-      <SideBarActionItem
-        icon={IoSendOutline}
-        label={t<string>('labels.sendAsset', {
-          nativeCurrency: network?.nativeCurrency.symbol,
-        })}
-        onClick={handleSendAssetClick}
-      />
+      {accounts.some((value) => !value.watchAccount) && (
+        <SideBarActionItem
+          icon={IoSendOutline}
+          label={t<string>('labels.sendAsset', {
+            nativeCurrency: network?.nativeCurrency.symbol,
+          })}
+          onClick={handleSendAssetClick}
+        />
+      )}
 
       {/*scan qr code*/}
       <SideBarActionItem

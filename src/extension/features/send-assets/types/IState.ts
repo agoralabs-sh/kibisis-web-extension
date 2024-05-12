@@ -10,7 +10,7 @@ import type { IAssetTypes, INativeCurrency } from '@extension/types';
  * @property {IAssetTypes | INativeCurrency | null} selectedAsset - the selected asset to send.
  * @property {string | null} toAddress - the address to send to.
  */
-interface ISendAssetsState {
+interface IState {
   amountInStandardUnits: string;
   confirming: boolean;
   creating: boolean;
@@ -20,4 +20,4 @@ interface ISendAssetsState {
   toAddress: string | null;
 }
 
-export default ISendAssetsState;
+export default IState;

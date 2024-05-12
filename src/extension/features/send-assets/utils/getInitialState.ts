@@ -1,7 +1,7 @@
 // types
-import type { ISendAssetsState } from '../types';
+import type { IState } from '../types';
 
-export default function getInitialState(): ISendAssetsState {
+export default function getInitialState(): IState {
   return {
     amountInStandardUnits: '0',
     confirming: false,
