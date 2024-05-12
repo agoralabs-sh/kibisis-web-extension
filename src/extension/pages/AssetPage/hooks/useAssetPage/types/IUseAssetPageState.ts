@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 
 // types
-import {
-  IAccount,
+import type {
+  IAccountWithExtendedProps,
   IAccountInformation,
   IAssetTypes,
   IARC0200AssetHolding,
@@ -10,7 +10,7 @@ import {
 } from '@extension/types';
 
 interface IUseAssetPageState {
-  account: IAccount | null;
+  account: IAccountWithExtendedProps | null;
   accountInformation: IAccountInformation | null;
   amountInStandardUnits: BigNumber;
   asset: IAssetTypes | null;
