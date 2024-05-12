@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
@@ -55,14 +55,12 @@ import AccountService from '@extension/services/AccountService';
 
 // types
 import type {
-  IAccount,
   IAccountWithExtendedProps,
   IAddAccountCompleteResult,
   IAppThunkDispatch,
 } from '@extension/types';
 
 // utils
-import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AddAccountMainRouter: FC = () => {
@@ -145,6 +143,8 @@ const AddAccountMainRouter: FC = () => {
         type: 'success',
       })
     );
+
+    updateAccounts(account.id);
   };
   const handleOnConfirmPasswordModalClose = () => setAddAccountResult(null);
   const handleOnConfirmPasswordModalConfirm = async (password: string) => {
@@ -166,6 +166,7 @@ const AddAccountMainRouter: FC = () => {
         allowedParams: [ARC0300PathEnum.Import],
       })
     );
+  // misc
   const saveNewAccount = async ({
     name,
     password,
@@ -215,48 +216,27 @@ const AddAccountMainRouter: FC = () => {
           type: 'success',
         })
       );
+
+      updateAccounts(account.id);
     }
   };
-
-  useEffect(() => {
-    let account: IAccount | null;
-    let address: string | null;
-
-    if (addAccountResult) {
-      address = convertPrivateKeyToAddress(addAccountResult.privateKey, {
-        logger,
-      });
-
-      if (address) {
-        // if the account has been added, navigate to the account and update
-        account =
-          accounts.find(
-            (value) =>
-              AccountService.convertPublicKeyToAlgorandAddress(
-                value.publicKey
-              ) === address
-          ) || null;
-
-        if (account) {
-          setAddAccountResult(null);
-          dispatch(
-            updateAccountsThunk({
-              accountIds: [account.id],
-            })
-          );
-          dispatch(
-            saveActiveAccountDetails({
-              accountId: account.id,
-              tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
-            })
-          );
-          navigate(ACCOUNTS_ROUTE, {
-            replace: true,
-          });
-        }
-      }
-    }
-  }, [accounts]);
+  const updateAccounts = (accountId: string) => {
+    setAddAccountResult(null);
+    dispatch(
+      updateAccountsThunk({
+        accountIds: [accountId],
+      })
+    );
+    dispatch(
+      saveActiveAccountDetails({
+        accountId,
+        tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
+      })
+    );
+    navigate(ACCOUNTS_ROUTE, {
+      replace: true,
+    });
+  };
 
   return (
     <>
