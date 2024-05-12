@@ -449,6 +449,7 @@ const translation: IResourceLanguage = {
     voteKeyDilution: 'Key Dilution',
     voteLast: 'Voting Last Round',
     yes: 'Yes',
+    watch: 'Watch',
   },
   placeholders: {
     enterAddress: 'Enter address',

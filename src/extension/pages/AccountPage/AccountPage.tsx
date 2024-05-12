@@ -89,6 +89,7 @@ import type { IAppThunkDispatch, INetwork } from '@extension/types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -270,7 +271,7 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/*address & controls*/}
+            {/*address and controls*/}
             <HStack
               alignItems="center"
               h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT}
@@ -334,6 +335,17 @@ const AccountPage: FC = () => {
                   variant="ghost"
                 />
               </Tooltip>
+            </HStack>
+
+            {/*badges*/}
+            <HStack
+              alignItems="center"
+              spacing={DEFAULT_GAP / 3}
+              justifyContent="flex-end"
+              w="full"
+            >
+              {/*watch account*/}
+              {account.watchAccount && <WatchAccountBadge />}
             </HStack>
           </VStack>
 
