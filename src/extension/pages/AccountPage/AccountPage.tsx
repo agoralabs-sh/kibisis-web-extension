@@ -192,7 +192,7 @@ const AccountPage: FC = () => {
   const renderContent = () => {
     const headerContainerProps: StackProps = {
       alignItems: 'flex-start',
-      p: DEFAULT_GAP - 2,
+      px: DEFAULT_GAP - 2,
       w: 'full',
     };
     let address: string;
