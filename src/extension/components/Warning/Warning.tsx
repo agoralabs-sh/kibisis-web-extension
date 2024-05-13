@@ -2,6 +2,9 @@ import { HStack, Icon, Text } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
@@ -10,9 +13,9 @@ import type { IProps } from './types';
 
 const Warning: FC<IProps> = ({ message, size = 'md' }) => {
   // hooks
-  const color: string = useColorModeValue('orange.500', 'yellow.500');
+  const color = useColorModeValue('orange.500', 'yellow.500');
   // misc
-  let iconSize: number = 8;
+  let iconSize = 8;
 
   switch (size) {
     case 'lg':
@@ -40,7 +43,7 @@ const Warning: FC<IProps> = ({ message, size = 'md' }) => {
       borderWidth={1}
       px={2}
       py={1}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
     >
       {/*icon*/}
       <Icon as={IoWarningOutline} color={color} h={iconSize} w={iconSize} />

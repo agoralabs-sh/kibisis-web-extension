@@ -98,6 +98,7 @@ const AddAssetsARC0200AssetSummaryModalContent: FC<
           <HStack spacing={1} w="full">
             <ModalTextItem
               flexGrow={1}
+              isCode={true}
               label={`${t<string>('labels.applicationId')}:`}
               value={asset.id}
             />

@@ -40,7 +40,7 @@ import AddAssetsStandardAssetSummaryModalContent from './AddAssetsStandardAssetS
 import AddAssetsStandardAssetItem from './AddAssetsStandardAssetItem';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
@@ -108,11 +108,9 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const assetContainerRef: MutableRefObject<HTMLDivElement | null> =
-    useRef<HTMLDivElement | null>(null);
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const assetContainerRef = useRef<HTMLDivElement | null>(null);
   // selectors
   const account = useSelectAddAssetsAccount();
   const accounts = useSelectAccounts();
@@ -155,7 +153,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
     > | null>(null);
   // misc
   const allAssets = [...arc0200Assets, ...standardAssets];
-  const isOpen = !!account;
+  const isOpen = !!(account && !account.watchAccount);
   // handlers
   const handleAddARC0200AssetClick = async () => {
     let actionTrackingService: ActionTrackingService;
@@ -361,28 +359,34 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
       dispatch(clearAssets());
     }
 
-    if (account) {
-      // abort the previous standard assets request
-      if (queryStandardAssetDispatch) {
-        queryStandardAssetDispatch.abort();
+    if (!account) {
+      return;
+    }
+
+    // abort the previous standard assets request
+    if (queryStandardAssetDispatch) {
+      queryStandardAssetDispatch.abort();
+    }
+
+    // if we have only numbers, we have an asset/app id
+    if (isNumericString(query)) {
+      // abort the previous arc200 assets request
+      if (queryARC0200AssetDispatch) {
+        queryARC0200AssetDispatch.abort();
       }
 
-      // if we have only numbers, we have an asset/app id
-      if (isNumericString(query)) {
-        // abort the previous arc200 assets request
-        if (queryARC0200AssetDispatch) {
-          queryARC0200AssetDispatch.abort();
-        }
+      setQueryARC0200AssetDispatch(
+        dispatch(
+          queryARC0200AssetThunk({
+            accountId: account.id,
+            applicationId: query,
+            refresh: true,
+          })
+        )
+      );
 
-        setQueryARC0200AssetDispatch(
-          dispatch(
-            queryARC0200AssetThunk({
-              accountId: account.id,
-              applicationId: query,
-              refresh: true,
-            })
-          )
-        );
+      // only add search for standard assets for non-watch accounts
+      if (!account.watchAccount) {
         setQueryStandardAssetDispatch(
           dispatch(
             queryStandardAssetThunk({
@@ -393,22 +397,27 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
             })
           )
         );
-
-        return;
       }
 
-      // for alphanumeric strings, query the name/unit of the standard asset
-      setQueryStandardAssetDispatch(
-        dispatch(
-          queryStandardAssetThunk({
-            accountId: account.id,
-            assetId: null,
-            nameOrUnit: query,
-            refresh: true,
-          })
-        )
-      );
+      return;
     }
+
+    // do not search for standard assets for watch accounts
+    if (account.watchAccount) {
+      return;
+    }
+
+    // for alphanumeric strings, query the name/unit of the standard asset
+    setQueryStandardAssetDispatch(
+      dispatch(
+        queryStandardAssetThunk({
+          accountId: account.id,
+          assetId: null,
+          nameOrUnit: query,
+          refresh: true,
+        })
+      )
+    );
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -673,7 +682,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
       scrollBehavior="inside"
     >
       <ModalContent
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        backgroundColor={BODY_BACKGROUND_COLOR}
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
       >

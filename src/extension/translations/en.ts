@@ -51,6 +51,9 @@ const translation: IResourceLanguage = {
     addAssetConfirming:
       'Please wait while we confirm the opt-in of the asset {{symbol}} with the network.',
     [`addAssetConfirming_${AssetTypeEnum.ARC0200}`]: 'Adding asset {{symbol}}.',
+    addAssetForWatchAccount: 'Enter an application ID (for ARC-200).',
+    addAssetForWatchAccountWarning:
+      'This is a watch account and only ARC-0200 assets can be added.',
     addAssetURI:
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
