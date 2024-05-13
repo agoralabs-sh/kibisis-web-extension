@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import {
   IoArrowDownOutline,
   IoArrowUpOutline,
+  IoEyeOffOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -246,9 +247,23 @@ const AssetPage: FC = () => {
               </Text>
             )}
 
-            {/*remove asset*/}
-            {(!account.watchAccount ||
-              asset.type !== AssetTypeEnum.Standard) && (
+            {/*hide arc-0200 asset*/}
+            {asset.type === AssetTypeEnum.ARC0200 && (
+              <Tooltip
+                label={t<string>('labels.hideAsset', { context: asset.type })}
+              >
+                <IconButton
+                  aria-label="Hide asset button"
+                  icon={<IoEyeOffOutline />}
+                  onClick={handleRemoveAssetClick}
+                  size="sm"
+                  variant="ghost"
+                />
+              </Tooltip>
+            )}
+
+            {/*remove standard asset*/}
+            {!account.watchAccount && asset.type === AssetTypeEnum.Standard && (
               <Tooltip
                 label={t<string>('labels.removeAsset', { context: asset.type })}
               >

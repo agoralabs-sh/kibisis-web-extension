@@ -94,24 +94,20 @@ import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
   // selectors
-  const account: IAccount | null = useSelectRemoveAssetsAccount();
-  const confirming: boolean = useSelectRemoveAssetsConfirming();
-  const explorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
-  const logger: ILogger = useSelectLogger();
-  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const selectedNetwork: INetworkWithTransactionParams | null =
-    useSelectSelectedNetwork();
-  const selectedAsset: IAssetTypes | null =
-    useSelectRemoveAssetsSelectedAsset();
-  const settings: ISettings = useSelectSettings();
+  const account = useSelectRemoveAssetsAccount();
+  const confirming = useSelectRemoveAssetsConfirming();
+  const explorer = useSelectSettingsPreferredBlockExplorer();
+  const logger = useSelectLogger();
+  const passwordLockPassword = useSelectPasswordLockPassword();
+  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedAsset = useSelectRemoveAssetsSelectedAsset();
+  const settings = useSelectSettings();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -120,9 +116,9 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const subTextColor: string = useSubTextColor();
+  const subTextColor = useSubTextColor();
   // misc
-  const isOpen: boolean = !!account && !!selectedAsset;
+  const isOpen = !!account && !!selectedAsset;
   // handlers
   const handleRemoveARC0200AssetClick = async () => {
     if (
@@ -147,7 +143,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
 
       dispatch(
         createNotification({
-          title: t<string>('headings.removedAsset', {
+          title: t<string>('headings.hiddenAsset', {
             symbol: selectedAsset.symbol,
           }),
           type: 'success',
@@ -177,7 +173,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
     dispatch(setConfirming(false));
   };
   const handleRemoveStandardAssetClick = async () => {
-    const _functionName: string = 'handleAddStandardAssetClick';
+    const _functionName = 'handleAddStandardAssetClick';
     let _password: string | null;
 
     if (
