@@ -1,3 +1,10 @@
+# [1.17.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0...v1.17.0-beta.1) (2024-05-14)
+
+
+### Features
+
+* add a watch account ([#230](https://github.com/agoralabs-sh/kibisis-web-extension/issues/230)) ([c00e1d0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c00e1d06c2163f99a0aa065a74d05a2b3cdcbf4e))
+
 # [1.16.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.15.1...v1.16.0) (2024-05-14)
 
 
