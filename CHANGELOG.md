@@ -1,3 +1,18 @@
+# [1.16.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.15.1...v1.16.0) (2024-05-14)
+
+
+### Bug Fixes
+
+* arc-0200 assets with large total supplyies correctly parse ([#224](https://github.com/agoralabs-sh/kibisis-web-extension/issues/224)) ([e7f91f3](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e7f91f327c172749c8560273eea9533c87b6fe99))
+* refactor seed phrase UI to fit maximum mnemonic word to input ([#225](https://github.com/agoralabs-sh/kibisis-web-extension/issues/225)) ([5213348](https://github.com/agoralabs-sh/kibisis-web-extension/commit/52133483d0fe4ce2fb07c3f534ce9ade90daeeb1))
+
+
+### Features
+
+* scan for key registration transaction qr codes ([#217](https://github.com/agoralabs-sh/kibisis-web-extension/issues/217)) ([ecd8f89](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ecd8f8911fcb4d057f91658f449495f7d7ec8ac1))
+* show already added assets to the search asset list ([#223](https://github.com/agoralabs-sh/kibisis-web-extension/issues/223)) ([5677066](https://github.com/agoralabs-sh/kibisis-web-extension/commit/5677066e042a11b3ffd01dd78ccd4dde8e2e0471))
+* show outgoing arc-200 asset transfers ([#220](https://github.com/agoralabs-sh/kibisis-web-extension/issues/220)) ([2a5fadb](https://github.com/agoralabs-sh/kibisis-web-extension/commit/2a5fadb978736c247b8891839f0c433c6ffff83d))
+
 # [1.16.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0-beta.5...v1.16.0-beta.6) (2024-05-08)
 
 
