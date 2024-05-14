@@ -16,7 +16,7 @@ import {
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import Divider from '@extension/components/Divider';
@@ -63,27 +63,24 @@ import AccountService from '@extension/services/AccountService';
 
 // types
 import type {
-  IAccount,
-  IActiveAccountDetails,
+  IAccountWithExtendedProps,
   IAppThunkDispatch,
-  INetwork,
 } from '@extension/types';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const activeAccount: IAccount | null = useSelectActiveAccount();
-  const activeAccountDetails: IActiveAccountDetails | null =
-    useSelectActiveAccountDetails();
-  const fetchingAccounts: boolean = useSelectAccountsFetching();
-  const network: INetwork | null = useSelectSelectedNetwork();
+  const accounts = useSelectAccounts();
+  const activeAccount = useSelectActiveAccount();
+  const activeAccountDetails = useSelectActiveAccountDetails();
+  const fetchingAccounts = useSelectAccountsFetching();
+  const network = useSelectSelectedNetwork();
   // hooks
-  const borderColor: string = useBorderColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
+  const borderColor = useBorderColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
   // state
   const [width, setWidth] = useState<number>(SIDEBAR_MIN_WIDTH);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -122,11 +119,24 @@ const SideBar: FC = () => {
       })
     );
   const handleSendAssetClick = () => {
+    let fromAccount: IAccountWithExtendedProps | null;
+
     if (activeAccount && network) {
+      fromAccount = activeAccount;
+
+      // if the active account is a watch account, get the first account that is not a watch account
+      if (activeAccount.watchAccount) {
+        fromAccount = accounts.find((value) => !value.watchAccount) || null;
+      }
+
+      if (!fromAccount) {
+        return;
+      }
+
       dispatch(
         initializeSendAsset({
           fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
-            activeAccount.publicKey
+            fromAccount.publicKey
           ),
           selectedAsset: network.nativeCurrency, // use native currency
         })
@@ -215,13 +225,15 @@ const SideBar: FC = () => {
       <Divider />
 
       {/*send asset*/}
-      <SideBarActionItem
-        icon={IoSendOutline}
-        label={t<string>('labels.sendAsset', {
-          nativeCurrency: network?.nativeCurrency.symbol,
-        })}
-        onClick={handleSendAssetClick}
-      />
+      {accounts.some((value) => !value.watchAccount) && (
+        <SideBarActionItem
+          icon={IoSendOutline}
+          label={t<string>('labels.sendAsset', {
+            nativeCurrency: network?.nativeCurrency.symbol,
+          })}
+          onClick={handleSendAssetClick}
+        />
+      )}
 
       {/*scan qr code*/}
       <SideBarActionItem

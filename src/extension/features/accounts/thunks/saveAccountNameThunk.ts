@@ -7,29 +7,34 @@ import { AccountsThunkEnum } from '@extension/enums';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { ILogger } from '@common/types';
-import {
-  IAccount,
+import type {
+  IAccountWithExtendedProps,
   IBaseAsyncThunkConfig,
   IMainRootState,
 } from '@extension/types';
-import { ISaveAccountNamePayload } from '../types';
+import type { ISaveAccountNamePayload } from '../types';
+
+// utils
+import isWatchAccount from '@extension/utils/isWatchAccount/isWatchAccount';
+import { findAccountWithoutExtendedProps } from '../utils';
 
 const saveAccountNameThunk: AsyncThunk<
-  IAccount | null, // return
+  IAccountWithExtendedProps | null, // return
   ISaveAccountNamePayload, // args
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
-  IAccount | null,
+  IAccountWithExtendedProps | null,
   ISaveAccountNamePayload,
-  { state: IMainRootState }
+  IBaseAsyncThunkConfig<IMainRootState>
 >(
   AccountsThunkEnum.SaveAccountName,
-  async ({ accountId, name }, { dispatch, getState }) => {
-    const logger: ILogger = getState().system.logger;
-    let account: IAccount | null =
-      getState().accounts.items.find((value) => value.id === accountId) || null;
-    let accountService: AccountService;
+  async ({ accountId, name }, { getState }) => {
+    const logger = getState().system.logger;
+    const accounts = getState().accounts.items;
+    const accountService = new AccountService({
+      logger,
+    });
+    let account = findAccountWithoutExtendedProps(accountId, accounts);
 
     if (!account) {
       logger.debug(
@@ -51,13 +56,13 @@ const saveAccountNameThunk: AsyncThunk<
       ...account,
       name,
     };
-    accountService = new AccountService({
-      logger,
-    });
 
     await accountService.saveAccounts([account]);
 
-    return account;
+    return {
+      ...account,
+      watchAccount: await isWatchAccount({ account, logger }),
+    };
   }
 );
 

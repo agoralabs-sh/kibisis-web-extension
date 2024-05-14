@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Checkbox,
   Heading,
@@ -29,7 +28,7 @@ import SessionAvatar from '@extension/components/SessionAvatar';
 import Warning from '@extension/components/Warning';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
 import {
@@ -45,9 +44,9 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectAccountsFetching,
   useSelectNetworks,
+  useSelectNonWatchAccounts,
   useSelectSessionsSaving,
 } from '@extension/selectors';
 
@@ -58,34 +57,26 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import {
-  IAccount,
-  IAppThunkDispatch,
-  INetwork,
-  ISession,
-} from '@extension/types';
+import type { IAppThunkDispatch, INetwork } from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import AccountAvatar from '@extension/components/AccountAvatar';
 
-interface IProps {
-  onClose: () => void;
-  session: ISession | null;
-}
-
-const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
+const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const fetching: boolean = useSelectAccountsFetching();
-  const networks: INetwork[] = useSelectNetworks();
-  const saving: boolean = useSelectSessionsSaving();
+  const accounts = useSelectNonWatchAccounts();
+  const fetching = useSelectAccountsFetching();
+  const networks = useSelectNetworks();
+  const saving = useSelectSessionsSaving();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
+  const textBackgroundColor = useTextBackgroundColor();
   // state
   const [network, setNetwork] = useState<INetwork | null>(null);
   const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
@@ -137,7 +128,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
         <HStack
           key={`manage-session-fetching-item-${index}`}
           py={4}
-          spacing={4}
+          spacing={DEFAULT_GAP - 2}
           w="full"
         >
           <SkeletonCircle size="12" />
@@ -163,10 +154,13 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
           <HStack
             key={`manage-session-modal-account-information-item-${currentIndex}`}
             py={4}
-            spacing={4}
+            spacing={DEFAULT_GAP - 2}
             w="full"
           >
-            <Avatar name={account.name || address} />
+            {/*account icon*/}
+            <AccountAvatar account={account} />
+
+            {/*name/address*/}
             {account.name ? (
               <VStack
                 alignItems="flex-start"
@@ -220,9 +214,11 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
       accountNodes
     ) : (
       <>
-        {/*empty state*/}
         <Spacer />
+
+        {/*empty state*/}
         <EmptyState text={t<string>('headings.noAccountsFound')} />
+
         <Spacer />
       </>
     );
@@ -230,13 +226,13 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
   const renderHeader = () => {
     if (!session) {
       return (
-        <VStack alignItems="center" spacing={5} w="full">
+        <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
           <SkeletonCircle size="12" />
 
           <VStack
             alignItems="center"
             justifyContent="flex-start"
-            spacing={2}
+            spacing={DEFAULT_GAP / 3}
             w="full"
           >
             <Skeleton w="full">
@@ -262,19 +258,17 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
     }
 
     return (
-      <VStack alignItems="center" spacing={5} w="full">
+      <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
         {/*app icon*/}
         <SessionAvatar
           iconUrl={session.iconUrl || undefined}
           name={session.appName}
           isWalletConnect={!!session.walletConnectMetadata}
         />
-        {/*<Avatar name={session.appName} src={session.iconUrl || undefined} />*/}
-
         <VStack
           alignItems="center"
           justifyContent="flex-start"
-          spacing={2}
+          spacing={DEFAULT_GAP / 3}
           w="full"
         >
           {/*app name*/}
@@ -340,7 +334,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
       scrollBehavior="inside"
     >
       <ModalContent
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        backgroundColor={BODY_BACKGROUND_COLOR}
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
       >
@@ -351,7 +345,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }: IProps) => {
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
 
         <ModalFooter p={DEFAULT_GAP}>
-          <HStack spacing={4} w="full">
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
             <Button
               onClick={handleCancelClick}
               size="lg"

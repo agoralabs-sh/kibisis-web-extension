@@ -1,4 +1,5 @@
 interface IProps {
+  allowAddWatchAccount: boolean;
   onImportAccountViaQRCodeClick: () => void;
 }
 

@@ -1,5 +1,5 @@
 // types
-import { ISession } from '@extension/types';
+import type { ISession } from '@extension/types';
 
 /**
  * Filters the sessions by host and extracts the unique addresses.

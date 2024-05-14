@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 // components
 import MainLayout from '@extension/components/MainLayout';
@@ -48,7 +48,9 @@ import useOnNewAssets from '@extension/hooks/useOnNewAssets';
 import useNotifications from '@extension/hooks/useNotifications';
 
 // modals
-import AddAssetsModal from '@extension/modals/AddAssetsModal';
+import AddAssetsModal, {
+  AddAssetsForWatchAccountModal,
+} from '@extension/modals/AddAssetsModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
 import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
@@ -68,21 +70,16 @@ import {
 } from '@extension/selectors';
 
 // types
-import type {
-  IAccount,
-  IAppThunkDispatch,
-  INetwork,
-  ISettings,
-} from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 
 const Root: FC = () => {
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const settings: ISettings = useSelectSettings();
+  const accounts = useSelectAccounts();
+  const passwordLockPassword = useSelectPasswordLockPassword();
+  const selectedNetwork = useSelectSelectedNetwork();
+  const settings = useSelectSettings();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
@@ -145,6 +142,7 @@ const Root: FC = () => {
       <SignMessageModal onClose={handleSignMessageModalClose} />
       <SignTransactionsModal onClose={handleSignTransactionsModalClose} />
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
+      <AddAssetsForWatchAccountModal onClose={handleAddAssetsModalClose} />
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />

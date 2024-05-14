@@ -42,10 +42,12 @@ import type {
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
+import isWatchAccount from '@extension/utils/isWatchAccount';
 import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
+import { findAccountWithoutExtendedProps } from '../utils';
 
 const addStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return
@@ -65,7 +67,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.online;
-    let account = accounts.find((value) => value.id === accountId) || null;
+    let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountBalanceInAtomicUnits: BigNumber;
     let accountInformation: IAccountInformation;
     let accountService: AccountService;
@@ -245,7 +247,10 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     await accountService.saveAccounts([account]);
 
     return {
-      account,
+      account: {
+        ...account,
+        watchAccount: await isWatchAccount({ account, logger }),
+      },
       transactionIds,
     };
   }

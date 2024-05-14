@@ -182,7 +182,12 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
               </Text>
 
               <VStack w="full">
-                <Text color={defaultTextColor} textAlign="left" w="full">
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
                   {t<string>('labels.accountName')}
                 </Text>
 

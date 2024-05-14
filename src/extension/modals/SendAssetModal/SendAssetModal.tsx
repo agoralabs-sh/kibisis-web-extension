@@ -89,17 +89,12 @@ import ActionTrackingService from '@extension/services/ActionTrackingService';
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAppThunkDispatch,
-  IARC0200Asset,
   IAssetTypes,
   IModalProps,
   INativeCurrency,
-  INetworkWithTransactionParams,
-  ISettings,
-  IStandardAsset,
 } from '@extension/types';
 
 // utils
@@ -107,28 +102,22 @@ import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransact
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const arc200Assets: IARC0200Asset[] =
-    useSelectARC0200AssetsBySelectedNetwork();
-  const amountInStandardUnits: string =
-    useSelectSendAssetAmountInStandardUnits();
-  const standardAssets: IStandardAsset[] =
-    useSelectStandardAssetsBySelectedNetwork();
-  const confirming: boolean = useSelectSendAssetConfirming();
-  const creating: boolean = useSelectSendAssetCreating();
-  const fromAccount: IAccount | null = useSelectSendAssetFromAccount();
-  const logger: ILogger = useSelectLogger();
-  const network: INetworkWithTransactionParams | null =
-    useSelectSelectedNetwork();
-  const note: string | null = useSelectSendAssetNote();
-  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const selectedAsset: IAssetTypes | INativeCurrency | null =
-    useSelectSendAssetSelectedAsset();
-  const settings: ISettings = useSelectSettings();
+  const accounts = useSelectAccounts();
+  const arc200Assets = useSelectARC0200AssetsBySelectedNetwork();
+  const amountInStandardUnits = useSelectSendAssetAmountInStandardUnits();
+  const standardAssets = useSelectStandardAssetsBySelectedNetwork();
+  const confirming = useSelectSendAssetConfirming();
+  const creating = useSelectSendAssetCreating();
+  const fromAccount = useSelectSendAssetFromAccount();
+  const logger = useSelectLogger();
+  const network = useSelectSelectedNetwork();
+  const note = useSelectSendAssetNote();
+  const passwordLockPassword = useSelectPasswordLockPassword();
+  const selectedAsset = useSelectSendAssetSelectedAsset();
+  const settings = useSelectSettings();
   // hooks
   const {
     error: toAddressError,
@@ -468,7 +457,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
             />
           </VStack>
 
-          {/*select from account*/}
+          {/*from account*/}
           <VStack alignItems="flex-start" w="full">
             {/*label*/}
             <Text
@@ -481,7 +470,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
             </Text>
 
             <AccountSelect
-              accounts={accounts}
+              accounts={accounts.filter((value) => !value.watchAccount)}
               disabled={creating}
               onSelect={handleFromAccountChange}
               value={fromAccount}

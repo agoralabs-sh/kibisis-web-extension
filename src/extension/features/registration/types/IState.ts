@@ -4,11 +4,11 @@
  * @property {saving} saving - whether the credentials are being saved or not.
  * @property {number} score - the score of the password.
  */
-interface IRegistrationState {
+interface IState {
   importAccountViaQRCodeModalOpen: boolean;
   password: string | null;
   saving: boolean;
   score: number;
 }
 
-export default IRegistrationState;
+export default IState;

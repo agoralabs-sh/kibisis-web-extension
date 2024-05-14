@@ -1,60 +1,51 @@
 import {
-  Avatar,
   Button,
   ButtonProps,
   Center,
   HStack,
-  Icon,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { IoWalletOutline } from 'react-icons/io5';
+
+// components
+import AccountAvatar from '@extension/components/AccountAvatar';
 
 // constants
-import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
+import {
+  DEFAULT_GAP,
+  SIDEBAR_ITEM_HEIGHT,
+  SIDEBAR_MIN_WIDTH,
+} from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount } from '@extension/types';
+import type { ISideBarAccountItemProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-interface IProps {
-  account: IAccount;
-  active: boolean;
-  onClick: (id: string) => void;
-}
-
-const SideBarAccountItem: FC<IProps> = ({
+const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
   account,
   active,
   onClick,
-}: IProps) => {
+}) => {
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const subTextColor: string = useSubTextColor();
-  const activeBackground: string = useColorModeValue(
-    'gray.200',
-    'whiteAlpha.200'
-  );
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
+  const activeBackground = useColorModeValue('gray.200', 'whiteAlpha.200');
   // misc
-  const address: string = AccountService.convertPublicKeyToAlgorandAddress(
+  const address = AccountService.convertPublicKeyToAlgorandAddress(
     account.publicKey
   );
   const activeProps: Partial<ButtonProps> = active
@@ -88,17 +79,13 @@ const SideBarAccountItem: FC<IProps> = ({
         variant="ghost"
         w="full"
       >
-        <HStack m={0} p={0} spacing={0} w="full">
+        {/*icon*/}
+        <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
           <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
-            <Avatar
-              bg={primaryColor}
-              icon={
-                <Icon as={IoWalletOutline} color={primaryButtonTextColor} />
-              }
-              size="sm"
-            />
+            <AccountAvatar account={account} />
           </Center>
 
+          {/*name/address*/}
           {account.name ? (
             <VStack
               alignItems="flex-start"

@@ -7,10 +7,13 @@ import useSelectAccounts from '../accounts/useSelectAccounts';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount, IMainRootState } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IMainRootState,
+} from '@extension/types';
 
-export default function useSelectSendAssetFromAccount(): IAccount | null {
-  const accounts: IAccount[] = useSelectAccounts();
+export default function useSelectSendAssetFromAccount(): IAccountWithExtendedProps | null {
+  const accounts = useSelectAccounts();
   const fromAddress: string | null = useSelector<IMainRootState, string | null>(
     (state) => state.sendAssets.fromAddress
   );

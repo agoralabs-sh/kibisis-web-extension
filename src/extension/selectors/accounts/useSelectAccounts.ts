@@ -1,14 +1,17 @@
 import { useSelector } from 'react-redux';
 
 // types
-import type { IAccount, IMainRootState } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IMainRootState,
+} from '@extension/types';
 
 /**
  * Selects all accounts.
- * @returns {IAccount[]} all accounts.
+ * @returns {IAccountWithExtendedProps[]} all accounts.
  */
-export default function useSelectAccounts(): IAccount[] {
-  return useSelector<IMainRootState, IAccount[]>(
+export default function useSelectAccounts(): IAccountWithExtendedProps[] {
+  return useSelector<IMainRootState, IAccountWithExtendedProps[]>(
     (state) => state.accounts.items
   );
 }

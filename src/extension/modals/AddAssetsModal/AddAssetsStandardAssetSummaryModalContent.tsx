@@ -156,6 +156,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
           <HStack spacing={1} w="full">
             <ModalTextItem
               flexGrow={1}
+              isCode={true}
               label={`${t<string>('labels.assetId')}:`}
               value={asset.id}
             />

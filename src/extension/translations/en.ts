@@ -51,10 +51,15 @@ const translation: IResourceLanguage = {
     addAssetConfirming:
       'Please wait while we confirm the opt-in of the asset {{symbol}} with the network.',
     [`addAssetConfirming_${AssetTypeEnum.ARC0200}`]: 'Adding asset {{symbol}}.',
+    addAssetForWatchAccount: 'Enter an application ID (for ARC-200).',
+    addAssetForWatchAccountWarning:
+      'This is a watch account and only ARC-0200 assets can be added.',
     addAssetURI:
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
     addressDoesNotMatch: 'This address does not match the signer',
+    addWatchAccount: 'Add a watch account by providing a valid address.',
+    addWatchAccountComplete: `Press save to confirm adding the watch account.`,
     allowActionTracking:
       'By tracking certain actions, you can earn rewards. See <2>here</2> for more information.',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
@@ -102,6 +107,8 @@ const translation: IResourceLanguage = {
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
     enterSeedPhrase: `Add your seed phrase to import your account.`,
+    enterWatchAccountAddress:
+      'Enter the address of the account you would like to watch.',
     exportAccount: 'Select account to view the QR code to export your account.',
     extraPayment:
       'An extra network payment has been applied as this is the first time the recipient has interacted with the {{symbol}} asset.',
@@ -247,8 +254,10 @@ const translation: IResourceLanguage = {
     addAsset: 'Add Asset',
     addedAccount: 'Added Account!',
     addedAsset: 'Added Asset {{symbol}}!',
+    addWatchAccount: 'Add A Watch Account',
     allowMainNetConfirm: 'Allow MainNet Networks',
     analyticsAndTracking: 'Analytics & Tracking',
+    almostThere: 'Almost There...',
     assetDetails: 'Asset Details',
     authentication: 'Authentication',
     beta: 'Beta',
@@ -259,13 +268,14 @@ const translation: IResourceLanguage = {
     createNewAccount: 'Create A New Account',
     dangerZone: 'Danger Zone',
     developer: 'Developer',
+    enterAnAddress: 'Enter an address',
     enterYourSeedPhrase: 'Enter your seed phrase',
     factoryReset: 'Factory Reset',
     generateSeedPhrase: 'Generate seed phrase',
+    hiddenAsset: 'Asset {{symbol}} Hidden!',
     importAccount: 'Import Account',
     importAccountViaQRCode: 'Import An Account Via A QR Code',
     importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',
-    importAccountViaSeedPhraseComplete: 'Almost There...',
     nameYourAccount: 'Name your account',
     network: 'Network',
     newAccountComplete: 'Almost There...',
@@ -381,6 +391,7 @@ const translation: IResourceLanguage = {
     frozenAccountBalance: 'Frozen Account Balance',
     from: 'From',
     groupId: 'Group ID',
+    hideAsset: 'Hide Asset',
     id: 'ID',
     information: 'Information',
     innerTransactions: 'Inner Transactions',
@@ -443,6 +454,7 @@ const translation: IResourceLanguage = {
     voteKeyDilution: 'Key Dilution',
     voteLast: 'Voting Last Round',
     yes: 'Yes',
+    watch: 'Watch',
   },
   placeholders: {
     enterAddress: 'Enter address',
@@ -458,6 +470,7 @@ const translation: IResourceLanguage = {
     page_about: 'About',
     page_accountSetup: 'Choose How To Add An Account',
     page_advanced: 'Advanced',
+    page_addWatchAccount: 'Add A Watch Account',
     page_appearance: 'Appearance',
     page_changePassword: 'Change Password',
     page_createNewAccount: 'Create A New Account',

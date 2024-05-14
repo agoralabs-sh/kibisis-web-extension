@@ -7,8 +7,11 @@ import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
-import { OPTION_HEIGHT } from './constants';
+import {
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+  OPTION_HEIGHT,
+} from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -21,7 +24,10 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { theme } from '@extension/theme';
 
 // types
-import { IARC0200Asset, INetworkWithTransactionParams } from '@extension/types';
+import type {
+  IARC0200Asset,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 
 interface IProps {
   asset: IARC0200Asset;
@@ -37,17 +43,17 @@ const AssetSelectOption: FC<IProps> = ({
   network,
 }: IProps) => {
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const primaryColor: string = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const primaryColor = useColorModeValue(
+    theme.colors.primaryLight['100'],
+    theme.colors.primaryDark['100']
   );
-  const subTextColor: string = useSubTextColor();
+  const subTextColor = useSubTextColor();
   // state
   const [backgroundColor, setBackgroundColor] = useState<string>(
-    isSelected ? primaryColor : 'var(--chakra-colors-chakra-body-bg)'
+    isSelected ? primaryColor : BODY_BACKGROUND_COLOR
   );
   // misc
   const formattedDefaultTextColor: string = isSelected
@@ -64,7 +70,7 @@ const AssetSelectOption: FC<IProps> = ({
   };
   const handleMouseLeave = () => {
     if (!isSelected) {
-      setBackgroundColor('var(--chakra-colors-chakra-body-bg)');
+      setBackgroundColor(BODY_BACKGROUND_COLOR);
     }
   };
 
@@ -79,7 +85,7 @@ const AssetSelectOption: FC<IProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       p={DEFAULT_GAP / 2}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {/*icon*/}

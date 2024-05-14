@@ -14,10 +14,11 @@ import { useTranslation } from 'react-i18next';
 import {
   IoArrowDownOutline,
   IoArrowUpOutline,
+  IoEyeOffOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
@@ -58,21 +59,16 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 // selectors
 import {
   useSelectAccounts,
-  useSelectStandardAssetsFetching,
   useSelectSelectedNetwork,
   useSelectSettingsPreferredBlockExplorer,
+  useSelectStandardAssetsFetching,
 } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type {
-  IAccount,
-  IAppThunkDispatch,
-  IBlockExplorer,
-  INetwork,
-} from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
@@ -82,8 +78,8 @@ import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
   const { assetId } = useParams();
   const {
     isOpen: isShareAddressModalOpen,
@@ -96,11 +92,10 @@ const AssetPage: FC = () => {
     onClose: onMoreInformationClose,
   } = useDisclosure();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const fetchingAssets: boolean = useSelectStandardAssetsFetching();
-  const blockExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const accounts = useSelectAccounts();
+  const fetchingAssets = useSelectStandardAssetsFetching();
+  const blockExplorer = useSelectSettingsPreferredBlockExplorer();
+  const selectedNetwork = useSelectSelectedNetwork();
   // hooks
   const {
     account,
@@ -111,24 +106,26 @@ const AssetPage: FC = () => {
   } = useAssetPage({
     assetId: assetId || null,
   });
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const subTextColor = useSubTextColor();
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onMoreInformationOpen() : onMoreInformationClose();
   const handleReceiveClick = () => onShareAddressModalOpen();
   const handleSendClick = () => {
-    if (asset && account) {
-      dispatch(
-        initializeSendAsset({
-          fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
-            account.publicKey
-          ),
-          selectedAsset: asset,
-        })
-      );
+    if (!account || account.watchAccount || !asset) {
+      return;
     }
+
+    dispatch(
+      initializeSendAsset({
+        fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
+          account.publicKey
+        ),
+        selectedAsset: asset,
+      })
+    );
   };
   const handleRemoveAssetClick = () => {
     if (!account || !asset || !selectedNetwork) {
@@ -173,9 +170,7 @@ const AssetPage: FC = () => {
     <>
       {account && (
         <ShareAddressModal
-          address={AccountService.convertPublicKeyToAlgorandAddress(
-            account.publicKey
-          )}
+          address={accountAddress}
           isOpen={isShareAddressModalOpen}
           onClose={onShareAddressModalClose}
         />
@@ -252,18 +247,35 @@ const AssetPage: FC = () => {
               </Text>
             )}
 
-            {/*remove asset*/}
-            <Tooltip
-              label={t<string>('labels.removeAsset', { context: asset.type })}
-            >
-              <IconButton
-                aria-label="Remove Asset"
-                icon={<IoTrashOutline />}
-                onClick={handleRemoveAssetClick}
-                size="sm"
-                variant="ghost"
-              />
-            </Tooltip>
+            {/*hide arc-0200 asset*/}
+            {asset.type === AssetTypeEnum.ARC0200 && (
+              <Tooltip
+                label={t<string>('labels.hideAsset', { context: asset.type })}
+              >
+                <IconButton
+                  aria-label="Hide asset button"
+                  icon={<IoEyeOffOutline />}
+                  onClick={handleRemoveAssetClick}
+                  size="sm"
+                  variant="ghost"
+                />
+              </Tooltip>
+            )}
+
+            {/*remove standard asset*/}
+            {!account.watchAccount && asset.type === AssetTypeEnum.Standard && (
+              <Tooltip
+                label={t<string>('labels.removeAsset', { context: asset.type })}
+              >
+                <IconButton
+                  aria-label="Remove Asset"
+                  icon={<IoTrashOutline />}
+                  onClick={handleRemoveAssetClick}
+                  size="sm"
+                  variant="ghost"
+                />
+              </Tooltip>
+            )}
           </HStack>
 
           <VStack spacing={0} w="full">
@@ -564,15 +576,18 @@ const AssetPage: FC = () => {
           spacing={DEFAULT_GAP / 3}
           w="full"
         >
-          <Button
-            leftIcon={<IoArrowUpOutline />}
-            onClick={handleSendClick}
-            size="md"
-            variant="solid"
-            w="full"
-          >
-            {t<string>('buttons.send')}
-          </Button>
+          {!account.watchAccount && (
+            <Button
+              leftIcon={<IoArrowUpOutline />}
+              onClick={handleSendClick}
+              size="md"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.send')}
+            </Button>
+          )}
+
           <Button
             leftIcon={<IoArrowDownOutline />}
             onClick={handleReceiveClick}

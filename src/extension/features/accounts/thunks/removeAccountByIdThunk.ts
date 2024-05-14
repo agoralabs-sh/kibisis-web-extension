@@ -9,21 +9,20 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import { ILogger } from '@common/types';
-import { IAccount, IMainRootState } from '@extension/types';
+import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
 
 const removeAccountByIdThunk: AsyncThunk<
   string, // return
   string, // args
-  Record<string, never>
-> = createAsyncThunk<string, string, { state: IMainRootState }>(
+  IBaseAsyncThunkConfig<IMainRootState>
+> = createAsyncThunk<string, string, IBaseAsyncThunkConfig<IMainRootState>>(
   AccountsThunkEnum.RemoveAccountById,
   async (id, { getState }) => {
-    const logger: ILogger = getState().system.logger;
-    const accountService: AccountService = new AccountService({
+    const logger = getState().system.logger;
+    const accountService = new AccountService({
       logger,
     });
-    const account: IAccount | null = await accountService.getAccountById(id);
+    const account = await accountService.getAccountById(id);
     let privateKeyService: PrivateKeyService;
 
     if (!account) {

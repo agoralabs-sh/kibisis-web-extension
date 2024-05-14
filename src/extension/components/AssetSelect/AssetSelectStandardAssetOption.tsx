@@ -7,8 +7,11 @@ import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 
 // constants
-import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
-import { OPTION_HEIGHT } from './constants';
+import {
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+  OPTION_HEIGHT,
+} from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -44,8 +47,8 @@ const AssetSelectStandardAssetOption: FC<IProps> = ({
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const primaryColor: string = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
+    theme.colors.primaryLight['100'],
+    theme.colors.primaryDark['100']
   );
   const subTextColor: string = useSubTextColor();
   // state
@@ -188,7 +191,7 @@ const AssetSelectStandardAssetOption: FC<IProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       p={DEFAULT_GAP / 2}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {/*icon*/}

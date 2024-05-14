@@ -278,7 +278,7 @@ export default class ClientMessageHandler {
     message: ClientRequestMessage<IEnableParams>,
     originTabId: number
   ): Promise<void> {
-    const _functionName: string = 'handleEnableRequestMessage';
+    const _functionName = 'handleEnableRequestMessage';
     let accounts: IAccount[];
     let session: ISession | null;
     let sessionFilterPredicate: ((value: ISession) => boolean) | undefined;

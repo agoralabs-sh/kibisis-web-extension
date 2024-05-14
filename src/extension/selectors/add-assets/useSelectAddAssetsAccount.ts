@@ -4,10 +4,13 @@ import { useSelector } from 'react-redux';
 import useSelectAccounts from '../accounts/useSelectAccounts';
 
 // types
-import { IAccount, IMainRootState } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IMainRootState,
+} from '@extension/types';
 
-export default function useSelectAddAssetsAccount(): IAccount | null {
-  const accounts: IAccount[] = useSelectAccounts();
+export default function useSelectAddAssetsAccount(): IAccountWithExtendedProps | null {
+  const accounts = useSelectAccounts();
   const accountId: string | null = useSelector<IMainRootState, string | null>(
     (state) => state.addAssets.accountId
   );

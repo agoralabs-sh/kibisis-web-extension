@@ -42,8 +42,8 @@ import qrCodePlaceholderImage from '@extension/images/placeholder_qr_code.png';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectActiveAccount,
+  useSelectNonWatchAccounts,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSettings,
@@ -54,41 +54,42 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { ILogger } from '@common/types';
-import type { IAccount, IAppThunkDispatch, ISettings } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IAppThunkDispatch,
+} from '@extension/types';
 
 // utils
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
 
 const ExportAccountPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
   const {
     isOpen: isPasswordConfirmModalOpen,
     onClose: onPasswordConfirmModalClose,
     onOpen: onPasswordConfirmModalOpen,
   } = useDisclosure();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const activeAccount: IAccount | null = useSelectActiveAccount();
-  const logger: ILogger = useSelectLogger();
-  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const settings: ISettings = useSelectSettings();
+  const accounts = useSelectNonWatchAccounts();
+  const activeAccount = useSelectActiveAccount();
+  const logger = useSelectLogger();
+  const passwordLockPassword = useSelectPasswordLockPassword();
+  const settings = useSelectSettings();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
   // states
   const [password, setPassword] = useState<string | null>(null);
-  const [selectedAccount, setSelectAccount] = useState<IAccount | null>(
-    activeAccount
-  );
+  const [selectedAccount, setSelectedAccount] =
+    useState<IAccountWithExtendedProps | null>(null);
   const [svgString, setSvgString] = useState<string | null>(null);
   const [uri, setURI] = useState<string | null>(null);
   // misc
-  const qrCodeSize: number = 300;
+  const qrCodeSize = 300;
   const createQRCode = async () => {
-    const _functionName: string = 'createQRCode';
-    const privateService: PrivateKeyService = new PrivateKeyService({
+    const _functionName = 'createQRCode';
+    const privateService = new PrivateKeyService({
       logger,
       passwordTag: browser.runtime.id,
     });
@@ -159,8 +160,8 @@ const ExportAccountPage: FC = () => {
     }
   };
   // handlers
-  const handleOnAccountSelect = (account: IAccount) =>
-    setSelectAccount(account);
+  const handleOnAccountSelect = (account: IAccountWithExtendedProps) =>
+    setSelectedAccount(account);
   const handleOnConfirmModalConfirm = (_password: string) => {
     onPasswordConfirmModalClose();
     setPassword(_password);
@@ -181,6 +182,20 @@ const ExportAccountPage: FC = () => {
       (async () => await createQRCode())();
     }
   }, [selectedAccount, password]);
+  useEffect(() => {
+    let _selectedAccount: IAccountWithExtendedProps;
+
+    if (activeAccount && !selectedAccount) {
+      _selectedAccount = activeAccount;
+
+      // if the active account is a watch account, get the first non-watch account
+      if (_selectedAccount.watchAccount) {
+        _selectedAccount = accounts[0];
+      }
+
+      setSelectedAccount(_selectedAccount);
+    }
+  }, [activeAccount]);
 
   return (
     <>

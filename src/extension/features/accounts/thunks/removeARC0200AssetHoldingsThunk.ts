@@ -10,9 +10,7 @@ import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
   IAccountInformation,
   IARC0200Asset,
   IBaseAsyncThunkConfig,
@@ -26,6 +24,8 @@ import type {
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import isWatchAccount from '@extension/utils/isWatchAccount';
+import { findAccountWithoutExtendedProps } from '../utils';
 
 const removeARC0200AssetHoldingsThunk: AsyncThunk<
   IUpdateAssetHoldingsResult, // return
@@ -38,11 +38,10 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
 >(
   AccountsThunkEnum.RemoveARC0200AssetHoldings,
   async ({ accountId, assets, genesisHash }, { getState, rejectWithValue }) => {
-    const logger: ILogger = getState().system.logger;
-    const networks: INetwork[] = getState().networks.items;
-    const accounts: IAccount[] = getState().accounts.items;
-    let account: IAccount | null =
-      accounts.find((value) => value.id === accountId) || null;
+    const logger = getState().system.logger;
+    const networks = getState().networks.items;
+    const accounts = getState().accounts.items;
+    let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountService: AccountService;
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
@@ -103,7 +102,10 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     await accountService.saveAccounts([account]);
 
     return {
-      account,
+      account: {
+        ...account,
+        watchAccount: await isWatchAccount({ account, logger }),
+      },
     };
   }
 );

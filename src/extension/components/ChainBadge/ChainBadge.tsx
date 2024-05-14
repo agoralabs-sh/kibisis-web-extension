@@ -1,4 +1,4 @@
-import { ColorMode, HStack, Tag, TagLabel } from '@chakra-ui/react';
+import { HStack, Tag, TagLabel } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
 // enums
@@ -8,40 +8,42 @@ import { NetworkTypeEnum } from '@extension/enums';
 import { useSelectSettingsColorMode } from '@extension/selectors';
 
 // types
-import { INetwork } from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
-interface IProps {
-  network: INetwork;
-  size?: string;
-}
-
-const ChainBadge: FC<IProps> = ({ network, size = 'sm' }: IProps) => {
-  const colorMode: ColorMode = useSelectSettingsColorMode();
-  const renderChainTag = () => (
-    <Tag
-      colorScheme={network.chakraTheme}
-      size={size}
-      variant={colorMode === 'dark' ? 'solid' : 'outline'}
-    >
-      {createIconFromDataUri(network.nativeCurrency.iconUrl, {
-        color: network.chakraTheme,
-        h: 3,
-        mr: 2,
-        w: 3,
-      })}
-      <TagLabel>{network.canonicalName}</TagLabel>
-    </Tag>
+const ChainBadge: FC<IProps> = ({ network, size = 'sm' }) => {
+  // selectors
+  const colorMode = useSelectSettingsColorMode();
+  // misc
+  const nativeCurrencyIcon = createIconFromDataUri(
+    network.nativeCurrency.iconUrl,
+    {
+      color: network.chakraTheme,
+      h: 3,
+      mr: 2,
+      w: 3,
+    }
   );
 
   switch (network.type) {
     case NetworkTypeEnum.Beta:
       return (
-        <HStack alignItems="center" justifyContent="flex-start" spacing={1}>
-          {renderChainTag()}
+        <HStack alignItems="center" justifyContent="flex-start" spacing={0}>
           <Tag
+            borderLeftRadius="full"
+            colorScheme={network.chakraTheme}
+            size={size}
+            variant={colorMode === 'dark' ? 'solid' : 'outline'}
+          >
+            {nativeCurrencyIcon}
+
+            <TagLabel>{network.canonicalName}</TagLabel>
+          </Tag>
+
+          <Tag
+            borderRightRadius="full"
             colorScheme="blue"
             size={size}
             variant={colorMode === 'dark' ? 'solid' : 'subtle'}
@@ -52,9 +54,20 @@ const ChainBadge: FC<IProps> = ({ network, size = 'sm' }: IProps) => {
       );
     case NetworkTypeEnum.Test:
       return (
-        <HStack alignItems="center" justifyContent="flex-start" spacing={1}>
-          {renderChainTag()}
+        <HStack alignItems="center" justifyContent="flex-start" spacing={0}>
           <Tag
+            borderLeftRadius="full"
+            colorScheme={network.chakraTheme}
+            size={size}
+            variant={colorMode === 'dark' ? 'solid' : 'outline'}
+          >
+            {nativeCurrencyIcon}
+
+            <TagLabel>{network.canonicalName}</TagLabel>
+          </Tag>
+
+          <Tag
+            borderRightRadius="full"
             colorScheme="yellow"
             size={size}
             variant={colorMode === 'dark' ? 'solid' : 'subtle'}
@@ -65,7 +78,18 @@ const ChainBadge: FC<IProps> = ({ network, size = 'sm' }: IProps) => {
       );
     case NetworkTypeEnum.Stable:
     default:
-      return renderChainTag();
+      return (
+        <Tag
+          borderRadius="full"
+          colorScheme={network.chakraTheme}
+          size={size}
+          variant={colorMode === 'dark' ? 'solid' : 'outline'}
+        >
+          {nativeCurrencyIcon}
+
+          <TagLabel>{network.canonicalName}</TagLabel>
+        </Tag>
+      );
   }
 };
 

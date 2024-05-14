@@ -9,13 +9,11 @@ import { AccountsThunkEnum } from '@extension/enums';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import {
   IAccount,
   IActiveAccountDetails,
   IBaseAsyncThunkConfig,
   IMainRootState,
-  INetworkWithTransactionParams,
 } from '@extension/types';
 import type {
   IFetchAccountsFromStoragePayload,
@@ -24,6 +22,7 @@ import type {
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import isWatchAccount from '@extension/utils/isWatchAccount';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
@@ -37,14 +36,16 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   IFetchAccountsFromStoragePayload | undefined,
   IBaseAsyncThunkConfig<IMainRootState>
 >(AccountsThunkEnum.FetchAccountsFromStorage, async (options, { getState }) => {
-  const logger: ILogger = getState().system.logger;
-  const networks: INetworkWithTransactionParams[] = getState().networks.items;
-  const online: boolean = getState().system.online;
-  const accountService: AccountService = new AccountService({
+  const logger = getState().system.logger;
+  const networks = getState().networks.items;
+  const online = getState().system.online;
+  const accountService = new AccountService({
     logger,
   });
-  const selectedNetwork: INetworkWithTransactionParams | null =
-    selectNetworkFromSettings(networks, getState().settings);
+  const selectedNetwork = selectNetworkFromSettings(
+    networks,
+    getState().settings
+  );
   let accounts: IAccount[];
   let activeAccountDetails: IActiveAccountDetails | null;
   let encodedGenesisHash: string;
@@ -124,7 +125,12 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   }
 
   return {
-    accounts,
+    accounts: await Promise.all(
+      accounts.map(async (account) => ({
+        ...account,
+        watchAccount: await isWatchAccount({ account, logger }),
+      }))
+    ),
     activeAccountDetails,
   };
 });

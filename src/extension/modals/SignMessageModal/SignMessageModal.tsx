@@ -1,7 +1,6 @@
 import {
   ARC0027MethodCanceledError,
   ARC0027MethodEnum,
-  ISignMessageParams,
 } from '@agoralabs-sh/avm-web-provider';
 import {
   Avatar,
@@ -18,14 +17,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
-import React, {
-  FC,
-  KeyboardEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -55,8 +47,8 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectAccountsFetching,
+  useSelectNonWatchAccounts,
   useSelectLogger,
   useSelectSessions,
   useSelectSignMessageRequest,
@@ -70,13 +62,9 @@ import ActionTrackingService from '@extension/services/ActionTrackingService';
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
+  IAccountWithExtendedProps,
   IAppThunkDispatch,
-  IClientRequestEventPayload,
-  IEvent,
-  ISession,
 } from '@extension/types';
 import type { ISignMessageModalProps } from './types';
 
@@ -86,19 +74,16 @@ import signBytes from '@extension/utils/signBytes';
 
 const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const fetching: boolean = useSelectAccountsFetching();
-  const logger: ILogger = useSelectLogger();
-  const sessions: ISession[] = useSelectSessions();
-  const signMessageRequest: IEvent<
-    IClientRequestEventPayload<ISignMessageParams>
-  > | null = useSelectSignMessageRequest();
+  const accounts = useSelectNonWatchAccounts();
+  const fetching = useSelectAccountsFetching();
+  const logger = useSelectLogger();
+  const sessions = useSelectSessions();
+  const signMessageRequest = useSelectSignMessageRequest();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -107,13 +92,17 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
+  const subTextColor = useSubTextColor();
+  const textBackgroundColor = useTextBackgroundColor();
   // state
-  const [authorizedAccounts, setAuthorizedAccounts] = useState<IAccount[]>([]);
-  const [selectedSigner, setSelectedSigner] = useState<IAccount | null>(null);
+  const [authorizedAccounts, setAuthorizedAccounts] = useState<
+    IAccountWithExtendedProps[]
+  >([]);
+  const [selectedSigner, setSelectedSigner] =
+    useState<IAccountWithExtendedProps | null>(null);
   // handlers
-  const handleAccountSelect = (account: IAccount) => setSelectedSigner(account);
+  const handleAccountSelect = (account: IAccountWithExtendedProps) =>
+    setSelectedSigner(account);
   const handleCancelClick = () => {
     if (signMessageRequest) {
       dispatch(
@@ -230,14 +219,15 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
     }
 
     return (
-      <VStack spacing={4} w="full">
+      <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/*account select*/}
-        <VStack spacing={2} w="full">
+        <VStack spacing={DEFAULT_GAP / 3} w="full">
           {signMessageRequest.payload.message.params.signer ? (
             <>
               <Text textAlign="left" w="full">{`${t<string>(
                 'labels.addressToSign'
               )}:`}</Text>
+
               <AccountItem account={selectedSigner} />
             </>
           ) : (
@@ -245,6 +235,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
               <Text textAlign="left" w="full">{`${t<string>(
                 'labels.authorizedAddresses'
               )}:`}</Text>
+
               <AccountSelect
                 accounts={authorizedAccounts}
                 onSelect={handleAccountSelect}
@@ -255,7 +246,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
         </VStack>
 
         {/*message*/}
-        <VStack spacing={2} w="full">
+        <VStack spacing={DEFAULT_GAP / 3} w="full">
           <Text textAlign="left" w="full">{`${t<string>(
             'labels.message'
           )}:`}</Text>
@@ -273,11 +264,10 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       passwordInputRef.current.focus();
     }
   }, []);
-  // when we have accounts, sessions and the request, update the authored accounts and get the signer, if it exists and is authorized
+  // when we have accounts, sessions and the request, update the authorized accounts
   useEffect(() => {
-    let _authorizedAccounts: IAccount[];
+    let _authorizedAccounts: IAccountWithExtendedProps[];
     let authorizedAddresses: string[];
-    let signerAccount: IAccount | null = null;
 
     if (accounts.length >= 0 && sessions.length > 0 && signMessageRequest) {
       authorizedAddresses = getAuthorizedAddressesForHost(
@@ -291,18 +281,26 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
             AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
         )
       );
+
+      setAuthorizedAccounts(_authorizedAccounts);
+    }
+  }, [accounts, sessions, signMessageRequest]);
+  // once we have some authorized accounts, get the signer from the request or use the first account
+  useEffect(() => {
+    let signerAccount: IAccountWithExtendedProps | null = null;
+
+    if (authorizedAccounts.length > 0) {
       signerAccount =
-        _authorizedAccounts.find(
+        authorizedAccounts.find(
           (value) =>
             AccountService.convertPublicKeyToAlgorandAddress(
               value.publicKey
             ) === signMessageRequest?.payload.message.params?.signer
         ) || null;
 
-      setAuthorizedAccounts(_authorizedAccounts);
-      setSelectedSigner(signerAccount || _authorizedAccounts[0]);
+      setSelectedSigner(signerAccount || authorizedAccounts[0]);
     }
-  }, [accounts, sessions, signMessageRequest]);
+  }, [authorizedAccounts]);
 
   return (
     <Modal
@@ -319,7 +317,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           {signMessageRequest && (
-            <VStack alignItems="center" spacing={4} w="full">
+            <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
               <Avatar
                 name={
                   signMessageRequest.payload.message.clientInfo.appName ||
@@ -334,7 +332,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
               <VStack
                 alignItems="center"
                 justifyContent="flex-start"
-                spacing={2}
+                spacing={DEFAULT_GAP / 3}
               >
                 <Heading color={defaultTextColor} size="md" textAlign="center">
                   {signMessageRequest.payload.message.clientInfo.appName ||
@@ -368,7 +366,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
 
         <ModalFooter p={DEFAULT_GAP}>
-          <VStack alignItems="flex-start" spacing={4} w="full">
+          <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
             <PasswordInput
               error={passwordError}
               hint={t<string>('captions.mustEnterPasswordToSign')}
@@ -378,7 +376,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
               value={password}
             />
 
-            <HStack spacing={4} w="full">
+            <HStack spacing={DEFAULT_GAP / 3} w="full">
               <Button
                 onClick={handleCancelClick}
                 size="lg"

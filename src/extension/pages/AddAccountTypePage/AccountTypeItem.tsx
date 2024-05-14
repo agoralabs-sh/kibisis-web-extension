@@ -26,7 +26,7 @@ const AccountTypeItem: FC<IItemProps> = ({
   //renders
   const renderContent = () => {
     return (
-      <HStack alignItems="center" minH={32} spacing={DEFAULT_GAP / 2} w="full">
+      <HStack alignItems="center" minH={28} spacing={DEFAULT_GAP / 2} w="full">
         {/*icon*/}
         <Icon as={icon} color={defaultTextColor} h={10} w={10} />
 

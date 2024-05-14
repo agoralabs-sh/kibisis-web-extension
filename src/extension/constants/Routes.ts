@@ -1,6 +1,7 @@
 export const ABOUT_ROUTE: string = '/about';
 export const ACCOUNTS_ROUTE: string = '/accounts';
 export const ADD_ACCOUNT_ROUTE: string = '/add-account';
+export const ADD_WATCH_ACCOUNT_ROUTE: string = '/add-watch-account';
 export const ADVANCED_ROUTE: string = '/advanced';
 export const APPEARANCE_ROUTE: string = '/appearance';
 export const ASSETS_ROUTE: string = '/assets';

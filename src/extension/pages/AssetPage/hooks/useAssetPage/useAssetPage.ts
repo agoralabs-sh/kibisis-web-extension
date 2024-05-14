@@ -31,13 +31,10 @@ export default function useAssetPage({
   assetId,
 }: IUseAssetPageOptions): IUseAssetPageState {
   // selectors
-  const account: IAccount | null = useSelectActiveAccount();
-  const accountInformation: IAccountInformation | null =
-    useSelectActiveAccountInformation();
-  const arc200Assets: IARC0200Asset[] =
-    useSelectARC0200AssetsBySelectedNetwork();
-  const standardAssets: IStandardAsset[] =
-    useSelectStandardAssetsBySelectedNetwork();
+  const account = useSelectActiveAccount();
+  const accountInformation = useSelectActiveAccountInformation();
+  const arc200Assets = useSelectARC0200AssetsBySelectedNetwork();
+  const standardAssets = useSelectStandardAssetsBySelectedNetwork();
   // state
   const [asset, setAsset] = useState<IAssetTypes | null>(null);
   const [assetHolding, setAssetHolding] = useState<

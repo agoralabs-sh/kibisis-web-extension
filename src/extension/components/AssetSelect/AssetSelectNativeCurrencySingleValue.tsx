@@ -5,8 +5,7 @@ import React, { FC } from 'react';
 import AssetAvatar from '@extension/components/AssetAvatar';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
-import { OPTION_HEIGHT } from './constants';
+import { DEFAULT_GAP, OPTION_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';

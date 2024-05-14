@@ -1,6 +1,9 @@
 // types
-import { IAccount, IActiveAccountDetails } from '@extension/types';
-import IAccountUpdate from './IAccountUpdate';
+import type {
+  IAccountWithExtendedProps,
+  IActiveAccountDetails,
+} from '@extension/types';
+import type IAccountUpdate from './IAccountUpdate';
 
 /**
  * @property {IActiveAccountDetails | null} activeAccountDetails - details of the active account.
@@ -10,13 +13,13 @@ import IAccountUpdate from './IAccountUpdate';
  * @property {boolean} saving - true when the account is being saved to storage.
  * @property {IAccountUpdate[]} updatingAccounts - a list of accounts being updated.
  */
-interface IAccountsState {
+interface IState {
   activeAccountDetails: IActiveAccountDetails | null;
   fetching: boolean;
-  items: IAccount[];
+  items: IAccountWithExtendedProps[];
   pollingId: number | null;
   saving: boolean;
   updatingAccounts: IAccountUpdate[];
 }
 
-export default IAccountsState;
+export default IState;

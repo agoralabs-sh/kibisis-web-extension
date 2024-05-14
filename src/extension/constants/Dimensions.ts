@@ -1,13 +1,14 @@
-export const ACCOUNT_PAGE_HEADER_ITEM_HEIGHT: number = 10; // 2.5rem - 40px
-export const ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT: number = 60; // px
-export const DEFAULT_GAP: number = 6;
-export const DEFAULT_POPUP_HEIGHT: number = 740;
-export const DEFAULT_POPUP_WIDTH: number = 400;
-export const MODAL_ITEM_HEIGHT: number = 10; // 8 = 2.5rem = 40px
-export const PAGE_ITEM_HEIGHT: number = 10; // 8 = 2.5rem = 40px
-export const SIDEBAR_BORDER_WIDTH: number = 1;
-export const SIDEBAR_ITEM_HEIGHT: number = 12;
-export const SETTINGS_ITEM_HEIGHT: number = 16;
-export const SIDEBAR_MIN_WIDTH: number = 40;
-export const SIDEBAR_MAX_WIDTH: number = 250;
-export const TAB_ITEM_HEIGHT: number = 16;
+export const ACCOUNT_PAGE_HEADER_ITEM_HEIGHT = 10; // 2.5rem - 40px
+export const ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT = 60; // px
+export const DEFAULT_GAP = 6;
+export const DEFAULT_POPUP_HEIGHT = 740;
+export const DEFAULT_POPUP_WIDTH = 400;
+export const MODAL_ITEM_HEIGHT = 10; // 10 = 2.5rem = 40px
+export const OPTION_HEIGHT = '57px';
+export const PAGE_ITEM_HEIGHT = 10; // 10 = 2.5rem = 40px
+export const SIDEBAR_BORDER_WIDTH = 1;
+export const SIDEBAR_ITEM_HEIGHT = 12;
+export const SETTINGS_ITEM_HEIGHT = 16;
+export const SIDEBAR_MIN_WIDTH = 40;
+export const SIDEBAR_MAX_WIDTH = 250;
+export const TAB_ITEM_HEIGHT = 16;
