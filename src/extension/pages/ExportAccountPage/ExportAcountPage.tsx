@@ -42,8 +42,8 @@ import qrCodePlaceholderImage from '@extension/images/placeholder_qr_code.png';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectActiveAccount,
-  useSelectNonWatchAccounts,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSettings,
@@ -61,6 +61,7 @@ import type {
 
 // utils
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
+import createWatchAccountImportURI from '@extension/utils/createWatchAccountImportURI';
 
 const ExportAccountPage: FC = () => {
   const { t } = useTranslation();
@@ -71,7 +72,7 @@ const ExportAccountPage: FC = () => {
     onOpen: onPasswordConfirmModalOpen,
   } = useDisclosure();
   // selectors
-  const accounts = useSelectNonWatchAccounts();
+  const accounts = useSelectAccounts();
   const activeAccount = useSelectActiveAccount();
   const logger = useSelectLogger();
   const passwordLockPassword = useSelectPasswordLockPassword();
@@ -87,7 +88,7 @@ const ExportAccountPage: FC = () => {
   const [uri, setURI] = useState<string | null>(null);
   // misc
   const qrCodeSize = 300;
-  const createQRCode = async () => {
+  const createQRCodeForPrivateKey = async () => {
     const _functionName = 'createQRCode';
     const privateService = new PrivateKeyService({
       logger,
@@ -159,9 +160,60 @@ const ExportAccountPage: FC = () => {
       return;
     }
   };
+  const createQRCodeForWatchAccount = async () => {
+    const _functionName = 'createQRCodeForWatchAccount';
+    let _svgString: string;
+    let _uri: string;
+
+    if (!selectedAccount) {
+      logger.debug(
+        `${ExportAccountPage.name}#${_functionName}: no account selected`
+      );
+
+      return;
+    }
+
+    try {
+      _uri = createWatchAccountImportURI({
+        address: AccountService.convertPublicKeyToAlgorandAddress(
+          selectedAccount.publicKey
+        ),
+        assets: [],
+      });
+      _svgString = await toString(_uri, {
+        type: 'svg',
+        width: qrCodeSize,
+      });
+
+      setSvgString(_svgString);
+      setURI(_uri);
+    } catch (error) {
+      logger.error(`${ExportAccountPage.name}#${_functionName}:`, error);
+
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
+
+      setSvgString(null);
+      setURI(null);
+
+      return;
+    }
+  };
   // handlers
-  const handleOnAccountSelect = (account: IAccountWithExtendedProps) =>
+  const handleOnAccountSelect = async (account: IAccountWithExtendedProps) => {
+    setSvgString(null);
+    setURI(null);
     setSelectedAccount(account);
+  };
   const handleOnConfirmModalConfirm = (_password: string) => {
     onPasswordConfirmModalClose();
     setPassword(_password);
@@ -178,22 +230,18 @@ const ExportAccountPage: FC = () => {
   };
 
   useEffect(() => {
-    if (password && selectedAccount) {
-      (async () => await createQRCode())();
+    if (selectedAccount && selectedAccount.watchAccount) {
+      (async () => await createQRCodeForWatchAccount())();
+    }
+  }, [selectedAccount]);
+  useEffect(() => {
+    if (password && selectedAccount && !selectedAccount.watchAccount) {
+      (async () => await createQRCodeForPrivateKey())();
     }
   }, [selectedAccount, password]);
   useEffect(() => {
-    let _selectedAccount: IAccountWithExtendedProps;
-
     if (activeAccount && !selectedAccount) {
-      _selectedAccount = activeAccount;
-
-      // if the active account is a watch account, get the first non-watch account
-      if (_selectedAccount.watchAccount) {
-        _selectedAccount = accounts[0];
-      }
-
-      setSelectedAccount(_selectedAccount);
+      setSelectedAccount(activeAccount);
     }
   }, [activeAccount]);
 

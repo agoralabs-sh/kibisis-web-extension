@@ -1,4 +1,5 @@
 enum ARC0300QueryEnum {
+  Address = 'address',
   Asset = 'asset',
   Encoding = 'encoding',
   Fee = 'fee',

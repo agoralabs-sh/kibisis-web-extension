@@ -41,7 +41,7 @@ export default function createAccountImportURI({
     ARC0300PathEnum.Import
   }?${ARC0300QueryEnum.Encoding}=${encoding}&${
     ARC0300QueryEnum.PrivateKey
-  }=${encodedPrivateKey}${
+  }=${encodedPrivateKey.toLowerCase()}${
     assets && assets.length > 0
       ? `&${ARC0300QueryEnum.Asset}=${assets.join(',')}`
       : ''
