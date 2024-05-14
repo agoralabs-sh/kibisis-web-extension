@@ -27,10 +27,11 @@ import { ARC0300EncodingEnum } from '@extension/enums';
 import { theme } from '@extension/theme';
 
 // types
-import { IAccountImportAsset } from './types';
+import type { IAccountImportAsset } from './types';
 
 // utils
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
+import createWatchAccountImportURI from '@extension/utils/createWatchAccountImportURI';
 
 const ImportAccountViaQRCodeTab: FC = () => {
   const toast: CreateToastFnReturn = useToast({
@@ -40,6 +41,7 @@ const ImportAccountViaQRCodeTab: FC = () => {
   });
   // states
   const [account, setAccount] = useState<Account>(generateAccount());
+  const [addAsWatchAccount, setAddAsWatchAccount] = useState<boolean>(false);
   const [assets, setAssets] = useState<IAccountImportAsset[]>([
     {
       appId: '6779767',
@@ -53,12 +55,16 @@ const ImportAccountViaQRCodeTab: FC = () => {
     },
   ]);
   const [svgString, setSvgString] = useState<string | null>(null);
+  const [uri, setURI] = useState<string | null>(null);
   const [encoding, setEncoding] = useState<ARC0300EncodingEnum>(
     ARC0300EncodingEnum.Hexadecimal
   );
   // misc
   const qrCodeSize: number = 350;
   // handlers
+  const handleAddAsWatchAccountCheckChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => setAddAsWatchAccount(event.target.checked);
   const handleAssetCheckChange =
     (appId: string) => (event: ChangeEvent<HTMLInputElement>) => {
       setAssets(
@@ -90,21 +96,33 @@ const ImportAccountViaQRCodeTab: FC = () => {
 
   useEffect(() => {
     (async () => {
+      let _assets: string[];
+      let _svg: string;
+      let _uri: string;
+
       try {
-        const svg: string = await toString(
-          createAccountImportURI({
-            assets: assets
-              .filter((value) => value.checked)
-              .map((value) => value.appId),
-            encoding,
-            privateKey: account.sk,
-          }),
-          {
-            type: 'svg',
-            width: qrCodeSize,
-          }
-        );
-        setSvgString(svg);
+        _assets = assets
+          .filter((value) => value.checked)
+          .map((value) => value.appId);
+        _uri = addAsWatchAccount
+          ? createWatchAccountImportURI({
+              address: account.addr,
+              assets: _assets,
+            })
+          : createAccountImportURI({
+              assets: _assets,
+              encoding,
+              privateKey: account.sk,
+            });
+
+        setURI(_uri);
+
+        _svg = await toString(_uri, {
+          type: 'svg',
+          width: qrCodeSize,
+        });
+
+        setSvgString(_svg);
       } catch (error) {
         toast({
           description: error.message,
@@ -113,22 +131,39 @@ const ImportAccountViaQRCodeTab: FC = () => {
         });
       }
     })();
-  }, [account, assets, encoding]);
+  }, [account, addAsWatchAccount, assets, encoding]);
 
   return (
     <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
-        {/*encoding*/}
-        <HStack spacing={2} w="full">
-          <Text>Encoding:</Text>
+        {/*add as a watch account checkbox*/}
+        <HStack alignItems="center" spacing={2} w="full">
+          <Checkbox
+            isChecked={addAsWatchAccount}
+            onChange={handleAddAsWatchAccountCheckChange}
+            size="lg"
+          />
 
-          <Select onChange={handleEncodingTypeChange} value={encoding}>
-            <option value={ARC0300EncodingEnum.Hexadecimal}>Hexadecimal</option>
-            <option value={ARC0300EncodingEnum.Base64URLSafe}>
-              Base64 (URL Safe)
-            </option>
-          </Select>
+          <Text size="md" w="full">
+            Add as a watch account?
+          </Text>
         </HStack>
+
+        {/*encoding*/}
+        {!addAsWatchAccount && (
+          <HStack spacing={2} w="full">
+            <Text>Encoding:</Text>
+
+            <Select onChange={handleEncodingTypeChange} value={encoding}>
+              <option value={ARC0300EncodingEnum.Hexadecimal}>
+                Hexadecimal
+              </option>
+              <option value={ARC0300EncodingEnum.Base64URLSafe}>
+                Base64 (URL Safe)
+              </option>
+            </Select>
+          </HStack>
+        )}
 
         {/*assets to add*/}
         <VStack alignItems="flex-start" spacing={4} w="full">
@@ -182,13 +217,7 @@ const ImportAccountViaQRCodeTab: FC = () => {
           <Text>Value:</Text>
 
           <Code fontSize="sm" wordBreak="break-word">
-            {createAccountImportURI({
-              assets: assets
-                .filter((value) => value.checked)
-                .map((value) => value.appId),
-              encoding,
-              privateKey: account.sk,
-            })}
+            {uri}
           </Code>
         </HStack>
 
