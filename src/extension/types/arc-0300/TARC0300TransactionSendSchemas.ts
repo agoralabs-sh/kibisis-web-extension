@@ -1,0 +1,9 @@
+// types
+import type IARC0300OfflineKeyRegistrationTransactionSendSchema from './IARC0300OfflineKeyRegistrationTransactionSendSchema';
+import type IARC0300OnlineKeyRegistrationTransactionSendSchema from './IARC0300OnlineKeyRegistrationTransactionSendSchema';
+
+type TARC0300TransactionSendSchemas =
+  | IARC0300OfflineKeyRegistrationTransactionSendSchema
+  | IARC0300OnlineKeyRegistrationTransactionSendSchema;
+
+export default TARC0300TransactionSendSchemas;

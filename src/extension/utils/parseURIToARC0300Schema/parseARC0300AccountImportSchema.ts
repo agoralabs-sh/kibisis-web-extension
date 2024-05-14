@@ -21,6 +21,7 @@ export default function parseARC0300AccountImportSchema(
 ): IARC0300AccountImportSchema | null {
   const _functionName: string = 'parseARC0300AccountImportSchema';
   const logger: ILogger | undefined = options?.logger;
+  let addressParam: string | null;
   let assets: string[] = [];
   let assetParam: string | null;
   let encoding: ARC0300EncodingEnum;
@@ -33,12 +34,39 @@ export default function parseARC0300AccountImportSchema(
     return null;
   }
 
+  assetParam = searchParams.get(ARC0300QueryEnum.Asset);
+
+  // if we have an asset param, get the list of assets
+  if (assetParam) {
+    assets = assetParam.split(',').filter((value) => isNumericString(value));
+  }
+
   privateKeyParam = searchParams.get(ARC0300QueryEnum.PrivateKey);
 
   if (!privateKeyParam) {
-    logger?.debug(`${_functionName}: no private key param found`);
+    logger?.debug(
+      `${_functionName}: no private key param found, attempting to parse watch account`
+    );
 
-    return null;
+    addressParam = searchParams.get(ARC0300QueryEnum.Address);
+
+    if (!addressParam) {
+      logger?.debug(
+        `${_functionName}: no address param found and no private key param found`
+      );
+
+      return null;
+    }
+
+    return {
+      authority: ARC0300AuthorityEnum.Account,
+      paths: [ARC0300PathEnum.Import],
+      query: {
+        [ARC0300QueryEnum.Address]: addressParam,
+        [ARC0300QueryEnum.Asset]: assets,
+      },
+      scheme,
+    };
   }
 
   encodingParam = searchParams.get(ARC0300QueryEnum.Encoding);
@@ -62,13 +90,6 @@ export default function parseARC0300AccountImportSchema(
       );
 
       return null;
-  }
-
-  assetParam = searchParams.get(ARC0300QueryEnum.Asset);
-
-  // if we have an asset param, get the list of assets
-  if (assetParam) {
-    assets = assetParam.split(',').filter((value) => isNumericString(value));
   }
 
   return {

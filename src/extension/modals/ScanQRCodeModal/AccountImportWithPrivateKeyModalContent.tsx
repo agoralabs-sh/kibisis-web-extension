@@ -8,18 +8,11 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, {
-  FC,
-  KeyboardEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import AssetAvatar from '@extension/components/AssetAvatar';
@@ -80,14 +73,11 @@ import ActionTrackingService from '@extension/services/ActionTrackingService';
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IARC0300AccountImportSchema,
-  IActiveAccountDetails,
+  IARC0300AccountImportWithPrivateKeyQuery,
   IAppThunkDispatch,
-  INetwork,
-  ISettings,
 } from '@extension/types';
 import type { IModalContentProps } from './types';
 
@@ -96,23 +86,23 @@ import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddr
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
-const AccountImportModalContent: FC<
-  IModalContentProps<IARC0300AccountImportSchema>
+const AccountImportWithPrivateKeyModalContent: FC<
+  IModalContentProps<
+    IARC0300AccountImportSchema<IARC0300AccountImportWithPrivateKeyQuery>
+  >
 > = ({ onComplete, onPreviousClick, schema }) => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
-  const activeAccountDetails: IActiveAccountDetails | null =
-    useSelectActiveAccountDetails();
-  const logger: ILogger = useSelectLogger();
-  const network: INetwork | null = useSelectSelectedNetwork();
-  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const settings: ISettings = useSelectSettings();
+  const activeAccountDetails = useSelectActiveAccountDetails();
+  const logger = useSelectLogger();
+  const network = useSelectSelectedNetwork();
+  const passwordLockPassword = useSelectPasswordLockPassword();
+  const settings = useSelectSettings();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
   const {
     assets,
     loading,
@@ -126,7 +116,7 @@ const AccountImportModalContent: FC<
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
   const subTextColor = useSubTextColor();
   // states
   const [address, setAddress] = useState<string | null>(null);
@@ -149,7 +139,7 @@ const AccountImportModalContent: FC<
       // validate the password input
       if (validatePassword()) {
         logger.debug(
-          `${AccountImportModalContent.name}#${_functionName}: password not valid`
+          `${AccountImportWithPrivateKeyModalContent.name}#${_functionName}: password not valid`
         );
 
         return;
@@ -162,7 +152,7 @@ const AccountImportModalContent: FC<
 
     if (!_password) {
       logger.debug(
-        `${AccountImportModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
+        `${AccountImportWithPrivateKeyModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
       );
 
       dispatch(
@@ -186,7 +176,7 @@ const AccountImportModalContent: FC<
 
     if (!privateKey) {
       logger.debug(
-        `${AccountImportModalContent.name}#${_functionName}: failed to decode the private key`
+        `${AccountImportWithPrivateKeyModalContent.name}#${_functionName}: failed to decode the private key`
       );
 
       dispatch(
@@ -237,7 +227,7 @@ const AccountImportModalContent: FC<
           break;
         case ErrorCodeEnum.PrivateKeyAlreadyExistsError:
           logger.debug(
-            `${AccountImportModalContent.name}#${_functionName}: account already exists, carry on`
+            `${AccountImportWithPrivateKeyModalContent.name}#${_functionName}: account already exists, carry on`
           );
 
           // clean up and close
@@ -349,7 +339,7 @@ const AccountImportModalContent: FC<
       {/*body*/}
       <ModalBody display="flex" px={DEFAULT_GAP}>
         <VStack alignItems="center" flexGrow={1} spacing={DEFAULT_GAP} w="full">
-          <Text color={defaultTextColor} fontSize="md" textAlign="center">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="center">
             {t<string>('captions.importAccount')}
           </Text>
 
@@ -388,7 +378,7 @@ const AccountImportModalContent: FC<
                   key={`account-import-add-asset-${index}`}
                   label={`${value.name}:`}
                   value={
-                    <HStack spacing={2}>
+                    <HStack spacing={DEFAULT_GAP / 3}>
                       {/*icon*/}
                       <AssetAvatar
                         asset={value}
@@ -423,7 +413,7 @@ const AccountImportModalContent: FC<
 
       {/*footer*/}
       <ModalFooter p={DEFAULT_GAP}>
-        <VStack alignItems="flex-start" spacing={4} w="full">
+        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
           {!settings.security.enablePasswordLock && !passwordLockPassword && (
             <PasswordInput
               error={passwordError}
@@ -435,7 +425,7 @@ const AccountImportModalContent: FC<
             />
           )}
 
-          <HStack spacing={4} w="full">
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
             {/*previous button*/}
             <Button
               leftIcon={<IoArrowBackOutline />}
@@ -464,4 +454,4 @@ const AccountImportModalContent: FC<
   );
 };
 
-export default AccountImportModalContent;
+export default AccountImportWithPrivateKeyModalContent;
