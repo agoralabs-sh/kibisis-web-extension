@@ -78,9 +78,7 @@ import { theme } from '@extension/theme';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
-  IARC0200Asset,
   IARC0300AssetAddSchema,
-  INetwork,
 } from '@extension/types';
 import type { IModalContentProps } from './types';
 
@@ -117,8 +115,8 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
   );
   const [saving, setSaving] = useState<boolean>(false);
   // misc
-  const asset: IARC0200Asset | null = assets[0] || null;
-  const network: INetwork | null =
+  const asset = assets[0] || null;
+  const network =
     networks.find(
       (value) =>
         value.genesisHash ===
@@ -131,7 +129,7 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
     : new BigNumber('0');
   // handlers
   const handleAddClick = async () => {
-    const _functionName: string = 'handleAddClick';
+    const _functionName = 'handleAddClick';
     let result: IUpdateAssetHoldingsResult;
 
     if (!account || !asset || !network) {
@@ -242,7 +240,7 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
       {/*body*/}
       <ModalBody display="flex" px={DEFAULT_GAP}>
         <VStack alignItems="center" flexGrow={1} spacing={DEFAULT_GAP} w="full">
-          <Text color={defaultTextColor} fontSize="md" textAlign="center">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="center">
             {t<string>('captions.addAssetURI')}
           </Text>
 
@@ -387,8 +385,8 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
 
       {/*footer*/}
       <ModalFooter p={DEFAULT_GAP}>
-        <VStack alignItems="flex-start" spacing={4} w="full">
-          <HStack spacing={4} w="full">
+        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
             {/*previous button*/}
             <Button
               leftIcon={<IoArrowBackOutline />}

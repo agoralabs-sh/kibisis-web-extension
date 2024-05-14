@@ -330,7 +330,7 @@ const KeyRegistrationTransactionSendModal: FC<
       {/*body*/}
       <ModalBody display="flex" px={DEFAULT_GAP}>
         <VStack alignItems="center" flexGrow={1} spacing={DEFAULT_GAP} w="full">
-          <Text color={defaultTextColor} fontSize="md" textAlign="center">
+          <Text color={defaultTextColor} fontSize="s," textAlign="center">
             {t<string>('captions.keyRegistrationURI', {
               status: isOnlineKeyRegistrationTransaction(schema)
                 ? 'online'

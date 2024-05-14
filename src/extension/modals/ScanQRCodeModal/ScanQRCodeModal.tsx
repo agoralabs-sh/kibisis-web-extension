@@ -8,12 +8,16 @@ import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeVia
 import ScanQRCodeViaScreenCaptureModalContent from '@extension/components/ScanQRCodeViaScreenCaptureModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
-import AccountImportModalContent from './AccountImportModalContent';
+import AccountImportWithPrivateKeyModalContent from './AccountImportWithPrivateKeyModalContent';
 import AssetAddModalContent from './AssetAddModalContent';
 import KeyRegistrationTransactionSendModal from './KeyRegistrationTransactionSendModal';
 
 // enums
-import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
+import {
+  ARC0300AuthorityEnum,
+  ARC0300PathEnum,
+  ARC0300QueryEnum,
+} from '@extension/enums';
 
 // selectors
 import {
@@ -25,6 +29,8 @@ import {
 // types
 import {
   IARC0300AccountImportSchema,
+  IARC0300AccountImportWithAddressQuery,
+  IARC0300AccountImportWithPrivateKeyQuery,
   IARC0300AssetAddSchema,
   IARC0300BaseSchema,
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
@@ -35,6 +41,7 @@ import {
 
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
+import AccountImportWithAddressModalContent from '@extension/modals/ScanQRCodeModal/AccountImportWithAddressModalContent';
 
 const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   // selectors
@@ -92,13 +99,39 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                     ARC0300PathEnum.Import
                   ))
               ) {
-                return (
-                  <AccountImportModalContent
-                    onComplete={handleClose}
-                    onPreviousClick={handlePreviousClick}
-                    schema={arc0300Schema as IARC0300AccountImportSchema}
-                  />
-                );
+                // if it is with a private key, add a normal account (password required)
+                if (
+                  Object.keys(arc0300Schema.query).includes(
+                    ARC0300QueryEnum.PrivateKey
+                  )
+                ) {
+                  return (
+                    <AccountImportWithPrivateKeyModalContent
+                      onComplete={handleClose}
+                      onPreviousClick={handlePreviousClick}
+                      schema={
+                        arc0300Schema as IARC0300AccountImportSchema<IARC0300AccountImportWithPrivateKeyQuery>
+                      }
+                    />
+                  );
+                }
+
+                // if it is with an address, add a watch account
+                if (
+                  Object.keys(arc0300Schema.query).includes(
+                    ARC0300QueryEnum.Address
+                  )
+                ) {
+                  return (
+                    <AccountImportWithAddressModalContent
+                      onComplete={handleClose}
+                      onPreviousClick={handlePreviousClick}
+                      schema={
+                        arc0300Schema as IARC0300AccountImportSchema<IARC0300AccountImportWithAddressQuery>
+                      }
+                    />
+                  );
+                }
               }
             }
 
