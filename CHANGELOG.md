@@ -1,3 +1,10 @@
+# [1.17.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.1...v1.17.0-beta.2) (2024-05-14)
+
+
+### Features
+
+* export watch accounts ([#231](https://github.com/agoralabs-sh/kibisis-web-extension/issues/231)) ([68a2769](https://github.com/agoralabs-sh/kibisis-web-extension/commit/68a27696545efa0a1ff5b1549bc0df6f1972cd6d))
+
 # [1.17.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0...v1.17.0-beta.1) (2024-05-14)
 
 
