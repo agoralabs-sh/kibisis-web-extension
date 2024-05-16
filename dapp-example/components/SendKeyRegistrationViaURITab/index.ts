@@ -1,1 +1,1 @@
-export { default } from './SendKeyRegistrationViaQRCodeTab';
+export { default } from './SendKeyRegistrationViaURITab';

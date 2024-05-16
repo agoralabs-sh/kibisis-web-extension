@@ -5,9 +5,7 @@ import {
   CreateToastFnReturn,
   Flex,
   HStack,
-  Icon,
   Input,
-  Link,
   Select,
   TabPanel,
   Text,
@@ -138,17 +136,6 @@ const SendKeyRegistrationViaURITab: FC<IProps> = ({ account, network }) => {
             />
           </Flex>
         )}
-
-        {/*uri link*/}
-        <HStack alignItems="center" spacing={2} w="full">
-          <Text>Link:</Text>
-
-          <Link href={uri} wordBreak="break-word">
-            {uri}
-          </Link>
-
-          <Icon as={IoOpenOutline} />
-        </HStack>
 
         {/*value*/}
         <HStack spacing={2} w="full">
