@@ -8,7 +8,7 @@ import { INetworkWithTransactionParams } from '@extension/types';
  * @property {boolean} saving - true when the transaction params are being saved to storage.
  * @property {boolean} updating - true when updating transaction params for the selected network.
  */
-interface INetworksState {
+interface IState {
   fetching: boolean;
   items: INetworkWithTransactionParams[];
   pollingId: number | null;
@@ -16,4 +16,4 @@ interface INetworksState {
   updating: boolean;
 }
 
-export default INetworksState;
+export default IState;
