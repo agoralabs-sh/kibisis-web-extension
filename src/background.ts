@@ -62,6 +62,9 @@ import createLogger from '@common/utils/createLogger';
   browser.alarms.onAlarm.addListener(
     providerActionListener.onAlarm.bind(providerActionListener)
   );
+  browser.omnibox.onInputEntered.addListener(
+    providerActionListener.onOmniboxInputEntered.bind(providerActionListener)
+  );
   browser.windows.onFocusChanged.addListener(
     providerActionListener.onFocusChanged.bind(providerActionListener)
   );

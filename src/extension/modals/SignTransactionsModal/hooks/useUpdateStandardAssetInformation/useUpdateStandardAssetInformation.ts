@@ -19,13 +19,10 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAppThunkDispatch,
-  IClientRequestEventPayload,
-  IEvent,
+  IClientRequestEvent,
   INetwork,
-  IStandardAsset,
 } from '@extension/types';
 
 // utils
@@ -34,33 +31,29 @@ import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransactio
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
 export default function useUpdateStandardAssetInformation(
-  signTransactionsRequest: IEvent<
-    IClientRequestEventPayload<ISignTransactionsParams>
-  > | null
+  event: IClientRequestEvent<ISignTransactionsParams> | null
 ): void {
-  const _functionName: string = 'useUpdateStandardAssetsForTransactions';
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const _functionName = 'useUpdateStandardAssetsForTransactions';
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const logger: ILogger = useSelectLogger();
-  const networks: INetwork[] = useSelectNetworks();
-  const standardAssets: Record<string, IStandardAsset[]> | null =
-    useSelectStandardAssets();
+  const logger = useSelectLogger();
+  const networks = useSelectNetworks();
+  const standardAssets = useSelectStandardAssets();
 
   useEffect(() => {
     let decodedUnsignedTransactions: Transaction[];
     let errorMessage: string;
 
     if (
-      signTransactionsRequest &&
-      signTransactionsRequest.payload.message.params &&
+      event &&
+      event.payload.message.params &&
       standardAssets &&
       networks.length > 0
     ) {
       try {
-        decodedUnsignedTransactions =
-          signTransactionsRequest.payload.message.params.txns.map((value) =>
-            decodeUnsignedTransaction(decodeBase64(value.txn))
-          );
+        decodedUnsignedTransactions = event.payload.message.params.txns.map(
+          (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
+        );
       } catch (error) {
         errorMessage = `failed to decode transactions: ${error.message}`;
 
@@ -72,7 +65,7 @@ export default function useUpdateStandardAssetInformation(
               message: errorMessage,
               providerId: __PROVIDER_ID__,
             }),
-            event: signTransactionsRequest,
+            event: event,
             stxns: null,
           })
         );
@@ -117,5 +110,5 @@ export default function useUpdateStandardAssetInformation(
         }
       );
     }
-  }, [signTransactionsRequest, standardAssets, networks]);
+  }, [event, standardAssets, networks]);
 }

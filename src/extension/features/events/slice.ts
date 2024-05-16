@@ -9,7 +9,7 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '@extension/enums';
 
 // types
-import type { IClientRequestEventPayload, IEvent } from '@extension/types';
+import type { IClientRequestEvent } from '@extension/types';
 import type { IState } from './types';
 
 // utils
@@ -21,25 +21,19 @@ const slice = createSlice({
   reducers: {
     setEnableRequest: (
       state: Draft<IState>,
-      action: PayloadAction<IEvent<
-        IClientRequestEventPayload<IEnableParams>
-      > | null>
+      action: PayloadAction<IClientRequestEvent<IEnableParams> | null>
     ) => {
       state.enableRequest = action.payload;
     },
     setSignMessageRequest: (
       state: Draft<IState>,
-      action: PayloadAction<IEvent<
-        IClientRequestEventPayload<ISignMessageParams>
-      > | null>
+      action: PayloadAction<IClientRequestEvent<ISignMessageParams> | null>
     ) => {
       state.signMessageRequest = action.payload;
     },
     setSignTransactionsRequest: (
       state: Draft<IState>,
-      action: PayloadAction<IEvent<
-        IClientRequestEventPayload<ISignTransactionsParams>
-      > | null>
+      action: PayloadAction<IClientRequestEvent<ISignTransactionsParams> | null>
     ) => {
       state.signTransactionsRequest = action.payload;
     },

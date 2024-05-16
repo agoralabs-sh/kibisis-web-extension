@@ -1,7 +1,7 @@
 // features
-import type { IState } from '@extension/features/accounts';
+import type { IState as IAccountsState } from '@extension/features/accounts';
 import type { IState as IEventsState } from '@extension/features/events';
-import type { IState } from '@extension/features/networks';
+import type { IState as INetworksState } from '@extension/features/networks';
 import type { ISessionsState } from '@extension/features/sessions';
 import type { ISettingsState } from '@extension/features/settings';
 import type { IStandardAssetsState } from '@extension/features/standard-assets';
@@ -10,9 +10,9 @@ import type { IStandardAssetsState } from '@extension/features/standard-assets';
 import type IBaseRootState from './IBaseRootState';
 
 interface IBackgroundRootState extends IBaseRootState {
-  accounts: IState;
+  accounts: IAccountsState;
   events: IEventsState;
-  networks: IState;
+  networks: INetworksState;
   sessions: ISessionsState;
   settings: ISettingsState;
   standardAssets: IStandardAssetsState;

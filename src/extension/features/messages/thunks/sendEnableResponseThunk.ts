@@ -20,7 +20,6 @@ import { ClientResponseMessage } from '@common/messages';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IBaseAsyncThunkConfig,
@@ -39,8 +38,8 @@ const sendEnableResponseThunk: AsyncThunk<
 >(
   MessagesThunkEnum.SendEnableResponse,
   async ({ error, event, session }, { dispatch, getState }) => {
-    const accounts: IAccount[] = getState().accounts.items;
-    const logger: ILogger = getState().system.logger;
+    const accounts = getState().accounts.items;
+    const logger = getState().system.logger;
 
     logger.debug(
       `${MessagesThunkEnum.SendEnableResponse}: sending "${ARC0027MethodEnum.Enable}" message to the content script`

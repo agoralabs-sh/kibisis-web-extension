@@ -9,7 +9,7 @@ import StorageManager from '../StorageManager';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
-import type { IEvent } from '@extension/types';
+import type { TEvents } from '@extension/types';
 
 export default class EventQueueService {
   // private variables
@@ -27,33 +27,34 @@ export default class EventQueueService {
 
   /**
    * Gets all the events.
-   * @returns {Promise<IEvent[]>} all the events.
+   * @returns {Promise<TEvents[]>} all the events.
    */
-  public async getAll(): Promise<IEvent[]> {
-    const items: Record<string, unknown> =
-      await this.storageManager.getAllItems();
+  public async getAll(): Promise<TEvents[]> {
+    const items = await this.storageManager.getAllItems();
 
-    return (items[EVENT_QUEUE_ITEM_KEY] as IEvent[]) || [];
+    return (items[EVENT_QUEUE_ITEM_KEY] as TEvents[]) || [];
   }
 
   /**
    * Gets the events for a given type.
    * @param {EventTypeEnum} type - the event type.
-   * @returns {Promise<IEvent[]>} a promise that resolves to all the events by type.
+   * @returns {Promise<TEvents[]>} a promise that resolves to all the events by type.
    */
-  public async getByType(type: EventTypeEnum): Promise<IEvent[]> {
-    const events: IEvent[] = await this.getAll();
+  public async getByType<Type extends TEvents>(
+    type: EventTypeEnum
+  ): Promise<Type[]> {
+    const events = await this.getAll();
 
-    return events.filter((value) => value.type === type);
+    return events.filter((value) => value.type === type) as Type[];
   }
 
   /**
    * Gets the event for a given ID.
    * @param {string} id - the event ID.
-   * @returns {Promise<IEvent | null>} the event or null.
+   * @returns {Promise<TEvents | null>} the event or null.
    */
-  public async getById(id: string): Promise<IEvent | null> {
-    const events: IEvent[] = await this.getAll();
+  public async getById(id: string): Promise<TEvents | null> {
+    const events = await this.getAll();
 
     return events.find((value) => value.id === id) || null;
   }
@@ -63,7 +64,7 @@ export default class EventQueueService {
    * @param {string} id - the event ID.
    */
   public async removeById(id: string): Promise<void> {
-    const messages: IEvent[] = await this.getAll();
+    const messages = await this.getAll();
 
     await this.storageManager.setItems({
       [EVENT_QUEUE_ITEM_KEY]: messages.filter((value) => value.id !== id),
@@ -72,14 +73,13 @@ export default class EventQueueService {
 
   /**
    * Saves an event to the event queue. If an event with the same ID exists, it will replace it.
-   * @param {IEvent} event - the event to add or replace.
-   * @returns {IEvent} the message that was added to the queue.
+   * @param {Event extends TEvents} event - the event to add or replace.
+   * @returns {Promise<Event extends TEvents>} a promise that resolves to the event that was added to the queue.
    */
-  public async save(event: IEvent): Promise<IEvent> {
+  public async save<Event extends TEvents>(event: Event): Promise<Event> {
+    const events = await this.getAll();
     let existingIndex: number;
-    let events: IEvent[];
 
-    events = await this.getAll();
     existingIndex = events.findIndex((value) => value.id === event.id);
 
     // the message exists, replace it

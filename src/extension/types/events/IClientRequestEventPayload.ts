@@ -3,7 +3,7 @@ import type { TRequestParams } from '@agoralabs-sh/avm-web-provider';
 // messages
 import { ClientRequestMessage } from '@common/messages';
 
-interface IClientRequestEventPayload<Params = TRequestParams> {
+interface IClientRequestEventPayload<Params extends TRequestParams> {
   message: ClientRequestMessage<Params>;
   originTabId: number;
 }

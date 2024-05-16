@@ -24,8 +24,7 @@ import AccountService from '@extension/services/AccountService';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
-  IClientRequestEventPayload,
-  IEvent,
+  IClientRequestEvent,
   ISession,
 } from '@extension/types';
 
@@ -35,9 +34,7 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 
 export default function useAuthorizedAccounts(
-  signTransactionsRequest: IEvent<
-    IClientRequestEventPayload<ISignTransactionsParams>
-  > | null
+  event: IClientRequestEvent<ISignTransactionsParams> | null
 ): IAccountWithExtendedProps[] {
   const _functionName = 'useAuthorizedAccounts';
   const dispatch = useDispatch<IAppThunkDispatch>();
@@ -57,15 +54,11 @@ export default function useAuthorizedAccounts(
     let filteredSessions: ISession[];
     let genesisHashes: string[];
 
-    if (
-      signTransactionsRequest &&
-      signTransactionsRequest.payload.message.params
-    ) {
+    if (event && event.payload.message.params) {
       try {
-        decodedUnsignedTransactions =
-          signTransactionsRequest.payload.message.params.txns.map((value) =>
-            decodeUnsignedTransaction(decodeBase64(value.txn))
-          );
+        decodedUnsignedTransactions = event.payload.message.params.txns.map(
+          (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
+        );
       } catch (error) {
         errorMessage = `failed to decode transactions: ${error.message}`;
 
@@ -77,7 +70,7 @@ export default function useAuthorizedAccounts(
               message: errorMessage,
               providerId: __PROVIDER_ID__,
             }),
-            event: signTransactionsRequest,
+            event: event,
             stxns: null,
           })
         );
@@ -94,7 +87,7 @@ export default function useAuthorizedAccounts(
         genesisHashes.some((value) => value === session.genesisHash)
       );
       authorizedAddresses = getAuthorizedAddressesForHost(
-        signTransactionsRequest.payload.message.clientInfo.host,
+        event.payload.message.clientInfo.host,
         filteredSessions
       );
 
@@ -111,7 +104,7 @@ export default function useAuthorizedAccounts(
         )
       );
     }
-  }, [accounts, sessions, signTransactionsRequest]);
+  }, [accounts, sessions, event]);
 
   return authorizedAccounts;
 }

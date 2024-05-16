@@ -8,13 +8,13 @@ import { MessagesThunkEnum } from '@extension/enums';
 import { ProviderFactoryResetMessage } from '@common/messages';
 
 // types
-import { IMainRootState } from '@extension/types';
+import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
 
 const sendResetFactoryThunk: AsyncThunk<
   void, // return
   undefined, // args
-  Record<string, never>
-> = createAsyncThunk<void, undefined, { state: IMainRootState }>(
+  IBaseAsyncThunkConfig
+> = createAsyncThunk<void, undefined, IBaseAsyncThunkConfig>(
   MessagesThunkEnum.SendFactoryReset,
   async () => {
     await browser.runtime.sendMessage(new ProviderFactoryResetMessage());

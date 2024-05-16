@@ -16,7 +16,6 @@ import { removeEventByIdThunk } from '@extension/features/events';
 import { ClientResponseMessage } from '@common/messages';
 
 // types
-import type { ILogger } from '@common/types';
 import type { IBaseAsyncThunkConfig } from '@extension/types';
 import type { ISignMessageResponseThunkPayload } from '../types';
 
@@ -31,7 +30,7 @@ const sendSignMessageResponseThunk: AsyncThunk<
 >(
   MessagesThunkEnum.SendSignMessageResponse,
   async ({ error, event, signature, signer }, { dispatch, getState }) => {
-    const logger: ILogger = getState().system.logger;
+    const logger = getState().system.logger;
 
     logger.debug(
       `${MessagesThunkEnum.SendSignMessageResponse}: sending "${ARC0027MethodEnum.SignMessage}" message to content script`
