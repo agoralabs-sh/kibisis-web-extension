@@ -1,10 +1,13 @@
 import {
   Box,
+  Button,
   Code,
   CreateToastFnReturn,
   Flex,
   HStack,
+  Icon,
   Input,
+  Link,
   Select,
   TabPanel,
   Text,
@@ -25,7 +28,7 @@ import type { IProps } from './types';
 // utils
 import { createKeyRegistrationTransactionURI } from '../../utils';
 
-const SendKeyRegistrationViaQRCodeTab: FC<IProps> = ({ account, network }) => {
+const SendKeyRegistrationViaURITab: FC<IProps> = ({ account, network }) => {
   const toast: CreateToastFnReturn = useToast({
     duration: 3000,
     isClosable: true,
@@ -39,6 +42,26 @@ const SendKeyRegistrationViaQRCodeTab: FC<IProps> = ({ account, network }) => {
   // misc
   const qrCodeSize = 350;
   // handlers
+  const handleCopyOmniboxURIClick = async () => {
+    if (uri) {
+      await window.navigator.clipboard.writeText(`kibisis ${uri}`);
+
+      toast({
+        status: 'success',
+        title: 'Copied Omnibox URI!',
+      });
+    }
+  };
+  const handleCopyURIClick = async () => {
+    if (uri) {
+      await window.navigator.clipboard.writeText(uri);
+
+      toast({
+        status: 'success',
+        title: 'Copied URI!',
+      });
+    }
+  };
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
   const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) =>
@@ -116,6 +139,17 @@ const SendKeyRegistrationViaQRCodeTab: FC<IProps> = ({ account, network }) => {
           </Flex>
         )}
 
+        {/*uri link*/}
+        <HStack alignItems="center" spacing={2} w="full">
+          <Text>Link:</Text>
+
+          <Link href={uri} wordBreak="break-word">
+            {uri}
+          </Link>
+
+          <Icon as={IoOpenOutline} />
+        </HStack>
+
         {/*value*/}
         <HStack spacing={2} w="full">
           <Text>Value:</Text>
@@ -124,9 +158,33 @@ const SendKeyRegistrationViaQRCodeTab: FC<IProps> = ({ account, network }) => {
             {uri}
           </Code>
         </HStack>
+
+        <HStack justifyContent="center" spacing={2} w="full">
+          {/*copy uri button*/}
+          <Button
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
+            minW={250}
+            onClick={handleCopyURIClick}
+            size="lg"
+          >
+            Copy URI
+          </Button>
+
+          {/*copy omnibox uri button*/}
+          <Button
+            borderRadius={theme.radii['3xl']}
+            colorScheme="primaryLight"
+            minW={250}
+            onClick={handleCopyOmniboxURIClick}
+            size="lg"
+          >
+            Copy Omnibox URI
+          </Button>
+        </HStack>
       </VStack>
     </TabPanel>
   );
 };
 
-export default SendKeyRegistrationViaQRCodeTab;
+export default SendKeyRegistrationViaURITab;
