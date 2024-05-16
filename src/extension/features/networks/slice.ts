@@ -12,8 +12,8 @@ import {
 } from './thunks';
 
 // types
-import { INetworkWithTransactionParams } from '@extension/types';
-import { INetworksState } from './types';
+import type { INetworkWithTransactionParams } from '@extension/types';
+import type { IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -24,7 +24,7 @@ const slice = createSlice({
     builder.addCase(
       fetchTransactionParamsFromStorageThunk.fulfilled,
       (
-        state: INetworksState,
+        state: IState,
         action: PayloadAction<INetworkWithTransactionParams[]>
       ) => {
         state.items = action.payload;
@@ -33,27 +33,27 @@ const slice = createSlice({
     );
     builder.addCase(
       fetchTransactionParamsFromStorageThunk.pending,
-      (state: INetworksState) => {
+      (state: IState) => {
         state.fetching = true;
       }
     );
     builder.addCase(
       fetchTransactionParamsFromStorageThunk.rejected,
-      (state: INetworksState) => {
+      (state: IState) => {
         state.fetching = false;
       }
     );
     /** start polling for transaction params **/
     builder.addCase(
       startPollingForTransactionsParamsThunk.fulfilled,
-      (state: INetworksState, action: PayloadAction<number>) => {
+      (state: IState, action: PayloadAction<number>) => {
         state.pollingId = action.payload;
       }
     );
     /** stop polling for transaction params **/
     builder.addCase(
       stopPollingForTransactionsParamsThunk.fulfilled,
-      (state: INetworksState) => {
+      (state: IState) => {
         state.pollingId = null;
       }
     );
@@ -61,7 +61,7 @@ const slice = createSlice({
     builder.addCase(
       updateTransactionParamsForSelectedNetworkThunk.fulfilled,
       (
-        state: INetworksState,
+        state: IState,
         action: PayloadAction<INetworkWithTransactionParams | null>
       ) => {
         if (action.payload) {
@@ -78,13 +78,13 @@ const slice = createSlice({
     );
     builder.addCase(
       updateTransactionParamsForSelectedNetworkThunk.pending,
-      (state: INetworksState) => {
+      (state: IState) => {
         state.updating = true;
       }
     );
     builder.addCase(
       updateTransactionParamsForSelectedNetworkThunk.rejected,
-      (state: INetworksState) => {
+      (state: IState) => {
         state.updating = false;
       }
     );

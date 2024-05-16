@@ -1,1 +1,1 @@
-export type { default as INetworksState } from './INetworksState';
+export type { default as IState } from './IState';

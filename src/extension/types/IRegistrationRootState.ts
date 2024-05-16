@@ -1,5 +1,5 @@
 // features
-import type { INetworksState } from '@extension/features/networks';
+import type { IState as INetworksState } from '@extension/features/networks';
 import type { INotificationsState } from '@extension/features/notifications';
 import type { IState as RegistrationState } from '@extension/features/registration';
 import type { ISettingsState } from '@extension/features/settings';
