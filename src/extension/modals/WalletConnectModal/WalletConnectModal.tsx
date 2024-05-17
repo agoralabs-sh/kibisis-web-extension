@@ -22,7 +22,8 @@ import { Rings } from 'react-loader-spinner';
 // components
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
-import SessionRequestHeader from '@extension/components/SessionRequestHeader';
+import ChainBadge from '@extension/components/ChainBadge';
+import ClientHeader from '@extension/components/ClientHeader';
 import WalletConnectBannerIcon from '@extension/components/WalletConnectBannerIcon';
 
 // constants
@@ -369,15 +370,24 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
       >
         <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
           {sessionProposal ? (
-            <SessionRequestHeader
-              caption={t<string>('captions.enableRequest')}
-              description={sessionProposal.params.proposer.metadata.description}
-              host={sessionProposal.params.proposer.metadata.url}
-              iconUrl={sessionProposal.params.proposer.metadata.icons[0]}
-              isWalletConnect={true}
-              name={sessionProposal.params.proposer.metadata.name}
-              network={network || undefined}
-            />
+            <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
+              <ClientHeader
+                description={
+                  sessionProposal.params.proposer.metadata.description
+                }
+                iconUrl={sessionProposal.params.proposer.metadata.icons[0]}
+                host={sessionProposal.params.proposer.metadata.url}
+                name={sessionProposal.params.proposer.metadata.name}
+              />
+
+              {/*network*/}
+              {network && <ChainBadge network={network} />}
+
+              {/*caption*/}
+              <Text color={subTextColor} fontSize="sm" textAlign="center">
+                {t('captions.enableRequest')}
+              </Text>
+            </VStack>
           ) : (
             <WalletConnectBannerIcon h={9} w={60} />
           )}

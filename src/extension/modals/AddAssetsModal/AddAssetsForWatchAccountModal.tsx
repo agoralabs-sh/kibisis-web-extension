@@ -197,7 +197,7 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   const handleClose = () => {
     setQuery('');
     setQueryARC0200AssetDispatch(null);
-    onClose();
+    onClose && onClose();
   };
   const handleKeyUp = () => {
     // if the query is empty, clear assets
@@ -374,7 +374,7 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
     <Modal
       isOpen={isOpen}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >

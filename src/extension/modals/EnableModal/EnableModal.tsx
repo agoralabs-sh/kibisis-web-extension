@@ -1,6 +1,5 @@
 import { ARC0027MethodCanceledError } from '@agoralabs-sh/avm-web-provider';
 import {
-  Avatar,
   Checkbox,
   HStack,
   Modal,
@@ -15,22 +14,24 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
-import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
 import AccountAvatar from '@extension/components/AccountAvatar';
 import Button from '@extension/components/Button';
+import ChainBadge from '@extension/components/ChainBadge';
+import ClientHeader, {
+  ClientHeaderSkeleton,
+} from '@extension/components/ClientHeader';
 import EmptyState from '@extension/components/EmptyState';
-import SessionRequestHeader, {
-  SessionRequestHeaderSkeleton,
-} from '@extension/components/SessionRequestHeader';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
+import { removeEventByIdThunk } from '@extension/features/events';
 import { sendEnableResponseThunk } from '@extension/features/messages';
 import { setSessionThunk } from '@extension/features/sessions';
 
@@ -38,13 +39,12 @@ import { setSessionThunk } from '@extension/features/sessions';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+import useEnableModal from './hooks/useEnableModal';
 
 // selectors
 import {
   useSelectAccountsFetching,
   useSelectNonWatchAccounts,
-  useSelectEnableRequest,
-  useSelectNetworks,
   useSelectSessionsSaving,
 } from '@extension/selectors';
 
@@ -57,7 +57,6 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAppThunkDispatch,
-  INetwork,
   IModalProps,
   ISession,
 } from '@extension/types';
@@ -65,38 +64,41 @@ import type {
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import mapSessionFromEnableRequest from '@extension/utils/mapSessionFromEnableRequest';
-import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
 const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts = useSelectNonWatchAccounts();
-  const enableRequestEvent = useSelectEnableRequest();
   const fetching = useSelectAccountsFetching();
-  const networks = useSelectNetworks();
   const saving = useSelectSessionsSaving();
   // hooks
   const defaultTextColor = useDefaultTextColor();
+  const {
+    authorizedAddresses,
+    event,
+    network,
+    setAuthorizedAddresses,
+    setNetwork,
+  } = useEnableModal();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
-  // state
-  const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
-  const [network, setNetwork] = useState<INetwork | null>(null);
   // handlers
-  const handleCancelClick = () => {
-    if (enableRequestEvent) {
-      dispatch(
+  const handleCancelClick = async () => {
+    if (event) {
+      await dispatch(
         sendEnableResponseThunk({
           error: new ARC0027MethodCanceledError({
             message: `user dismissed connect modal`,
-            method: enableRequestEvent.payload.message.method,
+            method: event.payload.message.method,
             providerId: __PROVIDER_ID__,
           }),
-          event: enableRequestEvent,
+          event: event,
           session: null,
         })
-      );
+      ).unwrap();
+      // remove the event
+      await dispatch(removeEventByIdThunk(event.id)).unwrap();
     }
 
     handleClose();
@@ -104,30 +106,37 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const handleClose = () => {
     setAuthorizedAddresses([]);
     setNetwork(null);
-    onClose();
+
+    if (onClose) {
+      onClose();
+    }
   };
-  const handleConnectClick = () => {
+  const handleConnectClick = async () => {
     let session: ISession;
 
-    if (!enableRequestEvent || !network || authorizedAddresses.length <= 0) {
+    if (!event || !network || authorizedAddresses.length <= 0) {
       return;
     }
 
     session = mapSessionFromEnableRequest({
       authorizedAddresses,
-      clientInfo: enableRequestEvent.payload.message.clientInfo,
+      clientInfo: event.payload.message.clientInfo,
       network,
     });
 
-    // save the session, send an enable response and remove the connect request
+    // save the session
     dispatch(setSessionThunk(session));
-    dispatch(
+
+    // send the response
+    await dispatch(
       sendEnableResponseThunk({
         error: null,
-        event: enableRequestEvent,
+        event,
         session,
       })
-    );
+    ).unwrap();
+    // remove the event
+    await dispatch(removeEventByIdThunk(event.id)).unwrap();
 
     handleClose();
   };
@@ -153,7 +162,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const renderContent = () => {
     let accountNodes: ReactNode[];
 
-    if (!enableRequestEvent || fetching) {
+    if (!event || fetching) {
       return Array.from({ length: 3 }, (_, index) => (
         <HStack
           key={`enable-modal-fetching-item-${index}`}
@@ -250,59 +259,41 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
     );
   };
 
-  useEffect(() => {
-    if (enableRequestEvent) {
-      // find the selected network, or use the default one
-      setNetwork(
-        networks.find(
-          (value) =>
-            value.genesisHash ===
-            enableRequestEvent.payload.message.params?.genesisHash
-        ) || selectDefaultNetwork(networks)
-      );
-
-      // if the authorized addresses are empty, auto add the first address
-      if (authorizedAddresses.length <= 0 && accounts.length > 0) {
-        setAuthorizedAddresses([
-          AccountService.convertPublicKeyToAlgorandAddress(
-            accounts[0].publicKey
-          ),
-        ]);
-      }
-    }
-  }, [enableRequestEvent]);
-
   return (
     <Modal
-      isOpen={!!enableRequestEvent}
+      isOpen={!!event}
       motionPreset="slideInBottom"
       onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >
       <ModalContent
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        backgroundColor={BODY_BACKGROUND_COLOR}
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          {enableRequestEvent ? (
-            <SessionRequestHeader
-              caption={t<string>('captions.enableRequest')}
-              description={
-                enableRequestEvent.payload.message.clientInfo.description ||
-                undefined
-              }
-              host={enableRequestEvent.payload.message.clientInfo.host}
-              iconUrl={
-                enableRequestEvent.payload.message.clientInfo.iconUrl ||
-                undefined
-              }
-              name={enableRequestEvent.payload.message.clientInfo.appName}
-              network={network || undefined}
-            />
+          {event ? (
+            <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
+              <ClientHeader
+                description={
+                  event.payload.message.clientInfo.description || undefined
+                }
+                iconUrl={event.payload.message.clientInfo.iconUrl || undefined}
+                host={event.payload.message.clientInfo.host || 'unknown host'}
+                name={event.payload.message.clientInfo.appName || 'Unknown'}
+              />
+
+              {/*network*/}
+              {network && <ChainBadge network={network} />}
+
+              {/*caption*/}
+              <Text color={subTextColor} fontSize="sm" textAlign="center">
+                {t<string>('captions.enableRequest')}
+              </Text>
+            </VStack>
           ) : (
-            <SessionRequestHeaderSkeleton />
+            <ClientHeaderSkeleton />
           )}
         </ModalHeader>
 

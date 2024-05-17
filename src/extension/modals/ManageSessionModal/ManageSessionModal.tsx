@@ -1,7 +1,5 @@
 import {
-  Box,
   Checkbox,
-  Heading,
   HStack,
   Modal,
   ModalBody,
@@ -14,7 +12,6 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { faker } from '@faker-js/faker';
 import { generateAccount } from 'algosdk';
 import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +21,6 @@ import { useDispatch } from 'react-redux';
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import EmptyState from '@extension/components/EmptyState';
-import SessionAvatar from '@extension/components/SessionAvatar';
 import Warning from '@extension/components/Warning';
 
 // constants
@@ -40,7 +36,6 @@ import {
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // selectors
 import {
@@ -63,6 +58,9 @@ import type { IProps } from './types';
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import AccountAvatar from '@extension/components/AccountAvatar';
+import ClientHeader, {
+  ClientHeaderSkeleton,
+} from '@extension/components/ClientHeader';
 
 const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const { t } = useTranslation();
@@ -76,11 +74,11 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
-  const textBackgroundColor = useTextBackgroundColor();
   // state
   const [network, setNetwork] = useState<INetwork | null>(null);
   const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
-  const handleCancelClick = () => onClose();
+  const handleCancelClick = () => handleClose();
+  const handleClose = () => onClose && onClose();
   const handleSaveClick = () => {
     if (!session) {
       return;
@@ -90,9 +88,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
     if (authorizedAddresses.length <= 0) {
       dispatch(removeSessionByIdThunk(session.id));
 
-      onClose();
-
-      return;
+      return handleClose();
     }
 
     dispatch(
@@ -102,7 +98,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
       })
     );
 
-    onClose();
+    handleClose();
   };
   const handleOnAccountCheckChange =
     (address: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -225,92 +221,33 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   };
   const renderHeader = () => {
     if (!session) {
-      return (
-        <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
-          <SkeletonCircle size="12" />
-
-          <VStack
-            alignItems="center"
-            justifyContent="flex-start"
-            spacing={DEFAULT_GAP / 3}
-            w="full"
-          >
-            <Skeleton w="full">
-              <Text color={defaultTextColor} fontSize="md" textAlign="center">
-                {faker.animal.cetacean()}
-              </Text>
-            </Skeleton>
-
-            <Skeleton w="full">
-              <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-                {faker.animal.cetacean()}
-              </Text>
-            </Skeleton>
-
-            <Skeleton w="full">
-              <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-                {faker.animal.cetacean()}
-              </Text>
-            </Skeleton>
-          </VStack>
-        </VStack>
-      );
+      return <ClientHeaderSkeleton />;
     }
 
     return (
       <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
-        {/*app icon*/}
-        <SessionAvatar
+        <ClientHeader
+          description={session.description || undefined}
           iconUrl={session.iconUrl || undefined}
+          host={session.host}
           name={session.appName}
-          isWalletConnect={!!session.walletConnectMetadata}
         />
-        <VStack
-          alignItems="center"
-          justifyContent="flex-start"
-          spacing={DEFAULT_GAP / 3}
-          w="full"
-        >
-          {/*app name*/}
-          <Heading color={defaultTextColor} size="md" textAlign="center">
-            {session.appName}
-          </Heading>
 
-          {/*app description*/}
-          {session.description && (
-            <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-              {session.description}
-            </Text>
-          )}
+        {/*network*/}
+        {network && <ChainBadge network={network} />}
 
-          {/*app host*/}
-          <Box
-            backgroundColor={textBackgroundColor}
-            borderRadius={theme.radii['3xl']}
-            px={2}
-            py={1}
-          >
-            <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-              {session.host}
-            </Text>
-          </Box>
+        {/*creation date*/}
+        <Text color={defaultTextColor} fontSize="xs" textAlign="center">
+          {new Date(session.createdAt).toLocaleString()}
+        </Text>
 
-          {/*network*/}
-          {network && <ChainBadge network={network} />}
-
-          {/*creation date*/}
-          <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-            {new Date(session.createdAt).toLocaleString()}
-          </Text>
-
-          {/*remove warning*/}
-          {authorizedAddresses.length <= 0 && (
-            <Warning
-              message={t<string>('captions.removeAllAccountsWarning')}
-              size="xs"
-            />
-          )}
-        </VStack>
+        {/*remove warning*/}
+        {authorizedAddresses.length <= 0 && (
+          <Warning
+            message={t<string>('captions.removeAllAccountsWarning')}
+            size="xs"
+          />
+        )}
       </VStack>
     );
   };
@@ -329,7 +266,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
     <Modal
       isOpen={!!session}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >

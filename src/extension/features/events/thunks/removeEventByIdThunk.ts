@@ -10,10 +10,10 @@ import EventQueueService from '@extension/services/EventQueueService';
 import type { IBaseAsyncThunkConfig } from '@extension/types';
 
 const removeEventByIdThunk: AsyncThunk<
-  void, // return
+  string, // return
   string, // args
   IBaseAsyncThunkConfig
-> = createAsyncThunk<void, string, IBaseAsyncThunkConfig>(
+> = createAsyncThunk<string, string, IBaseAsyncThunkConfig>(
   EventsThunkEnum.RemoveEventById,
   async (eventId, { getState }) => {
     const logger = getState().system.logger;
@@ -26,6 +26,8 @@ const removeEventByIdThunk: AsyncThunk<
     );
 
     await eventQueueService.removeById(eventId);
+
+    return eventId;
   }
 );
 

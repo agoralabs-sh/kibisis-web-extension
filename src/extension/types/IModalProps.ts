@@ -1,5 +1,5 @@
 interface IModalProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export default IModalProps;

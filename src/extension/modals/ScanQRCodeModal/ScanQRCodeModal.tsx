@@ -65,7 +65,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
     reset();
-    onClose();
+    onClose && onClose();
   };
   const handleOnURI = (uri: string) => setURI(uri);
   const handlePreviousClick = () => reset();
@@ -250,7 +250,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
     <Modal
       isOpen={!!scanQRCodeModal}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >

@@ -17,11 +17,6 @@ import {
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import {
-  setEnableRequest,
-  setSignMessageRequest,
-  setSignTransactionsRequest,
-} from '@extension/features/events';
-import {
   fetchTransactionParamsFromStorageThunk,
   startPollingForTransactionsParamsThunk,
 } from '@extension/features/networks';
@@ -36,6 +31,7 @@ import {
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import {
+  closeCurrentWindowThunk,
   setConfirmModal,
   setScanQRCodeModal,
 } from '@extension/features/system';
@@ -83,14 +79,9 @@ const Root: FC = () => {
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
-  const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
-  const handleSignMessageModalClose = () =>
-    dispatch(setSignMessageRequest(null));
-  const handleSignTransactionsModalClose = () =>
-    dispatch(setSignTransactionsRequest(null));
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
 
@@ -138,9 +129,9 @@ const Root: FC = () => {
   return (
     <>
       <ConfirmModal onClose={handleConfirmClose} />
-      <EnableModal onClose={handleEnableModalClose} />
-      <SignMessageModal onClose={handleSignMessageModalClose} />
-      <SignTransactionsModal onClose={handleSignTransactionsModalClose} />
+      <EnableModal />
+      <SignMessageModal />
+      <SignTransactionsModal />
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <AddAssetsForWatchAccountModal onClose={handleAddAssetsModalClose} />
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />

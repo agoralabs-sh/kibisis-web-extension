@@ -9,9 +9,6 @@ import browser from 'webextension-polyfill';
 // enums
 import { MessagesThunkEnum } from '@extension/enums';
 
-// features
-import { removeEventByIdThunk } from '@extension/features/events';
-
 // messages
 import { ClientResponseMessage } from '@common/messages';
 
@@ -48,9 +45,6 @@ const sendSignMessageResponseThunk: AsyncThunk<
         })
       );
 
-      // remove the event
-      dispatch(removeEventByIdThunk(event.id));
-
       return;
     }
 
@@ -70,9 +64,6 @@ const sendSignMessageResponseThunk: AsyncThunk<
         })
       );
     }
-
-    // remove the event
-    dispatch(removeEventByIdThunk(event.id));
   }
 );
 
