@@ -1,6 +1,6 @@
 // types
 import type { IBaseOptions } from '@common/types';
-import INetwork from './INetwork';
+import type { INetwork } from './networks';
 
 interface IUpdateAssetInformationByIdOptions extends IBaseOptions {
   delay?: number;

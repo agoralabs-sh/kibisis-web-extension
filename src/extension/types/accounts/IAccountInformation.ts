@@ -1,7 +1,9 @@
 // types
-import IARC0072AssetHolding from './IARC0072AssetHolding';
-import IARC0200AssetHolding from './IARC0200AssetHolding';
-import IStandardAssetHolding from './IStandardAssetHolding';
+import type {
+  IARC0072AssetHolding,
+  IARC0200AssetHolding,
+  IStandardAssetHolding,
+} from '../asset-holdings';
 
 /**
  * @property {IARC0072AssetHolding} arc0072AssetHoldings - the ARC-0072 assets this account holds.

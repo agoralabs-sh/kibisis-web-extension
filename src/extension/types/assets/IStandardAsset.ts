@@ -2,7 +2,7 @@
 import { AssetTypeEnum } from '@extension/enums';
 
 // types
-import IBaseAsset from './IBaseAsset';
+import type IBaseAsset from './IBaseAsset';
 
 /**
  * @property {string | null} clawbackAddress - the address of the account used to clawback holdings of this asset.

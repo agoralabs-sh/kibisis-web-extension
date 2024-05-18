@@ -1,6 +1,6 @@
 // types
-import INetwork from './INetwork';
-import ITransactionParams from './ITransactionParams';
+import type INetwork from './INetwork';
+import type ITransactionParams from './ITransactionParams';
 
 type INetworkWithTransactionParams = INetwork & ITransactionParams;
 

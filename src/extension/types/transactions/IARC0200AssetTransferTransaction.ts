@@ -2,7 +2,7 @@
 import { TransactionTypeEnum } from '@extension/enums';
 
 // types
-import IApplicationTransaction from './IApplicationTransaction';
+import type IApplicationTransaction from './IApplicationTransaction';
 
 interface IARC0200AssetTransferTransaction extends IApplicationTransaction {
   amount: string;

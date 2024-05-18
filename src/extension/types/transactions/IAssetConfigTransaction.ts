@@ -2,7 +2,7 @@
 import { TransactionTypeEnum } from '@extension/enums';
 
 // types
-import IBaseTransaction from './IBaseTransaction';
+import type IBaseTransaction from './IBaseTransaction';
 
 interface IAssetConfigTransaction extends IBaseTransaction {
   assetId: string;

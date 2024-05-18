@@ -2,7 +2,7 @@
 import { AssetTypeEnum } from '@extension/enums';
 
 // types
-import IBaseAsset from './IBaseAsset';
+import type IBaseAsset from './IBaseAsset';
 
 /**
  * @property {string} id - the app ID of the ARC-0072 asset.

@@ -1,6 +1,6 @@
 // types
-import IARC0072AssetHolding from './IARC0072AssetHolding';
-import IARC0072IndexerFetchTokensByOwnerOptions from './IARC0072IndexerFetchTokensByOwnerOptions';
+import type { IARC0072AssetHolding } from '../asset-holdings';
+import type IARC0072IndexerFetchTokensByOwnerOptions from './IARC0072IndexerFetchTokensByOwnerOptions';
 
 interface IARC0072Indexer {
   canonicalName: string;

@@ -2,7 +2,7 @@
 import { TransactionTypeEnum } from '@extension/enums';
 
 // types
-import IBaseAssetFreezeTransaction from './IBaseAssetFreezeTransaction';
+import type IBaseAssetFreezeTransaction from './IBaseAssetFreezeTransaction';
 
 interface IAssetFreezeTransaction extends IBaseAssetFreezeTransaction {
   type: TransactionTypeEnum.AssetFreeze;

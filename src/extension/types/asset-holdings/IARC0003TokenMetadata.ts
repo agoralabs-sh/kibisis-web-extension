@@ -1,5 +1,5 @@
 // types
-import IARC0003TokenMetadataLocalization from './IARC0003TokenMetadataLocalization';
+import type IARC0003TokenMetadataLocalization from './IARC0003TokenMetadataLocalization';
 
 /**
  * @property {string} animation_url - [optional] A URI pointing to a multi-media file representing the asset.

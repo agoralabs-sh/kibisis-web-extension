@@ -1,5 +1,5 @@
 // types
-import IBaseTransaction from './IBaseTransaction';
+import type IBaseTransaction from './IBaseTransaction';
 
 interface IBaseAssetFreezeTransaction extends IBaseTransaction {
   assetId: string;

@@ -2,7 +2,7 @@
 import { AssetTypeEnum } from '@extension/enums';
 
 // types
-import IBaseAsset from './IBaseAsset';
+import type IBaseAsset from './IBaseAsset';
 
 /**
  * @property {number} decimals - the number of digits to use after the decimal point when displaying this ARC-0200 asset.

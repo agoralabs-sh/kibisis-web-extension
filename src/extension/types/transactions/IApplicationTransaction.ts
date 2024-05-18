@@ -1,7 +1,7 @@
 // types
-import IApplicationTransactionTypes from './IApplicationTransactionTypes';
-import IBaseTransaction from './IBaseTransaction';
-import ITransactions from './ITransactions';
+import type IApplicationTransactionTypes from './IApplicationTransactionTypes';
+import type IBaseTransaction from './IBaseTransaction';
+import type ITransactions from './ITransactions';
 
 /**
  * @property {string[] | null} accounts - (apat) a list of accounts in addition to the sender that may be accessed
