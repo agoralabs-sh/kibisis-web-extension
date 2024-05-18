@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 // components
 import ChainBadge from '@extension/components/ChainBadge';
-import KeyRegistrationTransactionModalContent from '@extension/components/KeyRegistrationTransactionModalContent';
+import KeyRegistrationTransactionModalBody from '@extension/components/KeyRegistrationTransactionModalBody';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import ApplicationTransactionContent from './ApplicationTransactionContent';
@@ -196,7 +196,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
         );
       case 'keyreg':
         return (
-          <KeyRegistrationTransactionModalContent
+          <KeyRegistrationTransactionModalBody
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),

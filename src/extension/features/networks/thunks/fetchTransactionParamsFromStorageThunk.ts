@@ -34,10 +34,11 @@ const fetchTransactionParamsFromStorageThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.online;
-    const selectedNetwork = selectNetworkFromSettings(
-      networks,
-      getState().settings
-    );
+    const selectedNetwork =
+      selectNetworkFromSettings<INetworkWithTransactionParams>(
+        networks,
+        getState().settings
+      );
     const storageManager = new StorageManager();
     let storageItems: Record<string, unknown>;
     let updatedNetworks: INetworkWithTransactionParams[];
