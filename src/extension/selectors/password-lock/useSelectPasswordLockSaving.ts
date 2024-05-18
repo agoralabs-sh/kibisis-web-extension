@@ -1,9 +1,10 @@
 import { useSelector } from 'react-redux';
 
 // types
-import { IMainRootState } from '@extension/types';
+import type { IBackgroundRootState, IMainRootState } from '@extension/types';
+
 export default function useSelectPasswordLockSaving(): boolean {
-  return useSelector<IMainRootState, boolean>(
+  return useSelector<IBackgroundRootState | IMainRootState, boolean>(
     (state) => state.passwordLock.saving
   );
 }

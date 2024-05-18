@@ -1,16 +1,19 @@
 import { Modal } from '@chakra-ui/react';
 import { TransactionType } from 'algosdk';
 import React, { FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { IoArrowBackOutline } from 'react-icons/io5';
 
 // components
+import ARC0300AccountImportWithAddressModalContent from '@extension/components/ARC0300AccountImportWithAddressModalContent';
+import ARC0300AccountImportWithPrivateKeyModalContent from '@extension/components/ARC0300AccountImportWithPrivateKeyModalContent';
+import ARC0300AssetAddModalContent from '@extension/components/ARC0300AssetAddModalContent';
+import ARC0300KeyRegistrationTransactionSendModalContent from '@extension/components/ARC0300KeyRegistrationTransactionSendModalContent';
 import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
 import ScanQRCodeViaScreenCaptureModalContent from '@extension/components/ScanQRCodeViaScreenCaptureModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
-import AccountImportWithPrivateKeyModalContent from './AccountImportWithPrivateKeyModalContent';
-import AssetAddModalContent from './AssetAddModalContent';
-import KeyRegistrationTransactionSendModal from './KeyRegistrationTransactionSendModal';
 
 // enums
 import {
@@ -41,9 +44,9 @@ import {
 
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
-import AccountImportWithAddressModalContent from '@extension/modals/ScanQRCodeModal/AccountImportWithAddressModalContent';
 
 const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
+  const { t } = useTranslation();
   // selectors
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
@@ -65,7 +68,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
     reset();
-    onClose();
+    onClose && onClose();
   };
   const handleOnURI = (uri: string) => setURI(uri);
   const handlePreviousClick = () => reset();
@@ -106,9 +109,11 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                   )
                 ) {
                   return (
-                    <AccountImportWithPrivateKeyModalContent
+                    <ARC0300AccountImportWithPrivateKeyModalContent
+                      cancelButtonIcon={<IoArrowBackOutline />}
+                      cancelButtonLabel={t<string>('buttons.previous')}
                       onComplete={handleClose}
-                      onPreviousClick={handlePreviousClick}
+                      onCancel={handlePreviousClick}
                       schema={
                         arc0300Schema as IARC0300AccountImportSchema<IARC0300AccountImportWithPrivateKeyQuery>
                       }
@@ -123,9 +128,11 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                   )
                 ) {
                   return (
-                    <AccountImportWithAddressModalContent
+                    <ARC0300AccountImportWithAddressModalContent
+                      cancelButtonIcon={<IoArrowBackOutline />}
+                      cancelButtonLabel={t<string>('buttons.previous')}
                       onComplete={handleClose}
-                      onPreviousClick={handlePreviousClick}
+                      onCancel={handlePreviousClick}
                       schema={
                         arc0300Schema as IARC0300AccountImportSchema<IARC0300AccountImportWithAddressQuery>
                       }
@@ -150,9 +157,11 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                   scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Add))
               ) {
                 return (
-                  <AssetAddModalContent
+                  <ARC0300AssetAddModalContent
+                    cancelButtonIcon={<IoArrowBackOutline />}
+                    cancelButtonLabel={t<string>('buttons.previous')}
                     onComplete={handleClose}
-                    onPreviousClick={handlePreviousClick}
+                    onCancel={handlePreviousClick}
                     schema={arc0300Schema as IARC0300AssetAddSchema}
                   />
                 );
@@ -178,9 +187,11 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                 ) {
                   case TransactionType.keyreg:
                     return (
-                      <KeyRegistrationTransactionSendModal
+                      <ARC0300KeyRegistrationTransactionSendModalContent
+                        cancelButtonIcon={<IoArrowBackOutline />}
+                        cancelButtonLabel={t<string>('buttons.previous')}
                         onComplete={handleClose}
-                        onPreviousClick={handlePreviousClick}
+                        onCancel={handlePreviousClick}
                         schema={
                           arc0300Schema as
                             | IARC0300OfflineKeyRegistrationTransactionSendSchema
@@ -250,7 +261,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
     <Modal
       isOpen={!!scanQRCodeModal}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >

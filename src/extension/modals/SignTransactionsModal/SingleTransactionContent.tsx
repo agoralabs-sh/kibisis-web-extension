@@ -4,7 +4,7 @@ import { Transaction, encodeAddress } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 
 // components
-import KeyRegistrationTransactionModalContent from '@extension/components/KeyRegistrationTransactionModalContent';
+import KeyRegistrationTransactionModalBody from '@extension/components/KeyRegistrationTransactionModalBody';
 import ApplicationTransactionContent from './ApplicationTransactionContent';
 import AssetConfigTransactionContent from './AssetConfigTransactionContent';
 import AssetCreateTransactionContent from './AssetCreateTransactionContent';
@@ -203,7 +203,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
       );
     case 'keyreg':
       return (
-        <KeyRegistrationTransactionModalContent
+        <KeyRegistrationTransactionModalBody
           account={fromAccount}
           network={network}
           showHeader={true}

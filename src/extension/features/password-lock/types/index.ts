@@ -1,1 +1,1 @@
-export type { default as IPasswordLockState } from './IPasswordLockState';
+export type { default as IState } from './IState';

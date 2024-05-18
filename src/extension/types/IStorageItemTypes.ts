@@ -1,5 +1,6 @@
 // types
 import type { INewsItem } from '@extension/services/NewsService';
+import type TEvents from './events/TEvents';
 import type IAccount from './IAccount';
 import type IActiveAccountDetails from './IActiveAccountDetails';
 import type IAdvancedSettings from './IAdvancedSettings';
@@ -7,7 +8,6 @@ import type IAppearanceSettings from './IAppearanceSettings';
 import type IAppWindow from './IAppWindow';
 import type IARC0072Asset from './IARC0072Asset';
 import type IARC0200Asset from './IARC0200Asset';
-import type IEvent from './IEvent';
 import type IGeneralSettings from './IGeneralSettings';
 import type IPasswordLock from './IPasswordLock';
 import type IPasswordTag from './IPasswordTag';
@@ -27,7 +27,7 @@ type IStorageItemTypes =
   | IARC0072Asset[]
   | IARC0200Asset[]
   | IGeneralSettings
-  | IEvent[]
+  | TEvents[]
   | INewsItem[]
   | IPasswordLock
   | IPasswordTag

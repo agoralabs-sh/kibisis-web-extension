@@ -9,14 +9,10 @@ import browser from 'webextension-polyfill';
 // enums
 import { MessagesThunkEnum } from '@extension/enums';
 
-// features
-import { removeEventByIdThunk } from '@extension/features/events';
-
 // messages
 import { ClientResponseMessage } from '@common/messages';
 
 // types
-import type { ILogger } from '@common/types';
 import type { IBaseAsyncThunkConfig } from '@extension/types';
 import type { ISignMessageResponseThunkPayload } from '../types';
 
@@ -31,7 +27,7 @@ const sendSignMessageResponseThunk: AsyncThunk<
 >(
   MessagesThunkEnum.SendSignMessageResponse,
   async ({ error, event, signature, signer }, { dispatch, getState }) => {
-    const logger: ILogger = getState().system.logger;
+    const logger = getState().system.logger;
 
     logger.debug(
       `${MessagesThunkEnum.SendSignMessageResponse}: sending "${ARC0027MethodEnum.SignMessage}" message to content script`
@@ -48,9 +44,6 @@ const sendSignMessageResponseThunk: AsyncThunk<
           requestId: event.payload.message.id,
         })
       );
-
-      // remove the event
-      dispatch(removeEventByIdThunk(event.id));
 
       return;
     }
@@ -71,9 +64,6 @@ const sendSignMessageResponseThunk: AsyncThunk<
         })
       );
     }
-
-    // remove the event
-    dispatch(removeEventByIdThunk(event.id));
   }
 );
 

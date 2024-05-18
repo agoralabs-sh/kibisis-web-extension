@@ -1,54 +1,47 @@
-import type {
-  IEnableParams,
-  ISignMessageParams,
-  ISignTransactionsParams,
-} from '@agoralabs-sh/avm-web-provider';
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
+// thunks
+import { handleNewEventByIdThunk, removeEventByIdThunk } from './thunks';
+
 // types
-import type { IClientRequestEventPayload, IEvent } from '@extension/types';
+import type { TEvents } from '@extension/types';
 import type { IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({
+  extraReducers: (builder) => {
+    builder.addCase(
+      handleNewEventByIdThunk.fulfilled,
+      (state: IState, action: PayloadAction<TEvents | null>) => {
+        if (action.payload) {
+          state.items = [
+            ...state.items.filter((value) => value.id !== action.payload?.id),
+            action.payload,
+          ];
+        }
+      }
+    );
+    builder.addCase(
+      removeEventByIdThunk.fulfilled,
+      (state: IState, action: PayloadAction<string>) => {
+        state.items = state.items.filter(
+          (value) => value.id !== action.payload
+        );
+      }
+    );
+  },
   initialState: getInitialState(),
   name: StoreNameEnum.Events,
   reducers: {
-    setEnableRequest: (
-      state: Draft<IState>,
-      action: PayloadAction<IEvent<
-        IClientRequestEventPayload<IEnableParams>
-      > | null>
-    ) => {
-      state.enableRequest = action.payload;
-    },
-    setSignMessageRequest: (
-      state: Draft<IState>,
-      action: PayloadAction<IEvent<
-        IClientRequestEventPayload<ISignMessageParams>
-      > | null>
-    ) => {
-      state.signMessageRequest = action.payload;
-    },
-    setSignTransactionsRequest: (
-      state: Draft<IState>,
-      action: PayloadAction<IEvent<
-        IClientRequestEventPayload<ISignTransactionsParams>
-      > | null>
-    ) => {
-      state.signTransactionsRequest = action.payload;
+    noop: () => {
+      return;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const {
-  setEnableRequest,
-  setSignMessageRequest,
-  setSignTransactionsRequest,
-} = slice.actions;

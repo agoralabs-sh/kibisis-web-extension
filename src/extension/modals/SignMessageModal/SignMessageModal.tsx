@@ -3,10 +3,7 @@ import {
   ARC0027MethodEnum,
 } from '@agoralabs-sh/avm-web-provider';
 import {
-  Avatar,
-  Box,
   Code,
-  Heading,
   HStack,
   Modal,
   ModalBody,
@@ -17,7 +14,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
-import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import React, { FC, KeyboardEvent, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -25,33 +22,33 @@ import { useDispatch } from 'react-redux';
 import AccountSelect from '@extension/components/AccountSelect';
 import AccountItem from '@extension/components/AccountItem';
 import Button from '@extension/components/Button';
+import ClientHeader, {
+  ClientHeaderSkeleton,
+} from '@extension/components/ClientHeader';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
 import SignMessageContentSkeleton from './SignMessageContentSkeleton';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { ErrorCodeEnum } from '@extension/enums';
 
 // features
+import { removeEventByIdThunk } from '@extension/features/events';
 import { sendSignMessageResponseThunk } from '@extension/features/messages';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
+import useSignMessageModal from './hooks/useSignMessageModal';
 
 // selectors
 import {
   useSelectAccountsFetching,
-  useSelectNonWatchAccounts,
   useSelectLogger,
-  useSelectSessions,
-  useSelectSignMessageRequest,
 } from '@extension/selectors';
 
 // services
@@ -65,25 +62,20 @@ import { theme } from '@extension/theme';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IModalProps,
 } from '@extension/types';
-import type { ISignMessageModalProps } from './types';
 
 // utils
-import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import signBytes from '@extension/utils/signBytes';
 
-const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
+const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts = useSelectNonWatchAccounts();
   const fetching = useSelectAccountsFetching();
   const logger = useSelectLogger();
-  const sessions = useSelectSessions();
-  const signMessageRequest = useSelectSignMessageRequest();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -92,38 +84,45 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
+  const {
+    authorizedAccounts,
+    event,
+    signer,
+    setAuthorizedAccounts,
+    setSigner,
+  } = useSignMessageModal();
   const subTextColor = useSubTextColor();
-  const textBackgroundColor = useTextBackgroundColor();
-  // state
-  const [authorizedAccounts, setAuthorizedAccounts] = useState<
-    IAccountWithExtendedProps[]
-  >([]);
-  const [selectedSigner, setSelectedSigner] =
-    useState<IAccountWithExtendedProps | null>(null);
   // handlers
   const handleAccountSelect = (account: IAccountWithExtendedProps) =>
-    setSelectedSigner(account);
-  const handleCancelClick = () => {
-    if (signMessageRequest) {
-      dispatch(
+    setSigner(account);
+  const handleCancelClick = async () => {
+    if (event) {
+      await dispatch(
         sendSignMessageResponseThunk({
           error: new ARC0027MethodCanceledError({
             message: `user dismissed sign message modal`,
             method: ARC0027MethodEnum.SignMessage,
             providerId: __PROVIDER_ID__,
           }),
-          event: signMessageRequest,
+          event,
           signature: null,
           signer: null,
         })
-      );
+      ).unwrap();
+      // remove the event
+      await dispatch(removeEventByIdThunk(event.id)).unwrap();
     }
 
     handleClose();
   };
   const handleClose = () => {
-    onClose();
     resetPassword();
+    setAuthorizedAccounts(null);
+    setSigner(null);
+
+    if (onClose) {
+      onClose();
+    }
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -133,40 +132,38 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
     }
   };
   const handleSignClick = async () => {
-    const _functionName: string = 'handleSignClick';
+    const _functionName = 'handleSignClick';
     let actionTrackingService: ActionTrackingService;
     let signature: Uint8Array;
-    let signer: string;
+    let signerAddress: string;
 
     if (
       validatePassword() ||
-      !signMessageRequest ||
-      !signMessageRequest.payload.message.params ||
-      !selectedSigner
+      !event ||
+      !event.payload.message.params ||
+      !signer
     ) {
       return;
     }
 
-    signer = AccountService.convertPublicKeyToAlgorandAddress(
-      selectedSigner.publicKey
+    signerAddress = AccountService.convertPublicKeyToAlgorandAddress(
+      signer.publicKey
     );
 
     logger.debug(
-      `${SignMessageModal.name}#${_functionName}: signing message for signer "${signer}"`
+      `${SignMessageModal.name}#${_functionName}: signing message for signer "${signerAddress}"`
     );
 
     try {
       signature = await signBytes({
-        bytes: new TextEncoder().encode(
-          signMessageRequest.payload.message.params.message
-        ),
+        bytes: new TextEncoder().encode(event.payload.message.params.message),
         logger,
         password,
-        publicKey: AccountService.decodePublicKey(selectedSigner.publicKey),
+        publicKey: AccountService.decodePublicKey(signer.publicKey),
       });
 
       logger.debug(
-        `${SignMessageModal.name}#${_functionName}: signed message for signer "${signer}"`
+        `${SignMessageModal.name}#${_functionName}: signed message for signer "${signerAddress}"`
       );
 
       actionTrackingService = new ActionTrackingService({
@@ -174,16 +171,19 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       });
 
       // track the action
-      await actionTrackingService.signMessageAction(signer);
+      await actionTrackingService.signMessageAction(signerAddress);
 
-      dispatch(
+      // send the response
+      await dispatch(
         sendSignMessageResponseThunk({
           error: null,
-          event: signMessageRequest,
+          event,
           signature: encodeBase64(signature),
-          signer,
+          signer: signerAddress,
         })
-      );
+      ).unwrap();
+      // remove the event
+      await dispatch(removeEventByIdThunk(event.id)).unwrap();
 
       handleClose();
     } catch (error) {
@@ -212,8 +212,9 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
   const renderContent = () => {
     if (
       fetching ||
-      !signMessageRequest?.payload.message.params ||
-      !selectedSigner
+      !event?.payload.message.params ||
+      !authorizedAccounts ||
+      !signer
     ) {
       return <SignMessageContentSkeleton />;
     }
@@ -222,13 +223,13 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/*account select*/}
         <VStack spacing={DEFAULT_GAP / 3} w="full">
-          {signMessageRequest.payload.message.params.signer ? (
+          {event.payload.message.params.signer ? (
             <>
               <Text textAlign="left" w="full">{`${t<string>(
                 'labels.addressToSign'
               )}:`}</Text>
 
-              <AccountItem account={selectedSigner} />
+              <AccountItem account={signer} />
             </>
           ) : (
             <>
@@ -239,7 +240,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
               <AccountSelect
                 accounts={authorizedAccounts}
                 onSelect={handleAccountSelect}
-                value={selectedSigner}
+                value={signer}
               />
             </>
           )}
@@ -251,7 +252,7 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
             'labels.message'
           )}:`}</Text>
           <Code borderRadius="md" w="full">
-            {signMessageRequest.payload.message.params.message}
+            {event.payload.message.params.message}
           </Code>
         </VStack>
       </VStack>
@@ -264,102 +265,39 @@ const SignMessageModal: FC<ISignMessageModalProps> = ({ onClose }) => {
       passwordInputRef.current.focus();
     }
   }, []);
-  // when we have accounts, sessions and the request, update the authorized accounts
-  useEffect(() => {
-    let _authorizedAccounts: IAccountWithExtendedProps[];
-    let authorizedAddresses: string[];
-
-    if (accounts.length >= 0 && sessions.length > 0 && signMessageRequest) {
-      authorizedAddresses = getAuthorizedAddressesForHost(
-        signMessageRequest.payload.message.clientInfo.host,
-        sessions
-      );
-      _authorizedAccounts = accounts.filter((account) =>
-        authorizedAddresses.some(
-          (value) =>
-            value ===
-            AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
-        )
-      );
-
-      setAuthorizedAccounts(_authorizedAccounts);
-    }
-  }, [accounts, sessions, signMessageRequest]);
-  // once we have some authorized accounts, get the signer from the request or use the first account
-  useEffect(() => {
-    let signerAccount: IAccountWithExtendedProps | null = null;
-
-    if (authorizedAccounts.length > 0) {
-      signerAccount =
-        authorizedAccounts.find(
-          (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === signMessageRequest?.payload.message.params?.signer
-        ) || null;
-
-      setSelectedSigner(signerAccount || authorizedAccounts[0]);
-    }
-  }, [authorizedAccounts]);
 
   return (
     <Modal
-      isOpen={!!signMessageRequest}
+      isOpen={!!event}
       motionPreset="slideInBottom"
       onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >
       <ModalContent
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        backgroundColor={BODY_BACKGROUND_COLOR}
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
       >
-        <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          {signMessageRequest && (
+        <ModalHeader px={DEFAULT_GAP}>
+          {event ? (
             <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
-              <Avatar
-                name={
-                  signMessageRequest.payload.message.clientInfo.appName ||
-                  'unknown'
+              <ClientHeader
+                description={
+                  event.payload.message.clientInfo.description || undefined
                 }
-                src={
-                  signMessageRequest.payload.message.clientInfo.iconUrl ||
-                  undefined
-                }
+                iconUrl={event.payload.message.clientInfo.iconUrl || undefined}
+                host={event.payload.message.clientInfo.host || 'unknown host'}
+                name={event.payload.message.clientInfo.appName || 'Unknown'}
               />
 
-              <VStack
-                alignItems="center"
-                justifyContent="flex-start"
-                spacing={DEFAULT_GAP / 3}
-              >
-                <Heading color={defaultTextColor} size="md" textAlign="center">
-                  {signMessageRequest.payload.message.clientInfo.appName ||
-                    'Unknown'}
-                </Heading>
-
-                <Box
-                  backgroundColor={textBackgroundColor}
-                  borderRadius={theme.radii['3xl']}
-                  px={DEFAULT_GAP / 3}
-                  py={1}
-                >
-                  <Text
-                    color={defaultTextColor}
-                    fontSize="xs"
-                    textAlign="center"
-                  >
-                    {signMessageRequest.payload.message.clientInfo.host ||
-                      'unknown host'}
-                  </Text>
-                </Box>
-
-                <Text color={subTextColor} fontSize="md" textAlign="center">
-                  {t<string>('captions.signMessageRequest')}
-                </Text>
-              </VStack>
+              {/*caption*/}
+              <Text color={subTextColor} fontSize="sm" textAlign="center">
+                {t<string>('captions.signMessageRequest')}
+              </Text>
             </VStack>
+          ) : (
+            <ClientHeaderSkeleton />
           )}
         </ModalHeader>
 

@@ -33,23 +33,17 @@ import { networks } from '@extension/config';
 import { HOST, ICON_URI } from '@common/constants';
 
 // enums
-import { AppTypeEnum, EventTypeEnum } from '@extension/enums';
+import { EventTypeEnum } from '@extension/enums';
 
 // events
-import { Event } from '@extension/events';
+import { ClientRequestEvent } from '@extension/events';
 
 // messages
-import {
-  ClientRequestMessage,
-  ClientResponseMessage,
-  ProviderEventAddedMessage,
-} from '@common/messages';
+import { ClientRequestMessage, ClientResponseMessage } from '@common/messages';
 
 // services
 import AccountService from '../AccountService';
-import AppWindowManagerService from '../AppWindowManagerService';
 import EventQueueService from '../EventQueueService';
-import PrivateKeyService from '../PrivateKeyService';
 import SessionService from '../SessionService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
@@ -58,9 +52,7 @@ import StorageManager from '../StorageManager';
 import type { IBaseOptions, ILogger } from '@common/types';
 import type {
   IAccount,
-  IAppWindow,
-  IClientRequestEventPayload,
-  IEvent,
+  IClientRequestEvent,
   INetwork,
   ISession,
 } from '@extension/types';
@@ -71,16 +63,15 @@ import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransactio
 import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import isNetworkSupported from '@extension/utils/isNetworkSupported';
-import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
+import sendExtensionEvent from '@extension/utils/sendExtensionEvent';
+import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
 
 export default class ClientMessageHandler {
   // private variables
   private readonly accountService: AccountService;
-  private readonly appWindowManagerService: AppWindowManagerService;
-  private readonly logger: ILogger | null;
   private readonly eventQueueService: EventQueueService;
-  private readonly privateKeyService: PrivateKeyService;
+  private readonly logger: ILogger | null;
   private readonly sessionService: SessionService;
   private readonly settingsService: SettingsService;
 
@@ -90,19 +81,10 @@ export default class ClientMessageHandler {
     this.accountService = new AccountService({
       logger,
     });
-    this.appWindowManagerService = new AppWindowManagerService({
-      logger,
-      storageManager,
-    });
     this.eventQueueService = new EventQueueService({
       logger,
     });
     this.logger = logger || null;
-    this.privateKeyService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-      storageManager,
-    });
     this.sessionService = new SessionService({
       logger,
     });
@@ -381,14 +363,13 @@ export default class ClientMessageHandler {
       await this.sessionService.removeByIds([session.id]);
     }
 
-    return await this.sendExtensionEvent(
-      new Event({
+    return await this.sendClientMessageEvent(
+      new ClientRequestEvent({
         id: uuid(),
         payload: {
           message,
           originTabId,
         },
-        type: EventTypeEnum.ClientRequest,
       })
     );
   }
@@ -470,14 +451,13 @@ export default class ClientMessageHandler {
       );
     }
 
-    return await this.sendExtensionEvent(
-      new Event({
+    return await this.sendClientMessageEvent(
+      new ClientRequestEvent({
         id: uuid(),
         payload: {
           message,
           originTabId,
         },
-        type: EventTypeEnum.ClientRequest,
       })
     );
   }
@@ -624,35 +604,24 @@ export default class ClientMessageHandler {
       );
     }
 
-    return await this.sendExtensionEvent(
-      new Event({
+    return await this.sendClientMessageEvent(
+      new ClientRequestEvent({
         id: uuid(),
         payload: {
           message,
           originTabId,
         },
-        type: EventTypeEnum.ClientRequest,
       })
     );
   }
 
-  private async sendExtensionEvent(
-    event: IEvent<IClientRequestEventPayload>
+  private async sendClientMessageEvent<Params extends TRequestParams>(
+    event: IClientRequestEvent<Params>
   ): Promise<void> {
-    const _functionName: string = 'sendExtensionEvent';
-    const isInitialized: boolean = await this.privateKeyService.isInitialized();
-    const mainAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
-    let events: IEvent<IClientRequestEventPayload>[];
-
-    // not initialized, ignore it
-    if (!isInitialized) {
-      return;
-    }
-
-    events = await this.eventQueueService.getByType(
-      EventTypeEnum.ClientRequest
-    );
+    const _functionName = 'sendClientMessageEvent';
+    const events = await this.eventQueueService.getByType<
+      IClientRequestEvent<TRequestParams>
+    >(EventTypeEnum.ClientRequest);
 
     // if the client request already exists, ignore it
     if (
@@ -661,42 +630,18 @@ export default class ClientMessageHandler {
       )
     ) {
       this.logger?.debug(
-        `${ClientMessageHandler.name}#${_functionName}: client request "${event.payload.message.id}" already exists ignoring`
+        `${ClientMessageHandler.name}#${_functionName}: client request "${event.payload.message.id}" already exists, ignoring`
       );
 
       return;
     }
 
-    // remove any closed windows
-    await this.appWindowManagerService.hydrateAppWindows();
-
-    this.logger?.debug(
-      `${ClientMessageHandler.name}#${_functionName}: saving event "${event.type}" to event queue`
-    );
-
-    // save event to the queue
-    await this.eventQueueService.save(event);
-
-    // if a main app is open, post that a new event has been added to the queue
-    if (mainAppWindows.length > 0) {
-      this.logger?.debug(
-        `${ClientMessageHandler.name}#${_functionName}: main app window open, posting that event "${event.id}" has been added to the queue`
-      );
-
-      return await browser.runtime.sendMessage(
-        new ProviderEventAddedMessage(event.id)
-      );
-    }
-
-    this.logger?.debug(
-      `${ClientMessageHandler.name}#${_functionName}: main app window not open, opening background app window for "${event.type}" event`
-    );
-
-    await this.appWindowManagerService.createWindow({
-      searchParams: new URLSearchParams({
-        eventId: encodeURIComponent(event.id), // add the event id to the url search params, so the app knows which event to use
+    return await sendExtensionEvent({
+      event,
+      eventQueueService: this.eventQueueService,
+      ...(this.logger && {
+        logger: this.logger,
       }),
-      type: AppTypeEnum.BackgroundApp,
     });
   }
 

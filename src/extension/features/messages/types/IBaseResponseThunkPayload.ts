@@ -3,12 +3,12 @@ import {
   TRequestParams,
 } from '@agoralabs-sh/avm-web-provider';
 
-// types
-import type { IClientRequestEventPayload, IEvent } from '@extension/types';
+// events
+import type { IClientRequestEvent } from '@extension/types';
 
-interface IBaseResponseThunkPayload<Params = TRequestParams> {
+interface IBaseResponseThunkPayload<RequestParams extends TRequestParams> {
   error: BaseARC0027Error | null;
-  event: IEvent<IClientRequestEventPayload<Params>>;
+  event: IClientRequestEvent<RequestParams>;
 }
 
 export default IBaseResponseThunkPayload;

@@ -4,9 +4,6 @@ import {
   ARC0027MethodEnum,
 } from '@agoralabs-sh/avm-web-provider';
 import {
-  Avatar,
-  Box,
-  Heading,
   HStack,
   Modal,
   ModalBody,
@@ -25,16 +22,18 @@ import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
+import ClientHeader, {
+  ClientHeaderSkeleton,
+} from '@extension/components/ClientHeader';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
 import AtomicTransactionsContent from './AtomicTransactionsContent';
 import MultipleTransactionsContent from './MultipleTransactionsContent';
-import SignTxnsHeaderSkeleton from './SignTxnsHeaderSkeleton';
 import SingleTransactionContent from './SingleTransactionContent';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // contexts
 import { MultipleTransactionsContext } from './contexts';
@@ -43,21 +42,16 @@ import { MultipleTransactionsContext } from './contexts';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // features
+import { removeEventByIdThunk } from '@extension/features/events';
 import { sendSignTransactionsResponseThunk } from '@extension/features/messages';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
-import useAuthorizedAccounts from './hooks/useAuthorizedAccounts';
-import useUpdateStandardAssetInformation from './hooks/useUpdateStandardAssetInformation';
+import useSignTransactionsModal from './hooks/useSignTransactionsModal';
 
 // selectors
-import {
-  useSelectLogger,
-  useSelectSignTransactionsRequest,
-} from '@extension/selectors';
+import { useSelectLogger } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -66,26 +60,22 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
-import type { ISignTransactionsModalProps } from './types';
+import type { IAppThunkDispatch, IModalProps } from '@extension/types';
 
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import groupTransactions from '@extension/utils/groupTransactions';
 import signTransactions from '@extension/utils/signTransactions';
 
-const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
-  onClose,
-}) => {
+const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const logger = useSelectLogger();
-  const signTransactionsRequest = useSelectSignTransactionsRequest();
   // hooks
-  const authorizedAccounts = useAuthorizedAccounts(signTransactionsRequest);
-  const defaultTextColor = useDefaultTextColor();
+  const { authorizedAccounts, event, setAuthorizedAccounts } =
+    useSignTransactionsModal();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -95,32 +85,37 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
     value: password,
   } = usePassword();
   const subTextColor = useSubTextColor();
-  const textBackgroundColor = useTextBackgroundColor();
   // states
   const [moreDetailsTransactions, setMoreDetailsTransactions] = useState<
     Transaction[] | null
   >(null);
   // handlers
-  const handleCancelClick = () => {
-    if (signTransactionsRequest) {
-      dispatch(
+  const handleCancelClick = async () => {
+    if (event) {
+      await dispatch(
         sendSignTransactionsResponseThunk({
           error: new ARC0027MethodCanceledError({
             message: `user dismissed sign transaction modal`,
             method: ARC0027MethodEnum.SignTransactions,
             providerId: __PROVIDER_ID__,
           }),
-          event: signTransactionsRequest,
+          event,
           stxns: null,
         })
-      );
+      ).unwrap();
+      // remove the event
+      await dispatch(removeEventByIdThunk(event.id)).unwrap();
     }
 
     handleClose();
   };
   const handleClose = () => {
-    onClose();
     resetPassword();
+    setAuthorizedAccounts(null);
+
+    if (onClose) {
+      onClose();
+    }
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -135,8 +130,9 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
 
     if (
       validatePassword() ||
-      !signTransactionsRequest ||
-      !signTransactionsRequest.payload.message.params
+      !event ||
+      !event.payload.message.params ||
+      !authorizedAccounts
     ) {
       return;
     }
@@ -148,16 +144,19 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
         ),
         logger,
         password,
-        txns: signTransactionsRequest.payload.message.params.txns,
+        txns: event.payload.message.params.txns,
       });
 
-      dispatch(
+      // send a response
+      await dispatch(
         sendSignTransactionsResponseThunk({
           error: null,
-          event: signTransactionsRequest,
+          event,
           stxns,
         })
-      );
+      ).unwrap();
+      // remove the event
+      await dispatch(removeEventByIdThunk(event.id)).unwrap();
 
       handleClose();
     } catch (error) {
@@ -170,7 +169,7 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
           dispatch(
             sendSignTransactionsResponseThunk({
               error,
-              event: signTransactionsRequest,
+              event,
               stxns: null,
             })
           );
@@ -196,17 +195,13 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
     let decodedTransactions: Transaction[];
     let groupsOfTransactions: Transaction[][];
 
-    if (
-      !signTransactionsRequest ||
-      !signTransactionsRequest.payload.message.params
-    ) {
+    if (!event || !event.payload.message.params) {
       return <VStack spacing={DEFAULT_GAP - 2} w="full"></VStack>;
     }
 
-    decodedTransactions =
-      signTransactionsRequest.payload.message.params.txns.map((value) =>
-        decodeUnsignedTransaction(decodeBase64(value.txn))
-      );
+    decodedTransactions = event.payload.message.params.txns.map((value) =>
+      decodeUnsignedTransaction(decodeBase64(value.txn))
+    );
     groupsOfTransactions = groupTransactions(decodedTransactions);
 
     // if we have multiple groups/single transactions
@@ -237,89 +232,45 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
       <SingleTransactionContent transaction={groupsOfTransactions[0][0]} />
     );
   };
-  const renderHeader = () => {
-    if (
-      !signTransactionsRequest ||
-      !signTransactionsRequest.payload.message.params
-    ) {
-      return <SignTxnsHeaderSkeleton />;
-    }
-
-    return (
-      <>
-        <HStack
-          alignItems="center"
-          justifyContent="center"
-          spacing={DEFAULT_GAP - 2}
-          w="full"
-        >
-          {/*app icon*/}
-          <Avatar
-            name={signTransactionsRequest.payload.message.clientInfo.appName}
-            size="md"
-            src={
-              signTransactionsRequest.payload.message.clientInfo.iconUrl ||
-              undefined
-            }
-          />
-
-          <VStack
-            alignItems="flex-start"
-            justifyContent="space-evenly"
-            spacing={1}
-            w="full"
-          >
-            {/*app name*/}
-            <Heading color={defaultTextColor} size="md" textAlign="center">
-              {signTransactionsRequest.payload.message.clientInfo.appName}
-            </Heading>
-
-            {/*host*/}
-            <Box
-              backgroundColor={textBackgroundColor}
-              borderRadius={theme.radii['3xl']}
-              px={DEFAULT_GAP / 3}
-              py={1}
-            >
-              <Text color={defaultTextColor} fontSize="xs" textAlign="center">
-                {signTransactionsRequest.payload.message.clientInfo.host}
-              </Text>
-            </Box>
-          </VStack>
-        </HStack>
-
-        {/*caption*/}
-        <Text color={subTextColor} fontSize="md" textAlign="center">
-          {t<string>(
-            signTransactionsRequest.payload.message.params.txns.length > 1
-              ? 'captions.signTransactionsRequest'
-              : 'captions.signTransactionRequest'
-          )}
-        </Text>
-      </>
-    );
-  };
-
-  useUpdateStandardAssetInformation(signTransactionsRequest);
 
   return (
     <Modal
       initialFocusRef={passwordInputRef}
-      isOpen={!!signTransactionsRequest}
+      isOpen={!!event}
       motionPreset="slideInBottom"
       onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >
       <ModalContent
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        backgroundColor={BODY_BACKGROUND_COLOR}
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
-            {renderHeader()}
-          </VStack>
+          {event && event.payload.message.params ? (
+            <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
+              <ClientHeader
+                description={
+                  event.payload.message.clientInfo.description || undefined
+                }
+                iconUrl={event.payload.message.clientInfo.iconUrl || undefined}
+                host={event.payload.message.clientInfo.host || 'unknown host'}
+                name={event.payload.message.clientInfo.appName || 'Unknown'}
+              />
+
+              {/*caption*/}
+              <Text color={subTextColor} fontSize="sm" textAlign="center">
+                {t<string>(
+                  event.payload.message.params.txns.length > 1
+                    ? 'captions.signTransactionsRequest'
+                    : 'captions.signTransactionRequest'
+                )}
+              </Text>
+            </VStack>
+          ) : (
+            <ClientHeaderSkeleton />
+          )}
         </ModalHeader>
 
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
@@ -330,11 +281,9 @@ const SignTransactionsModal: FC<ISignTransactionsModalProps> = ({
             <PasswordInput
               error={passwordError}
               hint={
-                signTransactionsRequest &&
-                signTransactionsRequest.payload.message.params
+                event && event.payload.message.params
                   ? t<string>(
-                      signTransactionsRequest.payload.message.params.txns
-                        .length > 1
+                      event.payload.message.params.txns.length > 1
                         ? 'captions.mustEnterPasswordToSignTransactions'
                         : 'captions.mustEnterPasswordToSignTransaction'
                     )

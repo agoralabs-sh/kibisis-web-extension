@@ -351,7 +351,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
     setQuery('');
     setQueryARC0200AssetDispatch(null);
     setQueryStandardAssetDispatch(null);
-    onClose();
+    onClose && onClose();
   };
   const handleKeyUp = () => {
     // if the query is empty, clear assets
@@ -677,7 +677,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
     <Modal
       isOpen={isOpen}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >

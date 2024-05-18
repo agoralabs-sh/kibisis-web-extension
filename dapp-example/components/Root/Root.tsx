@@ -20,7 +20,7 @@ import ConnectMenu, { IOnConnectParams } from '../ConnectMenu';
 import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
 import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountViaQRCodeTab from '../ImportAccountViaQRCodeTab';
-import SendKeyRegistrationViaQRCodeTab from '../SendKeyRegistrationViaQRCodeTab';
+import SendKeyRegistrationViaURITab from '../SendKeyRegistrationViaURITab';
 import SignApplicationTransactionTab from '../SignApplicationTransactionTab';
 import SignAssetTransactionTab from '../SignAssetTransactionTab';
 import SignAtomicTransactionsTab from '../SignAtomicTransactionsTab';
@@ -162,11 +162,12 @@ const Root: FC = () => {
               <Tab>
                 <Text fontSize="sm">Sign Message</Text>
               </Tab>
+
               <Tab>
                 <Text fontSize="sm">Import Account Via QR Code</Text>
               </Tab>
               <Tab>
-                <Text fontSize="sm">Send Key Registration Via QR Code</Text>
+                <Text fontSize="sm">Send Key Registration Via URI</Text>
               </Tab>
             </TabList>
 
@@ -188,7 +189,7 @@ const Root: FC = () => {
 
               <ImportAccountViaQRCodeTab />
 
-              <SendKeyRegistrationViaQRCodeTab
+              <SendKeyRegistrationViaURITab
                 account={selectedAccount}
                 network={selectedNetwork}
               />
@@ -224,11 +225,12 @@ const Root: FC = () => {
               <Tab>
                 <Text fontSize="sm">Sign Message</Text>
               </Tab>
+
               <Tab>
                 <Text fontSize="sm">Import Account Via QR Code</Text>
               </Tab>
               <Tab>
-                <Text fontSize="sm">Send Key Registration Via QR Code</Text>
+                <Text fontSize="sm">Send Key Registration Via URI</Text>
               </Tab>
             </TabList>
 
@@ -250,7 +252,7 @@ const Root: FC = () => {
 
               <ImportAccountViaQRCodeTab />
 
-              <SendKeyRegistrationViaQRCodeTab
+              <SendKeyRegistrationViaURITab
                 account={selectedAccount}
                 network={selectedNetwork}
               />
@@ -283,11 +285,12 @@ const Root: FC = () => {
               <Tab>
                 <Text fontSize="sm">Sign Key Registration Transaction</Text>
               </Tab>
+
               <Tab>
                 <Text fontSize="sm">Import Account Via QR Code</Text>
               </Tab>
               <Tab>
-                <Text fontSize="sm">Send Key Registration Via QR Code</Text>
+                <Text fontSize="sm">Send Key Registration Via URI</Text>
               </Tab>
             </TabList>
 
@@ -304,7 +307,7 @@ const Root: FC = () => {
 
               <ImportAccountViaQRCodeTab />
 
-              <SendKeyRegistrationViaQRCodeTab
+              <SendKeyRegistrationViaURITab
                 account={selectedAccount}
                 network={selectedNetwork}
               />
@@ -312,10 +315,20 @@ const Root: FC = () => {
           </Tabs>
         );
       default:
-        break;
-    }
+        return (
+          <Tabs colorScheme="primaryLight" w="full">
+            <TabList>
+              <Tab>
+                <Text fontSize="sm">Import Account Via QR Code</Text>
+              </Tab>
+            </TabList>
 
-    return <ConnectionNotInitializedContent />;
+            <TabPanels>
+              <ImportAccountViaQRCodeTab />
+            </TabPanels>
+          </Tabs>
+        );
+    }
   };
 
   useEffect(() => {

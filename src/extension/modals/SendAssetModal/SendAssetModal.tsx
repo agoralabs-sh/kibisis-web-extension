@@ -167,8 +167,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     setTransactions(null);
     resetToAddress();
     resetPassword();
-
-    onClose();
+    onClose && onClose();
   };
   const handleFromAccountChange = (account: IAccount) =>
     dispatch(
@@ -648,7 +647,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     <Modal
       isOpen={isOpen}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >

@@ -8,13 +8,13 @@ import { MessagesThunkEnum } from '@extension/enums';
 import { ProviderRegistrationCompletedMessage } from '@common/messages';
 
 // types
-import { IMainRootState } from '@extension/types';
+import type { IBaseAsyncThunkConfig } from '@extension/types';
 
 const sendRegistrationCompletedThunk: AsyncThunk<
   void, // return
   undefined, // args
-  Record<string, never>
-> = createAsyncThunk<void, undefined, { state: IMainRootState }>(
+  IBaseAsyncThunkConfig
+> = createAsyncThunk<void, undefined, IBaseAsyncThunkConfig>(
   MessagesThunkEnum.SendRegistrationCompleted,
   async () => {
     // send the message

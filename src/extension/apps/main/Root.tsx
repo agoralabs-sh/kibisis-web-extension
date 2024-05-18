@@ -17,11 +17,6 @@ import {
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import {
-  setEnableRequest,
-  setSignMessageRequest,
-  setSignTransactionsRequest,
-} from '@extension/features/events';
-import {
   fetchTransactionParamsFromStorageThunk,
   startPollingForTransactionsParamsThunk,
 } from '@extension/features/networks';
@@ -36,6 +31,7 @@ import {
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import {
+  closeCurrentWindowThunk,
   setConfirmModal,
   setScanQRCodeModal,
 } from '@extension/features/system';
@@ -51,6 +47,7 @@ import useNotifications from '@extension/hooks/useNotifications';
 import AddAssetsModal, {
   AddAssetsForWatchAccountModal,
 } from '@extension/modals/AddAssetsModal';
+import ARC0300KeyRegistrationTransactionSendEventModal from '@extension/modals/ARC0300KeyRegistrationTransactionSendEventModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
 import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
@@ -83,14 +80,9 @@ const Root: FC = () => {
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
-  const handleEnableModalClose = () => dispatch(setEnableRequest(null));
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
-  const handleSignMessageModalClose = () =>
-    dispatch(setSignMessageRequest(null));
-  const handleSignTransactionsModalClose = () =>
-    dispatch(setSignTransactionsRequest(null));
   const handleWalletConnectModalClose = () =>
     dispatch(closeWalletConnectModal());
 
@@ -137,17 +129,27 @@ const Root: FC = () => {
 
   return (
     <>
+      {/*top-level modals*/}
       <ConfirmModal onClose={handleConfirmClose} />
-      <EnableModal onClose={handleEnableModalClose} />
-      <SignMessageModal onClose={handleSignMessageModalClose} />
-      <SignTransactionsModal onClose={handleSignTransactionsModalClose} />
+
+      {/*event modals*/}
+      <EnableModal />
+      <SignMessageModal />
+      <SignTransactionsModal />
+      <ARC0300KeyRegistrationTransactionSendEventModal />
+
+      {/*action modals*/}
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <AddAssetsForWatchAccountModal onClose={handleAddAssetsModalClose} />
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />
-      <VoiageToMainnetModal />
       <WalletConnectModal onClose={handleWalletConnectModalClose} />
+
+      {/*information modals*/}
+      <VoiageToMainnetModal />
+
+      {/*main*/}
       <MainLayout>
         <Outlet />
       </MainLayout>

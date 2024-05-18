@@ -9,9 +9,8 @@ import { NetworksThunkEnum } from '@extension/enums';
 import StorageManager from '@extension/services/StorageManager';
 
 // types
-import { ILogger } from '@common/types';
-import {
-  IMainRootState,
+import type {
+  IBaseAsyncThunkConfig,
   INetworkWithTransactionParams,
   ITransactionParams,
 } from '@extension/types';
@@ -24,20 +23,23 @@ import { updateTransactionParams } from '../utils';
 const fetchTransactionParamsFromStorageThunk: AsyncThunk<
   INetworkWithTransactionParams[], // return
   undefined, // args
-  Record<string, never>
+  IBaseAsyncThunkConfig
 > = createAsyncThunk<
   INetworkWithTransactionParams[],
   undefined,
-  { state: IMainRootState }
+  IBaseAsyncThunkConfig
 >(
   NetworksThunkEnum.FetchTransactionParamsFromStorageThunk,
   async (_, { getState }) => {
-    const logger: ILogger = getState().system.logger;
-    const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const online: boolean = getState().system.online;
-    const selectedNetwork: INetworkWithTransactionParams | null =
-      selectNetworkFromSettings(networks, getState().settings);
-    const storageManager: StorageManager = new StorageManager();
+    const logger = getState().system.logger;
+    const networks = getState().networks.items;
+    const online = getState().system.online;
+    const selectedNetwork =
+      selectNetworkFromSettings<INetworkWithTransactionParams>(
+        networks,
+        getState().settings
+      );
+    const storageManager = new StorageManager();
     let storageItems: Record<string, unknown>;
     let updatedNetworks: INetworkWithTransactionParams[];
 

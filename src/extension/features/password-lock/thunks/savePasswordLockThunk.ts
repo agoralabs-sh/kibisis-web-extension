@@ -8,7 +8,7 @@ import { PasswordLockThunkEnum } from '@extension/enums';
 import { ProviderPasswordLockClearMessage } from '@common/messages';
 
 // types
-import { IBaseAsyncThunkConfig } from '@extension/types';
+import type { IBaseAsyncThunkConfig } from '@extension/types';
 
 /**
  * Sends a message to the background service worker to clear the password lock alarm. This is either called when setting

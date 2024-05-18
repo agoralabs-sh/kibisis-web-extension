@@ -1,10 +1,23 @@
+import { TransactionType } from 'algosdk';
+import { v4 as uuid } from 'uuid';
 import browser, { Alarms, Tabs, Windows } from 'webextension-polyfill';
+
+// configs
+import { networks } from '@extension/config';
 
 // constants
 import { PASSWORD_LOCK_ALARM } from '@extension/constants';
 
 // enums
-import { AppTypeEnum } from '@extension/enums';
+import {
+  AppTypeEnum,
+  ARC0300AuthorityEnum,
+  ARC0300PathEnum,
+  ARC0300QueryEnum,
+} from '@extension/enums';
+
+// events
+import { ARC0300KeyRegistrationTransactionSendEvent } from '@extension/events';
 
 // messages
 import { ProviderPasswordLockTimeoutMessage } from '@common/messages';
@@ -18,7 +31,19 @@ import StorageManager from '../StorageManager';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
-import type { IAppWindow, ISettings } from '@extension/types';
+import {
+  IAppWindow,
+  IARC0300BaseSchema,
+  IARC0300OfflineKeyRegistrationTransactionSendSchema,
+  IARC0300OnlineKeyRegistrationTransactionSendSchema,
+  ISettings,
+  TARC0300TransactionSendSchemas,
+} from '@extension/types';
+
+// utils
+import supportedNetworksFromSettings from '@extension/utils/supportedNetworksFromSettings';
+import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
+import sendExtensionEvent from '@extension/utils/sendExtensionEvent';
 
 export default class ProviderActionListener {
   // private variables
@@ -63,8 +88,9 @@ export default class ProviderActionListener {
   private async getMainWindow(
     includeTabs: boolean = false
   ): Promise<Windows.Window | null> {
-    const mainAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+    const mainAppWindows = await this.appWindowManagerService.getByType(
+      AppTypeEnum.MainApp
+    );
 
     if (mainAppWindows.length <= 0) {
       return null;
@@ -78,7 +104,7 @@ export default class ProviderActionListener {
   }
 
   private async getMainWindowTab(): Promise<Tabs.Tab | null> {
-    const mainWindow: Windows.Window | null = await this.getMainWindow(true);
+    const mainWindow = await this.getMainWindow(true);
 
     if (!mainWindow) {
       return null;
@@ -92,7 +118,7 @@ export default class ProviderActionListener {
    */
 
   public async onAlarm(alarm: Alarms.Alarm): Promise<void> {
-    const _functionName: string = 'onAlarm';
+    const _functionName = 'onAlarm';
 
     this.logger?.debug(
       `${ProviderActionListener.name}#${_functionName}(): alarm "${PASSWORD_LOCK_ALARM}" fired`
@@ -112,8 +138,8 @@ export default class ProviderActionListener {
   }
 
   public async onExtensionClick(): Promise<void> {
-    const _functionName: string = 'onExtensionClick';
-    const isInitialized: boolean = await this.privateKeyService.isInitialized();
+    const _functionName = 'onExtensionClick';
+    const isInitialized = await this.privateKeyService.isInitialized();
     let mainAppWindows: IAppWindow[];
     let registrationAppWindows: IAppWindow[];
 
@@ -185,8 +211,8 @@ export default class ProviderActionListener {
   }
 
   public async onFocusChanged(windowId: number): Promise<void> {
-    const _functionName: string = 'onFocusChanged';
-    const mainWindow: Windows.Window | null = await this.getMainWindow();
+    const _functionName = 'onFocusChanged';
+    const mainWindow = await this.getMainWindow();
     let passwordLockAlarm: Alarms.Alarm | null;
     let settings: ISettings;
 
@@ -237,15 +263,65 @@ export default class ProviderActionListener {
     }
   }
 
+  public async onOmniboxInputEntered(text: string): Promise<void> {
+    const _functionName = 'onOmniboxInputEntered';
+    let arc0300Schema: IARC0300BaseSchema | null;
+    let settings: ISettings;
+
+    this.logger?.debug(
+      `${ProviderActionListener.name}#${_functionName}: received omnibox input "${text}"`
+    );
+
+    settings = await this.settingsService.getAll();
+    arc0300Schema = parseURIToARC0300Schema(text, {
+      supportedNetworks: supportedNetworksFromSettings(networks, settings),
+      ...(this.logger && {
+        logger: this.logger,
+      }),
+    });
+
+    if (arc0300Schema) {
+      switch (arc0300Schema.authority) {
+        case ARC0300AuthorityEnum.Transaction:
+          // send
+          if (arc0300Schema.paths[0] === ARC0300PathEnum.Send) {
+            switch (
+              (arc0300Schema as TARC0300TransactionSendSchemas).query.type
+            ) {
+              case TransactionType.keyreg:
+                return await sendExtensionEvent({
+                  appWindowManagerService: this.appWindowManagerService,
+                  privateKeyService: this.privateKeyService,
+                  event: new ARC0300KeyRegistrationTransactionSendEvent({
+                    id: uuid(),
+                    payload: arc0300Schema as
+                      | IARC0300OfflineKeyRegistrationTransactionSendSchema
+                      | IARC0300OnlineKeyRegistrationTransactionSendSchema,
+                  }),
+                  ...(this.logger && {
+                    logger: this.logger,
+                  }),
+                });
+              default:
+                break;
+            }
+          }
+
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   public async onWindowRemove(windowId: number): Promise<void> {
-    const _functionName: string = 'onWindowRemove';
-    const appWindow: IAppWindow | null =
-      await this.appWindowManagerService.getById(windowId);
+    const _functionName = 'onWindowRemove';
+    const appWindow = await this.appWindowManagerService.getById(windowId);
 
     // remove the app window from storage
     if (appWindow) {
       this.logger?.debug(
-        `${ProviderActionListener.name}#${_functionName}(): removed "${appWindow.type}" window`
+        `${ProviderActionListener.name}#${_functionName}: removed "${appWindow.type}" window`
       );
 
       await this.appWindowManagerService.removeById(windowId);
