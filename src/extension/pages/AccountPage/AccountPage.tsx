@@ -90,6 +90,7 @@ import type { IAppThunkDispatch, INetwork } from '@extension/types';
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import WatchAccountBadge from '@extension/components/WatchAccountBadge';
+import ReKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -346,6 +347,9 @@ const AccountPage: FC = () => {
             >
               {/*watch account*/}
               {account.watchAccount && <WatchAccountBadge />}
+
+              {/*re-keyed badge*/}
+              {accountInformation.authAddress && <ReKeyedAccountBadge />}
             </HStack>
           </VStack>
 

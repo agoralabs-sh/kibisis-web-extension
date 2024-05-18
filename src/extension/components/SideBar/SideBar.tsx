@@ -161,9 +161,10 @@ const SideBar: FC = () => {
 
     return accounts.map((value, index) => (
       <SideBarAccountItem
-        active={activeAccount ? value.id === activeAccount.id : false}
         account={value}
+        active={activeAccount ? value.id === activeAccount.id : false}
         key={`sidebar-item-${index}`}
+        network={network || undefined}
         onClick={handleAccountClick}
       />
     ));

@@ -423,6 +423,7 @@ const translation: IResourceLanguage = {
     passwordLockTimeout: 'Password lock timeout',
     preferredBlockExplorer: 'Preferred Block Explorer',
     preferredNFTExplorer: 'Preferred NFT Explorer',
+    reKeyed: 'Re-keyed',
     removeAccount: 'Remove Account',
     removeAsset: 'Remove Asset',
     [`removeAsset_${AssetTypeEnum.ARC0200}`]: 'Hide Asset',

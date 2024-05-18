@@ -37,6 +37,7 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
   account,
   active,
+  network,
   onClick,
 }) => {
   // hooks
@@ -82,7 +83,7 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
         {/*icon*/}
         <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
           <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
-            <AccountAvatar account={account} />
+            <AccountAvatar account={account} network={network} />
           </Center>
 
           {/*name/address*/}
