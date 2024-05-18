@@ -62,7 +62,7 @@ const ARC0300KeyRegistrationTransactionSendEventModal: FC<IModalProps> = ({
       {event ? (
         <ARC0300KeyRegistrationTransactionSendModalContent
           onComplete={handleClose}
-          onPreviousClick={handleClose}
+          onCancel={handleClose}
           schema={event.payload}
         />
       ) : (

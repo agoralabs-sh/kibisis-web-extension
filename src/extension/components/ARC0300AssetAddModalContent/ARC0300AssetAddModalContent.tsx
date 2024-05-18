@@ -17,7 +17,6 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -89,7 +88,7 @@ import isAssetInAccountHoldings from '@extension/utils/isAssetInAccountHoldings'
 
 const ARC0300AssetAddModalContent: FC<
   IARC0300ModalContentProps<IARC0300AssetAddSchema>
-> = ({ onComplete, onPreviousClick, schema }) => {
+> = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
@@ -213,9 +212,9 @@ const ARC0300AssetAddModalContent: FC<
   };
   const handleOnAccountSelect = (value: IAccountWithExtendedProps) =>
     setAccount(value);
-  const handlePreviousClick = () => {
+  const handleCancelClick = () => {
     reset();
-    onPreviousClick();
+    onCancel();
   };
   const reset = () => {
     resetUpdateAssets();
@@ -385,15 +384,15 @@ const ARC0300AssetAddModalContent: FC<
       <ModalFooter p={DEFAULT_GAP}>
         <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
           <HStack spacing={DEFAULT_GAP - 2} w="full">
-            {/*previous button*/}
+            {/*cancel button*/}
             <Button
-              leftIcon={<IoArrowBackOutline />}
-              onClick={handlePreviousClick}
+              leftIcon={cancelButtonIcon}
+              onClick={handleCancelClick}
               size="lg"
               variant="outline"
               w="full"
             >
-              {t<string>('buttons.previous')}
+              {cancelButtonLabel || t<string>('buttons.cancel')}
             </Button>
 
             {/*add button*/}

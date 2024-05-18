@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -90,7 +89,7 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
   IARC0300ModalContentProps<
     IARC0300AccountImportSchema<IARC0300AccountImportWithPrivateKeyQuery>
   >
-> = ({ onComplete, onPreviousClick, schema }) => {
+> = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
@@ -122,9 +121,9 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
   const [address, setAddress] = useState<string | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
   // handlers
-  const handlePreviousClick = () => {
+  const handleCancelClick = () => {
     reset();
-    onPreviousClick();
+    onCancel();
   };
   const handleImportClick = async () => {
     const _functionName: string = 'handleImportClick';
@@ -426,15 +425,15 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
           )}
 
           <HStack spacing={DEFAULT_GAP - 2} w="full">
-            {/*previous button*/}
+            {/*cancel button*/}
             <Button
-              leftIcon={<IoArrowBackOutline />}
-              onClick={handlePreviousClick}
+              leftIcon={cancelButtonIcon}
+              onClick={handleCancelClick}
               size="lg"
               variant="outline"
               w="full"
             >
-              {t<string>('buttons.previous')}
+              {cancelButtonLabel || t<string>('buttons.cancel')}
             </Button>
 
             {/*import button*/}

@@ -7,7 +7,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { savePasswordLockThunk } from './thunks';
 
 // types
-import { IPasswordLockState } from './types';
+import type { IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -17,29 +17,23 @@ const slice = createSlice({
     /** Save credentials **/
     builder.addCase(
       savePasswordLockThunk.fulfilled,
-      (state: IPasswordLockState, action: PayloadAction<string | null>) => {
+      (state: IState, action: PayloadAction<string | null>) => {
         state.password = action.payload;
         state.saving = false;
       }
     );
-    builder.addCase(
-      savePasswordLockThunk.pending,
-      (state: IPasswordLockState) => {
-        state.saving = true;
-      }
-    );
-    builder.addCase(
-      savePasswordLockThunk.rejected,
-      (state: IPasswordLockState) => {
-        state.saving = false;
-      }
-    );
+    builder.addCase(savePasswordLockThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(savePasswordLockThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
   },
   initialState: getInitialState(),
   name: StoreNameEnum.PasswordLock,
   reducers: {
     setPassword: (
-      state: Draft<IPasswordLockState>,
+      state: Draft<IState>,
       action: PayloadAction<string | null>
     ) => {
       state.password = action.payload;

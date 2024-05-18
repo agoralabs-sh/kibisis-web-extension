@@ -13,6 +13,7 @@ import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-asse
 import { reducer as eventsReducer } from '@extension/features/events';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
+import { reducer as passwordLockReducer } from '@extension/features/password-lock';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
 import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as standardAssetsReducer } from '@extension/features/standard-assets';
@@ -32,6 +33,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       events: eventsReducer,
       messages: messagesReducer,
       networks: networksReducer,
+      passwordLock: passwordLockReducer,
       sessions: sessionsReducer,
       settings: settingsReducer,
       standardAssets: standardAssetsReducer,

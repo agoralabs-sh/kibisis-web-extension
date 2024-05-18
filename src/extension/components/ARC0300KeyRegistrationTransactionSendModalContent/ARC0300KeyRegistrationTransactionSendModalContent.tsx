@@ -16,7 +16,6 @@ import {
 import { Transaction } from 'algosdk';
 import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -79,7 +78,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     | IARC0300OfflineKeyRegistrationTransactionSendSchema
     | IARC0300OnlineKeyRegistrationTransactionSendSchema
   >
-> = ({ onComplete, onPreviousClick, schema }) => {
+> = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
@@ -145,9 +144,9 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     reset();
     onComplete();
   };
-  const handlePreviousClick = () => {
+  const handleCancelClick = () => {
     reset();
-    onPreviousClick();
+    onCancel();
   };
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
@@ -373,15 +372,15 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
           )}
 
           <HStack spacing={DEFAULT_GAP - 2} w="full">
-            {/*previous button*/}
+            {/*cancel button*/}
             <Button
-              leftIcon={<IoArrowBackOutline />}
-              onClick={handlePreviousClick}
+              leftIcon={cancelButtonIcon}
+              onClick={handleCancelClick}
               size="lg"
               variant="outline"
               w="full"
             >
-              {t<string>('buttons.previous')}
+              {cancelButtonLabel || t<string>('buttons.cancel')}
             </Button>
 
             {/*send button*/}

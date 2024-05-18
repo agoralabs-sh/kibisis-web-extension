@@ -6,7 +6,7 @@ import type { IState as IEventsState } from '@extension/features/events';
 import type { IState as INetworksState } from '@extension/features/networks';
 import type { IState as INewsState } from '@extension/features/news';
 import type { INotificationsState } from '@extension/features/notifications';
-import type { IPasswordLockState } from '@extension/features/password-lock';
+import type { IState as IPasswordLockState } from '@extension/features/password-lock';
 import type { IState as IRemoveAssetsState } from '@extension/features/remove-assets';
 import type { IState as ISendAssetsState } from '@extension/features/send-assets';
 import type { ISessionsState } from '@extension/features/sessions';
