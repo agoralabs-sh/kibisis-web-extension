@@ -47,6 +47,7 @@ import useNotifications from '@extension/hooks/useNotifications';
 import AddAssetsModal, {
   AddAssetsForWatchAccountModal,
 } from '@extension/modals/AddAssetsModal';
+import ARC0300KeyRegistrationTransactionSendEventModal from '@extension/modals/ARC0300KeyRegistrationTransactionSendEventModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
 import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
@@ -128,17 +129,27 @@ const Root: FC = () => {
 
   return (
     <>
+      {/*top-level modals*/}
       <ConfirmModal onClose={handleConfirmClose} />
+
+      {/*event modals*/}
       <EnableModal />
       <SignMessageModal />
       <SignTransactionsModal />
+      <ARC0300KeyRegistrationTransactionSendEventModal />
+
+      {/*action modals*/}
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <AddAssetsForWatchAccountModal onClose={handleAddAssetsModalClose} />
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />
-      <VoiageToMainnetModal />
       <WalletConnectModal onClose={handleWalletConnectModalClose} />
+
+      {/*information modals*/}
+      <VoiageToMainnetModal />
+
+      {/*main*/}
       <MainLayout>
         <Outlet />
       </MainLayout>

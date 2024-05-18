@@ -16,6 +16,7 @@ import { closeCurrentWindowThunk } from '@extension/features/system';
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
 
 // modals
+import ARC0300KeyRegistrationTransactionSendEventModal from '@extension/modals/ARC0300KeyRegistrationTransactionSendEventModal';
 import EnableModal from '@extension/modals/EnableModal';
 import SignMessageModal from '@extension/modals/SignMessageModal';
 import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
@@ -67,6 +68,10 @@ const Root: FC = () => {
       <EnableModal onClose={handleModalClose} />
       <SignMessageModal onClose={handleModalClose} />
       <SignTransactionsModal onClose={handleModalClose} />
+      <ARC0300KeyRegistrationTransactionSendEventModal
+        onClose={handleModalClose}
+      />
+
       <LoadingPage />
     </>
   );
