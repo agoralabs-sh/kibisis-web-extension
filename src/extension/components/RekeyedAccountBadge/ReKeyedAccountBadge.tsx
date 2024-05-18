@@ -1,4 +1,4 @@
-import { Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react';
+import { Tag, TagLabel, TagLeftIcon, Tooltip } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoRepeatOutline } from 'react-icons/io5';
@@ -9,12 +9,12 @@ import { useSelectSettingsColorMode } from '@extension/selectors';
 // types
 import type { IProps } from './types';
 
-const ReKeyedAccountBadge: FC<IProps> = ({ size = 'sm' }) => {
+const ReKeyedAccountBadge: FC<IProps> = ({ size = 'sm', tooltipLabel }) => {
   const { t } = useTranslation();
   // selectors
   const colorMode = useSelectSettingsColorMode();
-
-  return (
+  // misc
+  const tag = (
     <Tag
       borderRadius="full"
       colorScheme="orange"
@@ -25,6 +25,12 @@ const ReKeyedAccountBadge: FC<IProps> = ({ size = 'sm' }) => {
       <TagLabel>{t('labels.reKeyed')}</TagLabel>
     </Tag>
   );
+
+  if (tooltipLabel) {
+    return <Tooltip label={tooltipLabel}>{tag}</Tooltip>;
+  }
+
+  return tag;
 };
 
 export default ReKeyedAccountBadge;

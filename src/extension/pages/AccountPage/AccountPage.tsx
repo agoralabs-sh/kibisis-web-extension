@@ -349,7 +349,13 @@ const AccountPage: FC = () => {
               {account.watchAccount && <WatchAccountBadge />}
 
               {/*re-keyed badge*/}
-              {accountInformation.authAddress && <ReKeyedAccountBadge />}
+              {accountInformation.authAddress && (
+                <ReKeyedAccountBadge
+                  tooltipLabel={t<string>('labels.reKeyedToAccount', {
+                    address: accountInformation.authAddress,
+                  })}
+                />
+              )}
             </HStack>
           </VStack>
 
