@@ -1,3 +1,10 @@
+# [1.17.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.3...v1.17.0-beta.4) (2024-05-18)
+
+
+### Features
+
+* listen to new tabs and parse key registration uris ([#234](https://github.com/agoralabs-sh/kibisis-web-extension/issues/234)) ([4caa9cd](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4caa9cd91b7eec7fdc2d89079a664b87874449ef))
+
 # [1.17.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.2...v1.17.0-beta.3) (2024-05-14)
 
 
