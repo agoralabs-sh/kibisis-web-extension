@@ -3,14 +3,15 @@ import { TransactionType } from 'algosdk';
 import React, { FC, useState } from 'react';
 
 // components
+import ARC0300AccountImportWithAddressModalContent from '@extension/components/ARC0300AccountImportWithAddressModalContent';
+import ARC0300AccountImportWithPrivateKeyModalContent from '@extension/components/ARC0300AccountImportWithPrivateKeyModalContent';
+import ARC0300AssetAddModalContent from '@extension/components/ARC0300AssetAddModalContent';
+import ARC0300KeyRegistrationTransactionSendModalContent from '@extension/components/ARC0300KeyRegistrationTransactionSendModalContent';
 import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
 import ScanQRCodeViaScreenCaptureModalContent from '@extension/components/ScanQRCodeViaScreenCaptureModalContent';
 import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTabModalContent';
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
-import AccountImportWithPrivateKeyModalContent from './AccountImportWithPrivateKeyModalContent';
-import AssetAddModalContent from './AssetAddModalContent';
-import KeyRegistrationTransactionSendModal from './KeyRegistrationTransactionSendModal';
 
 // enums
 import {
@@ -41,7 +42,6 @@ import {
 
 // utils
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
-import AccountImportWithAddressModalContent from '@extension/modals/ScanQRCodeModal/AccountImportWithAddressModalContent';
 
 const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   // selectors
@@ -106,7 +106,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                   )
                 ) {
                   return (
-                    <AccountImportWithPrivateKeyModalContent
+                    <ARC0300AccountImportWithPrivateKeyModalContent
                       onComplete={handleClose}
                       onPreviousClick={handlePreviousClick}
                       schema={
@@ -123,7 +123,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                   )
                 ) {
                   return (
-                    <AccountImportWithAddressModalContent
+                    <ARC0300AccountImportWithAddressModalContent
                       onComplete={handleClose}
                       onPreviousClick={handlePreviousClick}
                       schema={
@@ -150,7 +150,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                   scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Add))
               ) {
                 return (
-                  <AssetAddModalContent
+                  <ARC0300AssetAddModalContent
                     onComplete={handleClose}
                     onPreviousClick={handlePreviousClick}
                     schema={arc0300Schema as IARC0300AssetAddSchema}
@@ -178,7 +178,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                 ) {
                   case TransactionType.keyreg:
                     return (
-                      <KeyRegistrationTransactionSendModal
+                      <ARC0300KeyRegistrationTransactionSendModalContent
                         onComplete={handleClose}
                         onPreviousClick={handlePreviousClick}
                         schema={

@@ -33,7 +33,7 @@ import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 
-const KeyRegistrationTransactionContent: FC<IProps> = ({
+const KeyRegistrationTransactionModalBody: FC<IProps> = ({
   account,
   condensed,
   network,
@@ -215,4 +215,4 @@ const KeyRegistrationTransactionContent: FC<IProps> = ({
   );
 };
 
-export default KeyRegistrationTransactionContent;
+export default KeyRegistrationTransactionModalBody;

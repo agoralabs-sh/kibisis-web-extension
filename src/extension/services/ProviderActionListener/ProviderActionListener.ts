@@ -17,7 +17,7 @@ import {
 } from '@extension/enums';
 
 // events
-import { SendKeyRegistrationTransactionEvent } from '@extension/events';
+import { ARC0300KeyRegistrationTransactionSendEvent } from '@extension/events';
 
 // messages
 import { ProviderPasswordLockTimeoutMessage } from '@common/messages';
@@ -31,9 +31,11 @@ import StorageManager from '../StorageManager';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
-import type {
+import {
   IAppWindow,
   IARC0300BaseSchema,
+  IARC0300OfflineKeyRegistrationTransactionSendSchema,
+  IARC0300OnlineKeyRegistrationTransactionSendSchema,
   ISettings,
   TARC0300TransactionSendSchemas,
 } from '@extension/types';
@@ -290,33 +292,11 @@ export default class ProviderActionListener {
                 return await sendExtensionEvent({
                   appWindowManagerService: this.appWindowManagerService,
                   privateKeyService: this.privateKeyService,
-                  event: new SendKeyRegistrationTransactionEvent({
+                  event: new ARC0300KeyRegistrationTransactionSendEvent({
                     id: uuid(),
-                    payload: {
-                      fee: arc0300Schema.query[ARC0300QueryEnum.Fee],
-                      firstValidRound:
-                        arc0300Schema.query[ARC0300QueryEnum.FirstValid],
-                      genesisHash:
-                        arc0300Schema.query[ARC0300QueryEnum.GenesisHash],
-                      group: arc0300Schema.query[ARC0300QueryEnum.Group],
-                      lastValidRound:
-                        arc0300Schema.query[ARC0300QueryEnum.LastValid],
-                      lease: arc0300Schema.query[ARC0300QueryEnum.Lease],
-                      note: arc0300Schema.query[ARC0300QueryEnum.Note],
-                      rekeyTo: arc0300Schema.query[ARC0300QueryEnum.ReyKeyTo],
-                      selectionKey:
-                        arc0300Schema.query[ARC0300QueryEnum.SelectionKey],
-                      sender: arc0300Schema.query[ARC0300QueryEnum.Sender],
-                      stateProofKey:
-                        arc0300Schema.query[ARC0300QueryEnum.StateProofKey],
-                      voteFirstRound:
-                        arc0300Schema.query[ARC0300QueryEnum.VoteFirst],
-                      voteKey: arc0300Schema.query[ARC0300QueryEnum.VoteKey],
-                      voteKeyDilution:
-                        arc0300Schema.query[ARC0300QueryEnum.VoteKeyDilution],
-                      voteLastRound:
-                        arc0300Schema.query[ARC0300QueryEnum.VoteLast],
-                    },
+                    payload: arc0300Schema as
+                      | IARC0300OfflineKeyRegistrationTransactionSendSchema
+                      | IARC0300OnlineKeyRegistrationTransactionSendSchema,
                   }),
                   ...(this.logger && {
                     logger: this.logger,

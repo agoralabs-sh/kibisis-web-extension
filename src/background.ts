@@ -1,4 +1,4 @@
-import browser, { Action, BrowserAction } from 'webextension-polyfill';
+import browser from 'webextension-polyfill';
 
 // services
 import ClientMessageHandler from '@extension/services/ClientMessageHandler';
@@ -7,25 +7,18 @@ import ProviderActionListener from '@extension/services/ProviderActionListener';
 import ProviderMessageHandler from '@extension/services/ProviderMessageHandler';
 import SettingsService from '@extension/services/SettingsService';
 
-// types
-import type { ILogger } from '@common/types';
-import type { ISettings } from '@extension/types';
-
 // utils
 import createLogger from '@common/utils/createLogger';
 
 (async () => {
-  const browserAction: Action.Static | BrowserAction.Static =
-    browser.action || browser.browserAction; // TODO: use browser.action for v3
+  const browserAction = browser.action || browser.browserAction; // TODO: use browser.action for v3
   let clientMessageHandler: ClientMessageHandler;
-  let logger: ILogger = createLogger(
-    __ENV__ === 'development' ? 'debug' : 'error'
-  );
+  let logger = createLogger(__ENV__ === 'development' ? 'debug' : 'error');
   let heartbeatService: HeartbeatService;
   let providerActionListener: ProviderActionListener;
   let providerMessageHandler: ProviderMessageHandler;
   let settingsService: SettingsService = new SettingsService({ logger });
-  let settings: ISettings = await settingsService.getAll();
+  let settings = await settingsService.getAll();
 
   // if the debug logging is enabled, re-create the logger with debug logging enabled
   if (settings.advanced.debugLogging) {

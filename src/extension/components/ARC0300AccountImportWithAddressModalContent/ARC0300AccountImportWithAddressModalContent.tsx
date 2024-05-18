@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -23,9 +23,6 @@ import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import ModalSubHeading from '@extension/components/ModalSubHeading';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
 
 // constants
 import {
@@ -35,18 +32,14 @@ import {
 } from '@extension/constants';
 
 // enums
-import {
-  AccountTabEnum,
-  ARC0300QueryEnum,
-  ErrorCodeEnum,
-} from '@extension/enums';
+import { AccountTabEnum, ARC0300QueryEnum } from '@extension/enums';
 
 // features
 import {
   addARC0200AssetHoldingsThunk,
   IUpdateAssetHoldingsResult,
   saveActiveAccountDetails,
-  saveNewAccountThunk,
+  saveNewWatchAccountThunk,
 } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 
@@ -60,9 +53,7 @@ import useUpdateARC0200Assets from '@extension/hooks/useUpdateARC0200Assets';
 import {
   useSelectActiveAccountDetails,
   useSelectLogger,
-  useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -75,32 +66,28 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAccount,
-  IARC0300AccountImportSchema,
-  IARC0300AccountImportWithPrivateKeyQuery,
   IAppThunkDispatch,
+  IARC0300ModalContentProps,
+  IARC0300AccountImportSchema,
+  IARC0300AccountImportWithAddressQuery,
 } from '@extension/types';
-import type { IModalContentProps } from './types';
 
 // utils
-import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
+import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 
-const AccountImportWithPrivateKeyModalContent: FC<
-  IModalContentProps<
-    IARC0300AccountImportSchema<IARC0300AccountImportWithPrivateKeyQuery>
+const ARC0300AccountImportWithAddressModalContent: FC<
+  IARC0300ModalContentProps<
+    IARC0300AccountImportSchema<IARC0300AccountImportWithAddressQuery>
   >
 > = ({ onComplete, onPreviousClick, schema }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
   const network = useSelectSelectedNetwork();
-  const passwordLockPassword = useSelectPasswordLockPassword();
-  const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const {
@@ -108,18 +95,9 @@ const AccountImportWithPrivateKeyModalContent: FC<
     loading,
     reset: resetUpdateAssets,
   } = useUpdateARC0200Assets(schema.query[ARC0300QueryEnum.Asset]);
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
   const primaryButtonTextColor = usePrimaryButtonTextColor();
   const subTextColor = useSubTextColor();
   // states
-  const [address, setAddress] = useState<string | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
   // handlers
   const handlePreviousClick = () => {
@@ -127,83 +105,17 @@ const AccountImportWithPrivateKeyModalContent: FC<
     onPreviousClick();
   };
   const handleImportClick = async () => {
-    const _functionName: string = 'handleImportClick';
-    let _password: string | null;
     let account: IAccount | null;
     let actionTrackingService: ActionTrackingService;
-    let privateKey: Uint8Array | null;
     let result: IUpdateAssetHoldingsResult;
-
-    // if there is no password lock
-    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-      // validate the password input
-      if (validatePassword()) {
-        logger.debug(
-          `${AccountImportWithPrivateKeyModalContent.name}#${_functionName}: password not valid`
-        );
-
-        return;
-      }
-    }
-
-    _password = settings.security.enablePasswordLock
-      ? passwordLockPassword
-      : password;
-
-    if (!_password) {
-      logger.debug(
-        `${AccountImportWithPrivateKeyModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
-      );
-
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            context: ErrorCodeEnum.ParsingError,
-            type: 'password',
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', {
-            context: ErrorCodeEnum.ParsingError,
-          }),
-          type: 'error',
-        })
-      );
-
-      return;
-    }
-
-    privateKey = decodePrivateKeyFromAccountImportSchema(schema);
-
-    if (!privateKey) {
-      logger.debug(
-        `${AccountImportWithPrivateKeyModalContent.name}#${_functionName}: failed to decode the private key`
-      );
-
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            context: ErrorCodeEnum.ParsingError,
-            type: 'key',
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', {
-            context: ErrorCodeEnum.ParsingError,
-          }),
-          type: 'error',
-        })
-      );
-
-      return;
-    }
 
     setSaving(true);
 
     try {
       account = await dispatch(
-        saveNewAccountThunk({
+        saveNewWatchAccountThunk({
+          address: schema.query[ARC0300QueryEnum.Address],
           name: null,
-          password: _password,
-          privateKey,
         })
       ).unwrap();
 
@@ -221,19 +133,6 @@ const AccountImportWithPrivateKeyModalContent: FC<
       }
     } catch (error) {
       switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
-        case ErrorCodeEnum.PrivateKeyAlreadyExistsError:
-          logger.debug(
-            `${AccountImportWithPrivateKeyModalContent.name}#${_functionName}: account already exists, carry on`
-          );
-
-          // clean up and close
-          handleOnComplete();
-
-          break;
         default:
           dispatch(
             createNotification({
@@ -292,36 +191,14 @@ const AccountImportWithPrivateKeyModalContent: FC<
     // clean up and close
     handleOnComplete();
   };
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === 'Enter') {
-      await handleImportClick();
-    }
-  };
   const handleOnComplete = () => {
     reset();
     onComplete();
   };
   const reset = () => {
-    resetPassword();
     resetUpdateAssets();
     setSaving(false);
   };
-
-  useEffect(() => {
-    if (passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, []);
-  useEffect(() => {
-    const privateKey: Uint8Array | null =
-      decodePrivateKeyFromAccountImportSchema(schema);
-
-    if (privateKey) {
-      setAddress(convertPrivateKeyToAddress(privateKey));
-    }
-  }, []);
 
   return (
     <ModalContent
@@ -347,18 +224,17 @@ const AccountImportWithPrivateKeyModalContent: FC<
             <ModalSubHeading text={t<string>('labels.account')} />
 
             {/*address*/}
-            {!address ? (
-              <ModalSkeletonItem />
-            ) : (
-              <ModalTextItem
-                label={`${t<string>('labels.address')}:`}
-                tooltipLabel={address}
-                value={ellipseAddress(address, {
-                  end: 10,
-                  start: 10,
-                })}
-              />
-            )}
+            <ModalTextItem
+              label={`${t<string>('labels.address')}:`}
+              tooltipLabel={schema.query[ARC0300QueryEnum.Address]}
+              value={ellipseAddress(schema.query[ARC0300QueryEnum.Address], {
+                end: 10,
+                start: 10,
+              })}
+            />
+
+            {/*type*/}
+            <ModalItem label={t('labels.type')} value={<WatchAccountBadge />} />
           </VStack>
 
           {/*assets*/}
@@ -414,17 +290,6 @@ const AccountImportWithPrivateKeyModalContent: FC<
       {/*footer*/}
       <ModalFooter p={DEFAULT_GAP}>
         <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-          {!settings.security.enablePasswordLock && !passwordLockPassword && (
-            <PasswordInput
-              error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToImportAccount')}
-              onChange={onPasswordChange}
-              onKeyUp={handleKeyUpPasswordInput}
-              inputRef={passwordInputRef}
-              value={password}
-            />
-          )}
-
           <HStack spacing={DEFAULT_GAP - 2} w="full">
             {/*previous button*/}
             <Button
@@ -454,4 +319,4 @@ const AccountImportWithPrivateKeyModalContent: FC<
   );
 };
 
-export default AccountImportWithPrivateKeyModalContent;
+export default ARC0300AccountImportWithAddressModalContent;

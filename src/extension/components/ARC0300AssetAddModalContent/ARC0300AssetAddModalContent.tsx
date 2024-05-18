@@ -79,19 +79,17 @@ import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
   IARC0300AssetAddSchema,
+  IARC0300ModalContentProps,
 } from '@extension/types';
-import type { IModalContentProps } from './types';
 
 // utils
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import isAssetInAccountHoldings from '@extension/utils/isAssetInAccountHoldings';
 
-const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
-  onComplete,
-  onPreviousClick,
-  schema,
-}) => {
+const ARC0300AssetAddModalContent: FC<
+  IARC0300ModalContentProps<IARC0300AssetAddSchema>
+> = ({ onComplete, onPreviousClick, schema }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
@@ -139,7 +137,7 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
     // if the asset is already in the account, just clean up and close
     if (isAssetInAccountHoldings({ account, asset, network })) {
       logger.debug(
-        `${AssetAddModalContent.name}#${_functionName}: asset "${asset.id}" already added`
+        `${ARC0300AssetAddModalContent.name}#${_functionName}: asset "${asset.id}" already added`
       );
 
       handleOnComplete();
@@ -415,4 +413,4 @@ const AssetAddModalContent: FC<IModalContentProps<IARC0300AssetAddSchema>> = ({
   );
 };
 
-export default AssetAddModalContent;
+export default ARC0300AssetAddModalContent;

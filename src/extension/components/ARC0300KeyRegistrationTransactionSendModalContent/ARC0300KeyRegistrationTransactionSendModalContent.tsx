@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
-import KeyRegistrationTransactionModalContent from '@extension/components/KeyRegistrationTransactionModalContent';
+import KeyRegistrationTransactionModalBody from '@extension/components/KeyRegistrationTransactionModalBody';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import PasswordInput, {
   usePassword,
@@ -62,10 +62,10 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAppThunkDispatch,
+  IARC0300ModalContentProps,
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
   IARC0300OnlineKeyRegistrationTransactionSendSchema,
 } from '@extension/types';
-import type { IModalContentProps } from './types';
 
 // utils
 import createUnsignedKeyRegistrationTransactionFromSchema from '@extension/utils/createUnsignedKeyRegistrationTransactionFromSchema';
@@ -74,8 +74,8 @@ import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
 
-const KeyRegistrationTransactionSendModal: FC<
-  IModalContentProps<
+const ARC0300KeyRegistrationTransactionSendModalContent: FC<
+  IARC0300ModalContentProps<
     | IARC0300OfflineKeyRegistrationTransactionSendSchema
     | IARC0300OnlineKeyRegistrationTransactionSendSchema
   >
@@ -187,7 +187,7 @@ const KeyRegistrationTransactionSendModal: FC<
       // validate the password input
       if (validatePassword()) {
         logger.debug(
-          `${KeyRegistrationTransactionSendModal.name}#${_functionName}: password not valid`
+          `${ARC0300KeyRegistrationTransactionSendModalContent.name}#${_functionName}: password not valid`
         );
 
         return;
@@ -200,7 +200,7 @@ const KeyRegistrationTransactionSendModal: FC<
 
     if (!_password) {
       logger.debug(
-        `${KeyRegistrationTransactionSendModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
+        `${ARC0300KeyRegistrationTransactionSendModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
       );
 
       return;
@@ -231,7 +231,7 @@ const KeyRegistrationTransactionSendModal: FC<
 
       logger.debug(
         `${
-          KeyRegistrationTransactionSendModal.name
+          ARC0300KeyRegistrationTransactionSendModalContent.name
         }#${_functionName}: sent transactions [${transactionIds
           .map((value) => `"${value}"`)
           .join(',')}] to the network`
@@ -345,7 +345,7 @@ const KeyRegistrationTransactionSendModal: FC<
               <ModalSkeletonItem />
             </VStack>
           ) : (
-            <KeyRegistrationTransactionModalContent
+            <KeyRegistrationTransactionModalBody
               account={account}
               condensed={{
                 expanded: isOpen,
@@ -401,4 +401,4 @@ const KeyRegistrationTransactionSendModal: FC<
   );
 };
 
-export default KeyRegistrationTransactionSendModal;
+export default ARC0300KeyRegistrationTransactionSendModalContent;
