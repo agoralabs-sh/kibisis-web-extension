@@ -1,7 +1,13 @@
-import { Tag, TagLabel, TagLeftIcon, Tooltip } from '@chakra-ui/react';
+import {
+  Tag,
+  TagLabel,
+  TagLeftIcon,
+  TagRightIcon,
+  Tooltip,
+} from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoRepeatOutline } from 'react-icons/io5';
+import { IoAlertOutline, IoRepeatOutline } from 'react-icons/io5';
 
 // selectors
 import { useSelectSettingsColorMode } from '@extension/selectors';
@@ -9,7 +15,12 @@ import { useSelectSettingsColorMode } from '@extension/selectors';
 // types
 import type { IProps } from './types';
 
-const ReKeyedAccountBadge: FC<IProps> = ({ size = 'sm', tooltipLabel }) => {
+const ReKeyedAccountBadge: FC<IProps> = ({
+  authAddress,
+  isAuthAccountAvailable = false,
+  size = 'sm',
+  tooltipLabel,
+}) => {
   const { t } = useTranslation();
   // selectors
   const colorMode = useSelectSettingsColorMode();
@@ -22,12 +33,29 @@ const ReKeyedAccountBadge: FC<IProps> = ({ size = 'sm', tooltipLabel }) => {
       variant={colorMode === 'dark' ? 'solid' : 'outline'}
     >
       <TagLeftIcon as={IoRepeatOutline} />
+
       <TagLabel>{t('labels.reKeyed')}</TagLabel>
+
+      {!isAuthAccountAvailable && (
+        <TagRightIcon as={IoAlertOutline} color="red.300" />
+      )}
     </Tag>
   );
 
   if (tooltipLabel) {
     return <Tooltip label={tooltipLabel}>{tag}</Tooltip>;
+  }
+
+  if (!isAuthAccountAvailable) {
+    return (
+      <Tooltip
+        label={t<string>('labels.noAuthAddressAvailable', {
+          address: authAddress,
+        })}
+      >
+        {tag}
+      </Tooltip>
+    );
   }
 
   return tag;

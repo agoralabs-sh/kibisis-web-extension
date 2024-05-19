@@ -10,7 +10,7 @@ import {
 import React, { FC } from 'react';
 
 // components
-import AccountAvatar from '@extension/components/AccountAvatar';
+import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
 
 // constants
 import {
@@ -36,6 +36,7 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
   account,
+  accounts,
   active,
   network,
   onClick,
@@ -83,7 +84,11 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
         {/*icon*/}
         <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
           <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
-            <AccountAvatar account={account} network={network} />
+            <AccountAvatarWithBadges
+              account={account}
+              accounts={accounts}
+              network={network}
+            />
           </Center>
 
           {/*name/address*/}

@@ -410,6 +410,8 @@ const translation: IResourceLanguage = {
     newPassword: 'New Password',
     nfts: 'NFTs',
     no: 'No',
+    noAuthAddressAvailable:
+      'This account has been re-keyed to the account {{address}}, but the address is not available or is a watch account',
     note: 'Note',
     noteOptional: 'Note (optional)',
     password: 'Password',

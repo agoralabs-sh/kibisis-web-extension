@@ -154,7 +154,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
             w="full"
           >
             {/*account icon*/}
-            <AccountAvatar account={account} />
+            <AccountAvatar />
 
             {/*name/address*/}
             {account.name ? (

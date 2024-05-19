@@ -1,4 +1,5 @@
 import {
+  AvatarBadge,
   HStack,
   Icon,
   Spacer,
@@ -13,12 +14,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
   IoCloudOfflineOutline,
   IoCreateOutline,
+  IoEyeOutline,
   IoQrCodeOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
@@ -67,6 +69,7 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectActiveAccount,
   useSelectActiveAccountDetails,
   useSelectActiveAccountInformation,
@@ -91,6 +94,8 @@ import type { IAppThunkDispatch, INetwork } from '@extension/types';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 import ReKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
+import reKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
+import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -104,6 +109,7 @@ const AccountPage: FC = () => {
   // selectors
   const account = useSelectActiveAccount();
   const accountInformation = useSelectActiveAccountInformation();
+  const accounts = useSelectAccounts();
   const accountTransactions = useSelectActiveAccountTransactions();
   const activeAccountDetails = useSelectActiveAccountDetails();
   const fetchingAccounts = useSelectAccountsFetching();
@@ -346,16 +352,10 @@ const AccountPage: FC = () => {
               w="full"
             >
               {/*watch account*/}
-              {account.watchAccount && <WatchAccountBadge />}
+              {renderWatchAccountBadge()}
 
               {/*re-keyed badge*/}
-              {accountInformation.authAddress && (
-                <ReKeyedAccountBadge
-                  tooltipLabel={t<string>('labels.reKeyedToAccount', {
-                    address: accountInformation.authAddress,
-                  })}
-                />
-              )}
+              {renderReKeyedAccountBadge()}
             </HStack>
           </VStack>
 
@@ -416,6 +416,56 @@ const AccountPage: FC = () => {
         <Spacer />
       </>
     );
+  };
+  const renderReKeyedAccountBadge = () => {
+    let isAuthAccountAvailable = false;
+
+    if (accountInformation && accountInformation.authAddress) {
+      isAuthAccountAvailable = isReKeyedAuthAccountAvailable({
+        accounts,
+        authAddress: accountInformation.authAddress,
+      });
+
+      return (
+        <ReKeyedAccountBadge
+          authAddress={accountInformation.authAddress}
+          isAuthAccountAvailable={isAuthAccountAvailable}
+          tooltipLabel={
+            isAuthAccountAvailable
+              ? t<string>('labels.reKeyedToAccount', {
+                  address: accountInformation.authAddress,
+                })
+              : undefined
+          }
+        />
+      );
+    }
+
+    return null;
+  };
+  const renderWatchAccountBadge = () => {
+    const watchAccountBadge = <WatchAccountBadge />;
+
+    // if this is a re-keyed account
+    if (accountInformation && accountInformation.authAddress) {
+      // if no auth account is present, or the auth account is a watch account, show a watch badge
+      if (
+        !isReKeyedAuthAccountAvailable({
+          accounts,
+          authAddress: accountInformation.authAddress,
+        })
+      ) {
+        return watchAccountBadge;
+      }
+
+      return null;
+    }
+
+    if (account && account.watchAccount) {
+      return watchAccountBadge;
+    }
+
+    return null;
   };
 
   useEffect(() => {

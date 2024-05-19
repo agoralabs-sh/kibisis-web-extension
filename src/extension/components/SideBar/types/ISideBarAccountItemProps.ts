@@ -6,8 +6,9 @@ import type {
 
 interface ISideBarAccountItemProps {
   account: IAccountWithExtendedProps;
+  accounts: IAccountWithExtendedProps[];
   active: boolean;
-  network?: INetworkWithTransactionParams;
+  network: INetworkWithTransactionParams;
   onClick: (id: string) => void;
 }
 

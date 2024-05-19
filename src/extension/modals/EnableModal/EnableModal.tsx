@@ -199,7 +199,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
             w="full"
           >
             {/*account icon*/}
-            <AccountAvatar account={account} />
+            <AccountAvatar />
 
             {/*name/address*/}
             {account.name ? (

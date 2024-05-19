@@ -153,7 +153,7 @@ const SideBar: FC = () => {
     }
   };
   const renderAccounts: () => ReactNode = () => {
-    if (fetchingAccounts) {
+    if (fetchingAccounts || !network) {
       return Array.from({ length: 3 }, (_, index) => (
         <SideBarSkeletonAccountItem key={`sidebar-fetching-item-${index}`} />
       ));
@@ -162,9 +162,10 @@ const SideBar: FC = () => {
     return accounts.map((value, index) => (
       <SideBarAccountItem
         account={value}
+        accounts={accounts}
         active={activeAccount ? value.id === activeAccount.id : false}
         key={`sidebar-item-${index}`}
-        network={network || undefined}
+        network={network}
         onClick={handleAccountClick}
       />
     ));
