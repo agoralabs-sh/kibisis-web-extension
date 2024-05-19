@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAlertOutline, IoRepeatOutline } from 'react-icons/io5';
+import { IoAlertCircleOutline, IoRepeatOutline } from 'react-icons/io5';
 
 // selectors
 import { useSelectSettingsColorMode } from '@extension/selectors';
@@ -37,7 +37,7 @@ const ReKeyedAccountBadge: FC<IProps> = ({
       <TagLabel>{t('labels.reKeyed')}</TagLabel>
 
       {!isAuthAccountAvailable && (
-        <TagRightIcon as={IoAlertOutline} color="red.300" />
+        <TagRightIcon as={IoAlertCircleOutline} color="red.300" />
       )}
     </Tag>
   );

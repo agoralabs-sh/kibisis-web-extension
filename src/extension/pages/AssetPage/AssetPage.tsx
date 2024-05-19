@@ -59,6 +59,7 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 // selectors
 import {
   useSelectAccounts,
+  useSelectAvailableAccountsForSelectedNetwork,
   useSelectSelectedNetwork,
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsFetching,
@@ -93,6 +94,7 @@ const AssetPage: FC = () => {
   } = useDisclosure();
   // selectors
   const accounts = useSelectAccounts();
+  const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const fetchingAssets = useSelectStandardAssetsFetching();
   const blockExplorer = useSelectSettingsPreferredBlockExplorer();
   const selectedNetwork = useSelectSelectedNetwork();
@@ -576,7 +578,8 @@ const AssetPage: FC = () => {
           spacing={DEFAULT_GAP / 3}
           w="full"
         >
-          {!account.watchAccount && (
+          {/*only allow sending for available accounts; accounts that are not watch accounts or accounts that are re-keyed and have the auth account present*/}
+          {!!availableAccounts.find((value) => value.id === account.id) && (
             <Button
               leftIcon={<IoArrowUpOutline />}
               onClick={handleSendClick}
