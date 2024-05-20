@@ -13,7 +13,7 @@ import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccount
 
 /**
  * Gets all the available accounts that can be used for signing operations for the selected network. A valid account is
- * defined as is not a watch account (has a private key stored), or the account is re-keyed and the auth account's
+ * defined as a non-watch account (has a private key stored), or the account is re-keyed and the auth account's
  * private key is present.
  * @returns {IAccountWithExtendedProps[]} all accounts that are available to sign for the selected network.
  */

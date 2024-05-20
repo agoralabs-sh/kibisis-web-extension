@@ -20,6 +20,7 @@ import React, {
   MutableRefObject,
   ReactNode,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -94,6 +95,7 @@ import { theme } from '@extension/theme';
 
 // types
 import type {
+  IAccountInformation,
   IAppThunkDispatch,
   IAppThunkDispatchReturn,
   IARC0200Asset,
@@ -103,8 +105,9 @@ import type {
 } from '@extension/types';
 
 // utils
-import isNumericString from '@extension/utils/isNumericString';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import isNumericString from '@extension/utils/isNumericString';
+import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
 const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -127,6 +130,29 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const isNewSelectedAsset = useIsNewSelectedAsset(selectedAsset);
+  const isOpen = useMemo<boolean>(() => {
+    let accountInformation: IAccountInformation | null;
+
+    if (!account || !selectedNetwork) {
+      return false;
+    }
+
+    accountInformation = AccountService.extractAccountInformationForNetwork(
+      account,
+      selectedNetwork
+    );
+
+    // if the account has been re-keyed, check that the address is available
+    if (accountInformation && accountInformation.authAddress) {
+      return isReKeyedAuthAccountAvailable({
+        accounts,
+        authAddress: accountInformation.authAddress,
+      });
+    }
+
+    // if it has not been re-keyed, check if it is a watch account
+    return !account.watchAccount;
+  }, [account, accounts, selectedNetwork]);
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -153,7 +179,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
     > | null>(null);
   // misc
   const allAssets = [...arc0200Assets, ...standardAssets];
-  const isOpen = !!(account && !account.watchAccount);
   // handlers
   const handleAddARC0200AssetClick = async () => {
     let actionTrackingService: ActionTrackingService;
@@ -162,7 +187,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
       !selectedNetwork ||
       !account ||
       !selectedAsset ||
-      selectedAsset.type === AssetTypeEnum.Standard
+      selectedAsset.type !== AssetTypeEnum.ARC0200
     ) {
       return;
     }
