@@ -49,6 +49,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 // selectors
 import {
   useSelectAccountByAddress,
+  useSelectAccounts,
   useSelectLogger,
   useSelectNetworks,
   useSelectPasswordLockPassword,
@@ -87,6 +88,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   const account = useSelectAccountByAddress(
     schema.query[ARC0300QueryEnum.Sender]
   );
+  const accounts = useSelectAccounts();
   const logger = useSelectLogger();
   const passwordLockPassword = useSelectPasswordLockPassword();
   const networks = useSelectNetworks();
@@ -222,6 +224,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
       }
 
       transactionIds = await signAndSendTransactions({
+        accounts,
         logger,
         network,
         password,

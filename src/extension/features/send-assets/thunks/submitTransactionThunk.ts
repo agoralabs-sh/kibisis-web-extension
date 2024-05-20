@@ -136,6 +136,7 @@ const submitTransactionThunk: AsyncThunk<
 
     try {
       return await signAndSendTransactions({
+        accounts,
         logger,
         network,
         password,

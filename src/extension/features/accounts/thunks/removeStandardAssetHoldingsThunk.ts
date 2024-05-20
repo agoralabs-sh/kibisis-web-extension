@@ -213,6 +213,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       );
 
       transactionIds = await signAndSendTransactions({
+        accounts,
         logger,
         network,
         password,

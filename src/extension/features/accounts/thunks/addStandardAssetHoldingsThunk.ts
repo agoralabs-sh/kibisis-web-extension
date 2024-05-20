@@ -192,6 +192,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       );
 
       transactionIds = await signAndSendTransactions({
+        accounts,
         logger,
         network,
         password,

@@ -73,9 +73,9 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
   }, [events]);
   useEffect(() => {
     (async () => {
+      let _error: string;
       let authorizedAddresses: string[];
       let decodedUnsignedTransactions: Transaction[];
-      let errorMessage: string;
       let filteredSessions: ISession[];
       let genesisHashes: string[];
 
@@ -85,14 +85,14 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
             (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
           );
         } catch (error) {
-          errorMessage = `failed to decode transactions: ${error.message}`;
+          _error = `failed to decode transactions: ${error.message}`;
 
-          logger?.debug(`${_functionName}: ${errorMessage}`);
+          logger?.debug(`${_functionName}: ${_error}`);
 
           await dispatch(
             sendSignTransactionsResponseThunk({
               error: new ARC0027UnknownError({
-                message: errorMessage,
+                message: _error,
                 providerId: __PROVIDER_ID__,
               }),
               event,
