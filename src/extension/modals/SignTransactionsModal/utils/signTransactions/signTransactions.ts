@@ -1,0 +1,133 @@
+import { ARC0027UnauthorizedSignerError } from '@agoralabs-sh/avm-web-provider';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
+import { encodeAddress, Transaction } from 'algosdk';
+
+// errors
+import { MalformedDataError } from '@extension/errors';
+
+// services
+import AccountService from '@extension/services/AccountService';
+
+// types
+import type { INetwork } from '@extension/types';
+import type { IOptions } from './types';
+
+// utils
+import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
+import signTransactionForNetwork from '@extension/utils/signTransactionForNetwork';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+
+/**
+ * Convenience function that signs a group of transactions.
+ * @param {IOptions} options - the base64 encoded transactions, the authorized signers and the password.
+ * @returns {Promise<(string | null)[]>} the signed transactions.
+ * @throws {MalformedDataError} if the data could not be decoded or the signer addresses are malformed.
+ * @throws {DecryptionError} if there was a problem decrypting the private keys with the password.
+ * @throws {InvalidPasswordError} if the password is not valid.
+ */
+export default async function signTransactions({
+  arc001Transactions,
+  authorizedAccounts,
+  logger,
+  networks,
+  password,
+}: IOptions): Promise<(string | null)[]> {
+  const _functionName: string = 'signTransactions';
+  let _error: string;
+
+  return await Promise.all(
+    arc001Transactions.map(async (arc001Transaction) => {
+      const unsignedTransaction: Transaction = decodeUnsignedTransaction(
+        decodeBase64(arc001Transaction.txn)
+      );
+      const base64EncodedGenesisHash = encodeBase64(
+        unsignedTransaction.genesisHash
+      );
+      let network: INetwork | null;
+      let signedTransaction: Uint8Array;
+      let signerAddress: string;
+
+      // if we have an empty signers array, we will skip as per:
+      // {@link https://algorand-provider.agoralabs.sh/getting-started/dapps/signing-transactions#non-wallet-signed-transactions}
+      if (arc001Transaction.signers && arc001Transaction.signers.length <= 0) {
+        logger?.debug(
+          `${_functionName}: skipping transaction "${unsignedTransaction.txID()}" due to empty signers array`
+        );
+
+        return arc001Transaction.stxn || null; // if the signed transaction exists, return it, or null
+      }
+
+      try {
+        signerAddress = encodeAddress(unsignedTransaction.from.publicKey);
+      } catch (error) {
+        logger?.error(`${_functionName}: ${error.message}`);
+
+        throw new MalformedDataError(error.message);
+      }
+
+      // if no authorized address matches the signer, we cannot sign
+      if (
+        !authorizedAccounts.some(
+          (value) =>
+            value.publicKey ===
+            AccountService.encodePublicKey(unsignedTransaction.from.publicKey)
+        )
+      ) {
+        // if there is no signed transaction, we have been instructed to sign, so error
+        if (!arc001Transaction.stxn) {
+          throw new ARC0027UnauthorizedSignerError({
+            message: `signer "${signerAddress}" not authorized to sign transaction "${unsignedTransaction.txID()}"`,
+            providerId: __PROVIDER_ID__,
+            signer: signerAddress,
+          });
+        }
+
+        logger?.debug(
+          `${_functionName}: from address "${signerAddress}" has not been authorized to sign transaction, skipping`
+        );
+
+        // this is a signed transaction, so ignore
+        return null;
+      }
+
+      network =
+        networks.find(
+          (value) =>
+            value.genesisHash ===
+            convertGenesisHashToHex(base64EncodedGenesisHash)
+        ) || null;
+
+      // if the network is not known, we cannot sign
+      if (!network) {
+        _error = `failed to get network for genesis hash "${base64EncodedGenesisHash}"`;
+
+        logger?.error(`${_functionName}: ${_error}`);
+
+        return null;
+      }
+
+      try {
+        signedTransaction = await signTransactionForNetwork({
+          accounts: authorizedAccounts,
+          logger,
+          network,
+          password,
+          unsignedTransaction,
+        });
+
+        logger?.debug(
+          `${_functionName}: successfully signed transaction "${unsignedTransaction.txID()}" for signer "${signerAddress}"`
+        );
+
+        return encodeBase64(signedTransaction);
+      } catch (error) {
+        logger?.error(`${_functionName}: ${error.message}`);
+
+        throw new MalformedDataError(error.message);
+      }
+    })
+  );
+}

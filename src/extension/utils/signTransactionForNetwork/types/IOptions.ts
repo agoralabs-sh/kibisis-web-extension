@@ -1,4 +1,4 @@
-import { Transaction } from 'algosdk';
+import type { Transaction } from 'algosdk';
 
 // types
 import type { IBaseOptions } from '@common/types';
@@ -8,7 +8,7 @@ interface IOptions extends IBaseOptions {
   accounts: IAccountWithExtendedProps[];
   network: INetwork;
   password: string;
-  unsignedTransactions: Transaction[];
+  unsignedTransaction: Transaction;
 }
 
 export default IOptions;

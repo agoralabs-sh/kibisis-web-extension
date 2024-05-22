@@ -21,14 +21,14 @@ import type {
   IAccount,
   IAsyncThunkConfigWithRejectValue,
   IMainRootState,
-  INetworkWithTransactionParams,
 } from '@extension/types';
 import type { ISubmitTransactionsThunkPayload } from '../types';
 
 // utils
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import isAccountKnown from '@extension/utils/isAccountKnown';
-import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
+import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
+import signTransactionForNetwork from '@extension/utils/signTransactionForNetwork';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
 const submitTransactionThunk: AsyncThunk<
@@ -49,16 +49,18 @@ const submitTransactionThunk: AsyncThunk<
       uniqueGenesisHashesFromTransactions(transactions).pop() || null;
     const networks = getState().networks.items;
     const online = getState().system.online;
-    let errorMessage: string;
+    const network =
+      networks.find((value) => value.genesisHash === genesisHash) || null;
+    let _error: string;
     let fromAccount: IAccount | null;
-    let network: INetworkWithTransactionParams | null;
+    let signedTransactions: Uint8Array[];
 
     if (!fromAddress) {
-      errorMessage = `fromAddress field missing`;
+      _error = `fromAddress field missing`;
 
-      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${errorMessage}`);
+      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
 
-      return rejectWithValue(new MalformedDataError(errorMessage));
+      return rejectWithValue(new MalformedDataError(_error));
     }
 
     fromAccount =
@@ -69,11 +71,11 @@ const submitTransactionThunk: AsyncThunk<
       ) || null;
 
     if (!fromAccount) {
-      errorMessage = `from address "${fromAddress}" not a known account`;
+      _error = `from address "${fromAddress}" not a known account`;
 
-      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${errorMessage}`);
+      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
 
-      return rejectWithValue(new MalformedDataError(errorMessage));
+      return rejectWithValue(new MalformedDataError(_error));
     }
 
     if (!online) {
@@ -98,24 +100,21 @@ const submitTransactionThunk: AsyncThunk<
       );
     }
 
-    network =
-      networks.find((value) => value.genesisHash === genesisHash) || null;
-
     if (!network) {
-      errorMessage = `no network configuration found for "${genesisHash}"`;
+      _error = `no network configuration found for "${genesisHash}"`;
 
-      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${errorMessage}`);
+      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
 
-      return rejectWithValue(new NetworkNotSelectedError(errorMessage));
+      return rejectWithValue(new NetworkNotSelectedError(_error));
     }
 
     // check if we actually have the account
     if (!isAccountKnown(accounts, fromAddress)) {
-      errorMessage = `no account data found for "${fromAddress}" in wallet`;
+      _error = `no account data found for "${fromAddress}" in wallet`;
 
-      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${errorMessage}`);
+      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
 
-      return rejectWithValue(new MalformedDataError(errorMessage));
+      return rejectWithValue(new MalformedDataError(_error));
     }
 
     // ensure the transaction does not fall below the minimum balance requirement
@@ -127,21 +126,33 @@ const submitTransactionThunk: AsyncThunk<
         transactions,
       })
     ) {
-      errorMessage = `total transaction cost will bring the account "${fromAddress}" balance below the minimum balance requirement`;
+      _error = `total transaction cost will bring the account "${fromAddress}" balance below the minimum balance requirement`;
 
-      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${errorMessage}`);
+      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
 
-      return rejectWithValue(new NotEnoughMinimumBalanceError(errorMessage));
+      return rejectWithValue(new NotEnoughMinimumBalanceError(_error));
     }
 
     try {
-      return await signAndSendTransactions({
-        accounts,
+      signedTransactions = await Promise.all(
+        transactions.map((value) =>
+          signTransactionForNetwork({
+            accounts,
+            logger,
+            network,
+            password,
+            unsignedTransaction: value,
+          })
+        )
+      );
+
+      await sendTransactionsForNetwork({
         logger,
         network,
-        password,
-        unsignedTransactions: transactions,
+        signedTransactions,
       });
+
+      return transactions.map((value) => value.txID());
     } catch (error) {
       logger.error(`${SendAssetsThunkEnum.SubmitTransaction}:`, error);
 

@@ -3,8 +3,11 @@ import {
   ARC0027UnknownError,
   ISignTransactionsParams,
 } from '@agoralabs-sh/avm-web-provider';
-import { decode as decodeBase64 } from '@stablelib/base64';
-import { Transaction } from 'algosdk';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
+import type { Transaction } from 'algosdk';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -35,7 +38,6 @@ import type {
   IAppThunkDispatch,
   IClientRequestEvent,
   INetwork,
-  ISession,
 } from '@extension/types';
 import type { IUseSignTransactionsModalState } from './types';
 
@@ -73,11 +75,9 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
   }, [events]);
   useEffect(() => {
     (async () => {
+      let _authorizedAccounts: IAccountWithExtendedProps[];
       let _error: string;
-      let authorizedAddresses: string[];
       let decodedUnsignedTransactions: Transaction[];
-      let filteredSessions: ISession[];
-      let genesisHashes: string[];
 
       if (event && event.payload.message.params && !authorizedAccounts) {
         try {
@@ -105,30 +105,63 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
           return;
         }
 
-        genesisHashes = uniqueGenesisHashesFromTransactions(
-          decodedUnsignedTransactions
-        );
-        // filter sessions by the available genesis hashes
-        filteredSessions = sessions.filter((session) =>
-          genesisHashes.some((value) => value === session.genesisHash)
-        );
-        authorizedAddresses = getAuthorizedAddressesForHost(
-          event.payload.message.clientInfo.host,
-          filteredSessions
-        );
+        _authorizedAccounts = decodedUnsignedTransactions.reduce<
+          IAccountWithExtendedProps[]
+        >((acc, currentValue) => {
+          const account = accounts.find(
+            (value) =>
+              value.publicKey ===
+              AccountService.encodePublicKey(currentValue.from.publicKey)
+          );
+          const authorizedAddresses = getAuthorizedAddressesForHost(
+            event.payload.message.clientInfo.host,
+            sessions.filter(
+              (value) => value.genesisHash === base64EncodedGenesisHash
+            )
+          );
+          const base64EncodedGenesisHash = encodeBase64(
+            currentValue.genesisHash
+          );
+          const network = networks.find(
+            (value) => value.genesisHash === base64EncodedGenesisHash
+          );
+          const accountInformation =
+            account && network
+              ? AccountService.extractAccountInformationForNetwork(
+                  account,
+                  network
+                )
+              : null;
 
-        // set the authorized accounts and the event
-        setAuthorizedAccounts(
-          accounts.filter((account) =>
-            authorizedAddresses.some(
+          // the from account is not an authorized account if:
+          // * the account and account information is unknown for the network (inferred from the transaction's genesis hash)
+          // * the account has already been added
+          // * the account is not in the authorized addresses for a session matching the host and the genesis hash
+          // * the account has been re-keyed and the auth address is not in the authorized addresses for a session matching the host and the genesis hash
+          if (
+            !account ||
+            !accountInformation ||
+            acc.find((value) => value.id === account?.id) ||
+            !authorizedAddresses.find(
               (value) =>
                 value ===
                 AccountService.convertPublicKeyToAlgorandAddress(
-                  account.publicKey
+                  account?.publicKey
                 )
-            )
-          )
-        );
+            ) ||
+            (accountInformation.authAddress &&
+              !authorizedAddresses.find(
+                (value) => value === accountInformation.authAddress
+              ))
+          ) {
+            return acc;
+          }
+
+          return [...acc, account];
+        }, []);
+
+        // set the authorized accounts and the event
+        setAuthorizedAccounts(_authorizedAccounts);
       }
     })();
   }, [accounts, events, sessions]);

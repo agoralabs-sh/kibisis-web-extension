@@ -51,10 +51,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useSignTransactionsModal from './hooks/useSignTransactionsModal';
 
 // selectors
-import { useSelectLogger } from '@extension/selectors';
-
-// services
-import AccountService from '@extension/services/AccountService';
+import { useSelectLogger, useSelectNetworks } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -65,7 +62,7 @@ import type { IAppThunkDispatch, IModalProps } from '@extension/types';
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import groupTransactions from '@extension/utils/groupTransactions';
-import signTransactions from '@extension/utils/signTransactions';
+import signTransactions from './utils/signTransactions';
 
 const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -73,6 +70,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const logger = useSelectLogger();
+  const networks = useSelectNetworks();
   // hooks
   const { authorizedAccounts, event, setAuthorizedAccounts } =
     useSignTransactionsModal();
@@ -139,12 +137,11 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
     try {
       stxns = await signTransactions({
-        authorizedSigners: authorizedAccounts.map((value) =>
-          AccountService.convertPublicKeyToAlgorandAddress(value.publicKey)
-        ),
+        arc001Transactions: event.payload.message.params.txns,
+        authorizedAccounts,
         logger,
+        networks,
         password,
-        txns: event.payload.message.params.txns,
       });
 
       // send a response

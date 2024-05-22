@@ -72,7 +72,8 @@ import createUnsignedKeyRegistrationTransactionFromSchema from '@extension/utils
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
+import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
+import signTransactionForNetwork from '@extension/utils/signTransactionForNetwork';
 
 const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   IARC0300ModalContentProps<
@@ -154,6 +155,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
     let transactionIds: string[];
+    let signedTransaction: Uint8Array;
 
     if (!unsignedTransaction) {
       return;
@@ -223,27 +225,31 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
         );
       }
 
-      transactionIds = await signAndSendTransactions({
+      signedTransaction = await signTransactionForNetwork({
         accounts,
         logger,
         network,
         password,
-        unsignedTransactions: [unsignedTransaction],
+        unsignedTransaction,
+      });
+
+      await sendTransactionsForNetwork({
+        logger,
+        network,
+        signedTransactions: [signedTransaction],
       });
 
       logger.debug(
         `${
           ARC0300KeyRegistrationTransactionSendModalContent.name
-        }#${_functionName}: sent transactions [${transactionIds
-          .map((value) => `"${value}"`)
-          .join(',')}] to the network`
+        }#${_functionName}: sent transaction "${unsignedTransaction.txID()}" to the network`
       );
 
       // send a success transaction notification
       dispatch(
         createNotification({
           description: t<string>('captions.transactionsSentSuccessfully', {
-            amount: transactionIds.length,
+            amount: 1,
           }),
           title: t<string>('headings.transactionsSuccessful'),
           type: 'success',
