@@ -12,13 +12,11 @@ import { MalformedDataError } from '@extension/errors';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { INetwork } from '@extension/types';
 import type { IOptions } from './types';
 
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
-import signTransactionForNetwork from '@extension/utils/signTransactionForNetwork';
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import signTransaction from '@extension/utils/signTransaction';
 
 /**
  * Convenience function that signs a group of transactions.
@@ -36,17 +34,12 @@ export default async function signTransactions({
   password,
 }: IOptions): Promise<(string | null)[]> {
   const _functionName: string = 'signTransactions';
-  let _error: string;
 
   return await Promise.all(
     arc001Transactions.map(async (arc001Transaction) => {
       const unsignedTransaction: Transaction = decodeUnsignedTransaction(
         decodeBase64(arc001Transaction.txn)
       );
-      const base64EncodedGenesisHash = encodeBase64(
-        unsignedTransaction.genesisHash
-      );
-      let network: INetwork | null;
       let signedTransaction: Uint8Array;
       let signerAddress: string;
 
@@ -93,27 +86,11 @@ export default async function signTransactions({
         return null;
       }
 
-      network =
-        networks.find(
-          (value) =>
-            value.genesisHash ===
-            convertGenesisHashToHex(base64EncodedGenesisHash)
-        ) || null;
-
-      // if the network is not known, we cannot sign
-      if (!network) {
-        _error = `failed to get network for genesis hash "${base64EncodedGenesisHash}"`;
-
-        logger?.error(`${_functionName}: ${_error}`);
-
-        return null;
-      }
-
       try {
-        signedTransaction = await signTransactionForNetwork({
+        signedTransaction = await signTransaction({
           accounts: authorizedAccounts,
           logger,
-          network,
+          networks,
           password,
           unsignedTransaction,
         });

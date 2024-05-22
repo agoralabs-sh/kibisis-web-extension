@@ -73,7 +73,7 @@ import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@exten
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
-import signTransactionForNetwork from '@extension/utils/signTransactionForNetwork';
+import signTransaction from '@extension/utils/signTransaction';
 
 const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   IARC0300ModalContentProps<
@@ -154,7 +154,6 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
-    let transactionIds: string[];
     let signedTransaction: Uint8Array;
 
     if (!unsignedTransaction) {
@@ -225,10 +224,10 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
         );
       }
 
-      signedTransaction = await signTransactionForNetwork({
+      signedTransaction = await signTransaction({
         accounts,
         logger,
-        network,
+        networks,
         password,
         unsignedTransaction,
       });

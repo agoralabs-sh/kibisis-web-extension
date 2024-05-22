@@ -28,7 +28,7 @@ import type { ISubmitTransactionsThunkPayload } from '../types';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
-import signTransactionForNetwork from '@extension/utils/signTransactionForNetwork';
+import signTransaction from '@extension/utils/signTransaction';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
 const submitTransactionThunk: AsyncThunk<
@@ -136,10 +136,10 @@ const submitTransactionThunk: AsyncThunk<
     try {
       signedTransactions = await Promise.all(
         transactions.map((value) =>
-          signTransactionForNetwork({
+          signTransaction({
             accounts,
             logger,
-            network,
+            networks,
             password,
             unsignedTransaction: value,
           })

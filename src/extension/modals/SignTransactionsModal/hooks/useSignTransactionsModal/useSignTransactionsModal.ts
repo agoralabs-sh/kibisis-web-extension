@@ -79,7 +79,12 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
       let _error: string;
       let decodedUnsignedTransactions: Transaction[];
 
-      if (event && event.payload.message.params && !authorizedAccounts) {
+      if (
+        event &&
+        event.payload.message.params &&
+        accounts.length > 0 &&
+        !authorizedAccounts
+      ) {
         try {
           decodedUnsignedTransactions = event.payload.message.params.txns.map(
             (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
@@ -113,14 +118,14 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
               value.publicKey ===
               AccountService.encodePublicKey(currentValue.from.publicKey)
           );
+          const base64EncodedGenesisHash = encodeBase64(
+            currentValue.genesisHash
+          );
           const authorizedAddresses = getAuthorizedAddressesForHost(
             event.payload.message.clientInfo.host,
             sessions.filter(
               (value) => value.genesisHash === base64EncodedGenesisHash
             )
-          );
-          const base64EncodedGenesisHash = encodeBase64(
-            currentValue.genesisHash
           );
           const network = networks.find(
             (value) => value.genesisHash === base64EncodedGenesisHash
@@ -132,6 +137,18 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
                   network
                 )
               : null;
+
+          console.log('base64EncodedGenesisHash:', base64EncodedGenesisHash);
+          console.log(
+            'sessions:',
+            sessions.filter(
+              (value) => value.genesisHash === base64EncodedGenesisHash
+            )
+          );
+          console.log('authorizedAddresses:', authorizedAddresses);
+          console.log('accounts:', accounts);
+          console.log('account:', account);
+          console.log('accountInformation:', accountInformation);
 
           // the from account is not an authorized account if:
           // * the account and account information is unknown for the network (inferred from the transaction's genesis hash)

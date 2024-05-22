@@ -48,7 +48,7 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
-import signTransactionForNetwork from '@extension/utils/signTransactionForNetwork';
+import signTransaction from '@extension/utils/signTransaction';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 import { findAccountWithoutExtendedProps } from '../utils';
@@ -71,8 +71,6 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.online;
-    const network =
-      networks.find((value) => value.genesisHash === genesisHash) || null;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountInformation: IAccountInformation;
     let accountBalanceInAtomicUnits: BigNumber;
@@ -84,6 +82,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     let errorMessage: string;
     let filteredAssets: IStandardAsset[];
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
+    let network: INetworkWithTransactionParams | null;
     let transactionIds: string[];
     let signedTransactions: Uint8Array[];
     let suggestedParams: SuggestedParams;
@@ -110,6 +109,9 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
         )
       );
     }
+
+    network =
+      networks.find((value) => value.genesisHash === genesisHash) || null;
 
     if (!network) {
       logger.debug(
@@ -214,10 +216,10 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
 
       signedTransactions = await Promise.all(
         unsignedTransactions.map((value) =>
-          signTransactionForNetwork({
+          signTransaction({
             accounts,
             logger,
-            network,
+            networks,
             password,
             unsignedTransaction: value,
           })

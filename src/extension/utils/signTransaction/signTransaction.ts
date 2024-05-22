@@ -27,14 +27,14 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
  * @throws {InvalidPasswordError} if the password is not valid.
  * @throws {MalformedDataError} if the data could not be decoded or the signer address is malformed.
  */
-export default async function signTransactionForNetwork({
+export default async function signTransaction({
   accounts,
   logger,
-  network,
+  networks,
   password,
   unsignedTransaction,
 }: IOptions): Promise<Uint8Array> {
-  const _functionName = 'signTransactions';
+  const _functionName = 'signTransaction';
   const base64EncodedGenesisHash = encodeBase64(
     unsignedTransaction.genesisHash
   );
@@ -42,6 +42,9 @@ export default async function signTransactionForNetwork({
     logger,
     passwordTag: browser.runtime.id,
   });
+  const network =
+    networks.find((value) => value.genesisHash === base64EncodedGenesisHash) ||
+    null;
   const signerAddress = encodeAddress(unsignedTransaction.from.publicKey);
   let _error: string;
   let account: IAccountWithExtendedProps | null;
@@ -53,12 +56,10 @@ export default async function signTransactionForNetwork({
     `${_functionName}: signing transaction "${unsignedTransaction.txID()}"`
   );
 
-  if (
-    convertGenesisHashToHex(base64EncodedGenesisHash) !== network.genesisHash
-  ) {
-    _error = `transaction "${unsignedTransaction.txID()}" genesis hash mismatch, "${
-      network.genesisId
-    }" expected, "${base64EncodedGenesisHash}" used`;
+  if (!network) {
+    _error = `network "${
+      unsignedTransaction.genesisID
+    }" for transaction "${unsignedTransaction.txID()}" not supported`;
 
     logger?.error(`${_functionName}: ${_error}`);
 

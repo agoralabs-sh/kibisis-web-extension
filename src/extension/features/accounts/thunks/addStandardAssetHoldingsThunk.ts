@@ -31,6 +31,7 @@ import type {
   IAccountInformation,
   IBaseAsyncThunkConfig,
   IMainRootState,
+  INetworkWithTransactionParams,
   IStandardAsset,
 } from '@extension/types';
 import type {
@@ -43,7 +44,7 @@ import createAlgodClient from '@common/utils/createAlgodClient';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
-import signTransactionForNetwork from '@extension/utils/signTransactionForNetwork';
+import signTransaction from '@extension/utils/signTransaction';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
@@ -67,8 +68,6 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.online;
-    const network =
-      networks.find((value) => value.genesisHash === genesisHash) || null;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountBalanceInAtomicUnits: BigNumber;
     let accountInformation: IAccountInformation;
@@ -79,6 +78,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     let errorMessage: string;
     let filteredAssets: IStandardAsset[];
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
+    let network: INetworkWithTransactionParams | null;
     let signedTransactions: Uint8Array[];
     let suggestedParams: SuggestedParams;
     let transactionIds: string[];
@@ -105,6 +105,9 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
         )
       );
     }
+
+    network =
+      networks.find((value) => value.genesisHash === genesisHash) || null;
 
     if (!network) {
       logger.debug(
@@ -192,10 +195,10 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
 
       signedTransactions = await Promise.all(
         unsignedTransactions.map((value) =>
-          signTransactionForNetwork({
+          signTransaction({
             accounts,
             logger,
-            network,
+            networks,
             password,
             unsignedTransaction: value,
           })

@@ -6,7 +6,7 @@ import type { IAccountWithExtendedProps, INetwork } from '@extension/types';
 
 interface IOptions extends IBaseOptions {
   accounts: IAccountWithExtendedProps[];
-  network: INetwork;
+  networks: INetwork[];
   password: string;
   unsignedTransaction: Transaction;
 }
