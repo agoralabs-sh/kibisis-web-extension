@@ -1,3 +1,10 @@
+# [1.17.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.6...v1.17.0-beta.7) (2024-05-23)
+
+
+### Features
+
+* add toast for completed quests ([#242](https://github.com/agoralabs-sh/kibisis-web-extension/issues/242)) ([ed1bd1e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ed1bd1e164f7fc40003cb8fac5a931b486ab0c0c))
+
 # [1.17.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.5...v1.17.0-beta.6) (2024-05-23)
 
 
