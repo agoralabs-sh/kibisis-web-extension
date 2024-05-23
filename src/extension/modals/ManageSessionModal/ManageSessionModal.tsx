@@ -18,8 +18,12 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
+import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
+import ClientHeader, {
+  ClientHeaderSkeleton,
+} from '@extension/components/ClientHeader';
 import EmptyState from '@extension/components/EmptyState';
 import Warning from '@extension/components/Warning';
 
@@ -39,9 +43,9 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectAccountsFetching,
   useSelectNetworks,
-  useSelectNonWatchAccounts,
   useSelectSessionsSaving,
 } from '@extension/selectors';
 
@@ -56,17 +60,14 @@ import type { IAppThunkDispatch, INetwork } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
+import availableAccountsForNetwork from '@extension/utils/availableAccountsForNetwork';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import AccountAvatar from '@extension/components/AccountAvatar';
-import ClientHeader, {
-  ClientHeaderSkeleton,
-} from '@extension/components/ClientHeader';
 
 const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts = useSelectNonWatchAccounts();
+  const accounts = useSelectAccounts();
   const fetching = useSelectAccountsFetching();
   const networks = useSelectNetworks();
   const saving = useSelectSessionsSaving();
@@ -75,8 +76,8 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
-  const [network, setNetwork] = useState<INetwork | null>(null);
   const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
+  const [network, setNetwork] = useState<INetwork | null>(null);
   const handleCancelClick = () => handleClose();
   const handleClose = () => onClose && onClose();
   const handleSaveClick = () => {
@@ -140,71 +141,73 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
       ));
     }
 
-    accountNodes = accounts.reduce<ReactNode[]>(
-      (acc, account, currentIndex) => {
-        const address: string =
-          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
+    accountNodes = availableAccountsForNetwork({ accounts, network }).reduce<
+      ReactNode[]
+    >((acc, account, currentIndex, availableAccounts) => {
+      const address: string = AccountService.convertPublicKeyToAlgorandAddress(
+        account.publicKey
+      );
 
-        return [
-          ...acc,
-          <HStack
-            key={`manage-session-modal-account-information-item-${currentIndex}`}
-            py={4}
-            spacing={DEFAULT_GAP - 2}
-            w="full"
-          >
-            {/*account icon*/}
-            <AccountAvatar />
+      return [
+        ...acc,
+        <HStack
+          key={`manage-session-modal-account-information-item-${currentIndex}`}
+          py={4}
+          spacing={DEFAULT_GAP - 2}
+          w="full"
+        >
+          {/*account icon*/}
+          <AccountAvatarWithBadges
+            account={account}
+            accounts={availableAccounts}
+            network={network}
+          />
 
-            {/*name/address*/}
-            {account.name ? (
-              <VStack
-                alignItems="flex-start"
-                flexGrow={1}
-                justifyContent="space-evenly"
-                spacing={0}
-              >
-                <Text
-                  color={defaultTextColor}
-                  fontSize="md"
-                  maxW={400}
-                  noOfLines={1}
-                  textAlign="left"
-                >
-                  {account.name}
-                </Text>
-                <Text color={subTextColor} fontSize="sm" textAlign="left">
-                  {ellipseAddress(address, {
-                    end: 10,
-                    start: 10,
-                  })}
-                </Text>
-              </VStack>
-            ) : (
+          {/*name/address*/}
+          {account.name ? (
+            <VStack
+              alignItems="flex-start"
+              flexGrow={1}
+              justifyContent="space-evenly"
+              spacing={0}
+            >
               <Text
                 color={defaultTextColor}
-                flexGrow={1}
                 fontSize="md"
+                maxW={400}
+                noOfLines={1}
                 textAlign="left"
               >
+                {account.name}
+              </Text>
+              <Text color={subTextColor} fontSize="sm" textAlign="left">
                 {ellipseAddress(address, {
                   end: 10,
                   start: 10,
                 })}
               </Text>
-            )}
-            <Checkbox
-              colorScheme={primaryColorScheme}
-              isChecked={
-                !!authorizedAddresses.find((value) => value === address)
-              }
-              onChange={handleOnAccountCheckChange(address)}
-            />
-          </HStack>,
-        ];
-      },
-      []
-    );
+            </VStack>
+          ) : (
+            <Text
+              color={defaultTextColor}
+              flexGrow={1}
+              fontSize="md"
+              textAlign="left"
+            >
+              {ellipseAddress(address, {
+                end: 10,
+                start: 10,
+              })}
+            </Text>
+          )}
+          <Checkbox
+            colorScheme={primaryColorScheme}
+            isChecked={!!authorizedAddresses.find((value) => value === address)}
+            onChange={handleOnAccountCheckChange(address)}
+          />
+        </HStack>,
+      ];
+    }, []);
 
     return accountNodes.length > 0 ? (
       accountNodes

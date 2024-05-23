@@ -218,6 +218,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
         unsignedTransactions.map((value) =>
           signTransaction({
             accounts,
+            authAccounts: accounts,
             logger,
             networks,
             password,

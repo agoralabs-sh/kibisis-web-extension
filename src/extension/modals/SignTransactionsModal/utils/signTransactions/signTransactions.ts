@@ -27,8 +27,9 @@ import signTransaction from '@extension/utils/signTransaction';
  * @throws {InvalidPasswordError} if the password is not valid.
  */
 export default async function signTransactions({
-  arc001Transactions,
-  authorizedAccounts,
+  accounts,
+  arc0001Transactions,
+  authAccounts,
   logger,
   networks,
   password,
@@ -36,7 +37,7 @@ export default async function signTransactions({
   const _functionName: string = 'signTransactions';
 
   return await Promise.all(
-    arc001Transactions.map(async (arc001Transaction) => {
+    arc0001Transactions.map(async (arc001Transaction) => {
       const unsignedTransaction: Transaction = decodeUnsignedTransaction(
         decodeBase64(arc001Transaction.txn)
       );
@@ -61,9 +62,12 @@ export default async function signTransactions({
         throw new MalformedDataError(error.message);
       }
 
+      console.log('accounts:', accounts);
+      console.log('authAccounts:', authAccounts);
+
       // if no authorized address matches the signer, we cannot sign
       if (
-        !authorizedAccounts.some(
+        !accounts.some(
           (value) =>
             value.publicKey ===
             AccountService.encodePublicKey(unsignedTransaction.from.publicKey)
@@ -88,7 +92,8 @@ export default async function signTransactions({
 
       try {
         signedTransaction = await signTransaction({
-          accounts: authorizedAccounts,
+          accounts,
+          authAccounts,
           logger,
           networks,
           password,

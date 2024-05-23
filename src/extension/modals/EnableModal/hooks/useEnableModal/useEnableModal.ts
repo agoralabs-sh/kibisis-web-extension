@@ -9,30 +9,32 @@ import { EventTypeEnum } from '@extension/enums';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectEvents,
   useSelectNetworks,
-  useSelectNonWatchAccounts,
 } from '@extension/selectors';
-
-// services
-import AccountService from '@extension/services/AccountService';
 
 // types
 import type {
+  IAccountWithExtendedProps,
   IClientRequestEvent,
   INetworkWithTransactionParams,
 } from '@extension/types';
 import type { IUseEnableModalState } from './types';
 
+// utils
+import availableAccountsForNetwork from '@extension/utils/availableAccountsForNetwork';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
 export default function useEnableModal(): IUseEnableModalState {
   // selectors
-  const accounts = useSelectNonWatchAccounts();
+  const accounts = useSelectAccounts();
   const events = useSelectEvents();
   const networks = useSelectNetworks();
   // state
-  const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
+  const [availableAccounts, setAvailableAccounts] = useState<
+    IAccountWithExtendedProps[] | null
+  >(null);
   const [event, setEvent] = useState<IClientRequestEvent<IEnableParams> | null>(
     null
   );
@@ -49,14 +51,17 @@ export default function useEnableModal(): IUseEnableModalState {
       ) as IClientRequestEvent<IEnableParams>) || null
     );
   }, [events]);
-  // if the authorized addresses are empty, auto add the first address
+  // get the available accounts
   useEffect(() => {
-    if (event && authorizedAddresses.length <= 0 && accounts.length > 0) {
-      setAuthorizedAddresses([
-        AccountService.convertPublicKeyToAlgorandAddress(accounts[0].publicKey),
-      ]);
+    if (event && network) {
+      setAvailableAccounts(
+        availableAccountsForNetwork({
+          accounts,
+          network,
+        })
+      );
     }
-  }, [accounts, event]);
+  }, [accounts, network, event]);
   useEffect(() => {
     if (event && !network) {
       // find the selected network, or use the default one
@@ -70,10 +75,10 @@ export default function useEnableModal(): IUseEnableModalState {
   }, [event, networks]);
 
   return {
-    authorizedAddresses,
+    availableAccounts,
     event,
     network,
-    setAuthorizedAddresses,
+    setAvailableAccounts,
     setNetwork,
   };
 }

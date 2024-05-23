@@ -21,10 +21,10 @@ import { updateStandardAssetInformationThunk } from '@extension/features/standar
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectEvents,
   useSelectLogger,
   useSelectNetworks,
-  useSelectNonWatchAccounts,
   useSelectSessions,
   useSelectStandardAssets,
 } from '@extension/selectors';
@@ -51,7 +51,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
   const _functionName = 'useSignTransactionsModal';
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts = useSelectNonWatchAccounts();
+  const accounts = useSelectAccounts();
   const events = useSelectEvents();
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
@@ -138,23 +138,11 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
                 )
               : null;
 
-          console.log('base64EncodedGenesisHash:', base64EncodedGenesisHash);
-          console.log(
-            'sessions:',
-            sessions.filter(
-              (value) => value.genesisHash === base64EncodedGenesisHash
-            )
-          );
-          console.log('authorizedAddresses:', authorizedAddresses);
-          console.log('accounts:', accounts);
-          console.log('account:', account);
-          console.log('accountInformation:', accountInformation);
-
           // the from account is not an authorized account if:
           // * the account and account information is unknown for the network (inferred from the transaction's genesis hash)
           // * the account has already been added
           // * the account is not in the authorized addresses for a session matching the host and the genesis hash
-          // * the account has been re-keyed and the auth address is not in the authorized addresses for a session matching the host and the genesis hash
+          // * the account has not been re-keyed and is not a watch account
           if (
             !account ||
             !accountInformation ||
@@ -166,10 +154,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
                   account?.publicKey
                 )
             ) ||
-            (accountInformation.authAddress &&
-              !authorizedAddresses.find(
-                (value) => value === accountInformation.authAddress
-              ))
+            (!accountInformation.authAddress && !account.watchAccount)
           ) {
             return acc;
           }

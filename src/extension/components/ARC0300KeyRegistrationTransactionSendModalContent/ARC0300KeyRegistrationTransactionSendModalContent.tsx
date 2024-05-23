@@ -226,6 +226,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
 
       signedTransaction = await signTransaction({
         accounts,
+        authAccounts: accounts,
         logger,
         networks,
         password,

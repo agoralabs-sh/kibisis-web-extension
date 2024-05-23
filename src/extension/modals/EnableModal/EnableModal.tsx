@@ -14,12 +14,12 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
-import React, { ChangeEvent, FC, ReactNode } from 'react';
+import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
-import AccountAvatar from '@extension/components/AccountAvatar';
+import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
 import Button from '@extension/components/Button';
 import ChainBadge from '@extension/components/ChainBadge';
 import ClientHeader, {
@@ -44,7 +44,6 @@ import useEnableModal from './hooks/useEnableModal';
 // selectors
 import {
   useSelectAccountsFetching,
-  useSelectNonWatchAccounts,
   useSelectSessionsSaving,
 } from '@extension/selectors';
 
@@ -69,20 +68,21 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts = useSelectNonWatchAccounts();
   const fetching = useSelectAccountsFetching();
   const saving = useSelectSessionsSaving();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const {
-    authorizedAddresses,
+    availableAccounts,
     event,
     network,
-    setAuthorizedAddresses,
+    setAvailableAccounts,
     setNetwork,
   } = useEnableModal();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
+  // state
+  const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
   // handlers
   const handleCancelClick = async () => {
     if (event) {
@@ -105,6 +105,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleClose = () => {
     setAuthorizedAddresses([]);
+    setAvailableAccounts(null);
     setNetwork(null);
 
     if (onClose) {
@@ -162,7 +163,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const renderContent = () => {
     let accountNodes: ReactNode[];
 
-    if (!event || fetching) {
+    if (!availableAccounts || !event || fetching || !network) {
       return Array.from({ length: 3 }, (_, index) => (
         <HStack
           key={`enable-modal-fetching-item-${index}`}
@@ -184,7 +185,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
       ));
     }
 
-    accountNodes = accounts.reduce<ReactNode[]>(
+    accountNodes = availableAccounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
         const address = AccountService.convertPublicKeyToAlgorandAddress(
           account.publicKey
@@ -199,7 +200,11 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
             w="full"
           >
             {/*account icon*/}
-            <AccountAvatar />
+            <AccountAvatarWithBadges
+              account={account}
+              accounts={availableAccounts}
+              network={network}
+            />
 
             {/*name/address*/}
             {account.name ? (
@@ -258,6 +263,21 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
       </>
     );
   };
+
+  // when we have the available accounts, and the authorized address is empty, select the first account
+  useEffect(() => {
+    if (
+      availableAccounts &&
+      availableAccounts.length > 0 &&
+      authorizedAddresses.length <= 0
+    ) {
+      setAuthorizedAddresses([
+        AccountService.convertPublicKeyToAlgorandAddress(
+          availableAccounts[0].publicKey
+        ),
+      ]);
+    }
+  }, [availableAccounts]);
 
   return (
     <Modal

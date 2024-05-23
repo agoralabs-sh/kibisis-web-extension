@@ -2,14 +2,11 @@
 import useSelectAccounts from './useSelectAccounts';
 import useSelectSelectedNetwork from '../networks/useSelectSelectedNetwork';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
 
 // utils
-import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
+import availableAccountsForNetwork from '@extension/utils/availableAccountsForNetwork';
 
 /**
  * Gets all the available accounts that can be used for signing operations for the selected network. A valid account is
@@ -25,19 +22,8 @@ export default function useSelectAvailableAccountsForSelectedNetwork(): IAccount
     return [];
   }
 
-  return accounts.filter((value, _, array) => {
-    const accountInformation =
-      AccountService.extractAccountInformationForNetwork(value, network);
-
-    // if the account has been re-keyed, and the re-keyed account is available, add the account
-    if (accountInformation && accountInformation.authAddress) {
-      return isReKeyedAuthAccountAvailable({
-        accounts: array,
-        authAddress: accountInformation.authAddress,
-      });
-    }
-
-    // if the account has not been re-keyed, check if it is a watch account
-    return !value.watchAccount;
+  return availableAccountsForNetwork({
+    accounts,
+    network,
   });
 }

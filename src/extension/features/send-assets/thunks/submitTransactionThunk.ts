@@ -138,6 +138,7 @@ const submitTransactionThunk: AsyncThunk<
         transactions.map((value) =>
           signTransaction({
             accounts,
+            authAccounts: accounts,
             logger,
             networks,
             password,

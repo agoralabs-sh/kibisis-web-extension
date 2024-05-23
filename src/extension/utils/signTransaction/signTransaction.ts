@@ -16,9 +16,6 @@ import type {
 } from '@extension/types';
 import type { IOptions } from './types';
 
-// utils
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-
 /**
  * Convenience function that signs a transactions for a given network.
  * @param {IOptions} options - the unsigned transaction, the network, the available accounts and the password.
@@ -29,6 +26,7 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
  */
 export default async function signTransaction({
   accounts,
+  authAccounts = [],
   logger,
   networks,
   password,
@@ -102,7 +100,7 @@ export default async function signTransaction({
   // if the account is re-keyed, attempt to get the auth account's private key to sign
   if (accountInformation.authAddress) {
     authAccount =
-      accounts.find(
+      authAccounts.find(
         (value) =>
           accountInformation?.authAddress &&
           value.publicKey ===

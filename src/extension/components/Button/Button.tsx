@@ -18,8 +18,8 @@ const Button: ForwardRefExoticComponent<
   PropsWithoutRef<ButtonProps> & RefAttributes<HTMLButtonElement>
 > = forwardRef<HTMLButtonElement, ButtonProps>((props: ButtonProps, ref) => {
   // hooks
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
 
   return (
     <ChakraButton

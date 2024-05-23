@@ -51,7 +51,11 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useSignTransactionsModal from './hooks/useSignTransactionsModal';
 
 // selectors
-import { useSelectLogger, useSelectNetworks } from '@extension/selectors';
+import {
+  useSelectAccounts,
+  useSelectLogger,
+  useSelectNetworks,
+} from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -69,6 +73,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
+  const accounts = useSelectAccounts();
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
   // hooks
@@ -111,9 +116,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
     resetPassword();
     setAuthorizedAccounts(null);
 
-    if (onClose) {
-      onClose();
-    }
+    onClose && onClose();
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -137,8 +140,9 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
     try {
       stxns = await signTransactions({
-        arc001Transactions: event.payload.message.params.txns,
-        authorizedAccounts,
+        accounts: authorizedAccounts,
+        arc0001Transactions: event.payload.message.params.txns,
+        authAccounts: accounts,
         logger,
         networks,
         password,
@@ -170,6 +174,8 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
               stxns: null,
             })
           );
+
+          handleClose();
           break;
         default:
           dispatch(
