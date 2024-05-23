@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { StoreNameEnum } from '@extension/enums';
 
 // types
-import { IAddNotificationPayload, INotificationsState } from './types';
+import type { IAddNotificationPayload, IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -14,10 +14,7 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Notifications,
   reducers: {
-    closeById: (
-      state: Draft<INotificationsState>,
-      action: PayloadAction<string>
-    ) => {
+    closeById: (state: Draft<IState>, action: PayloadAction<string>) => {
       state.items = state.items.map((value) =>
         value.id === action.payload
           ? { ...value, showing: false, shown: true }
@@ -25,7 +22,7 @@ const slice = createSlice({
       );
     },
     create: (
-      state: Draft<INotificationsState>,
+      state: Draft<IState>,
       action: PayloadAction<IAddNotificationPayload>
     ) => {
       state.items = [
@@ -42,19 +39,13 @@ const slice = createSlice({
         },
       ];
     },
-    removeAll: (state: Draft<INotificationsState>) => {
+    removeAll: (state: Draft<IState>) => {
       state.items = [];
     },
-    removeById: (
-      state: Draft<INotificationsState>,
-      action: PayloadAction<string>
-    ) => {
+    removeById: (state: Draft<IState>, action: PayloadAction<string>) => {
       state.items = state.items.filter((value) => value.id !== action.payload);
     },
-    setShowingById: (
-      state: Draft<INotificationsState>,
-      action: PayloadAction<string>
-    ) => {
+    setShowingById: (state: Draft<IState>, action: PayloadAction<string>) => {
       state.items = state.items.map((value) =>
         value.id === action.payload ? { ...value, showing: true } : value
       );

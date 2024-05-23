@@ -1,14 +1,14 @@
 // types
-import { ISettings } from '@extension/types';
-import { ISettingsState } from '../types';
+import type { ISettings } from '@extension/types';
+import type { IState } from '../types';
 
 /**
  * Convenience function to that maps the settings to state.
- * @param {ISettingsState} state - the state to update.
+ * @param {IState} state - the state to update.
  * @param {ISettings} settings - the settings to map.
  */
 export default function mapSettingsToState(
-  state: ISettingsState,
+  state: IState,
   settings: ISettings
 ): void {
   state.advanced = {

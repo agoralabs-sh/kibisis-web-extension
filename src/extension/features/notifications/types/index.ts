@@ -1,2 +1,2 @@
 export type { default as IAddNotificationPayload } from './IAddNotificationPayload';
-export type { default as INotificationsState } from './INotificationsState';
+export type { default as IState } from './IState';

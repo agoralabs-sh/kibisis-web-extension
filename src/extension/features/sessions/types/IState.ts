@@ -11,7 +11,7 @@ import { ISession } from '@extension/types';
  * @property {IWeb3Wallet | null} web3Wallet - an initialized instance of Web3Wallet (WalletConnect).
  * @property {boolean} walletConnectModalOpen - true if the wallet connect modal is open.
  */
-interface ISessionsState {
+interface IState {
   fetching: boolean;
   initializingWalletConnect: boolean;
   items: ISession[];
@@ -20,4 +20,4 @@ interface ISessionsState {
   walletConnectModalOpen: boolean;
 }
 
-export default ISessionsState;
+export default IState;

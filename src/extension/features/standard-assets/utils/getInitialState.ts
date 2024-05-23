@@ -1,7 +1,7 @@
 // types
-import { IStandardAssetsState } from '../types';
+import { IState } from '../types';
 
-export default function getInitialState(): IStandardAssetsState {
+export default function getInitialState(): IState {
   return {
     fetching: false,
     items: null,

@@ -1,7 +1,7 @@
 // types
-import { ISessionsState } from '../types';
+import { IState } from '../types';
 
-export default function getInitialState(): ISessionsState {
+export default function getInitialState(): IState {
   return {
     fetching: false,
     initializingWalletConnect: false,

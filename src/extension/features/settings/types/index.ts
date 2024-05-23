@@ -1,1 +1,1 @@
-export type { default as ISettingsState } from './ISettingsState';
+export type { default as IState } from './IState';
