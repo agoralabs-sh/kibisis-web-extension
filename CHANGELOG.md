@@ -1,3 +1,10 @@
+# [1.17.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.4...v1.17.0-beta.5) (2024-05-23)
+
+
+### Features
+
+* rekeyed account support ([#240](https://github.com/agoralabs-sh/kibisis-web-extension/issues/240)) ([fde73b5](https://github.com/agoralabs-sh/kibisis-web-extension/commit/fde73b5a1f94e67aea4ac8aaaefbb2e08dcf56fe))
+
 # [1.17.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.3...v1.17.0-beta.4) (2024-05-18)
 
 
