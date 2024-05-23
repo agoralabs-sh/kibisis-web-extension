@@ -342,7 +342,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           break;
       }
 
-      if (!actionSent) {
+      if (actionSent) {
         // dispatch a successful quest notification
         dispatch(
           createNotification({
