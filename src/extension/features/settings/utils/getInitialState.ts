@@ -2,9 +2,9 @@
 import { PASSWORD_LOCK_DURATION_NORMAL } from '@extension/constants';
 
 // types
-import { ISettingsState } from '../types';
+import type { IState } from '../types';
 
-export default function getInitialState(): ISettingsState {
+export default function getInitialState(): IState {
   return {
     advanced: {
       allowBetaNet: false,

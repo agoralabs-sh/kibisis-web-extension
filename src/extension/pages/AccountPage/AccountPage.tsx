@@ -1,5 +1,4 @@
 import {
-  AvatarBadge,
   HStack,
   Icon,
   Spacer,
@@ -14,18 +13,17 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactNode, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
   IoCloudOfflineOutline,
   IoCreateOutline,
-  IoEyeOutline,
   IoQrCodeOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import ActivityTab from '@extension/components/ActivityTab';
@@ -94,7 +92,6 @@ import type { IAppThunkDispatch, INetwork } from '@extension/types';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 import ReKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
-import reKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
 import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
 const AccountPage: FC = () => {

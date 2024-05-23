@@ -10,8 +10,8 @@ import {
 } from './thunks';
 
 // types
-import { ISettings } from '@extension/types';
-import { ISettingsState } from './types';
+import type { ISettings } from '@extension/types';
+import type { IState } from './types';
 
 // utils
 import { getInitialState, mapSettingsToState } from './utils';
@@ -21,45 +21,33 @@ const slice = createSlice({
     /** fetch settings from storage **/
     builder.addCase(
       fetchSettingsFromStorageThunk.fulfilled,
-      (state: ISettingsState, action: PayloadAction<ISettings>) => {
+      (state: IState, action: PayloadAction<ISettings>) => {
         state.fetching = false;
 
         mapSettingsToState(state, action.payload);
       }
     );
-    builder.addCase(
-      fetchSettingsFromStorageThunk.pending,
-      (state: ISettingsState) => {
-        state.fetching = true;
-      }
-    );
-    builder.addCase(
-      fetchSettingsFromStorageThunk.rejected,
-      (state: ISettingsState) => {
-        state.fetching = false;
-      }
-    );
+    builder.addCase(fetchSettingsFromStorageThunk.pending, (state: IState) => {
+      state.fetching = true;
+    });
+    builder.addCase(fetchSettingsFromStorageThunk.rejected, (state: IState) => {
+      state.fetching = false;
+    });
     /** save settings to storage **/
     builder.addCase(
       saveSettingsToStorageThunk.fulfilled,
-      (state: ISettingsState, action: PayloadAction<ISettings>) => {
+      (state: IState, action: PayloadAction<ISettings>) => {
         state.saving = false;
 
         mapSettingsToState(state, action.payload);
       }
     );
-    builder.addCase(
-      saveSettingsToStorageThunk.pending,
-      (state: ISettingsState) => {
-        state.saving = true;
-      }
-    );
-    builder.addCase(
-      saveSettingsToStorageThunk.rejected,
-      (state: ISettingsState) => {
-        state.saving = false;
-      }
-    );
+    builder.addCase(saveSettingsToStorageThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(saveSettingsToStorageThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
   },
   initialState: getInitialState(),
   name: StoreNameEnum.Settings,

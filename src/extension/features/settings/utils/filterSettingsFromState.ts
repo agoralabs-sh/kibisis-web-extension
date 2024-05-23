@@ -1,10 +1,10 @@
 // types
-import { ISettings } from '@extension/types';
-import { ISettingsState } from '../types';
+import type { ISettings } from '@extension/types';
+import type { IState } from '../types';
 
 /**
  * Convenience function to that filters the settings from the state.
- * @param {ISettingsState} state - the state to extract the settings.
+ * @param {IState} state - the state to extract the settings.
  * @returns {ISettings} the settings from the state.
  */
 export default function filterSettingsFromState({
@@ -13,7 +13,7 @@ export default function filterSettingsFromState({
   general,
   privacy,
   security,
-}: ISettingsState): ISettings {
+}: IState): ISettings {
   return {
     advanced,
     appearance,

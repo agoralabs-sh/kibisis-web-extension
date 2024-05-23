@@ -1,11 +1,11 @@
 // types
-import { INotificationType } from '@extension/types';
+import type { TNotificationType } from '@extension/types';
 
 interface IAddNotificationPayload {
   description?: string;
   ephemeral?: boolean;
   title: string;
-  type: INotificationType;
+  type: TNotificationType;
 }
 
 export default IAddNotificationPayload;

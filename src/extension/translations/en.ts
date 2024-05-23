@@ -178,6 +178,7 @@ const translation: IResourceLanguage = {
       'To conform with our <2>Strong Password Policy</2>, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',
     preferredNFTExplorer: 'Used when opening NFTs.',
+    questComplete: 'You have successfully completed a quest!',
     removeAccount: 'Are you sure you want to remove account "{{address}}"?',
     removeAccountWarning:
       'To add this account back you will need the seed phrase',
@@ -265,6 +266,7 @@ const translation: IResourceLanguage = {
     cameraLoading: 'Camera Loading',
     comingSoon: 'Coming Soon!',
     confirm: 'Confirm',
+    congratulations: 'Congratulations!',
     createNewAccount: 'Create A New Account',
     dangerZone: 'Danger Zone',
     developer: 'Developer',

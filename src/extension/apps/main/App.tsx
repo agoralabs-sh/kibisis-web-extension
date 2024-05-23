@@ -61,7 +61,6 @@ import AddAccountRouter from '@extension/routers/AddAccountMainRouter';
 import SettingsRouter from '@extension/routers/SettingsRouter';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAppProps,
   IAppThunkDispatch,
@@ -73,8 +72,8 @@ import type {
 import makeStore from '@extension/utils/makeStore';
 
 const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
-  const _functionName: string = 'createRouter';
-  const logger: ILogger = getState().system.logger;
+  const _functionName = 'createRouter';
+  const logger = getState().system.logger;
 
   return createHashRouter([
     {

@@ -8,11 +8,11 @@ import { IStandardAsset } from '@extension/types';
  * @property {boolean} saving - true when an asset is being saved to storage.
  * @property {boolean} updating - true when remote asset information is being updated.
  */
-interface IStandardAssetsState {
+interface IState {
   fetching: boolean;
   items: Record<string, IStandardAsset[]> | null;
   saving: boolean;
   updating: boolean;
 }
 
-export default IStandardAssetsState;
+export default IState;

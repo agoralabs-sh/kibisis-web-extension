@@ -5,7 +5,11 @@ import React, { FC, ReactNode } from 'react';
 import SideBar from '@extension/components/SideBar';
 
 // constants
-import { SIDEBAR_BORDER_WIDTH, SIDEBAR_MIN_WIDTH } from '@extension/constants';
+import {
+  BODY_BACKGROUND_COLOR,
+  SIDEBAR_BORDER_WIDTH,
+  SIDEBAR_MIN_WIDTH,
+} from '@extension/constants';
 
 // selectors
 import { useSelectSideBar } from '@extension/selectors';
@@ -15,10 +19,10 @@ interface IProps {
 }
 
 const MainLayout: FC<IProps> = ({ children }: IProps) => {
-  const isSideBarShowing: boolean = useSelectSideBar();
+  const isSideBarShowing = useSelectSideBar();
 
   return (
-    <Center as="main" backgroundColor="var(--chakra-colors-chakra-body-bg)">
+    <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
       <HStack alignItems="flex-start" minH="100vh" w="full">
         {isSideBarShowing && <SideBar />}
         <VStack

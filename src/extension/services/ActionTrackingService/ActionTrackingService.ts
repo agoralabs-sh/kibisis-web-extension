@@ -53,7 +53,11 @@ export default class ActionTrackingService {
     return privacy.allowActionTracking;
   }
 
-  private async track({ account, data, name }: ITrackOptions): Promise<void> {
+  private async track({
+    account,
+    data,
+    name,
+  }: ITrackOptions): Promise<boolean> {
     const __functionName: string = 'track';
 
     if (!this.posthog) {
@@ -61,7 +65,7 @@ export default class ActionTrackingService {
         `${ActionTrackingService.name}#${__functionName}: tracking not initialized, ignoring`
       );
 
-      return;
+      return false;
     }
 
     // check whether tracking is allowed
@@ -70,7 +74,7 @@ export default class ActionTrackingService {
         `${ActionTrackingService.name}#${__functionName}: tracking not enabled, ignoring`
       );
 
-      return;
+      return false;
     }
 
     try {
@@ -86,11 +90,15 @@ export default class ActionTrackingService {
       this.logger?.debug(
         `${ActionTrackingService.name}#${__functionName}: successfully sent action "${name}"`
       );
+
+      return true;
     } catch (error) {
       this.logger?.error(
         `${ActionTrackingService.name}#${__functionName}:`,
         error
       );
+
+      return false;
     }
   }
 
@@ -102,11 +110,12 @@ export default class ActionTrackingService {
    * Tracks an acquire ARC-0072 action.
    * @param {string} fromAddress - the address of the account that added the asset.
    * @param {IAcquireARC0072ActionData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
    */
   public async acquireARC0072Action(
     fromAddress: string,
     data: IAcquireARC0072ActionData
-  ): Promise<void> {
+  ): Promise<boolean> {
     return await this.track({
       account: fromAddress,
       data,
@@ -118,11 +127,12 @@ export default class ActionTrackingService {
    * Tracks an add ARC-0200 asset action.
    * @param {string} fromAddress - the address of the account that added the asset.
    * @param {IAddARC0200AssetActionData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
    */
   public async addARC0200AssetAction(
     fromAddress: string,
     data: IAddARC0200AssetActionData
-  ): Promise<void> {
+  ): Promise<boolean> {
     return await this.track({
       account: fromAddress,
       data,
@@ -134,11 +144,12 @@ export default class ActionTrackingService {
    * Tracks an add standard asset action.
    * @param {string} fromAddress - the address of the account that added the asset.
    * @param {IAddStandardAssetActionData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
    */
   public async addStandardAssetAction(
     fromAddress: string,
     data: IAddStandardAssetActionData
-  ): Promise<void> {
+  ): Promise<boolean> {
     return await this.track({
       account: fromAddress,
       data,
@@ -149,8 +160,9 @@ export default class ActionTrackingService {
   /**
    * Tracks an import account via QR code action.
    * @param {string} account - the address of the account that was imported.
+   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
    */
-  public async importAccountViaQRCodeAction(account: string): Promise<void> {
+  public async importAccountViaQRCodeAction(account: string): Promise<boolean> {
     return await this.track({
       account,
       data: {
@@ -168,18 +180,19 @@ export default class ActionTrackingService {
    * @param {string} toAddress - the address of the account the asset was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
    * @param {ISendARC0200AssetActionData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
    */
   public async sendARC0200AssetAction(
     fromAddress: string,
     toAddress: string,
     amountInStandardUnits: string,
     data: ISendARC0200AssetActionData
-  ): Promise<void> {
+  ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
       new BigNumber(amountInStandardUnits).lt(new BigNumber('1'))
     ) {
-      return;
+      return false;
     }
 
     return await this.track({
@@ -195,18 +208,19 @@ export default class ActionTrackingService {
    * @param {string} toAddress - the address of the account the amount was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
    * @param {ISendARC0200AssetActionData} data - the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
    */
   public async sendNativeCurrencyAction(
     fromAddress: string,
     toAddress: string,
     amountInStandardUnits: string,
     data: ISendNativeCurrencyActionData
-  ): Promise<void> {
+  ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
       new BigNumber(amountInStandardUnits).lt(new BigNumber('0.1'))
     ) {
-      return;
+      return false;
     }
 
     return await this.track({
@@ -222,18 +236,19 @@ export default class ActionTrackingService {
    * @param {string} toAddress - the address of the account the asset was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
    * @param {ISendARC0200AssetActionData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
    */
   public async sendStandardAssetAction(
     fromAddress: string,
     toAddress: string,
     amountInStandardUnits: string,
     data: ISendStandardAssetActionData
-  ): Promise<void> {
+  ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
       new BigNumber(amountInStandardUnits).lt(new BigNumber('1'))
     ) {
-      return;
+      return false;
     }
 
     return await this.track({
@@ -246,8 +261,9 @@ export default class ActionTrackingService {
   /**
    * Tracks a sign message action.
    * @param {string} account - the address of the account that was as a signer.
+   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
    */
-  public async signMessageAction(account: string): Promise<void> {
+  public async signMessageAction(account: string): Promise<boolean> {
     return await this.track({
       account,
       data: {

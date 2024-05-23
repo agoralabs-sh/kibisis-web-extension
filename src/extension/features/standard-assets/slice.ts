@@ -11,10 +11,7 @@ import {
 
 // types
 import { IStandardAsset } from '@extension/types';
-import {
-  IStandardAssetsState,
-  IUpdateStandardAssetInformationResult,
-} from './types';
+import { IState, IUpdateStandardAssetInformationResult } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -26,7 +23,7 @@ const slice = createSlice({
     builder.addCase(
       fetchStandardAssetsFromStorageThunk.fulfilled,
       (
-        state: IStandardAssetsState,
+        state: IState,
         action: PayloadAction<Record<string, IStandardAsset[]>>
       ) => {
         state.items = action.payload;
@@ -35,13 +32,13 @@ const slice = createSlice({
     );
     builder.addCase(
       fetchStandardAssetsFromStorageThunk.pending,
-      (state: IStandardAssetsState) => {
+      (state: IState) => {
         state.fetching = true;
       }
     );
     builder.addCase(
       fetchStandardAssetsFromStorageThunk.rejected,
-      (state: IStandardAssetsState) => {
+      (state: IState) => {
         state.fetching = false;
       }
     );
@@ -49,7 +46,7 @@ const slice = createSlice({
     builder.addCase(
       updateStandardAssetInformationThunk.fulfilled,
       (
-        state: IStandardAssetsState,
+        state: IState,
         action: PayloadAction<IUpdateStandardAssetInformationResult>
       ) => {
         state.items = {
@@ -63,13 +60,13 @@ const slice = createSlice({
     );
     builder.addCase(
       updateStandardAssetInformationThunk.pending,
-      (state: IStandardAssetsState) => {
+      (state: IState) => {
         state.updating = true;
       }
     );
     builder.addCase(
       updateStandardAssetInformationThunk.rejected,
-      (state: IStandardAssetsState) => {
+      (state: IState) => {
         state.updating = false;
       }
     );

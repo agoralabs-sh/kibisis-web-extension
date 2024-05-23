@@ -1,8 +1,9 @@
 // types
-import { INotificationsState } from '../types';
+import type { IState } from '../types';
 
-export default function getInitialState(): INotificationsState {
+export default function getInitialState(): IState {
   return {
     items: [],
+    showingConfetti: false,
   };
 }

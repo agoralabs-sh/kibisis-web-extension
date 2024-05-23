@@ -1,5 +1,5 @@
 // types
-import INotificationType from './INotificationType';
+import TNotificationType from './TNotificationType';
 
 /**
  * @property {string | null} description - A more detailed explanation of the notification.
@@ -9,7 +9,7 @@ import INotificationType from './INotificationType';
  * @property {string} title - the title to display in the notification.
  * @property {boolean} showing - whether the notification is currently showing.
  * @property {boolean} shown - whether the notification has been shown.
- * @property {INotificationType} type - the type of notification.
+ * @property {TNotificationType} type - the type of notification.
  */
 interface INotification {
   description: string | null;
@@ -19,7 +19,7 @@ interface INotification {
   read: boolean;
   showing: boolean;
   shown: boolean;
-  type: INotificationType;
+  type: TNotificationType;
 }
 
 export default INotification;
