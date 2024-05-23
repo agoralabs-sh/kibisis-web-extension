@@ -2,9 +2,9 @@
 import createLogger from '@common/utils/createLogger';
 
 // types
-import type { ISystemState } from '../types';
+import type { IState } from '../types';
 
-export default function getInitialState(): ISystemState {
+export default function getInitialState(): IState {
   return {
     confirmModal: null,
     logger: createLogger(__ENV__ === 'development' ? 'debug' : 'error'),

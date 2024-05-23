@@ -17,8 +17,8 @@ export default function createAlgodClient(
   network: INetwork,
   { logger }: IBaseOptions = { logger: undefined }
 ): Algodv2 {
-  const _functionName: string = 'createAlgodClient';
-  const algod: INode = getRandomItem<INode>(network.algods);
+  const _functionName = 'createAlgodClient';
+  const algod = getRandomItem<INode>(network.algods);
 
   logger?.debug(
     `${_functionName}: selected algod node "${algod.canonicalName}"`
