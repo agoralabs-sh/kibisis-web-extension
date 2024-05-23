@@ -1,3 +1,10 @@
+# [1.17.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.5...v1.17.0-beta.6) (2024-05-23)
+
+
+### Bug Fixes
+
+* use nodes for network ping urls ([#241](https://github.com/agoralabs-sh/kibisis-web-extension/issues/241)) ([4e7798b](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4e7798b91fe224917b91db8616082e190f82846d))
+
 # [1.17.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.4...v1.17.0-beta.5) (2024-05-23)
 
 
