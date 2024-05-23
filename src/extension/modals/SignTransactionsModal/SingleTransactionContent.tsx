@@ -1,6 +1,6 @@
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
-import { Transaction, encodeAddress } from 'algosdk';
+import { encodeAddress, Transaction, TransactionType } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 
 // components
@@ -41,9 +41,9 @@ interface IProps {
 }
 
 const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
-  const encodedGenesisHash: string = encodeBase64(transaction.genesisHash);
+  const encodedGenesisHash = encodeBase64(transaction.genesisHash);
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
+  const accounts = useSelectAccounts();
   const logger = useSelectLogger();
   const network = useSelectNetworkByGenesisHash(encodedGenesisHash);
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
@@ -76,8 +76,8 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
   // fetch account information for the from account
   useEffect(() => {
     (async () => {
-      const _functionName: string = 'useEffect';
-      const encodedPublicKey: string = encodeHex(transaction.from.publicKey);
+      const _functionName = 'useEffect';
+      const encodedPublicKey = encodeHex(transaction.from.publicKey);
       let account: IAccount | null =
         accounts.find(
           (value) =>
@@ -149,7 +149,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
   }
 
   switch (transaction.type) {
-    case 'acfg':
+    case TransactionType.acfg:
       if (transactionType === TransactionTypeEnum.AssetCreate) {
         return (
           <AssetCreateTransactionContent
@@ -171,7 +171,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
           transaction={transaction}
         />
       );
-    case 'afrz':
+    case TransactionType.afrz:
       return (
         <AssetFreezeTransactionContent
           asset={standardAsset}
@@ -182,7 +182,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
           transaction={transaction}
         />
       );
-    case 'appl':
+    case TransactionType.appl:
       return (
         <ApplicationTransactionContent
           explorer={explorer}
@@ -190,7 +190,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
           transaction={transaction}
         />
       );
-    case 'axfer':
+    case TransactionType.axfer:
       return (
         <AssetTransferTransactionContent
           asset={standardAsset}
@@ -201,7 +201,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
           transaction={transaction}
         />
       );
-    case 'keyreg':
+    case TransactionType.keyreg:
       return (
         <KeyRegistrationTransactionModalBody
           account={fromAccount}
@@ -210,7 +210,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
           transaction={transaction}
         />
       );
-    case 'pay':
+    case TransactionType.pay:
       return (
         <PaymentTransactionContent
           fromAccount={fromAccount}
