@@ -7,39 +7,39 @@ import { NETWORK_CONNECTIVITY_CHECK_INTERVAL } from '@extension/constants';
 // features
 import { setOnline } from '@extension/features/system';
 
+// selectors
+import { useSelectSelectedNetwork } from '@extension/selectors';
+
 // types
-import { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, INode } from '@extension/types';
+
+// utils
+import getRandomItem from '@common/utils/getRandomItem';
 
 export default function useOnNetworkConnectivity(): void {
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  // selectors
+  const network = useSelectSelectedNetwork();
+  // states
   const [checking, setChecking] = useState<boolean>(false);
   const [intervalId, setIntervalId] = useState<number | undefined>();
+  // misc
   const determineNetworkStatus: () => Promise<void> = async () => {
     let result: Response;
-    let url: string = 'https://developer.chrome.com';
 
-    switch (__TARGET__) {
-      case 'edge':
-        url = 'https://developer.microsoft.com';
-        break;
-      case 'firefox':
-        url = 'https://developer.mozilla.org';
-        break;
-      case 'opera':
-        url = 'https://dev.opera.com';
-        break;
-      case 'safari':
-        url = 'https://developer.apple.com';
-        break;
-      case 'chrome':
-      default:
-        break;
+    if (!network) {
+      dispatch(setOnline(false));
+
+      return;
     }
 
     try {
       setChecking(true);
 
-      result = await fetch(url);
+      // use a random node
+      result = await fetch(
+        `${getRandomItem<INode>(network.algods).url}/versions`
+      );
 
       dispatch(setOnline(result.status >= 200 && result.status < 300));
     } catch (error) {
