@@ -38,6 +38,11 @@ const slice = createSlice({
           type: action.payload.type,
         },
       ];
+
+      // for achievements, show confetti
+      if (action.payload.type === 'achievement') {
+        state.showingConfetti = true;
+      }
     },
     removeAll: (state: Draft<IState>) => {
       state.items = [];
@@ -50,9 +55,21 @@ const slice = createSlice({
         value.id === action.payload ? { ...value, showing: true } : value
       );
     },
+    setShowingConfetti: (
+      state: Draft<IState>,
+      action: PayloadAction<boolean>
+    ) => {
+      state.showingConfetti = action.payload;
+    },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { closeById, create, removeAll, removeById, setShowingById } =
-  slice.actions;
+export const {
+  closeById,
+  create,
+  removeAll,
+  removeById,
+  setShowingById,
+  setShowingConfetti,
+} = slice.actions;

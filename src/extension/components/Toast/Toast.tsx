@@ -12,6 +12,7 @@ import {
   IoCloseCircleOutline,
   IoCloseOutline,
   IoInformationCircleOutline,
+  IoSparklesOutline,
 } from 'react-icons/io5';
 
 // constants
@@ -34,13 +35,16 @@ const Toast: FC<IProps> = ({ description, onClose, title, type = 'info' }) => {
   const backgroundColor = useColorModeValue('gray.200', 'gray.600');
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
-  // misc
   // handlers
   const handleCloseClick = () => onClose();
   let color = primaryColor;
   let icon = IoInformationCircleOutline;
 
   switch (type) {
+    case 'achievement':
+      color = 'yellow.500';
+      icon = IoSparklesOutline;
+      break;
     case 'error':
       color = 'red.500';
       icon = IoCloseCircleOutline;

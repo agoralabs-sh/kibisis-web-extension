@@ -6,6 +6,7 @@ import { INotification } from '@extension/types';
  */
 interface IState {
   items: INotification[];
+  showingConfetti: boolean;
 }
 
 export default IState;

@@ -1,4 +1,5 @@
 import React, { FC, useEffect } from 'react';
+import Confetti from 'react-confetti';
 import { useDispatch } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 
@@ -21,6 +22,7 @@ import {
   startPollingForTransactionsParamsThunk,
 } from '@extension/features/networks';
 import { fetchFromStorageThunk as fetchNewsFromStorageThunk } from '@extension/features/news';
+import { setShowingConfetti } from '@extension/features/notifications';
 import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
 import {
@@ -31,7 +33,6 @@ import {
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import {
-  closeCurrentWindowThunk,
   setConfirmModal,
   setScanQRCodeModal,
 } from '@extension/features/system';
@@ -62,6 +63,7 @@ import WalletConnectModal from '@extension/modals/WalletConnectModal';
 import {
   useSelectAccounts,
   useSelectPasswordLockPassword,
+  useSelectNotificationsShowingConfetti,
   useSelectSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
@@ -77,9 +79,11 @@ const Root: FC = () => {
   const passwordLockPassword = useSelectPasswordLockPassword();
   const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
+  const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
+  const handleConfettiComplete = () => dispatch(setShowingConfetti(false));
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
@@ -129,6 +133,10 @@ const Root: FC = () => {
 
   return (
     <>
+      {showingConfetti && (
+        <Confetti onConfettiComplete={handleConfettiComplete} recycle={false} />
+      )}
+
       {/*top-level modals*/}
       <ConfirmModal onClose={handleConfirmClose} />
 

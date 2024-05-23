@@ -1,4 +1,4 @@
-import { CreateToastFnReturn, useToast } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -19,11 +19,11 @@ import {
 import { useSelectNotShowingNotifications } from '@extension/selectors';
 
 // types
-import { IAppThunkDispatch, INotification } from '@extension/types';
+import type { IAppThunkDispatch, INotification } from '@extension/types';
 
 export default function useNotifications(): void {
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const toast: CreateToastFnReturn = useToast({
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const toast = useToast({
     containerStyle: {
       margin: '0',
       maxWidth: '100%',

@@ -1,11 +1,11 @@
 // types
-import type { INotificationType } from '@extension/types';
+import type { TNotificationType } from '@extension/types';
 
 interface IProps {
   description?: string;
   title: string;
   onClose: () => void;
-  type?: INotificationType;
+  type?: TNotificationType;
 }
 
 export default IProps;

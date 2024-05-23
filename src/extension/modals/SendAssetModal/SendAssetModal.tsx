@@ -241,6 +241,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
     let actionTrackingService: ActionTrackingService;
+    let actionSent: boolean = false;
     let fromAddress: string;
     let transactionIds: string[];
     let toAccount: IAccount | null;
@@ -306,7 +307,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       // track the action
       switch (selectedAsset?.type) {
         case AssetTypeEnum.ARC0200:
-          await actionTrackingService.sendARC0200AssetAction(
+          actionSent = await actionTrackingService.sendARC0200AssetAction(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -317,7 +318,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           );
           break;
         case AssetTypeEnum.Native:
-          await actionTrackingService.sendNativeCurrencyAction(
+          actionSent = await actionTrackingService.sendNativeCurrencyAction(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -327,7 +328,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           );
           break;
         case AssetTypeEnum.Standard:
-          await actionTrackingService.sendStandardAssetAction(
+          actionSent = await actionTrackingService.sendStandardAssetAction(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -339,6 +340,17 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           break;
         default:
           break;
+      }
+
+      if (!actionSent) {
+        // dispatch a successful quest notification
+        dispatch(
+          createNotification({
+            description: t<string>('captions.questComplete'),
+            title: t<string>('headings.congratulations'),
+            type: 'achievement',
+          })
+        );
       }
 
       // send a success transaction
