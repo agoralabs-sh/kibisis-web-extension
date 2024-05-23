@@ -1,6 +1,9 @@
 import { Center, HStack, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
+// components
+import AccountAvatar from '@extension/components/AccountAvatar';
+
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
@@ -16,7 +19,6 @@ import type { IProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import AccountAvatar from '@extension/components/AccountAvatar';
 
 const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
   // hooks
@@ -31,7 +33,7 @@ const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
     <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
       {/*avatar*/}
       <Center>
-        <AccountAvatar account={account} />
+        <AccountAvatar />
       </Center>
 
       {account.name ? (

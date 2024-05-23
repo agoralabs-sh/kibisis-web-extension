@@ -1,7 +1,5 @@
 import {
-  Heading,
   HStack,
-  Icon,
   Skeleton,
   SkeletonCircle,
   Spacer,
@@ -46,13 +44,13 @@ import { IAppThunkDispatch, ISession } from '@extension/types';
 
 const SessionsSettingsPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const fetching: boolean = useSelectSessionsFetching();
-  const sessions: ISession[] = useSelectSessions();
+  const fetching = useSelectSessionsFetching();
+  const sessions = useSelectSessions();
   // hooks
-  const defaultSubTextColor: string = useSubTextColor();
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultSubTextColor = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
   // states
   const [managedSession, setManagedSession] = useState<ISession | null>(null);
   // handlers
@@ -68,8 +66,7 @@ const SessionsSettingsPage: FC = () => {
       })
     );
   const handleRemoveSession = (id: string) => {
-    const session: ISession | null =
-      sessions.find((value) => value.id === id) || null;
+    const session = sessions.find((value) => value.id === id) || null;
 
     if (session) {
       // if this is a walletconnect session, remove by topic

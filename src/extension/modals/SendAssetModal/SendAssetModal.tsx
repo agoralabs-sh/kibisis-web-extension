@@ -68,6 +68,7 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import {
   useSelectAccounts,
   useSelectARC0200AssetsBySelectedNetwork,
+  useSelectAvailableAccountsForSelectedNetwork,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
@@ -91,6 +92,7 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAccount,
+  IAccountWithExtendedProps,
   IAppThunkDispatch,
   IAssetTypes,
   IModalProps,
@@ -106,8 +108,9 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts = useSelectAccounts();
-  const arc200Assets = useSelectARC0200AssetsBySelectedNetwork();
   const amountInStandardUnits = useSelectSendAssetAmountInStandardUnits();
+  const arc200Assets = useSelectARC0200AssetsBySelectedNetwork();
+  const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const standardAssets = useSelectStandardAssetsBySelectedNetwork();
   const confirming = useSelectSendAssetConfirming();
   const creating = useSelectSendAssetCreating();
@@ -169,7 +172,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     resetPassword();
     onClose && onClose();
   };
-  const handleFromAccountChange = (account: IAccount) =>
+  const handleFromAccountChange = (account: IAccountWithExtendedProps) =>
     dispatch(
       setFromAddress(
         AccountService.convertPublicKeyToAlgorandAddress(
@@ -403,117 +406,117 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       return <SendAssetModalConfirmingContent />;
     }
 
-    if (fromAccount && network && selectedAsset) {
-      if (transactions && transactions.length > 0) {
-        return (
-          <SendAssetModalSummaryContent
-            amountInStandardUnits={amountInStandardUnits}
-            asset={selectedAsset}
-            fromAccount={fromAccount}
-            network={network}
-            note={note}
-            toAddress={toAddress}
-            transactions={transactions}
-          />
-        );
-      }
+    if (!fromAccount || !network || !selectedAsset) {
+      return <SendAssetModalContentSkeleton />;
+    }
 
+    if (transactions && transactions.length > 0) {
       return (
-        <VStack spacing={DEFAULT_GAP - 2} w="full">
-          {/*amount*/}
-          <SendAmountInput
-            account={fromAccount}
-            disabled={creating}
-            network={network}
-            maximumTransactionAmount={maximumTransactionAmount}
-            onValueChange={handleAmountChange}
-            selectedAsset={selectedAsset}
-            value={amountInStandardUnits}
-          />
-
-          {/*select asset*/}
-          <VStack w="full">
-            {/*label*/}
-            <Text
-              color={defaultTextColor}
-              fontSize="md"
-              textAlign="left"
-              w="full"
-            >
-              {t<string>('labels.asset')}
-            </Text>
-
-            <AssetSelect
-              account={fromAccount}
-              assets={[
-                network.nativeCurrency, // add the native currency to the front
-                ...allAssets,
-              ]}
-              disabled={creating}
-              network={network}
-              onAssetChange={handleAssetChange}
-              value={selectedAsset}
-            />
-          </VStack>
-
-          {/*from account*/}
-          <VStack alignItems="flex-start" w="full">
-            {/*label*/}
-            <Text
-              color={defaultTextColor}
-              fontSize="md"
-              textAlign="left"
-              w="full"
-            >
-              {t<string>('labels.from')}
-            </Text>
-
-            <AccountSelect
-              accounts={accounts.filter((value) => !value.watchAccount)}
-              disabled={creating}
-              onSelect={handleFromAccountChange}
-              value={fromAccount}
-            />
-          </VStack>
-
-          {/*to address*/}
-          <AddressInput
-            accounts={accounts}
-            disabled={creating}
-            error={toAddressError}
-            label={t<string>('labels.to')}
-            onBlur={onToAddressBlur}
-            onChange={handleToAddressChange}
-            value={toAddress || ''}
-          />
-
-          {/*note*/}
-          <VStack alignItems="flex-start" w="full">
-            {/*label*/}
-            <Text
-              color={defaultTextColor}
-              fontSize="md"
-              textAlign="left"
-              w="full"
-            >
-              {t<string>('labels.noteOptional')}
-            </Text>
-
-            <Textarea
-              focusBorderColor={primaryColor}
-              isDisabled={creating}
-              onChange={handleNoteChange}
-              placeholder={t<string>('placeholders.enterNote')}
-              resize="vertical"
-              size="md"
-              value={note || ''}
-            />
-          </VStack>
-        </VStack>
+        <SendAssetModalSummaryContent
+          amountInStandardUnits={amountInStandardUnits}
+          asset={selectedAsset}
+          fromAccount={fromAccount}
+          network={network}
+          note={note}
+          toAddress={toAddress}
+          transactions={transactions}
+        />
       );
     }
 
-    return <SendAssetModalContentSkeleton />;
+    return (
+      <VStack spacing={DEFAULT_GAP - 2} w="full">
+        {/*amount*/}
+        <SendAmountInput
+          account={fromAccount}
+          disabled={creating}
+          network={network}
+          maximumTransactionAmount={maximumTransactionAmount}
+          onValueChange={handleAmountChange}
+          selectedAsset={selectedAsset}
+          value={amountInStandardUnits}
+        />
+
+        {/*select asset*/}
+        <VStack w="full">
+          {/*label*/}
+          <Text
+            color={defaultTextColor}
+            fontSize="md"
+            textAlign="left"
+            w="full"
+          >
+            {t<string>('labels.asset')}
+          </Text>
+
+          <AssetSelect
+            account={fromAccount}
+            assets={[
+              network.nativeCurrency, // add the native currency to the front
+              ...allAssets,
+            ]}
+            disabled={creating}
+            network={network}
+            onAssetChange={handleAssetChange}
+            value={selectedAsset}
+          />
+        </VStack>
+
+        {/*from account*/}
+        <VStack alignItems="flex-start" w="full">
+          {/*label*/}
+          <Text
+            color={defaultTextColor}
+            fontSize="md"
+            textAlign="left"
+            w="full"
+          >
+            {t<string>('labels.from')}
+          </Text>
+
+          <AccountSelect
+            accounts={availableAccounts}
+            disabled={creating}
+            onSelect={handleFromAccountChange}
+            value={fromAccount}
+          />
+        </VStack>
+
+        {/*to address*/}
+        <AddressInput
+          accounts={accounts}
+          disabled={creating}
+          error={toAddressError}
+          label={t<string>('labels.to')}
+          onBlur={onToAddressBlur}
+          onChange={handleToAddressChange}
+          value={toAddress || ''}
+        />
+
+        {/*note*/}
+        <VStack alignItems="flex-start" w="full">
+          {/*label*/}
+          <Text
+            color={defaultTextColor}
+            fontSize="md"
+            textAlign="left"
+            w="full"
+          >
+            {t<string>('labels.noteOptional')}
+          </Text>
+
+          <Textarea
+            focusBorderColor={primaryColor}
+            isDisabled={creating}
+            onChange={handleNoteChange}
+            placeholder={t<string>('placeholders.enterNote')}
+            resize="vertical"
+            size="md"
+            value={note || ''}
+          />
+        </VStack>
+      </VStack>
+    );
   };
   const renderFooter = () => {
     if (confirming) {

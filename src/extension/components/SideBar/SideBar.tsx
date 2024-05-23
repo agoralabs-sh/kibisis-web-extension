@@ -52,9 +52,10 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 // selectors
 import {
   useSelectAccounts,
+  useSelectAccountsFetching,
   useSelectActiveAccount,
   useSelectActiveAccountDetails,
-  useSelectAccountsFetching,
+  useSelectAvailableAccountsForSelectedNetwork,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
@@ -75,6 +76,7 @@ const SideBar: FC = () => {
   const accounts = useSelectAccounts();
   const activeAccount = useSelectActiveAccount();
   const activeAccountDetails = useSelectActiveAccountDetails();
+  const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const fetchingAccounts = useSelectAccountsFetching();
   const network = useSelectSelectedNetwork();
   // hooks
@@ -121,27 +123,28 @@ const SideBar: FC = () => {
   const handleSendAssetClick = () => {
     let fromAccount: IAccountWithExtendedProps | null;
 
-    if (activeAccount && network) {
-      fromAccount = activeAccount;
-
-      // if the active account is a watch account, get the first account that is not a watch account
-      if (activeAccount.watchAccount) {
-        fromAccount = accounts.find((value) => !value.watchAccount) || null;
-      }
-
-      if (!fromAccount) {
-        return;
-      }
-
-      dispatch(
-        initializeSendAsset({
-          fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
-            fromAccount.publicKey
-          ),
-          selectedAsset: network.nativeCurrency, // use native currency
-        })
-      );
+    if (!activeAccount || !network) {
+      return;
     }
+
+    // for the active account is eligible, use it as the from account, otherwise get the first account in the list
+    fromAccount =
+      availableAccounts.find((value) => value.id === activeAccount.id) ||
+      availableAccounts[0] ||
+      null;
+
+    if (!fromAccount) {
+      return;
+    }
+
+    dispatch(
+      initializeSendAsset({
+        fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
+          fromAccount.publicKey
+        ),
+        selectedAsset: network.nativeCurrency, // use native currency
+      })
+    );
   };
   const handleSettingsClick = () => {
     onCloseSideBar();
@@ -153,7 +156,7 @@ const SideBar: FC = () => {
     }
   };
   const renderAccounts: () => ReactNode = () => {
-    if (fetchingAccounts) {
+    if (fetchingAccounts || !network) {
       return Array.from({ length: 3 }, (_, index) => (
         <SideBarSkeletonAccountItem key={`sidebar-fetching-item-${index}`} />
       ));
@@ -161,9 +164,11 @@ const SideBar: FC = () => {
 
     return accounts.map((value, index) => (
       <SideBarAccountItem
-        active={activeAccount ? value.id === activeAccount.id : false}
         account={value}
+        accounts={accounts}
+        active={activeAccount ? value.id === activeAccount.id : false}
         key={`sidebar-item-${index}`}
+        network={network}
         onClick={handleAccountClick}
       />
     ));

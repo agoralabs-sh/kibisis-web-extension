@@ -25,7 +25,7 @@ import type {
 import type { IUseSignMessageModalState } from './types';
 
 // utils
-import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
+import authorizedAccountsForHost from '@extension/utils/authorizedAccountsForHost';
 
 export default function useSignMessageModal(): IUseSignMessageModalState {
   // selectors
@@ -51,24 +51,13 @@ export default function useSignMessageModal(): IUseSignMessageModalState {
   }, [events]);
   // when we have accounts, sessions and the event, update the authorized accounts
   useEffect(() => {
-    let authorizedAddresses: string[];
-
-    if (event && !authorizedAccounts) {
-      authorizedAddresses = getAuthorizedAddressesForHost(
-        event.payload.message.clientInfo.host,
-        sessions
-      );
-
+    if (event && accounts.length > 0 && !authorizedAccounts) {
       setAuthorizedAccounts(
-        accounts.filter((account) =>
-          authorizedAddresses.some(
-            (value) =>
-              value ===
-              AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
-              )
-          )
-        )
+        authorizedAccountsForHost({
+          accounts,
+          host: event.payload.message.clientInfo.host,
+          sessions,
+        })
       );
     }
   }, [accounts, event, sessions]);

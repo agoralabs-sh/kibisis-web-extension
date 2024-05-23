@@ -13,7 +13,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { ChangeEvent, FC, useRef, useState } from 'react';
+import React, { ChangeEvent, FC, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline, IoCloseOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -53,6 +53,7 @@ import useIsNewSelectedAsset from './hooks/useIsNewSelectedAsset';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectAddAssetsAccount,
   useSelectAddAssetsARC0200Assets,
   useSelectAddAssetsConfirming,
@@ -72,6 +73,7 @@ import { theme } from '@extension/theme';
 
 // types
 import type {
+  IAccountInformation,
   IAppThunkDispatch,
   IAppThunkDispatchReturn,
   IARC0200Asset,
@@ -82,6 +84,7 @@ import type {
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import isNumericString from '@extension/utils/isNumericString';
+import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
 const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -89,6 +92,7 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   const assetContainerRef = useRef<HTMLDivElement | null>(null);
   // selectors
   const account = useSelectAddAssetsAccount();
+  const accounts = useSelectAccounts();
   const arc0200Assets = useSelectAddAssetsARC0200Assets();
   const confirming = useSelectAddAssetsConfirming();
   const explorer = useSelectSettingsPreferredBlockExplorer();
@@ -110,7 +114,29 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
       IAssetsWithNextToken<IARC0200Asset>
     > | null>(null);
   // misc
-  const isOpen = !!(account && account.watchAccount);
+  const isOpen = useMemo<boolean>(() => {
+    let accountInformation: IAccountInformation | null;
+
+    if (!account || !selectedNetwork) {
+      return false;
+    }
+
+    accountInformation = AccountService.extractAccountInformationForNetwork(
+      account,
+      selectedNetwork
+    );
+
+    // if the account has been re-keyed, check that the address is not available, i.e. is abstractly a watch account
+    if (accountInformation && accountInformation.authAddress) {
+      return !isReKeyedAuthAccountAvailable({
+        accounts,
+        authAddress: accountInformation.authAddress,
+      });
+    }
+
+    // otherwise, just check if it is actually a watch account
+    return account.watchAccount;
+  }, [account, accounts, selectedNetwork]);
   // handlers
   const handleAddARC0200AssetClick = async () => {
     let actionTrackingService: ActionTrackingService;

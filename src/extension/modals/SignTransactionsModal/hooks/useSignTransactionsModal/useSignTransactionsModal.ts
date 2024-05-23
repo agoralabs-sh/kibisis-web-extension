@@ -3,8 +3,11 @@ import {
   ARC0027UnknownError,
   ISignTransactionsParams,
 } from '@agoralabs-sh/avm-web-provider';
-import { decode as decodeBase64 } from '@stablelib/base64';
-import { Transaction } from 'algosdk';
+import {
+  decode as decodeBase64,
+  encode as encodeBase64,
+} from '@stablelib/base64';
+import type { Transaction } from 'algosdk';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -18,10 +21,10 @@ import { updateStandardAssetInformationThunk } from '@extension/features/standar
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectEvents,
   useSelectLogger,
   useSelectNetworks,
-  useSelectNonWatchAccounts,
   useSelectSessions,
   useSelectStandardAssets,
 } from '@extension/selectors';
@@ -35,7 +38,6 @@ import type {
   IAppThunkDispatch,
   IClientRequestEvent,
   INetwork,
-  ISession,
 } from '@extension/types';
 import type { IUseSignTransactionsModalState } from './types';
 
@@ -49,7 +51,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
   const _functionName = 'useSignTransactionsModal';
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts = useSelectNonWatchAccounts();
+  const accounts = useSelectAccounts();
   const events = useSelectEvents();
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
@@ -73,26 +75,29 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
   }, [events]);
   useEffect(() => {
     (async () => {
-      let authorizedAddresses: string[];
+      let _authorizedAccounts: IAccountWithExtendedProps[];
+      let _error: string;
       let decodedUnsignedTransactions: Transaction[];
-      let errorMessage: string;
-      let filteredSessions: ISession[];
-      let genesisHashes: string[];
 
-      if (event && event.payload.message.params && !authorizedAccounts) {
+      if (
+        event &&
+        event.payload.message.params &&
+        accounts.length > 0 &&
+        !authorizedAccounts
+      ) {
         try {
           decodedUnsignedTransactions = event.payload.message.params.txns.map(
             (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
           );
         } catch (error) {
-          errorMessage = `failed to decode transactions: ${error.message}`;
+          _error = `failed to decode transactions: ${error.message}`;
 
-          logger?.debug(`${_functionName}: ${errorMessage}`);
+          logger?.debug(`${_functionName}: ${_error}`);
 
           await dispatch(
             sendSignTransactionsResponseThunk({
               error: new ARC0027UnknownError({
-                message: errorMessage,
+                message: _error,
                 providerId: __PROVIDER_ID__,
               }),
               event,
@@ -105,30 +110,60 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
           return;
         }
 
-        genesisHashes = uniqueGenesisHashesFromTransactions(
-          decodedUnsignedTransactions
-        );
-        // filter sessions by the available genesis hashes
-        filteredSessions = sessions.filter((session) =>
-          genesisHashes.some((value) => value === session.genesisHash)
-        );
-        authorizedAddresses = getAuthorizedAddressesForHost(
-          event.payload.message.clientInfo.host,
-          filteredSessions
-        );
+        _authorizedAccounts = decodedUnsignedTransactions.reduce<
+          IAccountWithExtendedProps[]
+        >((acc, currentValue) => {
+          const account = accounts.find(
+            (value) =>
+              value.publicKey ===
+              AccountService.encodePublicKey(currentValue.from.publicKey)
+          );
+          const base64EncodedGenesisHash = encodeBase64(
+            currentValue.genesisHash
+          );
+          const authorizedAddresses = getAuthorizedAddressesForHost(
+            event.payload.message.clientInfo.host,
+            sessions.filter(
+              (value) => value.genesisHash === base64EncodedGenesisHash
+            )
+          );
+          const network = networks.find(
+            (value) => value.genesisHash === base64EncodedGenesisHash
+          );
+          const accountInformation =
+            account && network
+              ? AccountService.extractAccountInformationForNetwork(
+                  account,
+                  network
+                )
+              : null;
 
-        // set the authorized accounts and the event
-        setAuthorizedAccounts(
-          accounts.filter((account) =>
-            authorizedAddresses.some(
+          // the from account is not an authorized account if:
+          // * the account and account information is unknown for the network (inferred from the transaction's genesis hash)
+          // * the account has already been added
+          // * the account is not in the authorized addresses for a session matching the host and the genesis hash
+          // * the account has not been re-keyed and is not a watch account
+          if (
+            !account ||
+            !accountInformation ||
+            acc.find((value) => value.id === account?.id) ||
+            !authorizedAddresses.find(
               (value) =>
                 value ===
                 AccountService.convertPublicKeyToAlgorandAddress(
-                  account.publicKey
+                  account?.publicKey
                 )
-            )
-          )
-        );
+            ) ||
+            (!accountInformation.authAddress && !account.watchAccount)
+          ) {
+            return acc;
+          }
+
+          return [...acc, account];
+        }, []);
+
+        // set the authorized accounts and the event
+        setAuthorizedAccounts(_authorizedAccounts);
       }
     })();
   }, [accounts, events, sessions]);

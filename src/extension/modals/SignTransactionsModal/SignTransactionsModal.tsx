@@ -51,10 +51,11 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useSignTransactionsModal from './hooks/useSignTransactionsModal';
 
 // selectors
-import { useSelectLogger } from '@extension/selectors';
-
-// services
-import AccountService from '@extension/services/AccountService';
+import {
+  useSelectAccounts,
+  useSelectLogger,
+  useSelectNetworks,
+} from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -65,14 +66,16 @@ import type { IAppThunkDispatch, IModalProps } from '@extension/types';
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import groupTransactions from '@extension/utils/groupTransactions';
-import signTransactions from '@extension/utils/signTransactions';
+import signTransactions from './utils/signTransactions';
 
 const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
+  const accounts = useSelectAccounts();
   const logger = useSelectLogger();
+  const networks = useSelectNetworks();
   // hooks
   const { authorizedAccounts, event, setAuthorizedAccounts } =
     useSignTransactionsModal();
@@ -113,9 +116,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
     resetPassword();
     setAuthorizedAccounts(null);
 
-    if (onClose) {
-      onClose();
-    }
+    onClose && onClose();
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -139,12 +140,12 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
     try {
       stxns = await signTransactions({
-        authorizedSigners: authorizedAccounts.map((value) =>
-          AccountService.convertPublicKeyToAlgorandAddress(value.publicKey)
-        ),
+        accounts: authorizedAccounts,
+        arc0001Transactions: event.payload.message.params.txns,
+        authAccounts: accounts,
         logger,
+        networks,
         password,
-        txns: event.payload.message.params.txns,
       });
 
       // send a response
@@ -173,6 +174,8 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
               stxns: null,
             })
           );
+
+          handleClose();
           break;
         default:
           dispatch(

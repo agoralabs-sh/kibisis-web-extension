@@ -49,6 +49,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 // selectors
 import {
   useSelectAccountByAddress,
+  useSelectAccounts,
   useSelectLogger,
   useSelectNetworks,
   useSelectPasswordLockPassword,
@@ -71,7 +72,8 @@ import createUnsignedKeyRegistrationTransactionFromSchema from '@extension/utils
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
+import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
+import signTransaction from '@extension/utils/signTransaction';
 
 const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   IARC0300ModalContentProps<
@@ -87,6 +89,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   const account = useSelectAccountByAddress(
     schema.query[ARC0300QueryEnum.Sender]
   );
+  const accounts = useSelectAccounts();
   const logger = useSelectLogger();
   const passwordLockPassword = useSelectPasswordLockPassword();
   const networks = useSelectNetworks();
@@ -151,7 +154,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
-    let transactionIds: string[];
+    let signedTransaction: Uint8Array;
 
     if (!unsignedTransaction) {
       return;
@@ -221,26 +224,32 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
         );
       }
 
-      transactionIds = await signAndSendTransactions({
+      signedTransaction = await signTransaction({
+        accounts,
+        authAccounts: accounts,
+        logger,
+        networks,
+        password,
+        unsignedTransaction,
+      });
+
+      await sendTransactionsForNetwork({
         logger,
         network,
-        password,
-        unsignedTransactions: [unsignedTransaction],
+        signedTransactions: [signedTransaction],
       });
 
       logger.debug(
         `${
           ARC0300KeyRegistrationTransactionSendModalContent.name
-        }#${_functionName}: sent transactions [${transactionIds
-          .map((value) => `"${value}"`)
-          .join(',')}] to the network`
+        }#${_functionName}: sent transaction "${unsignedTransaction.txID()}" to the network`
       );
 
       // send a success transaction notification
       dispatch(
         createNotification({
           description: t<string>('captions.transactionsSentSuccessfully', {
-            amount: transactionIds.length,
+            amount: 1,
           }),
           title: t<string>('headings.transactionsSuccessful'),
           type: 'success',

@@ -410,6 +410,8 @@ const translation: IResourceLanguage = {
     newPassword: 'New Password',
     nfts: 'NFTs',
     no: 'No',
+    noAuthAddressAvailable:
+      'This account has been re-keyed to the account {{address}}, but the address is not available or is a watch account',
     note: 'Note',
     noteOptional: 'Note (optional)',
     password: 'Password',
@@ -423,6 +425,8 @@ const translation: IResourceLanguage = {
     passwordLockTimeout: 'Password lock timeout',
     preferredBlockExplorer: 'Preferred Block Explorer',
     preferredNFTExplorer: 'Preferred NFT Explorer',
+    reKeyed: 'Re-keyed',
+    reKeyedToAccount: 'This account has been re-keyed to {{address}}',
     removeAccount: 'Remove Account',
     removeAsset: 'Remove Asset',
     [`removeAsset_${AssetTypeEnum.ARC0200}`]: 'Hide Asset',

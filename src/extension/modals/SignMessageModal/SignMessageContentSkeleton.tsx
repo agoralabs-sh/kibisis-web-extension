@@ -39,7 +39,7 @@ const SignMessageContentSkeleton: FC = () => {
       <VStack justifyContent="flex-start" spacing={DEFAULT_GAP / 3} w="full">
         {Array.from({ length: 3 }, (_, index) => (
           <Skeleton key={`sign-message-modal-fetching-item-${index}`}>
-            <Text color={defaultTextColor} fontSize="md" textAlign="center">
+            <Text color={defaultTextColor} fontSize="md" textAlign="left">
               {ellipseAddress(generateAccount().addr, {
                 end: 10,
                 start: 10,

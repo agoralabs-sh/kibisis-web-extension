@@ -52,20 +52,22 @@ import StorageManager from '../StorageManager';
 import type { IBaseOptions, ILogger } from '@common/types';
 import type {
   IAccount,
+  IAccountWithExtendedProps,
   IClientRequestEvent,
   INetwork,
   ISession,
 } from '@extension/types';
 
 // utils
-import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
+import authorizedAccountsForHost from '@extension/utils/authorizedAccountsForHost';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
-import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 import isNetworkSupported from '@extension/utils/isNetworkSupported';
+import isWatchAccount from '@extension/utils/isWatchAccount';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import sendExtensionEvent from '@extension/utils/sendExtensionEvent';
 import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
+import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
 export default class ClientMessageHandler {
   // private variables
@@ -97,6 +99,25 @@ export default class ClientMessageHandler {
   /**
    * private functions
    */
+
+  /**
+   * Convenience function that fetches all accounts with the extended props.
+   * @returns {Promise<IAccountWithExtendedProps[]>} a promise that resolves to all the accounts with extended props.
+   * @private
+   */
+  private async fetchAccounts(): Promise<IAccountWithExtendedProps[]> {
+    const accounts = await this.accountService.getAllAccounts();
+
+    return await Promise.all(
+      accounts.map(async (value) => ({
+        ...value,
+        watchAccount: await isWatchAccount({
+          account: value,
+          logger: this.logger || undefined,
+        }),
+      }))
+    );
+  }
 
   /**
    * Convenience function that fetches all the sessions from storage and filters them based on a predicate, if it is
@@ -378,11 +399,13 @@ export default class ClientMessageHandler {
     message: ClientRequestMessage<ISignMessageParams>,
     originTabId: number
   ): Promise<void> {
-    const _functionName: string = 'handleSignMessageRequestMessage';
-    const filteredSessions: ISession[] = await this.fetchSessions(
+    const _functionName = 'handleSignMessageRequestMessage';
+    const filteredSessions = await this.fetchSessions(
       (value) => value.host === message.clientInfo.host
     );
-    let authorizedAddresses: string[];
+    let _error: string;
+    let authorizedAccounts: IAccountWithExtendedProps[];
+    let signerAccount: IAccountWithExtendedProps | null;
 
     if (!message.params) {
       return await this.sendResponse(
@@ -421,34 +444,48 @@ export default class ClientMessageHandler {
       );
     }
 
-    authorizedAddresses = getAuthorizedAddressesForHost(
-      message.clientInfo.host,
-      filteredSessions
-    );
+    authorizedAccounts = authorizedAccountsForHost({
+      accounts: await this.fetchAccounts(),
+      host: message.clientInfo.host,
+      sessions: filteredSessions,
+    });
 
-    // if the requested signer has not been authorized
-    if (
-      message.params.signer &&
-      !authorizedAddresses.find((value) => value === message.params?.signer)
-    ) {
-      this.logger?.debug(
-        `${ClientMessageHandler.name}#${_functionName}: signer "${message.params.signer}" is not authorized`
-      );
+    // if the requested signer has not been authorized or is a watch account
+    if (message.params.signer) {
+      signerAccount =
+        authorizedAccounts.find(
+          (value) =>
+            AccountService.convertPublicKeyToAlgorandAddress(
+              value.publicKey
+            ) === message.params?.signer
+        ) || null;
 
-      // send the response to the web page (via the content script)
-      return await this.sendResponse(
-        new ClientResponseMessage<ISignMessageResult>({
-          error: new ARC0027UnauthorizedSignerError({
-            message: `"${message.params.signer}" has not been authorized`,
-            providerId: __PROVIDER_ID__,
-            signer: message.params.signer,
+      if (!signerAccount || signerAccount.watchAccount) {
+        _error = `"${message.params.signer}" ${
+          signerAccount?.watchAccount
+            ? ` is a watch account`
+            : `has not been authorized`
+        }`;
+
+        this.logger?.debug(
+          `${ClientMessageHandler.name}#${_functionName}: ${_error}`
+        );
+
+        // send the response to the web page (via the content script)
+        return await this.sendResponse(
+          new ClientResponseMessage<ISignMessageResult>({
+            error: new ARC0027UnauthorizedSignerError({
+              message: _error,
+              providerId: __PROVIDER_ID__,
+              signer: message.params.signer,
+            }),
+            id: uuid(),
+            method: message.method,
+            requestId: message.id,
           }),
-          id: uuid(),
-          method: message.method,
-          requestId: message.id,
-        }),
-        originTabId
-      );
+          originTabId
+        );
+      }
     }
 
     return await this.sendClientMessageEvent(

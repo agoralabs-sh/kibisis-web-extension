@@ -1,9 +1,14 @@
 // types
-import type { IAccountWithExtendedProps } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  INetworkWithTransactionParams,
+} from '@extension/types';
 
 interface ISideBarAccountItemProps {
   account: IAccountWithExtendedProps;
+  accounts: IAccountWithExtendedProps[];
   active: boolean;
+  network: INetworkWithTransactionParams;
   onClick: (id: string) => void;
 }
 

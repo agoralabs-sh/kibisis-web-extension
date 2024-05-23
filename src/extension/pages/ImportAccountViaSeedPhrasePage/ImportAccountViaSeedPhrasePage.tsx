@@ -231,11 +231,11 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
         {hasCompletedAllSteps && (
           <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
             <Heading color={defaultTextColor} fontSize="md" textAlign="left">
-              {t<string>('headings.importAccountViaSeedPhraseComplete')}
+              {t<string>('headings.almostThere')}
             </Heading>
 
             <Text color={subTextColor} fontSize="sm" textAlign="left">
-              {t<string>('captions.almostThere')}
+              {t<string>('captions.importAccountViaSeedPhraseComplete')}
             </Text>
           </VStack>
         )}

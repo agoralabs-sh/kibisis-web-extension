@@ -47,7 +47,8 @@ import createAlgodClient from '@common/utils/createAlgodClient';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import isWatchAccount from '@extension/utils/isWatchAccount';
-import signAndSendTransactions from '@extension/utils/signAndSendTransactions';
+import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
+import signTransaction from '@extension/utils/signTransaction';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 import { findAccountWithoutExtendedProps } from '../utils';
@@ -83,6 +84,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
     let network: INetworkWithTransactionParams | null;
     let transactionIds: string[];
+    let signedTransactions: Uint8Array[];
     let suggestedParams: SuggestedParams;
     let unsignedTransactions: Transaction[];
 
@@ -212,11 +214,24 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
           .join(',')}]`
       );
 
-      transactionIds = await signAndSendTransactions({
+      signedTransactions = await Promise.all(
+        unsignedTransactions.map((value) =>
+          signTransaction({
+            accounts,
+            authAccounts: accounts,
+            logger,
+            networks,
+            password,
+            unsignedTransaction: value,
+          })
+        )
+      );
+      transactionIds = unsignedTransactions.map((value) => value.txID());
+
+      await sendTransactionsForNetwork({
         logger,
         network,
-        password,
-        unsignedTransactions,
+        signedTransactions,
       });
     } catch (error) {
       logger.debug(`${AccountsThunkEnum.RemoveStandardAssetHoldings}: `, error);
