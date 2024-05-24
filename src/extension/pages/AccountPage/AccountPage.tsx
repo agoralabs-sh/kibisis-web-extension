@@ -1,6 +1,10 @@
 import {
   HStack,
   Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
   StackProps,
   Tab,
@@ -19,7 +23,9 @@ import {
   IoAdd,
   IoCloudOfflineOutline,
   IoCreateOutline,
+  IoEllipsisVerticalOutline,
   IoQrCodeOutline,
+  IoRepeatOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -55,10 +61,12 @@ import {
   saveActiveAccountDetails,
   updateAccountsThunk,
 } from '@extension/features/accounts';
+import { setAccount as setReKeyAccount } from '@extension/features/re-key-account';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 import { setConfirmModal } from '@extension/features/system';
 
 // hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -118,6 +126,7 @@ const AccountPage: FC = () => {
   const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
   // hooks
+  const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
@@ -192,6 +201,7 @@ const AccountPage: FC = () => {
       );
     }
   };
+  const handleReKeyAccountClick = () => dispatch(setReKeyAccount(account));
   // renders
   const renderContent = () => {
     const headerContainerProps: StackProps = {
@@ -329,16 +339,42 @@ const AccountPage: FC = () => {
                 />
               </Tooltip>
 
-              {/*remove account*/}
-              <Tooltip label={t<string>('labels.removeAccount')}>
-                <IconButton
-                  aria-label="Remove account"
-                  icon={IoTrashOutline}
-                  onClick={handleRemoveAccountClick}
-                  size="sm"
+              {/*overflow menu*/}
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  aria-label="Overflow menu"
+                  icon={IoEllipsisVerticalOutline}
                   variant="ghost"
                 />
-              </Tooltip>
+                <MenuList>
+                  {/*add/undo re-key*/}
+                  {accountInformation.authAddress &&
+                    isReKeyedAuthAccountAvailable({
+                      accounts,
+                      authAddress: accountInformation.authAddress,
+                    }) && (
+                      <MenuItem
+                        color={defaultTextColor}
+                        icon={
+                          <Icon as={IoRepeatOutline} color={defaultTextColor} />
+                        }
+                        onClick={handleReKeyAccountClick}
+                      >
+                        {t<string>('labels.undoReKey')}
+                      </MenuItem>
+                    )}
+
+                  {/*remove account*/}
+                  <MenuItem
+                    color={defaultTextColor}
+                    icon={<Icon as={IoTrashOutline} color={defaultTextColor} />}
+                    onClick={handleRemoveAccountClick}
+                  >
+                    {t<string>('labels.removeAccount')}
+                  </MenuItem>
+                </MenuList>
+              </Menu>
             </HStack>
 
             {/*badges*/}

@@ -41,6 +41,7 @@ const translation: IResourceLanguage = {
     send: 'Send',
     sign: 'Sign',
     tryAgain: 'Try Again',
+    undo: 'Undo',
     view: 'View',
     yesImIn: `Yes, I'm In`,
   },
@@ -142,6 +143,10 @@ const translation: IResourceLanguage = {
       'You must enter your password to authorize an opt-in transaction.',
     mustEnterPasswordToAuthorizeOptOut:
       'You must enter your password to authorize an opt-out transaction.',
+    mustEnterPasswordToAuthorizeReKey:
+      'You must enter your password to authorize the re-keying of the account.',
+    mustEnterPasswordToAuthorizeUndoReKey:
+      'You must enter your password to authorize the undo re-key.',
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
     mustEnterPasswordToImportAccount:
       'You must enter your password to import this account.',
@@ -179,6 +184,8 @@ const translation: IResourceLanguage = {
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',
     preferredNFTExplorer: 'Used when opening NFTs.',
     questComplete: 'You have successfully completed a quest!',
+    reKeyFee:
+      'Re-keying accounts requires a "re-key" fee. This is a transaction of with a "0" amount sent to yourself.',
     removeAccount: 'Are you sure you want to remove account "{{address}}"?',
     removeAccountWarning:
       'To add this account back you will need the seed phrase',
@@ -215,6 +222,10 @@ const translation: IResourceLanguage = {
     transactionIdCopied: 'Transaction ID copied!',
     transactionsSentSuccessfully:
       '{{amount}} transaction(s) were successfully sent.',
+    undoReKeyAccount:
+      'You are about to remove the authorized account from a re-keyed account.',
+    undoReKeyConfirming:
+      'Please wait while we remove the account "{{authAddress}}" from the re-keyed account "{{reKeyAddress}}".',
     unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
     viewSeedPhrase1: 'Select an account to view the seed phrase.',
@@ -290,6 +301,7 @@ const translation: IResourceLanguage = {
     numberOfTransactions_multiple: '{{number}} atomic transactions',
     offline: 'Offline',
     passwordLock: 'Welcome back',
+    reKeyAccount: 'Re-key Account 🔒',
     removeAccount: 'Remove Account',
     removeAllSessions: 'Remove All Sessions',
     removeAsset: 'Remove {{symbol}}',
@@ -334,6 +346,7 @@ const translation: IResourceLanguage = {
       'Online Key Registration 🔑',
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
     transactionsSuccessful: 'Transaction(s) Successful!',
+    undoReKey: 'Undo Re-Key 🔓',
     unknownAccount: 'Unknown Account',
     unknownNetwork: 'Unknown Network',
     unknownQRCode: 'Unknown QR Code',
@@ -359,6 +372,7 @@ const translation: IResourceLanguage = {
     assets: 'Assets',
     audience: 'Audience',
     authorizedAccounts: 'Authorized Accounts',
+    authorizedAccountToRemove: 'Authorized Account To Remove',
     authorizedAddresses: 'Authorized Addresses',
     balance: 'Balance',
     chain: 'Chain',
@@ -428,6 +442,7 @@ const translation: IResourceLanguage = {
     preferredBlockExplorer: 'Preferred Block Explorer',
     preferredNFTExplorer: 'Preferred NFT Explorer',
     reKeyed: 'Re-keyed',
+    reKeyedAccount: 'Re-keyed Account',
     reKeyedToAccount: 'This account has been re-keyed to {{address}}',
     removeAccount: 'Remove Account',
     removeAsset: 'Remove Asset',
@@ -449,6 +464,7 @@ const translation: IResourceLanguage = {
     tokenId: 'Token ID',
     totalSupply: 'Total Supply',
     type: 'Type',
+    undoReKey: 'Undo Re-key',
     unitName: 'Unit Name',
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',

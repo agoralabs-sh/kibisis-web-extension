@@ -1,6 +1,6 @@
 import { AvatarBadge, Icon } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { IoEyeOutline, IoRepeatOutline } from 'react-icons/io5';
+import { IoEyeOutline, IoLockClosedOutline } from 'react-icons/io5';
 
 // components
 import AccountAvatar from '../AccountAvatar';
@@ -73,7 +73,7 @@ const AccountAvatarWithBadges: FC<IProps> = ({
           p={1}
           placement="bottom-end"
         >
-          <Icon as={IoRepeatOutline} color="white" h={3} w={3} />
+          <Icon as={IoLockClosedOutline} color="white" h={3} w={3} />
         </AvatarBadge>
       )}
     </AccountAvatar>

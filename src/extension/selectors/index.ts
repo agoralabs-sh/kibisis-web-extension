@@ -7,6 +7,7 @@ export * from './networks';
 export * from './news';
 export * from './notifications';
 export * from './password-lock';
+export * from './re-key-account';
 export * from './registration';
 export * from './remove-assets';
 export * from './send-assets';
