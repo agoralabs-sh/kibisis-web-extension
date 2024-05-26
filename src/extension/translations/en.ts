@@ -316,6 +316,9 @@ const translation: IResourceLanguage = {
     screenCaptureDenied: 'Screen Capture Denied',
     screenCaptureLoading: 'Screen Capture Loading',
     transaction: 'Unknown Transaction 💀',
+    [`transaction_${TransactionTypeEnum.AccountReKey}`]: 'Re-Key Account 🔒',
+    [`transaction_${TransactionTypeEnum.AccountUndoReKey}`]:
+      'Undo Re-Key Account 🔓',
     [`transaction_${TransactionTypeEnum.ApplicationClearState}`]:
       'Application Interaction ⚙️',
     [`transaction_${TransactionTypeEnum.ApplicationCloseOut}`]:
@@ -347,6 +350,7 @@ const translation: IResourceLanguage = {
     [`transaction_${TransactionTypeEnum.Payment}`]: 'Payment 💸',
     transactionsSuccessful: 'Transaction(s) Successful!',
     undoReKey: 'Undo Re-Key 🔓',
+    undoReKeyAccountSuccessful: 'Successfully Removed Re-key!',
     unknownAccount: 'Unknown Account',
     unknownNetwork: 'Unknown Network',
     unknownQRCode: 'Unknown QR Code',

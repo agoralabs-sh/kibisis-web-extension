@@ -1,5 +1,5 @@
 enum ThunkEnum {
-  UndoReKey = 'reKeyAccount/undoReKey',
+  UndoReKeyAccount = 'reKeyAccount/undoReKeyAccount',
 }
 
 export default ThunkEnum;

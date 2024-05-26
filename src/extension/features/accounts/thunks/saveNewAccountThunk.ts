@@ -9,7 +9,7 @@ import {
 } from '@extension/errors';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -32,7 +32,7 @@ const saveNewAccountThunk: AsyncThunk<
   ISaveNewAccountPayload,
   IAsyncThunkConfigWithRejectValue
 >(
-  AccountsThunkEnum.SaveNewAccount,
+  ThunkEnum.SaveNewAccount,
   async ({ name, password, privateKey }, { getState, rejectWithValue }) => {
     const encodedPublicKey: string = encodeHex(
       PrivateKeyService.extractPublicKeyFromPrivateKey(privateKey)
@@ -44,7 +44,7 @@ const saveNewAccountThunk: AsyncThunk<
     let privateKeyItem: IPrivateKey | null;
     let privateKeyService: PrivateKeyService;
 
-    logger.debug(`${AccountsThunkEnum.SaveNewAccount}: inferring public key`);
+    logger.debug(`${ThunkEnum.SaveNewAccount}: inferring public key`);
 
     privateKeyService = new PrivateKeyService({
       logger,
@@ -58,13 +58,13 @@ const saveNewAccountThunk: AsyncThunk<
     if (privateKeyItem) {
       errorMessage = `private key for "${encodedPublicKey}" already exists`;
 
-      logger.debug(`${AccountsThunkEnum.SaveNewAccount}: ${errorMessage}`);
+      logger.debug(`${ThunkEnum.SaveNewAccount}: ${errorMessage}`);
 
       return rejectWithValue(new PrivateKeyAlreadyExistsError(errorMessage));
     }
 
     logger.debug(
-      `${AccountsThunkEnum.SaveNewAccount}: saving private key "${encodedPublicKey}" to storage`
+      `${ThunkEnum.SaveNewAccount}: saving private key "${encodedPublicKey}" to storage`
     );
 
     try {
@@ -74,7 +74,7 @@ const saveNewAccountThunk: AsyncThunk<
         password
       );
     } catch (error) {
-      logger.error(`${AccountsThunkEnum.SaveNewAccount}: ${error.message}`);
+      logger.error(`${ThunkEnum.SaveNewAccount}: ${error.message}`);
 
       return rejectWithValue(error);
     }
@@ -82,13 +82,13 @@ const saveNewAccountThunk: AsyncThunk<
     if (!privateKeyItem) {
       errorMessage = `failed to save private key "${encodedPublicKey}" to storage`;
 
-      logger.debug(`${AccountsThunkEnum.SaveNewAccount}: ${errorMessage}`);
+      logger.debug(`${ThunkEnum.SaveNewAccount}: ${errorMessage}`);
 
       return rejectWithValue(new MalformedDataError(errorMessage));
     }
 
     logger.debug(
-      `${AccountsThunkEnum.SaveNewAccount}: successfully saved private key "${encodedPublicKey}" to storage`
+      `${ThunkEnum.SaveNewAccount}: successfully saved private key "${encodedPublicKey}" to storage`
     );
 
     account = {
@@ -111,7 +111,7 @@ const saveNewAccountThunk: AsyncThunk<
     await accountService.saveAccounts([account]);
 
     logger.debug(
-      `${AccountsThunkEnum.SaveNewAccount}: saved account for "${encodedPublicKey}" to storage`
+      `${ThunkEnum.SaveNewAccount}: saved account for "${encodedPublicKey}" to storage`
     );
 
     return account;

@@ -1,4 +1,6 @@
 enum TransactionTypeEnum {
+  AccountReKey = 'account_rekey',
+  AccountUndoReKey = 'account_undo_rekey',
   ApplicationClearState = 'application_clear_state',
   ApplicationCloseOut = 'application_close_out',
   ApplicationCreate = 'application_create',

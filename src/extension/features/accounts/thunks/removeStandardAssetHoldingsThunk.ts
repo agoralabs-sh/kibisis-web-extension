@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // errors
 import {
@@ -62,7 +62,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
-  AccountsThunkEnum.RemoveStandardAssetHoldings,
+  ThunkEnum.RemoveStandardAssetHoldings,
   async (
     { accountId, assets, genesisHash, password },
     { getState, rejectWithValue }
@@ -90,7 +90,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${AccountsThunkEnum.RemoveStandardAssetHoldings}: no account for "${accountId}" found`
+        `${ThunkEnum.RemoveStandardAssetHoldings}: no account for "${accountId}" found`
       );
 
       return rejectWithValue(new MalformedDataError('no account found'));
@@ -98,7 +98,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
 
     if (!online) {
       logger.debug(
-        `${AccountsThunkEnum.RemoveStandardAssetHoldings}: extension offline`
+        `${ThunkEnum.RemoveStandardAssetHoldings}: extension offline`
       );
 
       return rejectWithValue(
@@ -115,7 +115,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
 
     if (!network) {
       logger.debug(
-        `${AccountsThunkEnum.RemoveStandardAssetHoldings}: no network found for "${genesisHash}" found`
+        `${ThunkEnum.RemoveStandardAssetHoldings}: no network found for "${genesisHash}" found`
       );
 
       return rejectWithValue(
@@ -160,9 +160,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
           ','
         )}] is "${minimumBalanceRequirementInAtomicUnits}", but the current balance is "${accountBalanceInAtomicUnits}"`;
 
-      logger.debug(
-        `${AccountsThunkEnum.RemoveStandardAssetHoldings}: ${errorMessage}`
-      );
+      logger.debug(`${ThunkEnum.RemoveStandardAssetHoldings}: ${errorMessage}`);
 
       return rejectWithValue(new NotEnoughMinimumBalanceError(errorMessage));
     }
@@ -180,9 +178,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
         .map(({ id }) => `"${id}"`)
         .join(',')}] do not have a zero balance`;
 
-      logger.debug(
-        `${AccountsThunkEnum.RemoveStandardAssetHoldings}: ${errorMessage}`
-      );
+      logger.debug(`${ThunkEnum.RemoveStandardAssetHoldings}: ${errorMessage}`);
 
       return rejectWithValue(new NotAZeroBalanceError(errorMessage));
     }
@@ -208,7 +204,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
 
       logger.debug(
         `${
-          AccountsThunkEnum.RemoveStandardAssetHoldings
+          ThunkEnum.RemoveStandardAssetHoldings
         }: sending opt-out transactions to the network for assets [${filteredAssets
           .map(({ id }) => `"${id}"`)
           .join(',')}]`
@@ -234,7 +230,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
         signedTransactions,
       });
     } catch (error) {
-      logger.debug(`${AccountsThunkEnum.RemoveStandardAssetHoldings}: `, error);
+      logger.debug(`${ThunkEnum.RemoveStandardAssetHoldings}: `, error);
 
       if ((error as BaseExtensionError).code) {
         return rejectWithValue(error);
@@ -276,7 +272,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     };
 
     logger.debug(
-      `${AccountsThunkEnum.RemoveStandardAssetHoldings}: saving account "${account.id}" to storage`
+      `${ThunkEnum.RemoveStandardAssetHoldings}: saving account "${account.id}" to storage`
     );
 
     // save the account to storage

@@ -30,16 +30,14 @@ import ReKeyAccountConfirmingModalContent from './ReKeyAccountConfirmingModalCon
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
+import { ErrorCodeEnum } from '@extension/enums';
 
 // features
-import { setConfirming } from '@extension/features/re-key-account';
 import { create as createNotification } from '@extension/features/notifications';
+import { undoReKeyAccountThunk } from '@extension/features/re-key-account';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useReKeyAccountModal from './hooks/useReKeyAccountModal';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -83,8 +81,6 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const primaryColor = usePrimaryColor();
-  const primaryColorScheme = usePrimaryColorScheme();
   const { account, accountInformation, confirming, network } =
     useReKeyAccountModal();
   const subTextColor: string = useSubTextColor();
@@ -99,118 +95,92 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
   ) => {
-    // if (event.key === 'Enter') {
-    //   await handleAddStandardAssetClick();
-    // }
+    if (event.key === 'Enter') {
+      await handleReKeyOrUndoClick();
+    }
   };
-  const handleUndoReKeyClick = async () => {
-    // const _functionName: string = 'handleAddStandardAssetClick';
-    // let actionTrackingService: ActionTrackingService;
-    // let _password: string | null;
-    //
-    // if (
-    //   !selectedNetwork ||
-    //   !account ||
-    //   !selectedAsset ||
-    //   selectedAsset.type !== AssetTypeEnum.Standard
-    // ) {
-    //   return;
-    // }
-    //
-    // // if there is no password lock
-    // if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-    //   // validate the password input
-    //   if (validatePassword()) {
-    //     logger.debug(
-    //       `${ReKeyAccountModal.name}#${_functionName}: password not valid`
-    //     );
-    //
-    //     return;
-    //   }
-    // }
-    //
-    // _password = settings.security.enablePasswordLock
-    //   ? passwordLockPassword
-    //   : password;
-    //
-    // if (!_password) {
-    //   logger.debug(
-    //     `${ReKeyAccountModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
-    //   );
-    //
-    //   return;
-    // }
-    //
-    // dispatch(setConfirming(true));
-    //
-    // try {
-    //   await dispatch(
-    //     addStandardAssetHoldingsThunk({
-    //       accountId: account.id,
-    //       assets: [selectedAsset],
-    //       genesisHash: selectedNetwork.genesisHash,
-    //       password: _password,
-    //     })
-    //   ).unwrap();
-    //
-    //   actionTrackingService = new ActionTrackingService({
-    //     logger,
-    //   });
-    //
-    //   // track the action if this is a new asset
-    //   if (isNewSelectedAsset) {
-    //     await actionTrackingService.addStandardAssetAction(
-    //       AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
-    //       {
-    //         assetID: selectedAsset.id,
-    //         genesisHash: selectedNetwork.genesisHash,
-    //       }
-    //     );
-    //   }
-    //
-    //   dispatch(
-    //     createNotification({
-    //       title: t<string>('headings.addedAsset', {
-    //         symbol:
-    //           selectedAsset.unitName || selectedAsset.name || selectedAsset.id,
-    //       }),
-    //       type: 'success',
-    //     })
-    //   );
-    //
-    //   handleClose();
-    // } catch (error) {
-    //   switch (error.code) {
-    //     case ErrorCodeEnum.InvalidPasswordError:
-    //       setPasswordError(t<string>('errors.inputs.invalidPassword'));
-    //
-    //       break;
-    //     case ErrorCodeEnum.OfflineError:
-    //       dispatch(
-    //         createNotification({
-    //           ephemeral: true,
-    //           title: t<string>('headings.offline'),
-    //           type: 'error',
-    //         })
-    //       );
-    //       break;
-    //     default:
-    //       dispatch(
-    //         createNotification({
-    //           description: t<string>('errors.descriptions.code', {
-    //             code: error.code,
-    //             context: error.code,
-    //           }),
-    //           ephemeral: true,
-    //           title: t<string>('errors.titles.code', { context: error.code }),
-    //           type: 'error',
-    //         })
-    //       );
-    //       break;
-    //   }
-    // }
-    //
-    // dispatch(setConfirming(false));
+  const handleReKeyOrUndoClick = async () => {
+    const _functionName: string = 'handleReKeyOrUndoClick';
+    let _password: string | null;
+    let transactionId: string | null;
+
+    if (!account || !accountInformation || !network) {
+      return;
+    }
+
+    // if there is no password lock
+    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
+      // validate the password input
+      if (validatePassword()) {
+        logger.debug(
+          `${ReKeyAccountModal.name}#${_functionName}: password not valid`
+        );
+
+        return;
+      }
+    }
+
+    _password = settings.security.enablePasswordLock
+      ? passwordLockPassword
+      : password;
+
+    if (!_password) {
+      logger.debug(
+        `${ReKeyAccountModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
+      );
+
+      return;
+    }
+
+    try {
+      transactionId = await dispatch(
+        undoReKeyAccountThunk({
+          account,
+          network: network,
+          password: _password,
+        })
+      ).unwrap();
+
+      if (transactionId) {
+        dispatch(
+          createNotification({
+            title: t<string>('headings.undoReKeyAccountSuccessful'),
+            type: 'success',
+          })
+        );
+      }
+
+      handleClose();
+    } catch (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.InvalidPasswordError:
+          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+          break;
+        case ErrorCodeEnum.OfflineError:
+          dispatch(
+            createNotification({
+              ephemeral: true,
+              title: t<string>('headings.offline'),
+              type: 'error',
+            })
+          );
+          break;
+        default:
+          dispatch(
+            createNotification({
+              description: t<string>('errors.descriptions.code', {
+                code: error.code,
+                context: error.code,
+              }),
+              ephemeral: true,
+              title: t<string>('errors.titles.code', { context: error.code }),
+              type: 'error',
+            })
+          );
+          break;
+      }
+    }
   };
   // renders
   const renderContent = () => {
@@ -353,7 +323,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
               {cancelButtonNode}
 
               <Button
-                onClick={handleUndoReKeyClick}
+                onClick={handleReKeyOrUndoClick}
                 size="lg"
                 variant="solid"
                 w="full"

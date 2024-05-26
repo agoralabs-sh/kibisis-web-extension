@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ACCOUNT_INFORMATION_REFRESH_INTERVAL } from '@extension/constants';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // thunks
 import updateAccountsThunk from './updateAccountsThunk';
@@ -18,12 +18,12 @@ const startPollingForAccountsThunk: AsyncThunk<
   undefined, // args
   Record<string, never>
 > = createAsyncThunk<number, undefined, { state: IMainRootState }>(
-  AccountsThunkEnum.StartPollingForAccounts,
+  ThunkEnum.StartPollingForAccounts,
   (_, { dispatch, getState }) => {
     const logger: ILogger = getState().system.logger;
 
     logger.debug(
-      `${AccountsThunkEnum.StartPollingForAccounts}: started polling for account information and recent transactions`
+      `${ThunkEnum.StartPollingForAccounts}: started polling for account information and recent transactions`
     );
 
     return window.setInterval(

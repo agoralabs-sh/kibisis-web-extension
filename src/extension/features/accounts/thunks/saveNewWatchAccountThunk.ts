@@ -6,7 +6,7 @@ import browser from 'webextension-polyfill';
 import { MalformedDataError } from '@extension/errors';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -30,7 +30,7 @@ const saveNewWatchAccountThunk: AsyncThunk<
   ISaveNewWatchAccountPayload,
   IAsyncThunkConfigWithRejectValue
 >(
-  AccountsThunkEnum.SaveNewWatchAccount,
+  ThunkEnum.SaveNewWatchAccount,
   async ({ address, name }, { getState, rejectWithValue }) => {
     const logger = getState().system.logger;
     const accountService = new AccountService({ logger });
@@ -42,13 +42,13 @@ const saveNewWatchAccountThunk: AsyncThunk<
     let privateKeyService: PrivateKeyService;
 
     logger.debug(
-      `${AccountsThunkEnum.SaveNewWatchAccount}: validating address "${address}"`
+      `${ThunkEnum.SaveNewWatchAccount}: validating address "${address}"`
     );
 
     if (!isValidAddress(address)) {
       errorMessage = `address "${address}" is not valid`;
 
-      logger.debug(`${AccountsThunkEnum.SaveNewWatchAccount}: ${errorMessage}`);
+      logger.debug(`${ThunkEnum.SaveNewWatchAccount}: ${errorMessage}`);
 
       return rejectWithValue(new MalformedDataError(errorMessage));
     }
@@ -59,7 +59,7 @@ const saveNewWatchAccountThunk: AsyncThunk<
       accounts.find((value) => value.publicKey === encodedPublicKey) || null;
 
     logger.debug(
-      `${AccountsThunkEnum.SaveNewWatchAccount}: checking if "${address}" already exists`
+      `${ThunkEnum.SaveNewWatchAccount}: checking if "${address}" already exists`
     );
 
     // if the account exists, just return it
@@ -80,7 +80,7 @@ const saveNewWatchAccountThunk: AsyncThunk<
     }
 
     logger.debug(
-      `${AccountsThunkEnum.SaveNewWatchAccount}: saving watch account "${address}" to storage`
+      `${ThunkEnum.SaveNewWatchAccount}: saving watch account "${address}" to storage`
     );
 
     account = AccountService.initializeDefaultAccount({
@@ -94,7 +94,7 @@ const saveNewWatchAccountThunk: AsyncThunk<
     await accountService.saveAccounts([account]);
 
     logger.debug(
-      `${AccountsThunkEnum.SaveNewWatchAccount}: saved watch account "${address}" to storage`
+      `${ThunkEnum.SaveNewWatchAccount}: saved watch account "${address}" to storage`
     );
 
     return {

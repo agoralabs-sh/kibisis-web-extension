@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // errors
 import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
@@ -36,7 +36,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
   IUpdateAssetHoldingsPayload<IARC0200Asset>,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
-  AccountsThunkEnum.RemoveARC0200AssetHoldings,
+  ThunkEnum.RemoveARC0200AssetHoldings,
   async ({ accountId, assets, genesisHash }, { getState, rejectWithValue }) => {
     const logger = getState().system.logger;
     const networks = getState().networks.items;
@@ -49,7 +49,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${AccountsThunkEnum.RemoveARC0200AssetHoldings}: no account for "${accountId}" found`
+        `${ThunkEnum.RemoveARC0200AssetHoldings}: no account for "${accountId}" found`
       );
 
       return rejectWithValue(new MalformedDataError('no account found'));
@@ -60,7 +60,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
 
     if (!network) {
       logger.debug(
-        `${AccountsThunkEnum.RemoveARC0200AssetHoldings}: no network found for "${genesisHash}" found`
+        `${ThunkEnum.RemoveARC0200AssetHoldings}: no network found for "${genesisHash}" found`
       );
 
       return rejectWithValue(
@@ -95,7 +95,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     };
 
     logger.debug(
-      `${AccountsThunkEnum.RemoveARC0200AssetHoldings}: saving account "${account.id}" to storage`
+      `${ThunkEnum.RemoveARC0200AssetHoldings}: saving account "${account.id}" to storage`
     );
 
     // save the account to storage
