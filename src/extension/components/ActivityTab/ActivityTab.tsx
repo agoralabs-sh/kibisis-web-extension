@@ -13,21 +13,15 @@ import TransactionItem, {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import { IAccount, ITransactions, INetwork } from '@extension/types';
-
-interface IProps {
-  account: IAccount;
-  fetching: boolean;
-  network: INetwork;
-  onScrollEnd: () => void;
-}
+import type { ITransactions } from '@extension/types';
+import type { IProps } from './types';
 
 const ActivityTab: FC<IProps> = ({
   account,
   fetching,
   network,
   onScrollEnd,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // misc
   const transactions: ITransactions[] | null =
@@ -66,9 +60,11 @@ const ActivityTab: FC<IProps> = ({
       nodes
     ) : (
       <>
-        {/* empty state */}
         <Spacer />
+
+        {/* empty state */}
         <EmptyState text={t<string>('headings.noTransactionsFound')} />
+
         <Spacer />
       </>
     );

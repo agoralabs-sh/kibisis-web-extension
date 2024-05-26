@@ -82,9 +82,7 @@ const undoReKeyAccountThunk: AsyncThunk<
       address,
       BigInt('0'),
       undefined,
-      new TextEncoder().encode(
-        `rekey: ${accountInformation.authAddress} -> ${address}`
-      ),
+      undefined,
       suggestedParams,
       address // re-key back to the original address
     );

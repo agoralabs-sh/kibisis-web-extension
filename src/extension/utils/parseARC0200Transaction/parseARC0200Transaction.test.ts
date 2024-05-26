@@ -17,6 +17,7 @@ describe(`${__dirname}/parseARC0200Transaction`, () => {
       genesisHash: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=',
       groupId: 'qo2ZGx7+TD0PYNCv4/cEHgIRLJ6/PPyyFh3gUlRbSxc=',
       note: null,
+      rekeyTo: null,
       sender: 'TESTKHUQJXXNSDSTCIY35GL3XMLFWNFEYH3HNATVGBURZR7XJP7C6EYM6Y',
       applicationArgs: [
         '2nAluQ==',

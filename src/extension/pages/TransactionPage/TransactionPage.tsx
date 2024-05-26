@@ -1,8 +1,9 @@
 import React, { FC, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // components
+import AccountReKeyTransactionPage from './AccountReKeyTransactionPage';
+import AccountUndoReKeyTransactionPage from './AccountUndoReKeyTransactionPage';
 import ApplicationTransactionPage from './ApplicationTransactionPage';
 import ARC0200AssetTransferTransactionPage from './ARC0200AssetTransferTransactionPage';
 import AssetConfigTransactionPage from './AssetConfigTransactionPage';
@@ -32,8 +33,7 @@ import type { IARC0200AssetTransferTransaction } from '@extension/types';
 import parseARC0200Transaction from '@extension/utils/parseARC0200Transaction';
 
 const TransactionPage: FC = () => {
-  const { t } = useTranslation();
-  const navigate: NavigateFunction = useNavigate();
+  const navigate = useNavigate();
   const { transactionId } = useParams();
   // selectors
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
@@ -61,6 +61,22 @@ const TransactionPage: FC = () => {
   }
 
   switch (transaction.type) {
+    case TransactionTypeEnum.AccountUndoReKey:
+      return (
+        <AccountUndoReKeyTransactionPage
+          account={account}
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.AccountReKey:
+      return (
+        <AccountReKeyTransactionPage
+          account={account}
+          network={network}
+          transaction={transaction}
+        />
+      );
     case TransactionTypeEnum.ApplicationClearState:
     case TransactionTypeEnum.ApplicationCloseOut:
     case TransactionTypeEnum.ApplicationCreate:

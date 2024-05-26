@@ -4,6 +4,8 @@ import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
 // components
+import AccountReKeyTransactionItemContent from './AccountReKeyTransactionItemContent';
+import AccountUndoReKeyTransactionItemContent from './AccountUndoReKeyTransactionItemContent';
 import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
 import ARC0200AssetTransferTransactionItemContent from './ARC0200AssetTransferTransactionItemContent';
 import AssetTransferTransactionItemContent from './AssetTransferTransactionItemContent';
@@ -45,6 +47,22 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
     let arc0200Transaction: IARC0200AssetTransferTransaction | null;
 
     switch (transaction.type) {
+      case TransactionTypeEnum.AccountUndoReKey:
+        return (
+          <AccountUndoReKeyTransactionItemContent
+            account={account}
+            network={network}
+            transaction={transaction}
+          />
+        );
+      case TransactionTypeEnum.AccountReKey:
+        return (
+          <AccountReKeyTransactionItemContent
+            account={account}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case TransactionTypeEnum.ApplicationClearState:
       case TransactionTypeEnum.ApplicationCloseOut:
       case TransactionTypeEnum.ApplicationCreate:

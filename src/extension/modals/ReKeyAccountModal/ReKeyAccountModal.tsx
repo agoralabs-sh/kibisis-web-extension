@@ -33,6 +33,7 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 import { ErrorCodeEnum } from '@extension/enums';
 
 // features
+import { updateAccountsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 import { undoReKeyAccountThunk } from '@extension/features/re-key-account';
 
@@ -148,6 +149,15 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
             type: 'success',
           })
         );
+
+        // force update the account information as we spent fees and refresh all the new transactions
+        dispatch(
+          updateAccountsThunk({
+            accountIds: [account.id],
+            forceInformationUpdate: true,
+            refreshTransactions: true,
+          })
+        );
       }
 
       handleClose();
@@ -204,7 +214,6 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
             />
           );
         }
-        console.log('account:', account);
 
         return (
           <VStack flexGrow={1} spacing={DEFAULT_GAP / 2} w="full">
