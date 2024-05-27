@@ -54,7 +54,7 @@ export default function useScreenCaptureStream(): IUseScreenCaptureState {
         video: {
           displaySurface: 'window',
         },
-      } as any);
+      } as DisplayMediaStreamOptions);
 
       // set the stream
       setStream(_stream);

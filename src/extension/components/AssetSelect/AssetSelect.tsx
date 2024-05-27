@@ -205,7 +205,7 @@ const AssetSelect: FC<IProps> = ({
           height: OPTION_HEIGHT,
           width: width || '100%',
         }),
-        control: (baseStyles, state) => ({
+        control: (baseStyles) => ({
           ...baseStyles,
           backgroundColor: BODY_BACKGROUND_COLOR,
           cursor: 'pointer',

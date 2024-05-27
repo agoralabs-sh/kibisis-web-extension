@@ -1,7 +1,6 @@
 import { Icon, IconButton, Tooltip, useClipboard } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { IoCheckmarkOutline, IoCopyOutline } from 'react-icons/io5';
-import { useTranslation } from 'react-i18next';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -20,7 +19,6 @@ const CopyIconButton: FC<IProps> = ({
   size = 'sm',
   value,
 }: IProps) => {
-  const { t } = useTranslation();
   const { hasCopied, onCopy } = useClipboard(value);
   const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
   const defaultTextColor: string = useDefaultTextColor();

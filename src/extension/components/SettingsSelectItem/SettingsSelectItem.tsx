@@ -175,7 +175,7 @@ const SettingsSelectItem: FC<IProps> = ({
               backgroundColor: BODY_BACKGROUND_COLOR,
               width: width || '100%',
             }),
-            control: (baseStyles, state) => ({
+            control: (baseStyles) => ({
               ...baseStyles,
               backgroundColor: disabled
                 ? disabledBackgroundColor

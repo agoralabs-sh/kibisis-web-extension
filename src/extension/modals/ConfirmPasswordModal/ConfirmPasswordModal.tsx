@@ -8,7 +8,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, {
-  ChangeEvent,
   FC,
   KeyboardEvent,
   MutableRefObject,

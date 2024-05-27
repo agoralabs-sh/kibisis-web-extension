@@ -17,7 +17,6 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 
 // components
 import ConnectMenu, { IOnConnectParams } from '../ConnectMenu';
-import ConnectionNotInitializedContent from '../ConnectionNotInitializedContent';
 import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountViaQRCodeTab from '../ImportAccountViaQRCodeTab';
 import SendKeyRegistrationViaURITab from '../SendKeyRegistrationViaURITab';

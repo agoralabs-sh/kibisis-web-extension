@@ -1,4 +1,4 @@
-import { ChangeEvent, FocusEvent } from 'react';
+import type { FocusEvent } from 'react';
 
 interface IUseAddressInputState {
   error: string | null;

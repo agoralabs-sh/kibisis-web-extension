@@ -42,7 +42,6 @@ import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSee
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectActiveAccountDetails,
   useSelectLogger,
   useSelectPasswordLockPassword,
@@ -68,7 +67,6 @@ const AddAccountMainRouter: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
   // selectors
-  const accounts = useSelectAccounts();
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
   const passwordLockPassword = useSelectPasswordLockPassword();

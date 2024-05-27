@@ -1,5 +1,5 @@
 import { Box, HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
-import React, { FC, ElementType } from 'react';
+import React, { FC } from 'react';
 import { IoArrowForwardOutline } from 'react-icons/io5';
 
 // constants

@@ -13,7 +13,6 @@ import {
   AppTypeEnum,
   ARC0300AuthorityEnum,
   ARC0300PathEnum,
-  ARC0300QueryEnum,
 } from '@extension/enums';
 
 // events

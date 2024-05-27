@@ -51,7 +51,7 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
   // selectors
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
-  const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
+  const { standardAsset } = useStandardAssetById(transaction.assetId);
   const defaultTextColor = useDefaultTextColor();
   const primaryButtonTextColor = usePrimaryButtonTextColor();
   const subTextColor = useSubTextColor();

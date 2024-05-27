@@ -10,17 +10,10 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, {
-  FC,
-  KeyboardEvent,
-  MutableRefObject,
-  ReactNode,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { FC, KeyboardEvent, ReactNode, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';

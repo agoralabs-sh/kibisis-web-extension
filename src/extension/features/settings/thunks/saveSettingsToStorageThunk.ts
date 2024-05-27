@@ -25,7 +25,7 @@ const saveSettingsToStorageThunk: AsyncThunk<
   IBaseAsyncThunkConfig
 > = createAsyncThunk<ISettings, ISettings, IBaseAsyncThunkConfig>(
   SettingsThunkEnum.SaveSettingsToStorage,
-  async (settings, { dispatch, getState }) => {
+  async (settings, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
     const settingsService: SettingsService = new SettingsService({

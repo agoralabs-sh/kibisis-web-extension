@@ -20,7 +20,6 @@ import PageItem from '@extension/components/PageItem';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
@@ -53,7 +52,6 @@ const PaymentInnerTransactionAccordionItem: FC<
     useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
   // misc
   const accountAddress: string =
     AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);

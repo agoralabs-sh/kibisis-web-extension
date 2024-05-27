@@ -1,13 +1,7 @@
 import { Text, VStack } from '@chakra-ui/react';
-import React, {
-  FC,
-  KeyboardEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { FC, KeyboardEvent, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 // components

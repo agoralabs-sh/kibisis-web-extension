@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // components
 import AccountReKeyTransactionPage from './AccountReKeyTransactionPage';

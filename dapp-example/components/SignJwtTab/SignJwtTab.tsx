@@ -56,7 +56,7 @@ function createSignatureToSign(header: string, payload: string): Uint8Array {
   );
 }
 
-const SignJwtTab: FC<IProps> = ({ account, connectionType }: IProps) => {
+const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
   const toast: CreateToastFnReturn = useToast({
     duration: 3000,
     isClosable: true,

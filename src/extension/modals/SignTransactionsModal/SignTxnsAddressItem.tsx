@@ -11,7 +11,6 @@ import { MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {

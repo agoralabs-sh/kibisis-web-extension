@@ -8,7 +8,7 @@ import { MessagesThunkEnum } from '@extension/enums';
 import { ProviderFactoryResetMessage } from '@common/messages';
 
 // types
-import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
+import type { IBaseAsyncThunkConfig } from '@extension/types';
 
 const sendResetFactoryThunk: AsyncThunk<
   void, // return

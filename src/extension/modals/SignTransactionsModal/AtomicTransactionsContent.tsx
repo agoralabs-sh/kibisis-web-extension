@@ -43,7 +43,6 @@ import AccountService from '@extension/services/AccountService';
 import type {
   IAccount,
   IAccountInformation,
-  IAccountWithExtendedProps,
   IStandardAsset,
 } from '@extension/types';
 
