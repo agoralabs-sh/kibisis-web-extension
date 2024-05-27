@@ -1,4 +1,5 @@
 enum ThunkEnum {
+  ReKeyAccount = 'reKeyAccount/reKeyAccount',
   UndoReKeyAccount = 'reKeyAccount/undoReKeyAccount',
 }
 

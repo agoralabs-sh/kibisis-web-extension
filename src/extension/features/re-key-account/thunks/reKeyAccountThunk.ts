@@ -26,7 +26,7 @@ import type {
   IBaseAsyncThunkConfig,
   IMainRootState,
 } from '@extension/types';
-import type { IUndoReKeyAccountThunkPayload } from '../types';
+import type { IReKeyAccountThunkPayload } from '../types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
@@ -34,18 +34,18 @@ import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@exten
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
 
-const undoReKeyAccountThunk: AsyncThunk<
+const reKeyAccountThunk: AsyncThunk<
   string | null, // return
-  IUndoReKeyAccountThunkPayload, // args
+  IReKeyAccountThunkPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   string | null,
-  IUndoReKeyAccountThunkPayload,
+  IReKeyAccountThunkPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
-  ThunkEnum.UndoReKeyAccount,
+  ThunkEnum.ReKeyAccount,
   async (
-    { network, password, reKeyAccount },
+    { authorizedAddress, network, password, reKeyAccount },
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
@@ -65,17 +65,9 @@ const undoReKeyAccountThunk: AsyncThunk<
     if (!accountInformation) {
       _error = `no account information for "${address}" found`;
 
-      logger.debug(`${ThunkEnum.UndoReKeyAccount}: ${_error}`);
+      logger.debug(`${ThunkEnum.ReKeyAccount}: ${_error}`);
 
       return rejectWithValue(new MalformedDataError(_error));
-    }
-
-    if (!accountInformation.authAddress) {
-      logger.debug(
-        `${ThunkEnum.UndoReKeyAccount}: account "${address}" is not re-keyed`
-      );
-
-      return null;
     }
 
     algodClient = createAlgodClient(network, { logger });
@@ -87,7 +79,7 @@ const undoReKeyAccountThunk: AsyncThunk<
       undefined,
       undefined,
       suggestedParams,
-      address // re-key back to the original address
+      authorizedAddress // re-key new address
     );
 
     // ensure the transaction does not fall below the minimum balance requirement
@@ -101,7 +93,7 @@ const undoReKeyAccountThunk: AsyncThunk<
     ) {
       _error = `total transaction cost will bring the account "${address}" balance below the minimum balance requirement`;
 
-      logger.debug(`${ThunkEnum.UndoReKeyAccount}: ${_error}`);
+      logger.debug(`${ThunkEnum.ReKeyAccount}: ${_error}`);
 
       return rejectWithValue(new NotEnoughMinimumBalanceError(_error));
     }
@@ -124,7 +116,7 @@ const undoReKeyAccountThunk: AsyncThunk<
 
       return unsignedTransaction.txID();
     } catch (error) {
-      logger.error(`${ThunkEnum.UndoReKeyAccount}:`, error);
+      logger.error(`${ThunkEnum.ReKeyAccount}:`, error);
 
       if ((error as BaseExtensionError).code) {
         return rejectWithValue(error);
@@ -135,4 +127,4 @@ const undoReKeyAccountThunk: AsyncThunk<
   }
 );
 
-export default undoReKeyAccountThunk;
+export default reKeyAccountThunk;

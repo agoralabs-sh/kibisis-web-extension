@@ -6,25 +6,21 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Text,
   VStack,
 } from '@chakra-ui/react';
-import BigNumber from 'bignumber.js';
 import React, { FC, KeyboardEvent, ReactNode, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
-import AddressDisplay from '@extension/components/AddressDisplay';
 import Button from '@extension/components/Button';
-import InfoIconTooltip from '@extension/components/InfoIconTooltip';
-import ModalAssetItem from '@extension/components/ModalAssetItem';
-import ModalItem from '@extension/components/ModalItem';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
 import ReKeyAccountConfirmingModalContent from './ReKeyAccountConfirmingModalContent';
+import ReKeyAccountModalContent from './ReKeyAccountModalContent';
+import UndoReKeyAccountModalContent from './UndoReKeyAccountModalContent';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
@@ -32,15 +28,21 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // enums
 import { ErrorCodeEnum } from '@extension/enums';
 
+// errors
+import { BaseExtensionError } from '@extension/errors';
+
 // features
 import { updateAccountsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
-import { undoReKeyAccountThunk } from '@extension/features/re-key-account';
+import {
+  reKeyAccountThunk,
+  undoReKeyAccountThunk,
+} from '@extension/features/re-key-account';
 
 // hooks
+import { useAddressInput } from '@extension/components/AddressInput';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useReKeyAccountModal from './hooks/useReKeyAccountModal';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
@@ -59,10 +61,6 @@ import { theme } from '@extension/theme';
 // types
 import type { IAppThunkDispatch, IModalProps } from '@extension/types';
 
-// utils
-import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
-import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
-
 const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
@@ -73,6 +71,14 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const passwordLockPassword = useSelectPasswordLockPassword();
   const settings = useSelectSettings();
   // hooks
+  const {
+    error: authAddressError,
+    onBlur: onAuthAddressBlur,
+    onChange: onAuthAddressChange,
+    reset: resetAuthAddress,
+    validate: validateAuthAddress,
+    value: authAddress,
+  } = useAddressInput();
   const defaultTextColor = useDefaultTextColor();
   const {
     error: passwordError,
@@ -82,32 +88,16 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const { account, accountInformation, confirming, network } =
-    useReKeyAccountModal();
-  const subTextColor: string = useSubTextColor();
+  const {
+    account,
+    accountInformation,
+    confirming,
+    network,
+    type: reKeyType,
+  } = useReKeyAccountModal();
   // misc
-  const isOpen = !!account && !!accountInformation;
-  // handlers
-  const handleCancelClick = () => handleClose();
-  const handleClose = () => {
-    resetPassword();
-    onClose && onClose();
-  };
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === 'Enter') {
-      await handleReKeyOrUndoClick();
-    }
-  };
-  const handleReKeyOrUndoClick = async () => {
-    const _functionName: string = 'handleReKeyOrUndoClick';
-    let _password: string | null;
-    let transactionId: string | null;
-
-    if (!account || !accountInformation || !network) {
-      return;
-    }
+  const checkPassword = (): string | null => {
+    const _functionName = 'checkPassword';
 
     // if there is no password lock
     if (!settings.security.enablePasswordLock && !passwordLockPassword) {
@@ -117,13 +107,128 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
           `${ReKeyAccountModal.name}#${_functionName}: password not valid`
         );
 
-        return;
+        return null;
       }
     }
 
-    _password = settings.security.enablePasswordLock
+    return settings.security.enablePasswordLock
       ? passwordLockPassword
       : password;
+  };
+  const isOpen = !!account && !!accountInformation;
+  const handleError = (error: BaseExtensionError) => {
+    switch (error.code) {
+      case ErrorCodeEnum.InvalidPasswordError:
+        setPasswordError(t<string>('errors.inputs.invalidPassword'));
+
+        break;
+      case ErrorCodeEnum.OfflineError:
+        dispatch(
+          createNotification({
+            ephemeral: true,
+            title: t<string>('headings.offline'),
+            type: 'error',
+          })
+        );
+        break;
+      default:
+        dispatch(
+          createNotification({
+            description: t<string>('errors.descriptions.code', {
+              code: error.code,
+              context: error.code,
+            }),
+            ephemeral: true,
+            title: t<string>('errors.titles.code', { context: error.code }),
+            type: 'error',
+          })
+        );
+        break;
+    }
+  };
+  const handleCancelClick = () => handleClose();
+  const handleClose = () => {
+    resetPassword();
+    resetAuthAddress();
+    onClose && onClose();
+  };
+  const handleKeyUpPasswordInput = async (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      reKeyType === 'undo'
+        ? await handleUndoReKeyClick()
+        : await handleReKeyClick();
+    }
+  };
+  const handleReKeyClick = async () => {
+    const _functionName = 'handleReKeyClick';
+    let _password: string | null;
+    let transactionId: string | null;
+
+    if (
+      !account ||
+      !accountInformation ||
+      !authAddress ||
+      !network ||
+      validateAuthAddress()
+    ) {
+      return;
+    }
+
+    _password = checkPassword();
+
+    if (!_password) {
+      logger.debug(
+        `${ReKeyAccountModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
+      );
+
+      return;
+    }
+
+    try {
+      transactionId = await dispatch(
+        reKeyAccountThunk({
+          authorizedAddress: authAddress,
+          reKeyAccount: account,
+          network: network,
+          password: _password,
+        })
+      ).unwrap();
+
+      if (transactionId) {
+        dispatch(
+          createNotification({
+            title: t<string>('headings.reKeyAccountSuccessful'),
+            type: 'success',
+          })
+        );
+
+        // force update the account information as we spent fees and refresh all the new transactions
+        dispatch(
+          updateAccountsThunk({
+            accountIds: [account.id],
+            forceInformationUpdate: true,
+            refreshTransactions: true,
+          })
+        );
+      }
+
+      handleClose();
+    } catch (error) {
+      handleError(error);
+    }
+  };
+  const handleUndoReKeyClick = async () => {
+    const _functionName = 'handleUndoReKeyClick';
+    let _password: string | null;
+    let transactionId: string | null;
+
+    if (!account || !accountInformation || !network) {
+      return;
+    }
+
+    _password = checkPassword();
 
     if (!_password) {
       logger.debug(
@@ -136,7 +241,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
     try {
       transactionId = await dispatch(
         undoReKeyAccountThunk({
-          account,
+          reKeyAccount: account,
           network: network,
           password: _password,
         })
@@ -162,51 +267,41 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
 
       handleClose();
     } catch (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
-        case ErrorCodeEnum.OfflineError:
-          dispatch(
-            createNotification({
-              ephemeral: true,
-              title: t<string>('headings.offline'),
-              type: 'error',
-            })
-          );
-          break;
-        default:
-          dispatch(
-            createNotification({
-              description: t<string>('errors.descriptions.code', {
-                code: error.code,
-                context: error.code,
-              }),
-              ephemeral: true,
-              title: t<string>('errors.titles.code', { context: error.code }),
-              type: 'error',
-            })
-          );
-          break;
-      }
+      handleError(error);
     }
   };
   // renders
   const renderContent = () => {
     if (account && accountInformation && network) {
       // undoing a re-key
-      if (
-        accountInformation.authAddress &&
-        isReKeyedAuthAccountAvailable({
-          accounts,
-          authAddress: accountInformation.authAddress,
-        })
-      ) {
+      if (accountInformation.authAddress && reKeyType === 'undo') {
         if (confirming) {
           return (
             <ReKeyAccountConfirmingModalContent
               authAddress={accountInformation.authAddress}
+              isReKeying={false}
+              reKeyAddress={AccountService.convertPublicKeyToAlgorandAddress(
+                account.publicKey
+              )}
+            />
+          );
+        }
+
+        return (
+          <UndoReKeyAccountModalContent
+            account={account}
+            authAddress={accountInformation.authAddress}
+            network={network}
+          />
+        );
+      }
+
+      // re-key account
+      if (reKeyType === 'rekey') {
+        if (confirming && authAddress) {
+          return (
+            <ReKeyAccountConfirmingModalContent
+              authAddress={authAddress}
               isReKeying={true}
               reKeyAddress={AccountService.convertPublicKeyToAlgorandAddress(
                 account.publicKey
@@ -216,71 +311,16 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
         }
 
         return (
-          <VStack flexGrow={1} spacing={DEFAULT_GAP / 2} w="full">
-            <VStack px={DEFAULT_GAP} spacing={DEFAULT_GAP / 2} w="full">
-              {/*descriptions*/}
-              <Text
-                color={defaultTextColor}
-                fontSize="sm"
-                textAlign="left"
-                w="full"
-              >
-                {t<string>('captions.undoReKeyAccount')}
-              </Text>
-
-              {/*re-keyed account*/}
-              <ModalItem
-                flexGrow={1}
-                label={`${t<string>('labels.reKeyedAccount')}:`}
-                value={
-                  <AddressDisplay
-                    address={AccountService.convertPublicKeyToAlgorandAddress(
-                      account.publicKey
-                    )}
-                    ariaLabel="Re-keyed address"
-                    color={subTextColor}
-                    fontSize="sm"
-                    network={network}
-                  />
-                }
-              />
-
-              {/*auth account*/}
-              <ModalItem
-                flexGrow={1}
-                label={`${t<string>('labels.authorizedAccountToRemove')}:`}
-                value={
-                  <AddressDisplay
-                    address={accountInformation.authAddress}
-                    ariaLabel="Auth address"
-                    color={subTextColor}
-                    fontSize="sm"
-                    network={network}
-                  />
-                }
-              />
-
-              {/*fee*/}
-              <HStack spacing={1} w="full">
-                <ModalAssetItem
-                  amountInAtomicUnits={new BigNumber(network.minFee)}
-                  decimals={network.nativeCurrency.decimals}
-                  icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
-                    color: subTextColor,
-                    h: 3,
-                    w: 3,
-                  })}
-                  label={`${t<string>('labels.fee')}:`}
-                />
-
-                {/*info*/}
-                <InfoIconTooltip
-                  color={subTextColor}
-                  label={t<string>('captions.reKeyFee')}
-                />
-              </HStack>
-            </VStack>
-          </VStack>
+          <ReKeyAccountModalContent
+            account={account}
+            accountInformation={accountInformation}
+            accounts={accounts}
+            authAddress={authAddress}
+            authAddressError={authAddressError}
+            network={network}
+            onAuthAddressBlur={onAuthAddressBlur}
+            onAuthAddressChange={onAuthAddressChange}
+          />
         );
       }
     }
@@ -305,44 +345,48 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
     }
 
     if (accountInformation) {
-      // if the re-key is being reversed
-      if (
-        accountInformation.authAddress &&
-        isReKeyedAuthAccountAvailable({
-          accounts,
-          authAddress: accountInformation.authAddress,
-        })
-      ) {
-        return (
-          <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-            {!settings.security.enablePasswordLock && !passwordLockPassword && (
-              <PasswordInput
-                error={passwordError}
-                hint={t<string>(
-                  'captions.mustEnterPasswordToAuthorizeUndoReKey'
-                )}
-                inputRef={passwordInputRef}
-                onChange={onPasswordChange}
-                onKeyUp={handleKeyUpPasswordInput}
-                value={password}
-              />
-            )}
+      return (
+        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
+          {!settings.security.enablePasswordLock && !passwordLockPassword && (
+            <PasswordInput
+              error={passwordError}
+              hint={t<string>(
+                reKeyType === 'undo'
+                  ? 'captions.mustEnterPasswordToAuthorizeUndoReKey'
+                  : 'captions.mustEnterPasswordToAuthorizeReKey'
+              )}
+              inputRef={passwordInputRef}
+              onChange={onPasswordChange}
+              onKeyUp={handleKeyUpPasswordInput}
+              value={password}
+            />
+          )}
 
-            <HStack spacing={DEFAULT_GAP - 2} w="full">
-              {cancelButtonNode}
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
+            {cancelButtonNode}
 
+            {reKeyType === 'undo' ? (
               <Button
-                onClick={handleReKeyOrUndoClick}
+                onClick={handleUndoReKeyClick}
                 size="lg"
                 variant="solid"
                 w="full"
               >
                 {t<string>('buttons.undo')}
               </Button>
-            </HStack>
-          </VStack>
-        );
-      }
+            ) : (
+              <Button
+                onClick={handleReKeyClick}
+                size="lg"
+                variant="solid"
+                w="full"
+              >
+                {t<string>('buttons.reKey')}
+              </Button>
+            )}
+          </HStack>
+        </VStack>
+      );
     }
 
     return cancelButtonNode;
@@ -364,12 +408,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
         <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {t<string>(
-              accountInformation &&
-                accountInformation.authAddress &&
-                isReKeyedAuthAccountAvailable({
-                  accounts,
-                  authAddress: accountInformation.authAddress,
-                })
+              accountInformation && reKeyType === 'undo'
                 ? 'headings.undoReKey'
                 : 'headings.reKeyAccount'
             )}

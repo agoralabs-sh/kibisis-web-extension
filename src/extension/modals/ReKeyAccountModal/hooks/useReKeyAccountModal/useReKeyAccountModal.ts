@@ -5,6 +5,7 @@ import {
   useSelectReKeyAccount,
   useSelectReKeyAccountConfirming,
   useSelectSelectedNetwork,
+  useSelectReKeyAccountType,
 } from '@extension/selectors';
 
 // services
@@ -19,6 +20,7 @@ export default function useReKeyAccountModal(): IState {
   const account = useSelectReKeyAccount();
   const confirming = useSelectReKeyAccountConfirming();
   const network = useSelectSelectedNetwork();
+  const type = useSelectReKeyAccountType();
   // states
   const [accountInformation, setAccountInformation] =
     useState<IAccountInformation | null>(null);
@@ -41,5 +43,6 @@ export default function useReKeyAccountModal(): IState {
     accountInformation,
     confirming,
     network,
+    type,
   };
 }

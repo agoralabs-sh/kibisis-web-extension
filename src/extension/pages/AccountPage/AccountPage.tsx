@@ -24,8 +24,9 @@ import {
   IoCloudOfflineOutline,
   IoCreateOutline,
   IoEllipsisVerticalOutline,
+  IoLockClosedOutline,
+  IoLockOpenOutline,
   IoQrCodeOutline,
-  IoRepeatOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -61,7 +62,10 @@ import {
   saveActiveAccountDetails,
   updateAccountsThunk,
 } from '@extension/features/accounts';
-import { setAccount as setReKeyAccount } from '@extension/features/re-key-account';
+import {
+  setAccountAndType as setReKeyAccount,
+  TReKeyType,
+} from '@extension/features/re-key-account';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 import { setConfirmModal } from '@extension/features/system';
 
@@ -131,6 +135,25 @@ const AccountPage: FC = () => {
   const subTextColor = useSubTextColor();
   // state
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  // misc
+  const canReKeyAccount = () => {
+    if (!account || !accountInformation) {
+      return false;
+    }
+
+    // if it is a watch account, but it has been re-keyed and the re-key is available, we can re-key
+    if (account.watchAccount) {
+      return !!(
+        accountInformation.authAddress &&
+        isReKeyedAuthAccountAvailable({
+          accounts,
+          authAddress: accountInformation.authAddress,
+        })
+      );
+    }
+
+    return true;
+  };
   // handlers
   const handleActivityScrollEnd = () => {
     if (account && accountTransactions && accountTransactions.next) {
@@ -201,7 +224,14 @@ const AccountPage: FC = () => {
       );
     }
   };
-  const handleReKeyAccountClick = () => dispatch(setReKeyAccount(account));
+  const handleReKeyAccountClick = (type: TReKeyType) => () =>
+    account &&
+    dispatch(
+      setReKeyAccount({
+        account,
+        type,
+      })
+    );
   // renders
   const renderContent = () => {
     const headerContainerProps: StackProps = {
@@ -348,7 +378,23 @@ const AccountPage: FC = () => {
                   variant="ghost"
                 />
                 <MenuList>
-                  {/*add/undo re-key*/}
+                  {/*re-key*/}
+                  {canReKeyAccount() && (
+                    <MenuItem
+                      color={defaultTextColor}
+                      icon={
+                        <Icon
+                          as={IoLockClosedOutline}
+                          color={defaultTextColor}
+                        />
+                      }
+                      onClick={handleReKeyAccountClick('rekey')}
+                    >
+                      {t<string>('labels.reKey')}
+                    </MenuItem>
+                  )}
+
+                  {/*undo re-key*/}
                   {accountInformation.authAddress &&
                     isReKeyedAuthAccountAvailable({
                       accounts,
@@ -357,9 +403,12 @@ const AccountPage: FC = () => {
                       <MenuItem
                         color={defaultTextColor}
                         icon={
-                          <Icon as={IoRepeatOutline} color={defaultTextColor} />
+                          <Icon
+                            as={IoLockOpenOutline}
+                            color={defaultTextColor}
+                          />
                         }
-                        onClick={handleReKeyAccountClick}
+                        onClick={handleReKeyAccountClick('undo')}
                       >
                         {t<string>('labels.undoReKey')}
                       </MenuItem>
