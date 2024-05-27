@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -34,7 +34,7 @@ const updateAccountsThunk: AsyncThunk<
   IUpdateAccountsPayload | undefined,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
-  AccountsThunkEnum.UpdateAccounts,
+  ThunkEnum.UpdateAccounts,
   async (
     {
       accountIds,
@@ -63,7 +63,7 @@ const updateAccountsThunk: AsyncThunk<
 
     if (!online) {
       logger.debug(
-        `${AccountsThunkEnum.UpdateAccounts}: the extension appears to be offline, skipping`
+        `${ThunkEnum.UpdateAccounts}: the extension appears to be offline, skipping`
       );
 
       return [];
@@ -71,7 +71,7 @@ const updateAccountsThunk: AsyncThunk<
 
     if (!selectedNetwork) {
       logger.debug(
-        `${AccountsThunkEnum.UpdateAccounts}: no network selected, skipping`
+        `${ThunkEnum.UpdateAccounts}: no network selected, skipping`
       );
 
       return [];

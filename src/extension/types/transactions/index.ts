@@ -1,3 +1,5 @@
+export type { default as IAccountReKeyTransaction } from './IAccountReKeyTransaction';
+export type { default as IAccountUndoReKeyTransaction } from './IAccountUndoReKeyTransaction';
 export type { default as IApplicationTransaction } from './IApplicationTransaction';
 export type { default as IApplicationTransactionTypes } from './IApplicationTransactionTypes';
 export type { default as IARC0200AssetTransferTransaction } from './IARC0200AssetTransferTransaction';

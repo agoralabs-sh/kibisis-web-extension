@@ -1,13 +1,13 @@
 // types
 import type { IBaseOptions } from '@common/types';
-import type { IAccountInformation, INetwork } from '@extension/types';
+import type { IAccountTransactions, INetwork } from '@extension/types';
 
 interface IOptions extends IBaseOptions {
   address: string;
-  currentAccountInformation: IAccountInformation;
+  currentAccountTransactions: IAccountTransactions;
   delay?: number;
-  forceUpdate?: boolean;
   network: INetwork;
+  refresh?: boolean;
 }
 
 export default IOptions;

@@ -1,8 +1,9 @@
 import React, { FC, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 
 // components
+import AccountReKeyTransactionPage from './AccountReKeyTransactionPage';
+import AccountUndoReKeyTransactionPage from './AccountUndoReKeyTransactionPage';
 import ApplicationTransactionPage from './ApplicationTransactionPage';
 import ARC0200AssetTransferTransactionPage from './ARC0200AssetTransferTransactionPage';
 import AssetConfigTransactionPage from './AssetConfigTransactionPage';
@@ -32,13 +33,12 @@ import type { IARC0200AssetTransferTransaction } from '@extension/types';
 import parseARC0200Transaction from '@extension/utils/parseARC0200Transaction';
 
 const TransactionPage: FC = () => {
-  const { t } = useTranslation();
-  const navigate: NavigateFunction = useNavigate();
+  const navigate = useNavigate();
   const { transactionId } = useParams();
   // selectors
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   // hooks
-  const { account, network, transaction } = useTransactionPage(
+  const { account, accounts, network, transaction } = useTransactionPage(
     transactionId || null
   );
   // misc
@@ -61,6 +61,24 @@ const TransactionPage: FC = () => {
   }
 
   switch (transaction.type) {
+    case TransactionTypeEnum.AccountUndoReKey:
+      return (
+        <AccountUndoReKeyTransactionPage
+          account={account}
+          accounts={accounts}
+          network={network}
+          transaction={transaction}
+        />
+      );
+    case TransactionTypeEnum.AccountReKey:
+      return (
+        <AccountReKeyTransactionPage
+          account={account}
+          accounts={accounts}
+          network={network}
+          transaction={transaction}
+        />
+      );
     case TransactionTypeEnum.ApplicationClearState:
     case TransactionTypeEnum.ApplicationCloseOut:
     case TransactionTypeEnum.ApplicationCreate:
@@ -70,6 +88,7 @@ const TransactionPage: FC = () => {
       return (
         <ApplicationTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -84,6 +103,7 @@ const TransactionPage: FC = () => {
           return (
             <ARC0200AssetTransferTransactionPage
               account={account}
+              accounts={accounts}
               network={network}
               transaction={arc0200Transaction}
             />
@@ -94,6 +114,7 @@ const TransactionPage: FC = () => {
       return (
         <ApplicationTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -102,6 +123,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetConfigTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -110,6 +132,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetCreateTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -118,6 +141,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetDestroyTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -127,6 +151,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetFreezeTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -135,6 +160,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetTransferTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -143,6 +169,7 @@ const TransactionPage: FC = () => {
       return (
         <PaymentTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />

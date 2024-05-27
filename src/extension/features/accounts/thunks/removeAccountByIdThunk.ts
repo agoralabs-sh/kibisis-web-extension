@@ -2,7 +2,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -16,7 +16,7 @@ const removeAccountByIdThunk: AsyncThunk<
   string, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<string, string, IBaseAsyncThunkConfig<IMainRootState>>(
-  AccountsThunkEnum.RemoveAccountById,
+  ThunkEnum.RemoveAccountById,
   async (id, { getState }) => {
     const logger = getState().system.logger;
     const accountService = new AccountService({
@@ -27,14 +27,14 @@ const removeAccountByIdThunk: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${AccountsThunkEnum.RemoveAccountById}: account "${id}" does not exist, ignoring`
+        `${ThunkEnum.RemoveAccountById}: account "${id}" does not exist, ignoring`
       );
 
       return id;
     }
 
     logger.debug(
-      `${AccountsThunkEnum.RemoveAccountById}: removing account "${id}" from storage`
+      `${ThunkEnum.RemoveAccountById}: removing account "${id}" from storage`
     );
 
     // remove the account
@@ -46,7 +46,7 @@ const removeAccountByIdThunk: AsyncThunk<
     });
 
     logger.debug(
-      `${AccountsThunkEnum.RemoveAccountById}: removing private key "${account.publicKey}" from storage`
+      `${ThunkEnum.RemoveAccountById}: removing private key "${account.publicKey}" from storage`
     );
 
     // remove the private key

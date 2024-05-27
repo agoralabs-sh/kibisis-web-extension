@@ -29,10 +29,7 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
 import type { IAssetCreateTransaction } from '@extension/types';
@@ -44,13 +41,13 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const AssetCreateTransactionPage: FC<IProps<IAssetCreateTransaction>> = ({
+  accounts,
   network,
   transaction,
 }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const accounts = useSelectAccounts();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -86,10 +83,10 @@ const AssetCreateTransactionPage: FC<IProps<IAssetCreateTransaction>> = ({
         <PageItem fontSize="sm" label={t<string>('labels.creatorAccount')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.creator}
               ariaLabel="Creator address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 
@@ -178,10 +175,10 @@ const AssetCreateTransactionPage: FC<IProps<IAssetCreateTransaction>> = ({
           <PageItem fontSize="sm" label={t<string>('labels.clawbackAccount')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.clawback}
                 ariaLabel="Clawback address"
-                color={subTextColor}
-                fontSize="sm"
+                size="sm"
                 network={network}
               />
 
@@ -204,10 +201,10 @@ const AssetCreateTransactionPage: FC<IProps<IAssetCreateTransaction>> = ({
           <PageItem fontSize="sm" label={t<string>('labels.freezeAccount')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.freeze}
                 ariaLabel="Freeze address"
-                color={subTextColor}
-                fontSize="sm"
+                size="sm"
                 network={network}
               />
 
@@ -230,10 +227,10 @@ const AssetCreateTransactionPage: FC<IProps<IAssetCreateTransaction>> = ({
           <PageItem fontSize="sm" label={t<string>('labels.managerAccount')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.manager}
                 ariaLabel="Manager address"
-                color={subTextColor}
-                fontSize="sm"
+                size="sm"
                 network={network}
               />
 
@@ -256,10 +253,10 @@ const AssetCreateTransactionPage: FC<IProps<IAssetCreateTransaction>> = ({
           <PageItem fontSize="sm" label={t<string>('labels.reserveAccount')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.reserve}
                 ariaLabel="Reserve address"
-                color={subTextColor}
-                fontSize="sm"
+                size="sm"
                 network={network}
               />
 

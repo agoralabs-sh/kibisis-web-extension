@@ -205,6 +205,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
       return (
         <KeyRegistrationTransactionModalBody
           account={fromAccount}
+          accounts={accounts}
           network={network}
           showHeader={true}
           transaction={transaction}

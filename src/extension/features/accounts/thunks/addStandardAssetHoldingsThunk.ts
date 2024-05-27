@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // errors
 import {
@@ -59,7 +59,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
-  AccountsThunkEnum.AddStandardAssetHoldings,
+  ThunkEnum.AddStandardAssetHoldings,
   async (
     { accountId, assets, genesisHash, password },
     { getState, rejectWithValue }
@@ -68,6 +68,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.online;
+    let _error: string;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountBalanceInAtomicUnits: BigNumber;
     let accountInformation: IAccountInformation;
@@ -75,7 +76,6 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     let address: string;
     let algodClient: Algodv2;
     let encodedGenesisHash: string;
-    let errorMessage: string;
     let filteredAssets: IStandardAsset[];
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
     let network: INetworkWithTransactionParams | null;
@@ -86,16 +86,14 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${AccountsThunkEnum.AddStandardAssetHoldings}: no account for "${accountId}" found`
+        `${ThunkEnum.AddStandardAssetHoldings}: no account for "${accountId}" found`
       );
 
       return rejectWithValue(new MalformedDataError('no account found'));
     }
 
     if (!online) {
-      logger.debug(
-        `${AccountsThunkEnum.AddStandardAssetHoldings}: extension offline`
-      );
+      logger.debug(`${ThunkEnum.AddStandardAssetHoldings}: extension offline`);
 
       return rejectWithValue(
         new OfflineError(
@@ -111,7 +109,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
 
     if (!network) {
       logger.debug(
-        `${AccountsThunkEnum.AddStandardAssetHoldings}: no network found for "${genesisHash}" found`
+        `${ThunkEnum.AddStandardAssetHoldings}: no network found for "${genesisHash}" found`
       );
 
       return rejectWithValue(
@@ -153,17 +151,15 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     if (
       accountBalanceInAtomicUnits.lt(minimumBalanceRequirementInAtomicUnits)
     ) {
-      errorMessage = `the required minimum balance to add assets [${assets
+      _error = `the required minimum balance to add assets [${assets
         .map(({ id }) => `"${id}"`)
         .join(
           ','
         )}] is "${minimumBalanceRequirementInAtomicUnits}", but the current balance is "${accountBalanceInAtomicUnits}"`;
 
-      logger.debug(
-        `${AccountsThunkEnum.AddStandardAssetHoldings}: ${errorMessage}`
-      );
+      logger.debug(`${ThunkEnum.AddStandardAssetHoldings}: ${_error}`);
 
-      return rejectWithValue(new NotEnoughMinimumBalanceError(errorMessage));
+      return rejectWithValue(new NotEnoughMinimumBalanceError(_error));
     }
 
     algodClient = createAlgodClient(network, {
@@ -187,7 +183,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
 
       logger.debug(
         `${
-          AccountsThunkEnum.AddStandardAssetHoldings
+          ThunkEnum.AddStandardAssetHoldings
         }: sending opt-in transactions to the network for assets [${filteredAssets
           .map(({ id }) => `"${id}"`)
           .join(',')}]`
@@ -213,7 +209,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
         signedTransactions,
       });
     } catch (error) {
-      logger.debug(`${AccountsThunkEnum.AddStandardAssetHoldings}: `, error);
+      logger.debug(`${ThunkEnum.AddStandardAssetHoldings}: `, error);
 
       if ((error as BaseExtensionError).code) {
         return rejectWithValue(error);
@@ -255,7 +251,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     };
 
     logger.debug(
-      `${AccountsThunkEnum.AddStandardAssetHoldings}: saving account "${account.id}" to storage`
+      `${ThunkEnum.AddStandardAssetHoldings}: saving account "${account.id}" to storage`
     );
 
     // save the account to storage

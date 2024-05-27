@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -26,44 +26,41 @@ const saveAccountNameThunk: AsyncThunk<
   IAccountWithExtendedProps | null,
   ISaveAccountNamePayload,
   IBaseAsyncThunkConfig<IMainRootState>
->(
-  AccountsThunkEnum.SaveAccountName,
-  async ({ accountId, name }, { getState }) => {
-    const logger = getState().system.logger;
-    const accounts = getState().accounts.items;
-    const accountService = new AccountService({
-      logger,
-    });
-    let account = findAccountWithoutExtendedProps(accountId, accounts);
+>(ThunkEnum.SaveAccountName, async ({ accountId, name }, { getState }) => {
+  const logger = getState().system.logger;
+  const accounts = getState().accounts.items;
+  const accountService = new AccountService({
+    logger,
+  });
+  let account = findAccountWithoutExtendedProps(accountId, accounts);
 
-    if (!account) {
-      logger.debug(
-        `${AccountsThunkEnum.SaveNewAccount}: no account found for "${accountId}", ignoring`
-      );
-
-      return null;
-    }
-
+  if (!account) {
     logger.debug(
-      `${AccountsThunkEnum.SaveNewAccount}: ${
-        name
-          ? `updating account "${accountId}" with new name "${name}"`
-          : `removing account name for account "${accountId}"`
-      }`
+      `${ThunkEnum.SaveNewAccount}: no account found for "${accountId}", ignoring`
     );
 
-    account = {
-      ...account,
-      name,
-    };
-
-    await accountService.saveAccounts([account]);
-
-    return {
-      ...account,
-      watchAccount: await isWatchAccount({ account, logger }),
-    };
+    return null;
   }
-);
+
+  logger.debug(
+    `${ThunkEnum.SaveNewAccount}: ${
+      name
+        ? `updating account "${accountId}" with new name "${name}"`
+        : `removing account name for account "${accountId}"`
+    }`
+  );
+
+  account = {
+    ...account,
+    name,
+  };
+
+  await accountService.saveAccounts([account]);
+
+  return {
+    ...account,
+    watchAccount: await isWatchAccount({ account, logger }),
+  };
+});
 
 export default saveAccountNameThunk;

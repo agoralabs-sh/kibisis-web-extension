@@ -21,7 +21,7 @@ import type { IProps } from './types';
 
 const AssetTransferTransactionItemContent: FC<
   IProps<IAssetTransferTransaction>
-> = ({ account, network, transaction }) => {
+> = ({ account, accounts, network, transaction }) => {
   const { t } = useTranslation();
   // hooks
   const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
@@ -41,9 +41,9 @@ const AssetTransferTransactionItemContent: FC<
 
         {/*from*/}
         <AddressDisplay
+          accounts={accounts}
           address={transaction.sender}
-          color={subTextColor}
-          fontSize="xs"
+          size="xs"
           network={network}
         />
       </VStack>

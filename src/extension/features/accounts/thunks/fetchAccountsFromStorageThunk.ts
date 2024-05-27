@@ -3,7 +3,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { NODE_REQUEST_DELAY } from '@extension/constants';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -35,7 +35,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   IFetchAccountsFromStorageResult,
   IFetchAccountsFromStoragePayload | undefined,
   IBaseAsyncThunkConfig<IMainRootState>
->(AccountsThunkEnum.FetchAccountsFromStorage, async (options, { getState }) => {
+>(ThunkEnum.FetchAccountsFromStorage, async (options, { getState }) => {
   const logger = getState().system.logger;
   const networks = getState().networks.items;
   const online = getState().system.online;
@@ -51,7 +51,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   let encodedGenesisHash: string;
 
   logger.debug(
-    `${AccountsThunkEnum.FetchAccountsFromStorage}: fetching accounts from storage`
+    `${ThunkEnum.FetchAccountsFromStorage}: fetching accounts from storage`
   );
 
   accounts = await accountService.getAllAccounts();
@@ -66,7 +66,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
     // update the account information for selected network
     if (options?.updateInformation) {
       logger.debug(
-        `${AccountsThunkEnum.FetchAccountsFromStorage}: updating account information for "${selectedNetwork.genesisId}"`
+        `${ThunkEnum.FetchAccountsFromStorage}: updating account information for "${selectedNetwork.genesisId}"`
       );
 
       accounts = await Promise.all(
@@ -96,7 +96,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
     // update the accounts transactions for selected network
     if (options?.updateTransactions) {
       logger.debug(
-        `${AccountsThunkEnum.FetchAccountsFromStorage}: updating account transactions for "${selectedNetwork.genesisId}"`
+        `${ThunkEnum.FetchAccountsFromStorage}: updating account transactions for "${selectedNetwork.genesisId}"`
       );
 
       accounts = await Promise.all(

@@ -46,7 +46,6 @@ const SignTxnsAddressItem: FC<IProps> = ({
     useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
   const explorer: IBlockExplorer | null =
     network.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
@@ -74,10 +73,10 @@ const SignTxnsAddressItem: FC<IProps> = ({
       </Text>
       <HStack spacing={0}>
         <AddressDisplay
+          accounts={accounts}
           address={address}
           ariaLabel={ariaLabel}
-          color={subTextColor}
-          fontSize="xs"
+          size="xs"
           network={network}
         />
 

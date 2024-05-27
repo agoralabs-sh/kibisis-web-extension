@@ -10,6 +10,7 @@ enum StoreNameEnum {
   Notifications = 'notifications',
   PasswordLock = 'password-lock',
   Register = 'register',
+  ReKeyAccount = 're-key-account',
   RemoveAssets = 'remove-assets',
   SendAssets = 'send-assets',
   Sessions = 'sessions',

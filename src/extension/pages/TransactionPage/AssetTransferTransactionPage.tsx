@@ -36,10 +36,7 @@ import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -55,13 +52,13 @@ import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
   account,
+  accounts,
   network,
   transaction,
 }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const accounts = useSelectAccounts();
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
@@ -144,10 +141,10 @@ const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
         <PageItem fontSize="sm" label={t<string>('labels.from')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.sender}
               ariaLabel="From address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 
@@ -168,10 +165,10 @@ const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
         <PageItem fontSize="sm" label={t<string>('labels.to')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.receiver}
               ariaLabel="From address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 

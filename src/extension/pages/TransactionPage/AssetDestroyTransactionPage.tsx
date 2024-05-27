@@ -27,10 +27,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
 import type { IAssetDestroyTransaction } from '@extension/types';
@@ -42,13 +39,13 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const AssetDestroyTransactionPage: FC<IProps<IAssetDestroyTransaction>> = ({
+  accounts,
   network,
   transaction,
 }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const accounts = useSelectAccounts();
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -105,10 +102,10 @@ const AssetDestroyTransactionPage: FC<IProps<IAssetDestroyTransaction>> = ({
         <PageItem fontSize="sm" label={t<string>('labels.creatorAccount')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.creator}
               ariaLabel="Creator address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 

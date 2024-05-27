@@ -35,6 +35,7 @@ import parseTransactionType from '@extension/utils/parseTransactionType';
 
 const KeyRegistrationTransactionModalBody: FC<IProps> = ({
   account,
+  accounts,
   condensed,
   network,
   showHeader = false,
@@ -90,6 +91,7 @@ const KeyRegistrationTransactionModalBody: FC<IProps> = ({
         tooltipLabel={encodeAddress(transaction.from.publicKey)}
         value={
           <AddressDisplay
+            accounts={accounts}
             address={encodeAddress(transaction.from.publicKey)}
             network={network}
           />

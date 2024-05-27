@@ -5,12 +5,10 @@ import {
   AccordionPanel,
   Code,
   HStack,
-  ResponsiveValue,
   Skeleton,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -29,41 +27,24 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
-import {
-  IAccount,
+import type {
   IAssetFreezeTransaction,
   IAssetUnfreezeTransaction,
   IBlockExplorer,
-  INetwork,
 } from '@extension/types';
+import type { IItemProps } from './types';
 
 // utils
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
-interface IProps {
-  color?: ResponsiveValue<CSS.Property.Color>;
-  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
-  minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
-  network: INetwork;
-  transaction: IAssetFreezeTransaction | IAssetUnfreezeTransaction;
-}
-
-const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
-  color,
-  fontSize,
-  minButtonHeight,
-  network,
-  transaction,
-}: IProps) => {
+const AssetFreezeInnerTransactionAccordionItem: FC<
+  IItemProps<IAssetFreezeTransaction | IAssetUnfreezeTransaction>
+> = ({ accounts, color, fontSize, minButtonHeight, network, transaction }) => {
   const { t } = useTranslation();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
   // hooks
@@ -132,10 +113,10 @@ const AssetFreezeInnerTransactionAccordionItem: FC<IProps> = ({
           >
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.frozenAddress}
                 ariaLabel="Address to freeze/unfreeze"
-                color={subTextColor}
-                fontSize="xs"
+                size="xs"
                 network={network}
               />
 

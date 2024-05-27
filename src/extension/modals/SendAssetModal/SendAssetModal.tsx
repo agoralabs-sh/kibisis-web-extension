@@ -425,6 +425,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     if (transactions && transactions.length > 0) {
       return (
         <SendAssetModalSummaryContent
+          accounts={accounts}
           amountInStandardUnits={amountInStandardUnits}
           asset={selectedAsset}
           fromAccount={fromAccount}
@@ -454,7 +455,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           {/*label*/}
           <Text
             color={defaultTextColor}
-            fontSize="md"
+            fontSize="sm"
             textAlign="left"
             w="full"
           >
@@ -479,7 +480,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           {/*label*/}
           <Text
             color={defaultTextColor}
-            fontSize="md"
+            fontSize="sm"
             textAlign="left"
             w="full"
           >
@@ -510,7 +511,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           {/*label*/}
           <Text
             color={defaultTextColor}
-            fontSize="md"
+            fontSize="sm"
             textAlign="left"
             w="full"
           >
@@ -523,7 +524,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
             onChange={handleNoteChange}
             placeholder={t<string>('placeholders.enterNote')}
             resize="vertical"
-            size="md"
+            size="sm"
             value={note || ''}
           />
         </VStack>

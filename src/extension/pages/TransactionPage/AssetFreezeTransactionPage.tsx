@@ -32,10 +32,7 @@ import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
 import type {
@@ -51,11 +48,10 @@ import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const AssetTransferTransactionContent: FC<
   IProps<IAssetFreezeTransaction | IAssetUnfreezeTransaction>
-> = ({ network, transaction }) => {
+> = ({ accounts, network, transaction }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const accounts = useSelectAccounts();
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
@@ -124,10 +120,10 @@ const AssetTransferTransactionContent: FC<
         >
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.frozenAddress}
               ariaLabel="Address to freeze/unfreeze"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 

@@ -13,6 +13,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import type { IProps } from './types';
 
 const DefaultTransactionItemContent: FC<IProps> = ({
+  accounts,
   network,
   transaction,
 }) => {
@@ -42,9 +43,9 @@ const DefaultTransactionItemContent: FC<IProps> = ({
         >
           {/*from*/}
           <AddressDisplay
+            accounts={accounts}
             address={transaction.sender}
-            color={subTextColor}
-            fontSize="xs"
+            size="xs"
             network={network}
           />
 

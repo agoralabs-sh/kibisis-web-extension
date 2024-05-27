@@ -6,7 +6,7 @@ import { BigNumber } from 'bignumber.js';
 import { TransactionTypeEnum } from '@extension/enums';
 
 // types
-import {
+import type {
   IAlgorandTransaction,
   IBaseTransaction,
   ITransactions,
@@ -18,12 +18,13 @@ import parseAssetConfigTransaction from './parseAssetConfigTransaction';
 import parseAssetFreezeTransaction from './parseAssetFreezeTransaction';
 import parseAssetTransferTransaction from './parseAssetTransferTransaction';
 import parseKeyRegistrationTransaction from './parseKeyRegistrationTransaction';
-import parsePaymentTransaction from './parsePaymentTransaction';
+import parsePaymentAndReKeyTransaction from './parsePaymentAndReKeyTransaction';
 
 export default function mapAlgorandTransactionToTransaction(
   algorandTransaction: IAlgorandTransaction
 ): ITransactions {
   const baseTransaction: IBaseTransaction = {
+    authAddr: algorandTransaction['auth-addr'] || null,
     completedAt: algorandTransaction['round-time']
       ? new BigNumber(String(algorandTransaction['round-time'] as bigint))
           .multipliedBy(1000) // we want milliseconds, as 'round-time' is in seconds
@@ -36,6 +37,7 @@ export default function mapAlgorandTransactionToTransaction(
     note: algorandTransaction.note
       ? decodeUtf8(decodeBase64(algorandTransaction.note))
       : null,
+    rekeyTo: algorandTransaction['rekey-to'] || null,
     sender: algorandTransaction.sender,
   };
 
@@ -67,7 +69,7 @@ export default function mapAlgorandTransactionToTransaction(
         baseTransaction
       );
     case 'pay':
-      return parsePaymentTransaction(
+      return parsePaymentAndReKeyTransaction(
         algorandTransaction['payment-transaction'],
         baseTransaction
       );

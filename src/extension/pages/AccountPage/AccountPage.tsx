@@ -1,6 +1,10 @@
 import {
   HStack,
   Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
   StackProps,
   Tab,
@@ -19,6 +23,9 @@ import {
   IoAdd,
   IoCloudOfflineOutline,
   IoCreateOutline,
+  IoEllipsisVerticalOutline,
+  IoLockClosedOutline,
+  IoLockOpenOutline,
   IoQrCodeOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
@@ -55,10 +62,15 @@ import {
   saveActiveAccountDetails,
   updateAccountsThunk,
 } from '@extension/features/accounts';
+import {
+  setAccountAndType as setReKeyAccount,
+  TReKeyType,
+} from '@extension/features/re-key-account';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 import { setConfirmModal } from '@extension/features/system';
 
 // hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -118,10 +130,30 @@ const AccountPage: FC = () => {
   const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
   // hooks
+  const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  // misc
+  const canReKeyAccount = () => {
+    if (!account || !accountInformation) {
+      return false;
+    }
+
+    // if it is a watch account, but it has been re-keyed and the re-key is available, we can re-key
+    if (account.watchAccount) {
+      return !!(
+        accountInformation.authAddress &&
+        isReKeyedAuthAccountAvailable({
+          accounts,
+          authAddress: accountInformation.authAddress,
+        })
+      );
+    }
+
+    return true;
+  };
   // handlers
   const handleActivityScrollEnd = () => {
     if (account && accountTransactions && accountTransactions.next) {
@@ -192,6 +224,14 @@ const AccountPage: FC = () => {
       );
     }
   };
+  const handleReKeyAccountClick = (type: TReKeyType) => () =>
+    account &&
+    dispatch(
+      setReKeyAccount({
+        account,
+        type,
+      })
+    );
   // renders
   const renderContent = () => {
     const headerContainerProps: StackProps = {
@@ -329,16 +369,61 @@ const AccountPage: FC = () => {
                 />
               </Tooltip>
 
-              {/*remove account*/}
-              <Tooltip label={t<string>('labels.removeAccount')}>
-                <IconButton
-                  aria-label="Remove account"
-                  icon={IoTrashOutline}
-                  onClick={handleRemoveAccountClick}
-                  size="sm"
+              {/*overflow menu*/}
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  aria-label="Overflow menu"
+                  icon={IoEllipsisVerticalOutline}
                   variant="ghost"
                 />
-              </Tooltip>
+                <MenuList>
+                  {/*re-key*/}
+                  {canReKeyAccount() && (
+                    <MenuItem
+                      color={defaultTextColor}
+                      icon={
+                        <Icon
+                          as={IoLockClosedOutline}
+                          color={defaultTextColor}
+                        />
+                      }
+                      onClick={handleReKeyAccountClick('rekey')}
+                    >
+                      {t<string>('labels.reKey')}
+                    </MenuItem>
+                  )}
+
+                  {/*undo re-key*/}
+                  {accountInformation.authAddress &&
+                    isReKeyedAuthAccountAvailable({
+                      accounts,
+                      authAddress: accountInformation.authAddress,
+                    }) && (
+                      <MenuItem
+                        color={defaultTextColor}
+                        icon={
+                          <Icon
+                            as={IoLockOpenOutline}
+                            color={defaultTextColor}
+                          />
+                        }
+                        onClick={handleReKeyAccountClick('undo')}
+                      >
+                        {t<string>('labels.undoReKey')}
+                      </MenuItem>
+                    )}
+
+                  {/*remove account*/}
+                  <MenuItem
+                    color={defaultTextColor}
+                    icon={<Icon as={IoTrashOutline} color={defaultTextColor} />}
+                    onClick={handleRemoveAccountClick}
+                  >
+                    {t<string>('labels.removeAccount')}
+                  </MenuItem>
+                </MenuList>
+              </Menu>
             </HStack>
 
             {/*badges*/}
@@ -387,6 +472,7 @@ const AccountPage: FC = () => {
 
               <ActivityTab
                 account={account}
+                accounts={accounts}
                 fetching={fetchingAccounts}
                 network={selectedNetwork}
                 onScrollEnd={handleActivityScrollEnd}

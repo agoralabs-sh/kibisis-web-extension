@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
-import { AccountsThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -22,7 +22,7 @@ const saveActiveAccountDetails: AsyncThunk<
   IActiveAccountDetails,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
-  AccountsThunkEnum.SaveActiveAccountDetails,
+  ThunkEnum.SaveActiveAccountDetails,
   async (activeAccountDetails, { getState }) => {
     const accounts = getState().accounts.items;
     const account =
@@ -33,14 +33,14 @@ const saveActiveAccountDetails: AsyncThunk<
 
     if (!account) {
       logger.debug(
-        `${AccountsThunkEnum.SaveActiveAccountDetails}: failed to find account "${activeAccountDetails.accountId}", ignoring`
+        `${ThunkEnum.SaveActiveAccountDetails}: failed to find account "${activeAccountDetails.accountId}", ignoring`
       );
 
       return null;
     }
 
     logger.debug(
-      `${AccountsThunkEnum.SaveActiveAccountDetails}: saving active account details for account id "${activeAccountDetails.accountId}" to storage`
+      `${ThunkEnum.SaveActiveAccountDetails}: saving active account details for account id "${activeAccountDetails.accountId}" to storage`
     );
 
     accountService = new AccountService({
@@ -51,7 +51,7 @@ const saveActiveAccountDetails: AsyncThunk<
     await accountService.saveActiveAccountDetails(activeAccountDetails);
 
     logger.debug(
-      `${AccountsThunkEnum.SaveActiveAccountDetails}: account details for account id "${activeAccountDetails.accountId}" to storage`
+      `${ThunkEnum.SaveActiveAccountDetails}: account details for account id "${activeAccountDetails.accountId}" to storage`
     );
 
     return activeAccountDetails;

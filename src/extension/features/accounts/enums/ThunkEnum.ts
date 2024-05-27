@@ -1,4 +1,4 @@
-enum AccountsThunkEnum {
+enum ThunkEnum {
   AddARC0200AssetHoldings = 'accounts/addARC0200AssetHoldings',
   AddStandardAssetHoldings = 'accounts/addStandardAssetHoldings',
   FetchAccountsFromStorage = 'accounts/fetchAccountsFromStorage',
@@ -14,4 +14,4 @@ enum AccountsThunkEnum {
   UpdateAccounts = 'accounts/updateAccounts',
 }
 
-export default AccountsThunkEnum;
+export default ThunkEnum;

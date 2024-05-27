@@ -58,7 +58,7 @@ const AddressInput: FC<IProps> = ({
       {/*label*/}
       <Text
         color={error ? 'red.300' : defaultTextColor}
-        fontSize="md"
+        fontSize="sm"
         textAlign="left"
       >
         {label || t<string>('labels.address')}
@@ -75,7 +75,6 @@ const AddressInput: FC<IProps> = ({
             onChange={handleHandleOnChange}
             placeholder={t<string>('placeholders.enterAddress')}
             ref={accountSelectRef}
-            size="lg"
             type="text"
             value={value}
           />
@@ -90,7 +89,7 @@ const AddressInput: FC<IProps> = ({
                 as={IconButton}
                 aria-label={t<string>('labels.selectWalletAccount')}
                 icon={IoChevronDown}
-                size="md"
+                size="sm"
                 variant="ghost"
               />
             </Tooltip>

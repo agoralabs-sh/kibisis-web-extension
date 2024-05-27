@@ -5,11 +5,9 @@ import {
   AccordionPanel,
   Code,
   HStack,
-  ResponsiveValue,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,40 +22,23 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
-import {
-  IAccount,
+import type {
   IAssetDestroyTransaction,
   IBlockExplorer,
-  INetwork,
 } from '@extension/types';
+import type { IItemProps } from './types';
 
 // utils
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
-interface IProps {
-  color?: ResponsiveValue<CSS.Property.Color>;
-  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
-  minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
-  network: INetwork;
-  transaction: IAssetDestroyTransaction;
-}
-
-const AssetDeleteInnerTransactionAccordionItem: FC<IProps> = ({
-  color,
-  fontSize,
-  minButtonHeight,
-  network,
-  transaction,
-}: IProps) => {
+const AssetDeleteInnerTransactionAccordionItem: FC<
+  IItemProps<IAssetDestroyTransaction>
+> = ({ accounts, color, fontSize, minButtonHeight, network, transaction }) => {
   const { t } = useTranslation();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
   // hooks
@@ -110,10 +91,10 @@ const AssetDeleteInnerTransactionAccordionItem: FC<IProps> = ({
           <PageItem fontSize="xs" label={t<string>('labels.creatorAccount')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.creator}
                 ariaLabel="Creator address"
-                color={subTextColor}
-                fontSize="xs"
+                size="xs"
                 network={network}
               />
 

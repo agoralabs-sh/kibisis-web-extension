@@ -4,26 +4,17 @@ import { Indexer } from 'algosdk';
 import { DEFAULT_TRANSACTION_INDEXER_LIMIT } from '@extension/constants';
 
 // types
-import { IBaseOptions } from '@common/types';
 import {
   IAccountTransactions,
   IAlgorandAccountTransaction,
-  INetwork,
 } from '@extension/types';
+import type { IOptions } from './types';
 
 // utils
 import getIndexerClient from '@common/utils/getIndexerClient';
 import lookupAlgorandAccountTransactionsWithDelay from '../lookupAlgorandAccountTransactionsWithDelay';
 import mapAlgorandTransactionToTransaction from '../mapAlgorandTransactionToTransaction';
 import refreshTransactions from '../refreshTransactions';
-
-interface IOptions extends IBaseOptions {
-  address: string;
-  currentAccountTransactions: IAccountTransactions;
-  delay?: number;
-  network: INetwork;
-  refresh?: boolean;
-}
 
 /**
  * Gets the account transactions.

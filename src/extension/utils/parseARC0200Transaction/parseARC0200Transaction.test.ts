@@ -11,12 +11,14 @@ describe(`${__dirname}/parseARC0200Transaction`, () => {
   it('should parse a transfer transaction', () => {
     // arrange
     const transaction: IApplicationTransaction = {
+      authAddr: null,
       completedAt: 1707654106000,
       fee: '1000',
       id: 'JSWYMGXCGMDUT45HWMHAXFM4364Q3HW2IDWMDK66A3LHAGIHQZEQ',
       genesisHash: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=',
       groupId: 'qo2ZGx7+TD0PYNCv4/cEHgIRLJ6/PPyyFh3gUlRbSxc=',
       note: null,
+      rekeyTo: null,
       sender: 'TESTKHUQJXXNSDSTCIY35GL3XMLFWNFEYH3HNATVGBURZR7XJP7C6EYM6Y',
       applicationArgs: [
         '2nAluQ==',

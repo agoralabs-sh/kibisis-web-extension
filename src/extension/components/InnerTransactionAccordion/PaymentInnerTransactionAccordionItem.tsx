@@ -5,12 +5,10 @@ import {
   AccordionPanel,
   Code,
   HStack,
-  ResponsiveValue,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,46 +23,32 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import {
-  IAccount,
-  IBlockExplorer,
-  INetwork,
-  IPaymentTransaction,
-} from '@extension/types';
+import type { IBlockExplorer, IPaymentTransaction } from '@extension/types';
+import type { IItemProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
-interface IProps {
-  account: IAccount;
-  color?: ResponsiveValue<CSS.Property.Color>;
-  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
-  minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
-  network: INetwork;
-  transaction: IPaymentTransaction;
-}
-
-const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
+const PaymentInnerTransactionAccordionItem: FC<
+  IItemProps<IPaymentTransaction>
+> = ({
   account,
+  accounts,
   color,
   fontSize,
   minButtonHeight,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
   // hooks
@@ -130,10 +114,10 @@ const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
           <PageItem fontSize="xs" label={t<string>('labels.from')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.sender}
                 ariaLabel="From address"
-                color={subTextColor}
-                fontSize="xs"
+                size="xs"
                 network={network}
               />
 
@@ -154,10 +138,10 @@ const PaymentInnerTransactionAccordionItem: FC<IProps> = ({
           <PageItem fontSize="xs" label={t<string>('labels.to')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.receiver}
                 ariaLabel="From address"
-                color={subTextColor}
-                fontSize="xs"
+                size="xs"
                 network={network}
               />
 

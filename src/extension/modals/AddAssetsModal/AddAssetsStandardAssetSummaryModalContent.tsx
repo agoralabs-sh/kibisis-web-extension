@@ -184,10 +184,10 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
               label={`${t<string>('labels.account')}:`}
               value={
                 <AddressDisplay
+                  accounts={accounts}
                   address={accountAddress}
                   ariaLabel="Accoun to add the standard asset to"
-                  color={subTextColor}
-                  fontSize="sm"
+                  size="sm"
                   network={network}
                 />
               }
@@ -301,10 +301,10 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                   label={`${t<string>('labels.creatorAccount')}:`}
                   value={
                     <AddressDisplay
+                      accounts={accounts}
                       address={asset.creator}
                       ariaLabel="Creator address"
-                      color={subTextColor}
-                      fontSize="sm"
+                      size="sm"
                       network={network}
                     />
                   }
@@ -329,10 +329,10 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                     label={`${t<string>('labels.clawbackAccount')}:`}
                     value={
                       <AddressDisplay
+                        accounts={accounts}
                         address={asset.clawbackAddress}
                         ariaLabel="Clawback address"
-                        color={subTextColor}
-                        fontSize="sm"
+                        size="sm"
                         network={network}
                       />
                     }
@@ -359,10 +359,10 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                     label={`${t<string>('labels.freezeAccount')}:`}
                     value={
                       <AddressDisplay
+                        accounts={accounts}
                         address={asset.freezeAddress}
                         ariaLabel="Freeze address"
-                        color={subTextColor}
-                        fontSize="sm"
+                        size="sm"
                         network={network}
                       />
                     }
@@ -389,10 +389,10 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                     label={`${t<string>('labels.managerAccount')}:`}
                     value={
                       <AddressDisplay
+                        accounts={accounts}
                         address={asset.managerAddress}
                         ariaLabel="Manager address"
-                        color={subTextColor}
-                        fontSize="sm"
+                        size="sm"
                         network={network}
                       />
                     }
@@ -419,10 +419,10 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                     label={`${t<string>('labels.reserveAccount')}:`}
                     value={
                       <AddressDisplay
+                        accounts={accounts}
                         address={asset.reserveAddress}
                         ariaLabel="Reserve address"
-                        color={subTextColor}
-                        fontSize="sm"
+                        size="sm"
                         network={network}
                       />
                     }

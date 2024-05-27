@@ -4,6 +4,8 @@ import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
 // components
+import AccountReKeyTransactionItemContent from './AccountReKeyTransactionItemContent';
+import AccountUndoReKeyTransactionItemContent from './AccountUndoReKeyTransactionItemContent';
 import ApplicationTransactionItemContent from './ApplicationTransactionItemContent';
 import ARC0200AssetTransferTransactionItemContent from './ARC0200AssetTransferTransactionItemContent';
 import AssetTransferTransactionItemContent from './AssetTransferTransactionItemContent';
@@ -34,7 +36,12 @@ import type { IProps } from './types';
 // utils
 import parseARC0200Transaction from '@extension/utils/parseARC0200Transaction';
 
-const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
+const TransactionItem: FC<IProps> = ({
+  account,
+  accounts,
+  network,
+  transaction,
+}) => {
   // selectors
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   // hooks
@@ -45,6 +52,24 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
     let arc0200Transaction: IARC0200AssetTransferTransaction | null;
 
     switch (transaction.type) {
+      case TransactionTypeEnum.AccountUndoReKey:
+        return (
+          <AccountUndoReKeyTransactionItemContent
+            account={account}
+            accounts={accounts}
+            network={network}
+            transaction={transaction}
+          />
+        );
+      case TransactionTypeEnum.AccountReKey:
+        return (
+          <AccountReKeyTransactionItemContent
+            account={account}
+            accounts={accounts}
+            network={network}
+            transaction={transaction}
+          />
+        );
       case TransactionTypeEnum.ApplicationClearState:
       case TransactionTypeEnum.ApplicationCloseOut:
       case TransactionTypeEnum.ApplicationCreate:
@@ -54,6 +79,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <ApplicationTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -69,6 +95,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
             return (
               <ARC0200AssetTransferTransactionItemContent
                 account={account}
+                accounts={accounts}
                 network={network}
                 transaction={arc0200Transaction}
               />
@@ -79,6 +106,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <ApplicationTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -87,6 +115,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <AssetTransferTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -96,6 +125,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <PaymentTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -104,6 +134,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <DefaultTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />

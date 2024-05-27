@@ -38,6 +38,7 @@ import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 
 const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
+  accounts,
   amountInStandardUnits,
   asset,
   fromAccount,
@@ -240,12 +241,12 @@ const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
         fontSize="sm"
         item={
           <AddressDisplay
+            accounts={accounts}
             address={AccountService.convertPublicKeyToAlgorandAddress(
               fromAccount.publicKey
             )}
             ariaLabel="From address"
-            color={subTextColor}
-            fontSize="sm"
+            size="sm"
             network={network}
           />
         }
@@ -257,10 +258,10 @@ const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
         fontSize="sm"
         item={
           <AddressDisplay
+            accounts={accounts}
             address={toAddress}
             ariaLabel="To address"
-            color={subTextColor}
-            fontSize="sm"
+            size="sm"
             network={network}
           />
         }

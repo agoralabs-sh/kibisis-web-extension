@@ -2,28 +2,24 @@ import { useEffect, useState } from 'react';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectActiveAccount,
   useSelectActiveAccountTransactions,
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
 // types
-import type {
-  IAccount,
-  IAccountTransactions,
-  INetwork,
-  ITransactions,
-} from '@extension/types';
+import type { ITransactions } from '@extension/types';
 import type { IUseTransactionPageState } from './types';
 
 export default function useTransactionPage(
   transactionId: string | null
 ): IUseTransactionPageState {
   // selectors
-  const account: IAccount | null = useSelectActiveAccount();
-  const accountTransactions: IAccountTransactions | null =
-    useSelectActiveAccountTransactions();
-  const network: INetwork | null = useSelectSelectedNetwork();
+  const account = useSelectActiveAccount();
+  const accounts = useSelectAccounts();
+  const accountTransactions = useSelectActiveAccountTransactions();
+  const network = useSelectSelectedNetwork();
   // state
   const [transaction, setTransaction] = useState<ITransactions | null>(null);
 
@@ -43,6 +39,7 @@ export default function useTransactionPage(
 
   return {
     account,
+    accounts,
     network,
     transaction,
   };

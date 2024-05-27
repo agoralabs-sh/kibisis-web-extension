@@ -64,4 +64,5 @@ export * from './networks';
 export * from './notifications';
 export * from './settings';
 export * from './states';
+export * from './styles';
 export * from './transactions';

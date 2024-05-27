@@ -1,8 +1,13 @@
 // types
-import { IAccount, INetwork, ITransactions } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  INetwork,
+  ITransactions,
+} from '@extension/types';
 
 interface IUseTransactionPageState {
-  account: IAccount | null;
+  account: IAccountWithExtendedProps | null;
+  accounts: IAccountWithExtendedProps[];
   network: INetwork | null;
   transaction: ITransactions | null;
 }
