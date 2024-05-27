@@ -1,5 +1,4 @@
-// types
-import {
+import type {
   AsyncThunkFulfilledActionCreator,
   AsyncThunkRejectedActionCreator,
 } from '@reduxjs/toolkit/dist/createAsyncThunk';

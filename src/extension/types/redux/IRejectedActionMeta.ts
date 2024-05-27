@@ -1,5 +1,5 @@
 // types
-import IBaseActionMeta from './IBaseActionMeta';
+import type IBaseActionMeta from './IBaseActionMeta';
 
 interface IRejectedActionMeta<Arg> extends IBaseActionMeta<Arg, 'rejected'> {
   aborted: boolean;

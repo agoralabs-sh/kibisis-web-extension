@@ -1,5 +1,5 @@
 // types
-import IBaseActionMeta from './IBaseActionMeta';
+import type IBaseActionMeta from './IBaseActionMeta';
 
 type IPendingActionMeta<Arg> = IBaseActionMeta<Arg, 'pending'>;
 

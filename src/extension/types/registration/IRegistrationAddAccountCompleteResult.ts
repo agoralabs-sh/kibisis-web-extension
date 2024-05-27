@@ -1,6 +1,6 @@
 // types
-import type { IARC0200Asset } from './assets';
-import IAddAccountCompleteResult from './IAddAccountCompleteResult';
+import type { IAddAccountCompleteResult } from '../accounts';
+import type { IARC0200Asset } from '../assets';
 
 interface IRegistrationAddAccountCompleteResult
   extends IAddAccountCompleteResult {

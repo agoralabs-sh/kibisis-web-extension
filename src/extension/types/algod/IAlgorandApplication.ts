@@ -1,5 +1,5 @@
 // types
-import IAlgorandApplicationParams from './IAlgorandApplicationParams';
+import type IAlgorandApplicationParams from './IAlgorandApplicationParams';
 
 interface IAlgorandApplication {
   ['created-at-round']?: bigint;

@@ -1,6 +1,6 @@
 // types
-import IAlgorandStateSchema from './IAlgorandStateSchema';
-import IAlgorandTealKeyValue from './IAlgorandTealKeyValue';
+import type IAlgorandStateSchema from './IAlgorandStateSchema';
+import type IAlgorandTealKeyValue from './IAlgorandTealKeyValue';
 
 interface IAlgorandApplicationParams {
   ['approval-program']: string;

@@ -1,5 +1,5 @@
 // types
-import IAlgorandAsset from './IAlgorandAsset';
+import type IAlgorandAsset from './IAlgorandAsset';
 
 interface IAlgorandSearchAssetsResult {
   assets: IAlgorandAsset[];

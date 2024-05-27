@@ -1,10 +1,10 @@
 // types
-import IAlgorandApplicationTransaction from './IAlgorandApplicationTransaction';
-import IAlgorandAssetConfigTransaction from './IAlgorandAssetConfigTransaction';
-import IAlgorandAssetFreezeTransaction from './IAlgorandAssetFreezeTransaction';
-import IAlgorandAssetTransferTransaction from './IAlgorandAssetTransferTransaction';
-import IAlgorandKeyRegistrationTransaction from './IAlgorandKeyRegistrationTransaction';
-import IAlgorandPaymentTransaction from './IAlgorandPaymentTransaction';
+import type IAlgorandApplicationTransaction from './IAlgorandApplicationTransaction';
+import type IAlgorandAssetConfigTransaction from './IAlgorandAssetConfigTransaction';
+import type IAlgorandAssetFreezeTransaction from './IAlgorandAssetFreezeTransaction';
+import type IAlgorandAssetTransferTransaction from './IAlgorandAssetTransferTransaction';
+import type IAlgorandKeyRegistrationTransaction from './IAlgorandKeyRegistrationTransaction';
+import type IAlgorandPaymentTransaction from './IAlgorandPaymentTransaction';
 
 interface IBaseAlgorandTransaction {
   ['auth-addr']?: string;

@@ -1,22 +1,20 @@
 // types
 import type { INewsItem } from '@extension/services/NewsService';
-import type { IAccount } from './accounts';
-import type { IARC0072Asset, IARC0200Asset, IStandardAsset } from './assets';
-import type { TEvents } from './events';
-import type { ITransactionParams } from './networks';
+import type { IAccount, IActiveAccountDetails } from '../accounts';
+import type { IARC0072Asset, IARC0200Asset, IStandardAsset } from '../assets';
+import type { TEvents } from '../events';
+import type { IAppWindow } from '../layout';
+import type { IPasswordLock } from '../password-lock';
+import type { IPasswordTag, IPrivateKey } from '../private-key';
+import type { ITransactionParams } from '../networks';
+import type { ISession } from '../sessions';
 import type {
   IAdvancedSettings,
   IAppearanceSettings,
   IGeneralSettings,
   IPrivacySettings,
   ISecuritySettings,
-} from './settings';
-import type IActiveAccountDetails from './IActiveAccountDetails';
-import type IAppWindow from './IAppWindow';
-import type IPasswordLock from './IPasswordLock';
-import type IPasswordTag from './IPasswordTag';
-import type IPrivateKey from './IPrivateKey';
-import type ISession from './ISession';
+} from '../settings';
 
 type IStorageItemTypes =
   | IAccount

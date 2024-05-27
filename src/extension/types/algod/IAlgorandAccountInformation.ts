@@ -1,5 +1,5 @@
 // types
-import IAlgorandAssetHolding from './IAlgorandAssetHolding';
+import type IAlgorandAssetHolding from './IAlgorandAssetHolding';
 
 interface IAlgorandAccountInformation {
   address: string;

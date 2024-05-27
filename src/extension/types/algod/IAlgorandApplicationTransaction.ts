@@ -1,5 +1,5 @@
 // types
-import IAlgorandStateSchema from './IAlgorandStateSchema';
+import type IAlgorandStateSchema from './IAlgorandStateSchema';
 
 interface IAlgorandApplicationTransaction {
   accounts?: string[];

@@ -1,5 +1,5 @@
 // types
-import IAlgorandApplication from './IAlgorandApplication';
+import type IAlgorandApplication from './IAlgorandApplication';
 
 interface IAlgorandSearchApplicationsResult {
   applications: IAlgorandApplication[];

@@ -1,5 +1,5 @@
-// Tyoes
-import IWalletConnectSessionMetadata from './IWalletConnectSessionMetadata';
+// types
+import type IWalletConnectSessionMetadata from '../IWalletConnectSessionMetadata';
 
 /**
  * @property {string} appName - the name of the dApp.

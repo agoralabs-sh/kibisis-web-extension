@@ -1,5 +1,5 @@
 // types
-import IAlgorandAssetParams from './IAlgorandAssetParams';
+import type IAlgorandAssetParams from './IAlgorandAssetParams';
 
 interface IAlgorandAsset {
   ['created-at-round']?: bigint;

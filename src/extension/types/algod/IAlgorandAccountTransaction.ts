@@ -1,5 +1,5 @@
 // types
-import IAlgorandTransaction from './IAlgorandTransaction';
+import type IAlgorandTransaction from './IAlgorandTransaction';
 
 interface IAlgorandAccountTransaction {
   ['current-round']: bigint;
