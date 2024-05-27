@@ -11,6 +11,7 @@ import Root from './Root';
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
 import { reducer as eventsReducer } from '@extension/features/events';
+import { reducer as layoutReducer } from '@extension/features/layout';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as passwordLockReducer } from '@extension/features/password-lock';
@@ -31,6 +32,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       accounts: accountsReducer,
       arc0200Assets: arc200AssetsReducer,
       events: eventsReducer,
+      layout: layoutReducer,
       messages: messagesReducer,
       networks: networksReducer,
       passwordLock: passwordLockReducer,

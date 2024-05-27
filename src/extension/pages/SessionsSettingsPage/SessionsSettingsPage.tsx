@@ -19,7 +19,7 @@ import PageHeader from '@extension/components/PageHeader';
 import SettingsSessionItem from '@extension/components/SettingsSessionItem';
 
 // features
-import { setConfirmModal } from '@extension/features/system';
+import { setConfirmModal } from '@extension/features/layout';
 import {
   clearSessionsThunk,
   removeSessionByIdThunk,

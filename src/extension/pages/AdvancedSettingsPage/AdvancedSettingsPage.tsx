@@ -12,8 +12,8 @@ import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // features
+import { setConfirmModal } from '@extension/features/layout';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
-import { setConfirmModal } from '@extension/features/system';
 
 // selectors
 import { useSelectSettings } from '@extension/selectors';

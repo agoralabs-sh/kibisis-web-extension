@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // features
-import type { IScanQRCodeModal } from '@extension/features/system';
+import type { IScanQRCodeModal } from '@extension/features/layout';
 
 // types
 import type { IMainRootState } from '@extension/types';
@@ -12,6 +12,6 @@ import type { IMainRootState } from '@extension/types';
  */
 export default function useSelectScanQRCodeModal(): IScanQRCodeModal | null {
   return useSelector<IMainRootState, IScanQRCodeModal | null>(
-    (state) => state.system.scanQRCodeModal
+    (state) => state.layout.scanQRCodeModal
   );
 }

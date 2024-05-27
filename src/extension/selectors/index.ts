@@ -3,6 +3,7 @@ export * from './add-assets';
 export * from './arc-0072-assets';
 export * from './arc-0200-assets';
 export * from './events';
+export * from './layout';
 export * from './networks';
 export * from './news';
 export * from './notifications';

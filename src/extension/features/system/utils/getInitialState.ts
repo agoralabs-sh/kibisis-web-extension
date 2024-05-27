@@ -6,10 +6,7 @@ import type { IState } from '../types';
 
 export default function getInitialState(): IState {
   return {
-    confirmModal: null,
     logger: createLogger(__ENV__ === 'development' ? 'debug' : 'error'),
     online: true,
-    scanQRCodeModal: null,
-    sidebar: false,
   };
 }

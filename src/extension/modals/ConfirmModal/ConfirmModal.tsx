@@ -21,7 +21,7 @@ import Warning from '@extension/components/Warning';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
-import type { IConfirmModal } from '@extension/features/system';
+import type { IConfirmModal } from '@extension/features/layout';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';

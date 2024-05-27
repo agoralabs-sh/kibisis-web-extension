@@ -12,9 +12,9 @@ import SettingsSelectItem, {
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
 // features
+import { setConfirmModal } from '@extension/features/layout';
 import { sendFactoryResetThunk } from '@extension/features/messages';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
-import { setConfirmModal } from '@extension/features/system';
 
 // selectors
 import {

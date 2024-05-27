@@ -4,5 +4,5 @@ import { useSelector } from 'react-redux';
 import type { IBaseRootState } from '@extension/types';
 
 export default function useSelectSideBar(): boolean {
-  return useSelector<IBaseRootState, boolean>((state) => state.system.sidebar);
+  return useSelector<IBaseRootState, boolean>((state) => state.layout.sidebar);
 }

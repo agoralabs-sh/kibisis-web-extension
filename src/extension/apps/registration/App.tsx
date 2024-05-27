@@ -17,6 +17,7 @@ import {
 
 // features
 import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
+import { reducer as layoutReducer } from '@extension/features/layout';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as notificationsReducer } from '@extension/features/notifications';
 import { reducer as settingsReducer } from '@extension/features/settings';
@@ -67,6 +68,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
     makeStore<IRegistrationRootState>(
       combineReducers({
         arc0200Assets: arc200AssetsReducer,
+        layout: layoutReducer,
         networks: networksReducer,
         notifications: notificationsReducer,
         settings: settingsReducer,

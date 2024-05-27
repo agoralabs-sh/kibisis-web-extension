@@ -62,12 +62,12 @@ import {
   saveActiveAccountDetails,
   updateAccountsThunk,
 } from '@extension/features/accounts';
+import { setConfirmModal } from '@extension/features/layout';
 import {
   setAccountAndType as setReKeyAccount,
   TReKeyType,
 } from '@extension/features/re-key-account';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
-import { setConfirmModal } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
