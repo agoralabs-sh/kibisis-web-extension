@@ -425,6 +425,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     if (transactions && transactions.length > 0) {
       return (
         <SendAssetModalSummaryContent
+          accounts={accounts}
           amountInStandardUnits={amountInStandardUnits}
           asset={selectedAsset}
           fromAccount={fromAccount}

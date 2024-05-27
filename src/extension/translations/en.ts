@@ -187,6 +187,7 @@ const translation: IResourceLanguage = {
     questComplete: 'You have successfully completed a quest!',
     reKeyAccount:
       'You are about to re-key an account with an authorized address.',
+    reKeyAccountConfirming: 'Please wait while the account is re-keyed.',
     reKeyFee:
       'Re-keying accounts requires a "re-key" fee. This is a transaction of with a "0" amount sent to yourself.',
     removeAccount: 'Are you sure you want to remove account "{{address}}"?',
@@ -227,8 +228,8 @@ const translation: IResourceLanguage = {
       '{{amount}} transaction(s) were successfully sent.',
     undoReKeyAccount:
       'You are about to remove the authorized account from a re-keyed account.',
-    undoReKeyConfirming:
-      'Please wait while we remove the account "{{authAddress}}" from the re-keyed account "{{reKeyAddress}}".',
+    undoReKeyAccountConfirming:
+      'Please wait while the the authorized account is removed from the re-keyed account.',
     unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
     viewSeedPhrase1: 'Select an account to view the seed phrase.',
@@ -414,7 +415,7 @@ const translation: IResourceLanguage = {
     freezeManagerAccount: 'Freeze Manager Account',
     frozenAccountBalance: 'Frozen Account Balance',
     from: 'From',
-    fromAuthorizedAccount: 'From Authorized Account',
+    fromAccount: 'From Account',
     groupId: 'Group ID',
     hideAsset: 'Hide Asset',
     id: 'ID',
@@ -453,13 +454,14 @@ const translation: IResourceLanguage = {
     reKey: 'Re-key',
     reKeyed: 'Re-keyed',
     reKeyedAccount: 'Re-keyed Account',
+    reKeyedFrom: 'Re-keyed From',
     reKeyedToAccount: 'This account has been re-keyed to {{address}}',
     reKeyedTo: 'Re-keyed To',
     reKeyTo: 'Re-key To',
     removeAccount: 'Remove Account',
     removeAsset: 'Remove Asset',
     [`removeAsset_${AssetTypeEnum.ARC0200}`]: 'Hide Asset',
-    removedAuthorizedAccount: 'Removed Authorized Account',
+    removedAccount: 'Removed Account',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
     scanQRCode: 'Scan QR Code',

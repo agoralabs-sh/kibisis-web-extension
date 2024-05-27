@@ -18,7 +18,7 @@ import type { IProps } from './types';
 
 const AccountReKeyTransactionItemContent: FC<
   IProps<IAccountReKeyTransaction>
-> = ({ network, transaction }) => {
+> = ({ accounts, network, transaction }) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -46,9 +46,10 @@ const AccountReKeyTransactionItemContent: FC<
           {/*re-key to*/}
           {transaction.rekeyTo && (
             <AddressDisplay
+              accounts={accounts}
               address={transaction.rekeyTo}
-              color={subTextColor}
-              fontSize="xs"
+              colorScheme="green"
+              size="xs"
               network={network}
             />
           )}

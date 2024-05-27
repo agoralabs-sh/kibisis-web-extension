@@ -157,10 +157,10 @@ const ARC0200AssetTransferTransactionPage: FC<
         <PageItem fontSize="sm" label={t<string>('labels.from')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.sender}
               ariaLabel="From address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 
@@ -181,10 +181,10 @@ const ARC0200AssetTransferTransactionPage: FC<
         <PageItem fontSize="sm" label={t<string>('labels.to')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.receiver}
               ariaLabel="From address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 

@@ -61,6 +61,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectLogger,
   useSelectPasswordLockPassword,
   useSelectRemoveAssetsAccount,
@@ -78,15 +79,7 @@ import AccountService from '@extension/services/AccountService';
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
-import type {
-  IAccount,
-  IAppThunkDispatch,
-  IAssetTypes,
-  IBlockExplorer,
-  INetworkWithTransactionParams,
-  ISettings,
-} from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 import type { IRemoveAssetsModalProps } from './types';
 
 // utils
@@ -99,6 +92,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
   const navigate = useNavigate();
   // selectors
   const account = useSelectRemoveAssetsAccount();
+  const accounts = useSelectAccounts();
   const confirming = useSelectRemoveAssetsConfirming();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const logger = useSelectLogger();
@@ -347,10 +341,10 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
               label={`${t<string>('labels.account')}:`}
               value={
                 <AddressDisplay
+                  accounts={accounts}
                   address={address}
                   ariaLabel="From address"
-                  color={subTextColor}
-                  fontSize="sm"
+                  size="sm"
                   network={selectedNetwork}
                 />
               }

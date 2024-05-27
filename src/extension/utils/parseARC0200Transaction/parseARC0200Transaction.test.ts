@@ -11,6 +11,7 @@ describe(`${__dirname}/parseARC0200Transaction`, () => {
   it('should parse a transfer transaction', () => {
     // arrange
     const transaction: IApplicationTransaction = {
+      authAddr: null,
       completedAt: 1707654106000,
       fee: '1000',
       id: 'JSWYMGXCGMDUT45HWMHAXFM4364Q3HW2IDWMDK66A3LHAGIHQZEQ',

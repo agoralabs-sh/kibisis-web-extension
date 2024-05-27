@@ -355,6 +355,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
           ) : (
             <KeyRegistrationTransactionModalBody
               account={account}
+              accounts={accounts}
               condensed={{
                 expanded: isOpen,
                 onChange: handleMoreInformationToggle,

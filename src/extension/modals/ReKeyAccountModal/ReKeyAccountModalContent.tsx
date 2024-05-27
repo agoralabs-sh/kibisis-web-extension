@@ -57,12 +57,12 @@ const ReKeyAccountConfirmingModalContent: FC<
           label={`${t<string>('labels.account')}:`}
           value={
             <AddressDisplay
+              accounts={accounts}
               address={AccountService.convertPublicKeyToAlgorandAddress(
                 account.publicKey
               )}
               ariaLabel="Re-keyed address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
           }
@@ -75,10 +75,11 @@ const ReKeyAccountConfirmingModalContent: FC<
             label={`${t<string>('labels.currentAuthorizedAccount')}:`}
             value={
               <AddressDisplay
+                accounts={accounts}
                 address={accountInformation.authAddress}
                 ariaLabel="Current auth address"
-                color={subTextColor}
-                fontSize="sm"
+                colorScheme="green"
+                size="sm"
                 network={network}
               />
             }

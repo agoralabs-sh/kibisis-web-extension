@@ -1,5 +1,4 @@
-import { Accordion, ResponsiveValue } from '@chakra-ui/react';
-import * as CSS from 'csstype';
+import { Accordion } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
 // components
@@ -15,21 +14,11 @@ import PaymentInnerTransactionAccordionItem from './PaymentInnerTransactionAccor
 import { TransactionTypeEnum } from '@extension/enums';
 
 // types
-import { IAccount, INetwork, ITransactions } from '@extension/types';
-
-interface IProps {
-  account: IAccount;
-  color?: ResponsiveValue<CSS.Property.Color>;
-  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
-  isOpen: boolean;
-  minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
-  network: INetwork;
-  onChange: (open: boolean) => void;
-  transaction: ITransactions;
-}
+import type { IProps } from './types';
 
 const InnerTransactionAccordion: FC<IProps> = ({
   account,
+  accounts,
   color,
   fontSize,
   isOpen,
@@ -37,7 +26,7 @@ const InnerTransactionAccordion: FC<IProps> = ({
   network,
   onChange,
   transaction,
-}: IProps) => {
+}) => {
   // handlers
   const handleOnChange = (value: number) => onChange(value > -1);
   const renderAccordionItem = () => {
@@ -45,6 +34,8 @@ const InnerTransactionAccordion: FC<IProps> = ({
       case TransactionTypeEnum.AssetConfig:
         return (
           <AssetConfigInnerTransactionAccordionItem
+            account={account}
+            accounts={accounts}
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}
@@ -55,6 +46,8 @@ const InnerTransactionAccordion: FC<IProps> = ({
       case TransactionTypeEnum.AssetCreate:
         return (
           <AssetCreateInnerTransactionAccordionItem
+            account={account}
+            accounts={accounts}
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}
@@ -65,6 +58,8 @@ const InnerTransactionAccordion: FC<IProps> = ({
       case TransactionTypeEnum.AssetDestroy:
         return (
           <AssetDeleteInnerTransactionAccordionItem
+            account={account}
+            accounts={accounts}
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}
@@ -76,6 +71,8 @@ const InnerTransactionAccordion: FC<IProps> = ({
       case TransactionTypeEnum.AssetUnfreeze:
         return (
           <AssetFreezeInnerTransactionAccordionItem
+            account={account}
+            accounts={accounts}
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}
@@ -87,6 +84,7 @@ const InnerTransactionAccordion: FC<IProps> = ({
         return (
           <AssetTransferInnerTransactionAccordionItem
             account={account}
+            accounts={accounts}
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}
@@ -98,6 +96,7 @@ const InnerTransactionAccordion: FC<IProps> = ({
         return (
           <PaymentInnerTransactionAccordionItem
             account={account}
+            accounts={accounts}
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}
@@ -108,6 +107,8 @@ const InnerTransactionAccordion: FC<IProps> = ({
       default:
         return (
           <DefaultInnerTransactionAccordionItem
+            account={account}
+            accounts={accounts}
             color={color}
             fontSize={fontSize}
             minButtonHeight={minButtonHeight}

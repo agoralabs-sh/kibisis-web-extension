@@ -2,16 +2,17 @@ import type { Transaction } from 'algosdk';
 
 // types
 import {
-  IAccount,
+  IAccountWithExtendedProps,
   IAssetTypes,
   INativeCurrency,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
 interface SendAssetModalSummaryContentProps {
+  accounts: IAccountWithExtendedProps[];
   amountInStandardUnits: string;
   asset: IAssetTypes | INativeCurrency;
-  fromAccount: IAccount;
+  fromAccount: IAccountWithExtendedProps;
   network: INetworkWithTransactionParams;
   note: string | null;
   toAddress: string;

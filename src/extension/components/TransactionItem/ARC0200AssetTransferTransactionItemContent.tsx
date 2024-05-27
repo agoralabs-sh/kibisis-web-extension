@@ -32,7 +32,7 @@ import type { IProps } from './types';
 
 const ARC0200AssetTransferTransactionItemContent: FC<
   IProps<IARC0200AssetTransferTransaction>
-> = ({ account, network, transaction }) => {
+> = ({ account, accounts, network, transaction }) => {
   const { t } = useTranslation();
   // selectors
   const assets = useSelectARC0200AssetsBySelectedNetwork();
@@ -68,9 +68,9 @@ const ARC0200AssetTransferTransactionItemContent: FC<
 
         {/*from*/}
         <AddressDisplay
+          accounts={accounts}
           address={transaction.sender}
-          color={subTextColor}
-          fontSize="xs"
+          size="xs"
           network={network}
         />
       </VStack>

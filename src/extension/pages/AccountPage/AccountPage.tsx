@@ -472,6 +472,7 @@ const AccountPage: FC = () => {
 
               <ActivityTab
                 account={account}
+                accounts={accounts}
                 fetching={fetchingAccounts}
                 network={selectedNetwork}
                 onScrollEnd={handleActivityScrollEnd}

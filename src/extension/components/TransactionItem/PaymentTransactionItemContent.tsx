@@ -23,6 +23,7 @@ import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const PaymentTransactionItemContent: FC<IProps<IPaymentTransaction>> = ({
   account,
+  accounts,
   network,
   transaction,
 }) => {
@@ -44,9 +45,9 @@ const PaymentTransactionItemContent: FC<IProps<IPaymentTransaction>> = ({
 
         {/*from*/}
         <AddressDisplay
+          accounts={accounts}
           address={transaction.sender}
-          color={subTextColor}
-          fontSize="xs"
+          size="xs"
           network={network}
         />
       </VStack>

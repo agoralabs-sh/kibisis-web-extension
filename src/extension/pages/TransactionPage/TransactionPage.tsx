@@ -38,7 +38,7 @@ const TransactionPage: FC = () => {
   // selectors
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   // hooks
-  const { account, network, transaction } = useTransactionPage(
+  const { account, accounts, network, transaction } = useTransactionPage(
     transactionId || null
   );
   // misc
@@ -65,6 +65,7 @@ const TransactionPage: FC = () => {
       return (
         <AccountUndoReKeyTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -73,6 +74,7 @@ const TransactionPage: FC = () => {
       return (
         <AccountReKeyTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -86,6 +88,7 @@ const TransactionPage: FC = () => {
       return (
         <ApplicationTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -100,6 +103,7 @@ const TransactionPage: FC = () => {
           return (
             <ARC0200AssetTransferTransactionPage
               account={account}
+              accounts={accounts}
               network={network}
               transaction={arc0200Transaction}
             />
@@ -110,6 +114,7 @@ const TransactionPage: FC = () => {
       return (
         <ApplicationTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -118,6 +123,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetConfigTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -126,6 +132,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetCreateTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -134,6 +141,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetDestroyTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -143,6 +151,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetFreezeTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -151,6 +160,7 @@ const TransactionPage: FC = () => {
       return (
         <AssetTransferTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />
@@ -159,6 +169,7 @@ const TransactionPage: FC = () => {
       return (
         <PaymentTransactionPage
           account={account}
+          accounts={accounts}
           network={network}
           transaction={transaction}
         />

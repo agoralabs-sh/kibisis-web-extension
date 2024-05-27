@@ -9,6 +9,7 @@ import type {
 
 interface IProps {
   account: IAccount;
+  accounts: IAccount[];
   condensed?: ICondensedProps;
   network: INetworkWithTransactionParams;
   showHeader?: boolean;

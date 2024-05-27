@@ -278,11 +278,13 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
         if (confirming) {
           return (
             <ReKeyAccountConfirmingModalContent
-              authAddress={accountInformation.authAddress}
-              isReKeying={false}
+              accounts={accounts}
+              currentAddress={accountInformation.authAddress}
+              network={network}
               reKeyAddress={AccountService.convertPublicKeyToAlgorandAddress(
                 account.publicKey
               )}
+              reKeyType={reKeyType}
             />
           );
         }
@@ -290,6 +292,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
         return (
           <UndoReKeyAccountModalContent
             account={account}
+            accounts={accounts}
             authAddress={accountInformation.authAddress}
             network={network}
           />
@@ -301,11 +304,16 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
         if (confirming && authAddress) {
           return (
             <ReKeyAccountConfirmingModalContent
-              authAddress={authAddress}
-              isReKeying={true}
-              reKeyAddress={AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
-              )}
+              accounts={accounts}
+              currentAddress={
+                accountInformation.authAddress ||
+                AccountService.convertPublicKeyToAlgorandAddress(
+                  account.publicKey
+                )
+              }
+              network={network}
+              reKeyAddress={authAddress}
+              reKeyType={reKeyType}
             />
           );
         }

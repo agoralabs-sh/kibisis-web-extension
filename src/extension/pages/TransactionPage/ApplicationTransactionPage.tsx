@@ -45,6 +45,7 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const ApplicationTransactionPage: FC<IProps<IApplicationTransaction>> = ({
   account,
+  accounts,
   network,
   transaction,
 }) => {
@@ -265,6 +266,7 @@ const ApplicationTransactionPage: FC<IProps<IApplicationTransaction>> = ({
                 {transaction.innerTransactions.map((value, index) => (
                   <InnerTransactionAccordion
                     account={account}
+                    accounts={accounts}
                     color={defaultTextColor}
                     fontSize="sm"
                     isOpen={openInnerTransactionAccordions[index]}

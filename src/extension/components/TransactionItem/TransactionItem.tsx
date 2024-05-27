@@ -36,7 +36,12 @@ import type { IProps } from './types';
 // utils
 import parseARC0200Transaction from '@extension/utils/parseARC0200Transaction';
 
-const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
+const TransactionItem: FC<IProps> = ({
+  account,
+  accounts,
+  network,
+  transaction,
+}) => {
   // selectors
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   // hooks
@@ -51,6 +56,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <AccountUndoReKeyTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -59,6 +65,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <AccountReKeyTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -72,6 +79,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <ApplicationTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -87,6 +95,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
             return (
               <ARC0200AssetTransferTransactionItemContent
                 account={account}
+                accounts={accounts}
                 network={network}
                 transaction={arc0200Transaction}
               />
@@ -97,6 +106,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <ApplicationTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -105,6 +115,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <AssetTransferTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -114,6 +125,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <PaymentTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />
@@ -122,6 +134,7 @@ const TransactionItem: FC<IProps> = ({ account, network, transaction }) => {
         return (
           <DefaultTransactionItemContent
             account={account}
+            accounts={accounts}
             network={network}
             transaction={transaction}
           />

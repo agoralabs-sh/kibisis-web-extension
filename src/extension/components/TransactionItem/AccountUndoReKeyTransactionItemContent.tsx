@@ -18,7 +18,7 @@ import type { IProps } from './types';
 
 const AccountUndoReKeyTransactionItemContent: FC<
   IProps<IAccountUndoReKeyTransaction>
-> = ({ network, transaction }) => {
+> = ({ accounts, network, transaction }) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -46,9 +46,10 @@ const AccountUndoReKeyTransactionItemContent: FC<
           {/*undo re-key*/}
           {transaction.authAddr && (
             <AddressDisplay
+              accounts={accounts}
               address={transaction.authAddr}
-              color={subTextColor}
-              fontSize="xs"
+              colorScheme="red"
+              size="xs"
               network={network}
             />
           )}

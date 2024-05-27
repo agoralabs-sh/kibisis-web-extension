@@ -6,6 +6,7 @@ import type {
 
 interface IUndoReKeyAccountModalContentProps {
   account: IAccountWithExtendedProps;
+  accounts: IAccountWithExtendedProps[];
   authAddress: string;
   network: INetworkWithTransactionParams;
 }

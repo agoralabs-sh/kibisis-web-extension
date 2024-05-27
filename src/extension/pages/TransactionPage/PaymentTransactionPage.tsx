@@ -27,10 +27,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -45,13 +42,13 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const PaymentTransactionPage: FC<IProps<IPaymentTransaction>> = ({
   account,
+  accounts,
   network,
   transaction,
 }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors
-  const accounts = useSelectAccounts();
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -129,10 +126,10 @@ const PaymentTransactionPage: FC<IProps<IPaymentTransaction>> = ({
         <PageItem fontSize="sm" label={t<string>('labels.from')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.sender}
               ariaLabel="From address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 
@@ -153,10 +150,10 @@ const PaymentTransactionPage: FC<IProps<IPaymentTransaction>> = ({
         <PageItem fontSize="sm" label={t<string>('labels.to')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.receiver}
               ariaLabel="From address"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 

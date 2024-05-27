@@ -1,8 +1,9 @@
 // types
-import type { IAccount, INetwork } from '@extension/types';
+import type { IAccountWithExtendedProps, INetwork } from '@extension/types';
 
 interface IProps<Transaction> {
-  account: IAccount;
+  account: IAccountWithExtendedProps;
+  accounts: IAccountWithExtendedProps[];
   network: INetwork;
   transaction: Transaction;
 }

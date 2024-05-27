@@ -94,10 +94,10 @@ const AccountUndoReKeyTransactionPage: FC<
         <PageItem fontSize="sm" label={t<string>('labels.account')}>
           <HStack spacing={0}>
             <AddressDisplay
+              accounts={accounts}
               address={transaction.sender}
               ariaLabel="Account"
-              color={subTextColor}
-              fontSize="sm"
+              size="sm"
               network={network}
             />
 
@@ -114,18 +114,16 @@ const AccountUndoReKeyTransactionPage: FC<
           </HStack>
         </PageItem>
 
-        {/*removed authorized account*/}
+        {/*removed account*/}
         {transaction.authAddr && (
-          <PageItem
-            fontSize="sm"
-            label={t<string>('labels.removedAuthorizedAccount')}
-          >
+          <PageItem fontSize="sm" label={t<string>('labels.removedAccount')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.authAddr}
-                ariaLabel="Removed authorized account"
-                color={subTextColor}
-                fontSize="sm"
+                ariaLabel="Removed account"
+                colorScheme="red"
+                size="sm"
                 network={network}
               />
 

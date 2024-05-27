@@ -18,6 +18,7 @@ import type { IProps } from './types';
 
 const ActivityTab: FC<IProps> = ({
   account,
+  accounts,
   fetching,
   network,
   onScrollEnd,
@@ -37,6 +38,7 @@ const ActivityTab: FC<IProps> = ({
       nodes = transactions.map((value, index) => (
         <TransactionItem
           account={account}
+          accounts={accounts}
           key={`activity-tab-item-${index}`}
           network={network}
           transaction={value}

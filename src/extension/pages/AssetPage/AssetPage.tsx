@@ -418,10 +418,10 @@ const AssetPage: FC = () => {
                             label={t<string>('labels.creatorAccount')}
                           >
                             <AddressDisplay
+                              accounts={accounts}
                               address={asset.creator}
                               ariaLabel="Creator address"
-                              color={subTextColor}
-                              fontSize="xs"
+                              size="xs"
                               network={selectedNetwork}
                             />
 
@@ -446,10 +446,10 @@ const AssetPage: FC = () => {
                               label={t<string>('labels.clawbackAccount')}
                             >
                               <AddressDisplay
+                                accounts={accounts}
                                 address={asset.clawbackAddress}
                                 ariaLabel="Clawback address"
-                                color={subTextColor}
-                                fontSize="xs"
+                                size="xs"
                                 network={selectedNetwork}
                               />
 
@@ -478,10 +478,10 @@ const AssetPage: FC = () => {
                               label={t<string>('labels.freezeAccount')}
                             >
                               <AddressDisplay
+                                accounts={accounts}
                                 address={asset.freezeAddress}
                                 ariaLabel="Freeze address"
-                                color={subTextColor}
-                                fontSize="xs"
+                                size="xs"
                                 network={selectedNetwork}
                               />
 
@@ -507,10 +507,10 @@ const AssetPage: FC = () => {
                               label={t<string>('labels.managerAccount')}
                             >
                               <AddressDisplay
+                                accounts={accounts}
                                 address={asset.managerAddress}
                                 ariaLabel="Manager address"
-                                color={subTextColor}
-                                fontSize="xs"
+                                size="xs"
                                 network={selectedNetwork}
                               />
 
@@ -539,10 +539,10 @@ const AssetPage: FC = () => {
                               label={t<string>('labels.reserveAccount')}
                             >
                               <AddressDisplay
+                                accounts={accounts}
                                 address={asset.reserveAddress}
                                 ariaLabel="Reserve address"
-                                color={subTextColor}
-                                fontSize="xs"
+                                size="xs"
                                 network={selectedNetwork}
                               />
 

@@ -97,67 +97,68 @@ const AccountReKeyTransactionPage: FC<IProps<IAccountReKeyTransaction>> = ({
         spacing={DEFAULT_GAP - 2}
         w="full"
       >
-        {/*from authorized account*/}
-        {transaction.authAddr ? (
-          <PageItem
-            fontSize="sm"
-            label={t<string>('labels.fromAuthorizedAccount')}
-          >
-            <HStack spacing={0}>
-              <AddressDisplay
-                address={transaction.authAddr}
-                ariaLabel="Auth account"
-                color={subTextColor}
-                fontSize="sm"
-                network={network}
-              />
+        {/*account*/}
+        <PageItem fontSize="sm" label={t<string>('labels.account')}>
+          <HStack spacing={0}>
+            <AddressDisplay
+              accounts={accounts}
+              address={transaction.sender}
+              ariaLabel="Account"
+              size="sm"
+              network={network}
+            />
 
-              {/*open in explorer button*/}
-              {!isAuthAddrKnown && explorer && (
-                <OpenTabIconButton
-                  size="sm"
-                  tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
-                  })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.authAddr}`}
-                />
-              )}
-            </HStack>
-          </PageItem>
-        ) : (
-          <PageItem fontSize="sm" label={t<string>('labels.account')}>
-            <HStack spacing={0}>
-              <AddressDisplay
-                address={transaction.sender}
-                ariaLabel="Account"
-                color={subTextColor}
-                fontSize="sm"
-                network={network}
+            {/*open in explorer button*/}
+            {!isSenderKnown && explorer && (
+              <OpenTabIconButton
+                size="sm"
+                tooltipLabel={t<string>('captions.openOn', {
+                  name: explorer.canonicalName,
+                })}
+                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
               />
+            )}
+          </HStack>
+        </PageItem>
 
-              {/*open in explorer button*/}
-              {!isSenderKnown && explorer && (
-                <OpenTabIconButton
+        {/*re-keyed from*/}
+        {transaction.authAddr &&
+          transaction.authAddr !== transaction.sender && (
+            <PageItem fontSize="sm" label={t<string>('labels.reKeyedFrom')}>
+              <HStack spacing={0}>
+                <AddressDisplay
+                  accounts={accounts}
+                  address={transaction.authAddr}
+                  ariaLabel="Auth account"
+                  colorScheme="red"
                   size="sm"
-                  tooltipLabel={t<string>('captions.openOn', {
-                    name: explorer.canonicalName,
-                  })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
+                  network={network}
                 />
-              )}
-            </HStack>
-          </PageItem>
-        )}
+
+                {/*open in explorer button*/}
+                {!isAuthAddrKnown && explorer && (
+                  <OpenTabIconButton
+                    size="sm"
+                    tooltipLabel={t<string>('captions.openOn', {
+                      name: explorer.canonicalName,
+                    })}
+                    url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.authAddr}`}
+                  />
+                )}
+              </HStack>
+            </PageItem>
+          )}
 
         {/*re-keyed to*/}
         {transaction.rekeyTo && (
           <PageItem fontSize="sm" label={t<string>('labels.reKeyedTo')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.rekeyTo}
                 ariaLabel="Re-keyed to"
-                color={subTextColor}
-                fontSize="sm"
+                colorScheme="green"
+                size="sm"
                 network={network}
               />
 

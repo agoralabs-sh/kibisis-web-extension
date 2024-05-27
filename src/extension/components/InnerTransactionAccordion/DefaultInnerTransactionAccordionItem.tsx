@@ -5,11 +5,9 @@ import {
   AccordionPanel,
   Code,
   HStack,
-  ResponsiveValue,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import * as CSS from 'csstype';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,48 +18,31 @@ import PageItem from '@extension/components/PageItem';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectSettingsPreferredBlockExplorer,
-} from '@extension/selectors';
+import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
-import {
-  IAccount,
-  IBlockExplorer,
-  INetwork,
-  ITransactions,
-} from '@extension/types';
+import type { IBlockExplorer } from '@extension/types';
+import type { IItemProps } from './types';
 
 // utils
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
-interface IProps {
-  color?: ResponsiveValue<CSS.Property.Color>;
-  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
-  minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
-  network: INetwork;
-  transaction: ITransactions;
-}
-
-const DefaultInnerTransactionAccordionItem: FC<IProps> = ({
+const DefaultInnerTransactionAccordionItem: FC<IItemProps> = ({
+  accounts,
   color,
   fontSize,
   minButtonHeight,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
   const preferredExplorer: IBlockExplorer | null =
     useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
   // misc
   const explorer: IBlockExplorer | null =
     network.blockExplorers.find(
@@ -85,10 +66,10 @@ const DefaultInnerTransactionAccordionItem: FC<IProps> = ({
           <PageItem fontSize="xs" label={t<string>('labels.from')}>
             <HStack spacing={0}>
               <AddressDisplay
+                accounts={accounts}
                 address={transaction.sender}
                 ariaLabel="From address"
-                color={subTextColor}
-                fontSize="xs"
+                size="xs"
                 network={network}
               />
 

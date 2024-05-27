@@ -40,11 +40,10 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAccountInformation,
-  IBlockExplorer,
+  IAccountWithExtendedProps,
   IStandardAsset,
 } from '@extension/types';
 
@@ -61,21 +60,18 @@ interface IProps {
 
 const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   const { t } = useTranslation();
-  const genesisHash: string =
+  const genesisHash =
     uniqueGenesisHashesFromTransactions(transactions).pop() || '';
-  const encodedGenesisHash: string =
-    convertGenesisHashToHex(genesisHash).toUpperCase();
+  const encodedGenesisHash = convertGenesisHashToHex(genesisHash).toUpperCase();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const logger: ILogger = useSelectLogger();
+  const accounts = useSelectAccounts();
+  const logger = useSelectLogger();
   const network = useSelectNetworkByGenesisHash(genesisHash);
-  const preferredExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
-  const standardAssets: IStandardAsset[] =
-    useSelectStandardAssetsByGenesisHash(genesisHash);
-  const updatingStandardAssets: boolean = useSelectStandardAssetsUpdating();
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
+  const standardAssets = useSelectStandardAssetsByGenesisHash(genesisHash);
+  const updatingStandardAssets = useSelectStandardAssetsUpdating();
   // hooks
-  const borderColor: string = useBorderColor();
+  const borderColor = useBorderColor();
   // state
   const [fetchingAccountInformation, setFetchingAccountInformation] =
     useState<boolean>(false);
@@ -84,8 +80,8 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
     Array.from({ length: transactions.length }, () => false)
   );
   // misc
-  const computedGroupId: string = encodeBase64(computeGroupId(transactions));
-  const explorer: IBlockExplorer | null =
+  const computedGroupId = encodeBase64(computeGroupId(transactions));
+  const explorer =
     network?.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
@@ -202,6 +198,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
               onChange: handleToggleAccordion(transactionIndex),
             }}
             account={sender}
+            accounts={accounts}
             network={network}
             showHeader={true}
             transaction={transaction}

@@ -6,6 +6,7 @@ import type {
 
 interface IProps {
   account: IAccountWithExtendedProps;
+  accounts: IAccountWithExtendedProps[];
   fetching: boolean;
   network: INetworkWithTransactionParams;
   onScrollEnd: () => void;

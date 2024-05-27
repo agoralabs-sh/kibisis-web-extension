@@ -27,6 +27,7 @@ import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const UndoReKeyAccountModalContent: FC<IUndoReKeyAccountModalContentProps> = ({
   account,
+  accounts,
   authAddress,
   network,
 }) => {
@@ -43,33 +44,34 @@ const UndoReKeyAccountModalContent: FC<IUndoReKeyAccountModalContentProps> = ({
           {t<string>('captions.undoReKeyAccount')}
         </Text>
 
-        {/*re-keyed account*/}
+        {/*account*/}
         <ModalItem
           flexGrow={1}
-          label={`${t<string>('labels.reKeyedAccount')}:`}
+          label={`${t<string>('labels.account')}:`}
           value={
             <AddressDisplay
+              accounts={accounts}
               address={AccountService.convertPublicKeyToAlgorandAddress(
                 account.publicKey
               )}
-              ariaLabel="Re-keyed address"
-              color={subTextColor}
-              fontSize="sm"
+              ariaLabel="Account address"
+              size="sm"
               network={network}
             />
           }
         />
 
-        {/*auth account*/}
+        {/*current auth account*/}
         <ModalItem
           flexGrow={1}
           label={`${t<string>('labels.currentAuthorizedAccount')}:`}
           value={
             <AddressDisplay
+              accounts={accounts}
               address={authAddress}
               ariaLabel="Current auth address"
-              color={subTextColor}
-              fontSize="sm"
+              colorScheme="green"
+              size="sm"
               network={network}
             />
           }
