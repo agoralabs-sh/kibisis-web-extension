@@ -206,7 +206,7 @@ const SendAmountInput: FC<IProps> = ({
     <VStack w="full">
       <HStack justifyContent="space-between" w="full">
         {/*label*/}
-        <Text color={defaultTextColor} fontSize="md" textAlign="left">
+        <Text color={defaultTextColor} fontSize="sm" textAlign="left">
           {t<string>('labels.amount')}
         </Text>
 
@@ -226,7 +226,6 @@ const SendAmountInput: FC<IProps> = ({
           onBlur={handleOnBlur}
           onChange={handleOnChange}
           onFocus={handleOnFocus}
-          size="lg"
           value={value || undefined}
           w="full"
         >
@@ -240,10 +239,8 @@ const SendAmountInput: FC<IProps> = ({
           }}
           aria-label="Add maximum amount"
           borderRadius={0}
-          fontSize="md"
           onClick={handleMaximumAmountClick}
           p={0}
-          size="md"
           variant="ghost"
         >
           <Text color={defaultTextColor} fontSize="md">
