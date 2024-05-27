@@ -1,3 +1,10 @@
+# [1.17.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.7...v1.17.0-beta.8) (2024-05-27)
+
+
+### Features
+
+* re-key an account and remove the auth account from re-key ([#243](https://github.com/agoralabs-sh/kibisis-web-extension/issues/243)) ([35f55ce](https://github.com/agoralabs-sh/kibisis-web-extension/commit/35f55ce329721314de4cbf2c3a41e0ef7c38427e))
+
 # [1.17.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.6...v1.17.0-beta.7) (2024-05-23)
 
 
