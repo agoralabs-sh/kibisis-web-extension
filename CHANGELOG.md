@@ -1,3 +1,10 @@
+# [1.17.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.8...v1.17.0-beta.9) (2024-05-27)
+
+
+### Features
+
+* store a unique id for an install ([#245](https://github.com/agoralabs-sh/kibisis-web-extension/issues/245)) ([4e1d55f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4e1d55fe99a2f32a48eeb6b0233dce87fb2c5423))
+
 # [1.17.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.7...v1.17.0-beta.8) (2024-05-27)
 
 
