@@ -1,1 +1,1 @@
-export { default as closeCurrentWindowThunk } from './closeCurrentWindowThunk';
+export { default as fetchFromStorageThunk } from './fetchFromStorageThunk';

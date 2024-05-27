@@ -10,23 +10,20 @@ import { handleNewEventByIdThunk } from '@extension/features/events';
 import { setPassword } from '@extension/features/password-lock';
 
 // messages
-import {
-  ProviderEventAddedMessage,
-  ProviderPasswordLockTimeoutMessage,
-} from '@common/messages';
+import { ProviderEventAddedMessage } from '@common/messages';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
 // types
-import type { ILogger, TProviderMessages } from '@common/types';
+import type { TProviderMessages } from '@common/types';
 import type { IAppThunkDispatch } from '@extension/types';
 
 export default function useOnMainAppMessage(): void {
-  const _functionName: string = 'useOnMainAppMessage';
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const _functionName = 'useOnMainAppMessage';
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const logger: ILogger = useSelectLogger();
+  const logger = useSelectLogger();
   const handleMessage = async (message: TProviderMessages) => {
     logger.debug(`${_functionName}: message "${message.reference}" received`);
 

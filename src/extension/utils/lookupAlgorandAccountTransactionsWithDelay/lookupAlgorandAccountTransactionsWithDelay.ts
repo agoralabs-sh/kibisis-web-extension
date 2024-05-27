@@ -1,4 +1,4 @@
-import { Indexer, IntDecoding } from 'algosdk';
+import { IntDecoding } from 'algosdk';
 import LookupAccountTransactions from 'algosdk/dist/types/client/v2/indexer/lookupAccountTransactions';
 
 // types

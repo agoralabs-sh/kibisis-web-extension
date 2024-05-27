@@ -18,6 +18,10 @@ import {
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import {
+  setConfirmModal,
+  setScanQRCodeModal,
+} from '@extension/features/layout';
+import {
   fetchTransactionParamsFromStorageThunk,
   startPollingForTransactionsParamsThunk,
 } from '@extension/features/networks';
@@ -33,10 +37,7 @@ import {
 } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
-import {
-  setConfirmModal,
-  setScanQRCodeModal,
-} from '@extension/features/system';
+import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
 
 // hooks
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
@@ -95,6 +96,7 @@ const Root: FC = () => {
 
   // 1. fetch the required data
   useEffect(() => {
+    dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());

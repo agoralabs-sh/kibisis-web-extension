@@ -5,6 +5,7 @@ enum StoreNameEnum {
   ARC0200Assets = 'arc0200-assets',
   Events = 'events',
   Messages = 'messages',
+  Layout = 'layout',
   Networks = 'networks',
   News = 'news',
   Notifications = 'notifications',

@@ -26,8 +26,8 @@ export default async function sendExtensionEvent({
   privateKeyService,
   ...baseOptions
 }: IOptions): Promise<void> {
-  const _appWindowManagerService = (appWindowManagerService =
-    new AppWindowManagerService(baseOptions));
+  const _appWindowManagerService =
+    appWindowManagerService || new AppWindowManagerService(baseOptions);
   const _eventQueueService =
     eventQueueService || new EventQueueService(baseOptions);
   const _functionName = 'sendExtensionEvent';

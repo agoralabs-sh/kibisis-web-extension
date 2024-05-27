@@ -12,9 +12,6 @@ import { IoChevronDown } from 'react-icons/io5';
 // components
 import ChainBadge from '@extension/components/ChainBadge';
 
-// hooks
-import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
-
 // types
 import type { IProps } from './types';
 

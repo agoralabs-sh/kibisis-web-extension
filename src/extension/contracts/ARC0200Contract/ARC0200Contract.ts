@@ -3,7 +3,6 @@ import algosdk, {
   ABIMethod,
   ABIType,
   assignGroupID,
-  BoxReference,
   makePaymentTxnWithSuggestedParams,
   SuggestedParams,
   Transaction,

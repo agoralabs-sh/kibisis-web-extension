@@ -2,8 +2,8 @@
 import { VESTIGE_FI_API_URL } from '@extension/constants';
 
 // types
-import { IBaseOptions, ILogger } from '@common/types';
-import { INetwork, IVestigeFiAssetResponse } from '@extension/types';
+import type { IBaseOptions } from '@common/types';
+import type { INetwork, IVestigeFiAssetResponse } from '@extension/types';
 
 // utils
 import fetchWithDelay from '../fetchWithDelay';

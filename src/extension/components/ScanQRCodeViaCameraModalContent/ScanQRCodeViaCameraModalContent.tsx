@@ -43,7 +43,6 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { theme } from '@extension/theme';
 
 // types
-import type { ILogger } from '@common/types';
 import type { IScanQRCodeModalContentProps } from '@extension/types';
 
 const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({

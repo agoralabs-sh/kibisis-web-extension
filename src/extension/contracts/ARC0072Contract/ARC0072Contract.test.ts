@@ -9,7 +9,7 @@ import ARC0072Contract from './ARC0072Contract';
 
 // types
 import type { IBaseOptions } from '@common/types';
-import type { IARC0200AssetInformation, INetwork } from '@extension/types';
+import type { INetwork } from '@extension/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';

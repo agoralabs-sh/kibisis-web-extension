@@ -30,6 +30,10 @@ import { reducer as addAssetsReducer } from '@extension/features/add-assets';
 import { reducer as arc0072AssetsReducer } from '@extension/features/arc0072-assets';
 import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
 import { reducer as eventsReducer } from '@extension/features/events';
+import {
+  reducer as layoutReducer,
+  setSideBar,
+} from '@extension/features/layout';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as newsReducer } from '@extension/features/news';
@@ -44,10 +48,7 @@ import {
   reducer as settingsReducer,
 } from '@extension/features/settings';
 import { reducer as standardAssetsReducer } from '@extension/features/standard-assets';
-import {
-  reducer as systemReducer,
-  setSideBar,
-} from '@extension/features/system';
+import { reducer as systemReducer } from '@extension/features/system';
 
 // pages
 import AccountPage from '@extension/pages/AccountPage';
@@ -181,6 +182,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       arc0072Assets: arc0072AssetsReducer,
       arc0200Assets: arc200AssetsReducer,
       events: eventsReducer,
+      layout: layoutReducer,
       messages: messagesReducer,
       networks: networksReducer,
       news: newsReducer,

@@ -15,7 +15,6 @@ import {
 import StorageManager from '../StorageManager';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAdvancedSettings,
   IAppearanceSettings,
@@ -32,11 +31,9 @@ import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
 export default class SettingsService {
   // private variables
-  private readonly logger: ILogger | null;
   private readonly storageManager: StorageManager;
 
-  constructor({ logger, storageManager }: ICreateOptions) {
-    this.logger = logger || null;
+  constructor({ storageManager }: ICreateOptions) {
     this.storageManager = storageManager || new StorageManager();
   }
 

@@ -17,3 +17,4 @@ export const SETTINGS_PRIVACY_KEY: string = 'settings_privacy';
 export const SETTINGS_SECURITY_KEY: string = 'settings_security';
 export const SESSION_ITEM_KEY_PREFIX: string = 'session_';
 export const STANDARD_ASSETS_KEY_PREFIX: string = 'standard_assets_';
+export const SYSTEM_KEY: string = 'system';

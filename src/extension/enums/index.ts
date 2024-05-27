@@ -23,5 +23,4 @@ export { default as SessionsThunkEnum } from './SessionsThunkEnum';
 export { default as SettingsThunkEnum } from './SettingsThunkEnum';
 export { default as StandardAssetsThunkEnum } from './StandardAssetsThunkEnum';
 export { default as StoreNameEnum } from './StoreNameEnum';
-export { default as SystemThunkEnum } from './SystemThunkEnum';
 export { default as TransactionTypeEnum } from './TransactionTypeEnum';

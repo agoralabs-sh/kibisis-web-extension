@@ -26,8 +26,8 @@ import {
   saveNewWatchAccountThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
+import { setScanQRCodeModal } from '@extension/features/layout';
 import { create as createNotification } from '@extension/features/notifications';
-import { setScanQRCodeModal } from '@extension/features/system';
 
 // modals
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
@@ -42,7 +42,6 @@ import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSee
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectActiveAccountDetails,
   useSelectLogger,
   useSelectPasswordLockPassword,
@@ -68,7 +67,6 @@ const AddAccountMainRouter: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
   // selectors
-  const accounts = useSelectAccounts();
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
   const passwordLockPassword = useSelectPasswordLockPassword();

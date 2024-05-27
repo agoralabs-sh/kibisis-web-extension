@@ -16,7 +16,6 @@ import { ThunkEnum } from '../enums';
 // errors
 import {
   BaseExtensionError,
-  DecryptionError,
   FailedToSendTransactionError,
   MalformedDataError,
   NetworkNotSelectedError,

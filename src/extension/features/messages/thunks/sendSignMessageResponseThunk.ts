@@ -26,7 +26,7 @@ const sendSignMessageResponseThunk: AsyncThunk<
   IBaseAsyncThunkConfig
 >(
   MessagesThunkEnum.SendSignMessageResponse,
-  async ({ error, event, signature, signer }, { dispatch, getState }) => {
+  async ({ error, event, signature, signer }, { getState }) => {
     const logger = getState().system.logger;
 
     logger.debug(

@@ -14,12 +14,8 @@ import {
 
 // types
 import type {
-  IAccount,
-  IAccountInformation,
-  IARC0200Asset,
   IARC0200AssetHolding,
   IAssetTypes,
-  IStandardAsset,
   IStandardAssetHolding,
 } from '@extension/types';
 import type { IUseAssetPageOptions, IUseAssetPageState } from './types';

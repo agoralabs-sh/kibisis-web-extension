@@ -1,11 +1,4 @@
-import {
-  Code,
-  HStack,
-  Text,
-  Tooltip,
-  useDisclosure,
-  VStack,
-} from '@chakra-ui/react';
+import { HStack, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';

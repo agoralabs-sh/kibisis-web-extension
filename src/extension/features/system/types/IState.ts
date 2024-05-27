@@ -1,14 +1,11 @@
 // types
 import type { ILogger } from '@common/types';
-import type IConfirmModal from './IConfirmModal';
-import type IScanQRCodeModal from './IScanQRCodeModal';
+import type { ISystemInfo } from '@extension/types';
 
 interface IState {
-  confirmModal: IConfirmModal | null;
+  info: ISystemInfo | null;
   logger: ILogger;
   online: boolean;
-  scanQRCodeModal: IScanQRCodeModal | null;
-  sidebar: boolean;
 }
 
 export default IState;

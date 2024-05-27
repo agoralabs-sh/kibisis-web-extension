@@ -7,10 +7,11 @@ import LoadingPage from '@extension/components/LoadingPage';
 // features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
 import { handleNewEventByIdThunk } from '@extension/features/events';
+import { closeCurrentWindowThunk } from '@extension/features/layout';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
-import { closeCurrentWindowThunk } from '@extension/features/system';
+import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
 
 // hooks
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
@@ -46,6 +47,7 @@ const Root: FC = () => {
       return;
     }
 
+    dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());

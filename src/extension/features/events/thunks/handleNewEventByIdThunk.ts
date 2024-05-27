@@ -15,7 +15,7 @@ const handleNewEventByIdThunk: AsyncThunk<
   IBaseAsyncThunkConfig
 > = createAsyncThunk<TEvents | null, string, IBaseAsyncThunkConfig>(
   EventsThunkEnum.HandleNewEventById,
-  async (eventId, { dispatch, getState }) => {
+  async (eventId, { getState }) => {
     const logger = getState().system.logger;
     const eventQueueService = new EventQueueService({
       logger,

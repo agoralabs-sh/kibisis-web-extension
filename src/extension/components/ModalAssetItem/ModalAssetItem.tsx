@@ -13,7 +13,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import { IProps } from './types';
+import type { IProps } from './types';
 
 const ModalAssetItem: FC<IProps> = ({
   amountInAtomicUnits,
@@ -27,8 +27,8 @@ const ModalAssetItem: FC<IProps> = ({
   ...stackProps
 }: IProps) => {
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
 
   return (
     <HStack

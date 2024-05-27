@@ -13,7 +13,6 @@ import {
   AppTypeEnum,
   ARC0300AuthorityEnum,
   ARC0300PathEnum,
-  ARC0300QueryEnum,
 } from '@extension/enums';
 
 // events
@@ -28,6 +27,7 @@ import PasswordLockService from '../PasswordLockService';
 import PrivateKeyService from '../PrivateKeyService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
+import SystemService from '../SystemService';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
@@ -55,6 +55,7 @@ export default class ProviderActionListener {
   private readonly privateKeyService: PrivateKeyService;
   private readonly settingsService: SettingsService;
   private readonly storageManager: StorageManager;
+  private readonly systemService: SystemService;
 
   constructor({ logger }: IBaseOptions) {
     const storageManager: StorageManager = new StorageManager();
@@ -79,6 +80,10 @@ export default class ProviderActionListener {
       storageManager,
     });
     this.storageManager = storageManager;
+    this.systemService = new SystemService({
+      logger,
+      storageManager,
+    });
   }
 
   /**
@@ -260,6 +265,22 @@ export default class ProviderActionListener {
       }
 
       return;
+    }
+  }
+
+  public async onInstalled(): Promise<void> {
+    const _functionName = 'onInstalled';
+    let systemInfo = await this.systemService.get();
+
+    // if there is no system info, initialize the default
+    if (!systemInfo) {
+      systemInfo = SystemService.initializeDefaultSystem();
+
+      this.logger?.debug(
+        `${ProviderActionListener.name}#${_functionName}: initialize a new system info with device id "${systemInfo.deviceID}"`
+      );
+
+      await this.systemService.save(systemInfo);
     }
   }
 

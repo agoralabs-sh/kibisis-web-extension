@@ -41,8 +41,8 @@ import { AccountTabEnum } from '@extension/enums';
 
 // features
 import { saveActiveAccountDetails } from '@extension/features/accounts';
+import { setScanQRCodeModal } from '@extension/features/layout';
 import { initializeSendAsset } from '@extension/features/send-assets';
-import { setScanQRCodeModal } from '@extension/features/system';
 
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';

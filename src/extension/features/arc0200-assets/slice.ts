@@ -11,10 +11,7 @@ import {
 
 // types
 import { IARC0200Asset } from '@extension/types';
-import {
-  IARC0200AssetsState,
-  IUpdateARC0200AssetInformationResult,
-} from './types';
+import { IState, IUpdateARC0200AssetInformationResult } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -27,7 +24,7 @@ const slice = createSlice({
     builder.addCase(
       fetchARC0200AssetsFromStorageThunk.fulfilled,
       (
-        state: IARC0200AssetsState,
+        state: IState,
         action: PayloadAction<Record<string, IARC0200Asset[]>>
       ) => {
         state.items = action.payload;
@@ -36,13 +33,13 @@ const slice = createSlice({
     );
     builder.addCase(
       fetchARC0200AssetsFromStorageThunk.pending,
-      (state: IARC0200AssetsState) => {
+      (state: IState) => {
         state.fetching = true;
       }
     );
     builder.addCase(
       fetchARC0200AssetsFromStorageThunk.rejected,
-      (state: IARC0200AssetsState) => {
+      (state: IState) => {
         state.fetching = false;
       }
     );
@@ -50,7 +47,7 @@ const slice = createSlice({
     builder.addCase(
       updateARC0200AssetInformationThunk.fulfilled,
       (
-        state: IARC0200AssetsState,
+        state: IState,
         action: PayloadAction<IUpdateARC0200AssetInformationResult>
       ) => {
         const encodedGenesisHash: string = convertGenesisHashToHex(
@@ -72,13 +69,13 @@ const slice = createSlice({
     );
     builder.addCase(
       updateARC0200AssetInformationThunk.pending,
-      (state: IARC0200AssetsState) => {
+      (state: IState) => {
         state.updating = true;
       }
     );
     builder.addCase(
       updateARC0200AssetInformationThunk.rejected,
-      (state: IARC0200AssetsState) => {
+      (state: IState) => {
         state.updating = false;
       }
     );

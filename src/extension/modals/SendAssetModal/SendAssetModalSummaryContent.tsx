@@ -35,7 +35,6 @@ import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
-import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 
 const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
   accounts,
