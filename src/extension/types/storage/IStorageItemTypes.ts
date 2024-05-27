@@ -15,6 +15,7 @@ import type {
   IPrivacySettings,
   ISecuritySettings,
 } from '../settings';
+import type { ISystemInfo } from '../system';
 
 type IStorageItemTypes =
   | IAccount
@@ -34,6 +35,7 @@ type IStorageItemTypes =
   | ISecuritySettings
   | ISession
   | IStandardAsset[]
+  | ISystemInfo
   | ITransactionParams;
 
 export default IStorageItemTypes;

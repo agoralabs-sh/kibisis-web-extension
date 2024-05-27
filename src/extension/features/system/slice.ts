@@ -3,14 +3,27 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
+// thunks
+import { fetchFromStorageThunk } from './thunks';
+
 // types
 import type { ILogger } from '@common/types';
+import type { ISystemInfo } from '@extension/types';
 import type { IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({
+  extraReducers: (builder) => {
+    /** fetch from storage **/
+    builder.addCase(
+      fetchFromStorageThunk.fulfilled,
+      (state: IState, action: PayloadAction<ISystemInfo>) => {
+        state.info = action.payload;
+      }
+    );
+  },
   initialState: getInitialState(),
   name: StoreNameEnum.System,
   reducers: {

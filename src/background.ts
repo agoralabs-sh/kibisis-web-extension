@@ -49,14 +49,17 @@ import createLogger from '@common/utils/createLogger';
   );
 
   // listen to special extension events
-  browserAction.onClicked.addListener(
-    providerActionListener.onExtensionClick.bind(providerActionListener)
-  );
   browser.alarms.onAlarm.addListener(
     providerActionListener.onAlarm.bind(providerActionListener)
   );
+  browserAction.onClicked.addListener(
+    providerActionListener.onExtensionClick.bind(providerActionListener)
+  );
   browser.omnibox.onInputEntered.addListener(
     providerActionListener.onOmniboxInputEntered.bind(providerActionListener)
+  );
+  browser.runtime.onInstalled.addListener(
+    providerActionListener.onInstalled.bind(providerActionListener)
   );
   browser.windows.onFocusChanged.addListener(
     providerActionListener.onFocusChanged.bind(providerActionListener)

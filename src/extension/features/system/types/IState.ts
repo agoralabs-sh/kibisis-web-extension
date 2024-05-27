@@ -1,8 +1,9 @@
 // types
 import type { ILogger } from '@common/types';
+import type { ISystemInfo } from '@extension/types';
 
 interface IState {
-  deviceID: string | null;
+  info: ISystemInfo | null;
   logger: ILogger;
   online: boolean;
 }
