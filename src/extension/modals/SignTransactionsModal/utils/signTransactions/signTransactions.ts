@@ -62,9 +62,6 @@ export default async function signTransactions({
         throw new MalformedDataError(error.message);
       }
 
-      console.log('accounts:', accounts);
-      console.log('authAccounts:', authAccounts);
-
       // if no authorized address matches the signer, we cannot sign
       if (
         !accounts.some(

@@ -142,7 +142,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
           // * the account and account information is unknown for the network (inferred from the transaction's genesis hash)
           // * the account has already been added
           // * the account is not in the authorized addresses for a session matching the host and the genesis hash
-          // * the account has not been re-keyed and is not a watch account
+          // * the account is a watch account but has not been re-keyed
           if (
             !account ||
             !accountInformation ||
@@ -154,7 +154,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
                   account?.publicKey
                 )
             ) ||
-            (!accountInformation.authAddress && !account.watchAccount)
+            (account.watchAccount && !accountInformation.authAddress)
           ) {
             return acc;
           }

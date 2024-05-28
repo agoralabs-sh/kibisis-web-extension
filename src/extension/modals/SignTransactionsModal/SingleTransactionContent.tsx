@@ -131,20 +131,10 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
   }, []);
 
   if (!network) {
-    logger.debug(
-      `${SingleTransactionContent.name}: failed to get network for genesis hash "${encodedGenesisHash}"`
-    );
-
     return null;
   }
 
   if (!fromAccount) {
-    logger.debug(
-      `${
-        SingleTransactionContent.name
-      }: from account not known "${encodeAddress(transaction.from.publicKey)}"`
-    );
-
     return null;
   }
 
