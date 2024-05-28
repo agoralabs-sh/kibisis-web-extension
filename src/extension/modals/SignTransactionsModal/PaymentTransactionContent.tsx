@@ -1,17 +1,18 @@
 import { Heading, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
-import { encodeAddress, Transaction } from 'algosdk';
+import { encodeAddress } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
-import SignTxnsAddressItem from './SignTxnsAddressItem';
-import SignTxnsAssetItem from './SignTxnsAssetItem';
 
-// enums
-import { TransactionTypeEnum } from '@extension/enums';
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -21,8 +22,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IAccount, IAccountInformation, INetwork } from '@extension/types';
-import type { ICondensedProps } from './types';
+import type { ITransactionBodyProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
@@ -30,48 +30,38 @@ import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 
-interface IProps {
-  condensed?: ICondensedProps;
-  fromAccount: IAccount | null;
-  loading?: boolean;
-  network: INetwork;
-  transaction: Transaction;
-}
-
-const PaymentTransactionContent: FC<IProps> = ({
+const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
+  accounts,
   condensed,
   fromAccount,
   loading = false,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   // misc
-  const accountInformation: IAccountInformation | null = fromAccount
+  const accountInformation = fromAccount
     ? AccountService.extractAccountInformationForNetwork(fromAccount, network)
     : null;
-  const amountAsAtomicUnit: BigNumber = new BigNumber(
+  const amountAsAtomicUnit = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'
   );
-  const amountAsStandardUnit: BigNumber = convertToStandardUnit(
+  const amountInStandardUnits = convertToStandardUnit(
     amountAsAtomicUnit,
     network.nativeCurrency.decimals
   );
-  const feeAsAtomicUnit: BigNumber = new BigNumber(
+  const feeInAtomicUnits = new BigNumber(
     transaction.fee ? String(transaction.fee) : '0'
   );
-  const icon: ReactNode = createIconFromDataUri(
-    network.nativeCurrency.iconUrl,
-    {
-      color: subTextColor,
-      h: 3,
-      w: 3,
-    }
-  );
-  const transactionType: TransactionTypeEnum = parseTransactionType(
+  const icon = createIconFromDataUri(network.nativeCurrency.iconUrl, {
+    color: subTextColor,
+    h: 3,
+    w: 3,
+  });
+  const transactionType = parseTransactionType(
     transaction.get_obj_for_encoding(),
     {
       network,
@@ -82,8 +72,8 @@ const PaymentTransactionContent: FC<IProps> = ({
   const renderExtraInformation = () => (
     <>
       {/*balance*/}
-      <SignTxnsAssetItem
-        atomicUnitAmount={
+      <ModalAssetItem
+        amountInAtomicUnits={
           new BigNumber(accountInformation?.atomicBalance || '0')
         }
         decimals={network.nativeCurrency.decimals}
@@ -94,8 +84,8 @@ const PaymentTransactionContent: FC<IProps> = ({
       />
 
       {/*fee*/}
-      <SignTxnsAssetItem
-        atomicUnitAmount={feeAsAtomicUnit}
+      <ModalAssetItem
+        amountInAtomicUnits={feeInAtomicUnits}
         decimals={network.nativeCurrency.decimals}
         icon={icon}
         label={`${t<string>('labels.fee')}:`}
@@ -117,7 +107,7 @@ const PaymentTransactionContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={condensed ? 2 : 4}
+      spacing={DEFAULT_GAP / 2}
       w="full"
     >
       {condensed ? (
@@ -135,8 +125,8 @@ const PaymentTransactionContent: FC<IProps> = ({
           </Text>
 
           {/*amount*/}
-          <SignTxnsAssetItem
-            atomicUnitAmount={amountAsAtomicUnit}
+          <ModalAssetItem
+            amountInAtomicUnits={amountAsAtomicUnit}
             decimals={network.nativeCurrency.decimals}
             icon={icon}
             label={`${t<string>('labels.amount')}:`}
@@ -148,7 +138,7 @@ const PaymentTransactionContent: FC<IProps> = ({
           {/*amount*/}
           <Tooltip
             aria-label="Amount with unrestricted decimals"
-            label={`${amountAsStandardUnit.toString()} ${
+            label={`${amountInStandardUnits.toString()} ${
               network.nativeCurrency.symbol
             }`}
           >
@@ -159,7 +149,7 @@ const PaymentTransactionContent: FC<IProps> = ({
               w="full"
             >
               <Heading color={defaultTextColor} size="lg" textAlign="center">
-                {formatCurrencyUnit(amountAsStandardUnit, {
+                {formatCurrencyUnit(amountInStandardUnits, {
                   decimals: network.nativeCurrency.decimals,
                 })}
               </Heading>
@@ -187,19 +177,33 @@ const PaymentTransactionContent: FC<IProps> = ({
       )}
 
       {/*from*/}
-      <SignTxnsAddressItem
-        address={encodeAddress(transaction.from.publicKey)}
-        ariaLabel="From address"
+      <ModalItem
+        flexGrow={1}
         label={`${t<string>('labels.from')}:`}
-        network={network}
+        value={
+          <AddressDisplay
+            accounts={accounts}
+            address={encodeAddress(transaction.from.publicKey)}
+            ariaLabel="From address"
+            size="sm"
+            network={network}
+          />
+        }
       />
 
       {/*to*/}
-      <SignTxnsAddressItem
-        address={encodeAddress(transaction.to.publicKey)}
-        ariaLabel="To address"
+      <ModalItem
+        flexGrow={1}
         label={`${t<string>('labels.to')}:`}
-        network={network}
+        value={
+          <AddressDisplay
+            accounts={accounts}
+            address={encodeAddress(transaction.to.publicKey)}
+            ariaLabel="To address"
+            size="sm"
+            network={network}
+          />
+        }
       />
 
       {condensed ? (

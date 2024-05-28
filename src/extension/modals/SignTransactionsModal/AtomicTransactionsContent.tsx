@@ -1,7 +1,7 @@
 import { Box, VStack } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
-import { Transaction } from 'algosdk';
+import { Transaction, TransactionType } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -41,10 +41,11 @@ import AccountService from '@extension/services/AccountService';
 
 // types
 import type {
-  IAccount,
   IAccountInformation,
+  IAccountWithExtendedProps,
   IStandardAsset,
 } from '@extension/types';
+import type { IAtomicTransactionsContentProps } from './types';
 
 // utils
 import computeGroupId from '@common/utils/computeGroupId';
@@ -53,11 +54,9 @@ import parseTransactionType from '@extension/utils/parseTransactionType';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
-interface IProps {
-  transactions: Transaction[];
-}
-
-const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
+const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
+  transactions,
+}) => {
   const { t } = useTranslation();
   const genesisHash =
     uniqueGenesisHashesFromTransactions(transactions).pop() || '';
@@ -74,18 +73,20 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   // state
   const [fetchingAccountInformation, setFetchingAccountInformation] =
     useState<boolean>(false);
-  const [fromAccounts, setFromAccounts] = useState<IAccount[]>([]);
+  const [fromAccounts, setFromAccounts] = useState<IAccountWithExtendedProps[]>(
+    []
+  );
   const [openAccordions, setOpenAccordions] = useState<boolean[]>(
     Array.from({ length: transactions.length }, () => false)
   );
   // misc
-  const computedGroupId = encodeBase64(computeGroupId(transactions));
-  const explorer =
+  const blockExplorer =
     network?.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
     network?.blockExplorers[0] ||
     null; // get the preferred explorer, if it exists in the network, otherwise get the default one
+  const computedGroupId = encodeBase64(computeGroupId(transactions));
   // handlers
   const handleToggleAccordion = (accordionIndex: number) => (open: boolean) => {
     setOpenAccordions(
@@ -99,11 +100,11 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
     transaction: Transaction,
     transactionIndex: number
   ) => {
-    const sender = fromAccounts[transactionIndex] || null;
+    const fromAccount = fromAccounts[transactionIndex] || null;
     let standardAsset: IStandardAsset | null;
     let transactionType: TransactionTypeEnum;
 
-    if (!network || !sender) {
+    if (!network || !fromAccount) {
       return;
     }
 
@@ -113,19 +114,21 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
       ) || null;
     transactionType = parseTransactionType(transaction.get_obj_for_encoding(), {
       network,
-      sender,
+      sender: fromAccount,
     });
 
     switch (transaction.type) {
-      case 'acfg':
+      case TransactionType.acfg:
         if (transactionType === TransactionTypeEnum.AssetCreate) {
           return (
             <AssetCreateTransactionContent
+              accounts={accounts}
+              blockExplorer={blockExplorer}
               condensed={{
                 expanded: openAccordions[transactionIndex],
                 onChange: handleToggleAccordion(transactionIndex),
               }}
-              fromAccount={sender}
+              fromAccount={fromAccount}
               loading={fetchingAccountInformation}
               network={network}
               transaction={transaction}
@@ -135,82 +138,89 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
 
         return (
           <AssetConfigTransactionContent
+            accounts={accounts}
             asset={standardAsset}
+            blockExplorer={blockExplorer}
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            explorer={explorer}
-            fromAccount={sender}
+            fromAccount={fromAccount}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
           />
         );
-      case 'afrz':
+      case TransactionType.afrz:
         return (
           <AssetFreezeTransactionContent
+            accounts={accounts}
             asset={standardAsset}
+            blockExplorer={blockExplorer}
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            explorer={explorer}
-            fromAccount={sender}
+            fromAccount={fromAccount}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
           />
         );
-      case 'appl':
+      case TransactionType.appl:
         return (
           <ApplicationTransactionContent
+            accounts={accounts}
+            blockExplorer={blockExplorer}
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            explorer={explorer}
+            fromAccount={fromAccount}
             network={network}
             transaction={transaction}
           />
         );
-      case 'axfer':
+      case TransactionType.axfer:
         return (
           <AssetTransferTransactionContent
+            accounts={accounts}
             asset={standardAsset}
+            blockExplorer={blockExplorer}
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            explorer={explorer}
-            fromAccount={sender}
+            fromAccount={fromAccount}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
           />
         );
-      case 'keyreg':
+      case TransactionType.keyreg:
         return (
           <KeyRegistrationTransactionModalBody
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            account={sender}
+            account={fromAccount}
             accounts={accounts}
             network={network}
             showHeader={true}
             transaction={transaction}
           />
         );
-      case 'pay':
+      case TransactionType.pay:
         return (
           <PaymentTransactionContent
+            accounts={accounts}
+            blockExplorer={blockExplorer}
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            fromAccount={sender}
+            fromAccount={fromAccount}
             loading={fetchingAccountInformation}
             network={network}
             transaction={transaction}
@@ -227,7 +237,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   useEffect(() => {
     (async () => {
       const _functionName: string = 'useEffect';
-      let updatedFromAccounts: IAccount[];
+      let updatedFromAccounts: IAccountWithExtendedProps[];
 
       if (!network) {
         logger.debug(
@@ -244,7 +254,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
           const encodedPublicKey: string = encodeHex(
             transaction.from.publicKey
           );
-          let account: IAccount | null =
+          let account: IAccountWithExtendedProps | null =
             accounts.find(
               (value) =>
                 value.publicKey.toUpperCase() === encodedPublicKey.toUpperCase()
@@ -256,9 +266,12 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
             return account;
           }
 
-          account = AccountService.initializeDefaultAccount({
-            publicKey: encodedPublicKey,
-          });
+          account = {
+            ...AccountService.initializeDefaultAccount({
+              publicKey: encodedPublicKey,
+            }),
+            watchAccount: true,
+          };
           accountInformation = await updateAccountInformation({
             address:
               AccountService.convertPublicKeyToAlgorandAddress(
@@ -288,7 +301,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
   }, []);
 
   return (
-    <VStack spacing={4} w="full">
+    <VStack spacing={DEFAULT_GAP - 2} w="full">
       {/*group id*/}
       <ModalTextItem
         label={`${t<string>('labels.groupId')}:`}
@@ -310,7 +323,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
           borderRadius="md"
           borderStyle="solid"
           borderWidth={1}
-          key={`sign-txns-modal-atomic-transactions-item-${index}`}
+          key={`sign-transactions-modal-atomic-transactions-item-${index}`}
           px={DEFAULT_GAP - 2}
           py={DEFAULT_GAP / 3}
           w="full"
@@ -318,7 +331,7 @@ const AtomicTransactionsContent: FC<IProps> = ({ transactions }: IProps) => {
           <VStack
             alignItems="center"
             justifyContent="flex-start"
-            spacing={2}
+            spacing={DEFAULT_GAP / 3}
             w="full"
           >
             {renderTransaction(transaction, index)}

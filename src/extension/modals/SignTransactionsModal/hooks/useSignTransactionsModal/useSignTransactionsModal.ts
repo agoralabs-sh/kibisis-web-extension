@@ -140,8 +140,8 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
 
           // the from account is not an authorized account if:
           // * the account and account information is unknown for the network (inferred from the transaction's genesis hash)
-          // * the account has already been added
-          // * the account is not in the authorized addresses for a session matching the host and the genesis hash
+          // * the account has already been added to the list
+          // * the account is not in the authorized addresses for a session, matching the host and the genesis hash
           // * the account is a watch account but has not been re-keyed
           if (
             !account ||
