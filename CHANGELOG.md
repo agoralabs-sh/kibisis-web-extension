@@ -1,3 +1,10 @@
+# [1.17.0-beta.10](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.9...v1.17.0-beta.10) (2024-05-28)
+
+
+### Bug Fixes
+
+* non watch accounts unable to sign transactions ([#247](https://github.com/agoralabs-sh/kibisis-web-extension/issues/247)) ([d430427](https://github.com/agoralabs-sh/kibisis-web-extension/commit/d430427826d0a4d58833ca5e3190da0769437923))
+
 # [1.17.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.8...v1.17.0-beta.9) (2024-05-27)
 
 
