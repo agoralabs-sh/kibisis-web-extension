@@ -37,6 +37,7 @@ const KeyRegistrationTransactionModalBody: FC<IProps> = ({
   account,
   accounts,
   condensed,
+  hideNetwork = false,
   network,
   showHeader = false,
   transaction,
@@ -98,12 +99,6 @@ const KeyRegistrationTransactionModalBody: FC<IProps> = ({
         }
       />
 
-      {/*network*/}
-      <ModalItem
-        label={`${t<string>('labels.network')}:`}
-        value={<ChainBadge network={network} />}
-      />
-
       {/*fee*/}
       <ModalAssetItem
         amountInAtomicUnits={feeAsAtomicUnit}
@@ -140,6 +135,14 @@ const KeyRegistrationTransactionModalBody: FC<IProps> = ({
           }),
         })}
       />
+
+      {/*network*/}
+      {!hideNetwork && (
+        <ModalItem
+          label={`${t<string>('labels.network')}:`}
+          value={<ChainBadge network={network} />}
+        />
+      )}
 
       {/*vote key*/}
       {transaction.voteKey && (

@@ -1,6 +1,5 @@
 import { Box, Button, Stack, VStack } from '@chakra-ui/react';
 import { encode as encodeBase64 } from '@stablelib/base64';
-import { Transaction } from 'algosdk';
 import React, { FC, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowForwardOutline } from 'react-icons/io5';
@@ -27,30 +26,23 @@ import usePrimaryColorSchemer from '@extension/hooks/usePrimaryColorScheme';
 import { useSelectNetworks } from '@extension/selectors';
 
 // types
-import type { INetwork } from '@extension/types';
-import type { IMultipleTransactionsContextValue } from './types';
+import type { IGroupOfTransactionsContentProps } from './types';
 
 // utils
 import computeGroupId from '@common/utils/computeGroupId';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
-interface IProps {
-  groupsOfTransactions: Transaction[][];
-}
-
-const MultipleTransactionsContent: FC<IProps> = ({
+const GroupOfTransactionsContent: FC<IGroupOfTransactionsContentProps> = ({
   groupsOfTransactions,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // selectors
-  const networks: INetwork[] = useSelectNetworks();
+  const networks = useSelectNetworks();
   // contexts
-  const context: IMultipleTransactionsContextValue | null = useContext(
-    MultipleTransactionsContext
-  );
+  const context = useContext(MultipleTransactionsContext);
   // hooks
-  const borderColor: string = useBorderColor();
-  const primaryColorScheme: string = usePrimaryColorSchemer();
+  const borderColor = useBorderColor();
+  const primaryColorScheme = usePrimaryColorSchemer();
   // handlers
   const handleMoreDetailsClick = (index: number) => () =>
     context &&
@@ -80,12 +72,12 @@ const MultipleTransactionsContent: FC<IProps> = ({
   }
 
   return (
-    <VStack spacing={4} w="full">
+    <VStack spacing={DEFAULT_GAP - 2} w="full">
       {groupsOfTransactions.map((transactions, index) => {
-        const genesisHash: string | null =
+        const genesisHash =
           uniqueGenesisHashesFromTransactions(transactions).pop() || null;
-        let computedGroupId: string | null = null;
-        const network: INetwork | null =
+        let computedGroupId = null;
+        const network =
           networks.find((value) => value.genesisHash === genesisHash) || null;
 
         // for atomic transactions add a group id
@@ -107,7 +99,7 @@ const MultipleTransactionsContent: FC<IProps> = ({
             <VStack
               alignItems="center"
               justifyContent="flex-start"
-              spacing={2}
+              spacing={DEFAULT_GAP / 3}
               w="full"
             >
               {/*number of transactions*/}
@@ -155,4 +147,4 @@ const MultipleTransactionsContent: FC<IProps> = ({
   );
 };
 
-export default MultipleTransactionsContent;
+export default GroupOfTransactionsContent;

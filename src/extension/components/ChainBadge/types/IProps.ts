@@ -1,9 +1,9 @@
 // types
-import type { INetwork } from '@extension/types';
+import type { INetwork, TSizes } from '@extension/types';
 
 interface IProps {
   network: INetwork;
-  size?: string;
+  size?: TSizes;
 }
 
 export default IProps;

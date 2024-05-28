@@ -1,58 +1,52 @@
 import { HStack, Text, VStack } from '@chakra-ui/react';
-import { encodeAddress, Transaction } from 'algosdk';
+import { encodeAddress } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
-import AssetIcon from '@extension/components/AssetIcon';
+import AddressDisplay from '@extension/components/AddressDisplay';
+import ChainBadge from '@extension/components/ChainBadge';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import SignTxnsAddressItem from './SignTxnsAddressItem';
-import SignTxnsAssetItem from './SignTxnsAssetItem';
 
-// enums
-import { TransactionTypeEnum } from '@extension/enums';
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IAccount, INetwork } from '@extension/types';
-import type { ICondensedProps } from './types';
+import type { ITransactionBodyProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 
-interface IProps {
-  condensed?: ICondensedProps;
-  fromAccount: IAccount | null;
-  loading?: boolean;
-  network: INetwork;
-  transaction: Transaction;
-}
-
-const AssetCreateTransactionContent: FC<IProps> = ({
+const AssetCreateTransactionContent: FC<ITransactionBodyProps> = ({
+  accounts,
   condensed,
   fromAccount,
+  hideNetwork = false,
   loading = false,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   // misc
-  const feeAsAtomicUnit: BigNumber = new BigNumber(
+  const feeAsAtomicUnit = new BigNumber(
     transaction.fee ? String(transaction.fee) : '0'
   );
-  const fromAddress: string = encodeAddress(transaction.from.publicKey);
-  const transactionType: TransactionTypeEnum = parseTransactionType(
+  const fromAddress = encodeAddress(transaction.from.publicKey);
+  const transactionType = parseTransactionType(
     transaction.get_obj_for_encoding(),
     {
       network,
@@ -64,8 +58,8 @@ const AssetCreateTransactionContent: FC<IProps> = ({
     return (
       <>
         {/*fee*/}
-        <SignTxnsAssetItem
-          atomicUnitAmount={feeAsAtomicUnit}
+        <ModalAssetItem
+          amountInAtomicUnits={feeAsAtomicUnit}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
@@ -76,18 +70,20 @@ const AssetCreateTransactionContent: FC<IProps> = ({
           unit={network.nativeCurrency.symbol}
         />
 
+        {/*network*/}
+        {!hideNetwork && (
+          <ModalItem
+            label={`${t<string>('labels.network')}:`}
+            value={<ChainBadge network={network} size="sm" />}
+          />
+        )}
+
         {/*total supply*/}
-        <SignTxnsAssetItem
-          atomicUnitAmount={new BigNumber(String(transaction.assetTotal))}
+        <ModalAssetItem
+          amountInAtomicUnits={new BigNumber(String(transaction.assetTotal))}
           decimals={transaction.assetDecimals}
-          icon={
-            <AssetIcon
-              color={subTextColor}
-              networkTheme={network.chakraTheme}
-              h={3}
-              w={3}
-            />
-          }
+          displayUnit={false}
+          icon={null}
           label={`${t<string>('labels.totalSupply')}:`}
         />
 
@@ -107,41 +103,65 @@ const AssetCreateTransactionContent: FC<IProps> = ({
 
         {/*clawback address*/}
         {transaction.assetClawback && (
-          <SignTxnsAddressItem
-            address={encodeAddress(transaction.assetClawback.publicKey)}
-            ariaLabel="The clawback account for the new asset"
+          <ModalItem
             label={`${t<string>('labels.clawbackAccount')}:`}
-            network={network}
+            value={
+              <AddressDisplay
+                accounts={accounts}
+                address={encodeAddress(transaction.assetClawback.publicKey)}
+                ariaLabel="The clawback account for the new asset"
+                size="sm"
+                network={network}
+              />
+            }
           />
         )}
 
         {/*freeze address*/}
         {transaction.assetFreeze && (
-          <SignTxnsAddressItem
-            address={encodeAddress(transaction.assetFreeze.publicKey)}
-            ariaLabel="The freeze account for the new asset"
+          <ModalItem
             label={`${t<string>('labels.freezeAccount')}:`}
-            network={network}
+            value={
+              <AddressDisplay
+                accounts={accounts}
+                address={encodeAddress(transaction.assetFreeze.publicKey)}
+                ariaLabel="The freeze account for the new asset"
+                size="sm"
+                network={network}
+              />
+            }
           />
         )}
 
         {/*manager address*/}
         {transaction.assetManager && (
-          <SignTxnsAddressItem
-            address={encodeAddress(transaction.assetManager.publicKey)}
-            ariaLabel="The manager account for the new asset"
+          <ModalItem
             label={`${t<string>('labels.managerAccount')}:`}
-            network={network}
+            value={
+              <AddressDisplay
+                accounts={accounts}
+                address={encodeAddress(transaction.assetManager.publicKey)}
+                ariaLabel="The manager account for the new asset"
+                size="sm"
+                network={network}
+              />
+            }
           />
         )}
 
         {/*reserve address*/}
         {transaction.assetReserve && (
-          <SignTxnsAddressItem
-            address={encodeAddress(transaction.assetReserve.publicKey)}
-            ariaLabel="The reserve account for the new asset"
+          <ModalItem
             label={`${t<string>('labels.reserveAccount')}:`}
-            network={network}
+            value={
+              <AddressDisplay
+                accounts={accounts}
+                address={encodeAddress(transaction.assetReserve.publicKey)}
+                ariaLabel="The reserve account for the new asset"
+                size="sm"
+                network={network}
+              />
+            }
           />
         )}
 
@@ -153,6 +173,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
               label={`${t<string>('labels.url')}:`}
               value={transaction.assetURL}
             />
+
             <OpenTabIconButton
               size="xs"
               tooltipLabel={t<string>('captions.openUrl')}
@@ -178,7 +199,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
       <VStack
         alignItems="flex-start"
         justifyContent="flex-start"
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <ModalSkeletonItem />
@@ -192,7 +213,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={condensed ? 2 : 4}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {/*heading*/}
@@ -211,11 +232,17 @@ const AssetCreateTransactionContent: FC<IProps> = ({
       )}
 
       {/*creator*/}
-      <SignTxnsAddressItem
-        address={fromAddress}
-        ariaLabel="Creator address (from)"
+      <ModalItem
         label={`${t<string>('labels.creatorAccount')}:`}
-        network={network}
+        value={
+          <AddressDisplay
+            accounts={accounts}
+            address={fromAddress}
+            ariaLabel="Creator address (from)"
+            size="sm"
+            network={network}
+          />
+        }
       />
 
       {condensed ? (
@@ -225,7 +252,7 @@ const AssetCreateTransactionContent: FC<IProps> = ({
           isOpen={condensed.expanded}
           onChange={condensed.onChange}
         >
-          <VStack spacing={2} w="full">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
             {renderExtraInformation()}
           </VStack>
         </MoreInformationAccordion>

@@ -1,22 +1,26 @@
 import { HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
-import { encodeAddress, Transaction } from 'algosdk';
+import { encodeAddress } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoWarningOutline } from 'react-icons/io5';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
+import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import Warning from '@extension/components/Warning';
-import SignTxnsAddressItem from './SignTxnsAddressItem';
-import SignTxnsAssetItem from './SignTxnsAssetItem';
-import SignTxnsChangeAddressItem from './SignTxnsChangeAddressItem';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -27,48 +31,34 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type {
-  IAccount,
-  IStandardAsset,
-  IBlockExplorer,
-  INetwork,
-} from '@extension/types';
-import type { ICondensedProps } from './types';
+import type { IAssetTransactionBodyProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 
-interface IProps {
-  asset: IStandardAsset | null;
-  condensed?: ICondensedProps;
-  explorer: IBlockExplorer | null;
-  fromAccount: IAccount | null;
-  loading?: boolean;
-  network: INetwork;
-  transaction: Transaction;
-}
-
-const AssetConfigTransactionContent: FC<IProps> = ({
+const AssetConfigTransactionContent: FC<IAssetTransactionBodyProps> = ({
+  accounts,
   asset,
   condensed,
-  explorer,
+  blockExplorer,
   fromAccount,
+  hideNetwork = false,
   loading = false,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const subTextColor = useSubTextColor();
   // misc
-  const feeAsAtomicUnit: BigNumber = new BigNumber(
+  const feeAsAtomicUnit = new BigNumber(
     transaction.fee ? String(transaction.fee) : '0'
   );
-  const fromAddress: string = encodeAddress(transaction.from.publicKey);
-  const transactionType: TransactionTypeEnum = parseTransactionType(
+  const fromAddress = encodeAddress(transaction.from.publicKey);
+  const transactionType = parseTransactionType(
     transaction.get_obj_for_encoding(),
     {
       network,
@@ -84,8 +74,8 @@ const AssetConfigTransactionContent: FC<IProps> = ({
     return (
       <>
         {/*fee*/}
-        <SignTxnsAssetItem
-          atomicUnitAmount={feeAsAtomicUnit}
+        <ModalAssetItem
+          amountInAtomicUnits={feeAsAtomicUnit}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
@@ -96,49 +86,185 @@ const AssetConfigTransactionContent: FC<IProps> = ({
           unit={network.nativeCurrency.symbol}
         />
 
+        {/*network*/}
+        {!hideNetwork && (
+          <ModalItem
+            label={`${t<string>('labels.network')}:`}
+            value={<ChainBadge network={network} size="sm" />}
+          />
+        )}
+
         {transactionType === TransactionTypeEnum.AssetConfig && (
           <>
             {/*clawback address*/}
             {transaction.assetClawback && asset.clawbackAddress && (
-              <SignTxnsChangeAddressItem
-                ariaLabel="The current and new clawback addresses"
-                currentAddress={asset.clawbackAddress}
+              <ModalItem
                 label={`${t<string>('labels.clawbackAccount')}:`}
-                network={network}
-                newAddress={encodeAddress(transaction.assetClawback.publicKey)}
+                value={
+                  <HStack spacing={DEFAULT_GAP / 3}>
+                    {asset.clawbackAddress !==
+                    encodeAddress(transaction.assetClawback.publicKey) ? (
+                      <>
+                        <AddressDisplay
+                          accounts={accounts}
+                          address={asset.clawbackAddress}
+                          ariaLabel="Current clawback address"
+                          size="sm"
+                          network={network}
+                        />
+
+                        <Text color={subTextColor} fontSize="xs">{`>`}</Text>
+
+                        <AddressDisplay
+                          accounts={accounts}
+                          address={encodeAddress(
+                            transaction.assetClawback.publicKey
+                          )}
+                          ariaLabel="New clawback address"
+                          size="sm"
+                          network={network}
+                        />
+                      </>
+                    ) : (
+                      <AddressDisplay
+                        accounts={accounts}
+                        address={asset.clawbackAddress}
+                        ariaLabel="Current clawback address"
+                        size="sm"
+                        network={network}
+                      />
+                    )}
+                  </HStack>
+                }
               />
             )}
 
             {/*freeze address*/}
             {transaction.assetFreeze && asset.freezeAddress && (
-              <SignTxnsChangeAddressItem
-                ariaLabel="The current and new freeze addresses"
-                currentAddress={asset.freezeAddress}
+              <ModalItem
                 label={`${t<string>('labels.freezeAccount')}:`}
-                network={network}
-                newAddress={encodeAddress(transaction.assetFreeze.publicKey)}
+                value={
+                  <HStack spacing={DEFAULT_GAP / 3}>
+                    {asset.freezeAddress !==
+                    encodeAddress(transaction.assetFreeze.publicKey) ? (
+                      <>
+                        <AddressDisplay
+                          accounts={accounts}
+                          address={asset.freezeAddress}
+                          ariaLabel="Current freeze address"
+                          size="sm"
+                          network={network}
+                        />
+
+                        <Text color={subTextColor} fontSize="xs">{`>`}</Text>
+
+                        <AddressDisplay
+                          accounts={accounts}
+                          address={encodeAddress(
+                            transaction.assetFreeze.publicKey
+                          )}
+                          ariaLabel="New freeze address"
+                          size="sm"
+                          network={network}
+                        />
+                      </>
+                    ) : (
+                      <AddressDisplay
+                        accounts={accounts}
+                        address={asset.freezeAddress}
+                        ariaLabel="Current freeze address"
+                        size="sm"
+                        network={network}
+                      />
+                    )}
+                  </HStack>
+                }
               />
             )}
 
             {/*manager address*/}
             {transaction.assetManager && asset.managerAddress && (
-              <SignTxnsChangeAddressItem
-                ariaLabel="The current and new manager addresses"
-                currentAddress={asset.managerAddress}
+              <ModalItem
                 label={`${t<string>('labels.managerAccount')}:`}
-                network={network}
-                newAddress={encodeAddress(transaction.assetManager.publicKey)}
+                value={
+                  <HStack spacing={DEFAULT_GAP / 3}>
+                    {asset.managerAddress !==
+                    encodeAddress(transaction.assetManager.publicKey) ? (
+                      <>
+                        <AddressDisplay
+                          accounts={accounts}
+                          address={asset.managerAddress}
+                          ariaLabel="Current manager address"
+                          size="sm"
+                          network={network}
+                        />
+
+                        <Text color={subTextColor} fontSize="xs">{`>`}</Text>
+
+                        <AddressDisplay
+                          accounts={accounts}
+                          address={encodeAddress(
+                            transaction.assetManager.publicKey
+                          )}
+                          ariaLabel="New manager address"
+                          size="sm"
+                          network={network}
+                        />
+                      </>
+                    ) : (
+                      <AddressDisplay
+                        accounts={accounts}
+                        address={asset.managerAddress}
+                        ariaLabel="Current manager address"
+                        size="sm"
+                        network={network}
+                      />
+                    )}
+                  </HStack>
+                }
               />
             )}
 
             {/*reserve address*/}
             {transaction.assetReserve && asset.reserveAddress && (
-              <SignTxnsChangeAddressItem
-                ariaLabel="The current and new reserve addresses"
-                currentAddress={asset.reserveAddress}
+              <ModalItem
                 label={`${t<string>('labels.reserveAccount')}:`}
-                network={network}
-                newAddress={encodeAddress(transaction.assetReserve.publicKey)}
+                value={
+                  <HStack spacing={DEFAULT_GAP / 3}>
+                    {asset.reserveAddress !==
+                    encodeAddress(transaction.assetReserve.publicKey) ? (
+                      <>
+                        <AddressDisplay
+                          accounts={accounts}
+                          address={asset.reserveAddress}
+                          ariaLabel="Current reserve address"
+                          size="sm"
+                          network={network}
+                        />
+
+                        <Text color={subTextColor} fontSize="xs">{`>`}</Text>
+
+                        <AddressDisplay
+                          accounts={accounts}
+                          address={encodeAddress(
+                            transaction.assetReserve.publicKey
+                          )}
+                          ariaLabel="New reserve address"
+                          size="sm"
+                          network={network}
+                        />
+                      </>
+                    ) : (
+                      <AddressDisplay
+                        accounts={accounts}
+                        address={asset.reserveAddress}
+                        ariaLabel="Current reserve address"
+                        size="sm"
+                        network={network}
+                      />
+                    )}
+                  </HStack>
+                }
               />
             )}
           </>
@@ -147,8 +273,8 @@ const AssetConfigTransactionContent: FC<IProps> = ({
         {transactionType === TransactionTypeEnum.AssetDestroy && (
           <>
             {/*total supply*/}
-            <SignTxnsAssetItem
-              atomicUnitAmount={new BigNumber(asset.totalSupply)}
+            <ModalAssetItem
+              amountInAtomicUnits={new BigNumber(asset.totalSupply)}
               decimals={asset.decimals}
               displayUnit={true}
               icon={icon}
@@ -177,7 +303,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
       <VStack
         alignItems="flex-start"
         justifyContent="flex-start"
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <ModalSkeletonItem />
@@ -206,7 +332,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={condensed ? 2 : 4}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {/*heading*/}
@@ -236,19 +362,21 @@ const AssetConfigTransactionContent: FC<IProps> = ({
           label={`${t<string>('labels.id')}:`}
           value={asset.id}
         />
+
         <CopyIconButton
           ariaLabel={t<string>('labels.copyValue', { value: asset.id })}
           tooltipLabel={t<string>('labels.copyValue', { value: asset.id })}
           size="xs"
           value={asset.id}
         />
-        {explorer && (
+
+        {blockExplorer && (
           <OpenTabIconButton
             size="xs"
             tooltipLabel={t<string>('captions.openOn', {
-              name: explorer.canonicalName,
+              name: blockExplorer.canonicalName,
             })}
-            url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+            url={`${blockExplorer.baseUrl}${blockExplorer.assetPath}/${asset.id}`}
           />
         )}
       </HStack>
@@ -261,12 +389,19 @@ const AssetConfigTransactionContent: FC<IProps> = ({
           spacing={1}
           w="full"
         >
-          <SignTxnsAddressItem
-            address={fromAddress}
-            ariaLabel="Manager address (from)"
+          <ModalItem
             label={`${t<string>('labels.managerAccount')}:`}
-            network={network}
+            value={
+              <AddressDisplay
+                accounts={accounts}
+                address={fromAddress}
+                ariaLabel="Manager address (from)"
+                size="sm"
+                network={network}
+              />
+            }
           />
+
           <Tooltip
             aria-label="Manager address does not match the asset's manager address"
             label={t<string>('captions.managerAddressDoesNotMatch')}
@@ -282,11 +417,17 @@ const AssetConfigTransactionContent: FC<IProps> = ({
           </Tooltip>
         </HStack>
       ) : (
-        <SignTxnsAddressItem
-          address={fromAddress}
-          ariaLabel="Manager address (from)"
+        <ModalItem
           label={`${t<string>('labels.managerAccount')}:`}
-          network={network}
+          value={
+            <AddressDisplay
+              accounts={accounts}
+              address={fromAddress}
+              ariaLabel="Manager address (from)"
+              size="sm"
+              network={network}
+            />
+          }
         />
       )}
 
@@ -297,7 +438,7 @@ const AssetConfigTransactionContent: FC<IProps> = ({
           isOpen={condensed.expanded}
           onChange={condensed.onChange}
         >
-          <VStack spacing={2} w="full">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
             {renderExtraInformation(assetIcon)}
           </VStack>
         </MoreInformationAccordion>

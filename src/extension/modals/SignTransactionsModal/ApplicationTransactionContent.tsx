@@ -1,18 +1,23 @@
 import { HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
-import { encodeAddress, Transaction } from 'algosdk';
+import { encodeAddress } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoInformationCircleOutline } from 'react-icons/io5';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
+import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import Warning from '@extension/components/Warning';
-import SignTxnsAddressItem from './SignTxnsAddressItem';
-import SignTxnsAssetItem from './SignTxnsAssetItem';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -22,52 +27,44 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IBlockExplorer, INetwork } from '@extension/types';
-import type { ICondensedProps } from './types';
+import type { ITransactionBodyProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 
-interface IProps {
-  condensed?: ICondensedProps;
-  explorer: IBlockExplorer | null;
-  network: INetwork;
-  transaction: Transaction;
-}
-
-const ApplicationTransactionContent: FC<IProps> = ({
+const ApplicationTransactionContent: FC<ITransactionBodyProps> = ({
+  accounts,
+  blockExplorer,
   condensed,
-  explorer,
+  hideNetwork = false,
+  loading,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   // misc
-  const feeAsAtomicUnit: BigNumber = new BigNumber(
+  const feeAsAtomicUnit = new BigNumber(
     transaction.fee ? String(transaction.fee) : '0'
   );
-  const icon: ReactNode = createIconFromDataUri(
-    network.nativeCurrency.iconUrl,
-    {
-      color: subTextColor,
-      h: 3,
-      w: 3,
-    }
-  );
-  const transactionType: TransactionTypeEnum = parseTransactionType(
+  const transactionType = parseTransactionType(
     transaction.get_obj_for_encoding()
   );
   const renderExtraInformation = () => (
     <>
       {/*fee*/}
-      <SignTxnsAssetItem
-        atomicUnitAmount={feeAsAtomicUnit}
+      <ModalAssetItem
+        amountInAtomicUnits={feeAsAtomicUnit}
         decimals={network.nativeCurrency.decimals}
-        icon={icon}
+        icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
+          color: subTextColor,
+          h: 3,
+          w: 3,
+        })}
+        isLoading={loading}
         label={`${t<string>('labels.fee')}:`}
         unit={network.nativeCurrency.symbol}
       />
@@ -86,6 +83,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
             context: transactionType,
           })}
         />
+
         <Tooltip
           aria-label="Application description"
           label={t<string>('captions.appOnComplete', {
@@ -103,6 +101,14 @@ const ApplicationTransactionContent: FC<IProps> = ({
         </Tooltip>
       </HStack>
 
+      {/*network*/}
+      {!hideNetwork && (
+        <ModalItem
+          label={`${t<string>('labels.network')}:`}
+          value={<ChainBadge network={network} size="sm" />}
+        />
+      )}
+
       {/*note*/}
       {transaction.note && transaction.note.length > 0 && (
         <ModalTextItem
@@ -118,7 +124,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={condensed ? 2 : 4}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {/*heading*/}
@@ -153,24 +159,30 @@ const ApplicationTransactionContent: FC<IProps> = ({
             value={transaction.appIndex.toString()}
           />
 
-          {explorer && (
+          {blockExplorer && (
             <OpenTabIconButton
               size="xs"
               tooltipLabel={t<string>('captions.openOn', {
-                name: explorer.canonicalName,
+                name: blockExplorer.canonicalName,
               })}
-              url={`${explorer.baseUrl}${explorer.applicationPath}/${transaction.appIndex}`}
+              url={`${blockExplorer.baseUrl}${blockExplorer.applicationPath}/${transaction.appIndex}`}
             />
           )}
         </HStack>
       )}
 
       {/*from*/}
-      <SignTxnsAddressItem
-        address={encodeAddress(transaction.from.publicKey)}
-        ariaLabel="From address"
+      <ModalItem
         label={`${t<string>('labels.from')}:`}
-        network={network}
+        value={
+          <AddressDisplay
+            accounts={accounts}
+            address={encodeAddress(transaction.from.publicKey)}
+            ariaLabel="From address"
+            size="sm"
+            network={network}
+          />
+        }
       />
 
       {condensed ? (
@@ -180,7 +192,7 @@ const ApplicationTransactionContent: FC<IProps> = ({
           isOpen={condensed.expanded}
           onChange={condensed.onChange}
         >
-          <VStack spacing={2} w="full">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
             {renderExtraInformation()}
           </VStack>
         </MoreInformationAccordion>

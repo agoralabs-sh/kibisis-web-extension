@@ -1,20 +1,24 @@
-import { HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
-import { encodeAddress, Transaction } from 'algosdk';
+import { HStack, Text, VStack } from '@chakra-ui/react';
+import { encodeAddress } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoWarningOutline } from 'react-icons/io5';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
+import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import SignTxnsAddressItem from './SignTxnsAddressItem';
-import SignTxnsAssetItem from './SignTxnsAssetItem';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
@@ -25,22 +29,18 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
+import { useSelectLogger } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
-  IAccount,
+  IAccountWithExtendedProps,
   IAccountInformation,
-  IStandardAsset,
   IStandardAssetHolding,
-  IBlockExplorer,
-  INetwork,
 } from '@extension/types';
-import type { ICondensedProps } from './types';
+import type { IAssetTransactionBodyProps } from './types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
@@ -48,56 +48,47 @@ import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
-interface IProps {
-  asset: IStandardAsset | null;
-  condensed?: ICondensedProps;
-  explorer: IBlockExplorer | null;
-  fromAccount: IAccount | null;
-  loading?: boolean;
-  network: INetwork;
-  transaction: Transaction;
-}
-
-const AssetFreezeTransactionContent: FC<IProps> = ({
+const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
+  accounts,
   asset,
+  blockExplorer,
   condensed,
-  explorer,
   fromAccount,
+  hideNetwork = false,
   loading = false,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const logger: ILogger = useSelectLogger();
+  const logger = useSelectLogger();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const subTextColor = useSubTextColor();
   // state
   const [
     fetchingFreezeAccountInformation,
     setFetchingFreezeAccountInformation,
   ] = useState<boolean>(false);
-  const [freezeAccount, setFreezeAccount] = useState<IAccount | null>(null);
+  const [freezeAccount, setFreezeAccount] =
+    useState<IAccountWithExtendedProps | null>(null);
   const [atomicUnitFreezeAccountBalance, setAtomicUnitFreezeAccountBalance] =
     useState<BigNumber>(new BigNumber('0'));
   // misc
-  const freezeAddress: string | null = transaction.freezeAccount
+  const freezeAddress = transaction.freezeAccount
     ? encodeAddress(transaction.freezeAccount.publicKey)
     : null;
-  const fromAddress: string = encodeAddress(transaction.from.publicKey);
-  const transactionType: TransactionTypeEnum = parseTransactionType(
+  const fromAddress = encodeAddress(transaction.from.publicKey);
+  const feeAsAtomicUnit = new BigNumber(
+    transaction.fee ? String(transaction.fee) : '0'
+  );
+  const transactionType = parseTransactionType(
     transaction.get_obj_for_encoding(),
     {
       network,
       sender: fromAccount,
     }
-  );
-  // misc
-  const feeAsAtomicUnit: BigNumber = new BigNumber(
-    transaction.fee ? String(transaction.fee) : '0'
   );
   // renders
   const renderExtraInformation = () => {
@@ -107,9 +98,9 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
 
     return (
       <>
-        {/* freeze account balance */}
-        <SignTxnsAssetItem
-          atomicUnitAmount={atomicUnitFreezeAccountBalance}
+        {/*freeze account balance*/}
+        <ModalAssetItem
+          amountInAtomicUnits={atomicUnitFreezeAccountBalance}
           decimals={asset.decimals}
           displayUnit={true}
           icon={
@@ -136,8 +127,8 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
         />
 
         {/*fee*/}
-        <SignTxnsAssetItem
-          atomicUnitAmount={feeAsAtomicUnit}
+        <ModalAssetItem
+          amountInAtomicUnits={feeAsAtomicUnit}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
@@ -147,6 +138,14 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
           label={`${t<string>('labels.fee')}:`}
           unit={network.nativeCurrency.symbol}
         />
+
+        {/*network*/}
+        {!hideNetwork && (
+          <ModalItem
+            label={`${t<string>('labels.network')}:`}
+            value={<ChainBadge network={network} size="sm" />}
+          />
+        )}
 
         {/*note*/}
         {transaction.note && transaction.note.length > 0 && (
@@ -162,7 +161,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
   // fetch the account information for the freeze account
   useEffect(() => {
     (async () => {
-      let account: IAccount | null;
+      let account: IAccountWithExtendedProps | null;
       let accountInformation: IAccountInformation;
       let encodedGenesisHash: string;
 
@@ -190,10 +189,13 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       encodedGenesisHash = convertGenesisHashToHex(
         network.genesisHash
       ).toUpperCase();
-      account = AccountService.initializeDefaultAccount({
-        publicKey:
-          AccountService.convertAlgorandAddressToPublicKey(freezeAddress),
-      });
+      account = {
+        ...AccountService.initializeDefaultAccount({
+          publicKey:
+            AccountService.convertAlgorandAddressToPublicKey(freezeAddress),
+        }),
+        watchAccount: false,
+      };
       accountInformation = await updateAccountInformation({
         address: freezeAddress,
         currentAccountInformation:
@@ -240,7 +242,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
       <VStack
         alignItems="flex-start"
         justifyContent="flex-start"
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <ModalSkeletonItem />
@@ -254,17 +256,17 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={condensed ? 2 : 4}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
-      {/* heading */}
+      {/*heading*/}
       <Text color={defaultTextColor} fontSize="md" textAlign="left" w="full">
         {t<string>('headings.transaction', {
           context: transactionType,
         })}
       </Text>
 
-      {/* asset id */}
+      {/*asset id*/}
       <HStack spacing={0} w="full">
         <ModalTextItem
           flexGrow={1}
@@ -280,65 +282,53 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
           value={asset.id}
         />
 
-        {explorer && (
+        {blockExplorer && (
           <OpenTabIconButton
             size="xs"
             tooltipLabel={t<string>('captions.openOn', {
-              name: explorer.canonicalName,
+              name: blockExplorer.canonicalName,
             })}
-            url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+            url={`${blockExplorer.baseUrl}${blockExplorer.assetPath}/${asset.id}`}
           />
         )}
       </HStack>
 
-      {/* freeze manager */}
-      {fromAddress !== asset.freezeAddress ? (
-        <HStack
-          alignItems="center"
-          justifyContent="flex-end"
-          spacing={1}
-          w="full"
-        >
-          <SignTxnsAddressItem
+      {/*freeze manager*/}
+      <ModalItem
+        label={`${t<string>('labels.freezeManagerAccount')}:`}
+        value={
+          <AddressDisplay
+            accounts={accounts}
             address={fromAddress}
             ariaLabel="Freeze manager address (from)"
-            label={`${t<string>('labels.freezeManagerAccount')}:`}
+            size="sm"
             network={network}
           />
-          <Tooltip
-            aria-label="Freeze manager address does not match the asset's freeze manager address"
-            label={t<string>('captions.freezeManagerAddressDoesNotMatch')}
-          >
-            <span
-              style={{
-                height: '1em',
-                lineHeight: '1em',
-              }}
-            >
-              <Icon as={IoWarningOutline} color="yellow.500" />
-            </span>
-          </Tooltip>
-        </HStack>
-      ) : (
-        <SignTxnsAddressItem
-          address={fromAddress}
-          ariaLabel="Freeze manager address (from)"
-          label={`${t<string>('labels.freezeManagerAccount')}:`}
-          network={network}
-        />
-      )}
+        }
+        warningLabel={
+          fromAddress !== asset.freezeAddress
+            ? t<string>('captions.freezeManagerAddressDoesNotMatch')
+            : undefined
+        }
+      />
 
-      {/* freeze/unfreeze account */}
+      {/*freeze/unfreeze account*/}
       {freezeAddress && (
-        <SignTxnsAddressItem
-          address={freezeAddress}
-          ariaLabel="Asset freeze address"
+        <ModalItem
           label={`${t<string>(
             transactionType === TransactionTypeEnum.AssetFreeze
               ? 'labels.accountToFreeze'
               : 'labels.accountToUnfreeze'
           )}:`}
-          network={network}
+          value={
+            <AddressDisplay
+              accounts={accounts}
+              address={freezeAddress}
+              ariaLabel="Asset freeze address"
+              size="sm"
+              network={network}
+            />
+          }
         />
       )}
 
@@ -349,7 +339,7 @@ const AssetFreezeTransactionContent: FC<IProps> = ({
           isOpen={condensed.expanded}
           onChange={condensed.onChange}
         >
-          <VStack spacing={2} w="full">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
             {renderExtraInformation()}
           </VStack>
         </MoreInformationAccordion>

@@ -29,7 +29,7 @@ import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
 import AtomicTransactionsContent from './AtomicTransactionsContent';
-import MultipleTransactionsContent from './MultipleTransactionsContent';
+import GroupOfTransactionsContent from './GroupOfTransactionsContent';
 import SingleTransactionContent from './SingleTransactionContent';
 
 // constants
@@ -216,7 +216,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
             setMoreDetailsTransactions,
           }}
         >
-          <MultipleTransactionsContent
+          <GroupOfTransactionsContent
             groupsOfTransactions={groupsOfTransactions}
           />
         </MultipleTransactionsContext.Provider>

@@ -1,6 +1,6 @@
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { encode as encodeHex } from '@stablelib/hex';
-import { encodeAddress, Transaction, TransactionType } from 'algosdk';
+import { TransactionType } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 
 // components
@@ -29,18 +29,20 @@ import {
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { IAccount, IAccountInformation } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IAccountInformation,
+} from '@extension/types';
+import type { ISingleTransactionContentProps } from './types';
 
 // utils
 import parseTransactionType from '@extension/utils/parseTransactionType';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
-interface IProps {
-  transaction: Transaction;
-}
-
-const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
+const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
+  transaction,
+}) => {
   const encodedGenesisHash = encodeBase64(transaction.genesisHash);
   // selectors
   const accounts = useSelectAccounts();
@@ -53,9 +55,10 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
   // states
   const [fetchingAccountInformation, setFetchingAccountInformation] =
     useState<boolean>(false);
-  const [fromAccount, setFromAccount] = useState<IAccount | null>(null);
+  const [fromAccount, setFromAccount] =
+    useState<IAccountWithExtendedProps | null>(null);
   // misc
-  const explorer =
+  const blockExplorer =
     network?.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
@@ -78,7 +81,7 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
     (async () => {
       const _functionName = 'useEffect';
       const encodedPublicKey = encodeHex(transaction.from.publicKey);
-      let account: IAccount | null =
+      let account: IAccountWithExtendedProps | null =
         accounts.find(
           (value) =>
             value.publicKey.toUpperCase() === encodedPublicKey.toUpperCase()
@@ -103,9 +106,12 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
 
       setFetchingAccountInformation(true);
 
-      account = AccountService.initializeDefaultAccount({
-        publicKey: encodedPublicKey,
-      });
+      account = {
+        ...AccountService.initializeDefaultAccount({
+          publicKey: encodedPublicKey,
+        }),
+        watchAccount: true,
+      };
       encodedGenesisHash = convertGenesisHashToHex(
         network.genesisHash
       ).toUpperCase();
@@ -131,20 +137,10 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
   }, []);
 
   if (!network) {
-    logger.debug(
-      `${SingleTransactionContent.name}: failed to get network for genesis hash "${encodedGenesisHash}"`
-    );
-
     return null;
   }
 
   if (!fromAccount) {
-    logger.debug(
-      `${
-        SingleTransactionContent.name
-      }: from account not known "${encodeAddress(transaction.from.publicKey)}"`
-    );
-
     return null;
   }
 
@@ -153,6 +149,8 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
       if (transactionType === TransactionTypeEnum.AssetCreate) {
         return (
           <AssetCreateTransactionContent
+            accounts={accounts}
+            blockExplorer={blockExplorer}
             fromAccount={fromAccount}
             loading={fetchingAccountInformation}
             network={network}
@@ -163,10 +161,11 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
 
       return (
         <AssetConfigTransactionContent
+          accounts={accounts}
           asset={standardAsset}
-          explorer={explorer}
+          blockExplorer={blockExplorer}
           fromAccount={fromAccount}
-          loading={fetchingAccountInformation || updatingStandardAssets}
+          loading={fetchingAccountInformation}
           network={network}
           transaction={transaction}
         />
@@ -174,10 +173,11 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
     case TransactionType.afrz:
       return (
         <AssetFreezeTransactionContent
+          accounts={accounts}
           asset={standardAsset}
-          explorer={explorer}
+          blockExplorer={blockExplorer}
           fromAccount={fromAccount}
-          loading={fetchingAccountInformation || updatingStandardAssets}
+          loading={fetchingAccountInformation}
           network={network}
           transaction={transaction}
         />
@@ -185,7 +185,10 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
     case TransactionType.appl:
       return (
         <ApplicationTransactionContent
-          explorer={explorer}
+          accounts={accounts}
+          blockExplorer={blockExplorer}
+          fromAccount={fromAccount}
+          loading={fetchingAccountInformation}
           network={network}
           transaction={transaction}
         />
@@ -193,10 +196,11 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
     case TransactionType.axfer:
       return (
         <AssetTransferTransactionContent
+          accounts={accounts}
           asset={standardAsset}
-          explorer={explorer}
+          blockExplorer={blockExplorer}
           fromAccount={fromAccount}
-          loading={fetchingAccountInformation || updatingStandardAssets}
+          loading={fetchingAccountInformation}
           network={network}
           transaction={transaction}
         />
@@ -214,6 +218,8 @@ const SingleTransactionContent: FC<IProps> = ({ transaction }: IProps) => {
     case TransactionType.pay:
       return (
         <PaymentTransactionContent
+          accounts={accounts}
+          blockExplorer={blockExplorer}
           fromAccount={fromAccount}
           loading={fetchingAccountInformation}
           network={network}

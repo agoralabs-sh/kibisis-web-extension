@@ -1,33 +1,35 @@
 import { Heading, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
-import { encodeAddress, Transaction } from 'algosdk';
+import { encodeAddress } from 'algosdk';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
+import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import SignTxnsAddressItem from './SignTxnsAddressItem';
-import SignTxnsAssetItem from './SignTxnsAssetItem';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// services
+import AccountService from '@extension/services/AccountService';
+
 // types
-import type {
-  IAccount,
-  IStandardAsset,
-  IBlockExplorer,
-  INetwork,
-} from '@extension/types';
-import type { ICondensedProps } from './types';
+import type { IAssetTransactionBodyProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
@@ -35,39 +37,36 @@ import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 
-interface IProps {
-  asset: IStandardAsset | null;
-  condensed?: ICondensedProps;
-  explorer: IBlockExplorer | null;
-  fromAccount: IAccount | null;
-  loading?: boolean;
-  network: INetwork;
-  transaction: Transaction;
-}
-
-const AssetTransferTransactionContent: FC<IProps> = ({
+const AssetTransferTransactionContent: FC<IAssetTransactionBodyProps> = ({
+  accounts,
   asset,
+  blockExplorer,
   condensed,
-  explorer,
   fromAccount,
+  hideNetwork = false,
   loading = false,
   network,
   transaction,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const subTextColor = useSubTextColor();
   // states
   const [amountAsStandardUnit, setAmountAsStandardUnit] = useState<BigNumber>(
     new BigNumber('0')
   );
+  const [balanceInAtomicUnits, setBalanceInAtomicUnits] =
+    useState<BigNumber | null>();
   // misc
-  const amountAsAtomicUnit: BigNumber = new BigNumber(
+  const accountInformation = fromAccount
+    ? AccountService.extractAccountInformationForNetwork(fromAccount, network)
+    : null;
+  const amountInAtomicUnits = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'
   );
-  const feeAsAtomicUnit: BigNumber = new BigNumber(
+  const feeInAtomicUnits = new BigNumber(
     transaction.fee ? String(transaction.fee) : '0'
   );
   // renders
@@ -79,19 +78,21 @@ const AssetTransferTransactionContent: FC<IProps> = ({
     return (
       <>
         {/*balance*/}
-        <SignTxnsAssetItem
-          atomicUnitAmount={amountAsAtomicUnit}
-          decimals={asset.decimals}
-          displayUnit={true}
-          icon={icon}
-          isLoading={loading}
-          label={`${t<string>('labels.balance')}:`}
-          unit={asset.unitName || undefined}
-        />
+        {balanceInAtomicUnits && (
+          <ModalAssetItem
+            amountInAtomicUnits={balanceInAtomicUnits}
+            decimals={asset.decimals}
+            displayUnit={true}
+            icon={icon}
+            isLoading={loading}
+            label={`${t<string>('labels.balance')}:`}
+            unit={asset.unitName || undefined}
+          />
+        )}
 
         {/*fee*/}
-        <SignTxnsAssetItem
-          atomicUnitAmount={feeAsAtomicUnit}
+        <ModalAssetItem
+          amountInAtomicUnits={feeInAtomicUnits}
           decimals={network.nativeCurrency.decimals}
           icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
             color: subTextColor,
@@ -110,22 +111,32 @@ const AssetTransferTransactionContent: FC<IProps> = ({
             label={`${t<string>('labels.id')}:`}
             value={asset.id}
           />
+
           <CopyIconButton
             ariaLabel={t<string>('labels.copyValue', { value: asset.id })}
             tooltipLabel={t<string>('labels.copyValue', { value: asset.id })}
             size="xs"
             value={asset.id}
           />
-          {explorer && (
+
+          {blockExplorer && (
             <OpenTabIconButton
               size="xs"
               tooltipLabel={t<string>('captions.openOn', {
-                name: explorer.canonicalName,
+                name: blockExplorer.canonicalName,
               })}
-              url={`${explorer.baseUrl}${explorer.assetPath}/${asset.id}`}
+              url={`${blockExplorer.baseUrl}${blockExplorer.assetPath}/${asset.id}`}
             />
           )}
         </HStack>
+
+        {/*network*/}
+        {!hideNetwork && (
+          <ModalItem
+            label={`${t<string>('labels.network')}:`}
+            value={<ChainBadge network={network} size="sm" />}
+          />
+        )}
 
         {/*note*/}
         {transaction.note && transaction.note.length > 0 && (
@@ -142,9 +153,20 @@ const AssetTransferTransactionContent: FC<IProps> = ({
 
   // once the store has been updated with the asset information, update the asset and the amount
   useEffect(() => {
+    let _balanceInAtomicUnits: string | null;
+
     if (asset) {
       setAmountAsStandardUnit(
-        convertToStandardUnit(amountAsAtomicUnit, asset.decimals)
+        convertToStandardUnit(amountInAtomicUnits, asset.decimals)
+      );
+
+      _balanceInAtomicUnits =
+        accountInformation?.standardAssetHoldings.find(
+          (value) => value.id === asset.id
+        )?.amount || null;
+
+      setBalanceInAtomicUnits(
+        _balanceInAtomicUnits ? new BigNumber(_balanceInAtomicUnits) : null
       );
     }
   }, [asset]);
@@ -154,7 +176,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       <VStack
         alignItems="flex-start"
         justifyContent="flex-start"
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <ModalSkeletonItem />
@@ -183,7 +205,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={condensed ? 2 : 4}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {condensed ? (
@@ -207,11 +229,12 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           </Text>
 
           {/*amount*/}
-          <SignTxnsAssetItem
-            atomicUnitAmount={amountAsAtomicUnit}
+          <ModalAssetItem
+            amountInAtomicUnits={amountInAtomicUnits}
             decimals={asset.decimals}
             displayUnit={true}
             icon={assetIcon}
+            isLoading={loading}
             label={`${t<string>('labels.amount')}:`}
             unit={asset.unitName || undefined}
           />
@@ -264,19 +287,31 @@ const AssetTransferTransactionContent: FC<IProps> = ({
       )}
 
       {/*from*/}
-      <SignTxnsAddressItem
-        address={encodeAddress(transaction.from.publicKey)}
-        ariaLabel="From address"
+      <ModalItem
         label={`${t<string>('labels.from')}:`}
-        network={network}
+        value={
+          <AddressDisplay
+            accounts={accounts}
+            address={encodeAddress(transaction.from.publicKey)}
+            ariaLabel="From address"
+            size="sm"
+            network={network}
+          />
+        }
       />
 
       {/*to*/}
-      <SignTxnsAddressItem
-        address={encodeAddress(transaction.to.publicKey)}
-        ariaLabel="To address"
+      <ModalItem
         label={`${t<string>('labels.to')}:`}
-        network={network}
+        value={
+          <AddressDisplay
+            accounts={accounts}
+            address={encodeAddress(transaction.to.publicKey)}
+            ariaLabel="To address"
+            size="sm"
+            network={network}
+          />
+        }
       />
 
       {condensed ? (
@@ -286,7 +321,7 @@ const AssetTransferTransactionContent: FC<IProps> = ({
           isOpen={condensed.expanded}
           onChange={condensed.onChange}
         >
-          <VStack spacing={2} w="full">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
             {renderExtraInformation(assetIcon)}
           </VStack>
         </MoreInformationAccordion>
