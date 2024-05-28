@@ -1,4 +1,4 @@
-import { Transaction } from 'algosdk';
+import type { Transaction } from 'algosdk';
 
 // types
 import type {
@@ -11,6 +11,7 @@ interface IProps {
   account: IAccount;
   accounts: IAccount[];
   condensed?: ICondensedProps;
+  hideNetwork?: boolean;
   network: INetworkWithTransactionParams;
   showHeader?: boolean;
   transaction: Transaction;

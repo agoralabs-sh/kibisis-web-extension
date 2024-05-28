@@ -7,6 +7,7 @@ import { IoInformationCircleOutline } from 'react-icons/io5';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
+import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import ModalAssetItem from '@extension/components/ModalAssetItem';
 import ModalItem from '@extension/components/ModalItem';
@@ -36,6 +37,7 @@ const ApplicationTransactionContent: FC<ITransactionBodyProps> = ({
   accounts,
   blockExplorer,
   condensed,
+  hideNetwork = false,
   loading,
   network,
   transaction,
@@ -98,6 +100,14 @@ const ApplicationTransactionContent: FC<ITransactionBodyProps> = ({
           </span>
         </Tooltip>
       </HStack>
+
+      {/*network*/}
+      {!hideNetwork && (
+        <ModalItem
+          label={`${t<string>('labels.network')}:`}
+          value={<ChainBadge network={network} size="sm" />}
+        />
+      )}
 
       {/*note*/}
       {transaction.note && transaction.note.length > 0 && (
@@ -163,7 +173,6 @@ const ApplicationTransactionContent: FC<ITransactionBodyProps> = ({
 
       {/*from*/}
       <ModalItem
-        flexGrow={1}
         label={`${t<string>('labels.from')}:`}
         value={
           <AddressDisplay

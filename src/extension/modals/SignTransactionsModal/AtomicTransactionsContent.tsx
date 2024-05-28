@@ -129,6 +129,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
                 onChange: handleToggleAccordion(transactionIndex),
               }}
               fromAccount={fromAccount}
+              hideNetwork={true}
               loading={fetchingAccountInformation}
               network={network}
               transaction={transaction}
@@ -146,6 +147,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
               onChange: handleToggleAccordion(transactionIndex),
             }}
             fromAccount={fromAccount}
+            hideNetwork={true}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
@@ -162,6 +164,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
               onChange: handleToggleAccordion(transactionIndex),
             }}
             fromAccount={fromAccount}
+            hideNetwork={true}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
@@ -177,6 +180,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
               onChange: handleToggleAccordion(transactionIndex),
             }}
             fromAccount={fromAccount}
+            hideNetwork={true}
             network={network}
             transaction={transaction}
           />
@@ -192,6 +196,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
               onChange: handleToggleAccordion(transactionIndex),
             }}
             fromAccount={fromAccount}
+            hideNetwork={true}
             loading={fetchingAccountInformation || updatingStandardAssets}
             network={network}
             transaction={transaction}
@@ -200,12 +205,13 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
       case TransactionType.keyreg:
         return (
           <KeyRegistrationTransactionModalBody
+            account={fromAccount}
+            accounts={accounts}
             condensed={{
               expanded: openAccordions[transactionIndex],
               onChange: handleToggleAccordion(transactionIndex),
             }}
-            account={fromAccount}
-            accounts={accounts}
+            hideNetwork={true}
             network={network}
             showHeader={true}
             transaction={transaction}
@@ -221,6 +227,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
               onChange: handleToggleAccordion(transactionIndex),
             }}
             fromAccount={fromAccount}
+            hideNetwork={true}
             loading={fetchingAccountInformation}
             network={network}
             transaction={transaction}

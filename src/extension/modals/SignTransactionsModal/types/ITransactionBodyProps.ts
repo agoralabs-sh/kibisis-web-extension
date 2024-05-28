@@ -13,6 +13,7 @@ interface ITransactionBodyProps {
   blockExplorer: IBlockExplorer | null;
   condensed?: ICondensedProps;
   fromAccount: IAccountWithExtendedProps | null;
+  hideNetwork?: boolean;
   loading?: boolean;
   network: INetworkWithTransactionParams;
   transaction: Transaction;

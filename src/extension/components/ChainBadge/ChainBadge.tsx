@@ -12,6 +12,7 @@ import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import mapIconSizeToSize from './utils/mapIconSizeToSize';
 
 const ChainBadge: FC<IProps> = ({ network, size = 'sm' }) => {
   // selectors
@@ -21,9 +22,9 @@ const ChainBadge: FC<IProps> = ({ network, size = 'sm' }) => {
     network.nativeCurrency.iconUrl,
     {
       color: network.chakraTheme,
-      h: 3,
+      h: mapIconSizeToSize(size),
       mr: 2,
-      w: 3,
+      w: mapIconSizeToSize(size),
     }
   );
 

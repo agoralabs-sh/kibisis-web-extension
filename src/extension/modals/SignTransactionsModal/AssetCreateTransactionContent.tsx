@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
+import ChainBadge from '@extension/components/ChainBadge';
 import ModalAssetItem from '@extension/components/ModalAssetItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
@@ -31,6 +32,7 @@ const AssetCreateTransactionContent: FC<ITransactionBodyProps> = ({
   accounts,
   condensed,
   fromAccount,
+  hideNetwork = false,
   loading = false,
   network,
   transaction,
@@ -67,6 +69,14 @@ const AssetCreateTransactionContent: FC<ITransactionBodyProps> = ({
           label={`${t<string>('labels.fee')}:`}
           unit={network.nativeCurrency.symbol}
         />
+
+        {/*network*/}
+        {!hideNetwork && (
+          <ModalItem
+            label={`${t<string>('labels.network')}:`}
+            value={<ChainBadge network={network} size="sm" />}
+          />
+        )}
 
         {/*total supply*/}
         <ModalAssetItem

@@ -99,7 +99,7 @@ const GroupOfTransactionsContent: FC<IGroupOfTransactionsContentProps> = ({
             <VStack
               alignItems="center"
               justifyContent="flex-start"
-              spacing={2}
+              spacing={DEFAULT_GAP / 3}
               w="full"
             >
               {/*number of transactions*/}

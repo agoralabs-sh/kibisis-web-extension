@@ -9,6 +9,7 @@ import { IoWarningOutline } from 'react-icons/io5';
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
+import ChainBadge from '@extension/components/ChainBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import ModalAssetItem from '@extension/components/ModalAssetItem';
 import ModalItem from '@extension/components/ModalItem';
@@ -42,6 +43,7 @@ const AssetConfigTransactionContent: FC<IAssetTransactionBodyProps> = ({
   condensed,
   blockExplorer,
   fromAccount,
+  hideNetwork = false,
   loading = false,
   network,
   transaction,
@@ -83,6 +85,14 @@ const AssetConfigTransactionContent: FC<IAssetTransactionBodyProps> = ({
           label={`${t<string>('labels.fee')}:`}
           unit={network.nativeCurrency.symbol}
         />
+
+        {/*network*/}
+        {!hideNetwork && (
+          <ModalItem
+            label={`${t<string>('labels.network')}:`}
+            value={<ChainBadge network={network} size="sm" />}
+          />
+        )}
 
         {transactionType === TransactionTypeEnum.AssetConfig && (
           <>

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
+import ChainBadge from '@extension/components/ChainBadge';
 import ModalAssetItem from '@extension/components/ModalAssetItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
@@ -34,6 +35,7 @@ const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
   accounts,
   condensed,
   fromAccount,
+  hideNetwork = false,
   loading = false,
   network,
   transaction,
@@ -71,6 +73,15 @@ const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
   // renders
   const renderExtraInformation = () => (
     <>
+      {/*fee*/}
+      <ModalAssetItem
+        amountInAtomicUnits={feeInAtomicUnits}
+        decimals={network.nativeCurrency.decimals}
+        icon={icon}
+        label={`${t<string>('labels.fee')}:`}
+        unit={network.nativeCurrency.symbol}
+      />
+
       {/*balance*/}
       <ModalAssetItem
         amountInAtomicUnits={
@@ -83,14 +94,13 @@ const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
         unit={network.nativeCurrency.symbol}
       />
 
-      {/*fee*/}
-      <ModalAssetItem
-        amountInAtomicUnits={feeInAtomicUnits}
-        decimals={network.nativeCurrency.decimals}
-        icon={icon}
-        label={`${t<string>('labels.fee')}:`}
-        unit={network.nativeCurrency.symbol}
-      />
+      {/*network*/}
+      {!hideNetwork && (
+        <ModalItem
+          label={`${t<string>('labels.network')}:`}
+          value={<ChainBadge network={network} size="sm" />}
+        />
+      )}
 
       {/*note*/}
       {transaction.note && transaction.note.length > 0 && (
