@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react';
+import { useDisclosure } from '@chakra-ui/react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
@@ -20,7 +21,6 @@ import {
 
 // features
 import {
-  ISaveNewAccountPayload,
   saveActiveAccountDetails,
   saveNewAccountThunk,
   saveNewWatchAccountThunk,
@@ -66,6 +66,11 @@ const AddAccountMainRouter: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
+  const {
+    isOpen: isConfirmPasswordModalOpen,
+    onClose: onConfirmPasswordModalClose,
+    onOpen: onConfirmPasswordModalOpen,
+  } = useDisclosure();
   // selectors
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
@@ -73,35 +78,32 @@ const AddAccountMainRouter: FC = () => {
   const saving = useSelectAccountsSaving();
   const settings = useSelectSettings();
   // states
-  const [addAccountResult, setAddAccountResult] =
-    useState<IAddAccountCompleteResult | null>(null);
+  const [name, setName] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  const [privateKey, setPrivateKey] = useState<Uint8Array | null>(null);
   // handlers
   const handleOnAddAccountComplete = async ({
     name,
     privateKey,
   }: IAddAccountCompleteResult) => {
-    // if the password lock is enabled and the password is active, just submit the result
+    setName(name);
+    setPrivateKey(privateKey);
+
+    // if the password lock is enabled and the password is active, use the password
     if (settings.security.enablePasswordLock && passwordLockPassword) {
-      await saveNewAccount({
-        name,
-        password: passwordLockPassword,
-        privateKey,
-      });
+      setPassword(passwordLockPassword);
 
       return;
     }
 
-    // set the result to state, in order for the password confirm modal to handle the encryption
-    setAddAccountResult({
-      name,
-      privateKey,
-    });
+    // get the password from the modal
+    onConfirmPasswordModalOpen();
   };
   const handleOnAddWatchAccountComplete = async ({
     address,
     name,
   }: IAddWatchAccountCompleteResult) => {
-    const _functionName: string = 'handleOnAddWatchAccountComplete';
+    const _functionName = 'handleOnAddWatchAccountComplete';
     let account: IAccountWithExtendedProps;
 
     try {
@@ -143,18 +145,12 @@ const AddAccountMainRouter: FC = () => {
     );
 
     updateAccounts(account.id);
+    reset();
   };
-  const handleOnConfirmPasswordModalClose = () => setAddAccountResult(null);
+  const handleOnConfirmPasswordModalClose = () => onConfirmPasswordModalClose();
   const handleOnConfirmPasswordModalConfirm = async (password: string) => {
-    if (!addAccountResult) {
-      return;
-    }
-
-    await saveNewAccount({
-      name: addAccountResult.name,
-      password,
-      privateKey: addAccountResult.privateKey,
-    });
+    setPassword(password);
+    onConfirmPasswordModalClose();
   };
   const handleImportAccountViaQRCodeClick = () =>
     dispatch(
@@ -165,61 +161,62 @@ const AddAccountMainRouter: FC = () => {
       })
     );
   // misc
-  const saveNewAccount = async ({
-    name,
-    password,
-    privateKey,
-  }: ISaveNewAccountPayload) => {
-    const _functionName: string = 'saveNewAccount';
+  const reset = () => {
+    setName(null);
+    setPassword(null);
+    setPrivateKey(null);
+  };
+  const saveNewAccount = async () => {
+    const _functionName = 'saveNewAccount';
     let account: IAccountWithExtendedProps;
 
-    if (addAccountResult) {
-      try {
-        account = await dispatch(
-          saveNewAccountThunk({
-            name,
-            password,
-            privateKey,
-          })
-        ).unwrap();
-      } catch (error) {
-        logger.error(`${AddAccountMainRouter.name}#${_functionName}:`, error);
+    if (!password || !privateKey) {
+      return;
+    }
 
-        dispatch(
-          createNotification({
-            description: t<string>('errors.descriptions.code', {
-              code: error.code,
-              context: error.code,
-            }),
-            ephemeral: true,
-            title: t<string>('errors.titles.code', { context: error.code }),
-            type: 'error',
-          })
-        );
-
-        return;
-      }
+    try {
+      account = await dispatch(
+        saveNewAccountThunk({
+          name,
+          password,
+          privateKey,
+        })
+      ).unwrap();
+    } catch (error) {
+      logger.error(`${AddAccountMainRouter.name}#${_functionName}:`, error);
 
       dispatch(
         createNotification({
-          ephemeral: true,
-          description: t<string>('captions.addedAccount', {
-            address: ellipseAddress(
-              AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
-              )
-            ),
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
           }),
-          title: t<string>('headings.addedAccount'),
-          type: 'success',
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
         })
       );
 
-      updateAccounts(account.id);
+      return;
     }
+
+    dispatch(
+      createNotification({
+        ephemeral: true,
+        description: t<string>('captions.addedAccount', {
+          address: ellipseAddress(
+            AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+          ),
+        }),
+        title: t<string>('headings.addedAccount'),
+        type: 'success',
+      })
+    );
+
+    updateAccounts(account.id);
+    reset();
   };
   const updateAccounts = (accountId: string) => {
-    setAddAccountResult(null);
     dispatch(
       updateAccountsThunk({
         accountIds: [accountId],
@@ -236,10 +233,17 @@ const AddAccountMainRouter: FC = () => {
     });
   };
 
+  // if we have the password and the private key, we can save a new account
+  useEffect(() => {
+    if (password && privateKey) {
+      (async () => await saveNewAccount())();
+    }
+  }, [password, privateKey]);
+
   return (
     <>
       <ConfirmPasswordModal
-        isOpen={!!addAccountResult}
+        isOpen={isConfirmPasswordModalOpen}
         onCancel={handleOnConfirmPasswordModalClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
