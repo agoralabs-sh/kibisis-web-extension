@@ -1,3 +1,10 @@
+# [1.17.0-beta.11](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.10...v1.17.0-beta.11) (2024-06-03)
+
+
+### Bug Fixes
+
+* able to create account when password lock enabled ([#251](https://github.com/agoralabs-sh/kibisis-web-extension/issues/251)) ([481cee1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/481cee1f5a893ba7b424b7ea003e759c208a61c7))
+
 # [1.17.0-beta.10](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.9...v1.17.0-beta.10) (2024-05-28)
 
 
