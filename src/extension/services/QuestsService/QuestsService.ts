@@ -54,6 +54,15 @@ export default class QuestsService {
    */
 
   /**
+   * Gets all the completed quest items.
+   * @returns {Promise<IQuestItem[]>} a promise that resolves to all the quest items.
+   * @private
+   */
+  public async _allCompletedQuests(): Promise<IQuestItem[]> {
+    return (await this._storageManager.getItem(QUESTS_COMPLETED_KEY)) || [];
+  }
+
+  /**
    * Adds (or updates) a completed quest by name. This function uses the current time for the completed timestamp.
    * @param {QuestNameEnum} name - the name of the quest to complete.
    * @private
@@ -63,7 +72,7 @@ export default class QuestsService {
       lastCompletedAt: new Date().getTime(),
       name,
     };
-    const items = await this.allCompletedQuests();
+    const items = await this._allCompletedQuests();
 
     // if the item doesn't exist, just add it
     if (!items.find((value) => value.name === name)) {
@@ -202,14 +211,6 @@ export default class QuestsService {
   }
 
   /**
-   * Gets all the completed quest items.
-   * @returns {Promise<IQuestItem[]>} a promise that resolves to all the quest items.
-   */
-  public async allCompletedQuests(): Promise<IQuestItem[]> {
-    return (await this._storageManager.getItem(QUESTS_COMPLETED_KEY)) || [];
-  }
-
-  /**
    * Tracks an import account via QR code quest.
    * @param {string} account - the address of the account that was imported.
    * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
@@ -229,17 +230,25 @@ export default class QuestsService {
   }
 
   /**
-   * Gets the completed quest by name.
+   * Determines if a quest has been completed today. Today is defined as whether a quest has been completed between
+   * 00:00 UTC and now.
    * @param {QuestNameEnum} name - the name of the quest.
-   * @returns {Promise<IQuestItem | null>} a promise that resolves to the completed quest item, or null if it hasn't
-   * been completed.
+   * @returns {Promise<boolean>} a promise that resolves to true if the quest has been completed between 00:00 UTC and
+   * now, false otherwise.
    */
-  public async questCompletedByName(
+  public async hasQuestBeenCompletedTodayByName(
     name: QuestNameEnum
-  ): Promise<IQuestItem | null> {
-    const allCompletedQuests = await this.allCompletedQuests();
+  ): Promise<boolean> {
+    const allCompletedQuests = await this._allCompletedQuests();
+    const completedQuest =
+      allCompletedQuests.find((value) => value.name === name) || null;
+    const timestampOfMidnightUTC = new Date().setUTCHours(0, 0, 0, 0);
 
-    return allCompletedQuests.find((value) => value.name === name) || null;
+    // true, if the last completed quest was greater than or equal to midnight UTC.
+    return (
+      !!completedQuest &&
+      completedQuest.lastCompletedAt >= timestampOfMidnightUTC
+    );
   }
 
   /**
@@ -248,7 +257,7 @@ export default class QuestsService {
    * @param {string} toAddress - the address of the account the asset was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
    * @param {ISendARC0200AssetQuestData} data - the ID of the asset and the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest has been tracked or not.
    */
   public async sendARC0200AssetQuest(
     fromAddress: string,
@@ -278,7 +287,7 @@ export default class QuestsService {
    * @param {string} toAddress - the address of the account the amount was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
    * @param {ISendARC0200AssetQuestData} data - the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest has been tracked or not.
    */
   public async sendNativeCurrencyQuest(
     fromAddress: string,
@@ -308,7 +317,7 @@ export default class QuestsService {
    * @param {string} toAddress - the address of the account the asset was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
    * @param {ISendARC0200AssetQuestData} data - the ID of the asset and the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest has been tracked or not.
    */
   public async sendStandardAssetQuest(
     fromAddress: string,
