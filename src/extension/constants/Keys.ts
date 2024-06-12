@@ -10,6 +10,7 @@ export const NEWS_KEY: string = 'news';
 export const PASSWORD_LOCK_ITEM_KEY: string = 'password_lock';
 export const PASSWORD_TAG_ITEM_KEY: string = 'password_tag';
 export const PRIVATE_KEY_ITEM_KEY_PREFIX: string = 'private_key_';
+export const QUESTS_COMPLETED_KEY: string = 'quests_completed';
 export const SETTINGS_ADVANCED_KEY: string = 'settings_advanced';
 export const SETTINGS_APPEARANCE_KEY: string = 'settings_appearance';
 export const SETTINGS_GENERAL_KEY: string = 'settings_general';

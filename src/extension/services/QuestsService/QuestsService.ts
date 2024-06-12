@@ -1,18 +1,24 @@
 import BigNumber from 'bignumber.js';
 import { PostHog } from 'posthog-node';
 
+// constants
+import { QUESTS_COMPLETED_KEY } from '@extension/constants';
+
 // enums
 import { QuestNameEnum } from './enums';
 
 // services
 import SettingsService from '@extension/services/SettingsService';
+import StorageManager from '@extension/services/StorageManager';
 
 // types
-import type { IBaseOptions, ILogger } from '@common/types';
+import type { ILogger } from '@common/types';
 import type {
   IAcquireARC0072QuestData,
   IAddARC0200AssetQuestData,
   IAddStandardAssetQuestData,
+  INewQuestServiceOptions,
+  IQuestItem,
   ISendARC0200AssetQuestData,
   ISendNativeCurrencyQuestData,
   ISendStandardAssetQuestData,
@@ -21,21 +27,26 @@ import type {
 
 export default class QuestsService {
   // private variables
-  private readonly logger: ILogger | null;
-  private readonly posthog: PostHog | null;
-  private readonly settingsService: SettingsService;
+  private readonly _logger: ILogger | null;
+  private readonly _posthog: PostHog | null;
+  private readonly _settingsService: SettingsService;
+  private readonly _storageManager: StorageManager;
 
-  constructor({ logger }: IBaseOptions) {
-    this.logger = logger || null;
-    this.posthog =
+  constructor({ logger, storageManager }: INewQuestServiceOptions) {
+    const _storageManager = storageManager || new StorageManager();
+
+    this._logger = logger || null;
+    this._posthog =
       __POSTHOG_API_HOST__ && __POSTHOG_PROJECT_ID__
         ? new PostHog(__POSTHOG_PROJECT_ID__, {
             host: __POSTHOG_API_HOST__,
           })
         : null;
-    this.settingsService = new SettingsService({
+    this._settingsService = new SettingsService({
       logger,
+      storageManager: _storageManager,
     });
+    this._storageManager = _storageManager;
   }
 
   /**
@@ -43,25 +54,55 @@ export default class QuestsService {
    */
 
   /**
+   * Adds (or updates) a completed quest by name. This function uses the current time for the completed timestamp.
+   * @param {QuestNameEnum} name - the name of the quest to complete.
+   * @private
+   */
+  private async _completeQuestByName(name: QuestNameEnum): Promise<IQuestItem> {
+    const item: IQuestItem = {
+      lastCompletedAt: new Date().getTime(),
+      name,
+    };
+    const items = await this.allCompletedQuests();
+
+    // if the item doesn't exist, just add it
+    if (!items.find((value) => value.name === name)) {
+      await this._storageManager.setItems({
+        [QUESTS_COMPLETED_KEY]: [...items, item],
+      });
+
+      return item;
+    }
+
+    await this._storageManager.setItems({
+      [QUESTS_COMPLETED_KEY]: items.map((value) =>
+        value.name === item.name ? item : value
+      ),
+    });
+
+    return item;
+  }
+
+  /**
    * Convenience function that checks if the action tracking has been enabled in the settings.
    * @returns {Promise<boolean>} a promise that resolves to true if action tacking is enabled, false otherwise.
    * @private
    */
-  private async isTrackingAllowed(): Promise<boolean> {
-    const { privacy } = await this.settingsService.getAll();
+  private async _isTrackingAllowed(): Promise<boolean> {
+    const { privacy } = await this._settingsService.getAll();
 
     return privacy.allowActionTracking;
   }
 
-  private async track({
+  private async _track({
     account,
     data,
     name,
   }: ITrackOptions): Promise<boolean> {
     const __functionName: string = 'track';
 
-    if (!this.posthog) {
-      this.logger?.debug(
+    if (!this._posthog) {
+      this._logger?.debug(
         `${QuestsService.name}#${__functionName}: tracking not initialized, ignoring`
       );
 
@@ -69,8 +110,8 @@ export default class QuestsService {
     }
 
     // check whether tracking is allowed
-    if (!(await this.isTrackingAllowed())) {
-      this.logger?.debug(
+    if (!(await this._isTrackingAllowed())) {
+      this._logger?.debug(
         `${QuestsService.name}#${__functionName}: tracking not enabled, ignoring`
       );
 
@@ -78,7 +119,7 @@ export default class QuestsService {
     }
 
     try {
-      this.posthog.capture({
+      this._posthog.capture({
         disableGeoip: true,
         distinctId: account,
         event: name,
@@ -87,13 +128,13 @@ export default class QuestsService {
         }),
       });
 
-      this.logger?.debug(
+      this._logger?.debug(
         `${QuestsService.name}#${__functionName}: successfully sent action "${name}"`
       );
 
       return true;
     } catch (error) {
-      this.logger?.error(`${QuestsService.name}#${__functionName}:`, error);
+      this._logger?.error(`${QuestsService.name}#${__functionName}:`, error);
 
       return false;
     }
@@ -113,7 +154,9 @@ export default class QuestsService {
     fromAddress: string,
     data: IAcquireARC0072QuestData
   ): Promise<boolean> {
-    return await this.track({
+    await this._completeQuestByName(QuestNameEnum.AcquireARC0072Action);
+
+    return await this._track({
       account: fromAddress,
       data,
       name: QuestNameEnum.AcquireARC0072Action,
@@ -130,7 +173,9 @@ export default class QuestsService {
     fromAddress: string,
     data: IAddARC0200AssetQuestData
   ): Promise<boolean> {
-    return await this.track({
+    await this._completeQuestByName(QuestNameEnum.AddARC0200AssetAction);
+
+    return await this._track({
       account: fromAddress,
       data,
       name: QuestNameEnum.AddARC0200AssetAction,
@@ -147,11 +192,21 @@ export default class QuestsService {
     fromAddress: string,
     data: IAddStandardAssetQuestData
   ): Promise<boolean> {
-    return await this.track({
+    await this._completeQuestByName(QuestNameEnum.AddStandardAssetAction);
+
+    return await this._track({
       account: fromAddress,
       data,
       name: QuestNameEnum.AddStandardAssetAction,
     });
+  }
+
+  /**
+   * Gets all the completed quest items.
+   * @returns {Promise<IQuestItem[]>} a promise that resolves to all the quest items.
+   */
+  public async allCompletedQuests(): Promise<IQuestItem[]> {
+    return (await this._storageManager.getItem(QUESTS_COMPLETED_KEY)) || [];
   }
 
   /**
@@ -160,7 +215,9 @@ export default class QuestsService {
    * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
   public async importAccountViaQRCodeQuest(account: string): Promise<boolean> {
-    return await this.track({
+    await this._completeQuestByName(QuestNameEnum.ImportAccountViaQRCodeAction);
+
+    return await this._track({
       account,
       data: {
         $set_once: {
@@ -169,6 +226,20 @@ export default class QuestsService {
       },
       name: QuestNameEnum.ImportAccountViaQRCodeAction,
     });
+  }
+
+  /**
+   * Gets the completed quest by name.
+   * @param {QuestNameEnum} name - the name of the quest.
+   * @returns {Promise<IQuestItem | null>} a promise that resolves to the completed quest item, or null if it hasn't
+   * been completed.
+   */
+  public async questCompletedByName(
+    name: QuestNameEnum
+  ): Promise<IQuestItem | null> {
+    const allCompletedQuests = await this.allCompletedQuests();
+
+    return allCompletedQuests.find((value) => value.name === name) || null;
   }
 
   /**
@@ -192,7 +263,9 @@ export default class QuestsService {
       return false;
     }
 
-    return await this.track({
+    await this._completeQuestByName(QuestNameEnum.SendARC0200AssetAction);
+
+    return await this._track({
       account: fromAddress,
       data,
       name: QuestNameEnum.SendARC0200AssetAction,
@@ -220,7 +293,9 @@ export default class QuestsService {
       return false;
     }
 
-    return await this.track({
+    await this._completeQuestByName(QuestNameEnum.SendNativeCurrencyAction);
+
+    return await this._track({
       account: fromAddress,
       data,
       name: QuestNameEnum.SendNativeCurrencyAction,
@@ -248,7 +323,9 @@ export default class QuestsService {
       return false;
     }
 
-    return await this.track({
+    await this._completeQuestByName(QuestNameEnum.SendStandardAssetAction);
+
+    return await this._track({
       account: fromAddress,
       data,
       name: QuestNameEnum.SendStandardAssetAction,
@@ -261,7 +338,9 @@ export default class QuestsService {
    * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
   public async signMessageQuest(account: string): Promise<boolean> {
-    return await this.track({
+    await this._completeQuestByName(QuestNameEnum.SignAMessageAction);
+
+    return await this._track({
       account,
       data: {
         $set_once: {
