@@ -20,7 +20,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import ActionTrackingService from '@extension/services/ActionTrackingService';
+import QuestsService from '@extension/services/QuestsService';
 
 // types
 import type {
@@ -87,7 +87,7 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
 
   // check if there are new arc-0072 assets
   useEffect(() => {
-    let actionTrackingService: ActionTrackingService;
+    let questsService: QuestsService;
     let newARC0072AssetHoldings: IARC0072AssetHolding[];
 
     if (
@@ -95,7 +95,7 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
       accountInformation?.arc0072AssetHoldings &&
       selectedNetwork
     ) {
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
       newARC0072AssetHoldings = accountInformation.arc0072AssetHoldings.filter(
@@ -107,7 +107,7 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
 
       // if there are new assets acquired, track an action for each new asset
       newARC0072AssetHoldings.forEach(({ id }) =>
-        actionTrackingService.acquireARC0072Action(
+        questsService.acquireARC0072Quest(
           AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
           {
             appID: id,

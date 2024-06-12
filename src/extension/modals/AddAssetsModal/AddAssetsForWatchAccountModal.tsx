@@ -66,7 +66,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import ActionTrackingService from '@extension/services/ActionTrackingService';
+import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -139,7 +139,7 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   }, [account, accounts, selectedNetwork]);
   // handlers
   const handleAddARC0200AssetClick = async () => {
-    let actionTrackingService: ActionTrackingService;
+    let questsService: QuestsService;
 
     if (
       !selectedNetwork ||
@@ -161,13 +161,13 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
         })
       ).unwrap();
 
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
 
       // track the action if this is a new asset
       if (isNewSelectedAsset) {
-        await actionTrackingService.addARC0200AssetAction(
+        await questsService.addARC0200AssetQuest(
           AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
           {
             appID: selectedAsset.id,

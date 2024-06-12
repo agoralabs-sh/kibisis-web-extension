@@ -53,7 +53,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import ActionTrackingService from '@extension/services/ActionTrackingService';
+import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -133,7 +133,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleSignClick = async () => {
     const _functionName = 'handleSignClick';
-    let actionTrackingService: ActionTrackingService;
+    let questsService: QuestsService;
     let signature: Uint8Array;
     let signerAddress: string;
 
@@ -166,12 +166,12 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
         `${SignMessageModal.name}#${_functionName}: signed message for signer "${signerAddress}"`
       );
 
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
 
       // track the action
-      await actionTrackingService.signMessageAction(signerAddress);
+      await questsService.signMessageQuest(signerAddress);
 
       // send the response
       await dispatch(

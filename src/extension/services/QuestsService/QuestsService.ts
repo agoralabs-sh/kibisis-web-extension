@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { PostHog } from 'posthog-node';
 
 // enums
-import { ActionNameEnum } from './enums';
+import { QuestNameEnum } from './enums';
 
 // services
 import SettingsService from '@extension/services/SettingsService';
@@ -10,16 +10,16 @@ import SettingsService from '@extension/services/SettingsService';
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
 import type {
-  IAcquireARC0072ActionData,
-  IAddARC0200AssetActionData,
-  IAddStandardAssetActionData,
-  ISendARC0200AssetActionData,
-  ISendNativeCurrencyActionData,
-  ISendStandardAssetActionData,
+  IAcquireARC0072QuestData,
+  IAddARC0200AssetQuestData,
+  IAddStandardAssetQuestData,
+  ISendARC0200AssetQuestData,
+  ISendNativeCurrencyQuestData,
+  ISendStandardAssetQuestData,
   ITrackOptions,
 } from './types';
 
-export default class ActionTrackingService {
+export default class QuestsService {
   // private variables
   private readonly logger: ILogger | null;
   private readonly posthog: PostHog | null;
@@ -62,7 +62,7 @@ export default class ActionTrackingService {
 
     if (!this.posthog) {
       this.logger?.debug(
-        `${ActionTrackingService.name}#${__functionName}: tracking not initialized, ignoring`
+        `${QuestsService.name}#${__functionName}: tracking not initialized, ignoring`
       );
 
       return false;
@@ -71,7 +71,7 @@ export default class ActionTrackingService {
     // check whether tracking is allowed
     if (!(await this.isTrackingAllowed())) {
       this.logger?.debug(
-        `${ActionTrackingService.name}#${__functionName}: tracking not enabled, ignoring`
+        `${QuestsService.name}#${__functionName}: tracking not enabled, ignoring`
       );
 
       return false;
@@ -88,15 +88,12 @@ export default class ActionTrackingService {
       });
 
       this.logger?.debug(
-        `${ActionTrackingService.name}#${__functionName}: successfully sent action "${name}"`
+        `${QuestsService.name}#${__functionName}: successfully sent action "${name}"`
       );
 
       return true;
     } catch (error) {
-      this.logger?.error(
-        `${ActionTrackingService.name}#${__functionName}:`,
-        error
-      );
+      this.logger?.error(`${QuestsService.name}#${__functionName}:`, error);
 
       return false;
     }
@@ -107,62 +104,62 @@ export default class ActionTrackingService {
    */
 
   /**
-   * Tracks an acquire ARC-0072 action.
+   * Tracks an acquire ARC-0072 quest.
    * @param {string} fromAddress - the address of the account that added the asset.
-   * @param {IAcquireARC0072ActionData} data - the ID of the asset and the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
+   * @param {IAcquireARC0072QuestData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
-  public async acquireARC0072Action(
+  public async acquireARC0072Quest(
     fromAddress: string,
-    data: IAcquireARC0072ActionData
+    data: IAcquireARC0072QuestData
   ): Promise<boolean> {
     return await this.track({
       account: fromAddress,
       data,
-      name: ActionNameEnum.AcquireARC0072Action,
+      name: QuestNameEnum.AcquireARC0072Action,
     });
   }
 
   /**
-   * Tracks an add ARC-0200 asset action.
+   * Tracks an add ARC-0200 asset quest.
    * @param {string} fromAddress - the address of the account that added the asset.
-   * @param {IAddARC0200AssetActionData} data - the ID of the asset and the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
+   * @param {IAddARC0200AssetQuestData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
-  public async addARC0200AssetAction(
+  public async addARC0200AssetQuest(
     fromAddress: string,
-    data: IAddARC0200AssetActionData
+    data: IAddARC0200AssetQuestData
   ): Promise<boolean> {
     return await this.track({
       account: fromAddress,
       data,
-      name: ActionNameEnum.AddARC0200AssetAction,
+      name: QuestNameEnum.AddARC0200AssetAction,
     });
   }
 
   /**
-   * Tracks an add standard asset action.
+   * Tracks an add standard asset quest.
    * @param {string} fromAddress - the address of the account that added the asset.
-   * @param {IAddStandardAssetActionData} data - the ID of the asset and the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
+   * @param {IAddStandardAssetQuestData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
-  public async addStandardAssetAction(
+  public async addStandardAssetQuest(
     fromAddress: string,
-    data: IAddStandardAssetActionData
+    data: IAddStandardAssetQuestData
   ): Promise<boolean> {
     return await this.track({
       account: fromAddress,
       data,
-      name: ActionNameEnum.AddStandardAssetAction,
+      name: QuestNameEnum.AddStandardAssetAction,
     });
   }
 
   /**
-   * Tracks an import account via QR code action.
+   * Tracks an import account via QR code quest.
    * @param {string} account - the address of the account that was imported.
-   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
-  public async importAccountViaQRCodeAction(account: string): Promise<boolean> {
+  public async importAccountViaQRCodeQuest(account: string): Promise<boolean> {
     return await this.track({
       account,
       data: {
@@ -170,23 +167,23 @@ export default class ActionTrackingService {
           featOfStrengthImportWalletViaQRCode: true,
         },
       },
-      name: ActionNameEnum.ImportAccountViaQRCodeAction,
+      name: QuestNameEnum.ImportAccountViaQRCodeAction,
     });
   }
 
   /**
-   * Tracks a send ARC-0200 asset action. This action is only tracked when >=1 unit is sent to a different account.
+   * Tracks a send ARC-0200 asset quest. This quest is only tracked when >=1 unit is sent to a different account.
    * @param {string} fromAddress - the address of the account the asset was sent from.
    * @param {string} toAddress - the address of the account the asset was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
-   * @param {ISendARC0200AssetActionData} data - the ID of the asset and the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
+   * @param {ISendARC0200AssetQuestData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
-  public async sendARC0200AssetAction(
+  public async sendARC0200AssetQuest(
     fromAddress: string,
     toAddress: string,
     amountInStandardUnits: string,
-    data: ISendARC0200AssetActionData
+    data: ISendARC0200AssetQuestData
   ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
@@ -198,23 +195,23 @@ export default class ActionTrackingService {
     return await this.track({
       account: fromAddress,
       data,
-      name: ActionNameEnum.SendARC0200AssetAction,
+      name: QuestNameEnum.SendARC0200AssetAction,
     });
   }
 
   /**
-   * Tracks a send native currency action. This action is only tracked when >=0.1 unit is sent to a different account.
+   * Tracks a send native currency quest. This quest is only tracked when >=0.1 unit is sent to a different account.
    * @param {string} fromAddress - the address of the account the amount was sent from.
    * @param {string} toAddress - the address of the account the amount was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
-   * @param {ISendARC0200AssetActionData} data - the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
+   * @param {ISendARC0200AssetQuestData} data - the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
-  public async sendNativeCurrencyAction(
+  public async sendNativeCurrencyQuest(
     fromAddress: string,
     toAddress: string,
     amountInStandardUnits: string,
-    data: ISendNativeCurrencyActionData
+    data: ISendNativeCurrencyQuestData
   ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
@@ -226,23 +223,23 @@ export default class ActionTrackingService {
     return await this.track({
       account: fromAddress,
       data,
-      name: ActionNameEnum.SendNativeCurrencyAction,
+      name: QuestNameEnum.SendNativeCurrencyAction,
     });
   }
 
   /**
-   * Tracks a send standard asset action. This action is only tracked when >=1 unit is sent to a different account.
+   * Tracks a send standard asset quest. This quest is only tracked when >=1 unit is sent to a different account.
    * @param {string} fromAddress - the address of the account the asset was sent from.
    * @param {string} toAddress - the address of the account the asset was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
-   * @param {ISendARC0200AssetActionData} data - the ID of the asset and the network.
-   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
+   * @param {ISendARC0200AssetQuestData} data - the ID of the asset and the network.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
-  public async sendStandardAssetAction(
+  public async sendStandardAssetQuest(
     fromAddress: string,
     toAddress: string,
     amountInStandardUnits: string,
-    data: ISendStandardAssetActionData
+    data: ISendStandardAssetQuestData
   ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
@@ -254,16 +251,16 @@ export default class ActionTrackingService {
     return await this.track({
       account: fromAddress,
       data,
-      name: ActionNameEnum.SendStandardAssetAction,
+      name: QuestNameEnum.SendStandardAssetAction,
     });
   }
 
   /**
-   * Tracks a sign message action.
+   * Tracks a sign message quest.
    * @param {string} account - the address of the account that was as a signer.
-   * @returns {Promise<boolean>} a promise that resolves to whether the action was tracked or not.
+   * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
-  public async signMessageAction(account: string): Promise<boolean> {
+  public async signMessageQuest(account: string): Promise<boolean> {
     return await this.track({
       account,
       data: {
@@ -271,7 +268,7 @@ export default class ActionTrackingService {
           featOfStrengthSignMessage: true,
         },
       },
-      name: ActionNameEnum.SignAMessageAction,
+      name: QuestNameEnum.SignAMessageAction,
     });
   }
 }

@@ -1,8 +1,8 @@
 // types
 import type ISetOnce from './ISetOnce';
 
-type ISignMessageActionData = ISetOnce<{
+type ISignMessageQuestData = ISetOnce<{
   featOfStrengthSignMessage: true;
 }>;
 
-export default ISignMessageActionData;
+export default ISignMessageQuestData;

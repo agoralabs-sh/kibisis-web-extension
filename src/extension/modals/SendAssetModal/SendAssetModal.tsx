@@ -83,7 +83,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import ActionTrackingService from '@extension/services/ActionTrackingService';
+import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -239,7 +239,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
-    let actionTrackingService: ActionTrackingService;
+    let questsService: QuestsService;
     let actionSent: boolean = false;
     let fromAddress: string;
     let transactionIds: string[];
@@ -299,14 +299,14 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       fromAddress = AccountService.convertPublicKeyToAlgorandAddress(
         fromAccount.publicKey
       );
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
 
       // track the action
       switch (selectedAsset?.type) {
         case AssetTypeEnum.ARC0200:
-          actionSent = await actionTrackingService.sendARC0200AssetAction(
+          actionSent = await questsService.sendARC0200AssetQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -317,7 +317,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           );
           break;
         case AssetTypeEnum.Native:
-          actionSent = await actionTrackingService.sendNativeCurrencyAction(
+          actionSent = await questsService.sendNativeCurrencyQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -327,7 +327,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           );
           break;
         case AssetTypeEnum.Standard:
-          actionSent = await actionTrackingService.sendStandardAssetAction(
+          actionSent = await questsService.sendStandardAssetQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,

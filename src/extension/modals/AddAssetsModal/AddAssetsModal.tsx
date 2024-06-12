@@ -87,7 +87,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import ActionTrackingService from '@extension/services/ActionTrackingService';
+import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -180,7 +180,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const allAssets = [...arc0200Assets, ...standardAssets];
   // handlers
   const handleAddARC0200AssetClick = async () => {
-    let actionTrackingService: ActionTrackingService;
+    let questsService: QuestsService;
 
     if (
       !selectedNetwork ||
@@ -202,13 +202,13 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
         })
       ).unwrap();
 
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
 
       // track the action if this is a new asset
       if (isNewSelectedAsset) {
-        await actionTrackingService.addARC0200AssetAction(
+        await questsService.addARC0200AssetQuest(
           AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
           {
             appID: selectedAsset.id,
@@ -258,7 +258,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleAddStandardAssetClick = async () => {
     const _functionName: string = 'handleAddStandardAssetClick';
-    let actionTrackingService: ActionTrackingService;
+    let questsService: QuestsService;
     let _password: string | null;
 
     if (
@@ -306,13 +306,13 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
         })
       ).unwrap();
 
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
 
       // track the action if this is a new asset
       if (isNewSelectedAsset) {
-        await actionTrackingService.addStandardAssetAction(
+        await questsService.addStandardAssetQuest(
           AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
           {
             assetID: selectedAsset.id,
