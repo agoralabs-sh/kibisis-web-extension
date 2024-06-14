@@ -66,7 +66,9 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import ActionTrackingService from '@extension/services/ActionTrackingService';
+import QuestsService, {
+  QuestNameEnum,
+} from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -139,7 +141,9 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   }, [account, accounts, selectedNetwork]);
   // handlers
   const handleAddARC0200AssetClick = async () => {
-    let actionTrackingService: ActionTrackingService;
+    let hasQuestBeenCompletedToday: boolean = false;
+    let questsService: QuestsService;
+    let questsSent: boolean = false;
 
     if (
       !selectedNetwork ||
@@ -161,18 +165,33 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
         })
       ).unwrap();
 
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
+      hasQuestBeenCompletedToday =
+        await questsService.hasQuestBeenCompletedTodayByName(
+          QuestNameEnum.AddARC0200AssetAction
+        );
 
       // track the action if this is a new asset
       if (isNewSelectedAsset) {
-        await actionTrackingService.addARC0200AssetAction(
+        questsSent = await questsService.addARC0200AssetQuest(
           AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
           {
             appID: selectedAsset.id,
             genesisHash: selectedNetwork.genesisHash,
           }
+        );
+      }
+
+      // if the quest has not been completed today (since 00:00 UTC), show a quest notification
+      if (questsSent && !hasQuestBeenCompletedToday) {
+        dispatch(
+          createNotification({
+            description: t<string>('captions.questComplete'),
+            title: t<string>('headings.congratulations'),
+            type: 'achievement',
+          })
         );
       }
 

@@ -83,7 +83,9 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import ActionTrackingService from '@extension/services/ActionTrackingService';
+import QuestsService, {
+  QuestNameEnum,
+} from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -239,11 +241,12 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const handleSendClick = async () => {
     const _functionName: string = 'handleSendClick';
     let _password: string | null;
-    let actionTrackingService: ActionTrackingService;
-    let actionSent: boolean = false;
     let fromAddress: string;
-    let transactionIds: string[];
+    let hasQuestBeenCompletedToday: boolean = false;
+    let questsService: QuestsService;
+    let questsSent: boolean = false;
     let toAccount: IAccount | null;
+    let transactionIds: string[];
 
     if (!fromAccount || !network || !transactions || transactions.length <= 0) {
       return;
@@ -299,14 +302,18 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       fromAddress = AccountService.convertPublicKeyToAlgorandAddress(
         fromAccount.publicKey
       );
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
 
       // track the action
       switch (selectedAsset?.type) {
         case AssetTypeEnum.ARC0200:
-          actionSent = await actionTrackingService.sendARC0200AssetAction(
+          hasQuestBeenCompletedToday =
+            await questsService.hasQuestBeenCompletedTodayByName(
+              QuestNameEnum.SendARC0200AssetAction
+            );
+          questsSent = await questsService.sendARC0200AssetQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -317,7 +324,11 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           );
           break;
         case AssetTypeEnum.Native:
-          actionSent = await actionTrackingService.sendNativeCurrencyAction(
+          hasQuestBeenCompletedToday =
+            await questsService.hasQuestBeenCompletedTodayByName(
+              QuestNameEnum.SendNativeCurrencyAction
+            );
+          questsSent = await questsService.sendNativeCurrencyQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -327,7 +338,11 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           );
           break;
         case AssetTypeEnum.Standard:
-          actionSent = await actionTrackingService.sendStandardAssetAction(
+          hasQuestBeenCompletedToday =
+            await questsService.hasQuestBeenCompletedTodayByName(
+              QuestNameEnum.SendStandardAssetAction
+            );
+          questsSent = await questsService.sendStandardAssetQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -341,8 +356,8 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           break;
       }
 
-      if (actionSent) {
-        // dispatch a successful quest notification
+      // if the quest has not been completed today (since 00:00 UTC), show a quest notification
+      if (questsSent && !hasQuestBeenCompletedToday) {
         dispatch(
           createNotification({
             description: t<string>('captions.questComplete'),

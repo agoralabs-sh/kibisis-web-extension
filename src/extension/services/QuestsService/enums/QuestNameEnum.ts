@@ -1,4 +1,4 @@
-enum ActionNameEnum {
+enum QuestNameEnum {
   AddARC0200AssetAction = 'add-arc0200-asset-action',
   AddStandardAssetAction = 'add-standard-asset-action',
   AcquireARC0072Action = 'acquire-arc0072-action',
@@ -9,4 +9,4 @@ enum ActionNameEnum {
   SignAMessageAction = 'sign-a-message-action',
 }
 
-export default ActionNameEnum;
+export default QuestNameEnum;

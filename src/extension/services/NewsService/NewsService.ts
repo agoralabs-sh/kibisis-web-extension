@@ -33,7 +33,6 @@ export default class NewsService {
   /**
    * Gets all the news items.
    * @returns {Promise<INewsItem[]>} a promise that resolves to all the news items.
-   * exist.
    */
   public async getAll(): Promise<INewsItem[]> {
     return (await this.storageManager.getItem(NEWS_KEY)) || [];

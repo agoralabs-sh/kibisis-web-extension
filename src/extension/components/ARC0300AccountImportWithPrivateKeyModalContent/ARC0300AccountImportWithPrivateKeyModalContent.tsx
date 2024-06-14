@@ -66,7 +66,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import ActionTrackingService from '@extension/services/ActionTrackingService';
+import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -129,7 +129,7 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
     const _functionName: string = 'handleImportClick';
     let _password: string | null;
     let account: IAccount | null;
-    let actionTrackingService: ActionTrackingService;
+    let questsService: QuestsService;
     let privateKey: Uint8Array | null;
     let result: IUpdateAssetHoldingsResult;
 
@@ -269,12 +269,12 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
         })
       );
 
-      actionTrackingService = new ActionTrackingService({
+      questsService = new QuestsService({
         logger,
       });
 
       // track the action
-      await actionTrackingService.importAccountViaQRCodeAction(
+      await questsService.importAccountViaQRCodeQuest(
         AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
       );
 
