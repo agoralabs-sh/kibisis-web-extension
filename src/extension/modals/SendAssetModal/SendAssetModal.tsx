@@ -244,6 +244,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     let fromAddress: string;
     let hasQuestBeenCompletedToday: boolean = false;
     let questsService: QuestsService;
+    let questsSent: boolean = false;
     let toAccount: IAccount | null;
     let transactionIds: string[];
 
@@ -312,7 +313,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
             await questsService.hasQuestBeenCompletedTodayByName(
               QuestNameEnum.SendARC0200AssetAction
             );
-          await questsService.sendARC0200AssetQuest(
+          questsSent = await questsService.sendARC0200AssetQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -327,7 +328,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
             await questsService.hasQuestBeenCompletedTodayByName(
               QuestNameEnum.SendNativeCurrencyAction
             );
-          await questsService.sendNativeCurrencyQuest(
+          questsSent = await questsService.sendNativeCurrencyQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -341,7 +342,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
             await questsService.hasQuestBeenCompletedTodayByName(
               QuestNameEnum.SendStandardAssetAction
             );
-          await questsService.sendStandardAssetQuest(
+          questsSent = await questsService.sendStandardAssetQuest(
             fromAddress,
             toAddress,
             amountInStandardUnits,
@@ -356,7 +357,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       }
 
       // if the quest has not been completed today (since 00:00 UTC), show a quest notification
-      if (!hasQuestBeenCompletedToday) {
+      if (questsSent && !hasQuestBeenCompletedToday) {
         dispatch(
           createNotification({
             description: t<string>('captions.questComplete'),

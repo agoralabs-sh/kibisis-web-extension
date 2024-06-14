@@ -141,6 +141,9 @@ export default class QuestsService {
         `${QuestsService.name}#${__functionName}: successfully sent action "${name}"`
       );
 
+      // record the quest as completed
+      await this._completeQuestByName(name);
+
       return true;
     } catch (error) {
       this._logger?.error(`${QuestsService.name}#${__functionName}:`, error);
@@ -163,8 +166,6 @@ export default class QuestsService {
     fromAddress: string,
     data: IAcquireARC0072QuestData
   ): Promise<boolean> {
-    await this._completeQuestByName(QuestNameEnum.AcquireARC0072Action);
-
     return await this._track({
       account: fromAddress,
       data,
@@ -182,8 +183,6 @@ export default class QuestsService {
     fromAddress: string,
     data: IAddARC0200AssetQuestData
   ): Promise<boolean> {
-    await this._completeQuestByName(QuestNameEnum.AddARC0200AssetAction);
-
     return await this._track({
       account: fromAddress,
       data,
@@ -201,8 +200,6 @@ export default class QuestsService {
     fromAddress: string,
     data: IAddStandardAssetQuestData
   ): Promise<boolean> {
-    await this._completeQuestByName(QuestNameEnum.AddStandardAssetAction);
-
     return await this._track({
       account: fromAddress,
       data,
@@ -216,8 +213,6 @@ export default class QuestsService {
    * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
   public async importAccountViaQRCodeQuest(account: string): Promise<boolean> {
-    await this._completeQuestByName(QuestNameEnum.ImportAccountViaQRCodeAction);
-
     return await this._track({
       account,
       data: {
@@ -272,8 +267,6 @@ export default class QuestsService {
       return false;
     }
 
-    await this._completeQuestByName(QuestNameEnum.SendARC0200AssetAction);
-
     return await this._track({
       account: fromAddress,
       data,
@@ -301,8 +294,6 @@ export default class QuestsService {
     ) {
       return false;
     }
-
-    await this._completeQuestByName(QuestNameEnum.SendNativeCurrencyAction);
 
     return await this._track({
       account: fromAddress,
@@ -332,8 +323,6 @@ export default class QuestsService {
       return false;
     }
 
-    await this._completeQuestByName(QuestNameEnum.SendStandardAssetAction);
-
     return await this._track({
       account: fromAddress,
       data,
@@ -347,8 +336,6 @@ export default class QuestsService {
    * @returns {Promise<boolean>} a promise that resolves to whether the quest was tracked or not.
    */
   public async signMessageQuest(account: string): Promise<boolean> {
-    await this._completeQuestByName(QuestNameEnum.SignAMessageAction);
-
     return await this._track({
       account,
       data: {
