@@ -1,3 +1,10 @@
+# [1.17.0-beta.12](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.11...v1.17.0-beta.12) (2024-06-14)
+
+
+### Features
+
+* only show quest completion toast once daily for each quest ([#252](https://github.com/agoralabs-sh/kibisis-web-extension/issues/252)) ([189abcc](https://github.com/agoralabs-sh/kibisis-web-extension/commit/189abccdbef6f416cbb618fcc8d06777e00f2749))
+
 # [1.17.0-beta.11](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.10...v1.17.0-beta.11) (2024-06-03)
 
 
