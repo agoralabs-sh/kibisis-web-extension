@@ -93,14 +93,14 @@ export default class PrivateKeyService {
     publicKey: Uint8Array,
     password: string
   ): Promise<Uint8Array | null> {
-    const _functionName: string = 'getDecryptedPrivateKey';
-    const isPasswordValid: boolean = await this.verifyPassword(password);
+    const _functionName = 'getDecryptedPrivateKey';
+    const isPasswordValid = await this.verifyPassword(password);
     let account: IPrivateKey | null;
     let encodedPublicKey: string;
 
     if (!isPasswordValid) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): password is invalid`
+        `${PrivateKeyService.name}#${_functionName}: password is invalid`
       );
 
       throw new InvalidPasswordError();
@@ -113,14 +113,14 @@ export default class PrivateKeyService {
 
     if (!account) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): no account stored for public key "${encodedPublicKey}"`
+        `${PrivateKeyService.name}#${_functionName}: no account stored for public key "${encodedPublicKey}"`
       );
 
       return null;
     }
 
     this.logger?.debug(
-      `${PrivateKeyService.name}#${_functionName}(): decrypting private key for public key "${encodedPublicKey}"`
+      `${PrivateKeyService.name}#${_functionName}: decrypting private key for public key "${encodedPublicKey}"`
     );
 
     return await decryptBytes(
@@ -152,8 +152,7 @@ export default class PrivateKeyService {
    * @returns {Promise<IPrivateKey[]>} all the private keys in local storage.
    */
   public async getPrivateKeys(): Promise<IPrivateKey[]> {
-    const items: Record<string, unknown> =
-      await this.storageManager.getAllItems();
+    const items = await this.storageManager.getAllItems();
 
     return Object.keys(items).reduce<IPrivateKey[]>(
       (acc, key) =>
@@ -170,13 +169,13 @@ export default class PrivateKeyService {
    * been initialized.
    */
   public async getPublicKeys(): Promise<Uint8Array[]> {
-    const _functionName: string = 'getPublicKeys';
-    const isInitialized: boolean = await this.isInitialized();
+    const _functionName = 'getPublicKeys';
+    const isInitialized = await this.isInitialized();
     let accounts: IPrivateKey[];
 
     if (!isInitialized) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): private key service has not been initialized`
+        `${PrivateKeyService.name}#${_functionName}: private key service has not been initialized`
       );
 
       return [];
@@ -193,8 +192,9 @@ export default class PrivateKeyService {
    * @returns {boolean} true if the private key store has been initialized, false otherwise.
    */
   public async isInitialized(): Promise<boolean> {
-    const encryptedPasswordTag: string | null =
-      await this.storageManager.getItem(PASSWORD_TAG_ITEM_KEY);
+    const encryptedPasswordTag = await this.storageManager.getItem(
+      PASSWORD_TAG_ITEM_KEY
+    );
 
     return !!encryptedPasswordTag;
   }
@@ -211,9 +211,8 @@ export default class PrivateKeyService {
    * Removes the password tag and all private keys from local storage.
    */
   public async reset(): Promise<void> {
-    const items: Record<string, unknown> =
-      await this.storageManager.getAllItems();
-    const filteredKeyNames: string[] = Object.keys(items).filter((value) =>
+    const items = await this.storageManager.getAllItems();
+    const filteredKeyNames = Object.keys(items).filter((value) =>
       value.startsWith(PRIVATE_KEY_ITEM_KEY_PREFIX)
     );
 
@@ -235,8 +234,8 @@ export default class PrivateKeyService {
     newPassword: string,
     currentPassword?: string
   ): Promise<IPasswordTag> {
-    const _functionName: string = 'setPassword';
-    const encryptedTag: Uint8Array = await encryptBytes(
+    const _functionName = 'setPassword';
+    const encryptedTag = await encryptBytes(
       encodeUtf8(this.passwordTag),
       newPassword,
       {
@@ -245,7 +244,7 @@ export default class PrivateKeyService {
         }),
       }
     ); // encrypt the password tag (the extension id) with the new password
-    const isInitialized: boolean = await this.isInitialized();
+    const isInitialized = await this.isInitialized();
     const passwordTagItem: IPasswordTag = {
       id: uuid(),
       encryptedTag: encodeHex(encryptedTag), // encode it into hexadecimal
@@ -257,13 +256,13 @@ export default class PrivateKeyService {
     // if no password exists, we can just set the new one
     if (!isInitialized) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): private key service has not been initialized, removing any previous accounts`
+        `${PrivateKeyService.name}#${_functionName}: private key service has not been initialized, removing any previous accounts`
       );
 
       await this.reset(); // first remove any previously saved accounts
 
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): saving new password tag to storage`
+        `${PrivateKeyService.name}#${_functionName}: saving new password tag to storage`
       );
 
       await this.storageManager.setItems({
@@ -276,7 +275,7 @@ export default class PrivateKeyService {
     // if we have a password tag stored and no password, throw an error
     if (!currentPassword) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): private key service has been initialized but no password was supplied to validate`
+        `${PrivateKeyService.name}#${_functionName}: private key service has been initialized but no password was supplied to validate`
       );
 
       throw new InvalidPasswordError();
@@ -286,14 +285,14 @@ export default class PrivateKeyService {
 
     if (!isPasswordValid) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): private key service has been initialized but supplied password is invalid`
+        `${PrivateKeyService.name}#${_functionName}: private key service has been initialized but supplied password is invalid`
       );
 
       throw new InvalidPasswordError();
     }
 
     this.logger?.debug(
-      `${PrivateKeyService.name}#${_functionName}(): re-encrypting private keys`
+      `${PrivateKeyService.name}#${_functionName}: re-encrypting private keys`
     );
 
     privateKeys = await this.getPrivateKeys();
@@ -328,7 +327,7 @@ export default class PrivateKeyService {
     );
 
     this.logger?.debug(
-      `${PrivateKeyService.name}#${_functionName}(): saving new password tag and re-encrypted keys to storage`
+      `${PrivateKeyService.name}#${_functionName}: saving new password tag and re-encrypted keys to storage`
     );
 
     // add the new password tag and the re-encrypted keys
@@ -361,8 +360,8 @@ export default class PrivateKeyService {
     privateKey: Uint8Array,
     password: string
   ): Promise<IPrivateKey | null> {
-    const _functionName: string = 'setPrivateKey';
-    const isPasswordValid: boolean = await this.verifyPassword(password);
+    const _functionName = 'setPrivateKey';
+    const isPasswordValid = await this.verifyPassword(password);
     let encodedPublicKey: string;
     let encryptedPrivateKey: Uint8Array;
     let now: Date;
@@ -372,7 +371,7 @@ export default class PrivateKeyService {
 
     if (!isPasswordValid) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): password is invalid`
+        `${PrivateKeyService.name}#${_functionName}: password is invalid`
       );
 
       throw new InvalidPasswordError();
@@ -383,7 +382,7 @@ export default class PrivateKeyService {
     );
 
     this.logger?.debug(
-      `${PrivateKeyService.name}#${_functionName}(): encrypting private key for public key "${encodedPublicKey}"`
+      `${PrivateKeyService.name}#${_functionName}: encrypting private key for public key "${encodedPublicKey}"`
     );
 
     encryptedPrivateKey = await encryptBytes(privateKey, password, {
@@ -401,14 +400,14 @@ export default class PrivateKeyService {
 
     if (!passwordTag) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): failed to get password tag`
+        `${PrivateKeyService.name}#${_functionName}: failed to get password tag`
       );
 
       return null;
     }
 
     this.logger?.debug(
-      `${PrivateKeyService.name}#${_functionName}(): storing private key for public key "${encodedPublicKey}"`
+      `${PrivateKeyService.name}#${_functionName}: storing private key for public key "${encodedPublicKey}"`
     );
 
     now = new Date();
@@ -445,15 +444,16 @@ export default class PrivateKeyService {
    * @returns {boolean} true if the password is valid, false otherwise.
    */
   public async verifyPassword(password: string): Promise<boolean> {
-    const _functionName: string = 'verifyPassword';
-    const passwordTag: IPasswordTag | null =
-      await this.storageManager.getItem<IPasswordTag>(PASSWORD_TAG_ITEM_KEY);
+    const _functionName = 'verifyPassword';
+    const passwordTag = await this.storageManager.getItem<IPasswordTag>(
+      PASSWORD_TAG_ITEM_KEY
+    );
     let decryptedPasswordTag: Uint8Array;
 
     // if we have the decrypted password tag, decrypt it and check it matches the extension id
     if (passwordTag) {
       this.logger?.debug(
-        `${PrivateKeyService.name}#${_functionName}(): password tag "${passwordTag.id}" found, attempting to validate`
+        `${PrivateKeyService.name}#${_functionName}: password tag "${passwordTag.id}" found, attempting to validate`
       );
 
       try {
@@ -468,7 +468,7 @@ export default class PrivateKeyService {
         );
       } catch (error) {
         this.logger?.debug(
-          `${PrivateKeyService.name}#${_functionName}(): failed to decrypt password tag "${passwordTag.id}"`
+          `${PrivateKeyService.name}#${_functionName}: failed to decrypt password tag "${passwordTag.id}"`
         );
 
         return false;
