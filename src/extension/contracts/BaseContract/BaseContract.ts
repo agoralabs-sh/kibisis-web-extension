@@ -6,6 +6,7 @@ import algosdk, {
   ABIUintType,
   Algodv2,
   assignGroupID,
+  decodeAddress,
   decodeObj,
   EncodedSignedTransaction,
   encodeUnsignedSimulateTransaction,
@@ -20,7 +21,10 @@ import BigNumber from 'bignumber.js';
 import { SIMULATE_MINIMUM_FEE } from './constants';
 
 // errors
-import { ReadABIContractError } from '@extension/errors';
+import {
+  InvalidABIContractError,
+  ReadABIContractError,
+} from '@extension/errors';
 
 // types
 import type { ILogger } from '@common/types';
@@ -93,6 +97,21 @@ export default class BaseContract {
   }
 
   /**
+   * Box names that use an address need to be padded with some null bytes.
+   * @param {string} address - the address string to parse.
+   * @returns {Uint8Array} the raw box name.
+   */
+  public static parseBoxNameFromAddress(address: string): Uint8Array {
+    const decodedAddress = decodeAddress(address);
+    const bytes = new Uint8Array(decodedAddress.publicKey.length + 1);
+
+    bytes.set([0]); // pad some null bytes to the box name
+    bytes.set(decodedAddress.publicKey, 1);
+
+    return bytes;
+  }
+
+  /**
    * protected functions
    */
 
@@ -161,7 +180,7 @@ export default class BaseContract {
     fromAddress,
     suggestedParams,
   }: IDetermineBoxReferencesOptions): Promise<algosdk.modelsv2.BoxReference[]> {
-    const _functionName: string = 'determineBoxReferences';
+    const _functionName = 'determineBoxReferences';
     let response: algosdk.modelsv2.SimulateResponse;
 
     try {
@@ -177,11 +196,7 @@ export default class BaseContract {
         },
       ]);
 
-      if (!response.txnGroups[0].unnamedResourcesAccessed?.boxes) {
-        return [];
-      }
-
-      return response.txnGroups[0].unnamedResourcesAccessed?.boxes;
+      return response.txnGroups[0].unnamedResourcesAccessed?.boxes || [];
     } catch (error) {
       this.logger.debug(
         `${BaseContract.name}#${_functionName}: ${error.message}`
@@ -195,8 +210,8 @@ export default class BaseContract {
     abiMethod,
     response,
   }: IParseTransactionResponseOptions): IABIResult | null {
-    const _functionName: string = 'parseTransactionResponse';
-    const log: Uint8Array | null = response.logs?.pop() || null; // get the first log
+    const _functionName = 'parseTransactionResponse';
+    const log = response.logs?.pop() || null; // get the first log
     let trimmedLog: Uint8Array;
     let type: string;
 

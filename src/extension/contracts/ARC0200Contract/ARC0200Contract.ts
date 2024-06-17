@@ -116,7 +116,6 @@ export default class ARC0200Contract extends BaseContract {
     let toBalance: BigNumber;
     let paymentTransaction: Transaction | null = null;
     let boxStorageAmount: BigNumber;
-    let boxReferences: algosdk.modelsv2.BoxReference[];
     let encodedAmount: Uint8Array;
     let encodedToAddress: Uint8Array;
     let suggestedParams: SuggestedParams;
@@ -158,12 +157,10 @@ export default class ARC0200Contract extends BaseContract {
       appArgs = [encodedToAddress, encodedAmount];
       toBalance = await this.balanceOf(toAddress);
       suggestedParams = await this.algodClient.getTransactionParams().do();
-      boxReferences = await this.determineBoxReferences({
-        abiMethod,
-        appArgs,
-        fromAddress,
-        suggestedParams,
-      });
+
+      const [fromBoxName, toBoxName] = [fromAddress, toAddress].map(
+        ARC0200Contract.parseBoxNameFromAddress
+      );
 
       // if the balance is zero, we will need to create a payment transaction to fund a box
       if (toBalance.lte(0)) {
@@ -172,7 +169,7 @@ export default class ARC0200Contract extends BaseContract {
         );
 
         boxStorageAmount = calculateAppMbrForBox(
-          new BigNumber(boxReferences[0].name.length),
+          new BigNumber(toBoxName.length),
           new BigNumber(encodedAmount.length)
         );
         paymentTransaction = makePaymentTxnWithSuggestedParams(
@@ -194,14 +191,10 @@ export default class ARC0200Contract extends BaseContract {
         fromAddress,
         note,
         suggestedParams,
-        ...(boxReferences && {
-          boxes: boxReferences.map(
-            ({ name }: algosdk.modelsv2.BoxReference) => ({
-              appIndex: new BigNumber(this.appId).toNumber(),
-              name,
-            })
-          ),
-        }),
+        boxes: [fromBoxName, toBoxName].map((value) => ({
+          appIndex: new BigNumber(this.appId).toNumber(),
+          name: value,
+        })),
       });
 
       transactions = [

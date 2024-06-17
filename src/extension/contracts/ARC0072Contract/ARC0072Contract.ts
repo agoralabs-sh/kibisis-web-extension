@@ -43,7 +43,7 @@ export default class ARC0072Contract extends BaseContract {
    * @throws {ReadABIContractError} if there was a problem reading the data.
    */
   public async balanceOf(owner: string): Promise<BigNumber> {
-    const _functionName: string = 'balanceOf';
+    const _functionName = 'balanceOf';
     let abiAddressArgType: ABIType | null;
     let abiMethod: ABIMethod;
     let result: BigNumber | null;
@@ -92,7 +92,7 @@ export default class ARC0072Contract extends BaseContract {
    * @throws {ReadABIContractError} if there was a problem reading the data.
    */
   public async ownerOf(tokenId: BigNumber): Promise<string | null> {
-    const _functionName: string = 'ownerOf';
+    const _functionName = 'ownerOf';
     let abiMethod: ABIMethod;
     let address: string;
     let encodedTokenId: Uint8Array;
@@ -138,7 +138,7 @@ export default class ARC0072Contract extends BaseContract {
    * @returns {BigNumber} the token ID for a given index.
    */
   public async tokenByIndex(index: BigNumber): Promise<BigNumber> {
-    const _functionName: string = 'tokenByIndex';
+    const _functionName = 'tokenByIndex';
     let abiMethod: ABIMethod;
     let encodedIndex: Uint8Array;
     let result: BigNumber | null;
@@ -178,7 +178,7 @@ export default class ARC0072Contract extends BaseContract {
    * @throws {ReadABIContractError} if there was a problem reading the data.
    */
   public async tokenURI(tokenId: BigNumber): Promise<string> {
-    const _functionName: string = 'tokenURI';
+    const _functionName = 'tokenURI';
     let abiMethod: ABIMethod;
     let encodedTokenId: Uint8Array;
     let result: string | null;
@@ -217,7 +217,7 @@ export default class ARC0072Contract extends BaseContract {
    * @throws {ReadABIContractError} if there was a problem reading the data.
    */
   public async totalSupply(): Promise<BigNumber> {
-    const _functionName: string = 'totalSupply';
+    const _functionName = 'totalSupply';
     let abiMethod: ABIMethod;
     let result: BigNumber | null;
 
