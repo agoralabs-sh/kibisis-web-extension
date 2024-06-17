@@ -247,7 +247,7 @@ export default class QuestsService {
   }
 
   /**
-   * Tracks a send ARC-0200 asset quest. This quest is only tracked when >=1 unit is sent to a different account.
+   * Tracks a send ARC-0200 asset quest. This quest is only tracked when >0 unit is sent to a different account.
    * @param {string} fromAddress - the address of the account the asset was sent from.
    * @param {string} toAddress - the address of the account the asset was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
@@ -262,7 +262,7 @@ export default class QuestsService {
   ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
-      new BigNumber(amountInStandardUnits).lt(new BigNumber('1'))
+      new BigNumber(amountInStandardUnits).lte(new BigNumber('0'))
     ) {
       return false;
     }
@@ -275,7 +275,7 @@ export default class QuestsService {
   }
 
   /**
-   * Tracks a send native currency quest. This quest is only tracked when >=0.1 unit is sent to a different account.
+   * Tracks a send native currency quest. This quest is only tracked when >0 unit is sent to a different account.
    * @param {string} fromAddress - the address of the account the amount was sent from.
    * @param {string} toAddress - the address of the account the amount was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
@@ -290,7 +290,7 @@ export default class QuestsService {
   ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
-      new BigNumber(amountInStandardUnits).lt(new BigNumber('0.1'))
+      new BigNumber(amountInStandardUnits).lte(new BigNumber('0'))
     ) {
       return false;
     }
@@ -303,7 +303,7 @@ export default class QuestsService {
   }
 
   /**
-   * Tracks a send standard asset quest. This quest is only tracked when >=1 unit is sent to a different account.
+   * Tracks a send standard asset quest. This quest is only tracked when >0 unit is sent to a different account.
    * @param {string} fromAddress - the address of the account the asset was sent from.
    * @param {string} toAddress - the address of the account the asset was sent to.
    * @param {string} amountInStandardUnits - the amount that was sent in standard units.
@@ -318,7 +318,7 @@ export default class QuestsService {
   ): Promise<boolean> {
     if (
       fromAddress === toAddress ||
-      new BigNumber(amountInStandardUnits).lt(new BigNumber('1'))
+      new BigNumber(amountInStandardUnits).lte(new BigNumber('0'))
     ) {
       return false;
     }
