@@ -1,3 +1,10 @@
+# [1.17.0-beta.14](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.13...v1.17.0-beta.14) (2024-06-17)
+
+
+### Features
+
+* send asset quest amount threshold lowered to be greater than 0 ([#256](https://github.com/agoralabs-sh/kibisis-web-extension/issues/256)) ([7bb7b16](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7bb7b16445946ed7d48a158dad4b2ae46659ccc0))
+
 # [1.17.0-beta.13](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.12...v1.17.0-beta.13) (2024-06-17)
 
 
