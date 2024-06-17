@@ -1,3 +1,10 @@
+# [1.17.0-beta.13](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.12...v1.17.0-beta.13) (2024-06-17)
+
+
+### Features
+
+* rekeyed accounts unable to send arc-0200 assets ([#254](https://github.com/agoralabs-sh/kibisis-web-extension/issues/254)) ([ea36986](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ea369862aacc7c1670e710e392405fea05ddea28))
+
 # [1.17.0-beta.12](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.11...v1.17.0-beta.12) (2024-06-14)
 
 
