@@ -6,6 +6,7 @@ import algosdk, {
   ABIUintType,
   Algodv2,
   assignGroupID,
+  decodeAddress,
   decodeObj,
   EncodedSignedTransaction,
   encodeUnsignedSimulateTransaction,
@@ -93,6 +94,21 @@ export default class BaseContract {
     return new BigNumber(
       String(new ABIUintType(size).decode(decodeBase64(arg)))
     );
+  }
+
+  /**
+   * Box names that use an address need to be padded with some null bytes.
+   * @param {string} address - the address string to parse.
+   * @returns {Uint8Array} the raw box name.
+   */
+  public static parseBoxNameFromAddress(address: string): Uint8Array {
+    const decodedAddress = decodeAddress(address);
+    const bytes = new Uint8Array(decodedAddress.publicKey.length + 1);
+
+    bytes.set([0]); // pad some null bytes to the box name
+    bytes.set(decodedAddress.publicKey, 1);
+
+    return bytes;
   }
 
   /**

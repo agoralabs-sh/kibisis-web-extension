@@ -3,7 +3,6 @@ import algosdk, {
   ABIMethod,
   ABIType,
   assignGroupID,
-  decodeAddress,
   makePaymentTxnWithSuggestedParams,
   SuggestedParams,
   Transaction,
@@ -49,22 +48,6 @@ export default class ARC0200Contract extends BaseContract {
 
   public static getABI(): ABIContract {
     return new ABIContract(abi);
-  }
-
-  /**
-   * Boxes are used to store the map for ARC-0200 and the box name is the address. These are referenced with a padded
-   * null value.
-   * @param {string} address - the address string to parse.
-   * @returns {Uint8Array} the raw box name.
-   */
-  public static parseBoxNameFromAddress(address: string): Uint8Array {
-    const decodedAddress = decodeAddress(address);
-    const bytes = new Uint8Array(decodedAddress.publicKey.length + 1);
-
-    bytes.set([0]); // pad some null bytes to the box name
-    bytes.set(decodedAddress.publicKey, 1);
-
-    return bytes;
   }
 
   /**
