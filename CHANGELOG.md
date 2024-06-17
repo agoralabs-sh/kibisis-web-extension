@@ -1,3 +1,27 @@
+# [1.17.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0...v1.17.0) (2024-06-17)
+
+
+### Bug Fixes
+
+* able to create account when password lock enabled ([#251](https://github.com/agoralabs-sh/kibisis-web-extension/issues/251)) ([481cee1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/481cee1f5a893ba7b424b7ea003e759c208a61c7))
+* non watch accounts unable to sign transactions ([#247](https://github.com/agoralabs-sh/kibisis-web-extension/issues/247)) ([d430427](https://github.com/agoralabs-sh/kibisis-web-extension/commit/d430427826d0a4d58833ca5e3190da0769437923))
+* use nodes for network ping urls ([#241](https://github.com/agoralabs-sh/kibisis-web-extension/issues/241)) ([4e7798b](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4e7798b91fe224917b91db8616082e190f82846d))
+
+
+### Features
+
+* add a watch account ([#230](https://github.com/agoralabs-sh/kibisis-web-extension/issues/230)) ([c00e1d0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c00e1d06c2163f99a0aa065a74d05a2b3cdcbf4e))
+* add toast for completed quests ([#242](https://github.com/agoralabs-sh/kibisis-web-extension/issues/242)) ([ed1bd1e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ed1bd1e164f7fc40003cb8fac5a931b486ab0c0c))
+* export watch accounts ([#231](https://github.com/agoralabs-sh/kibisis-web-extension/issues/231)) ([68a2769](https://github.com/agoralabs-sh/kibisis-web-extension/commit/68a27696545efa0a1ff5b1549bc0df6f1972cd6d))
+* import watch account via a qr code ([#232](https://github.com/agoralabs-sh/kibisis-web-extension/issues/232)) ([4a7a5a4](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4a7a5a41d86e537406de05d651944728089baa8c))
+* listen to new tabs and parse key registration uris ([#234](https://github.com/agoralabs-sh/kibisis-web-extension/issues/234)) ([4caa9cd](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4caa9cd91b7eec7fdc2d89079a664b87874449ef))
+* only show quest completion toast once daily for each quest ([#252](https://github.com/agoralabs-sh/kibisis-web-extension/issues/252)) ([189abcc](https://github.com/agoralabs-sh/kibisis-web-extension/commit/189abccdbef6f416cbb618fcc8d06777e00f2749))
+* re-key an account and remove the auth account from re-key ([#243](https://github.com/agoralabs-sh/kibisis-web-extension/issues/243)) ([35f55ce](https://github.com/agoralabs-sh/kibisis-web-extension/commit/35f55ce329721314de4cbf2c3a41e0ef7c38427e))
+* rekeyed account support ([#240](https://github.com/agoralabs-sh/kibisis-web-extension/issues/240)) ([fde73b5](https://github.com/agoralabs-sh/kibisis-web-extension/commit/fde73b5a1f94e67aea4ac8aaaefbb2e08dcf56fe))
+* rekeyed accounts unable to send arc-0200 assets ([#254](https://github.com/agoralabs-sh/kibisis-web-extension/issues/254)) ([ea36986](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ea369862aacc7c1670e710e392405fea05ddea28))
+* send asset quest amount threshold lowered to be greater than 0 ([#256](https://github.com/agoralabs-sh/kibisis-web-extension/issues/256)) ([7bb7b16](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7bb7b16445946ed7d48a158dad4b2ae46659ccc0))
+* store a unique id for an install ([#245](https://github.com/agoralabs-sh/kibisis-web-extension/issues/245)) ([4e1d55f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4e1d55fe99a2f32a48eeb6b0233dce87fb2c5423))
+
 # [1.17.0-beta.14](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0-beta.13...v1.17.0-beta.14) (2024-06-17)
 
 
