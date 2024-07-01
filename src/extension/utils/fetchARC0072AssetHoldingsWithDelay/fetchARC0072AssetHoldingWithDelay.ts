@@ -42,10 +42,6 @@ export default async function fetchARC0072AssetHoldingsWithDelay({
       } catch (error) {
         reject(error);
       }
-      return await arc0072Indexer.fetchTokensByOwner({
-        address,
-        logger,
-      });
     }, delay)
   );
 }
