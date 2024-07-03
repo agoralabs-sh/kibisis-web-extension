@@ -1,3 +1,10 @@
+## [1.17.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0...v1.17.1) (2024-07-03)
+
+
+### Bug Fixes
+
+* add auth address when simulating a transaction to get the box references ([#262](https://github.com/agoralabs-sh/kibisis-web-extension/issues/262)) ([1862666](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1862666eccc6d8cbfe27cff58d9428e0bdb49545))
+
 # [1.17.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0...v1.17.0) (2024-06-17)
 
 
