@@ -20,6 +20,7 @@ import AccountService from '@extension/services/AccountService';
 import type { ILogger } from '@common/types';
 import type {
   IAccount,
+  IAccountInformation,
   IAssetTypes,
   IAsyncThunkConfigWithRejectValue,
   INativeCurrency,
@@ -59,15 +60,19 @@ const createUnsignedTransactionsThunk: AsyncThunk<
       selectNetworkFromSettings(networks, getState().settings);
     const note: string | null = getState().sendAssets.note;
     const toAddress: string | null = getState().sendAssets.toAddress;
+    let _error: string;
+    let fromAccountInformation: IAccountInformation | null;
     let amountInAtomicUnits: string;
     let fromAccount: IAccount | null;
 
     if (!asset || !fromAddress || !toAddress) {
+      _error = 'required fields not completed';
+
       logger.debug(
-        `${SendAssetsThunkEnum.CreateUnsignedTransactions}: required fields not completed`
+        `${SendAssetsThunkEnum.CreateUnsignedTransactions}: ${_error}`
       );
 
-      return rejectWithValue(new MalformedDataError('required fields missing'));
+      return rejectWithValue(new MalformedDataError(_error));
     }
 
     fromAccount =
@@ -78,15 +83,13 @@ const createUnsignedTransactionsThunk: AsyncThunk<
       ) || null;
 
     if (!fromAccount) {
+      _error = `no account found for "${fromAddress}"`;
+
       logger.debug(
-        `${SendAssetsThunkEnum.CreateUnsignedTransactions}: no account found for "${fromAddress}"`
+        `${SendAssetsThunkEnum.CreateUnsignedTransactions}: ${_error}`
       );
 
-      return rejectWithValue(
-        new MalformedDataError(
-          `no account data found for "${fromAddress}" in wallet`
-        )
-      );
+      return rejectWithValue(new MalformedDataError(_error));
     }
 
     if (!online) {
@@ -111,6 +114,21 @@ const createUnsignedTransactionsThunk: AsyncThunk<
       );
     }
 
+    fromAccountInformation = AccountService.extractAccountInformationForNetwork(
+      fromAccount,
+      network
+    );
+
+    if (!fromAccountInformation) {
+      _error = `no account information found for "${fromAddress}" on network "${network.genesisId}"`;
+
+      logger.debug(
+        `${SendAssetsThunkEnum.CreateUnsignedTransactions}: ${_error}`
+      );
+
+      return rejectWithValue(new MalformedDataError(_error));
+    }
+
     try {
       amountInAtomicUnits = convertToAtomicUnit(
         new BigNumber(amountInStandardUnits),
@@ -122,6 +140,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
           return await createUnsignedARC0200TransferTransactions({
             amountInAtomicUnits,
             asset,
+            authAddress: fromAccountInformation.authAddress,
             fromAddress,
             logger,
             network,

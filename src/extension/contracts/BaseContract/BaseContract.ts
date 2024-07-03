@@ -16,15 +16,13 @@ import algosdk, {
   Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
+import { Buffer } from 'buffer';
 
 // constants
 import { SIMULATE_MINIMUM_FEE } from './constants';
 
 // errors
-import {
-  InvalidABIContractError,
-  ReadABIContractError,
-} from '@extension/errors';
+import { ReadABIContractError } from '@extension/errors';
 
 // types
 import type { ILogger } from '@common/types';
@@ -97,21 +95,6 @@ export default class BaseContract {
   }
 
   /**
-   * Box names that use an address need to be padded with some null bytes.
-   * @param {string} address - the address string to parse.
-   * @returns {Uint8Array} the raw box name.
-   */
-  public static parseBoxNameFromAddress(address: string): Uint8Array {
-    const decodedAddress = decodeAddress(address);
-    const bytes = new Uint8Array(decodedAddress.publicKey.length + 1);
-
-    bytes.set([0]); // pad some null bytes to the box name
-    bytes.set(decodedAddress.publicKey, 1);
-
-    return bytes;
-  }
-
-  /**
    * protected functions
    */
 
@@ -177,9 +160,12 @@ export default class BaseContract {
   protected async determineBoxReferences({
     abiMethod,
     appArgs,
+    authAddress,
     fromAddress,
     suggestedParams,
-  }: IDetermineBoxReferencesOptions): Promise<algosdk.modelsv2.BoxReference[]> {
+  }: IDetermineBoxReferencesOptions): Promise<
+    algosdk.modelsv2.BoxReference[] | null
+  > {
     const _functionName = 'determineBoxReferences';
     let response: algosdk.modelsv2.SimulateResponse;
 
@@ -187,6 +173,7 @@ export default class BaseContract {
       response = await this.simulateTransactions([
         {
           abiMethod,
+          authAddress,
           transaction: await this.createWriteApplicationTransaction({
             abiMethod,
             appArgs,
@@ -196,7 +183,7 @@ export default class BaseContract {
         },
       ]);
 
-      return response.txnGroups[0].unnamedResourcesAccessed?.boxes || [];
+      return response.txnGroups[0].unnamedResourcesAccessed?.boxes || null;
     } catch (error) {
       this.logger.debug(
         `${BaseContract.name}#${_functionName}: ${error.message}`
@@ -320,12 +307,18 @@ export default class BaseContract {
       allowEmptySignatures: true,
       txnGroups: [
         new algosdk.modelsv2.SimulateRequestTransactionGroup({
-          txns: transactions.map(
-            (value) =>
-              decodeObj(
+          txns: transactions.map((value, index) => {
+            const authAddress = simulateTransactions[index].authAddress;
+
+            return {
+              ...(decodeObj(
                 encodeUnsignedSimulateTransaction(value)
-              ) as EncodedSignedTransaction
-          ),
+              ) as EncodedSignedTransaction),
+              ...(authAddress && {
+                sgnr: Buffer.from(decodeAddress(authAddress).publicKey),
+              }),
+            };
+          }),
         }),
       ],
     });
