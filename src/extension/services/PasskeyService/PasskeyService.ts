@@ -33,9 +33,12 @@ export default class PasskeyService {
    */
 
   /**
-   *
+   * Registers a passkey with the authenticator and returns the credentials that are used to fetch the key material to derive an
+   * encryption key. NOTE: this requires PRF extension support and will throw an error if the authenticator does not
+   * support it.
    * @param {ICreatePasskeyOptions} options - the device ID and an optional logger.
    * @returns {Promise<IPasskeyCredential>} a promise that resolves to a created passkey credential.
+   * @throws {PasskeyCreationError} if the public key credentials failed to be created on the authenticator.
    * @throws {PasskeyNotSupportedError} if the browser does not support WebAuthn or the authenticator does not support
    * the PRF extension.
    * @public
@@ -116,11 +119,16 @@ export default class PasskeyService {
   }
 
   /**
-   *
-   * @param credential
-   * @param logger
+   * Fetches the key material from the authenticator that is used to derive the encryption key.
+   * @param {IFetchPasskeyKeyMaterialOptions} options - passkey credentials and a logger.
+   * @returns {Promise<Uint8Array>} a promise that resolves to the key material used to derive an encryption key.
+   * @throws {UnableToFetchPasskeyError} if the authenticator did not return the public key credentials.
+   * @throws {PasskeyNotSupportedError} if the browser does not support WebAuthn or the authenticator does not support
+   * the PRF extension.
+   * @public
+   * @static
    */
-  public static async fetchPasskeyKeyMaterial({
+  public static async fetchKeyMaterialFromPasskey({
     credential,
     logger,
   }: IFetchPasskeyKeyMaterialOptions): Promise<Uint8Array> {
