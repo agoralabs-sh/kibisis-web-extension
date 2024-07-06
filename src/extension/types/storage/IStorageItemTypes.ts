@@ -5,6 +5,7 @@ import type { IAccount, IActiveAccountDetails } from '../accounts';
 import type { IARC0072Asset, IARC0200Asset, IStandardAsset } from '../assets';
 import type { TEvents } from '../events';
 import type { IAppWindow } from '../layout';
+import type { IPasskeyCredential } from '../passkeys';
 import type { IPasswordLock } from '../password-lock';
 import type { IPasswordTag, IPrivateKey } from '../private-key';
 import type { ITransactionParams } from '../networks';
@@ -29,6 +30,7 @@ type IStorageItemTypes =
   | IGeneralSettings
   | TEvents[]
   | INewsItem[]
+  | IPasskeyCredential
   | IPasswordLock
   | IPasswordTag
   | IPrivacySettings

@@ -1,6 +1,9 @@
 import { encode as encodeHex, decode as decodeHex } from '@stablelib/hex';
 import { randomBytes } from 'tweetnacl';
 
+// constants
+import { PASSKEY_CREDENTIAL_KEY } from '@extension/constants';
+
 // errors
 import {
   PasskeyCreationError,
@@ -8,24 +11,29 @@ import {
   UnableToFetchPasskeyError,
 } from '@extension/errors';
 
+// services
+import StorageManager from '@extension/services/StorageManager';
+
 // types
 import type {
   IAuthenticationExtensionsClientOutputs,
-  IBaseOptions,
   ILogger,
 } from '@common/types';
 import type { IPasskeyCredential } from '@extension/types';
 import type {
   ICreatePasskeyCredentialOptions,
   IFetchPasskeyKeyMaterialOptions,
+  INewOptions,
 } from './types';
 
 export default class PasskeyService {
   // private variables
-  private logger: ILogger | null;
+  private readonly logger: ILogger | null;
+  private readonly storageManager: StorageManager;
 
-  constructor({ logger }: IBaseOptions) {
-    this.logger = logger || null;
+  constructor(options?: INewOptions) {
+    this.logger = options?.logger || null;
+    this.storageManager = options?.storageManager || new StorageManager();
   }
 
   /**
@@ -195,5 +203,45 @@ export default class PasskeyService {
    */
   public static isSupported(): boolean {
     return !!window?.PublicKeyCredential;
+  }
+
+  /**
+   * public functions
+   */
+
+  /**
+   * Fetches the passkey credential from storage.
+   * @returns {Promise<IPasskeyCredential | null>} a promise that resolves to the passkey credential or null if no
+   * passkey credential exists in storage.
+   * @public
+   */
+  public async fetchFromStorage(): Promise<IPasskeyCredential | null> {
+    return await this.storageManager.getItem<IPasskeyCredential>(
+      PASSKEY_CREDENTIAL_KEY
+    );
+  }
+
+  /**
+   * Removes the stored passkey credential.
+   * @public
+   */
+  public async removeFromStorage(): Promise<void> {
+    return await this.storageManager.remove(PASSKEY_CREDENTIAL_KEY);
+  }
+
+  /**
+   * Saves the credential to storage. This will overwrite the current stored credential.
+   * @param {IPasskeyCredential} credential - the credential to save.
+   * @returns {Promise<IPasskeyCredential>} a promise that resolves to the saved credential.
+   * @public
+   */
+  public async saveToStorage(
+    credential: IPasskeyCredential
+  ): Promise<IPasskeyCredential> {
+    await this.storageManager.setItems({
+      [PASSKEY_CREDENTIAL_KEY]: credential,
+    });
+
+    return credential;
   }
 }
