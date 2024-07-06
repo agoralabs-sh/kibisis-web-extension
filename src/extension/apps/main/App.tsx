@@ -38,6 +38,7 @@ import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as newsReducer } from '@extension/features/news';
 import { reducer as notificationsReducer } from '@extension/features/notifications';
+import { reducer as passkeysReducer } from '@extension/features/passkeys';
 import { reducer as passwordLockReducer } from '@extension/features/password-lock';
 import { reducer as reKeyAccountReducer } from '@extension/features/re-key-account';
 import { reducer as removeAssetsReducer } from '@extension/features/remove-assets';
@@ -187,6 +188,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       networks: networksReducer,
       news: newsReducer,
       notifications: notificationsReducer,
+      passkeys: passkeysReducer,
       passwordLock: passwordLockReducer,
       reKeyAccount: reKeyAccountReducer,
       removeAssets: removeAssetsReducer,

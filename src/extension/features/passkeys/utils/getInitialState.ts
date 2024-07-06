@@ -1,0 +1,10 @@
+// types
+import type { IState } from '../types';
+
+export default function getInitialState(): IState {
+  return {
+    fetching: false,
+    credential: null,
+    saving: false,
+  };
+}
