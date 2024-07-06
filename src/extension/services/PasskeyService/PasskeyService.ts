@@ -3,6 +3,15 @@ import { randomBytes } from 'tweetnacl';
 
 // constants
 import { PASSKEY_CREDENTIAL_KEY } from '@extension/constants';
+import {
+  CHALLENGE_BYTE_SIZE,
+  DERIVATION_KEY_ALGORITHM,
+  DERIVATION_KEY_HASH_ALGORITHM,
+  ENCRYPTION_KEY_ALGORITHM,
+  ENCRYPTION_KEY_BIT_SIZE,
+  INITIALIZATION_VECTOR_BYTE_SIZE,
+  SALT_BYTE_SIZE,
+} from './constants';
 
 // errors
 import {
@@ -22,7 +31,10 @@ import type {
 import type { IPasskeyCredential } from '@extension/types';
 import type {
   ICreatePasskeyCredentialOptions,
+  IDecryptBytesOptions,
+  IEncryptBytesOptions,
   IFetchPasskeyKeyMaterialOptions,
+  IGenerateEncryptionKeyOptions,
   INewOptions,
 } from './types';
 
@@ -34,6 +46,48 @@ export default class PasskeyService {
   constructor(options?: INewOptions) {
     this.logger = options?.logger || null;
     this.storageManager = options?.storageManager || new StorageManager();
+  }
+
+  /**
+   * private static functions
+   */
+
+  /**
+   * Generates an encryption key that can be used to decrypt/encrypt bytes. This function imports the key using the
+   * input key material rom the passkey.
+   * @param {IGenerateEncryptionKeyOptions} options - the device ID and input key material from the passkey.
+   * @returns {Promise<CryptoKey>} a promise that resolves to an encryption key that can be used to decrypt/encrypt
+   * some bytes.
+   * @private
+   * @static
+   */
+  private static async _generateEncryptionKey({
+    deviceID,
+    inputKeyMaterial,
+  }: IGenerateEncryptionKeyOptions): Promise<CryptoKey> {
+    const derivationKey = await crypto.subtle.importKey(
+      'raw',
+      inputKeyMaterial,
+      DERIVATION_KEY_ALGORITHM,
+      false,
+      ['deriveKey']
+    );
+
+    return await crypto.subtle.deriveKey(
+      {
+        name: DERIVATION_KEY_ALGORITHM,
+        info: new TextEncoder().encode(deviceID), //
+        salt: new Uint8Array(), // use an empty salt
+        hash: DERIVATION_KEY_HASH_ALGORITHM,
+      },
+      derivationKey,
+      {
+        name: ENCRYPTION_KEY_ALGORITHM,
+        length: ENCRYPTION_KEY_BIT_SIZE,
+      },
+      false,
+      ['decrypt', 'encrypt']
+    );
   }
 
   /**
@@ -57,7 +111,7 @@ export default class PasskeyService {
     logger,
   }: ICreatePasskeyCredentialOptions): Promise<IPasskeyCredential> {
     const _functionName = 'createPasskey';
-    const salt = randomBytes(32);
+    const salt = randomBytes(SALT_BYTE_SIZE);
     let _error: string;
     let credential: PublicKeyCredential | null;
     let extensionResults: IAuthenticationExtensionsClientOutputs;
@@ -119,11 +173,75 @@ export default class PasskeyService {
 
     return {
       id: encodeHex(new Uint8Array(credential.rawId)),
+      initializationVector: encodeHex(
+        randomBytes(INITIALIZATION_VECTOR_BYTE_SIZE)
+      ),
       salt: encodeHex(salt),
       transports: (
         credential.response as AuthenticatorAttestationResponse
       ).getTransports() as AuthenticatorTransport[],
     };
+  }
+
+  /**
+   * Decrypts some previously encrypted bytes using the input key material fetched from a passkey.
+   * @param {IDecryptBytesOptions} options - the encrypted bytes, the initialization vector created at the passkey
+   * creation, the device ID and the input key material fetched from the passkey.
+   * @returns {Promise<Uint8Array>} a promise that resolves to the decrypted bytes.
+   * @public
+   * @static
+   */
+  public static async decryptBytes({
+    deviceID,
+    encryptedBytes,
+    initializationVector,
+    inputKeyMaterial,
+  }: IDecryptBytesOptions): Promise<Uint8Array> {
+    const encryptionKey = await PasskeyService._generateEncryptionKey({
+      deviceID,
+      inputKeyMaterial,
+    });
+    const decryptedBytes = await crypto.subtle.decrypt(
+      {
+        name: ENCRYPTION_KEY_ALGORITHM,
+        iv: initializationVector,
+      },
+      encryptionKey,
+      encryptedBytes
+    );
+
+    return new Uint8Array(decryptedBytes);
+  }
+
+  /**
+   * Encrypts some arbitrary bytes using the input key material fetched from a passkey. This function uses the AES-GCM
+   * algorithm to encrypt the bytes.
+   * @param {IEncryptBytesOptions} options - the bytes to encrypt, the initialization vector created at the passkey
+   * creation, the device ID and the input key material fetched from the passkey.
+   * @returns {Promise<Uint8Array>} a promise that resolves to the encrypted bytes.
+   * @public
+   * @static
+   */
+  public static async encryptBytes({
+    bytes,
+    deviceID,
+    initializationVector,
+    inputKeyMaterial,
+  }: IEncryptBytesOptions): Promise<Uint8Array> {
+    const encryptionKey = await PasskeyService._generateEncryptionKey({
+      deviceID,
+      inputKeyMaterial,
+    });
+    const encryptedBytes = await crypto.subtle.encrypt(
+      {
+        name: ENCRYPTION_KEY_ALGORITHM,
+        iv: initializationVector,
+      },
+      encryptionKey,
+      bytes
+    );
+
+    return new Uint8Array(encryptedBytes);
   }
 
   /**
@@ -136,7 +254,7 @@ export default class PasskeyService {
    * @public
    * @static
    */
-  public static async fetchKeyMaterialFromPasskey({
+  public static async fetchInputKeyMaterialFromPasskey({
     credential,
     logger,
   }: IFetchPasskeyKeyMaterialOptions): Promise<Uint8Array> {
@@ -155,7 +273,7 @@ export default class PasskeyService {
               type: 'public-key',
             },
           ],
-          challenge: randomBytes(32),
+          challenge: randomBytes(CHALLENGE_BYTE_SIZE),
           extensions: {
             // @ts-ignore
             prf: {
