@@ -8,6 +8,7 @@ import LoadingPage from '@extension/components/LoadingPage';
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
+import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
@@ -47,6 +48,7 @@ const Root: FC = () => {
       return;
     }
 
+    dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
