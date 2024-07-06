@@ -1,1 +1,1 @@
-export type { default as IPasskey } from './IPasskey';
+export type { default as IPasskeyCredential } from './IPasskeyCredential';

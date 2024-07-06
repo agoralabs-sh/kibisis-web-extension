@@ -38,6 +38,8 @@ enum ErrorCodeEnum {
 
   // passkey
   PasskeyNotSupportedError = 8000,
+  PasskeyCreationError = 8001,
+  UnableToFetchPasskeyError = 8002,
 }
 
 export default ErrorCodeEnum;

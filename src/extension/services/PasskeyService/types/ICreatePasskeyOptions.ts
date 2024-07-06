@@ -1,9 +1,8 @@
 // types
-import type { ILogger } from '@common/types';
+import type { IBaseOptions } from '@common/types';
 
-interface ICreatePasskeyOptions {
+interface ICreatePasskeyOptions extends IBaseOptions {
   deviceID: string;
-  logger?: ILogger;
 }
 
 export default ICreatePasskeyOptions;

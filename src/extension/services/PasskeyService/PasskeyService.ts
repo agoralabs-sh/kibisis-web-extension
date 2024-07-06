@@ -1,8 +1,12 @@
-import { encode as encodeHex } from '@stablelib/hex';
+import { encode as encodeHex, decode as decodeHex } from '@stablelib/hex';
 import { randomBytes } from 'tweetnacl';
 
 // errors
-import { PasskeyNotSupportedError } from '@extension/errors';
+import {
+  PasskeyCreationError,
+  PasskeyNotSupportedError,
+  UnableToFetchPasskeyError,
+} from '@extension/errors';
 
 // types
 import type {
@@ -10,7 +14,11 @@ import type {
   IBaseOptions,
   ILogger,
 } from '@common/types';
-import type { ICreatePasskeyOptions, ICreatePasskeyResult } from './types';
+import type { IPasskeyCredential } from '@extension/types';
+import type {
+  ICreatePasskeyCredentialOptions,
+  IFetchPasskeyKeyMaterialOptions,
+} from './types';
 
 export default class PasskeyService {
   // private variables
@@ -27,61 +35,67 @@ export default class PasskeyService {
   /**
    *
    * @param {ICreatePasskeyOptions} options - the device ID and an optional logger.
-   * @returns {Promise<ICreatePasskeyResult | null>}
+   * @returns {Promise<IPasskeyCredential>} a promise that resolves to a created passkey credential.
    * @throws {PasskeyNotSupportedError} if the browser does not support WebAuthn or the authenticator does not support
    * the PRF extension.
    * @public
    * @static
    */
-  public static async createPasskey({
+  public static async createPasskeyCredential({
     deviceID,
     logger,
-  }: ICreatePasskeyOptions): Promise<ICreatePasskeyResult> {
+  }: ICreatePasskeyCredentialOptions): Promise<IPasskeyCredential> {
     const _functionName = 'createPasskey';
     const salt = randomBytes(32);
-    const credential = await navigator.credentials.create({
-      publicKey: {
-        challenge: randomBytes(32),
-        rp: {
-          name: 'Kibisis Web Extension',
-        },
-        user: {
-          id: new TextEncoder().encode(deviceID),
-          name: deviceID,
-          displayName: 'Kibisis Passkey',
-        },
-        pubKeyCredParams: [
-          { alg: -8, type: 'public-key' }, // Ed25519
-          { alg: -7, type: 'public-key' }, // ES256
-          { alg: -257, type: 'public-key' }, // RS256
-        ],
-        authenticatorSelection: {
-          userVerification: 'required',
-        },
-        extensions: {
-          // @ts-ignore
-          prf: {
-            eval: {
-              first: salt,
-            },
-          },
-        },
-      },
-    });
     let _error: string;
+    let credential: PublicKeyCredential | null;
     let extensionResults: IAuthenticationExtensionsClientOutputs;
 
+    try {
+      credential = (await navigator.credentials.create({
+        publicKey: {
+          authenticatorSelection: {
+            userVerification: 'discouraged',
+          },
+          challenge: randomBytes(32),
+          extensions: {
+            // @ts-ignore
+            prf: {
+              eval: {
+                first: salt,
+              },
+            },
+          },
+          pubKeyCredParams: [
+            { alg: -8, type: 'public-key' }, // Ed25519
+            { alg: -7, type: 'public-key' }, // ES256
+            { alg: -257, type: 'public-key' }, // RS256
+          ],
+          rp: {
+            name: 'Kibisis Web Extension',
+          },
+          user: {
+            id: new TextEncoder().encode(deviceID),
+            name: deviceID,
+            displayName: 'Kibisis Passkey',
+          },
+        },
+      })) as PublicKeyCredential | null;
+    } catch (error) {
+      logger?.error(`${PasskeyService.name}#${_functionName}:`, error);
+
+      throw new PasskeyCreationError(error.message);
+    }
+
     if (!credential) {
-      _error = 'browser does not support webauthn';
+      _error = 'failed to create a passkey';
 
       logger?.error(`${PasskeyService.name}#${_functionName}: ${_error}`);
 
-      throw new PasskeyNotSupportedError(_error);
+      throw new PasskeyCreationError(_error);
     }
 
-    extensionResults = (
-      credential as PublicKeyCredential
-    ).getClientExtensionResults();
+    extensionResults = credential.getClientExtensionResults();
 
     // if the prf is not present or the not enabled, the browser does not support the prf extension
     if (!extensionResults.prf?.enabled) {
@@ -93,9 +107,76 @@ export default class PasskeyService {
     }
 
     return {
-      credential,
+      id: encodeHex(new Uint8Array(credential.rawId)),
       salt: encodeHex(salt),
+      transports: (
+        credential.response as AuthenticatorAttestationResponse
+      ).getTransports() as AuthenticatorTransport[],
     };
+  }
+
+  /**
+   *
+   * @param credential
+   * @param logger
+   */
+  public static async fetchPasskeyKeyMaterial({
+    credential,
+    logger,
+  }: IFetchPasskeyKeyMaterialOptions): Promise<Uint8Array> {
+    const _functionName = 'fetchPasskey';
+    let _error: string;
+    let _credential: PublicKeyCredential | null;
+    let extensionResults: IAuthenticationExtensionsClientOutputs;
+
+    try {
+      _credential = (await navigator.credentials.get({
+        publicKey: {
+          allowCredentials: [
+            {
+              id: decodeHex(credential.id),
+              transports: credential.transports,
+              type: 'public-key',
+            },
+          ],
+          challenge: randomBytes(32),
+          extensions: {
+            // @ts-ignore
+            prf: {
+              eval: {
+                first: decodeHex(credential.salt),
+              },
+            },
+          },
+          userVerification: 'discouraged',
+        },
+      })) as PublicKeyCredential | null;
+    } catch (error) {
+      logger?.error(`${PasskeyService.name}#${_functionName}:`, error);
+
+      throw new UnableToFetchPasskeyError(credential.id, error.message);
+    }
+
+    if (!_credential) {
+      _error = `failed to fetch passkey "${credential.id}"`;
+
+      logger?.error(`${PasskeyService.name}#${_functionName}: ${_error}`);
+
+      throw new UnableToFetchPasskeyError(credential.id, _error);
+    }
+
+    extensionResults = _credential.getClientExtensionResults();
+
+    // if the prf is not present or not results, the browser does not support the prf extension
+    if (!extensionResults.prf?.results) {
+      _error = 'authenticator does not support the prf extension for webauthn';
+
+      logger?.error(`${PasskeyService.name}#${_functionName}: ${_error}`);
+
+      throw new PasskeyNotSupportedError(_error);
+    }
+
+    return new Uint8Array(extensionResults.prf.results.first);
   }
 
   /**

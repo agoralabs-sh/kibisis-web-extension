@@ -36,7 +36,7 @@ export default async function encryptBytes(
   try {
     encryptedData = secretbox(data, nonce, derivedKey);
   } catch (error) {
-    logger?.debug(`${_functionName}(): ${error.message}`);
+    logger?.debug(`${_functionName}: ${error.message}`);
 
     throw new EncryptionError(error.message);
   }
