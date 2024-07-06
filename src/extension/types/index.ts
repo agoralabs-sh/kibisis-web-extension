@@ -20,6 +20,7 @@ export * from './modals';
 export * from './networks';
 export * from './notifications';
 export * from './password-lock';
+export * from './passkeys';
 export * from './private-key';
 export * from './redux';
 export * from './registration';

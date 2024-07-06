@@ -16,6 +16,7 @@ export { default as NotAZeroBalanceError } from './NotAZeroBalanceError';
 export { default as NotEnoughMinimumBalanceError } from './NotEnoughMinimumBalanceError';
 export { default as OfflineError } from './OfflineError';
 export { default as ParsingError } from './ParsingError';
+export { default as PasskeyNotSupportedError } from './PasskeyNotSupportedError';
 export { default as PrivateKeyAlreadyExistsError } from './PrivateKeyAlreadyExistsError';
 export { default as ReadABIContractError } from './ReadABIContractError';
 export { default as ScreenCaptureError } from './ScreenCaptureError';
