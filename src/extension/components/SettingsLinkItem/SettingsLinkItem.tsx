@@ -1,8 +1,17 @@
-import { Button, HStack, Icon, Text } from '@chakra-ui/react';
+import {
+  Button,
+  HStack,
+  Icon,
+  Tag,
+  TagLabel,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+import { encode as encodeHex } from '@stablelib/hex';
 import React, { FC } from 'react';
-import { IconType } from 'react-icons';
 import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import { hash } from 'tweetnacl';
 
 // constants
 import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
@@ -11,15 +20,21 @@ import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-interface IProps {
-  icon: IconType;
-  label: string;
-  to: string;
-}
+// selectors
+import { useSelectSettingsColorMode } from '@extension/selectors';
 
-const SettingsLinkItem: FC<IProps> = ({ icon, label, to }: IProps) => {
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
+// types
+import type { IProps } from './types';
+
+const SettingsLinkItem: FC<IProps> = ({ badges, icon, label, to }) => {
+  // selectors
+  const colorMode = useSelectSettingsColorMode();
+  // hooks
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  // misc
+  const iconSize = 6;
+  const labelHash = encodeHex(hash(new TextEncoder().encode(label)), true);
 
   return (
     <Button
@@ -33,7 +48,12 @@ const SettingsLinkItem: FC<IProps> = ({ icon, label, to }: IProps) => {
       justifyContent="start"
       px={DEFAULT_GAP - 2}
       rightIcon={
-        <Icon as={IoChevronForward} color={defaultTextColor} h={6} w={6} />
+        <Icon
+          as={IoChevronForward}
+          color={defaultTextColor}
+          h={iconSize}
+          w={iconSize}
+        />
       }
       to={to}
       variant="ghost"
@@ -42,13 +62,34 @@ const SettingsLinkItem: FC<IProps> = ({ icon, label, to }: IProps) => {
       <HStack
         alignItems="center"
         justifyContent="flex-start"
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
-        <Icon as={icon} color={defaultTextColor} h={6} w={6} />
-        <Text color={defaultTextColor} fontSize="md">
-          {label}
-        </Text>
+        <Icon as={icon} color={defaultTextColor} h={iconSize} w={iconSize} />
+
+        <VStack alignItems="flex-start" justifyContent="space-evenly" w="full">
+          {/*label*/}
+          <Text color={defaultTextColor} fontSize="md">
+            {label}
+          </Text>
+
+          {/*badges*/}
+          {badges && (
+            <HStack w="full">
+              {badges.map(({ colorScheme, label }, index) => (
+                <Tag
+                  borderRadius="full"
+                  colorScheme={colorScheme}
+                  key={`settings-${labelHash.slice(0, 12)}-item-${index}`}
+                  size="sm"
+                  variant={colorMode === 'dark' ? 'solid' : 'outline'}
+                >
+                  <TagLabel>{label}</TagLabel>
+                </Tag>
+              ))}
+            </HStack>
+          )}
+        </VStack>
       </HStack>
     </Button>
   );
