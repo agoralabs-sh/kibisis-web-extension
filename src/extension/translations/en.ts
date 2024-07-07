@@ -115,6 +115,7 @@ const translation: IResourceLanguage = {
       'Passwords will only need to be entered due to inactivity.',
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
+    encryptAccountsWithPasskey: `Decrypting account's private keys with the password and re-encrypting with the passkey "{{name}}".`,
     encryptWithPasskey: `To complete the process, the passkey will be requested to re-encrypt the account's private keys.`,
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     enterWatchAccountAddress:
@@ -223,6 +224,8 @@ const translation: IResourceLanguage = {
       'Are you sure you want remove the passkey "{{name}}" from your wallet?',
     removePasskeyWarning:
       'This action will only remove the passkey from your wallet, the passkey will remain on your device.',
+    requestingPasskeyEncryptionKey:
+      'Requesting encryption key from passkey "{{name}}".',
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,

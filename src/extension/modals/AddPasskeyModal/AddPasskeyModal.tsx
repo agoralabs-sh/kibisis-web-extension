@@ -8,6 +8,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
   Text,
   useDisclosure,
   VStack,
@@ -16,6 +17,7 @@ import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoShieldLock } from 'react-icons/go';
 import { IoKeyOutline } from 'react-icons/io5';
+import { Radio } from 'react-loader-spinner';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -23,6 +25,7 @@ import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import COSEAlgorithmBadge from '@extension/components/COSEAlgorithmBadge';
 import ModalItem from '@extension/components/ModalItem';
+import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import PasskeyCapabilities from '@extension/components/PasskeyCapabilities';
 import PasswordInput, {
@@ -47,7 +50,9 @@ import {
 } from '@extension/features/passkeys';
 
 // hooks
+import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
@@ -75,8 +80,6 @@ import type {
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
-import ModalTextItem from '@extension/components/ModalTextItem';
-import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -104,14 +107,24 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
+  const primaryColor = usePrimaryColor();
+  const primaryColorCode = useColorModeValue(
+    theme.colors.primaryLight['500'],
+    theme.colors.primaryDark['500']
+  );
   const subTextColor = useSubTextColor();
   // state
   const [encrypting, setEncrypting] = useState<boolean>(false);
+  const [requestingInputKeyMaterial, setRequestingInputKeyMaterial] =
+    useState<boolean>(false);
+  // misc
+  const isLoading = encrypting || saving || requestingInputKeyMaterial;
   // handlers
   const handleCancelClick = async () => handleClose();
   const handleClose = () => {
     resetPassword();
     setEncrypting(false);
+    setRequestingInputKeyMaterial(false);
 
     if (onClose) {
       onClose();
@@ -151,19 +164,53 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
 
-    setEncrypting(true);
-
     // first save the passkey to storage
     passkey = await dispatch(
       savePasskeyCredentialToStorageThunk(addPasskey)
     ).unwrap();
 
+    setRequestingInputKeyMaterial(true);
+
     try {
+      logger.debug(
+        `${AddPasskeyModal.name}#${_functionName}: requesting input key material from passkey "${passkey.id}"`
+      );
+
       // fetch the encryption key material
       inputKeyMaterial = await PasskeyService.fetchInputKeyMaterialFromPasskey({
         credential: passkey,
         logger,
       });
+
+      setRequestingInputKeyMaterial(false);
+    } catch (error) {
+      setRequestingInputKeyMaterial(false);
+
+      // remove the previously saved credential
+      dispatch(removePasskeyCredentialFromStorageThunk());
+
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
+
+      return;
+    }
+
+    logger.debug(
+      `${AddPasskeyModal.name}#${_functionName}: received input key material from passkey "${passkey.id}"`
+    );
+
+    setEncrypting(true);
+
+    try {
       // let encryptedBytes = await PasskeyService.encryptBytes({
       //   bytes: new TextEncoder().encode(message),
       //   deviceID: systemInfo.deviceID,
@@ -243,11 +290,65 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
 
+    if (encrypting) {
+      return (
+        <VStack
+          alignItems="center"
+          flexGrow={1}
+          justifyContent="center"
+          spacing={DEFAULT_GAP}
+          w="full"
+        >
+          {/*loader*/}
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor={defaultTextColor}
+            color={primaryColorCode}
+            size="xl"
+          />
+
+          {/*caption*/}
+          <Text color={subTextColor} fontSize="sm" textAlign="justify" w="full">
+            {t<string>('captions.encryptAccountsWithPasskey', {
+              name: addPasskey.name,
+            })}
+          </Text>
+        </VStack>
+      );
+    }
+
+    if (requestingInputKeyMaterial) {
+      return (
+        <VStack
+          alignItems="center"
+          flexGrow={1}
+          justifyContent="center"
+          spacing={DEFAULT_GAP}
+          w="full"
+        >
+          {/*loader*/}
+          <Radio
+            colors={[primaryColorCode, primaryColorCode, primaryColorCode]}
+            height="80"
+            width="80"
+          />
+
+          {/*caption*/}
+          <Text color={subTextColor} fontSize="sm" textAlign="justify" w="full">
+            {t<string>('captions.requestingPasskeyEncryptionKey', {
+              name: addPasskey.name,
+            })}
+          </Text>
+        </VStack>
+      );
+    }
+
     return (
       <VStack
         alignItems="center"
+        flexGrow={1}
         justifyContent="flex-start"
-        px={DEFAULT_GAP}
         spacing={DEFAULT_GAP}
         w="full"
       >
@@ -402,31 +503,33 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
           </Heading>
         </ModalHeader>
 
-        <ModalBody display="flex" px={0}>
+        <ModalBody display="flex" px={DEFAULT_GAP}>
           {renderContent()}
         </ModalBody>
 
         <ModalFooter p={DEFAULT_GAP}>
           <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
             {/*password input*/}
-            {!settings.security.enablePasswordLock && !passwordLockPassword && (
-              <PasswordInput
-                error={passwordError}
-                hint={t<string>(
-                  'captions.mustEnterPasswordToDecryptPrivateKeys'
-                )}
-                onChange={onPasswordChange}
-                onKeyUp={handleKeyUpPasswordInput}
-                inputRef={passwordInputRef}
-                value={password}
-              />
-            )}
+            {!settings.security.enablePasswordLock &&
+              !passwordLockPassword &&
+              !isLoading && (
+                <PasswordInput
+                  error={passwordError}
+                  hint={t<string>(
+                    'captions.mustEnterPasswordToDecryptPrivateKeys'
+                  )}
+                  onChange={onPasswordChange}
+                  onKeyUp={handleKeyUpPasswordInput}
+                  inputRef={passwordInputRef}
+                  value={password}
+                />
+              )}
 
             {/*buttons*/}
             <HStack spacing={DEFAULT_GAP - 2} w="full">
               {/*cancel*/}
               <Button
-                isDisabled={encrypting || saving}
+                isDisabled={isLoading}
                 onClick={handleCancelClick}
                 size="lg"
                 variant="outline"
@@ -437,7 +540,7 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
 
               {/*encrypt*/}
               <Button
-                isLoading={encrypting || saving}
+                isLoading={isLoading}
                 onClick={handleEncryptClick}
                 rightIcon={<IoKeyOutline />}
                 size="lg"
