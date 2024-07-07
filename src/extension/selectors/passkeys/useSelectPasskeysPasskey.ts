@@ -7,9 +7,9 @@ import type {
   IPasskeyCredential,
 } from '@extension/types';
 
-export default function useSelectPasskeysCredential(): IPasskeyCredential | null {
+export default function useSelectPasskeysPasskey(): IPasskeyCredential | null {
   return useSelector<
     IBackgroundRootState | IMainRootState,
     IPasskeyCredential | null
-  >((state) => state.passkeys.credential);
+  >((state) => state.passkeys.passkey);
 }

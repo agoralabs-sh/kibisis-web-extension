@@ -5,7 +5,7 @@ import React, { FC } from 'react';
 import WarningIcon from '@extension/components/WarningIcon';
 
 // constants
-import { MODAL_ITEM_HEIGHT } from '@extension/constants';
+import { DEFAULT_GAP, MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -28,16 +28,16 @@ const ModalItem: FC<IProps> = ({
       alignItems="center"
       justifyContent="space-between"
       minH={MODAL_ITEM_HEIGHT}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
       {...stackProps}
     >
       {/*label*/}
-      <Text color={defaultTextColor} fontSize="xs" w="full">
+      <Text color={defaultTextColor} fontSize="xs">
         {label}
       </Text>
 
-      <HStack flexGrow={1} justifyContent="flex-end" spacing={2} w="full">
+      <HStack flexGrow={1} justifyContent="flex-end" spacing={DEFAULT_GAP / 3}>
         {/*value*/}
         {tooltipLabel ? (
           <Tooltip

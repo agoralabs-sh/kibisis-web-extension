@@ -108,18 +108,22 @@ export default class PasskeyService {
    */
   public static async createPasskeyCredential({
     deviceID,
+    name,
     logger,
   }: ICreatePasskeyCredentialOptions): Promise<IPasskeyCredential> {
     const _functionName = 'createPasskey';
+    const _name = name && name.length > 0 ? name : 'Kibisis Web Extension';
     const salt = randomBytes(SALT_BYTE_SIZE);
     let _error: string;
     let credential: PublicKeyCredential | null;
     let extensionResults: IAuthenticationExtensionsClientOutputs;
+    let publicKey: ArrayBuffer | null;
 
     try {
       credential = (await navigator.credentials.create({
         publicKey: {
           authenticatorSelection: {
+            residentKey: 'required', // make passkey discoverable on the device
             userVerification: 'discouraged',
           },
           challenge: randomBytes(32),
@@ -137,12 +141,12 @@ export default class PasskeyService {
             { alg: -257, type: 'public-key' }, // RS256
           ],
           rp: {
-            name: 'Kibisis Web Extension',
+            name: _name,
           },
           user: {
             id: new TextEncoder().encode(deviceID),
             name: deviceID,
-            displayName: 'Kibisis Passkey',
+            displayName: deviceID,
           },
         },
       })) as PublicKeyCredential | null;
@@ -171,11 +175,20 @@ export default class PasskeyService {
       throw new PasskeyNotSupportedError(_error);
     }
 
+    publicKey = (
+      credential.response as AuthenticatorAttestationResponse
+    ).getPublicKey();
+
     return {
+      algorithm: (
+        credential.response as AuthenticatorAttestationResponse
+      ).getPublicKeyAlgorithm(),
       id: encodeHex(new Uint8Array(credential.rawId)),
       initializationVector: encodeHex(
         randomBytes(INITIALIZATION_VECTOR_BYTE_SIZE)
       ),
+      name: _name,
+      publicKey: publicKey ? encodeHex(new Uint8Array(publicKey)) : null,
       salt: encodeHex(salt),
       transports: (
         credential.response as AuthenticatorAttestationResponse

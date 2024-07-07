@@ -3,8 +3,9 @@ import type { IState } from '../types';
 
 export default function getInitialState(): IState {
   return {
+    addPasskey: null,
     fetching: false,
-    credential: null,
+    passkey: null,
     saving: false,
   };
 }

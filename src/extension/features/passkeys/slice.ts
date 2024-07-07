@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
@@ -23,7 +23,7 @@ const slice = createSlice({
     builder.addCase(
       fetchFromStorageThunk.fulfilled,
       (state: IState, action: PayloadAction<IPasskeyCredential | null>) => {
-        state.credential = action.payload;
+        state.passkey = action.payload;
         state.fetching = false;
       }
     );
@@ -35,7 +35,7 @@ const slice = createSlice({
     });
     /** remove from storage **/
     builder.addCase(removeFromStorageThunk.fulfilled, (state: IState) => {
-      state.credential = null;
+      state.passkey = null;
       state.saving = false;
     });
     builder.addCase(removeFromStorageThunk.pending, (state: IState) => {
@@ -48,7 +48,7 @@ const slice = createSlice({
     builder.addCase(
       saveToStorageThunk.fulfilled,
       (state: IState, action: PayloadAction<IPasskeyCredential>) => {
-        state.credential = action.payload;
+        state.passkey = action.payload;
         state.saving = false;
       }
     );
@@ -62,10 +62,14 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Passkeys,
   reducers: {
-    noop: () => {
-      return;
+    setAddPasskey: (
+      state: Draft<IState>,
+      action: PayloadAction<IPasskeyCredential | null>
+    ) => {
+      state.addPasskey = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
+export const { setAddPasskey } = slice.actions;

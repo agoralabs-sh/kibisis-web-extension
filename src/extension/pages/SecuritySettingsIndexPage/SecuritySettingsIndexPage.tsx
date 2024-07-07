@@ -1,6 +1,7 @@
 import { useDisclosure, VStack } from '@chakra-ui/react';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { GoShieldLock } from 'react-icons/go';
 import {
   IoKeyOutline,
   IoLockClosedOutline,
@@ -21,6 +22,7 @@ import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 import {
   CHANGE_PASSWORD_ROUTE,
   EXPORT_ACCOUNT_ROUTE,
+  PASSKEY_ROUTE,
   PASSWORD_LOCK_DURATION_HIGH,
   PASSWORD_LOCK_DURATION_HIGHER,
   PASSWORD_LOCK_DURATION_HIGHEST,
@@ -40,23 +42,30 @@ import { saveSettingsToStorageThunk } from '@extension/features/settings';
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // selectors
-import { useSelectLogger, useSelectSettings } from '@extension/selectors';
+import {
+  useSelectLogger,
+  useSelectPasskeysEnabled,
+  useSelectSettings,
+} from '@extension/selectors';
+
+// services
+import PasskeyService from '@extension/services/PasskeyService';
 
 // types
-import type { ILogger } from '@common/types';
-import type { IAppThunkDispatch, ISettings } from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 
 const SecuritySettingsIndexPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
   const {
     isOpen: isPasswordConfirmModalOpen,
     onClose: onPasswordConfirmModalClose,
     onOpen: onPasswordConfirmModalOpen,
   } = useDisclosure();
   // selectors
-  const logger: ILogger = useSelectLogger();
-  const settings: ISettings = useSelectSettings();
+  const logger = useSelectLogger();
+  const passkeyEnabled = useSelectPasskeysEnabled();
+  const settings = useSelectSettings();
   // misc
   const durationOptions: IOption<number>[] = [
     {
@@ -218,6 +227,42 @@ const SecuritySettingsIndexPage: FC = () => {
           label={t<string>('titles.page', { context: 'changePassword' })}
           to={`${SETTINGS_ROUTE}${SECURITY_ROUTE}${CHANGE_PASSWORD_ROUTE}`}
         />
+
+        {/*passkey*/}
+        <SettingsLinkItem
+          badges={[
+            ...(PasskeyService.isSupported()
+              ? [
+                  {
+                    ...(passkeyEnabled
+                      ? {
+                          colorScheme: 'green',
+                          label: t<string>('labels.enabled'),
+                        }
+                      : {
+                          colorScheme: 'red',
+                          label: t<string>('labels.disabled'),
+                        }),
+                  },
+                ]
+              : [
+                  {
+                    colorScheme: 'yellow',
+                    label: t<string>('labels.notSupported'),
+                  },
+                ]),
+            {
+              colorScheme: 'blue',
+              label: t<string>('labels.experimental'),
+            },
+          ]}
+          icon={GoShieldLock}
+          label={t<string>('titles.page', { context: 'passkey' })}
+          to={`${SETTINGS_ROUTE}${SECURITY_ROUTE}${PASSKEY_ROUTE}`}
+        />
+
+        {/*accounts*/}
+        <SettingsSubHeading text={t<string>('headings.accounts')} />
 
         {/*view seed phrase*/}
         <SettingsLinkItem
