@@ -61,7 +61,7 @@ export default class PasskeyService {
    * @private
    * @static
    */
-  private static async _generateEncryptionKey({
+  private static async _generateEncryptionKeyFromInputKeyMaterial({
     deviceID,
     inputKeyMaterial,
   }: IGenerateEncryptionKeyOptions): Promise<CryptoKey> {
@@ -111,7 +111,7 @@ export default class PasskeyService {
     name,
     logger,
   }: ICreatePasskeyCredentialOptions): Promise<IPasskeyCredential> {
-    const _functionName = 'createPasskey';
+    const _functionName = 'createPasskeyCredential';
     const _name = name && name.length > 0 ? name : 'Kibisis Web Extension';
     const salt = randomBytes(SALT_BYTE_SIZE);
     let _error: string;
@@ -210,10 +210,11 @@ export default class PasskeyService {
     initializationVector,
     inputKeyMaterial,
   }: IDecryptBytesOptions): Promise<Uint8Array> {
-    const encryptionKey = await PasskeyService._generateEncryptionKey({
-      deviceID,
-      inputKeyMaterial,
-    });
+    const encryptionKey =
+      await PasskeyService._generateEncryptionKeyFromInputKeyMaterial({
+        deviceID,
+        inputKeyMaterial,
+      });
     const decryptedBytes = await crypto.subtle.decrypt(
       {
         name: ENCRYPTION_KEY_ALGORITHM,
@@ -241,10 +242,11 @@ export default class PasskeyService {
     initializationVector,
     inputKeyMaterial,
   }: IEncryptBytesOptions): Promise<Uint8Array> {
-    const encryptionKey = await PasskeyService._generateEncryptionKey({
-      deviceID,
-      inputKeyMaterial,
-    });
+    const encryptionKey =
+      await PasskeyService._generateEncryptionKeyFromInputKeyMaterial({
+        deviceID,
+        inputKeyMaterial,
+      });
     const encryptedBytes = await crypto.subtle.encrypt(
       {
         name: ENCRYPTION_KEY_ALGORITHM,
