@@ -4,11 +4,11 @@ import browser from 'webextension-polyfill';
 // errors
 import { DecryptionError, MalformedDataError } from '@extension/errors';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
-
 // types
 import type { IOptions } from './types';
+
+// utils
+import fetchDecryptedPrivateKeyWithPassword from '@extension/utils/fetchDecryptedPrivateKeyWithPassword';
 
 /**
  * Convenience function that signs an arbitrary bit of data using the supplied signer.
@@ -25,25 +25,22 @@ export default async function signBytes({
   publicKey,
 }: IOptions): Promise<Uint8Array> {
   const _functionName: string = 'signBytes';
-  const privateKeyService: PrivateKeyService = new PrivateKeyService({
-    logger,
-    passwordTag: browser.runtime.id,
-  });
-  let errorMessage: string;
+  let _error: string;
   let privateKey: Uint8Array | null;
   let signature: Uint8Array;
 
-  privateKey = await privateKeyService.getDecryptedPrivateKey(
+  privateKey = await fetchDecryptedPrivateKeyWithPassword({
+    logger,
+    password,
     publicKey,
-    password
-  );
+  });
 
   if (!privateKey) {
-    errorMessage = `failed to get private key`;
+    _error = `failed to get private key`;
 
-    logger?.error(errorMessage);
+    logger?.error(_error);
 
-    throw new DecryptionError(errorMessage);
+    throw new DecryptionError(_error);
   }
 
   try {

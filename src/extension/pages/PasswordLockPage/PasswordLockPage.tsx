@@ -1,15 +1,8 @@
 import { Center, Flex, Heading, VStack } from '@chakra-ui/react';
-import React, {
-  FC,
-  KeyboardEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import browser from 'webextension-polyfill';
 
 // components
@@ -37,24 +30,22 @@ import {
 } from '@extension/selectors';
 
 // services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+import PasswordService from '@extension/services/PasswordService';
 
 // types
-import type { ILogger } from '@common/types';
 import type { IAppThunkDispatch } from '@extension/types';
 
 const PasswordLockPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
-  const logger: ILogger = useSelectLogger();
-  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const saving: boolean = useSelectPasswordLockSaving();
+  const logger = useSelectLogger();
+  const passwordLockPassword = useSelectPasswordLockPassword();
+  const saving = useSelectPasswordLockSaving();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -62,11 +53,11 @@ const PasswordLockPage: FC = () => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const primaryColor: string = usePrimaryColor();
+  const primaryColor = usePrimaryColor();
   // states
   const [verifying, setVerifying] = useState<boolean>(false);
   // misc
-  const isLoading: boolean = saving || verifying;
+  const isLoading = saving || verifying;
   // handlers
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -77,21 +68,21 @@ const PasswordLockPage: FC = () => {
   };
   const handleConfirmClick = async () => {
     let isValid: boolean;
-    let privateKeyService: PrivateKeyService;
+    let passwordService: PasswordService;
 
     // check if the input is valid
     if (validatePassword()) {
       return;
     }
 
-    privateKeyService = new PrivateKeyService({
+    passwordService = new PasswordService({
       logger,
       passwordTag: browser.runtime.id,
     });
 
     setVerifying(true);
 
-    isValid = await privateKeyService.verifyPassword(password);
+    isValid = await passwordService.verifyPassword(password);
 
     setVerifying(false);
 

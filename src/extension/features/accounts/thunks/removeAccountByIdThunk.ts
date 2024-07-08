@@ -42,7 +42,6 @@ const removeAccountByIdThunk: AsyncThunk<
 
     privateKeyService = new PrivateKeyService({
       logger,
-      passwordTag: browser.runtime.id,
     });
 
     logger.debug(
@@ -50,7 +49,7 @@ const removeAccountByIdThunk: AsyncThunk<
     );
 
     // remove the private key
-    await privateKeyService.removePrivateKeyByPublicKey(account.publicKey);
+    await privateKeyService.removeFromStorageByPublicKey(account.publicKey);
 
     return account.id;
   }

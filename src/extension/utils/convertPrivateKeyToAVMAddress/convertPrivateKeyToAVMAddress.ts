@@ -10,11 +10,11 @@ import { IBaseOptions } from '@common/types';
  * @param {IBaseOptions} options - [optional] optional options.
  * @returns {string} the address for a given private key, or null.
  */
-export default function convertPrivateKeyToAddress(
+export default function convertPrivateKeyToAVMAddress(
   privateKey: Uint8Array,
   options?: IBaseOptions
 ): string | null {
-  const _functionName: string = 'convertPrivateKeyToAddress';
+  const _functionName = 'convertPrivateKeyToAddress';
 
   try {
     const publicKey: Uint8Array =

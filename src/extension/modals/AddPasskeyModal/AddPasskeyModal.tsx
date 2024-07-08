@@ -243,15 +243,6 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
         case ErrorCodeEnum.InvalidPasswordError:
           setPasswordError(t<string>('errors.inputs.invalidPassword'));
           break;
-        case ErrorCodeEnum.OfflineError:
-          dispatch(
-            createNotification({
-              ephemeral: true,
-              title: t<string>('headings.offline'),
-              type: 'error',
-            })
-          );
-          break;
         default:
           // remove the previously saved credential
           dispatch(removePasskeyCredentialFromStorageThunk());

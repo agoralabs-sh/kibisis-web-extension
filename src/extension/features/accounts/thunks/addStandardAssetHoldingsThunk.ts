@@ -25,6 +25,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -42,6 +43,7 @@ import type {
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
@@ -121,8 +123,8 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       );
     }
 
-    address = AccountService.convertPublicKeyToAlgorandAddress(
-      account.publicKey
+    address = convertPublicKeyToAVMAddress(
+      PrivateKeyService.decode(account.publicKey)
     );
     accountInformation =
       AccountService.extractAccountInformationForNetwork(account, network) ||

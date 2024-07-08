@@ -50,7 +50,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -60,6 +60,7 @@ import type {
 } from '@extension/types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AddAccountMainRouter: FC = () => {
@@ -136,7 +137,9 @@ const AddAccountMainRouter: FC = () => {
         ephemeral: true,
         description: t<string>('captions.addedAccount', {
           address: ellipseAddress(
-            AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+            convertPublicKeyToAVMAddress(
+              PrivateKeyService.decode(account.publicKey)
+            )
           ),
         }),
         title: t<string>('headings.addedAccount'),
@@ -205,7 +208,9 @@ const AddAccountMainRouter: FC = () => {
         ephemeral: true,
         description: t<string>('captions.addedAccount', {
           address: ellipseAddress(
-            AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+            convertPublicKeyToAVMAddress(
+              PrivateKeyService.decode(account.publicKey)
+            )
           ),
         }),
         title: t<string>('headings.addedAccount'),

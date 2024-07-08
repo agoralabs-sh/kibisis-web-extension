@@ -24,9 +24,6 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useMinimumBalanceRequirementsForTransactions from '@extension/hooks/useMinimumBalanceRequirementsForTransactions';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { SendAssetModalSummaryContentProps } from './types';
 
@@ -34,6 +31,7 @@ import type { SendAssetModalSummaryContentProps } from './types';
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
@@ -241,9 +239,7 @@ const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
         item={
           <AddressDisplay
             accounts={accounts}
-            address={AccountService.convertPublicKeyToAlgorandAddress(
-              fromAccount.publicKey
-            )}
+            address={convertPublicKeyToAVMAddress(fromAccount.publicKey)}
             ariaLabel="From address"
             size="sm"
             network={network}

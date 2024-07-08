@@ -1,12 +1,7 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { encode as encodeHex } from '@stablelib/hex';
-import browser from 'webextension-polyfill';
 
 // errors
-import {
-  MalformedDataError,
-  PrivateKeyAlreadyExistsError,
-} from '@extension/errors';
+import { MalformedDataError } from '@extension/errors';
 
 // enums
 import { ThunkEnum } from '../enums';
@@ -23,6 +18,9 @@ import type {
 } from '@extension/types';
 import type { ISaveNewAccountPayload } from '../types';
 
+// utils
+import savePrivateKeyItemWithPassword from '@extension/utils/savePrivateKeyItemWithPassword';
+
 const saveNewAccountThunk: AsyncThunk<
   IAccountWithExtendedProps, // return
   ISaveNewAccountPayload, // args
@@ -34,61 +32,35 @@ const saveNewAccountThunk: AsyncThunk<
 >(
   ThunkEnum.SaveNewAccount,
   async ({ name, password, privateKey }, { getState, rejectWithValue }) => {
-    const encodedPublicKey: string = encodeHex(
+    const encodedPublicKey = PrivateKeyService.encode(
       PrivateKeyService.extractPublicKeyFromPrivateKey(privateKey)
-    ).toUpperCase();
+    );
     const logger = getState().system.logger;
+    let _error: string;
     let account: IAccountWithExtendedProps;
     let accountService: AccountService;
-    let errorMessage: string;
     let privateKeyItem: IPrivateKey | null;
-    let privateKeyService: PrivateKeyService;
-
-    logger.debug(`${ThunkEnum.SaveNewAccount}: inferring public key`);
-
-    privateKeyService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
-
-    privateKeyItem = await privateKeyService.getPrivateKeyByPublicKey(
-      encodedPublicKey
-    );
-
-    if (privateKeyItem) {
-      errorMessage = `private key for "${encodedPublicKey}" already exists`;
-
-      logger.debug(`${ThunkEnum.SaveNewAccount}: ${errorMessage}`);
-
-      return rejectWithValue(new PrivateKeyAlreadyExistsError(errorMessage));
-    }
-
-    logger.debug(
-      `${ThunkEnum.SaveNewAccount}: saving private key "${encodedPublicKey}" to storage`
-    );
 
     try {
-      // add the new private key
-      privateKeyItem = await privateKeyService.setPrivateKey(
+      privateKeyItem = await savePrivateKeyItemWithPassword({
+        logger,
+        password,
         privateKey,
-        password
-      );
+      });
     } catch (error) {
-      logger.error(`${ThunkEnum.SaveNewAccount}: ${error.message}`);
-
       return rejectWithValue(error);
     }
 
     if (!privateKeyItem) {
-      errorMessage = `failed to save private key "${encodedPublicKey}" to storage`;
+      _error = `failed to save key "${encodedPublicKey}" (public key) to storage`;
 
-      logger.debug(`${ThunkEnum.SaveNewAccount}: ${errorMessage}`);
+      logger.debug(`${ThunkEnum.SaveNewAccount}: ${_error}`);
 
-      return rejectWithValue(new MalformedDataError(errorMessage));
+      return rejectWithValue(new MalformedDataError(_error));
     }
 
     logger.debug(
-      `${ThunkEnum.SaveNewAccount}: successfully saved private key "${encodedPublicKey}" to storage`
+      `${ThunkEnum.SaveNewAccount}: successfully saved key "${encodedPublicKey}" (public key) to storage`
     );
 
     account = {
@@ -111,7 +83,7 @@ const saveNewAccountThunk: AsyncThunk<
     await accountService.saveAccounts([account]);
 
     logger.debug(
-      `${ThunkEnum.SaveNewAccount}: saved account for "${encodedPublicKey}" to storage`
+      `${ThunkEnum.SaveNewAccount}: saved account for key "${encodedPublicKey}" (public key) to storage`
     );
 
     return account;

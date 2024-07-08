@@ -1,13 +1,13 @@
 import { useSelector } from 'react-redux';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type {
   IAccountWithExtendedProps,
   IMainRootState,
 } from '@extension/types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 /**
  * Selects an account for the supplied address.
@@ -21,10 +21,7 @@ export default function useSelectAccountByAddress(
     (state) => {
       return (
         state.accounts.items.find(
-          (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === address
+          (value) => convertPublicKeyToAVMAddress(value.publicKey) === address
         ) || null
       );
     }

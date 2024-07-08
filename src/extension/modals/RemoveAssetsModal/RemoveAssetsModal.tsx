@@ -65,9 +65,6 @@ import {
   useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // theme
 import { theme } from '@extension/theme';
 
@@ -76,6 +73,7 @@ import type { IAppThunkDispatch } from '@extension/types';
 import type { IRemoveAssetsModalProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
@@ -302,9 +300,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
         break;
     }
 
-    address = AccountService.convertPublicKeyToAlgorandAddress(
-      account.publicKey
-    );
+    address = convertPublicKeyToAVMAddress(account.publicKey);
 
     return (
       <VStack

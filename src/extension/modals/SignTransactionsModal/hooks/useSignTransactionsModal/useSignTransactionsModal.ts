@@ -7,7 +7,7 @@ import {
   decode as decodeBase64,
   encode as encodeBase64,
 } from '@stablelib/base64';
-import type { Transaction } from 'algosdk';
+import { Transaction, TransactionType } from 'algosdk';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -31,6 +31,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -42,10 +43,11 @@ import type {
 import type { IUseSignTransactionsModalState } from './types';
 
 // utils
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 export default function useSignTransactionsModal(): IUseSignTransactionsModalState {
   const _functionName = 'useSignTransactionsModal';
@@ -116,7 +118,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
           const account = accounts.find(
             (value) =>
               value.publicKey ===
-              AccountService.encodePublicKey(currentValue.from.publicKey)
+              PrivateKeyService.encode(currentValue.from.publicKey)
           );
           const base64EncodedGenesisHash = encodeBase64(
             currentValue.genesisHash
@@ -149,10 +151,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
             acc.find((value) => value.id === account?.id) ||
             !authorizedAddresses.find(
               (value) =>
-                value ===
-                AccountService.convertPublicKeyToAlgorandAddress(
-                  account?.publicKey
-                )
+                value === convertPublicKeyToAVMAddress(account?.publicKey)
             ) ||
             (account.watchAccount && !accountInformation.authAddress)
           ) {
@@ -214,7 +213,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
           const encodedGenesisHash: string =
             convertGenesisHashToHex(genesisHash).toUpperCase();
           const unknownAssetIds: string[] = decodedUnsignedTransactions
-            .filter((value) => value.type === 'axfer')
+            .filter((value) => value.type === TransactionType.axfer)
             .filter(
               (transaction) =>
                 !standardAssets[encodedGenesisHash].some(

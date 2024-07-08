@@ -7,6 +7,7 @@ import { ThunkEnum } from '../enums';
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import {
@@ -22,6 +23,7 @@ import type {
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
@@ -75,8 +77,8 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
           networkInformation: {
             ...account.networkInformation,
             [encodedGenesisHash]: await updateAccountInformation({
-              address: AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
+              address: convertPublicKeyToAVMAddress(
+                PrivateKeyService.decode(account.publicKey)
               ),
               currentAccountInformation:
                 account.networkInformation[encodedGenesisHash] ||
@@ -105,8 +107,8 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
           networkTransactions: {
             ...account.networkTransactions,
             [encodedGenesisHash]: await updateAccountTransactions({
-              address: AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
+              address: convertPublicKeyToAVMAddress(
+                PrivateKeyService.decode(account.publicKey)
               ),
               currentAccountTransactions:
                 account.networkTransactions[encodedGenesisHash] ||

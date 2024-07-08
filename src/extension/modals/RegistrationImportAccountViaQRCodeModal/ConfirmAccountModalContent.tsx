@@ -57,7 +57,7 @@ import type {
 } from '@extension/types';
 
 // utils
-import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
+import convertPrivateKeyToAVMAddress from '@extension/utils/convertPrivateKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
@@ -134,7 +134,7 @@ const ConfirmAccountModalContent: FC<IProps> = ({
       decodePrivateKeyFromAccountImportSchema(schema);
 
     if (privateKey) {
-      setAddress(convertPrivateKeyToAddress(privateKey));
+      setAddress(convertPrivateKeyToAVMAddress(privateKey));
     }
   }, []);
 

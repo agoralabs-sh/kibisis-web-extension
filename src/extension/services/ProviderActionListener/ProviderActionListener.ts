@@ -24,7 +24,6 @@ import { ProviderPasswordLockTimeoutMessage } from '@common/messages';
 // services
 import AppWindowManagerService from '../AppWindowManagerService';
 import PasswordLockService from '../PasswordLockService';
-import PrivateKeyService from '../PrivateKeyService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
 import SystemService from '../SystemService';
@@ -41,9 +40,10 @@ import {
 } from '@extension/types';
 
 // utils
-import supportedNetworksFromSettings from '@extension/utils/supportedNetworksFromSettings';
+import isExtensionInitialized from '@extension/utils/isExtensionInitialized';
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 import sendExtensionEvent from '@extension/utils/sendExtensionEvent';
+import supportedNetworksFromSettings from '@extension/utils/supportedNetworksFromSettings';
 
 export default class ProviderActionListener {
   // private variables
@@ -52,7 +52,6 @@ export default class ProviderActionListener {
   private isRestartingPasswordLockAlarm: boolean;
   private readonly logger: ILogger | null;
   private readonly passwordLockService: PasswordLockService;
-  private readonly privateKeyService: PrivateKeyService;
   private readonly settingsService: SettingsService;
   private readonly storageManager: StorageManager;
   private readonly systemService: SystemService;
@@ -69,11 +68,6 @@ export default class ProviderActionListener {
     this.logger = logger || null;
     this.passwordLockService = new PasswordLockService({
       logger,
-    });
-    this.privateKeyService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-      storageManager,
     });
     this.settingsService = new SettingsService({
       logger,
@@ -144,7 +138,7 @@ export default class ProviderActionListener {
 
   public async onExtensionClick(): Promise<void> {
     const _functionName = 'onExtensionClick';
-    const isInitialized = await this.privateKeyService.isInitialized();
+    const isInitialized = await isExtensionInitialized();
     let mainAppWindows: IAppWindow[];
     let registrationAppWindows: IAppWindow[];
 
@@ -312,7 +306,6 @@ export default class ProviderActionListener {
               case TransactionType.keyreg:
                 return await sendExtensionEvent({
                   appWindowManagerService: this.appWindowManagerService,
-                  privateKeyService: this.privateKeyService,
                   event: new ARC0300KeyRegistrationTransactionSendEvent({
                     id: uuid(),
                     payload: arc0300Schema as

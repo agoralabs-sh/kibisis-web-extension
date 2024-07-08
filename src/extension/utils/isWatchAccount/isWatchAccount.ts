@@ -17,9 +17,10 @@ export default async function isWatchAccount({
 }: IOptions): Promise<boolean> {
   const privateKeyService = new PrivateKeyService({
     logger,
-    passwordTag: browser.runtime.id,
   });
 
   // if there is no private key stored, it is a watch account
-  return !(await privateKeyService.getPrivateKeyByPublicKey(account.publicKey));
+  return !(await privateKeyService.fetchFromStorageByPublicKey(
+    account.publicKey
+  ));
 }

@@ -25,13 +25,11 @@ import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { ISideBarAccountItemProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
@@ -47,9 +45,7 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
   const subTextColor = useSubTextColor();
   const activeBackground = useColorModeValue('gray.200', 'whiteAlpha.200');
   // misc
-  const address = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
-  );
+  const address = convertPublicKeyToAVMAddress(account.publicKey);
   const activeProps: Partial<ButtonProps> = active
     ? {
         _hover: {

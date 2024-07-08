@@ -7,14 +7,7 @@ import {
   ModalOverlay,
   VStack,
 } from '@chakra-ui/react';
-import React, {
-  FC,
-  KeyboardEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
 
@@ -31,30 +24,22 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 import { useSelectLogger } from '@extension/selectors';
 
 // services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+import PasswordService from '@extension/services/PasswordService';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import { ILogger } from '@common/types';
-
-interface IProps {
-  hint?: string;
-  isOpen: boolean;
-  onCancel: () => void;
-  onConfirm: (password: string) => void;
-}
+import type { IProps } from './types';
 
 const ConfirmPasswordModal: FC<IProps> = ({
   hint,
   isOpen,
   onCancel,
   onConfirm,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
+  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // hooks
   const {
     error: passwordError,
@@ -65,7 +50,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
     value: password,
   } = usePassword();
   // selectors
-  const logger: ILogger = useSelectLogger();
+  const logger = useSelectLogger();
   // state
   const [verifying, setVerifying] = useState<boolean>(false);
   // misc
@@ -77,21 +62,21 @@ const ConfirmPasswordModal: FC<IProps> = ({
   const handleCancelClick = () => handleClose();
   const handleConfirmClick = async () => {
     let isValid: boolean;
-    let privateKeyService: PrivateKeyService;
+    let passwordService: PasswordService;
 
     // check if the input is valid
     if (validatePassword()) {
       return;
     }
 
-    privateKeyService = new PrivateKeyService({
+    passwordService = new PasswordService({
       logger,
       passwordTag: browser.runtime.id,
     });
 
     setVerifying(true);
 
-    isValid = await privateKeyService.verifyPassword(password);
+    isValid = await passwordService.verifyPassword(password);
 
     setVerifying(false);
 

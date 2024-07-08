@@ -30,7 +30,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useAddAssetStandardAssetSummaryContent from './hooks/useAddAssetStandardAssetSummaryContent';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAddAssetsModalStandardAssetSummaryContentProps } from './types';
@@ -38,6 +38,7 @@ import type { IAddAssetsModalStandardAssetSummaryContentProps } from './types';
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
@@ -59,8 +60,9 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
+  const accountAddress: string = convertPublicKeyToAVMAddress(
+    PrivateKeyService.decode(account.publicKey)
+  );
   const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
     new BigNumber(asset.totalSupply),
     asset.decimals

@@ -15,6 +15,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { ILogger } from '@common/types';
@@ -30,10 +31,11 @@ import type {
 
 // utils
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
-import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createUnsignedARC0200TransferTransactions from '@extension/utils/createUnsignedARC0200TransferTransactions';
 import createUnsignedPaymentTransactions from '@extension/utils/createUnsignedPaymentTransactions';
 import createUnsignedStandardAssetTransferTransactions from '@extension/utils/createUnsignedStandardAssetTransferTransactions';
+import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 
 const createUnsignedTransactionsThunk: AsyncThunk<
   Transaction[], // return
@@ -78,8 +80,9 @@ const createUnsignedTransactionsThunk: AsyncThunk<
     fromAccount =
       getState().accounts.items.find(
         (value) =>
-          AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-          fromAddress
+          convertPublicKeyToAVMAddress(
+            PrivateKeyService.decode(value.publicKey)
+          ) === fromAddress
       ) || null;
 
     if (!fromAccount) {

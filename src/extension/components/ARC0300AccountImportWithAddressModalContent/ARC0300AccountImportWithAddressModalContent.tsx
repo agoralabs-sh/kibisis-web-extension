@@ -22,6 +22,7 @@ import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import ModalSubHeading from '@extension/components/ModalSubHeading';
+import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 
 // constants
 import {
@@ -56,7 +57,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 import QuestsService from '@extension/services/QuestsService';
 
 // theme
@@ -72,8 +73,8 @@ import type {
 } from '@extension/types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 
 const ARC0300AccountImportWithAddressModalContent: FC<
   IARC0300ModalContentProps<
@@ -158,8 +159,8 @@ const ARC0300AccountImportWithAddressModalContent: FC<
           ephemeral: true,
           description: t<string>('captions.addedAccount', {
             address: ellipseAddress(
-              AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
+              convertPublicKeyToAVMAddress(
+                PrivateKeyService.decode(account.publicKey)
               )
             ),
           }),
@@ -174,7 +175,9 @@ const ARC0300AccountImportWithAddressModalContent: FC<
 
       // track the action
       await questsService.importAccountViaQRCodeQuest(
-        AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+        convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(account.publicKey)
+        )
       );
 
       // go to the account and the assets tab

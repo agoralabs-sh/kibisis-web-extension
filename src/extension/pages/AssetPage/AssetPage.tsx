@@ -66,7 +66,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAppThunkDispatch } from '@extension/types';
@@ -74,6 +74,7 @@ import type { IAppThunkDispatch } from '@extension/types';
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
@@ -122,8 +123,8 @@ const AssetPage: FC = () => {
 
     dispatch(
       initializeSendAsset({
-        fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
+        fromAddress: convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(account.publicKey)
         ),
         selectedAsset: asset,
       })
@@ -164,8 +165,8 @@ const AssetPage: FC = () => {
     return <LoadingPage />;
   }
 
-  accountAddress = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
+  accountAddress = convertPublicKeyToAVMAddress(
+    PrivateKeyService.decode(account.publicKey)
   );
 
   return (

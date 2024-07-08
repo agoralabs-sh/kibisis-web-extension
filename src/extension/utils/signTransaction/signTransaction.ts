@@ -1,6 +1,5 @@
 import { encode as encodeBase64 } from '@stablelib/base64';
 import { encodeAddress } from 'algosdk';
-import browser from 'webextension-polyfill';
 
 // errors
 import { MalformedDataError } from '@extension/errors';
@@ -15,6 +14,10 @@ import type {
   IAccountWithExtendedProps,
 } from '@extension/types';
 import type { IOptions } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import fetchDecryptedPrivateKeyWithPassword from '@extension/utils/fetchDecryptedPrivateKeyWithPassword';
 
 /**
  * Convenience function that signs a transactions for a given network.
@@ -36,10 +39,6 @@ export default async function signTransaction({
   const base64EncodedGenesisHash = encodeBase64(
     unsignedTransaction.genesisHash
   );
-  const privateKeyService = new PrivateKeyService({
-    logger,
-    passwordTag: browser.runtime.id,
-  });
   const network =
     networks.find((value) => value.genesisHash === base64EncodedGenesisHash) ||
     null;
@@ -48,7 +47,7 @@ export default async function signTransaction({
   let account: IAccountWithExtendedProps | null;
   let accountInformation: IAccountInformation | null;
   let authAccount: IAccountWithExtendedProps | null;
-  let privateKey: Uint8Array | null;
+  let privateKeyItem: Uint8Array | null;
 
   logger?.debug(
     `${_functionName}: signing transaction "${unsignedTransaction.txID()}"`
@@ -68,7 +67,7 @@ export default async function signTransaction({
     accounts.find(
       (value) =>
         value.publicKey ===
-        AccountService.encodePublicKey(unsignedTransaction.from.publicKey)
+        PrivateKeyService.encode(unsignedTransaction.from.publicKey)
     ) || null;
 
   if (!account) {
@@ -92,10 +91,11 @@ export default async function signTransaction({
     throw new MalformedDataError(_error);
   }
 
-  privateKey = await privateKeyService.getDecryptedPrivateKey(
-    unsignedTransaction.from.publicKey,
-    password
-  );
+  privateKeyItem = await fetchDecryptedPrivateKeyWithPassword({
+    logger,
+    password,
+    publicKey: unsignedTransaction.from.publicKey,
+  });
 
   // if the account is re-keyed, attempt to get the auth account's private key to sign
   if (accountInformation.authAddress) {
@@ -104,9 +104,7 @@ export default async function signTransaction({
         (value) =>
           accountInformation?.authAddress &&
           value.publicKey ===
-            AccountService.convertAlgorandAddressToPublicKey(
-              accountInformation.authAddress
-            )
+            convertPublicKeyToAVMAddress(accountInformation.authAddress)
       ) || null;
 
     if (!authAccount) {
@@ -117,13 +115,14 @@ export default async function signTransaction({
       throw new MalformedDataError(_error);
     }
 
-    privateKey = await privateKeyService.getDecryptedPrivateKey(
-      AccountService.decodePublicKey(authAccount.publicKey),
-      password
-    );
+    privateKeyItem = await fetchDecryptedPrivateKeyWithPassword({
+      logger,
+      password,
+      publicKey: authAccount.publicKey,
+    });
   }
 
-  if (!privateKey) {
+  if (!privateKeyItem) {
     _error = `failed to get private key for ${
       accountInformation.authAddress
         ? `the re-keyed account "${signerAddress}" with auth address "${accountInformation.authAddress}"`
@@ -136,7 +135,7 @@ export default async function signTransaction({
   }
 
   try {
-    return unsignedTransaction.signTxn(privateKey);
+    return unsignedTransaction.signTxn(privateKeyItem);
   } catch (error) {
     logger?.error(`${_functionName}: ${error.message}`);
 

@@ -8,14 +8,12 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import { decode as decodeHex } from '@stablelib/hex';
 import { sanitize } from 'dompurify';
 import { toString } from 'qrcode';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoEyeOffOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import browser from 'webextension-polyfill';
 
 // components
 import AccountSelect from '@extension/components/AccountSelect';
@@ -50,7 +48,6 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -60,8 +57,10 @@ import type {
 } from '@extension/types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
 import createWatchAccountImportURI from '@extension/utils/createWatchAccountImportURI';
+import fetchDecryptedPrivateKeyWithPassword from '@extension/utils/fetchDecryptedPrivateKeyWithPassword';
 
 const ExportAccountPage: FC = () => {
   const { t } = useTranslation();
@@ -90,10 +89,6 @@ const ExportAccountPage: FC = () => {
   const qrCodeSize = 300;
   const createQRCodeForPrivateKey = async () => {
     const _functionName = 'createQRCode';
-    const privateService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
     let privateKey: Uint8Array | null;
     let _svgString: string;
     let _uri: string;
@@ -115,15 +110,16 @@ const ExportAccountPage: FC = () => {
     }
 
     try {
-      privateKey = await privateService.getDecryptedPrivateKey(
-        decodeHex(selectedAccount.publicKey),
-        password
-      );
+      privateKey = await fetchDecryptedPrivateKeyWithPassword({
+        logger,
+        password,
+        publicKey: selectedAccount.publicKey,
+      });
 
       if (!privateKey) {
         throw new DecryptionError(
-          `failed to get private key for account "${AccountService.convertPublicKeyToAlgorandAddress(
-            selectedAccount.publicKey
+          `failed to get private key for account "${convertPublicKeyToAVMAddress(
+            PrivateKeyService.decode(selectedAccount.publicKey)
           )}"`
         );
       }
@@ -175,8 +171,8 @@ const ExportAccountPage: FC = () => {
 
     try {
       _uri = createWatchAccountImportURI({
-        address: AccountService.convertPublicKeyToAlgorandAddress(
-          selectedAccount.publicKey
+        address: convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(selectedAccount.publicKey)
         ),
         assets: [],
       });

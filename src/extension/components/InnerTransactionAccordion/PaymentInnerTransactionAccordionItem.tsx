@@ -24,14 +24,12 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 // selectors
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { IBlockExplorer, IPaymentTransaction } from '@extension/types';
 import type { IItemProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
@@ -53,8 +51,9 @@ const PaymentInnerTransactionAccordionItem: FC<
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // misc
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
+  const accountAddress: string = convertPublicKeyToAVMAddress(
+    account.publicKey
+  );
   const amount: BigNumber = new BigNumber(String(transaction.amount));
   const explorer: IBlockExplorer | null =
     network.blockExplorers.find(

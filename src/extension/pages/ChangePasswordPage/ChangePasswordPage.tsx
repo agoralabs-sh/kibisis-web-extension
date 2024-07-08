@@ -1,7 +1,7 @@
 import { Text, VStack, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -33,15 +33,24 @@ import { IAppThunkDispatch } from '@extension/types';
 
 const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
   const { isOpen, onClose, onOpen } = useDisclosure();
   // hooks
-  const { changePassword, error, passwordTag, saving } = useChangePassword();
-  const subTextColor: string = useSubTextColor();
+  const {
+    changePasswordAction,
+    encrypting,
+    error,
+    passwordTag,
+    resetAction,
+    validating,
+  } = useChangePassword();
+  const subTextColor = useSubTextColor();
   // state
   const [newPassword, setNewPassword] = useState<string | null>(null);
   const [score, setScore] = useState<number>(-1);
+  // misc
+  const isLoading = encrypting || validating;
   // handlers
   const handlePasswordChange = (newPassword: string, newScore: number) => {
     setNewPassword(newPassword);
@@ -59,8 +68,16 @@ const ChangePasswordPage: FC = () => {
 
     // save the new password
     if (newPassword) {
-      await changePassword(newPassword, currentPassword);
+      await changePasswordAction({
+        currentPassword,
+        newPassword,
+      });
     }
+  };
+  const reset = () => {
+    setNewPassword(null);
+    setScore(-1);
+    resetAction();
   };
 
   // if there is an error from the hook, show a toast
@@ -68,9 +85,12 @@ const ChangePasswordPage: FC = () => {
     if (error) {
       dispatch(
         createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
           ephemeral: true,
-          description: error.message,
-          title: `${error.code}: ${error.name}`,
+          title: t<string>('errors.titles.code', { context: error.code }),
           type: 'error',
         })
       );
@@ -79,12 +99,11 @@ const ChangePasswordPage: FC = () => {
   // if we have the updated password tag navigate back
   useEffect(() => {
     if (passwordTag) {
-      setNewPassword(null);
-      setScore(-1);
-
       navigate(`${SETTINGS_ROUTE}${SECURITY_ROUTE}`, {
         replace: true,
       });
+
+      reset();
     }
   }, [passwordTag]);
 
@@ -95,6 +114,7 @@ const ChangePasswordPage: FC = () => {
         onCancel={onClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
+
       <PageHeader
         title={t<string>('titles.page', { context: 'changePassword' })}
       />
@@ -116,7 +136,7 @@ const ChangePasswordPage: FC = () => {
           </Text>
 
           <CreatePasswordInput
-            disabled={saving}
+            disabled={isLoading}
             label={t<string>('labels.newPassword')}
             onChange={handlePasswordChange}
             score={score}
@@ -125,7 +145,7 @@ const ChangePasswordPage: FC = () => {
         </VStack>
 
         <Button
-          isLoading={saving}
+          isLoading={isLoading}
           onClick={handleChangeClick}
           size="lg"
           variant="solid"

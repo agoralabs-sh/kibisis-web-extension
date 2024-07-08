@@ -12,6 +12,7 @@ import {
   DecryptionError,
   EncryptionError,
   InvalidPasswordError,
+  MalformedDataError,
 } from '@extension/errors';
 
 // services
@@ -21,20 +22,21 @@ import StorageManager from '../StorageManager';
 import type { ILogger } from '@common/types';
 import type { IPasswordTag } from '@extension/types';
 import type {
+  ICreatePasswordTagOptions,
   IDecryptAndEncryptBytesOptions,
   IGenerateEncryptionKeyFromPasswordOptions,
   INewOptions,
-  ISavePasswordOptions,
+  ISaveNewPasswordOptions,
 } from './types';
 
 export default class PasswordService {
+  // public static variables
+  public static readonly version: number = 0;
+
   // private variables
   private readonly logger: ILogger | null;
   private readonly passwordTag: string;
   private readonly storageManager: StorageManager;
-
-  // public variables
-  public readonly version: number = 0;
 
   constructor({ logger, passwordTag, storageManager }: INewOptions) {
     this.logger = logger || null;
@@ -78,6 +80,34 @@ export default class PasswordService {
   /**
    * public static functions
    */
+
+  /**
+   * Convenience function that creates a password tag item.
+   * @param {ICreatePasswordTagOptions} options - the raw encrypted tag.
+   * @returns {IPasswordTag} an initialized password tag item.
+   * @public
+   * @static
+   */
+  public static createPasswordTag({
+    encryptedTag,
+  }: ICreatePasswordTagOptions): IPasswordTag {
+    return {
+      encryptedTag: encodeHex(encryptedTag),
+      id: uuid(),
+      version: PasswordService.version,
+    };
+  }
+
+  /**
+   * Convenience that decodes the password tag from hexadecimal.
+   * @param {string} encodedKey - the hexadecimal password tag to decode.
+   * @returns {Uint8Array} the decoded password tag.
+   * @public
+   * @static
+   */
+  public static decode(encodedKey: string): Uint8Array {
+    return decodeHex(encodedKey);
+  }
 
   /**
    * Decrypts some data using the supplied password to derive an encryption key.
@@ -130,6 +160,17 @@ export default class PasswordService {
     }
 
     return decryptedData;
+  }
+
+  /**
+   * Convenience that encodes a password tag to uppercase hexadecimal.
+   * @param {Uint8Array} key - the password tag to encode.
+   * @returns {string} the password tag encoded to uppercase hexadecimal.
+   * @public
+   * @static
+   */
+  public static encode(key: Uint8Array): string {
+    return encodeHex(key);
   }
 
   /**
@@ -189,6 +230,10 @@ export default class PasswordService {
     );
   }
 
+  public getPasswordTag(): string {
+    return this.passwordTag;
+  }
+
   /**
    * Removes the stored password tag from storage.
    * @public
@@ -198,56 +243,43 @@ export default class PasswordService {
   }
 
   /**
-   * Changes the current password to the new password. If the storage has not been initialized, a new password is set.
-   * @param {ISavePasswordOptions} options - the new password and a current password if there is a password tag
-   * present.
+   * Changes the current password to a new password.
+   * @param {ISaveNewPasswordOptions} options - the new password and a current password.
    * @returns {Promise<IPasswordTag>} a promise that resolves to the saved password tag.
    * @throws {InvalidPasswordError} if there is an existing password tag and the current password is not supplied, or
    * the current password is invalid.
    * @public
    */
-  public async savePassword({
+  public async saveNewPassword({
     currentPassword,
-    password,
-  }: ISavePasswordOptions): Promise<IPasswordTag> {
-    const _functionName = 'savePassword';
+    newPassword,
+  }: ISaveNewPasswordOptions): Promise<IPasswordTag> {
+    const _functionName = 'saveNewPassword';
     const newEncryptedTag = await PasswordService.encryptBytes({
       data: encodeUtf8(this.passwordTag),
-      password,
+      password: newPassword,
       ...(this.logger && {
         logger: this.logger,
       }),
     }); // encrypt the password tag with the new password
+    let _error: string;
     let isPasswordValid: boolean;
     let passwordTag = await this.fetchFromStorage();
 
-    // if there is no password tag, we can just save the new one
+    // if there is no password tag
     if (!passwordTag) {
-      this.logger?.debug(
-        `${PasswordService.name}#${_functionName}: no previous password tag found, creating new one`
-      );
+      _error = `attempted to change password, but no previous password tag found`;
 
-      return await this.saveToStorage({
-        id: uuid(),
-        encryptedTag: encodeHex(newEncryptedTag), // encode it into hexadecimal
-        version: this.version,
-      });
-    }
+      this.logger?.debug(`${PasswordService.name}#${_functionName}: ${_error}`);
 
-    // if we have a password tag stored and no password, throw an error
-    if (!currentPassword) {
-      this.logger?.debug(
-        `${PasswordService.name}#${_functionName}: password tag found, but no password was supplied to validate`
-      );
-
-      throw new InvalidPasswordError();
+      throw new MalformedDataError(_error);
     }
 
     isPasswordValid = await this.verifyPassword(currentPassword);
 
     if (!isPasswordValid) {
       this.logger?.debug(
-        `${PasswordService.name}#${_functionName}: password is invalid`
+        `${PasswordService.name}#${_functionName}: invalid password`
       );
 
       throw new InvalidPasswordError();
@@ -257,7 +289,10 @@ export default class PasswordService {
       `${PasswordService.name}#${_functionName}: saving new password tag to storage`
     );
 
-    return await this.saveToStorage(passwordTag);
+    return await this.saveToStorage({
+      ...passwordTag,
+      encryptedTag: encodeHex(newEncryptedTag),
+    });
   }
 
   /**

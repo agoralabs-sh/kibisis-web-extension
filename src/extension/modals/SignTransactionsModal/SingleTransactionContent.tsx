@@ -36,8 +36,9 @@ import type {
 import type { ISingleTransactionContentProps } from './types';
 
 // utils
-import parseTransactionType from '@extension/utils/parseTransactionType';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import parseTransactionType from '@extension/utils/parseTransactionType';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
 const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
@@ -116,8 +117,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
         network.genesisHash
       ).toUpperCase();
       accountInformation = await updateAccountInformation({
-        address:
-          AccountService.convertPublicKeyToAlgorandAddress(encodedPublicKey),
+        address: convertPublicKeyToAVMAddress(encodedPublicKey),
         currentAccountInformation:
           account.networkInformation[encodedGenesisHash] ||
           AccountService.initializeDefaultAccountInformation(),

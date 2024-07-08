@@ -52,14 +52,14 @@ import {
   useSelectSettings,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // theme
 import { theme } from '@extension/theme';
 
 // types
 import type { IAppThunkDispatch, IModalProps } from '@extension/types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -281,9 +281,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
               accounts={accounts}
               currentAddress={accountInformation.authAddress}
               network={network}
-              reKeyAddress={AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
-              )}
+              reKeyAddress={convertPublicKeyToAVMAddress(account.publicKey)}
               reKeyType={reKeyType}
             />
           );
@@ -307,9 +305,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
               accounts={accounts}
               currentAddress={
                 accountInformation.authAddress ||
-                AccountService.convertPublicKeyToAlgorandAddress(
-                  account.publicKey
-                )
+                convertPublicKeyToAVMAddress(account.publicKey)
               }
               network={network}
               reKeyAddress={authAddress}

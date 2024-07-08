@@ -17,13 +17,11 @@ import { DEFAULT_GAP } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { IReKeyAccountModalContentProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const ReKeyAccountConfirmingModalContent: FC<
@@ -58,9 +56,7 @@ const ReKeyAccountConfirmingModalContent: FC<
           value={
             <AddressDisplay
               accounts={accounts}
-              address={AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
-              )}
+              address={convertPublicKeyToAVMAddress(account.publicKey)}
               ariaLabel="Re-keyed address"
               size="sm"
               network={network}

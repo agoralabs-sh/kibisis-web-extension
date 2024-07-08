@@ -82,7 +82,6 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
 import QuestsService, {
   QuestNameEnum,
 } from '@extension/services/QuestsService';
@@ -102,6 +101,7 @@ import type {
 
 // utils
 import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransactionAmount';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -174,13 +174,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     onClose && onClose();
   };
   const handleFromAccountChange = (account: IAccountWithExtendedProps) =>
-    dispatch(
-      setFromAddress(
-        AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
-        ).toUpperCase()
-      )
-    );
+    dispatch(setFromAddress(convertPublicKeyToAVMAddress(account.publicKey)));
   const handleNextClick = async () => {
     const _functionName: string = 'handleNextClick';
     let _transactions: Transaction[];
@@ -285,10 +279,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       ).unwrap();
       toAccount =
         accounts.find(
-          (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === toAddress
+          (value) => convertPublicKeyToAVMAddress(value.publicKey) === toAddress
         ) || null;
 
       logger.debug(
@@ -299,9 +290,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           .join(',')}] to the network`
       );
 
-      fromAddress = AccountService.convertPublicKeyToAlgorandAddress(
-        fromAccount.publicKey
-      );
+      fromAddress = convertPublicKeyToAVMAddress(fromAccount.publicKey);
       questsService = new QuestsService({
         logger,
       });

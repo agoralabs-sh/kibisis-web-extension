@@ -29,14 +29,12 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { IPaymentTransaction } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
@@ -54,9 +52,7 @@ const PaymentTransactionPage: FC<IProps<IPaymentTransaction>> = ({
   const defaultTextColor = useDefaultTextColor();
   const subTextColor = useSubTextColor();
   // misc
-  const accountAddress = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
-  );
+  const accountAddress = convertPublicKeyToAVMAddress(account.publicKey);
   const amount: BigNumber = new BigNumber(transaction.amount);
   const explorer =
     network.blockExplorers.find(
@@ -67,14 +63,12 @@ const PaymentTransactionPage: FC<IProps<IPaymentTransaction>> = ({
   const isReceiverKnown =
     accounts.findIndex(
       (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.receiver
+        convertPublicKeyToAVMAddress(value.publicKey) === transaction.receiver
     ) > -1;
   const isSenderKnown =
     accounts.findIndex(
       (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.sender
+        convertPublicKeyToAVMAddress(value.publicKey) === transaction.sender
     ) > -1;
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>

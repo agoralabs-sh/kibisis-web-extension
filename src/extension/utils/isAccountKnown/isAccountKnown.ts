@@ -1,8 +1,11 @@
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import { IAccount } from '@extension/types';
+import type { IAccount } from '@extension/types';
+
+// services
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 export default function isAccountKnown(
   accounts: IAccount[],
@@ -11,8 +14,9 @@ export default function isAccountKnown(
   return (
     accounts.findIndex(
       (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        address
+        convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(value.publicKey)
+        ) === address
     ) > -1
   );
 }

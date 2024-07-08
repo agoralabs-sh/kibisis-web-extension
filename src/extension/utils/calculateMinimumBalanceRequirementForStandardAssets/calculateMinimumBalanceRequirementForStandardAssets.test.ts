@@ -4,16 +4,20 @@ import BigNumber from 'bignumber.js';
 // config
 import { networks } from '@extension/config';
 
+// constants
+import { MINIMUM_BALANCE_REQUIREMENT } from '@extension/constants';
+
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccount, INetworkWithTransactionParams } from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertAVMAddressToPublicKey from '@extension/utils/convertAVMAddressToPublicKey';
 import calculateMinimumBalanceRequirementForStandardAssets from './calculateMinimumBalanceRequirementForStandardAssets';
-import { MINIMUM_BALANCE_REQUIREMENT } from '../../constants';
 
 interface ITestParams {
   expected: BigNumber;
@@ -30,8 +34,8 @@ describe(`${__dirname}/calculateMinimumBalanceRequirementForStandardAssets`, () 
     const _account: Account = generateAccount();
 
     account = AccountService.initializeDefaultAccount({
-      publicKey: AccountService.encodePublicKey(
-        decodeAddress(_account.addr).publicKey
+      publicKey: PrivateKeyService.encode(
+        convertAVMAddressToPublicKey(_account.addr)
       ),
     });
     network = {

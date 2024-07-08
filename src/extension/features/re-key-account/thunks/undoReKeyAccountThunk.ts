@@ -30,6 +30,7 @@ import type { IUndoReKeyAccountThunkPayload } from '../types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
@@ -52,9 +53,7 @@ const undoReKeyAccountThunk: AsyncThunk<
     const logger = getState().system.logger;
     const accountInformation: IAccountInformation | null =
       AccountService.extractAccountInformationForNetwork(reKeyAccount, network);
-    const address = AccountService.convertPublicKeyToAlgorandAddress(
-      reKeyAccount.publicKey
-    );
+    const address = convertPublicKeyToAVMAddress(reKeyAccount.publicKey);
     const networks = getState().networks.items;
     let _error: string;
     let algodClient: Algodv2;

@@ -42,15 +42,15 @@ import {
   useSelectLogger,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
-
 // types
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
 } from '@extension/types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import fetchDecryptedPrivateKeyWithPassword from '@extension/utils/fetchDecryptedPrivateKeyWithPassword';
 
 const ViewSeedPhrasePage: FC = () => {
   const { t } = useTranslation();
@@ -73,10 +73,6 @@ const ViewSeedPhrasePage: FC = () => {
   // misc
   const decryptSeedPhrase = async () => {
     const _functionName = 'decryptSeedPhrase';
-    const privateKeyService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
     let privateKey: Uint8Array | null;
 
     if (!password || !selectedAccount) {
@@ -89,14 +85,15 @@ const ViewSeedPhrasePage: FC = () => {
 
     // get the private key
     try {
-      privateKey = await privateKeyService.getDecryptedPrivateKey(
-        decodeHex(selectedAccount.publicKey),
-        password
-      );
+      privateKey = await fetchDecryptedPrivateKeyWithPassword({
+        logger,
+        password,
+        publicKey: selectedAccount.publicKey,
+      });
 
       if (!privateKey) {
         throw new DecryptionError(
-          `failed to get private key for account "${AccountService.convertPublicKeyToAlgorandAddress(
+          `failed to get private key for account "${convertPublicKeyToAVMAddress(
             selectedAccount.publicKey
           )}"`
         );

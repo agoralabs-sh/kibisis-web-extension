@@ -10,13 +10,14 @@ import useColorModeValue from '@extension/hooks/useColorModeValue';
 import { useSelectSettingsColorMode } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccount } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AddressDisplay: FC<IProps> = ({
@@ -35,8 +36,9 @@ const AddressDisplay: FC<IProps> = ({
   const account: IAccount | null =
     accounts.find(
       (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        address
+        convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(value.publicKey)
+        ) === address
     ) || null;
 
   if (account) {
@@ -54,8 +56,8 @@ const AddressDisplay: FC<IProps> = ({
         ) : (
           <TagLabel>
             {ellipseAddress(
-              AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
+              convertPublicKeyToAVMAddress(
+                PrivateKeyService.decode(account.publicKey)
               )
             )}
           </TagLabel>

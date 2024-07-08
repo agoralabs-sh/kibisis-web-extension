@@ -65,7 +65,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 import QuestsService from '@extension/services/QuestsService';
 
 // theme
@@ -81,7 +81,8 @@ import type {
 } from '@extension/types';
 
 // utils
-import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
+import convertPrivateKeyToAVMAddress from '@extension/utils/convertPrivateKeyToAVMAddress';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
@@ -259,8 +260,8 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
           ephemeral: true,
           description: t<string>('captions.addedAccount', {
             address: ellipseAddress(
-              AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
+              convertPublicKeyToAVMAddress(
+                PrivateKeyService.decode(account.publicKey)
               )
             ),
           }),
@@ -275,7 +276,9 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
 
       // track the action
       await questsService.importAccountViaQRCodeQuest(
-        AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+        convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(account.publicKey)
+        )
       );
 
       // go to the account and the assets tab
@@ -318,7 +321,7 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
       decodePrivateKeyFromAccountImportSchema(schema);
 
     if (privateKey) {
-      setAddress(convertPrivateKeyToAddress(privateKey));
+      setAddress(convertPrivateKeyToAVMAddress(privateKey));
     }
   }, []);
 

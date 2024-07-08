@@ -52,7 +52,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 import QuestsService from '@extension/services/QuestsService';
 
 // theme
@@ -66,6 +66,7 @@ import type {
 } from '@extension/types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import signBytes from '@extension/utils/signBytes';
 
 const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
@@ -146,9 +147,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
 
-    signerAddress = AccountService.convertPublicKeyToAlgorandAddress(
-      signer.publicKey
-    );
+    signerAddress = convertPublicKeyToAVMAddress(signer.publicKey);
 
     logger.debug(
       `${SignMessageModal.name}#${_functionName}: signing message for signer "${signerAddress}"`
@@ -159,7 +158,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
         bytes: new TextEncoder().encode(event.payload.message.params.message),
         logger,
         password,
-        publicKey: AccountService.decodePublicKey(signer.publicKey),
+        publicKey: PrivateKeyService.decode(signer.publicKey),
       });
 
       logger.debug(

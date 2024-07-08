@@ -43,8 +43,9 @@ import type {
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
@@ -126,9 +127,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       );
     }
 
-    address = AccountService.convertPublicKeyToAlgorandAddress(
-      account.publicKey
-    );
+    address = convertPublicKeyToAVMAddress(account.publicKey);
     accountInformation =
       AccountService.extractAccountInformationForNetwork(account, network) ||
       AccountService.initializeDefaultAccountInformation();

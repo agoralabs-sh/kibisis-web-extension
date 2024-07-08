@@ -13,9 +13,6 @@ import {
   OfflineError,
 } from '@extension/errors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type {
   IAccount,
@@ -25,6 +22,7 @@ import type {
 import type { ISubmitTransactionsThunkPayload } from '../types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
@@ -65,9 +63,7 @@ const submitTransactionThunk: AsyncThunk<
 
     fromAccount =
       accounts.find(
-        (value) =>
-          AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-          fromAddress
+        (value) => convertPublicKeyToAVMAddress(value.publicKey) === fromAddress
       ) || null;
 
     if (!fromAccount) {

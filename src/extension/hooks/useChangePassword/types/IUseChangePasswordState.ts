@@ -2,16 +2,20 @@
 import { BaseExtensionError } from '@extension/errors';
 
 // types
-import { IPasswordTag } from '@extension/types';
+import type { IPasswordTag } from '@extension/types';
+import type IChangePasswordActionOptions from './IChangePasswordActionOptions';
 
 interface IUseChangePasswordState {
-  changePassword: (
-    newPassword: string,
-    currentPassword: string
+  changePasswordAction: (
+    options: IChangePasswordActionOptions
   ) => Promise<void>;
+  count: number;
+  encrypting: boolean;
   error: BaseExtensionError | null;
   passwordTag: IPasswordTag | null;
-  saving: boolean;
+  resetAction: () => void;
+  validating: boolean;
+  total: number;
 }
 
 export default IUseChangePasswordState;

@@ -38,14 +38,12 @@ import {
   useSelectSettingsPreferredNFTExplorer,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { IBlockExplorer, INFTExplorer } from '@extension/types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const NFTPage: FC = () => {
   const { t } = useTranslation();
@@ -126,9 +124,7 @@ const NFTPage: FC = () => {
     return <LoadingPage />;
   }
 
-  accountAddress = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
-  );
+  accountAddress = convertPublicKeyToAVMAddress(account.publicKey);
 
   return (
     <>

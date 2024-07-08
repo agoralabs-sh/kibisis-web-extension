@@ -44,6 +44,7 @@ import { ClientRequestMessage, ClientResponseMessage } from '@common/messages';
 // services
 import AccountService from '../AccountService';
 import EventQueueService from '../EventQueueService';
+import PrivateKeyService from '../PrivateKeyService';
 import SessionService from '../SessionService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
@@ -60,6 +61,7 @@ import type {
 
 // utils
 import authorizedAccountsForHost from '@extension/utils/authorizedAccountsForHost';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
 import isNetworkSupported from '@extension/utils/isNetworkSupported';
@@ -357,8 +359,8 @@ export default class ClientMessageHandler {
                   const account: IAccount | null =
                     accounts.find(
                       (value) =>
-                        AccountService.convertPublicKeyToAlgorandAddress(
-                          value.publicKey
+                        convertPublicKeyToAVMAddress(
+                          PrivateKeyService.decode(value.publicKey)
                         ) === address
                     ) || null;
 
@@ -455,8 +457,8 @@ export default class ClientMessageHandler {
       signerAccount =
         authorizedAccounts.find(
           (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
+            convertPublicKeyToAVMAddress(
+              PrivateKeyService.decode(value.publicKey)
             ) === message.params?.signer
         ) || null;
 

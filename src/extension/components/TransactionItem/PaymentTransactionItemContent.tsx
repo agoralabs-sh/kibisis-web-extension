@@ -11,15 +11,13 @@ import AssetDisplay from '@extension/components/AssetDisplay';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { IPaymentTransaction } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const PaymentTransactionItemContent: FC<IProps<IPaymentTransaction>> = ({
   account,
@@ -31,8 +29,9 @@ const PaymentTransactionItemContent: FC<IProps<IPaymentTransaction>> = ({
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
+  const accountAddress: string = convertPublicKeyToAVMAddress(
+    account.publicKey
+  );
   const amount: BigNumber = new BigNumber(String(transaction.amount));
 
   return (

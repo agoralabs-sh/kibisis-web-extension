@@ -43,7 +43,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -53,6 +53,7 @@ import type {
 import type { IProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
@@ -81,8 +82,8 @@ const ARC0200AssetTransferTransactionPage: FC<
     ) ||
     network.blockExplorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
-  const senderAddress = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
+  const senderAddress = convertPublicKeyToAVMAddress(
+    PrivateKeyService.decode(account.publicKey)
   );
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>
