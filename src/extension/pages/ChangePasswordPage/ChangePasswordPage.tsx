@@ -26,6 +26,7 @@ import useChangePassword from '@extension/hooks/useChangePassword';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
+import ChangePasswordLoadingModal from '@extension/modals/ChangePasswordLoadingModal';
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // types
@@ -39,6 +40,7 @@ const ChangePasswordPage: FC = () => {
   // hooks
   const {
     changePasswordAction,
+    encryptionProgressState,
     encrypting,
     error,
     passwordTag,
@@ -109,6 +111,10 @@ const ChangePasswordPage: FC = () => {
 
   return (
     <>
+      <ChangePasswordLoadingModal
+        encryptionProgressState={encryptionProgressState}
+        isOpen={isLoading}
+      />
       <ConfirmPasswordModal
         isOpen={isOpen}
         onCancel={onClose}

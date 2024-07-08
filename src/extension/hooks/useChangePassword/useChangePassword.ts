@@ -10,30 +10,31 @@ import {
 } from '@extension/errors';
 
 // selectors
-import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
+import { useSelectLogger } from '@extension/selectors';
 
 // services
 import PasswordService from '@extension/services/PasswordService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
+import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadingContent';
 import type { IPasswordTag, IPrivateKey } from '@extension/types';
-import type {
-  IChangePasswordActionOptions,
-  IUseChangePasswordState,
-} from './types';
+import { IChangePasswordActionOptions, IUseChangePasswordState } from './types';
+
+// utils
+import { reEncryptPrivateKeyItemWithDelay } from './utils';
 
 export default function useChangePassword(): IUseChangePasswordState {
   const _hookName = 'useChangePassword';
   // selectors
-  const accounts = useSelectAccounts();
   const logger = useSelectLogger();
   // states
-  const [count, setCount] = useState<number>(0);
+  const [encryptionProgressState, setEncryptionProgressState] = useState<
+    IEncryptionState[]
+  >([]);
   const [encrypting, setEncrypting] = useState<boolean>(false);
   const [error, setError] = useState<BaseExtensionError | null>(null);
   const [passwordTag, setPasswordTag] = useState<IPasswordTag | null>(null);
-  const [total, setTotal] = useState<number>(accounts.length);
   const [validating, setValidating] = useState<boolean>(false);
   // actions
   const changePasswordAction = async ({
@@ -65,6 +66,14 @@ export default function useChangePassword(): IUseChangePasswordState {
       setValidating(false);
 
       return setError(new MalformedDataError(_error));
+    }
+
+    if (currentPassword === newPassword) {
+      logger.debug(
+        `${_hookName}#${_functionName}: passwords match, ignoring update`
+      );
+
+      return setPasswordTag(passwordTag);
     }
 
     isPasswordValid = await passwordService.verifyPassword(currentPassword);
@@ -107,31 +116,36 @@ export default function useChangePassword(): IUseChangePasswordState {
     });
     privateKeyItems = await privateKeyService.fetchAllFromStorage();
 
-    setTotal(privateKeyItems.length);
+    // set the encryption state for each item to false
+    setEncryptionProgressState(
+      privateKeyItems.map(({ id }) => ({
+        id,
+        encrypted: false,
+      }))
+    );
 
     // re-encrypt each private key items
     try {
       privateKeyItems = await Promise.all(
-        privateKeyItems.map(async (value) => {
-          const decryptedPrivateKey = await PasswordService.decryptBytes({
-            data: PrivateKeyService.decode(value.encryptedPrivateKey),
+        privateKeyItems.map(async (privateKeyItem, index) => {
+          const item = await reEncryptPrivateKeyItemWithDelay({
+            currentPassword,
+            delay: (index + 1) * 300, // add a staggered delay for the ui to catch up
             logger,
-            password: currentPassword,
-          }); // decrypt the private key with the current password
-          const reEncryptedPrivateKey = await PasswordService.encryptBytes({
-            data: decryptedPrivateKey,
-            logger,
-            password: newPassword,
-          }); // re-encrypt the private key with the new password
-          const item: IPrivateKey = {
-            ...value,
-            encryptedPrivateKey: PrivateKeyService.encode(
-              reEncryptedPrivateKey
-            ),
-            updatedAt: new Date().getTime(),
-          };
+            newPassword,
+            privateKeyItem,
+          });
 
-          setCount(count + 1);
+          setEncryptionProgressState((_encryptionProgressState) =>
+            _encryptionProgressState.map((value) =>
+              value.id === privateKeyItem.id
+                ? {
+                    ...value,
+                    encrypted: true,
+                  }
+                : value
+            )
+          );
 
           return item;
         })
@@ -156,22 +170,20 @@ export default function useChangePassword(): IUseChangePasswordState {
     setEncrypting(false);
   };
   const resetAction = () => {
-    setCount(0);
+    setEncryptionProgressState([]);
     setEncrypting(false);
     setError(null);
     setPasswordTag(null);
     setValidating(false);
-    setTotal(accounts.length);
   };
 
   return {
     changePasswordAction,
+    encryptionProgressState,
     encrypting,
     error,
-    count,
     passwordTag,
     resetAction,
     validating,
-    total,
   };
 }

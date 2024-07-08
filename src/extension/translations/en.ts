@@ -201,6 +201,7 @@ const translation: IResourceLanguage = {
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',
     preferredNFTExplorer: 'Used when opening NFTs.',
     questComplete: 'You have successfully completed a quest!',
+    reEncryptingKeys: 'Re-encrypting {{count}} of {{total}} accounts.',
     reKeyAccount:
       'You are about to re-key an account with an authorized address.',
     reKeyAccountConfirming: 'Please wait while the account is re-keyed.',
