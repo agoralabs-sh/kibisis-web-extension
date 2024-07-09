@@ -13,7 +13,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import React, { FC, KeyboardEvent, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoShieldLock } from 'react-icons/go';
 import { IoKeyOutline } from 'react-icons/io5';
@@ -44,16 +44,12 @@ import { ErrorCodeEnum } from '@extension/enums';
 
 // features
 import { create as createNotification } from '@extension/features/notifications';
-import {
-  removeFromStorageThunk as removePasskeyCredentialFromStorageThunk,
-  saveToStorageThunk as savePasskeyCredentialToStorageThunk,
-} from '@extension/features/passkeys';
 
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+import useAddPasskey from './hooks/useAddPasskey';
 
 // selectors
 import {
@@ -64,9 +60,6 @@ import {
   useSelectSettings,
   useSelectSystemInfo,
 } from '@extension/selectors';
-
-// services
-import PasskeyService from '@extension/services/PasskeyService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -80,6 +73,7 @@ import type {
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
+import ReEncryptKeysLoadingContent from '@extension/components/ReEncryptKeysLoadingContent';
 
 const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -98,6 +92,15 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
   const settings = useSelectSettings();
   const systemInfo = useSelectSystemInfo();
   // hooks
+  const {
+    addPasskeyAction,
+    encrypting,
+    encryptionProgressState,
+    error,
+    passkey,
+    requesting,
+    resetAction: resetAddPasskeyAction,
+  } = useAddPasskey();
   const defaultTextColor = useDefaultTextColor();
   const {
     error: passwordError,
@@ -107,24 +110,18 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const primaryColor = usePrimaryColor();
   const primaryColorCode = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
   );
   const subTextColor = useSubTextColor();
-  // state
-  const [encrypting, setEncrypting] = useState<boolean>(false);
-  const [requestingInputKeyMaterial, setRequestingInputKeyMaterial] =
-    useState<boolean>(false);
   // misc
-  const isLoading = encrypting || saving || requestingInputKeyMaterial;
+  const isLoading = encrypting || requesting || saving;
   // handlers
   const handleCancelClick = async () => handleClose();
   const handleClose = () => {
     resetPassword();
-    setEncrypting(false);
-    setRequestingInputKeyMaterial(false);
+    resetAddPasskeyAction();
 
     if (onClose) {
       onClose();
@@ -134,9 +131,8 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
     const _functionName = 'handleEncryptClick';
     let _password: string | null;
     let passkey: IPasskeyCredential;
-    let inputKeyMaterial: Uint8Array;
 
-    if (!addPasskey) {
+    if (!addPasskey || !systemInfo?.deviceID) {
       return;
     }
 
@@ -164,105 +160,11 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
 
-    // first save the passkey to storage
-    passkey = await dispatch(
-      savePasskeyCredentialToStorageThunk(addPasskey)
-    ).unwrap();
-
-    setRequestingInputKeyMaterial(true);
-
-    try {
-      logger.debug(
-        `${AddPasskeyModal.name}#${_functionName}: requesting input key material from passkey "${passkey.id}"`
-      );
-
-      // fetch the encryption key material
-      inputKeyMaterial = await PasskeyService.fetchInputKeyMaterialFromPasskey({
-        credential: passkey,
-        logger,
-      });
-
-      setRequestingInputKeyMaterial(false);
-    } catch (error) {
-      setRequestingInputKeyMaterial(false);
-
-      // remove the previously saved credential
-      dispatch(removePasskeyCredentialFromStorageThunk());
-
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            code: error.code,
-            context: error.code,
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', { context: error.code }),
-          type: 'error',
-        })
-      );
-
-      return;
-    }
-
-    logger.debug(
-      `${AddPasskeyModal.name}#${_functionName}: received input key material from passkey "${passkey.id}"`
-    );
-
-    setEncrypting(true);
-
-    try {
-      // let encryptedBytes = await PasskeyService.encryptBytes({
-      //   bytes: new TextEncoder().encode(message),
-      //   deviceID: systemInfo.deviceID,
-      //   logger,
-      //   initializationVector: decodeHex(credential.initializationVector),
-      //   inputKeyMaterial,
-      // });
-      // let decryptedBytes = await PasskeyService.decryptBytes({
-      //   deviceID: systemInfo.deviceID,
-      //   encryptedBytes,
-      //   initializationVector: decodeHex(credential.initializationVector),
-      //   inputKeyMaterial,
-      //   logger,
-      // });
-
-      dispatch(
-        createNotification({
-          description: t<string>('captions.passkeyAdded', {
-            name: passkey.name,
-          }),
-          ephemeral: true,
-          title: t<string>('headings.passkeyAdded'),
-          type: 'success',
-        })
-      );
-
-      handleClose();
-    } catch (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-          break;
-        default:
-          // remove the previously saved credential
-          dispatch(removePasskeyCredentialFromStorageThunk());
-
-          dispatch(
-            createNotification({
-              description: t<string>('errors.descriptions.code', {
-                code: error.code,
-                context: error.code,
-              }),
-              ephemeral: true,
-              title: t<string>('errors.titles.code', { context: error.code }),
-              type: 'error',
-            })
-          );
-          break;
-      }
-    }
-
-    setEncrypting(false);
+    await addPasskeyAction({
+      deviceID: systemInfo.deviceID,
+      password: _password,
+      passkey: addPasskey,
+    });
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -291,25 +193,14 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
           w="full"
         >
           {/*loader*/}
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor={defaultTextColor}
-            color={primaryColorCode}
-            size="xl"
+          <ReEncryptKeysLoadingContent
+            encryptionProgressState={encryptionProgressState}
           />
-
-          {/*caption*/}
-          <Text color={subTextColor} fontSize="sm" textAlign="justify" w="full">
-            {t<string>('captions.encryptAccountsWithPasskey', {
-              name: addPasskey.name,
-            })}
-          </Text>
         </VStack>
       );
     }
 
-    if (requestingInputKeyMaterial) {
+    if (requesting) {
       return (
         <VStack
           alignItems="center"
@@ -474,6 +365,35 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
       passwordInputRef.current.focus();
     }
   }, []);
+  // if there is an error from the hook, show a toast
+  useEffect(() => {
+    if (error) {
+      switch (error.code) {
+        case ErrorCodeEnum.InvalidPasswordError:
+          setPasswordError(t<string>('errors.inputs.invalidPassword'));
+          break;
+        default:
+          dispatch(
+            createNotification({
+              description: t<string>('errors.descriptions.code', {
+                code: error.code,
+                context: error.code,
+              }),
+              ephemeral: true,
+              title: t<string>('errors.titles.code', { context: error.code }),
+              type: 'error',
+            })
+          );
+          break;
+      }
+    }
+  }, [error]);
+  // if we have the updated the passkey close the modal
+  useEffect(() => {
+    if (passkey) {
+      handleClose();
+    }
+  }, [passkey]);
 
   return (
     <Modal

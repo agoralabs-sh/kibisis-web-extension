@@ -197,6 +197,17 @@ export default class PasskeyService {
   }
 
   /**
+   * Convenience that decodes a property of the passkey credential from hexadecimal.
+   * @param {string} encodedKey - the hexadecimal property of the passkey credential to decode.
+   * @returns {Uint8Array} the decoded property of the passkey credential.
+   * @public
+   * @static
+   */
+  public static decode(encodedKey: string): Uint8Array {
+    return decodeHex(encodedKey);
+  }
+
+  /**
    * Decrypts some previously encrypted bytes using the input key material fetched from a passkey.
    * @param {IDecryptBytesOptions} options - the encrypted bytes, the initialization vector created at the passkey
    * creation, the device ID and the input key material fetched from the passkey.
@@ -225,6 +236,17 @@ export default class PasskeyService {
     );
 
     return new Uint8Array(decryptedBytes);
+  }
+
+  /**
+   * Convenience that encodes a property of the passkey credential to uppercase hexadecimal.
+   * @param {Uint8Array} key - the property of the passkey credential to encode.
+   * @returns {string} the property of the passkey credential encoded to uppercase hexadecimal.
+   * @public
+   * @static
+   */
+  public static encode(key: Uint8Array): string {
+    return encodeHex(key);
   }
 
   /**

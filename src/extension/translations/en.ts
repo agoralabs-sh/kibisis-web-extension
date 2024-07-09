@@ -115,7 +115,6 @@ const translation: IResourceLanguage = {
       'Passwords will only need to be entered due to inactivity.',
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
-    encryptAccountsWithPasskey: `Decrypting account's private keys with the password and re-encrypting with the passkey "{{name}}".`,
     encryptWithPasskey: `To complete the process, the passkey will be requested to re-encrypt the account's private keys.`,
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     enterWatchAccountAddress:
