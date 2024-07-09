@@ -2,8 +2,7 @@
 import type { IBaseOptions } from '@common/types';
 import type { IPasskeyCredential, IPrivateKey } from '@extension/types';
 
-interface IReEncryptPrivateKeyItemWithPasskeyAndDelayOptions
-  extends IBaseOptions {
+interface IEncryptPrivateKeyItemWithDelayOptions extends IBaseOptions {
   delay?: number;
   deviceID: string;
   inputKeyMaterial: Uint8Array;
@@ -12,4 +11,4 @@ interface IReEncryptPrivateKeyItemWithPasskeyAndDelayOptions
   privateKeyItem: IPrivateKey;
 }
 
-export default IReEncryptPrivateKeyItemWithPasskeyAndDelayOptions;
+export default IEncryptPrivateKeyItemWithDelayOptions;

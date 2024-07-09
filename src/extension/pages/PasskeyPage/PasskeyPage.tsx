@@ -12,7 +12,7 @@ import {
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoTrashOutline } from 'react-icons/io5';
-import { GoShield, GoShieldLock } from 'react-icons/go';
+import { GoShield, GoShieldCheck, GoShieldLock } from 'react-icons/go';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -30,15 +30,15 @@ import { DEFAULT_GAP, PAGE_ITEM_HEIGHT } from '@extension/constants';
 
 // features
 import { create as createNotification } from '@extension/features/notifications';
-import {
-  removeFromStorageThunk as removePasskeyCredentialFromStorageThunk,
-  setAddPasskey,
-} from '@extension/features/passkeys';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
+
+// modals
+import AddPasskeyModal from '@extension/modals/AddPasskeyModal';
+import RemovePasskeyModal from '@extension/modals/RemovePasskeyModal';
 
 // selectors
 import {
@@ -57,8 +57,6 @@ import { IAppThunkDispatch, IPasskeyCredential } from '@extension/types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
-import { setConfirmModal } from '@extension/features/layout';
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
 
 const PasskeyPage: FC = () => {
   const { t } = useTranslation();
@@ -79,8 +77,12 @@ const PasskeyPage: FC = () => {
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
   // states
+  const [addPasskey, setAddPasskey] = useState<IPasskeyCredential | null>(null);
   const [creating, setCreating] = useState<boolean>(false);
   const [passkeyName, setPasskeyName] = useState<string>('');
+  const [removePasskey, setRemovePasskey] = useState<IPasskeyCredential | null>(
+    null
+  );
   // handlers
   const handleAddPasskeyClick = async () => {
     const _functionName = 'handleAddPasskeyClick';
@@ -107,7 +109,7 @@ const PasskeyPage: FC = () => {
       );
 
       // set the add passkey to open the add passkey modal
-      dispatch(setAddPasskey(_passkey));
+      setAddPasskey(_passkey);
     } catch (error) {
       // show a notification
       dispatch(
@@ -125,52 +127,18 @@ const PasskeyPage: FC = () => {
 
     setCreating(false);
   };
+  const handleAddPasskeyModalClose = () => setAddPasskey(null);
   const handleMoreInformationToggle = (value: boolean) =>
     value ? onMoreInformationOpen() : onMoreInformationClose();
   const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
     setPasskeyName(event.target.value);
-  const handleRemovePasskeyClick = async () => {
-    const _functionName = 'handleRemovePasskeyClick';
-
-    if (!passkey) {
-      return;
-    }
-
-    dispatch(
-      setConfirmModal({
-        description: t<string>('captions.removePasskeyConfirm', {
-          name: passkey.name,
-        }),
-        onConfirm: async () => {
-          // remove the passkey from storage
-          await dispatch(removePasskeyCredentialFromStorageThunk()).unwrap();
-
-          logger.debug(
-            `${PasskeyPage.name}#${_functionName}: removed passkey "${passkey.id}"`
-          );
-
-          // display a notification
-          dispatch(
-            createNotification({
-              description: t<string>('captions.passkeyRemoved', {
-                name: passkey.name,
-              }),
-              ephemeral: true,
-              title: t<string>('headings.passkeyRemoved'),
-              type: 'info',
-            })
-          );
-        },
-        title: t<string>('headings.removePasskeyConfirm'),
-        warningText: t<string>('captions.removePasskeyWarning'),
-      })
-    );
-  };
+  const handleRemovePasskeyClick = () => setRemovePasskey(passkey);
+  const handleRemovePasskeyModalClose = () => setRemovePasskey(null);
   // renders
   const renderContent = () => {
     const iconSize = calculateIconSize('xl');
 
-    // if passkeys are not supported for teh browser
+    // if passkeys are not supported for the browser
     if (!PasskeyService.isSupported()) {
       return (
         <VStack
@@ -271,7 +239,7 @@ const PasskeyPage: FC = () => {
           >
             {/*icon*/}
             <Icon
-              as={GoShieldLock}
+              as={GoShieldCheck}
               color="green.600"
               h={iconSize}
               w={iconSize}
@@ -429,7 +397,9 @@ const PasskeyPage: FC = () => {
               textAlign="left"
               w="full"
             >
-              {t<string>('labels.passkeyName')}
+              {`${t<string>('labels.passkeyName')} ${t<string>(
+                'labels.optional'
+              )}`}
             </Text>
 
             <InputGroup size="md">
@@ -460,6 +430,16 @@ const PasskeyPage: FC = () => {
 
   return (
     <>
+      {/*modals*/}
+      <AddPasskeyModal
+        addPasskey={addPasskey}
+        onClose={handleAddPasskeyModalClose}
+      />
+      <RemovePasskeyModal
+        onClose={handleRemovePasskeyModalClose}
+        removePasskey={removePasskey}
+      />
+
       <PageHeader title={t<string>('titles.page', { context: 'passkey' })} />
 
       <VStack

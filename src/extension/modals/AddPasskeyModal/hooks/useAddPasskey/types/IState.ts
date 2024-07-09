@@ -6,7 +6,7 @@ import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadin
 import type { IPasskeyCredential } from '@extension/types';
 import type IAddPasskeyActionOptions from './IAddPasskeyActionOptions';
 
-interface IUseAddPasskeyState {
+interface IState {
   addPasskeyAction: (options: IAddPasskeyActionOptions) => Promise<void>;
   encryptionProgressState: IEncryptionState[];
   encrypting: boolean;
@@ -16,4 +16,4 @@ interface IUseAddPasskeyState {
   resetAction: () => void;
 }
 
-export default IUseAddPasskeyState;
+export default IState;

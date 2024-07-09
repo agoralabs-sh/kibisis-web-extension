@@ -8,7 +8,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner,
   Text,
   useDisclosure,
   VStack,
@@ -31,6 +30,7 @@ import PasskeyCapabilities from '@extension/components/PasskeyCapabilities';
 import PasswordInput, {
   usePassword,
 } from '@extension/components/PasswordInput';
+import ReEncryptKeysLoadingContent from '@extension/components/ReEncryptKeysLoadingContent';
 
 // constants
 import {
@@ -54,7 +54,6 @@ import useAddPasskey from './hooks/useAddPasskey';
 // selectors
 import {
   useSelectLogger,
-  useSelectPasskeysAddPasskey,
   useSelectPasskeysSaving,
   useSelectPasswordLockPassword,
   useSelectSettings,
@@ -65,17 +64,13 @@ import {
 import { theme } from '@extension/theme';
 
 // types
-import type {
-  IAppThunkDispatch,
-  IModalProps,
-  IPasskeyCredential,
-} from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
-import ReEncryptKeysLoadingContent from '@extension/components/ReEncryptKeysLoadingContent';
 
-const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
+const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const {
@@ -85,7 +80,6 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
   } = useDisclosure();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
-  const addPasskey = useSelectPasskeysAddPasskey();
   const logger = useSelectLogger();
   const passwordLockPassword = useSelectPasswordLockPassword();
   const saving = useSelectPasskeysSaving();
@@ -130,7 +124,6 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
   const handleEncryptClick = async () => {
     const _functionName = 'handleEncryptClick';
     let _password: string | null;
-    let passkey: IPasskeyCredential;
 
     if (!addPasskey || !systemInfo?.deviceID) {
       return;
@@ -218,7 +211,7 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
 
           {/*caption*/}
           <Text color={subTextColor} fontSize="sm" textAlign="justify" w="full">
-            {t<string>('captions.requestingPasskeyEncryptionKey', {
+            {t<string>('captions.requestingPasskeyPermission', {
               name: addPasskey.name,
             })}
           </Text>
@@ -391,6 +384,18 @@ const AddPasskeyModal: FC<IModalProps> = ({ onClose }) => {
   // if we have the updated the passkey close the modal
   useEffect(() => {
     if (passkey) {
+      // display a notification
+      dispatch(
+        createNotification({
+          description: t<string>('captions.passkeyAdded', {
+            name: passkey.name,
+          }),
+          ephemeral: true,
+          title: t<string>('headings.passkeyAdded'),
+          type: 'info',
+        })
+      );
+
       handleClose();
     }
   }, [passkey]);

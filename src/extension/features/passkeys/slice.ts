@@ -1,4 +1,4 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
@@ -62,14 +62,10 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Passkeys,
   reducers: {
-    setAddPasskey: (
-      state: Draft<IState>,
-      action: PayloadAction<IPasskeyCredential | null>
-    ) => {
-      state.addPasskey = action.payload;
+    noop: () => {
+      return;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setAddPasskey } = slice.actions;

@@ -27,10 +27,7 @@ import {
 } from '@extension/features/networks';
 import { fetchFromStorageThunk as fetchNewsFromStorageThunk } from '@extension/features/news';
 import { setShowingConfetti } from '@extension/features/notifications';
-import {
-  fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk,
-  setAddPasskey,
-} from '@extension/features/passkeys';
+import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
 import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
@@ -90,7 +87,6 @@ const Root: FC = () => {
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
-  const handleAddPasskeyModalClose = () => dispatch(setAddPasskey(null));
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
   const handleConfettiComplete = () => dispatch(setShowingConfetti(false));
   const handleReKeyAccountModalClose = () => dispatch(resetReKeyAccount());
@@ -161,7 +157,6 @@ const Root: FC = () => {
       {/*action modals*/}
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <AddAssetsForWatchAccountModal onClose={handleAddAssetsModalClose} />
-      <AddPasskeyModal onClose={handleAddPasskeyModalClose} />
       <ReKeyAccountModal onClose={handleReKeyAccountModalClose} />
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />

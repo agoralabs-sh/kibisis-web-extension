@@ -6,7 +6,7 @@ import browser from 'webextension-polyfill';
 import { BaseExtensionError, InvalidPasswordError } from '@extension/errors';
 
 // features
-import { saveToStorageThunk as savePasskeyToStorageThunk } from '@extension/features/passkeys';
+import { removeFromStorageThunk as removePasskeyToStorageThunk } from '@extension/features/passkeys';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
@@ -18,17 +18,13 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadingContent';
-import type {
-  IAppThunkDispatch,
-  IPasskeyCredential,
-  IPrivateKey,
-} from '@extension/types';
-import type { IAddPasskeyActionOptions, IState } from './types';
+import type { IAppThunkDispatch, IPrivateKey } from '@extension/types';
+import type { IRemovePasskeyActionOptions, IState } from './types';
 
 // utils
-import { encryptPrivateKeyItemWithDelay } from './utils';
+import { encryptPrivateKeyItemAndDelay } from './utils';
 
-export default function useAddPasskey(): IState {
+export default function useRemovePasskey(): IState {
   const _hookName = 'useAddPasskey';
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
@@ -39,20 +35,18 @@ export default function useAddPasskey(): IState {
   >([]);
   const [encrypting, setEncrypting] = useState<boolean>(false);
   const [error, setError] = useState<BaseExtensionError | null>(null);
-  const [passkey, setPasskey] = useState<IPasskeyCredential | null>(null);
   const [requesting, setRequesting] = useState<boolean>(false);
   // actions
-  const addPasskeyAction = async ({
+  const removePasskeyAction = async ({
     deviceID,
     passkey,
     password,
-  }: IAddPasskeyActionOptions) => {
-    const _functionName = 'addPasskeyAction';
+  }: IRemovePasskeyActionOptions) => {
+    const _functionName = 'removePasskeyAction';
     const passwordService = new PasswordService({
       logger,
       passwordTag: browser.runtime.id,
     });
-    let _passkey: IPasskeyCredential;
     let inputKeyMaterial: Uint8Array;
     let isPasswordValid: boolean;
     let privateKeyItems: IPrivateKey[];
@@ -105,11 +99,11 @@ export default function useAddPasskey(): IState {
       }))
     );
 
-    // re-encrypt each private key items with the passkey
+    // re-encrypt each private key items with the password
     try {
       privateKeyItems = await Promise.all(
         privateKeyItems.map(async (privateKeyItem, index) => {
-          const item = await encryptPrivateKeyItemWithDelay({
+          const item = await encryptPrivateKeyItemAndDelay({
             delay: (index + 1) * 300, // add a staggered delay for the ui to catch up
             deviceID,
             inputKeyMaterial,
@@ -145,30 +139,27 @@ export default function useAddPasskey(): IState {
     // save the new encrypted items to storage
     await privateKeyService.saveManyToStorage(privateKeyItems);
 
-    // save the new passkey to storage
-    _passkey = await dispatch(savePasskeyToStorageThunk(passkey)).unwrap();
+    // remove the passkey to storage
+    await dispatch(removePasskeyToStorageThunk()).unwrap();
 
     logger?.debug(
-      `${_hookName}#${_functionName}: successfully enabled passkey`
+      `${_hookName}#${_functionName}: successfully removed passkey`
     );
 
-    setPasskey(_passkey);
     setEncrypting(false);
   };
   const resetAction = () => {
     setEncryptionProgressState([]);
     setEncrypting(false);
     setError(null);
-    setPasskey(null);
     setRequesting(false);
   };
 
   return {
-    addPasskeyAction,
     encryptionProgressState,
     encrypting,
     error,
-    passkey,
+    removePasskeyAction,
     requesting,
     resetAction,
   };

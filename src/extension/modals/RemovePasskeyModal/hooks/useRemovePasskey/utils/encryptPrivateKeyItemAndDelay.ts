@@ -5,9 +5,15 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IPrivateKey } from '@extension/types';
-import type { IReEncryptPrivateKeyItemWithPasskeyAndDelayOptions } from '../types';
+import type { IEncryptPrivateKeyItemWithDelayOptions } from '../types';
 
-export default async function reEncryptPrivateKeyItemWithPasskeyAndDelay({
+/**
+ * Convenience function that decrypts a private key item with the passkey and re-encrypts with the password.
+ * @param {IEncryptPrivateKeyItemWithDelayOptions} options - the password, the passkey credential, the input key
+ * material to derive a passkey encryption key, the private key item to decrypt/encrypt and an optional delay.
+ * @returns {IPrivateKey} a re-encrypted private key item.
+ */
+export default async function encryptPrivateKeyItemAndDelay({
   delay = 0,
   deviceID,
   inputKeyMaterial,
@@ -15,8 +21,8 @@ export default async function reEncryptPrivateKeyItemWithPasskeyAndDelay({
   passkey,
   password,
   privateKeyItem,
-}: IReEncryptPrivateKeyItemWithPasskeyAndDelayOptions): Promise<IPrivateKey> {
-  const _functionName = 'reEncryptPrivateKeyItemWithPasskeyAndDelay';
+}: IEncryptPrivateKeyItemWithDelayOptions): Promise<IPrivateKey> {
+  const _functionName = 'encryptPrivateKeyItemAndDelay';
 
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
@@ -25,11 +31,17 @@ export default async function reEncryptPrivateKeyItemWithPasskeyAndDelay({
       let version: number = privateKeyItem.version;
 
       try {
-        decryptedPrivateKey = await PasswordService.decryptBytes({
-          data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+        decryptedPrivateKey = await PasskeyService.decryptBytes({
+          deviceID,
+          encryptedBytes: PrivateKeyService.decode(
+            privateKeyItem.encryptedPrivateKey
+          ),
+          inputKeyMaterial,
+          initializationVector: PasskeyService.decode(
+            passkey.initializationVector
+          ),
           logger,
-          password,
-        }); // decrypt the private key with the current password
+        }); // decrypt the private key with the passkey
 
         // if the saved private key is a legacy item, it is using the "secret key" form - the private key concatenated to the public key
         if (privateKeyItem.version <= 0) {
@@ -44,15 +56,11 @@ export default async function reEncryptPrivateKeyItemWithPasskeyAndDelay({
           version = PrivateKeyService.latestVersion; // update to the latest version
         }
 
-        reEncryptedPrivateKey = await PasskeyService.encryptBytes({
-          bytes: decryptedPrivateKey,
-          deviceID,
-          inputKeyMaterial,
-          initializationVector: PasskeyService.decode(
-            passkey.initializationVector
-          ),
+        reEncryptedPrivateKey = await PasswordService.encryptBytes({
+          data: decryptedPrivateKey,
           logger,
-        }); // re-encrypt the private key with the new password
+          password,
+        }); // re-encrypt the private key with the password
       } catch (error) {
         return reject(error);
       }

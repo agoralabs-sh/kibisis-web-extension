@@ -64,7 +64,7 @@ const translation: IResourceLanguage = {
     addedAccount: 'Account {{address}} has been added.',
     addPasskey1:
       'Adding a passkey allows you to sign transactions without your password.',
-    addPasskey2: `The passkey will be used to to encrypt/decrypt your account's private keys.`,
+    addPasskey2: `The passkey will be used to to encrypt/decrypt the private keys.`,
     addPasskeyInstruction: `Begin by adding a new passkey on your device.`,
     addressDoesNotMatch: 'This address does not match the signer',
     addWatchAccount: 'Add a watch account by providing a valid address.',
@@ -115,7 +115,7 @@ const translation: IResourceLanguage = {
       'Passwords will only need to be entered due to inactivity.',
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
-    encryptWithPasskey: `To complete the process, the passkey will be requested to re-encrypt the account's private keys.`,
+    encryptWithPasskey: `To complete the process, the passkey will be requested to re-encrypt the private keys.`,
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     enterWatchAccountAddress:
       'Enter the address of the account you would like to watch.',
@@ -157,9 +157,10 @@ const translation: IResourceLanguage = {
     mustEnterPasswordToAuthorizeUndoReKey:
       'You must enter your password to authorize the undo re-key.',
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
-    mustEnterPasswordToDecryptPrivateKeys: `Enter your password to decrypt the account's private keys.`,
+    mustEnterPasswordToDecryptPrivateKeys: `Enter your password to decrypt the private keys.`,
     mustEnterPasswordToImportAccount:
       'You must enter your password to import this account.',
+    mustEnterPasswordToReEncryptPrivateKeys: `Enter your password to re-encrypt the private keys.`,
     mustEnterPasswordToSign: 'Enter your password to sign.',
     mustEnterPasswordToSignSecurityToken:
       'Enter your password to sign this security token.',
@@ -220,12 +221,14 @@ const translation: IResourceLanguage = {
       'Please wait while we confirm the opt-out of the asset {{symbol}} with the network.',
     [`removeAssetConfirming_${AssetTypeEnum.ARC0200}`]:
       'Hiding asset {{symbol}}.',
-    removePasskeyConfirm:
-      'Are you sure you want remove the passkey "{{name}}" from your wallet?',
-    removePasskeyWarning:
-      'This action will only remove the passkey from your wallet, the passkey will remain on your device.',
-    requestingPasskeyEncryptionKey:
-      'Requesting encryption key from passkey "{{name}}".',
+    removePasskey:
+      'You are about to remove the passkey "{{name}}". This action will re-enable password authentication.',
+    removePasskeyInstruction1:
+      '1. Before you can remove the passkey, you will need to enter your password in order to re-encrypt your keys.',
+    removePasskeyInstruction2:
+      '2. You will also be asked to decrypt your keys with your passkey.',
+    requestingPasskeyPermission:
+      'Requesting permission from the passkey "{{name}}".',
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
@@ -347,7 +350,7 @@ const translation: IResourceLanguage = {
     [`removeAsset_${AssetTypeEnum.ARC0200}`]: 'Hide {{symbol}}',
     removedAsset: 'Asset {{symbol}} Removed!',
     [`removedAsset_${AssetTypeEnum.ARC0200}`]: 'Asset {{symbol}} Hidden!',
-    removePasskeyConfirm: 'Remove Passkey',
+    removePasskey: 'Remove Passkey',
     scanningForQRCode: 'Scanning For QR Code',
     scanQrCode: 'Scan QR Code',
     selectAccount: 'Select Account',
@@ -486,6 +489,7 @@ const translation: IResourceLanguage = {
     note: 'Note',
     noteOptional: 'Note (optional)',
     notSupported: 'Not Supported',
+    optional: '(optional)',
     passkeyName: 'Passkey name',
     password: 'Password',
     passwordLockDuration: 'Never',

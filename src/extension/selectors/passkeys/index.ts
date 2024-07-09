@@ -1,4 +1,3 @@
-export { default as useSelectPasskeysAddPasskey } from './useSelectPasskeysAddPasskey';
 export { default as useSelectPasskeysEnabled } from './useSelectPasskeysEnabled';
 export { default as useSelectPasskeysFetching } from './useSelectPasskeysFetching';
 export { default as useSelectPasskeysPasskey } from './useSelectPasskeysPasskey';
