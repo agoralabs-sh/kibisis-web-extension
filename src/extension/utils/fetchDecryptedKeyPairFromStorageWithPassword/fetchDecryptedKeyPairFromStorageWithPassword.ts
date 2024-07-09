@@ -3,6 +3,9 @@ import browser from 'webextension-polyfill';
 // errors
 import { InvalidPasswordError } from '@extension/errors';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 // services
 import PasswordService from '@extension/services/PasswordService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
@@ -12,20 +15,20 @@ import type { IPrivateKey } from '@extension/types';
 import type { IOptions } from './types';
 
 /**
- * Convenience function that fetches a raw private key from storage from a hexadecimal encoded public key.
+ * Convenience function that fetches the private key from storage and converts it to a key pair.
  * @param {IOptions} options - the password and the public key.
- * @returns {Promise<Uint8Array | null>} a promise that resolves to the raw decrypted private key or null if there was
- * no private key associated with the public key.
+ * @returns {Promise<Ed21559KeyPair | null>} a promise that resolves to the key pair or null if there was no private key
+ * associated with the public key in storage.
  * @throws {InvalidPasswordError} if the password is invalid.
  * @throws {DecryptionError} if the private key failed to be decrypted with the supplied password.
  */
-export default async function fetchDecryptedPrivateKeyWithPassword({
+export default async function fetchDecryptedKeyPairFromStorageWithPassword({
   logger,
   password,
   passwordService,
   privateKeyService,
   publicKey,
-}: IOptions): Promise<Uint8Array | null> {
+}: IOptions): Promise<Ed21559KeyPair | null> {
   const _functionName = 'fetchDecryptedPrivateKeyWithPassword';
   const _passwordService =
     passwordService ||
@@ -40,6 +43,7 @@ export default async function fetchDecryptedPrivateKeyWithPassword({
     });
   const isPasswordValid = await _passwordService.verifyPassword(password);
   let _publicKey: string;
+  let decryptedPrivateKey: Uint8Array;
   let privateKeyItem: IPrivateKey | null;
 
   if (!isPasswordValid) {
@@ -68,9 +72,24 @@ export default async function fetchDecryptedPrivateKeyWithPassword({
     `${_functionName}: decrypting private key for public key "${_publicKey}"`
   );
 
-  return PasswordService.decryptBytes({
+  // this is the legacy version, we need to convert the "secret key" to a private key
+  if (privateKeyItem.version <= 0) {
+    decryptedPrivateKey = await PasswordService.decryptBytes({
+      data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+      logger,
+      password,
+    });
+
+    return Ed21559KeyPair.generateFromPrivateKey(
+      PrivateKeyService.extractPrivateKeyFromSecretKey(decryptedPrivateKey)
+    );
+  }
+
+  decryptedPrivateKey = await PasswordService.decryptBytes({
     data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
     logger,
     password,
   });
+
+  return Ed21559KeyPair.generateFromPrivateKey(decryptedPrivateKey);
 }

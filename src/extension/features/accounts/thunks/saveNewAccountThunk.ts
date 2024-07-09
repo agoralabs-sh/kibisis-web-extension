@@ -31,10 +31,8 @@ const saveNewAccountThunk: AsyncThunk<
   IAsyncThunkConfigWithRejectValue
 >(
   ThunkEnum.SaveNewAccount,
-  async ({ name, password, privateKey }, { getState, rejectWithValue }) => {
-    const encodedPublicKey = PrivateKeyService.encode(
-      PrivateKeyService.extractPublicKeyFromPrivateKey(privateKey)
-    );
+  async ({ name, keyPair, password }, { getState, rejectWithValue }) => {
+    const encodedPublicKey = PrivateKeyService.encode(keyPair.publicKey);
     const logger = getState().system.logger;
     let _error: string;
     let account: IAccountWithExtendedProps;
@@ -43,9 +41,9 @@ const saveNewAccountThunk: AsyncThunk<
 
     try {
       privateKeyItem = await savePrivateKeyItemWithPassword({
+        keyPair,
         logger,
         password,
-        privateKey,
       });
     } catch (error) {
       return rejectWithValue(error);

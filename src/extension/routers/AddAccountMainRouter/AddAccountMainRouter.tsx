@@ -32,6 +32,9 @@ import { create as createNotification } from '@extension/features/notifications'
 // modals
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 // pages
 import AddAccountTypePage from '@extension/pages/AddAccountTypePage';
 import AddWatchAccountPage, {
@@ -79,16 +82,16 @@ const AddAccountMainRouter: FC = () => {
   const saving = useSelectAccountsSaving();
   const settings = useSelectSettings();
   // states
+  const [keyPair, setKeyPair] = useState<Ed21559KeyPair | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
-  const [privateKey, setPrivateKey] = useState<Uint8Array | null>(null);
   // handlers
   const handleOnAddAccountComplete = async ({
     name,
-    privateKey,
+    keyPair,
   }: IAddAccountCompleteResult) => {
+    setKeyPair(keyPair);
     setName(name);
-    setPrivateKey(privateKey);
 
     // if the password lock is enabled and the password is active, use the password
     if (settings.security.enablePasswordLock && passwordLockPassword) {
@@ -165,24 +168,24 @@ const AddAccountMainRouter: FC = () => {
     );
   // misc
   const reset = () => {
+    setKeyPair(null);
     setName(null);
     setPassword(null);
-    setPrivateKey(null);
   };
   const saveNewAccount = async () => {
     const _functionName = 'saveNewAccount';
     let account: IAccountWithExtendedProps;
 
-    if (!password || !privateKey) {
+    if (!password || !keyPair) {
       return;
     }
 
     try {
       account = await dispatch(
         saveNewAccountThunk({
+          keyPair,
           name,
           password,
-          privateKey,
         })
       ).unwrap();
     } catch (error) {
@@ -208,9 +211,7 @@ const AddAccountMainRouter: FC = () => {
         ephemeral: true,
         description: t<string>('captions.addedAccount', {
           address: ellipseAddress(
-            convertPublicKeyToAVMAddress(
-              PrivateKeyService.decode(account.publicKey)
-            )
+            convertPublicKeyToAVMAddress(account.publicKey)
           ),
         }),
         title: t<string>('headings.addedAccount'),
@@ -240,10 +241,10 @@ const AddAccountMainRouter: FC = () => {
 
   // if we have the password and the private key, we can save a new account
   useEffect(() => {
-    if (password && privateKey) {
+    if (keyPair && password) {
       (async () => await saveNewAccount())();
     }
-  }, [password, privateKey]);
+  }, [keyPair, password]);
 
   return (
     <>

@@ -55,6 +55,9 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useUpdateARC0200Assets from '@extension/hooks/useUpdateARC0200Assets';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 // selectors
 import {
   useSelectActiveAccountDetails,
@@ -201,9 +204,9 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
     try {
       account = await dispatch(
         saveNewAccountThunk({
+          keyPair: Ed21559KeyPair.generateFromPrivateKey(privateKey),
           name: null,
           password: _password,
-          privateKey,
         })
       ).unwrap();
 

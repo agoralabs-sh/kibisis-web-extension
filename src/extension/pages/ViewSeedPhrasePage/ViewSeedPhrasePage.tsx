@@ -1,11 +1,8 @@
 import { SkeletonText, Text, useDisclosure, VStack } from '@chakra-ui/react';
-import { decode as decodeHex } from '@stablelib/hex';
-import { secretKeyToMnemonic } from 'algosdk';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoEyeOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
-import browser from 'webextension-polyfill';
 
 // components
 import AccountSelect from '@extension/components/AccountSelect';
@@ -35,6 +32,9 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 // modals
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 // selectors
 import {
   useSelectActiveAccount,
@@ -49,8 +49,9 @@ import type {
 } from '@extension/types';
 
 // utils
+import convertPrivateKeyToSeedPhrase from '@extension/utils/convertPrivateKeyToSeedPhrase';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
-import fetchDecryptedPrivateKeyWithPassword from '@extension/utils/fetchDecryptedPrivateKeyWithPassword';
+import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 
 const ViewSeedPhrasePage: FC = () => {
   const { t } = useTranslation();
@@ -73,7 +74,7 @@ const ViewSeedPhrasePage: FC = () => {
   // misc
   const decryptSeedPhrase = async () => {
     const _functionName = 'decryptSeedPhrase';
-    let privateKey: Uint8Array | null;
+    let keyPair: Ed21559KeyPair | null;
 
     if (!password || !selectedAccount) {
       logger?.debug(
@@ -85,13 +86,13 @@ const ViewSeedPhrasePage: FC = () => {
 
     // get the private key
     try {
-      privateKey = await fetchDecryptedPrivateKeyWithPassword({
+      keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
         logger,
         password,
         publicKey: selectedAccount.publicKey,
       });
 
-      if (!privateKey) {
+      if (!keyPair) {
         throw new DecryptionError(
           `failed to get private key for account "${convertPublicKeyToAVMAddress(
             selectedAccount.publicKey
@@ -99,8 +100,13 @@ const ViewSeedPhrasePage: FC = () => {
         );
       }
 
-      // convert the secret key to the mnemonic
-      setSeedPhrase(secretKeyToMnemonic(privateKey));
+      // convert the private key to the seed phrase
+      setSeedPhrase(
+        convertPrivateKeyToSeedPhrase({
+          logger,
+          privateKey: keyPair.privateKey,
+        })
+      );
     } catch (error) {
       logger?.error(
         `${ViewSeedPhrasePage.name}#${_functionName}: ${error.message}`

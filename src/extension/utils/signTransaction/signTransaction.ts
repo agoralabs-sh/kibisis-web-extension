@@ -4,6 +4,9 @@ import { encodeAddress } from 'algosdk';
 // errors
 import { MalformedDataError } from '@extension/errors';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 // services
 import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
@@ -17,7 +20,7 @@ import type { IOptions } from './types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
-import fetchDecryptedPrivateKeyWithPassword from '@extension/utils/fetchDecryptedPrivateKeyWithPassword';
+import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 
 /**
  * Convenience function that signs a transactions for a given network.
@@ -42,12 +45,14 @@ export default async function signTransaction({
   const network =
     networks.find((value) => value.genesisHash === base64EncodedGenesisHash) ||
     null;
-  const signerAddress = encodeAddress(unsignedTransaction.from.publicKey);
+  const signerAddress = convertPublicKeyToAVMAddress(
+    unsignedTransaction.from.publicKey
+  );
   let _error: string;
   let account: IAccountWithExtendedProps | null;
   let accountInformation: IAccountInformation | null;
   let authAccount: IAccountWithExtendedProps | null;
-  let privateKeyItem: Uint8Array | null;
+  let keyPair: Ed21559KeyPair | null;
 
   logger?.debug(
     `${_functionName}: signing transaction "${unsignedTransaction.txID()}"`
@@ -91,7 +96,7 @@ export default async function signTransaction({
     throw new MalformedDataError(_error);
   }
 
-  privateKeyItem = await fetchDecryptedPrivateKeyWithPassword({
+  keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
     logger,
     password,
     publicKey: unsignedTransaction.from.publicKey,
@@ -115,14 +120,14 @@ export default async function signTransaction({
       throw new MalformedDataError(_error);
     }
 
-    privateKeyItem = await fetchDecryptedPrivateKeyWithPassword({
+    keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
       logger,
       password,
       publicKey: authAccount.publicKey,
     });
   }
 
-  if (!privateKeyItem) {
+  if (!keyPair) {
     _error = `failed to get private key for ${
       accountInformation.authAddress
         ? `the re-keyed account "${signerAddress}" with auth address "${accountInformation.authAddress}"`
@@ -135,9 +140,9 @@ export default async function signTransaction({
   }
 
   try {
-    return unsignedTransaction.signTxn(privateKeyItem);
+    return unsignedTransaction.signTxn(keyPair.getSecretKey());
   } catch (error) {
-    logger?.error(`${_functionName}: ${error.message}`);
+    logger?.error(`${_functionName}:`, error);
 
     throw new MalformedDataError(error.message);
   }

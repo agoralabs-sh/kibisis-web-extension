@@ -37,6 +37,7 @@ export default function createCommonConfig(): Configuration {
         ['@extension/hooks']: resolve(extensionPath, 'hooks'),
         ['@extension/images']: resolve(extensionPath, 'images'),
         ['@extension/modals']: resolve(extensionPath, 'modals'),
+        ['@extension/models']: resolve(extensionPath, 'models'),
         ['@extension/pages']: resolve(extensionPath, 'pages'),
         ['@extension/routers']: resolve(extensionPath, 'routers'),
         ['@extension/selectors']: resolve(extensionPath, 'selectors'),

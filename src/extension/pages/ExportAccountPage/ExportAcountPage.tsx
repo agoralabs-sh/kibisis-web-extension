@@ -38,6 +38,9 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 // images
 import qrCodePlaceholderImage from '@extension/images/placeholder_qr_code.png';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 // selectors
 import {
   useSelectAccounts,
@@ -60,7 +63,7 @@ import type {
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
 import createWatchAccountImportURI from '@extension/utils/createWatchAccountImportURI';
-import fetchDecryptedPrivateKeyWithPassword from '@extension/utils/fetchDecryptedPrivateKeyWithPassword';
+import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 
 const ExportAccountPage: FC = () => {
   const { t } = useTranslation();
@@ -89,9 +92,9 @@ const ExportAccountPage: FC = () => {
   const qrCodeSize = 300;
   const createQRCodeForPrivateKey = async () => {
     const _functionName = 'createQRCode';
-    let privateKey: Uint8Array | null;
     let _svgString: string;
     let _uri: string;
+    let keyPair: Ed21559KeyPair | null;
 
     if (!selectedAccount) {
       logger.debug(
@@ -110,13 +113,13 @@ const ExportAccountPage: FC = () => {
     }
 
     try {
-      privateKey = await fetchDecryptedPrivateKeyWithPassword({
+      keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
         logger,
         password,
         publicKey: selectedAccount.publicKey,
       });
 
-      if (!privateKey) {
+      if (!keyPair) {
         throw new DecryptionError(
           `failed to get private key for account "${convertPublicKeyToAVMAddress(
             PrivateKeyService.decode(selectedAccount.publicKey)
@@ -126,7 +129,7 @@ const ExportAccountPage: FC = () => {
 
       _uri = createAccountImportURI({
         assets: [],
-        privateKey,
+        privateKey: keyPair.privateKey,
       });
       _svgString = await toString(_uri, {
         type: 'svg',

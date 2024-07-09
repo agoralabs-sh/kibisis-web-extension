@@ -2,13 +2,16 @@ import { sign } from 'tweetnacl';
 import browser from 'webextension-polyfill';
 
 // errors
-import { DecryptionError, MalformedDataError } from '@extension/errors';
+import { MalformedDataError } from '@extension/errors';
+
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // types
 import type { IOptions } from './types';
 
 // utils
-import fetchDecryptedPrivateKeyWithPassword from '@extension/utils/fetchDecryptedPrivateKeyWithPassword';
+import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 
 /**
  * Convenience function that signs an arbitrary bit of data using the supplied signer.
@@ -24,31 +27,26 @@ export default async function signBytes({
   password,
   publicKey,
 }: IOptions): Promise<Uint8Array> {
-  const _functionName: string = 'signBytes';
-  let _error: string;
-  let privateKey: Uint8Array | null;
+  const _functionName = 'signBytes';
+  let keyPair: Ed21559KeyPair | null;
   let signature: Uint8Array;
 
-  privateKey = await fetchDecryptedPrivateKeyWithPassword({
+  keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
     logger,
     password,
     publicKey,
   });
 
-  if (!privateKey) {
-    _error = `failed to get private key`;
-
-    logger?.error(_error);
-
-    throw new DecryptionError(_error);
+  if (!keyPair) {
+    throw new MalformedDataError(`failed to get private key from storage`);
   }
 
   try {
-    signature = sign.detached(bytes, privateKey);
+    signature = sign.detached(bytes, keyPair.getSecretKey());
 
     return signature;
   } catch (error) {
-    logger?.error(`${_functionName}: ${error.message}`);
+    logger?.error(`${_functionName}:`, error);
 
     throw new MalformedDataError(error.message);
   }

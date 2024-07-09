@@ -13,7 +13,7 @@ import type { IOptions } from './types';
 
 /**
  * Convenience function that saves a encrypts a private key and saves it to storage.
- * @param {IOptions} options - the password and the private key.
+ * @param {IOptions} options - the password and the key pair.
  * @returns {Promise<Uint8Array | null>} a promise that resolves to the saved private key item or null if the private
  * key failed to save.
  * @throws {InvalidPasswordError} if the password is invalid.
@@ -21,10 +21,10 @@ import type { IOptions } from './types';
  * @throws {DecryptionError} if the private key failed to be encrypted with the supplied password.
  */
 export default async function savePrivateKeyItemWithPassword({
+  keyPair,
   logger,
   password,
   passwordService,
-  privateKey,
   privateKeyService,
 }: IOptions): Promise<IPrivateKey | null> {
   const _functionName = 'savePrivateKeyItemWithPassword';
@@ -40,8 +40,6 @@ export default async function savePrivateKeyItemWithPassword({
       logger,
     });
   const isPasswordValid = await _passwordService.verifyPassword(password);
-  const publicKey =
-    PrivateKeyService.extractPublicKeyFromPrivateKey(privateKey);
   let _error: string;
   let encryptedPrivateKey: Uint8Array;
   let passwordTagItem: IPasswordTag | null;
@@ -54,13 +52,13 @@ export default async function savePrivateKeyItemWithPassword({
   }
 
   privateKeyItem = await _privateKeyService.fetchFromStorageByPublicKey(
-    PrivateKeyService.encode(publicKey)
+    keyPair.publicKey
   );
 
   if (!privateKeyItem) {
     logger?.debug(
       `${_functionName}: key for "${PrivateKeyService.encode(
-        publicKey
+        keyPair.publicKey
       )}" (public key) doesn't exist, creating a new one`
     );
 
@@ -76,7 +74,7 @@ export default async function savePrivateKeyItemWithPassword({
 
     // encrypt the private key and add it to storage.
     encryptedPrivateKey = await PasswordService.encryptBytes({
-      data: privateKey,
+      data: keyPair.privateKey,
       logger,
       password,
     });
@@ -84,7 +82,7 @@ export default async function savePrivateKeyItemWithPassword({
       PrivateKeyService.createPrivateKey({
         encryptedPrivateKey,
         passwordTagId: passwordTagItem.id,
-        publicKey,
+        publicKey: keyPair.publicKey,
       })
     );
   }

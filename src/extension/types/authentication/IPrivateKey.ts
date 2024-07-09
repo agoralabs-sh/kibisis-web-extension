@@ -5,6 +5,7 @@ interface IPrivateKey {
   passwordTagId: string;
   publicKey: string;
   updatedAt: number;
+  version: number;
 }
 
 export default IPrivateKey;

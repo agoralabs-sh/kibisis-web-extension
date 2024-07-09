@@ -5,28 +5,33 @@ import { v4 as uuid } from 'uuid';
 // constants
 import { PRIVATE_KEY_ITEM_KEY_PREFIX } from '@extension/constants';
 
-// errors
-import { MalformedDataError } from '@extension/errors';
-
 // services
 import StorageManager from '../StorageManager';
 
 // types
-import type { ILogger } from '@common/types';
 import type { IPrivateKey } from '@extension/types';
 import type { ICreatePrivateKeyOptions, INewOptions } from './types';
 
+//
+
+/**
+ * Handles all interactions with the private key item in storage. This does not deal with any encryption/decryption,
+ * this is handled in the PasswordService and the PasskeyService.
+ *
+ * @version 0:
+ * * The `encryptedPrivateKey` property is the "secret key" - the private key concentrated to the public key,
+ * @version 1:
+ * * The `encryptedPrivateKey` property is replaced with the actual private key (seed) rather than the "secret key"
+ * (private key concentrated to the public key).
+ */
 export default class PrivateKeyService {
+  // public static variables
+  public static readonly latestVersion: number = 1;
+
   // private variables
-  private readonly logger: ILogger | null;
-  private readonly passwordTag: string;
   private readonly storageManager: StorageManager;
 
-  // public variables
-  public readonly version: number = 0;
-
   constructor(options?: INewOptions) {
-    this.logger = options?.logger || null;
     this.storageManager = options?.storageManager || new StorageManager();
   }
 
@@ -56,6 +61,7 @@ export default class PrivateKeyService {
       passwordTagId,
       publicKey: PrivateKeyService.encode(publicKey),
       updatedAt: now.getTime(),
+      version: PrivateKeyService.latestVersion,
     };
   }
 
@@ -82,26 +88,22 @@ export default class PrivateKeyService {
   }
 
   /**
-   * Convenience that extracts the raw public key from a private key.
-   * @param {Uint8Array} privateKey - the raw private key.
-   * @returns {Uint8Array} the public key for the supplied private key.
-   * @throws {MalformedDataError} if the private key is the incorrect format (should have been created using
-   * {@link http://ed25519.cr.yp.to/ ed25519}).
+   * Convenience function that extracts the private key (seed) from a "secret key". The secret key is used by tweetnacl
+   * and is defined as the 32-byte private key (seed) concatenated to the 32 byte public key.
+   * @param {Uint8Array} secretKey - a 64 byte "secret key".
+   * @returns {Uint8Array} a 32 byte private key (seed).
    * @public
    * @static
    */
-  public static extractPublicKeyFromPrivateKey(
-    privateKey: Uint8Array
+  public static extractPrivateKeyFromSecretKey(
+    secretKey: Uint8Array
   ): Uint8Array {
-    let keyPair: SignKeyPair;
-
-    try {
-      keyPair = sign.keyPair.fromSecretKey(privateKey);
-
-      return keyPair.publicKey;
-    } catch (error) {
-      throw new MalformedDataError(error.message);
+    // if the secret key is <=32-bytes, it is probably not a secret key.
+    if (secretKey.byteLength <= sign.seedLength) {
+      return secretKey;
     }
+
+    return secretKey.slice(0, sign.seedLength); // get the first 32 bytes, this is the private key (seed)
   }
 
   /**
@@ -124,14 +126,25 @@ export default class PrivateKeyService {
    * @returns {IPrivateKey} the sanitized private key item.
    * @private
    */
-  private _sanitize(item: IPrivateKey): IPrivateKey {
+  private _sanitize({
+    createdAt,
+    encryptedPrivateKey,
+    id,
+    passwordTagId,
+    publicKey,
+    updatedAt,
+    version,
+  }: IPrivateKey): IPrivateKey {
+    const _version = !version ? 0 : version; // if there is no version, start at zero (legacy)
+
     return {
-      createdAt: item.createdAt,
-      id: item.id,
-      encryptedPrivateKey: item.encryptedPrivateKey,
-      passwordTagId: item.passwordTagId,
-      publicKey: item.publicKey,
-      updatedAt: item.updatedAt,
+      createdAt,
+      id,
+      encryptedPrivateKey,
+      passwordTagId,
+      publicKey,
+      updatedAt,
+      version: _version,
     };
   }
 
@@ -150,7 +163,7 @@ export default class PrivateKeyService {
     return Object.keys(items).reduce<IPrivateKey[]>(
       (acc, key) =>
         key.startsWith(PRIVATE_KEY_ITEM_KEY_PREFIX)
-          ? [...acc, items[key] as IPrivateKey]
+          ? [...acc, this._sanitize(items[key] as IPrivateKey)]
           : acc,
       []
     );
@@ -169,10 +182,13 @@ export default class PrivateKeyService {
       typeof publicKey !== 'string'
         ? PrivateKeyService.encode(publicKey)
         : publicKey;
-
-    return await this.storageManager.getItem(
+    const item = await this.storageManager.getItem<IPrivateKey>(
       this._createPrivateKeyItemKey(_publicKey.toUpperCase())
     );
+
+    console.log('private key:', item ? this._sanitize(item) : null);
+
+    return item ? this._sanitize(item) : null;
   }
 
   /**

@@ -13,10 +13,13 @@ export default async function reEncryptPrivateKeyItemWithDelay({
   newPassword,
   privateKeyItem,
 }: IReEncryptPrivateKeyItemWithDelayOptions): Promise<IPrivateKey> {
+  const _functionName = 'reEncryptPrivateKeyItemWithDelay';
+
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
       let decryptedPrivateKey: Uint8Array;
       let reEncryptedPrivateKey: Uint8Array;
+      let version: number = privateKeyItem.version;
 
       try {
         decryptedPrivateKey = await PasswordService.decryptBytes({
@@ -24,6 +27,20 @@ export default async function reEncryptPrivateKeyItemWithDelay({
           logger,
           password: currentPassword,
         }); // decrypt the private key with the current password
+
+        // if the saved private key is a legacy item, it is using the "secret key" form - the private key concatenated to the public key
+        if (privateKeyItem.version <= 0) {
+          logger?.debug(
+            `${_functionName}: key "${privateKeyItem}" on legacy version "${privateKeyItem.version}", updating`
+          );
+
+          decryptedPrivateKey =
+            PrivateKeyService.extractPrivateKeyFromSecretKey(
+              decryptedPrivateKey
+            );
+          version = PrivateKeyService.latestVersion; // update to the latest version
+        }
+
         reEncryptedPrivateKey = await PasswordService.encryptBytes({
           data: decryptedPrivateKey,
           logger,
@@ -37,6 +54,7 @@ export default async function reEncryptPrivateKeyItemWithDelay({
         ...privateKeyItem,
         encryptedPrivateKey: PrivateKeyService.encode(reEncryptedPrivateKey),
         updatedAt: new Date().getTime(),
+        version,
       });
     }, delay);
   });

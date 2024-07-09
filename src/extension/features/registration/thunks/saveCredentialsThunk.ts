@@ -39,10 +39,7 @@ const saveCredentialsThunk: AsyncThunk<
   IAsyncThunkConfigWithRejectValue<IRegistrationRootState>
 >(
   ThunkEnum.SaveCredentials,
-  async (
-    { arc0200Assets, name, privateKey },
-    { getState, rejectWithValue }
-  ) => {
+  async ({ arc0200Assets, keyPair, name }, { getState, rejectWithValue }) => {
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const password = getState().registration.password;
@@ -96,13 +93,12 @@ const saveCredentialsThunk: AsyncThunk<
       privateKeyItem = await privateKeyService.saveToStorage(
         PrivateKeyService.createPrivateKey({
           encryptedPrivateKey: await PasswordService.encryptBytes({
-            data: privateKey,
+            data: keyPair.privateKey,
             logger,
             password,
           }),
           passwordTagId: passwordTagItem.id,
-          publicKey:
-            PrivateKeyService.extractPublicKeyFromPrivateKey(privateKey),
+          publicKey: keyPair.publicKey,
         })
       );
     } catch (error) {
