@@ -7,7 +7,7 @@ import type { IPasskeyCredential } from '@extension/types';
 import type IAddPasskeyActionOptions from './IAddPasskeyActionOptions';
 
 interface IState {
-  addPasskeyAction: (options: IAddPasskeyActionOptions) => Promise<void>;
+  addPasskeyAction: (options: IAddPasskeyActionOptions) => Promise<boolean>;
   encryptionProgressState: IEncryptionState[];
   encrypting: boolean;
   error: BaseExtensionError | null;

@@ -43,10 +43,9 @@ export default function useAddPasskey(): IState {
   const [requesting, setRequesting] = useState<boolean>(false);
   // actions
   const addPasskeyAction = async ({
-    deviceID,
     passkey,
     password,
-  }: IAddPasskeyActionOptions) => {
+  }: IAddPasskeyActionOptions): Promise<boolean> => {
     const _functionName = 'addPasskeyAction';
     const passwordService = new PasswordService({
       logger,
@@ -66,7 +65,9 @@ export default function useAddPasskey(): IState {
     if (!isPasswordValid) {
       logger?.debug(`${_hookName}#${_functionName}: invalid password`);
 
-      return setError(new InvalidPasswordError());
+      setError(new InvalidPasswordError());
+
+      return false;
     }
 
     setRequesting(true);
@@ -85,8 +86,9 @@ export default function useAddPasskey(): IState {
       logger?.debug(`${_hookName}#${_functionName}:`, error);
 
       setRequesting(false);
+      setError(error);
 
-      return setError(error);
+      return false;
     }
 
     setRequesting(false);
@@ -111,7 +113,6 @@ export default function useAddPasskey(): IState {
         privateKeyItems.map(async (privateKeyItem, index) => {
           const item = await encryptPrivateKeyItemWithDelay({
             delay: (index + 1) * 300, // add a staggered delay for the ui to catch up
-            deviceID,
             inputKeyMaterial,
             logger,
             passkey,
@@ -138,8 +139,9 @@ export default function useAddPasskey(): IState {
       logger?.debug(`${_hookName}#${_functionName}:`, error);
 
       setEncrypting(false);
+      setError(error);
 
-      return setError(error);
+      return false;
     }
 
     // save the new encrypted items to storage
@@ -154,6 +156,8 @@ export default function useAddPasskey(): IState {
 
     setPasskey(_passkey);
     setEncrypting(false);
+
+    return true;
   };
   const resetAction = () => {
     setEncryptionProgressState([]);

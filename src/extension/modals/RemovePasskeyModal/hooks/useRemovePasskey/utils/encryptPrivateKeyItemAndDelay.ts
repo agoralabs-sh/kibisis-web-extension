@@ -15,7 +15,6 @@ import type { IEncryptPrivateKeyItemWithDelayOptions } from '../types';
  */
 export default async function encryptPrivateKeyItemAndDelay({
   delay = 0,
-  deviceID,
   inputKeyMaterial,
   logger,
   passkey,
@@ -32,14 +31,11 @@ export default async function encryptPrivateKeyItemAndDelay({
 
       try {
         decryptedPrivateKey = await PasskeyService.decryptBytes({
-          deviceID,
           encryptedBytes: PrivateKeyService.decode(
             privateKeyItem.encryptedPrivateKey
           ),
           inputKeyMaterial,
-          initializationVector: PasskeyService.decode(
-            passkey.initializationVector
-          ),
+          passkey,
           logger,
         }); // decrypt the private key with the passkey
 

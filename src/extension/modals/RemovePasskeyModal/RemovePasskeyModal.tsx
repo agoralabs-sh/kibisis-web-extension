@@ -39,11 +39,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useRemovePasskey from './hooks/useRemovePasskey';
 
 // selectors
-import {
-  useSelectLogger,
-  useSelectPasskeysSaving,
-  useSelectSystemInfo,
-} from '@extension/selectors';
+import { useSelectLogger, useSelectPasskeysSaving } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -62,7 +58,6 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
   // selectors
   const logger = useSelectLogger();
   const saving = useSelectPasskeysSaving();
-  const systemInfo = useSelectSystemInfo();
   // hooks
   const {
     encrypting,
@@ -107,8 +102,9 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
   };
   const handleRemoveClick = async () => {
     const _functionName = 'handleRemoveClick';
+    let success: boolean;
 
-    if (!removePasskey || !systemInfo?.deviceID) {
+    if (!removePasskey) {
       return;
     }
 
@@ -121,11 +117,27 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
       return;
     }
 
-    await removePasskeyAction({
-      deviceID: systemInfo.deviceID,
+    success = await removePasskeyAction({
       password,
       passkey: removePasskey,
     });
+
+    if (success) {
+      // display a success notification
+      dispatch(
+        createNotification({
+          description: t<string>('captions.passkeyRemoved', {
+            name: removePasskey.name,
+          }),
+          ephemeral: true,
+          title: t<string>('headings.passkeyRemoved'),
+          type: 'info',
+        })
+      );
+
+      // close the modal
+      handleClose();
+    }
   };
   // renders
   const renderContent = () => {
@@ -242,12 +254,6 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
       }
     }
   }, [error]);
-  // if we have the updated the passkey close the modal
-  // useEffect(() => {
-  //   if (passkey) {
-  //     handleClose();
-  //   }
-  // }, [passkey]);
 
   return (
     <Modal

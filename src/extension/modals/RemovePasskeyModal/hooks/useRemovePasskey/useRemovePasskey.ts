@@ -38,10 +38,9 @@ export default function useRemovePasskey(): IState {
   const [requesting, setRequesting] = useState<boolean>(false);
   // actions
   const removePasskeyAction = async ({
-    deviceID,
     passkey,
     password,
-  }: IRemovePasskeyActionOptions) => {
+  }: IRemovePasskeyActionOptions): Promise<boolean> => {
     const _functionName = 'removePasskeyAction';
     const passwordService = new PasswordService({
       logger,
@@ -60,7 +59,9 @@ export default function useRemovePasskey(): IState {
     if (!isPasswordValid) {
       logger?.debug(`${_hookName}#${_functionName}: invalid password`);
 
-      return setError(new InvalidPasswordError());
+      setError(new InvalidPasswordError());
+
+      return false;
     }
 
     setRequesting(true);
@@ -79,8 +80,9 @@ export default function useRemovePasskey(): IState {
       logger?.debug(`${_hookName}#${_functionName}:`, error);
 
       setRequesting(false);
+      setError(error);
 
-      return setError(error);
+      return false;
     }
 
     setRequesting(false);
@@ -105,7 +107,6 @@ export default function useRemovePasskey(): IState {
         privateKeyItems.map(async (privateKeyItem, index) => {
           const item = await encryptPrivateKeyItemAndDelay({
             delay: (index + 1) * 300, // add a staggered delay for the ui to catch up
-            deviceID,
             inputKeyMaterial,
             logger,
             passkey,
@@ -132,8 +133,9 @@ export default function useRemovePasskey(): IState {
       logger?.debug(`${_hookName}#${_functionName}:`, error);
 
       setEncrypting(false);
+      setError(error);
 
-      return setError(error);
+      return error;
     }
 
     // save the new encrypted items to storage
@@ -147,6 +149,8 @@ export default function useRemovePasskey(): IState {
     );
 
     setEncrypting(false);
+
+    return true;
   };
   const resetAction = () => {
     setEncryptionProgressState([]);

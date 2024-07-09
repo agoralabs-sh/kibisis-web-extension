@@ -15,7 +15,6 @@ import type { IEncryptPrivateKeyItemWithDelayOptions } from '../types';
  */
 export default async function encryptPrivateKeyItemWithDelay({
   delay = 0,
-  deviceID,
   inputKeyMaterial,
   logger,
   passkey,
@@ -52,11 +51,8 @@ export default async function encryptPrivateKeyItemWithDelay({
 
         reEncryptedPrivateKey = await PasskeyService.encryptBytes({
           bytes: decryptedPrivateKey,
-          deviceID,
           inputKeyMaterial,
-          initializationVector: PasskeyService.decode(
-            passkey.initializationVector
-          ),
+          passkey,
           logger,
         }); // re-encrypt the private key with the new password
       } catch (error) {

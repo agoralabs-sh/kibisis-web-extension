@@ -1,6 +1,6 @@
 interface IGenerateEncryptionKeyOptions {
-  deviceID: string;
   inputKeyMaterial: Uint8Array;
+  userID: string;
 }
 
 export default IGenerateEncryptionKeyOptions;

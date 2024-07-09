@@ -24,10 +24,7 @@ import {
 import StorageManager from '@extension/services/StorageManager';
 
 // types
-import type {
-  IAuthenticationExtensionsClientOutputs,
-  ILogger,
-} from '@common/types';
+import type { IAuthenticationExtensionsClientOutputs } from '@common/types';
 import type { IPasskeyCredential } from '@extension/types';
 import type {
   ICreatePasskeyCredentialOptions,
@@ -40,11 +37,9 @@ import type {
 
 export default class PasskeyService {
   // private variables
-  private readonly logger: ILogger | null;
   private readonly storageManager: StorageManager;
 
   constructor(options?: INewOptions) {
-    this.logger = options?.logger || null;
     this.storageManager = options?.storageManager || new StorageManager();
   }
 
@@ -55,15 +50,15 @@ export default class PasskeyService {
   /**
    * Generates an encryption key that can be used to decrypt/encrypt bytes. This function imports the key using the
    * input key material rom the passkey.
-   * @param {IGenerateEncryptionKeyOptions} options - the device ID and input key material from the passkey.
+   * @param {IGenerateEncryptionKeyOptions} options - the user ID and the input key material from the passkey.
    * @returns {Promise<CryptoKey>} a promise that resolves to an encryption key that can be used to decrypt/encrypt
    * some bytes.
    * @private
    * @static
    */
   private static async _generateEncryptionKeyFromInputKeyMaterial({
-    deviceID,
     inputKeyMaterial,
+    userID,
   }: IGenerateEncryptionKeyOptions): Promise<CryptoKey> {
     const derivationKey = await crypto.subtle.importKey(
       'raw',
@@ -76,7 +71,7 @@ export default class PasskeyService {
     return await crypto.subtle.deriveKey(
       {
         name: DERIVATION_KEY_ALGORITHM,
-        info: new TextEncoder().encode(deviceID), //
+        info: new TextEncoder().encode(userID),
         salt: new Uint8Array(), // use an empty salt
         hash: DERIVATION_KEY_HASH_ALGORITHM,
       },
@@ -193,6 +188,7 @@ export default class PasskeyService {
       transports: (
         credential.response as AuthenticatorAttestationResponse
       ).getTransports() as AuthenticatorTransport[],
+      userID: deviceID,
     };
   }
 
@@ -209,27 +205,26 @@ export default class PasskeyService {
 
   /**
    * Decrypts some previously encrypted bytes using the input key material fetched from a passkey.
-   * @param {IDecryptBytesOptions} options - the encrypted bytes, the initialization vector created at the passkey
-   * creation, the device ID and the input key material fetched from the passkey.
+   * @param {IDecryptBytesOptions} options - the encrypted bytes, the passkey credentials and the input key material
+   * fetched from the passkey.
    * @returns {Promise<Uint8Array>} a promise that resolves to the decrypted bytes.
    * @public
    * @static
    */
   public static async decryptBytes({
-    deviceID,
     encryptedBytes,
-    initializationVector,
     inputKeyMaterial,
+    passkey,
   }: IDecryptBytesOptions): Promise<Uint8Array> {
     const encryptionKey =
       await PasskeyService._generateEncryptionKeyFromInputKeyMaterial({
-        deviceID,
         inputKeyMaterial,
+        userID: passkey.userID,
       });
     const decryptedBytes = await crypto.subtle.decrypt(
       {
         name: ENCRYPTION_KEY_ALGORITHM,
-        iv: initializationVector,
+        iv: PasskeyService.decode(passkey.initializationVector),
       },
       encryptionKey,
       encryptedBytes
@@ -260,19 +255,18 @@ export default class PasskeyService {
    */
   public static async encryptBytes({
     bytes,
-    deviceID,
-    initializationVector,
     inputKeyMaterial,
+    passkey,
   }: IEncryptBytesOptions): Promise<Uint8Array> {
     const encryptionKey =
       await PasskeyService._generateEncryptionKeyFromInputKeyMaterial({
-        deviceID,
         inputKeyMaterial,
+        userID: passkey.userID,
       });
     const encryptedBytes = await crypto.subtle.encrypt(
       {
         name: ENCRYPTION_KEY_ALGORITHM,
-        iv: initializationVector,
+        iv: PasskeyService.decode(passkey.initializationVector),
       },
       encryptionKey,
       bytes

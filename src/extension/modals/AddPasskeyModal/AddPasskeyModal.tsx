@@ -57,7 +57,6 @@ import {
   useSelectPasskeysSaving,
   useSelectPasswordLockPassword,
   useSelectSettings,
-  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // theme
@@ -84,7 +83,6 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
   const passwordLockPassword = useSelectPasswordLockPassword();
   const saving = useSelectPasskeysSaving();
   const settings = useSelectSettings();
-  const systemInfo = useSelectSystemInfo();
   // hooks
   const {
     addPasskeyAction,
@@ -124,8 +122,9 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
   const handleEncryptClick = async () => {
     const _functionName = 'handleEncryptClick';
     let _password: string | null;
+    let success: boolean;
 
-    if (!addPasskey || !systemInfo?.deviceID) {
+    if (!addPasskey) {
       return;
     }
 
@@ -153,11 +152,27 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
       return;
     }
 
-    await addPasskeyAction({
-      deviceID: systemInfo.deviceID,
+    success = await addPasskeyAction({
       password: _password,
       passkey: addPasskey,
     });
+
+    if (success) {
+      // display a success notification
+      dispatch(
+        createNotification({
+          description: t<string>('captions.passkeyAdded', {
+            name: addPasskey.name,
+          }),
+          ephemeral: true,
+          title: t<string>('headings.passkeyAdded'),
+          type: 'success',
+        })
+      );
+
+      // close the modal
+      handleClose();
+    }
   };
   const handleKeyUpPasswordInput = async (
     event: KeyboardEvent<HTMLInputElement>
@@ -265,31 +280,29 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
           />
 
           {/*user id*/}
-          {systemInfo?.deviceID && (
-            <ModalItem
-              fontSize="xs"
-              label={`${t<string>('labels.userID')}:`}
-              value={
-                <HStack spacing={1}>
-                  <Code
-                    borderRadius="md"
-                    color={defaultTextColor}
-                    fontSize="xs"
-                    wordBreak="break-word"
-                  >
-                    {systemInfo.deviceID}
-                  </Code>
+          <ModalItem
+            fontSize="xs"
+            label={`${t<string>('labels.userID')}:`}
+            value={
+              <HStack spacing={1}>
+                <Code
+                  borderRadius="md"
+                  color={defaultTextColor}
+                  fontSize="xs"
+                  wordBreak="break-word"
+                >
+                  {addPasskey.userID}
+                </Code>
 
-                  {/*copy user id button*/}
-                  <CopyIconButton
-                    ariaLabel={t<string>('labels.copyUserID')}
-                    tooltipLabel={t<string>('labels.copyUserID')}
-                    value={systemInfo.deviceID}
-                  />
-                </HStack>
-              }
-            />
-          )}
+                {/*copy user id button*/}
+                <CopyIconButton
+                  ariaLabel={t<string>('labels.copyUserID')}
+                  tooltipLabel={t<string>('labels.copyUserID')}
+                  value={addPasskey.userID}
+                />
+              </HStack>
+            }
+          />
 
           {/*capabilities*/}
           <ModalItem

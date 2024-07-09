@@ -6,7 +6,9 @@ import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadin
 import type IRemovePasskeyActionOptions from './IRemovePasskeyActionOptions';
 
 interface IState {
-  removePasskeyAction: (options: IRemovePasskeyActionOptions) => Promise<void>;
+  removePasskeyAction: (
+    options: IRemovePasskeyActionOptions
+  ) => Promise<boolean>;
   encryptionProgressState: IEncryptionState[];
   encrypting: boolean;
   error: BaseExtensionError | null;
