@@ -117,7 +117,7 @@ const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={DEFAULT_GAP / 2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {condensed ? (
@@ -223,7 +223,7 @@ const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
           isOpen={condensed.expanded}
           onChange={condensed.onChange}
         >
-          <VStack spacing={2} w="full">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
             {renderExtraInformation()}
           </VStack>
         </MoreInformationAccordion>

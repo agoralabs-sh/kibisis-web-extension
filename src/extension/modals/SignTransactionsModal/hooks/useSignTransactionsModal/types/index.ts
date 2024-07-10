@@ -1,1 +1,1 @@
-export type { default as IUseSignTransactionsModalState } from './IUseSignTransactionsModalState';
+export type { default as IState } from './IState';
