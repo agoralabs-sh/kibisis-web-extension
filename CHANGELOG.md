@@ -1,3 +1,10 @@
+## [1.17.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.1...v1.17.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* sign button no longer relies for account update ([#265](https://github.com/agoralabs-sh/kibisis-web-extension/issues/265)) ([bbcba58](https://github.com/agoralabs-sh/kibisis-web-extension/commit/bbcba58449a3eb3c2dcaa051b3b1a15d58af5111))
+
 ## [1.17.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0...v1.17.1) (2024-07-03)
 
 
