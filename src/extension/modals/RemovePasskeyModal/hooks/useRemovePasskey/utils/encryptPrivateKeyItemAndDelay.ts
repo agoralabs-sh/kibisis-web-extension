@@ -1,10 +1,18 @@
+import browser from 'webextension-polyfill';
+
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
+// errors
+import { MalformedDataError } from '@extension/errors';
+
 // services
 import PasskeyService from '@extension/services/PasskeyService';
 import PasswordService from '@extension/services/PasswordService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { IPrivateKey } from '@extension/types';
+import type { IPasswordTag, IPrivateKey } from '@extension/types';
 import type { IEncryptPrivateKeyItemWithDelayOptions } from '../types';
 
 /**
@@ -25,7 +33,13 @@ export default async function encryptPrivateKeyItemAndDelay({
 
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
+      const passwordService = new PasswordService({
+        logger,
+        passwordTag: browser.runtime.id,
+      });
+      let _error: string;
       let decryptedPrivateKey: Uint8Array;
+      let passwordTagItem: IPasswordTag | null;
       let reEncryptedPrivateKey: Uint8Array;
       let version: number = privateKeyItem.version;
 
@@ -57,6 +71,15 @@ export default async function encryptPrivateKeyItemAndDelay({
           logger,
           password,
         }); // re-encrypt the private key with the password
+        passwordTagItem = await passwordService.fetchFromStorage();
+
+        if (!passwordTagItem) {
+          _error = `failed to get password tag from storage, doesn't exist`;
+
+          logger?.error(`${_functionName}: ${_error}`);
+
+          throw new MalformedDataError(_error);
+        }
       } catch (error) {
         return reject(error);
       }
@@ -64,6 +87,8 @@ export default async function encryptPrivateKeyItemAndDelay({
       return resolve({
         ...privateKeyItem,
         encryptedPrivateKey: PrivateKeyService.encode(reEncryptedPrivateKey),
+        encryptionID: passwordTagItem.id,
+        encryptionMethod: EncryptionMethodEnum.Password,
         updatedAt: new Date().getTime(),
         version,
       });

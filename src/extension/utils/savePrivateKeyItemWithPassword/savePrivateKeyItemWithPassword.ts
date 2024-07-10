@@ -1,5 +1,8 @@
 import browser from 'webextension-polyfill';
 
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // errors
 import { InvalidPasswordError, MalformedDataError } from '@extension/errors';
 
@@ -81,7 +84,8 @@ export default async function savePrivateKeyItemWithPassword({
     privateKeyItem = await _privateKeyService.saveToStorage(
       PrivateKeyService.createPrivateKey({
         encryptedPrivateKey,
-        passwordTagId: passwordTagItem.id,
+        encryptionID: passwordTagItem.id,
+        encryptionMethod: EncryptionMethodEnum.Password,
         publicKey: keyPair.publicKey,
       })
     );

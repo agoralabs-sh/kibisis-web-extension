@@ -1,3 +1,6 @@
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // services
 import PasskeyService from '@extension/services/PasskeyService';
 import PasswordService from '@extension/services/PasswordService';
@@ -62,6 +65,8 @@ export default async function encryptPrivateKeyItemWithDelay({
       return resolve({
         ...privateKeyItem,
         encryptedPrivateKey: PrivateKeyService.encode(reEncryptedPrivateKey),
+        encryptionID: passkey.id,
+        encryptionMethod: EncryptionMethodEnum.Passkey,
         updatedAt: new Date().getTime(),
         version,
       });

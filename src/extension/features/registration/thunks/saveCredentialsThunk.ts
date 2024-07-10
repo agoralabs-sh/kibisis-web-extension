@@ -3,6 +3,7 @@ import { encode as encodeUtf8 } from '@stablelib/utf8';
 import browser from 'webextension-polyfill';
 
 // enums
+import { EncryptionMethodEnum } from '@extension/enums';
 import { ThunkEnum } from '../enums';
 
 // errors
@@ -97,7 +98,8 @@ const saveCredentialsThunk: AsyncThunk<
             logger,
             password,
           }),
-          passwordTagId: passwordTagItem.id,
+          encryptionID: passwordTagItem.id,
+          encryptionMethod: EncryptionMethodEnum.Password,
           publicKey: keyPair.publicKey,
         })
       );

@@ -1,5 +1,5 @@
 import { decode as decodeHex, encode as encodeHex } from '@stablelib/hex';
-import { sign, SignKeyPair } from 'tweetnacl';
+import { sign } from 'tweetnacl';
 import { v4 as uuid } from 'uuid';
 
 // constants
@@ -11,6 +11,7 @@ import StorageManager from '../StorageManager';
 // types
 import type { IPrivateKey } from '@extension/types';
 import type { ICreatePrivateKeyOptions, INewOptions } from './types';
+import { EncryptionMethodEnum } from '@extension/enums';
 
 //
 
@@ -23,6 +24,7 @@ import type { ICreatePrivateKeyOptions, INewOptions } from './types';
  * @version 1:
  * * The `encryptedPrivateKey` property is replaced with the actual private key (seed) rather than the "secret key"
  * (private key concentrated to the public key).
+ * * `passwordTagId` has been replaced with `encryptionID` and `encryptionMethod`
  */
 export default class PrivateKeyService {
   // public static variables
@@ -41,15 +43,16 @@ export default class PrivateKeyService {
 
   /**
    * Convenience function that creates a new private key item.
-   * @param {ICreatePrivateKeyOptions} options - the raw encrypted private key, the raw public key and the password tag
-   * used to encrypt the private key.
+   * @param {ICreatePrivateKeyOptions} options - the raw encrypted private key, the raw public key and the encryption
+   * method & ID.
    * @returns {IPrivateKey} an initialized private key item.
    * @public
    * @static
    */
   public static createPrivateKey({
     encryptedPrivateKey,
-    passwordTagId,
+    encryptionID,
+    encryptionMethod,
     publicKey,
   }: ICreatePrivateKeyOptions): IPrivateKey {
     const now = new Date();
@@ -57,8 +60,9 @@ export default class PrivateKeyService {
     return {
       createdAt: now.getTime(),
       encryptedPrivateKey: PrivateKeyService.encode(encryptedPrivateKey),
+      encryptionID,
+      encryptionMethod,
       id: uuid(),
-      passwordTagId,
       publicKey: PrivateKeyService.encode(publicKey),
       updatedAt: now.getTime(),
       version: PrivateKeyService.latestVersion,
@@ -129,19 +133,33 @@ export default class PrivateKeyService {
   private _sanitize({
     createdAt,
     encryptedPrivateKey,
+    encryptionID,
     id,
     passwordTagId,
     publicKey,
+    encryptionMethod,
     updatedAt,
     version,
   }: IPrivateKey): IPrivateKey {
     const _version = !version ? 0 : version; // if there is no version, start at zero (legacy)
+    let _encryptionID = encryptionID;
+    let _encryptionMethod = encryptionMethod;
+
+    // if there is a password tag id, this means it is using the old style, replace it with the new properties (v1+)
+    if (
+      passwordTagId &&
+      (!encryptionID || encryptionMethod !== EncryptionMethodEnum.Passkey)
+    ) {
+      _encryptionID = passwordTagId;
+      _encryptionMethod = EncryptionMethodEnum.Password;
+    }
 
     return {
       createdAt,
       id,
       encryptedPrivateKey,
-      passwordTagId,
+      encryptionID: _encryptionID,
+      encryptionMethod: _encryptionMethod,
       publicKey,
       updatedAt,
       version: _version,
@@ -185,8 +203,6 @@ export default class PrivateKeyService {
     const item = await this.storageManager.getItem<IPrivateKey>(
       this._createPrivateKeyItemKey(_publicKey.toUpperCase())
     );
-
-    console.log('private key:', item ? this._sanitize(item) : null);
 
     return item ? this._sanitize(item) : null;
   }

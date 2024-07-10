@@ -22,7 +22,7 @@ import type { IPasswordTag, IPrivateKey } from '@extension/types';
 import { IChangePasswordActionOptions, IUseChangePasswordState } from './types';
 
 // utils
-import { reEncryptPrivateKeyItemWithDelay } from './utils';
+import { encryptPrivateKeyItemWithDelay } from './utils';
 
 export default function useChangePassword(): IUseChangePasswordState {
   const _hookName = 'useChangePassword';
@@ -128,7 +128,7 @@ export default function useChangePassword(): IUseChangePasswordState {
     try {
       privateKeyItems = await Promise.all(
         privateKeyItems.map(async (privateKeyItem, index) => {
-          const item = await reEncryptPrivateKeyItemWithDelay({
+          const item = await encryptPrivateKeyItemWithDelay({
             currentPassword,
             delay: (index + 1) * 300, // add a staggered delay for the ui to catch up
             logger,

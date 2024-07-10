@@ -1,1 +1,1 @@
-export { default as reEncryptPrivateKeyItemWithDelay } from './reEncryptPrivateKeyItemWithDelay';
+export { default as encryptPrivateKeyItemWithDelay } from './encryptPrivateKeyItemWithDelay';

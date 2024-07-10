@@ -6,7 +6,7 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 import type { IPrivateKey } from '@extension/types';
 import type { IReEncryptPrivateKeyItemWithDelayOptions } from '../types';
 
-export default async function reEncryptPrivateKeyItemWithDelay({
+export default async function encryptPrivateKeyItemWithDelay({
   currentPassword,
   delay = 0,
   logger,
