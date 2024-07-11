@@ -5,6 +5,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalOverlay,
+  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -26,7 +27,6 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 import { EncryptionMethodEnum } from '@extension/enums';
 
 // errors
-import { MalformedDataError } from '@extension/errors';
 
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
@@ -36,6 +36,8 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import {
   useSelectLogger,
   useSelectPasskeysPasskey,
+  useSelectPasswordLockPassword,
+  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -47,6 +49,7 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IProps } from './types';
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 const AuthenticationModal: FC<IProps> = ({
   isOpen,
@@ -60,7 +63,10 @@ const AuthenticationModal: FC<IProps> = ({
   // selectors
   const logger = useSelectLogger();
   const passkey = useSelectPasskeysPasskey();
+  const passwordLockPassword = useSelectPasswordLockPassword();
+  const settings = useSelectSettings();
   // hooks
+  const defaultTextColor = useDefaultTextColor();
   const primaryColorCode = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
@@ -128,6 +134,78 @@ const AuthenticationModal: FC<IProps> = ({
       await handleConfirmClick();
     }
   };
+  // renders
+  const renderContent = () => {
+    // show a loader for passkeys
+    if (passkey) {
+      return (
+        <VStack
+          alignItems="center"
+          flexGrow={1}
+          justifyContent="center"
+          spacing={DEFAULT_GAP}
+          w="full"
+        >
+          {/*passkey loader*/}
+          <Radio
+            colors={[primaryColorCode, primaryColorCode, primaryColorCode]}
+            height="80"
+            width="80"
+          />
+
+          {/*caption*/}
+          <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">
+            {t<string>('captions.requestingPasskeyPermission', {
+              name: passkey.name,
+            })}
+          </Text>
+        </VStack>
+      );
+    }
+
+    // show a loader if there is a password lock and password
+    if (settings.security.enablePasswordLock && passwordLockPassword) {
+      return (
+        <VStack
+          alignItems="center"
+          flexGrow={1}
+          justifyContent="center"
+          spacing={DEFAULT_GAP}
+          w="full"
+        >
+          {/*loader*/}
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor={defaultTextColor}
+            color={defaultTextColor}
+            size="lg"
+          />
+
+          {/*caption*/}
+          <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">
+            {t<string>('captions.checkingAuthenticationCredentials')}
+          </Text>
+        </VStack>
+      );
+    }
+
+    return (
+      <VStack w="full">
+        <PasswordInput
+          disabled={verifying}
+          error={passwordError}
+          hint={
+            passwordHint || t<string>('captions.mustEnterPasswordToConfirm')
+          }
+          inputRef={passwordInputRef}
+          onChange={onPasswordChange}
+          onKeyUp={handleKeyUpPasswordInput}
+          value={password || ''}
+        />
+      </VStack>
+    );
+  };
 
   // set focus when opening
   useEffect(() => {
@@ -136,44 +214,47 @@ const AuthenticationModal: FC<IProps> = ({
     }
   }, []);
   useEffect(() => {
-    if (!passkey) {
-      return;
-    }
-
     (async () => {
       let _error: string;
       let inputKeyMaterial: Uint8Array;
 
-      if (!passkey) {
-        _error = `no passkey found`;
-
-        logger.error(`${AuthenticationModal.name}#useEffect: ${_error}`);
-
-        return onError && onError(new MalformedDataError(_error));
+      if (!isOpen) {
+        return;
       }
 
-      try {
-        // fetch the encryption key material
-        inputKeyMaterial =
-          await PasskeyService.fetchInputKeyMaterialFromPasskey({
-            credential: passkey,
-            logger,
+      // if there is a passkey, attempt to fetch the passkey input key material
+      if (passkey) {
+        try {
+          // fetch the encryption key material
+          inputKeyMaterial =
+            await PasskeyService.fetchInputKeyMaterialFromPasskey({
+              credential: passkey,
+              logger,
+            });
+
+          onConfirm({
+            inputKeyMaterial,
+            type: EncryptionMethodEnum.Passkey,
           });
 
-        onConfirm({
-          inputKeyMaterial,
-          type: EncryptionMethodEnum.Passkey,
+          // clean up
+          return reset();
+        } catch (error) {
+          logger.error(`${AuthenticationModal.name}#useEffect:`, error);
+
+          return onError && onError(error);
+        }
+      }
+
+      // otherwise, check if there is a password lock and password lock password present
+      if (settings.security.enablePasswordLock && passwordLockPassword) {
+        return onConfirm({
+          password: passwordLockPassword,
+          type: EncryptionMethodEnum.Password,
         });
-
-        // clean up
-        return reset();
-      } catch (error) {
-        logger.error(`${AuthenticationModal.name}#useEffect:`, error);
-
-        return onError && onError(error);
       }
     })();
-  }, [passkey]);
+  }, [isOpen]);
 
   return (
     <Modal
@@ -196,53 +277,7 @@ const AuthenticationModal: FC<IProps> = ({
         minH={0}
       >
         {/*content*/}
-        <ModalBody px={DEFAULT_GAP}>
-          {passkey ? (
-            // passkey
-            <VStack
-              alignItems="center"
-              flexGrow={1}
-              justifyContent="center"
-              spacing={DEFAULT_GAP}
-              w="full"
-            >
-              {/*passkey loader*/}
-              <Radio
-                colors={[primaryColorCode, primaryColorCode, primaryColorCode]}
-                height="80"
-                width="80"
-              />
-
-              {/*caption*/}
-              <Text
-                color={subTextColor}
-                fontSize="sm"
-                textAlign="center"
-                w="full"
-              >
-                {t<string>('captions.requestingPasskeyPermission', {
-                  name: passkey?.name || 'unknown',
-                })}
-              </Text>
-            </VStack>
-          ) : (
-            // password
-            <VStack w="full">
-              <PasswordInput
-                disabled={verifying}
-                error={passwordError}
-                hint={
-                  passwordHint ||
-                  t<string>('captions.mustEnterPasswordToConfirm')
-                }
-                inputRef={passwordInputRef}
-                onChange={onPasswordChange}
-                onKeyUp={handleKeyUpPasswordInput}
-                value={password || ''}
-              />
-            </VStack>
-          )}
-        </ModalBody>
+        <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
 
         {/*footer*/}
         {!passkey && (

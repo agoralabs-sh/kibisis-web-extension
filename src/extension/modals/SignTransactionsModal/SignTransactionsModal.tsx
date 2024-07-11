@@ -36,6 +36,12 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // contexts
 import { MultipleTransactionsContext } from './contexts';
 
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
+// errors
+import { BaseExtensionError } from '@extension/errors';
+
 // features
 import { removeEventByIdThunk } from '@extension/features/events';
 import { sendSignTransactionsResponseThunk } from '@extension/features/messages';
@@ -73,8 +79,6 @@ import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransactio
 import groupTransactions from '@extension/utils/groupTransactions';
 import authorizedAccountsForEvent from './utils/authorizedAccountsForEvent';
 import signTransactions from './utils/signTransactions';
-import { EncryptionMethodEnum } from '@extension/enums';
-import { BaseExtensionError } from '@extension/errors';
 
 const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
