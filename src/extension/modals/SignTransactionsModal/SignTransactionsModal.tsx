@@ -55,17 +55,23 @@ import {
   useSelectAccounts,
   useSelectLogger,
   useSelectNetworks,
+  useSelectSessions,
 } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import type { IAppThunkDispatch, IModalProps } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IAppThunkDispatch,
+  IModalProps,
+} from '@extension/types';
 
 // utils
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import groupTransactions from '@extension/utils/groupTransactions';
+import authorizedAccountsForEvent from './utils/authorizedAccountsForEvent';
 import signTransactions from './utils/signTransactions';
 
 const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
@@ -76,9 +82,9 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const accounts = useSelectAccounts();
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
+  const sessions = useSelectSessions();
   // hooks
-  const { authorizedAccounts, event, setAuthorizedAccounts } =
-    useSignTransactionsModal();
+  const { event } = useSignTransactionsModal();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -92,6 +98,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const [moreDetailsTransactions, setMoreDetailsTransactions] = useState<
     Transaction[] | null
   >(null);
+  const [signing, setSigning] = useState<boolean>(false);
   // handlers
   const handleCancelClick = async () => {
     if (event) {
@@ -114,7 +121,6 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleClose = () => {
     resetPassword();
-    setAuthorizedAccounts(null);
 
     onClose && onClose();
   };
@@ -127,18 +133,23 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handlePreviousClick = () => setMoreDetailsTransactions(null);
   const handleSignClick = async () => {
+    let authorizedAccounts: IAccountWithExtendedProps[];
     let stxns: (string | null)[];
 
-    if (
-      validatePassword() ||
-      !event ||
-      !event.payload.message.params ||
-      !authorizedAccounts
-    ) {
+    if (validatePassword() || !event || !event.payload.message.params) {
       return;
     }
 
+    setSigning(true);
+
     try {
+      authorizedAccounts = await authorizedAccountsForEvent({
+        accounts,
+        event,
+        logger,
+        networks,
+        sessions,
+      });
       stxns = await signTransactions({
         accounts: authorizedAccounts,
         arc0001Transactions: event.payload.message.params.txns,
@@ -193,6 +204,8 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
           break;
       }
     }
+
+    setSigning(false);
   };
   const renderContent = () => {
     let decodedTransactions: Transaction[];
@@ -325,6 +338,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
               {/*sign button*/}
               <Button
+                isLoading={signing}
                 onClick={handleSignClick}
                 size="lg"
                 variant="solid"

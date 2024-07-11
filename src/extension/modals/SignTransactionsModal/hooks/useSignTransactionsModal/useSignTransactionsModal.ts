@@ -3,10 +3,7 @@ import {
   ARC0027UnknownError,
   ISignTransactionsParams,
 } from '@agoralabs-sh/avm-web-provider';
-import {
-  decode as decodeBase64,
-  encode as encodeBase64,
-} from '@stablelib/base64';
+import { decode as decodeBase64 } from '@stablelib/base64';
 import { Transaction, TransactionType } from 'algosdk';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -21,48 +18,34 @@ import { updateStandardAssetInformationThunk } from '@extension/features/standar
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectEvents,
   useSelectLogger,
   useSelectNetworks,
-  useSelectSessions,
   useSelectStandardAssets,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
-
 // types
 import type {
-  IAccountWithExtendedProps,
   IAppThunkDispatch,
   IClientRequestEvent,
   INetwork,
 } from '@extension/types';
-import type { IUseSignTransactionsModalState } from './types';
+import type { IState } from './types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
-import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 
-export default function useSignTransactionsModal(): IUseSignTransactionsModalState {
-  const _functionName = 'useSignTransactionsModal';
+export default function useSignTransactionsModal(): IState {
+  const _hookName = 'useSignTransactionsModal';
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const accounts = useSelectAccounts();
   const events = useSelectEvents();
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
-  const sessions = useSelectSessions();
   const standardAssets = useSelectStandardAssets();
   // state
-  const [authorizedAccounts, setAuthorizedAccounts] = useState<
-    IAccountWithExtendedProps[] | null
-  >(null);
   const [event, setEvent] =
     useState<IClientRequestEvent<ISignTransactionsParams> | null>(null);
 
@@ -75,103 +58,11 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
       ) as IClientRequestEvent<ISignTransactionsParams>) || null
     );
   }, [events]);
-  useEffect(() => {
-    (async () => {
-      let _authorizedAccounts: IAccountWithExtendedProps[];
-      let _error: string;
-      let decodedUnsignedTransactions: Transaction[];
-
-      if (
-        event &&
-        event.payload.message.params &&
-        accounts.length > 0 &&
-        !authorizedAccounts
-      ) {
-        try {
-          decodedUnsignedTransactions = event.payload.message.params.txns.map(
-            (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
-          );
-        } catch (error) {
-          _error = `failed to decode transactions: ${error.message}`;
-
-          logger?.debug(`${_functionName}: ${_error}`);
-
-          await dispatch(
-            sendSignTransactionsResponseThunk({
-              error: new ARC0027UnknownError({
-                message: _error,
-                providerId: __PROVIDER_ID__,
-              }),
-              event,
-              stxns: null,
-            })
-          ).unwrap();
-          // remove the event
-          await dispatch(removeEventByIdThunk(event.id)).unwrap();
-
-          return;
-        }
-
-        _authorizedAccounts = decodedUnsignedTransactions.reduce<
-          IAccountWithExtendedProps[]
-        >((acc, currentValue) => {
-          const account = accounts.find(
-            (value) =>
-              value.publicKey ===
-              PrivateKeyService.encode(currentValue.from.publicKey)
-          );
-          const base64EncodedGenesisHash = encodeBase64(
-            currentValue.genesisHash
-          );
-          const authorizedAddresses = getAuthorizedAddressesForHost(
-            event.payload.message.clientInfo.host,
-            sessions.filter(
-              (value) => value.genesisHash === base64EncodedGenesisHash
-            )
-          );
-          const network = networks.find(
-            (value) => value.genesisHash === base64EncodedGenesisHash
-          );
-          const accountInformation =
-            account && network
-              ? AccountService.extractAccountInformationForNetwork(
-                  account,
-                  network
-                )
-              : null;
-
-          // the from account is not an authorized account if:
-          // * the account and account information is unknown for the network (inferred from the transaction's genesis hash)
-          // * the account has already been added to the list
-          // * the account is not in the authorized addresses for a session, matching the host and the genesis hash
-          // * the account is a watch account but has not been re-keyed
-          if (
-            !account ||
-            !accountInformation ||
-            acc.find((value) => value.id === account?.id) ||
-            !authorizedAddresses.find(
-              (value) =>
-                value === convertPublicKeyToAVMAddress(account?.publicKey)
-            ) ||
-            (account.watchAccount && !accountInformation.authAddress)
-          ) {
-            return acc;
-          }
-
-          return [...acc, account];
-        }, []);
-
-        // set the authorized accounts and the event
-        setAuthorizedAccounts(_authorizedAccounts);
-      }
-    })();
-  }, [accounts, events, sessions]);
-
   // check for any unknown standard assets and fetch the asset information
   useEffect(() => {
     (async () => {
       let decodedUnsignedTransactions: Transaction[];
-      let errorMessage: string;
+      let _error: string;
 
       if (
         event &&
@@ -184,14 +75,14 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
             (value) => decodeUnsignedTransaction(decodeBase64(value.txn))
           );
         } catch (error) {
-          errorMessage = `failed to decode transactions: ${error.message}`;
+          _error = `failed to decode transactions: ${error.message}`;
 
-          logger?.debug(`${_functionName}: ${errorMessage}`);
+          logger?.debug(`${_hookName}#useEffect: ${_error}`);
 
           await dispatch(
             sendSignTransactionsResponseThunk({
               error: new ARC0027UnknownError({
-                message: errorMessage,
+                message: _error,
                 providerId: __PROVIDER_ID__,
               }),
               event: event,
@@ -224,7 +115,7 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
 
           if (!network) {
             logger.debug(
-              `${_functionName}: unable to get network for genesis hash "${genesisHash}"`
+              `${_hookName}#useEffect: unable to get network for genesis hash "${genesisHash}"`
             );
 
             return;
@@ -245,8 +136,6 @@ export default function useSignTransactionsModal(): IUseSignTransactionsModalSta
   }, [event, standardAssets, networks]);
 
   return {
-    authorizedAccounts,
     event,
-    setAuthorizedAccounts,
   };
 }
