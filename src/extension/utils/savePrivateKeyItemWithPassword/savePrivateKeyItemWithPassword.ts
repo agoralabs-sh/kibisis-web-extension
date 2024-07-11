@@ -15,7 +15,7 @@ import type { IPasswordTag, IPrivateKey } from '@extension/types';
 import type { IOptions } from './types';
 
 /**
- * Convenience function that saves a encrypts a private key and saves it to storage.
+ * Convenience function that encrypts a private key with the password and saves it to storage.
  * @param {IOptions} options - the password and the key pair.
  * @returns {Promise<Uint8Array | null>} a promise that resolves to the saved private key item or null if the private
  * key failed to save.

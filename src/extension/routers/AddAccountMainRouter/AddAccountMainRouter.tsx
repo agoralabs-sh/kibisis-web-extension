@@ -1,5 +1,5 @@
 import { useDisclosure } from '@chakra-ui/react';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
@@ -17,7 +17,11 @@ import {
   AccountTabEnum,
   ARC0300AuthorityEnum,
   ARC0300PathEnum,
+  EncryptionMethodEnum,
 } from '@extension/enums';
+
+// errors
+import { BaseExtensionError } from '@extension/errors';
 
 // features
 import {
@@ -30,7 +34,9 @@ import { setScanQRCodeModal } from '@extension/features/layout';
 import { create as createNotification } from '@extension/features/notifications';
 
 // modals
-import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
 
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
@@ -47,9 +53,7 @@ import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSee
 import {
   useSelectActiveAccountDetails,
   useSelectLogger,
-  useSelectPasswordLockPassword,
   useSelectAccountsSaving,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -71,21 +75,26 @@ const AddAccountMainRouter: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
   const {
-    isOpen: isConfirmPasswordModalOpen,
-    onClose: onConfirmPasswordModalClose,
-    onOpen: onConfirmPasswordModalOpen,
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
   const saving = useSelectAccountsSaving();
-  const settings = useSelectSettings();
   // states
   const [keyPair, setKeyPair] = useState<Ed21559KeyPair | null>(null);
   const [name, setName] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
   // handlers
+  const handleImportAccountViaQRCodeClick = () =>
+    dispatch(
+      setScanQRCodeModal({
+        // only allow account import
+        allowedAuthorities: [ARC0300AuthorityEnum.Account],
+        allowedParams: [ARC0300PathEnum.Import],
+      })
+    );
   const handleOnAddAccountComplete = async ({
     name,
     keyPair,
@@ -93,16 +102,9 @@ const AddAccountMainRouter: FC = () => {
     setKeyPair(keyPair);
     setName(name);
 
-    // if the password lock is enabled and the password is active, use the password
-    if (settings.security.enablePasswordLock && passwordLockPassword) {
-      setPassword(passwordLockPassword);
-
-      return;
-    }
-
-    // get the password from the modal
-    onConfirmPasswordModalOpen();
+    onAuthenticationModalOpen();
   };
+  const handleOnAuthenticationModalClose = () => onAuthenticationModalClose();
   const handleOnAddWatchAccountComplete = async ({
     address,
     name,
@@ -153,30 +155,13 @@ const AddAccountMainRouter: FC = () => {
     updateAccounts(account.id);
     reset();
   };
-  const handleOnConfirmPasswordModalClose = () => onConfirmPasswordModalClose();
-  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
-    setPassword(password);
-    onConfirmPasswordModalClose();
-  };
-  const handleImportAccountViaQRCodeClick = () =>
-    dispatch(
-      setScanQRCodeModal({
-        // only allow account import
-        allowedAuthorities: [ARC0300AuthorityEnum.Account],
-        allowedParams: [ARC0300PathEnum.Import],
-      })
-    );
-  // misc
-  const reset = () => {
-    setKeyPair(null);
-    setName(null);
-    setPassword(null);
-  };
-  const saveNewAccount = async () => {
-    const _functionName = 'saveNewAccount';
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
     let account: IAccountWithExtendedProps;
 
-    if (!password || !keyPair) {
+    if (!keyPair) {
       return;
     }
 
@@ -185,7 +170,15 @@ const AddAccountMainRouter: FC = () => {
         saveNewAccountThunk({
           keyPair,
           name,
-          password,
+          ...(result.type === EncryptionMethodEnum.Password
+            ? {
+                password: result.password,
+                type: EncryptionMethodEnum.Password,
+              }
+            : {
+                inputKeyMaterial: result.inputKeyMaterial,
+                type: EncryptionMethodEnum.Passkey,
+              }),
         })
       ).unwrap();
     } catch (error) {
@@ -222,6 +215,23 @@ const AddAccountMainRouter: FC = () => {
     updateAccounts(account.id);
     reset();
   };
+  const handleOnError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
+  // misc
+  const reset = () => {
+    setKeyPair(null);
+    setName(null);
+  };
   const updateAccounts = (accountId: string) => {
     dispatch(
       updateAccountsThunk({
@@ -239,19 +249,13 @@ const AddAccountMainRouter: FC = () => {
     });
   };
 
-  // if we have the password and the private key, we can save a new account
-  useEffect(() => {
-    if (keyPair && password) {
-      (async () => await saveNewAccount())();
-    }
-  }, [keyPair, password]);
-
   return (
     <>
-      <ConfirmPasswordModal
-        isOpen={isConfirmPasswordModalOpen}
-        onCancel={handleOnConfirmPasswordModalClose}
-        onConfirm={handleOnConfirmPasswordModalConfirm}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onCancel={handleOnAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnError}
       />
 
       <Routes>

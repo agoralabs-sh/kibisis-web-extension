@@ -1,11 +1,12 @@
 import type { Transaction } from 'algosdk';
 
-// enums
-import { EncryptionMethodEnum } from '@extension/enums';
-
 // types
 import type { IBaseOptions } from '@common/types';
-import type { IAccountWithExtendedProps, INetwork } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  INetwork,
+  TEncryptionCredentials,
+} from '@extension/types';
 
 /**
  * @property {IAccountWithExtendedProps[]} accounts - a list of accounts that can sign the transaction.
@@ -21,16 +22,6 @@ interface IOptions extends IBaseOptions {
   unsignedTransaction: Transaction;
 }
 
-type TEncryptionOptions =
-  | (IOptions & {
-      password: string;
-      type: EncryptionMethodEnum.Password;
-    })
-  | {
-      inputKeyMaterial: Uint8Array;
-      type: EncryptionMethodEnum.Passkey;
-    };
-
-type TOptions = IOptions & TEncryptionOptions;
+type TOptions = IOptions & TEncryptionCredentials;
 
 export default TOptions;

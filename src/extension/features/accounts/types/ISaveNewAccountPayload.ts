@@ -1,10 +1,15 @@
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
-interface ISaveNewAccountPayload {
+// types
+import type { TEncryptionCredentials } from '@extension/types';
+
+interface ISaveNewAccountPayloadFragment {
   keyPair: Ed21559KeyPair;
   name: string | null;
-  password: string;
 }
 
-export default ISaveNewAccountPayload;
+type TSaveNewAccountPayload = ISaveNewAccountPayloadFragment &
+  TEncryptionCredentials;
+
+export default TSaveNewAccountPayload;

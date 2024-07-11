@@ -1,5 +1,8 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // errors
 import { MalformedDataError } from '@extension/errors';
 
@@ -19,6 +22,7 @@ import type {
 import type { ISaveNewAccountPayload } from '../types';
 
 // utils
+import savePrivateKeyItemWithPasskey from '@extension/utils/savePrivateKeyItemWithPasskey';
 import savePrivateKeyItemWithPassword from '@extension/utils/savePrivateKeyItemWithPassword';
 
 const saveNewAccountThunk: AsyncThunk<
@@ -31,20 +35,33 @@ const saveNewAccountThunk: AsyncThunk<
   IAsyncThunkConfigWithRejectValue
 >(
   ThunkEnum.SaveNewAccount,
-  async ({ name, keyPair, password }, { getState, rejectWithValue }) => {
+  async (
+    { name, keyPair, ...encryptionOptions },
+    { getState, rejectWithValue }
+  ) => {
     const encodedPublicKey = PrivateKeyService.encode(keyPair.publicKey);
     const logger = getState().system.logger;
     let _error: string;
     let account: IAccountWithExtendedProps;
     let accountService: AccountService;
-    let privateKeyItem: IPrivateKey | null;
+    let privateKeyItem: IPrivateKey | null = null;
 
     try {
-      privateKeyItem = await savePrivateKeyItemWithPassword({
-        keyPair,
-        logger,
-        password,
-      });
+      if (encryptionOptions.type === EncryptionMethodEnum.Passkey) {
+        privateKeyItem = await savePrivateKeyItemWithPasskey({
+          inputKeyMaterial: encryptionOptions.inputKeyMaterial,
+          keyPair,
+          logger,
+        });
+      }
+
+      if (encryptionOptions.type === EncryptionMethodEnum.Password) {
+        privateKeyItem = await savePrivateKeyItemWithPassword({
+          keyPair,
+          logger,
+          password: encryptionOptions.password,
+        });
+      }
     } catch (error) {
       return rejectWithValue(error);
     }

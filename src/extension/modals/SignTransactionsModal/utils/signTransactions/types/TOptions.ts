@@ -1,11 +1,12 @@
 import type { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
 
-// enums
-import { EncryptionMethodEnum } from '@extension/enums';
-
 // types
 import type { IBaseOptions } from '@common/types';
-import type { IAccountWithExtendedProps, INetwork } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  INetwork,
+  TEncryptionCredentials,
+} from '@extension/types';
 
 /**
  * @property {IAccountWithExtendedProps[]} accounts - the authorized accounts.
@@ -20,16 +21,6 @@ interface IOptions extends IBaseOptions {
   networks: INetwork[];
 }
 
-type TEncryptionOptions =
-  | {
-      password: string;
-      type: EncryptionMethodEnum.Password;
-    }
-  | {
-      inputKeyMaterial: Uint8Array;
-      type: EncryptionMethodEnum.Passkey;
-    };
-
-type TOptions = IOptions & TEncryptionOptions;
+type TOptions = IOptions & TEncryptionCredentials;
 
 export default TOptions;
