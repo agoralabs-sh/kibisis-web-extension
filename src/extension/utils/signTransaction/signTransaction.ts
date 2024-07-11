@@ -1,5 +1,7 @@
 import { encode as encodeBase64 } from '@stablelib/base64';
-import { encodeAddress } from 'algosdk';
+
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
 
 // errors
 import { MalformedDataError } from '@extension/errors';
@@ -16,10 +18,11 @@ import type {
   IAccountInformation,
   IAccountWithExtendedProps,
 } from '@extension/types';
-import type { IOptions } from './types';
+import type { TOptions } from './types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 
 /**
@@ -35,9 +38,9 @@ export default async function signTransaction({
   authAccounts = [],
   logger,
   networks,
-  password,
   unsignedTransaction,
-}: IOptions): Promise<Uint8Array> {
+  ...encryptionOptions
+}: TOptions): Promise<Uint8Array> {
   const _functionName = 'signTransaction';
   const base64EncodedGenesisHash = encodeBase64(
     unsignedTransaction.genesisHash
@@ -52,7 +55,8 @@ export default async function signTransaction({
   let account: IAccountWithExtendedProps | null;
   let accountInformation: IAccountInformation | null;
   let authAccount: IAccountWithExtendedProps | null;
-  let keyPair: Ed21559KeyPair | null;
+  let keyPair: Ed21559KeyPair | null = null;
+  let publicKey: string | Uint8Array = unsignedTransaction.from.publicKey;
 
   logger?.debug(
     `${_functionName}: signing transaction "${unsignedTransaction.txID()}"`
@@ -96,12 +100,6 @@ export default async function signTransaction({
     throw new MalformedDataError(_error);
   }
 
-  keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
-    logger,
-    password,
-    publicKey: unsignedTransaction.from.publicKey,
-  });
-
   // if the account is re-keyed, attempt to get the auth account's private key to sign
   if (accountInformation.authAddress) {
     authAccount =
@@ -120,10 +118,26 @@ export default async function signTransaction({
       throw new MalformedDataError(_error);
     }
 
+    publicKey = authAccount.publicKey;
+  }
+
+  logger?.debug(
+    `${_functionName}: decrypting private key using "${encryptionOptions.type}" encryption method`
+  );
+
+  if (encryptionOptions.type === EncryptionMethodEnum.Password) {
     keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
       logger,
-      password,
-      publicKey: authAccount.publicKey,
+      password: encryptionOptions.password,
+      publicKey,
+    });
+  }
+
+  if (encryptionOptions.type === EncryptionMethodEnum.Passkey) {
+    keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+      inputKeyMaterial: encryptionOptions.inputKeyMaterial,
+      logger,
+      publicKey,
     });
   }
 

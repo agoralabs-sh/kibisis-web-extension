@@ -114,6 +114,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
 
   return (
     <Modal
+      initialFocusRef={passwordInputRef}
       isOpen={isOpen}
       motionPreset="slideInBottom"
       onClose={handleClose}
@@ -146,7 +147,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
 
         {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>
-          <HStack spacing={4} w="full">
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
             <Button
               onClick={handleCancelClick}
               size="lg"
