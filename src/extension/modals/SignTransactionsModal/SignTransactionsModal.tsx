@@ -208,7 +208,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
     setSigning(false);
   };
-  const handleError = (error: BaseExtensionError) =>
+  const handleAuthenticationError = (error: BaseExtensionError) =>
     dispatch(
       createNotification({
         description: t<string>('errors.descriptions.code', {
@@ -271,7 +271,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
         isOpen={isAuthenticationModalOpen}
         onCancel={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
-        onError={handleError}
+        onError={handleAuthenticationError}
         {...(event &&
           event.payload.message.params && {
             passwordHint: t<string>(

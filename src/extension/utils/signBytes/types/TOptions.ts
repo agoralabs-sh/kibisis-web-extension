@@ -1,5 +1,6 @@
 // types
 import type { IBaseOptions } from '@common/types';
+import type { TEncryptionCredentials } from '@extension/types';
 
 /**
  * @property {Uint8Array} bytes - the bytes to be signed.
@@ -8,8 +9,9 @@ import type { IBaseOptions } from '@common/types';
  */
 interface IOptions extends IBaseOptions {
   bytes: Uint8Array;
-  password: string;
   publicKey: Uint8Array;
 }
 
-export default IOptions;
+type TOptions = IOptions & TEncryptionCredentials;
+
+export default TOptions;
