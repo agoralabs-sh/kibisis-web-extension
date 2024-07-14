@@ -17,7 +17,6 @@ import { useDispatch } from 'react-redux';
 
 // components
 import AccountSelect from '@extension/components/AccountSelect';
-import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 import CopyButton from '@extension/components/CopyButton';
 import EmptyState from '@extension/components/EmptyState';
 import PageHeader from '@extension/components/PageHeader';
@@ -25,8 +24,11 @@ import PageHeader from '@extension/components/PageHeader';
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // errors
-import { DecryptionError } from '@extension/errors';
+import { BaseExtensionError, DecryptionError } from '@extension/errors';
 
 // features
 import { create as createNotification } from '@extension/features/notifications';
@@ -38,6 +40,11 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 // images
 import qrCodePlaceholderImage from '@extension/images/placeholder_qr_code.png';
 
+// modals
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
+
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
@@ -46,8 +53,6 @@ import {
   useSelectAccounts,
   useSelectActiveAccount,
   useSelectLogger,
-  useSelectPasswordLockPassword,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -64,101 +69,30 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
 import createWatchAccountImportURI from '@extension/utils/createWatchAccountImportURI';
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
+import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
 
 const ExportAccountPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const {
-    isOpen: isPasswordConfirmModalOpen,
-    onClose: onPasswordConfirmModalClose,
-    onOpen: onPasswordConfirmModalOpen,
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
   const accounts = useSelectAccounts();
   const activeAccount = useSelectActiveAccount();
   const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
-  const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   // states
-  const [password, setPassword] = useState<string | null>(null);
   const [selectedAccount, setSelectedAccount] =
     useState<IAccountWithExtendedProps | null>(null);
   const [svgString, setSvgString] = useState<string | null>(null);
   const [uri, setURI] = useState<string | null>(null);
   // misc
   const qrCodeSize = 300;
-  const createQRCodeForPrivateKey = async () => {
-    const _functionName = 'createQRCode';
-    let _svgString: string;
-    let _uri: string;
-    let keyPair: Ed21559KeyPair | null;
-
-    if (!selectedAccount) {
-      logger.debug(
-        `${ExportAccountPage.name}#${_functionName}: no account selected`
-      );
-
-      return;
-    }
-
-    if (!password) {
-      logger.debug(
-        `${ExportAccountPage.name}#${_functionName}: no password found`
-      );
-
-      return;
-    }
-
-    try {
-      keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
-        logger,
-        password,
-        publicKey: selectedAccount.publicKey,
-      });
-
-      if (!keyPair) {
-        throw new DecryptionError(
-          `failed to get private key for account "${convertPublicKeyToAVMAddress(
-            PrivateKeyService.decode(selectedAccount.publicKey)
-          )}"`
-        );
-      }
-
-      _uri = createAccountImportURI({
-        assets: [],
-        privateKey: keyPair.privateKey,
-      });
-      _svgString = await toString(_uri, {
-        type: 'svg',
-        width: qrCodeSize,
-      });
-
-      setSvgString(_svgString);
-      setURI(_uri);
-    } catch (error) {
-      logger.error(`${ExportAccountPage.name}#${_functionName}:`, error);
-
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            code: error.code,
-            context: error.code,
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', { context: error.code }),
-          type: 'error',
-        })
-      );
-
-      setSvgString(null);
-      setURI(null);
-
-      return;
-    }
-  };
   const createQRCodeForWatchAccount = async () => {
     const _functionName = 'createQRCodeForWatchAccount';
     let _svgString: string;
@@ -213,31 +147,96 @@ const ExportAccountPage: FC = () => {
     setURI(null);
     setSelectedAccount(account);
   };
-  const handleOnConfirmModalConfirm = (_password: string) => {
-    onPasswordConfirmModalClose();
-    setPassword(_password);
-  };
-  const handleViewClick = () => {
-    if (settings.security.enablePasswordLock && passwordLockPassword) {
-      setPassword(passwordLockPassword);
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
+    let _svgString: string;
+    let _uri: string;
+    let keyPair: Ed21559KeyPair | null = null;
+
+    if (!selectedAccount) {
+      logger.debug(
+        `${ExportAccountPage.name}#${_functionName}: no account selected`
+      );
 
       return;
     }
 
-    // get password
-    onPasswordConfirmModalOpen();
+    try {
+      if (result.type === EncryptionMethodEnum.Passkey) {
+        keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+          inputKeyMaterial: result.inputKeyMaterial,
+          logger,
+          publicKey: selectedAccount.publicKey,
+        });
+      }
+
+      if (result.type === EncryptionMethodEnum.Password) {
+        keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+          logger,
+          password: result.password,
+          publicKey: selectedAccount.publicKey,
+        });
+      }
+
+      if (!keyPair) {
+        throw new DecryptionError(
+          `failed to get private key for account "${convertPublicKeyToAVMAddress(
+            PrivateKeyService.decode(selectedAccount.publicKey)
+          )}"`
+        );
+      }
+
+      _uri = createAccountImportURI({
+        assets: [],
+        privateKey: keyPair.privateKey,
+      });
+      _svgString = await toString(_uri, {
+        type: 'svg',
+        width: qrCodeSize,
+      });
+
+      setSvgString(_svgString);
+      setURI(_uri);
+    } catch (error) {
+      logger.error(`${ExportAccountPage.name}#${_functionName}:`, error);
+
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
+
+      setSvgString(null);
+      setURI(null);
+    }
   };
+  const handleViewClick = () => onAuthenticationModalOpen();
 
   useEffect(() => {
     if (selectedAccount && selectedAccount.watchAccount) {
       (async () => await createQRCodeForWatchAccount())();
     }
   }, [selectedAccount]);
-  useEffect(() => {
-    if (password && selectedAccount && !selectedAccount.watchAccount) {
-      (async () => await createQRCodeForPrivateKey())();
-    }
-  }, [selectedAccount, password]);
   useEffect(() => {
     if (activeAccount && !selectedAccount) {
       setSelectedAccount(activeAccount);
@@ -246,10 +245,12 @@ const ExportAccountPage: FC = () => {
 
   return (
     <>
-      <ConfirmPasswordModal
-        isOpen={isPasswordConfirmModalOpen}
-        onCancel={onPasswordConfirmModalClose}
-        onConfirm={handleOnConfirmModalConfirm}
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onCancel={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
       />
 
       <PageHeader

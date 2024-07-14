@@ -26,7 +26,7 @@ import type {
   IBaseAsyncThunkConfig,
   IMainRootState,
 } from '@extension/types';
-import type { IUndoReKeyAccountThunkPayload } from '../types';
+import type { TUndoReKeyAccountThunkPayload } from '../types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
@@ -37,16 +37,16 @@ import signTransaction from '@extension/utils/signTransaction';
 
 const undoReKeyAccountThunk: AsyncThunk<
   string | null, // return
-  IUndoReKeyAccountThunkPayload, // args
+  TUndoReKeyAccountThunkPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   string | null,
-  IUndoReKeyAccountThunkPayload,
+  TUndoReKeyAccountThunkPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.UndoReKeyAccount,
   async (
-    { network, password, reKeyAccount },
+    { network, reKeyAccount, ...encryptionOptions },
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
@@ -111,8 +111,8 @@ const undoReKeyAccountThunk: AsyncThunk<
         authAccounts: accounts,
         logger,
         networks,
-        password,
         unsignedTransaction,
+        ...encryptionOptions,
       });
 
       await sendTransactionsForNetwork({

@@ -8,18 +8,12 @@ import {
   ModalHeader,
   Text,
   Textarea,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import { Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, {
-  ChangeEvent,
-  FC,
-  KeyboardEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -31,19 +25,19 @@ import AddressInput, {
 } from '@extension/components/AddressInput';
 import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
 import SendAmountInput from './SendAmountInput';
 import SendAssetModalConfirmingContent from './SendAssetModalConfirmingContent';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
 import SendAssetModalSummaryContent from './SendAssetModalSummaryContent';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
+
+// errors
+import { BaseExtensionError } from '@extension/errors';
 
 // features
 import { updateAccountsThunk } from '@extension/features/accounts';
@@ -63,13 +57,17 @@ import {
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
+// modals
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
+
 // selectors
 import {
   useSelectAccounts,
   useSelectARC0200AssetsBySelectedNetwork,
   useSelectAvailableAccountsForSelectedNetwork,
   useSelectLogger,
-  useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
   useSelectSendAssetAmountInStandardUnits,
   useSelectSendAssetConfirming,
@@ -77,7 +75,6 @@ import {
   useSelectSendAssetFromAccount,
   useSelectSendAssetNote,
   useSelectSendAssetSelectedAsset,
-  useSelectSettings,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
@@ -105,8 +102,12 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
+  const {
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
   // selectors
   const accounts = useSelectAccounts();
   const amountInStandardUnits = useSelectSendAssetAmountInStandardUnits();
@@ -119,9 +120,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const logger = useSelectLogger();
   const network = useSelectSelectedNetwork();
   const note = useSelectSendAssetNote();
-  const passwordLockPassword = useSelectPasswordLockPassword();
   const selectedAsset = useSelectSendAssetSelectedAsset();
-  const settings = useSelectSettings();
   // hooks
   const {
     error: toAddressError,
@@ -131,16 +130,8 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     validate: validateToAddress,
     value: toAddress,
   } = useAddressInput();
-  const defaultTextColor: string = useDefaultTextColor();
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
-  const primaryColor: string = usePrimaryColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
   // state
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<string>('0');
@@ -170,13 +161,12 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     // reset modal input and transactions
     setTransactions(null);
     resetToAddress();
-    resetPassword();
     onClose && onClose();
   };
   const handleFromAccountChange = (account: IAccountWithExtendedProps) =>
     dispatch(setFromAddress(convertPublicKeyToAVMAddress(account.publicKey)));
   const handleNextClick = async () => {
-    const _functionName: string = 'handleNextClick';
+    const _functionName = 'handleNextClick';
     let _transactions: Transaction[];
 
     if (validateToAddress()) {
@@ -221,20 +211,23 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     dispatch(
       setNote(event.target.value.length > 0 ? event.target.value : null)
     );
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
+  const handlePreviousClick = () => setTransactions(null);
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
   ) => {
-    if (event.key === 'Enter') {
-      await handleSendClick();
-    }
-  };
-  const handlePreviousClick = () => {
-    resetPassword();
-    setTransactions(null);
-  };
-  const handleSendClick = async () => {
-    const _functionName: string = 'handleSendClick';
-    let _password: string | null;
+    const _functionName = 'handleOnAuthenticationModalConfirm';
     let fromAddress: string;
     let hasQuestBeenCompletedToday: boolean = false;
     let questsService: QuestsService;
@@ -246,35 +239,11 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
 
-    // if there is no password lock
-    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-      // validate the password input
-      if (validatePassword()) {
-        logger.debug(
-          `${SendAssetModal.name}#${_functionName}: password not valid`
-        );
-
-        return;
-      }
-    }
-
-    _password = settings.security.enablePasswordLock
-      ? passwordLockPassword
-      : password;
-
-    if (!_password) {
-      logger.debug(
-        `${SendAssetModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
-      );
-
-      return;
-    }
-
     try {
       transactionIds = await dispatch(
         submitTransactionThunk({
-          password: _password,
           transactions,
+          ...result,
         })
       ).unwrap();
       toAccount =
@@ -382,10 +351,6 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       handleClose();
     } catch (error) {
       switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
         case ErrorCodeEnum.OfflineError:
           dispatch(
             createNotification({
@@ -411,6 +376,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       }
     }
   };
+  const handleSendClick = () => onAuthenticationModalOpen();
   const handleToAddressChange = (value: string) => {
     dispatch(setToAddress(value.length > 0 ? value : null));
     onToAddressChange(value);
@@ -541,39 +507,21 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
     if (transactions && transactions.length > 0) {
       return (
-        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-          {!settings.security.enablePasswordLock && !passwordLockPassword && (
-            <PasswordInput
-              error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
-              onChange={onPasswordChange}
-              onKeyUp={handleKeyUpPasswordInput}
-              inputRef={passwordInputRef}
-              value={password}
-            />
-          )}
+        <HStack spacing={DEFAULT_GAP - 2} w="full">
+          <Button
+            leftIcon={<IoArrowBackOutline />}
+            onClick={handlePreviousClick}
+            size="lg"
+            variant="outline"
+            w="full"
+          >
+            {t<string>('buttons.previous')}
+          </Button>
 
-          <HStack spacing={DEFAULT_GAP - 2} w="full">
-            <Button
-              leftIcon={<IoArrowBackOutline />}
-              onClick={handlePreviousClick}
-              size="lg"
-              variant="outline"
-              w="full"
-            >
-              {t<string>('buttons.previous')}
-            </Button>
-
-            <Button
-              onClick={handleSendClick}
-              size="lg"
-              variant="solid"
-              w="full"
-            >
-              {t<string>('buttons.send')}
-            </Button>
-          </HStack>
-        </VStack>
+          <Button onClick={handleSendClick} size="lg" variant="solid" w="full">
+            {t<string>('buttons.send')}
+          </Button>
+        </HStack>
       );
     }
 
@@ -632,11 +580,6 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   };
 
   useEffect(() => {
-    if (transactions && transactions.length > 0 && passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, [transactions]);
-  useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
 
     if (fromAccount && network && selectedAsset) {
@@ -663,29 +606,40 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   }, [fromAccount, network, selectedAsset]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      motionPreset="slideInBottom"
-      onClose={handleClose}
-      size="full"
-      scrollBehavior="inside"
-    >
-      <ModalContent
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
-        borderTopRadius={theme.radii['3xl']}
-        borderBottomRadius={0}
+    <>
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onCancel={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
+        passwordHint={t<string>('captions.mustEnterPasswordToSendTransaction')}
+      />
+
+      <Modal
+        isOpen={isOpen}
+        motionPreset="slideInBottom"
+        onClose={handleClose}
+        size="full"
+        scrollBehavior="inside"
       >
-        <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
-          {renderHeader()}
-        </ModalHeader>
+        <ModalContent
+          backgroundColor={BODY_BACKGROUND_COLOR}
+          borderTopRadius={theme.radii['3xl']}
+          borderBottomRadius={0}
+        >
+          <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
+            {renderHeader()}
+          </ModalHeader>
 
-        <ModalBody display="flex" px={DEFAULT_GAP}>
-          {renderContent()}
-        </ModalBody>
+          <ModalBody display="flex" px={DEFAULT_GAP}>
+            {renderContent()}
+          </ModalBody>
 
-        <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

@@ -64,7 +64,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
 >(
   ThunkEnum.RemoveStandardAssetHoldings,
   async (
-    { accountId, assets, genesisHash, password },
+    { accountId, assets, genesisHash, ...encryptionOptions },
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
@@ -215,8 +215,8 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
             authAccounts: accounts,
             logger,
             networks,
-            password,
             unsignedTransaction: value,
+            ...encryptionOptions,
           })
         )
       );

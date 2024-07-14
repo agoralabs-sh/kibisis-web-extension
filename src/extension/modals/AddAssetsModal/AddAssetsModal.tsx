@@ -279,7 +279,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const handleOnAuthenticationModalConfirm = async (
     result: TOnConfirmResult
   ) => {
-    const _functionName = 'handleOnAuthenticationModalConfirm';
     let hasQuestBeenCompletedToday: boolean = false;
     let questsSent: boolean = false;
     let questsService: QuestsService;

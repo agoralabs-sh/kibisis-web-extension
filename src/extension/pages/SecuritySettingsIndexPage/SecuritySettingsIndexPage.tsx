@@ -58,9 +58,9 @@ const SecuritySettingsIndexPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const {
-    isOpen: isPasswordConfirmModalOpen,
-    onClose: onPasswordConfirmModalClose,
-    onOpen: onPasswordConfirmModalOpen,
+    isOpen: isConfirmPasswordModalOpen,
+    onClose: onConfirmPasswordModalClose,
+    onOpen: onConfirmPasswordModalOpen,
   } = useDisclosure();
   // selectors
   const logger = useSelectLogger();
@@ -113,11 +113,11 @@ const SecuritySettingsIndexPage: FC = () => {
   const handleEnablePasswordLockSwitchChange = async (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    const _functionName: string = 'handleEnablePasswordLockSwitchChange';
+    const _functionName = 'handleEnablePasswordLockSwitchChange';
 
     // if we are enabling, we need to set the password
     if (event.target.checked) {
-      onPasswordConfirmModalOpen();
+      onConfirmPasswordModalOpen();
 
       return;
     }
@@ -143,9 +143,9 @@ const SecuritySettingsIndexPage: FC = () => {
     }
   };
   const handleOnConfirmPasswordModalConfirm = async (password: string) => {
-    const _functionName: string = 'handleOnConfirmPasswordModalConfirm';
+    const _functionName = 'handleOnConfirmPasswordModalConfirm';
 
-    onPasswordConfirmModalClose();
+    onConfirmPasswordModalClose();
 
     try {
       // enable the lock and wait for the settings to be updated
@@ -181,9 +181,10 @@ const SecuritySettingsIndexPage: FC = () => {
 
   return (
     <>
+      {/*confirm password modal*/}
       <ConfirmPasswordModal
-        isOpen={isPasswordConfirmModalOpen}
-        onCancel={onPasswordConfirmModalClose}
+        isOpen={isConfirmPasswordModalOpen}
+        onCancel={onConfirmPasswordModalClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
 

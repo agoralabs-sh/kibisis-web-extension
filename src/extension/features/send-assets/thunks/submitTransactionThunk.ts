@@ -19,7 +19,7 @@ import type {
   IAsyncThunkConfigWithRejectValue,
   IMainRootState,
 } from '@extension/types';
-import type { ISubmitTransactionsThunkPayload } from '../types';
+import type { TSubmitTransactionsThunkPayload } from '../types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
@@ -31,15 +31,18 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 
 const submitTransactionThunk: AsyncThunk<
   string[], // return
-  ISubmitTransactionsThunkPayload, // args
+  TSubmitTransactionsThunkPayload, // args
   IAsyncThunkConfigWithRejectValue<IMainRootState>
 > = createAsyncThunk<
   string[],
-  ISubmitTransactionsThunkPayload,
+  TSubmitTransactionsThunkPayload,
   IAsyncThunkConfigWithRejectValue<IMainRootState>
 >(
   SendAssetsThunkEnum.SubmitTransaction,
-  async ({ password, transactions }, { getState, rejectWithValue }) => {
+  async (
+    { transactions, ...encryptionOptions },
+    { getState, rejectWithValue }
+  ) => {
     const accounts = getState().accounts.items;
     const fromAddress = getState().sendAssets.fromAddress;
     const logger = getState().system.logger;
@@ -137,8 +140,8 @@ const submitTransactionThunk: AsyncThunk<
             authAccounts: accounts,
             logger,
             networks,
-            password,
             unsignedTransaction: value,
+            ...encryptionOptions,
           })
         )
       );

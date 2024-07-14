@@ -2,12 +2,15 @@
 import type {
   IAccountWithExtendedProps,
   INetworkWithTransactionParams,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 interface IUndoReKeyAccountThunkPayload {
   network: INetworkWithTransactionParams;
-  password: string;
   reKeyAccount: IAccountWithExtendedProps;
 }
 
-export default IUndoReKeyAccountThunkPayload;
+type TUndoReKeyAccountThunkPayload = IUndoReKeyAccountThunkPayload &
+  TEncryptionCredentials;
+
+export default TUndoReKeyAccountThunkPayload;

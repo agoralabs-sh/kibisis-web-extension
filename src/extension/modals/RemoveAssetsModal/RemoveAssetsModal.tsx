@@ -7,10 +7,11 @@ import {
   ModalFooter,
   ModalHeader,
   Text,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, KeyboardEvent, ReactNode, useEffect, useRef } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -25,9 +26,6 @@ import ModalAssetItem from '@extension/components/ModalAssetItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
 import RemoveAssetsConfirmingModalContent from './RemoveAssetsConfirmingModalContent';
 
 // constants
@@ -39,6 +37,9 @@ import {
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
+
+// errors
+import { BaseExtensionError } from '@extension/errors';
 
 // features
 import {
@@ -52,16 +53,18 @@ import { setConfirming } from '@extension/features/remove-assets';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// modals
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
+
 // selectors
 import {
   useSelectAccounts,
-  useSelectLogger,
-  useSelectPasswordLockPassword,
   useSelectRemoveAssetsAccount,
   useSelectRemoveAssetsConfirming,
   useSelectRemoveAssetsSelectedAsset,
   useSelectSelectedNetwork,
-  useSelectSettings,
   useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
@@ -78,29 +81,22 @@ import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
+  const {
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
   // selectors
   const account = useSelectRemoveAssetsAccount();
   const accounts = useSelectAccounts();
   const confirming = useSelectRemoveAssetsConfirming();
   const explorer = useSelectSettingsPreferredBlockExplorer();
-  const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
   const selectedNetwork = useSelectSelectedNetwork();
   const selectedAsset = useSelectRemoveAssetsSelectedAsset();
-  const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
   const subTextColor = useSubTextColor();
   // misc
   const isOpen = !!account && !!selectedAsset;
@@ -157,40 +153,17 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
 
     dispatch(setConfirming(false));
   };
-  const handleRemoveStandardAssetClick = async () => {
-    const _functionName = 'handleAddStandardAssetClick';
-    let _password: string | null;
-
+  const handleRemoveStandardAssetClick = async () =>
+    onAuthenticationModalOpen();
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
     if (
       !selectedNetwork ||
       !account ||
       !selectedAsset ||
       selectedAsset.type !== AssetTypeEnum.Standard
     ) {
-      return;
-    }
-
-    // if there is no password lock
-    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-      // validate the password input
-      if (validatePassword()) {
-        logger.debug(
-          `${RemoveAssetsModal.name}#${_functionName}: password not valid`
-        );
-
-        return;
-      }
-    }
-
-    _password = settings.security.enablePasswordLock
-      ? passwordLockPassword
-      : password;
-
-    if (!_password) {
-      logger.debug(
-        `${RemoveAssetsModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
-      );
-
       return;
     }
 
@@ -202,7 +175,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
           accountId: account.id,
           assets: [selectedAsset],
           genesisHash: selectedNetwork.genesisHash,
-          password: _password,
+          ...result,
         })
       ).unwrap();
 
@@ -224,10 +197,6 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
       handleClose();
     } catch (error) {
       switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
         case ErrorCodeEnum.OfflineError:
           dispatch(
             createNotification({
@@ -256,23 +225,19 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
     dispatch(setConfirming(false));
   };
   const handleCancelClick = () => handleClose();
-  const handleClose = () => {
-    resetPassword();
-    onClose();
-  };
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === 'Enter') {
-      if (selectedAsset?.type === AssetTypeEnum.ARC0200) {
-        return await handleRemoveARC0200AssetClick();
-      }
-
-      if (selectedAsset?.type === AssetTypeEnum.Standard) {
-        return await handleRemoveStandardAssetClick();
-      }
-    }
-  };
+  const handleClose = () => onClose();
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
   // renders
   const renderContent = () => {
     let address: string;
@@ -479,31 +444,18 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
 
       if (selectedAsset.type === AssetTypeEnum.Standard) {
         return (
-          <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-            {!settings.security.enablePasswordLock && !passwordLockPassword && (
-              <PasswordInput
-                error={passwordError}
-                hint={t<string>('captions.mustEnterPasswordToAuthorizeOptOut')}
-                inputRef={passwordInputRef}
-                onChange={onPasswordChange}
-                onKeyUp={handleKeyUpPasswordInput}
-                value={password}
-              />
-            )}
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
+            {cancelButtonNode}
 
-            <HStack spacing={DEFAULT_GAP - 2} w="full">
-              {cancelButtonNode}
-
-              <Button
-                onClick={handleRemoveStandardAssetClick}
-                size="lg"
-                variant="solid"
-                w="full"
-              >
-                {t<string>('buttons.remove')}
-              </Button>
-            </HStack>
-          </VStack>
+            <Button
+              onClick={handleRemoveStandardAssetClick}
+              size="lg"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.remove')}
+            </Button>
+          </HStack>
         );
       }
     }
@@ -541,41 +493,41 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
     );
   };
 
-  // only standard assets will have the password submit
-  useEffect(() => {
-    if (
-      selectedAsset &&
-      selectedAsset.type === AssetTypeEnum.Standard &&
-      passwordInputRef.current
-    ) {
-      passwordInputRef.current.focus();
-    }
-  }, [selectedAsset]);
-
   return (
-    <Modal
-      isOpen={isOpen}
-      motionPreset="slideInBottom"
-      onClose={onClose}
-      size="full"
-      scrollBehavior="inside"
-    >
-      <ModalContent
-        backgroundColor={BODY_BACKGROUND_COLOR}
-        borderTopRadius={theme.radii['3xl']}
-        borderBottomRadius={0}
+    <>
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onCancel={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
+        passwordHint={t<string>('captions.mustEnterPasswordToAuthorizeOptOut')}
+      />
+
+      <Modal
+        isOpen={isOpen}
+        motionPreset="slideInBottom"
+        onClose={onClose}
+        size="full"
+        scrollBehavior="inside"
       >
-        <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
-          {renderHeader()}
-        </ModalHeader>
+        <ModalContent
+          backgroundColor={BODY_BACKGROUND_COLOR}
+          borderTopRadius={theme.radii['3xl']}
+          borderBottomRadius={0}
+        >
+          <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
+            {renderHeader()}
+          </ModalHeader>
 
-        <ModalBody display="flex" px={0}>
-          {renderContent()}
-        </ModalBody>
+          <ModalBody display="flex" px={0}>
+            {renderContent()}
+          </ModalBody>
 
-        <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

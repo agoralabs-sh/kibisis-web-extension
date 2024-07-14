@@ -36,7 +36,11 @@ const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const {
+    isOpen: isConfirmPasswordModalOpen,
+    onClose: onConfirmPasswordModalClose,
+    onOpen: onConfirmPasswordModalOpen,
+  } = useDisclosure();
   // hooks
   const {
     changePasswordAction,
@@ -60,13 +64,13 @@ const ChangePasswordPage: FC = () => {
   };
   const handleChangeClick = () => {
     if (!validate(newPassword || '', score, t)) {
-      onOpen();
+      onConfirmPasswordModalOpen();
     }
   };
   const handleOnConfirmPasswordModalConfirm = async (
     currentPassword: string
   ) => {
-    onClose();
+    onConfirmPasswordModalClose();
 
     // save the new password
     if (newPassword) {
@@ -116,8 +120,8 @@ const ChangePasswordPage: FC = () => {
         isOpen={isLoading}
       />
       <ConfirmPasswordModal
-        isOpen={isOpen}
-        onCancel={onClose}
+        isOpen={isConfirmPasswordModalOpen}
+        onCancel={onConfirmPasswordModalClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
 

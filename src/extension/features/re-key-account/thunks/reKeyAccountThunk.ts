@@ -26,7 +26,7 @@ import type {
   IBaseAsyncThunkConfig,
   IMainRootState,
 } from '@extension/types';
-import type { IReKeyAccountThunkPayload } from '../types';
+import type { TReKeyAccountThunkPayload } from '../types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
@@ -37,16 +37,16 @@ import signTransaction from '@extension/utils/signTransaction';
 
 const reKeyAccountThunk: AsyncThunk<
   string | null, // return
-  IReKeyAccountThunkPayload, // args
+  TReKeyAccountThunkPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   string | null,
-  IReKeyAccountThunkPayload,
+  TReKeyAccountThunkPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.ReKeyAccount,
   async (
-    { authorizedAddress, network, password, reKeyAccount },
+    { authorizedAddress, network, reKeyAccount, ...encryptionOptions },
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
@@ -99,11 +99,11 @@ const reKeyAccountThunk: AsyncThunk<
 
     try {
       signedTransaction = await signTransaction({
+        ...encryptionOptions,
         accounts,
         authAccounts: accounts,
         logger,
         networks,
-        password,
         unsignedTransaction,
       });
 

@@ -2,13 +2,16 @@
 import type {
   IAccountWithExtendedProps,
   INetworkWithTransactionParams,
+  TEncryptionCredentials,
 } from '@extension/types';
 
-interface IUndoReKeyAccountThunkPayload {
+interface IReKeyAccountThunkPayload {
   authorizedAddress: string;
   network: INetworkWithTransactionParams;
-  password: string;
   reKeyAccount: IAccountWithExtendedProps;
 }
 
-export default IUndoReKeyAccountThunkPayload;
+type TReKeyAccountThunkPayload = IReKeyAccountThunkPayload &
+  TEncryptionCredentials;
+
+export default TReKeyAccountThunkPayload;
