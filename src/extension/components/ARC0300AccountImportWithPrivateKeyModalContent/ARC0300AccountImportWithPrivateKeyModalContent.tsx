@@ -6,9 +6,10 @@ import {
   ModalFooter,
   ModalHeader,
   Text,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -22,9 +23,6 @@ import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import ModalSubHeading from '@extension/components/ModalSubHeading';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
 
 // constants
 import {
@@ -39,6 +37,9 @@ import {
   ARC0300QueryEnum,
   ErrorCodeEnum,
 } from '@extension/enums';
+
+// errors
+import { BaseExtensionError } from '@extension/errors';
 
 // features
 import {
@@ -55,6 +56,11 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useUpdateARC0200Assets from '@extension/hooks/useUpdateARC0200Assets';
 
+// modals
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
+
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
@@ -62,9 +68,7 @@ import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 import {
   useSelectActiveAccountDetails,
   useSelectLogger,
-  useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -97,13 +101,15 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
+  const {
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
   // selectors
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
   const network = useSelectSelectedNetwork();
-  const passwordLockPassword = useSelectPasswordLockPassword();
-  const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const {
@@ -111,71 +117,31 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
     loading,
     reset: resetUpdateAssets,
   } = useUpdateARC0200Assets(schema.query[ARC0300QueryEnum.Asset]);
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
   const primaryButtonTextColor = usePrimaryButtonTextColor();
   const subTextColor = useSubTextColor();
   // states
   const [address, setAddress] = useState<string | null>(null);
   const [saving, setSaving] = useState<boolean>(false);
+  // misc
+  const reset = () => {
+    resetUpdateAssets();
+    setSaving(false);
+  };
   // handlers
   const handleCancelClick = () => {
     reset();
     onCancel();
   };
-  const handleImportClick = async () => {
-    const _functionName: string = 'handleImportClick';
-    let _password: string | null;
+  const handleImportClick = () => onAuthenticationModalOpen();
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
+    const privateKey: Uint8Array | null =
+      decodePrivateKeyFromAccountImportSchema(schema);
     let account: IAccount | null;
     let questsService: QuestsService;
-    let privateKey: Uint8Array | null;
-    let result: IUpdateAssetHoldingsResult;
-
-    // if there is no password lock
-    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-      // validate the password input
-      if (validatePassword()) {
-        logger.debug(
-          `${ARC0300AccountImportWithPrivateKeyModalContent.name}#${_functionName}: password not valid`
-        );
-
-        return;
-      }
-    }
-
-    _password = settings.security.enablePasswordLock
-      ? passwordLockPassword
-      : password;
-
-    if (!_password) {
-      logger.debug(
-        `${ARC0300AccountImportWithPrivateKeyModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
-      );
-
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            context: ErrorCodeEnum.ParsingError,
-            type: 'password',
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', {
-            context: ErrorCodeEnum.ParsingError,
-          }),
-          type: 'error',
-        })
-      );
-
-      return;
-    }
-
-    privateKey = decodePrivateKeyFromAccountImportSchema(schema);
+    let updateAssetHoldingsResult: IUpdateAssetHoldingsResult;
 
     if (!privateKey) {
       logger.debug(
@@ -206,13 +172,13 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
         saveNewAccountThunk({
           keyPair: Ed21559KeyPair.generateFromPrivateKey(privateKey),
           name: null,
-          password: _password,
+          ...result,
         })
       ).unwrap();
 
       // if there are assets, add them to the new account
       if (assets.length > 0 && network) {
-        result = await dispatch(
+        updateAssetHoldingsResult = await dispatch(
           addARC0200AssetHoldingsThunk({
             accountId: account.id,
             assets,
@@ -220,14 +186,10 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
           })
         ).unwrap();
 
-        account = result.account;
+        account = updateAssetHoldingsResult.account;
       }
     } catch (error) {
       switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
         case ErrorCodeEnum.PrivateKeyAlreadyExistsError:
           logger.debug(
             `${ARC0300AccountImportWithPrivateKeyModalContent.name}#${_functionName}: account already exists, carry on`
@@ -297,28 +259,23 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
     // clean up and close
     handleOnComplete();
   };
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === 'Enter') {
-      await handleImportClick();
-    }
-  };
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
   const handleOnComplete = () => {
     reset();
     onComplete();
   };
-  const reset = () => {
-    resetPassword();
-    resetUpdateAssets();
-    setSaving(false);
-  };
 
-  useEffect(() => {
-    if (passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, []);
   useEffect(() => {
     const privateKey: Uint8Array | null =
       decodePrivateKeyFromAccountImportSchema(schema);
@@ -329,107 +286,110 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
   }, []);
 
   return (
-    <ModalContent
-      backgroundColor={BODY_BACKGROUND_COLOR}
-      borderTopRadius={theme.radii['3xl']}
-      borderBottomRadius={0}
-    >
-      {/*header*/}
-      <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
-        <Heading color={defaultTextColor} size="md" textAlign="center">
-          {t<string>('headings.importAccount')}
-        </Heading>
-      </ModalHeader>
+    <>
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onCancel={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
+        passwordHint={t<string>('captions.mustEnterPasswordToImportAccount')}
+      />
 
-      {/*body*/}
-      <ModalBody display="flex" px={DEFAULT_GAP}>
-        <VStack alignItems="center" flexGrow={1} spacing={DEFAULT_GAP} w="full">
-          <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-            {t<string>('captions.importAccount')}
-          </Text>
+      <ModalContent
+        backgroundColor={BODY_BACKGROUND_COLOR}
+        borderTopRadius={theme.radii['3xl']}
+        borderBottomRadius={0}
+      >
+        {/*header*/}
+        <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
+          <Heading color={defaultTextColor} size="md" textAlign="center">
+            {t<string>('headings.importAccount')}
+          </Heading>
+        </ModalHeader>
 
-          <VStack spacing={DEFAULT_GAP / 3} w="full">
-            <ModalSubHeading text={t<string>('labels.account')} />
+        {/*body*/}
+        <ModalBody display="flex" px={DEFAULT_GAP}>
+          <VStack
+            alignItems="center"
+            flexGrow={1}
+            spacing={DEFAULT_GAP}
+            w="full"
+          >
+            <Text color={defaultTextColor} fontSize="sm" textAlign="center">
+              {t<string>('captions.importAccount')}
+            </Text>
 
-            {/*address*/}
-            {!address ? (
-              <ModalSkeletonItem />
-            ) : (
-              <ModalTextItem
-                label={`${t<string>('labels.address')}:`}
-                tooltipLabel={address}
-                value={ellipseAddress(address, {
-                  end: 10,
-                  start: 10,
-                })}
-              />
+            <VStack spacing={DEFAULT_GAP / 3} w="full">
+              <ModalSubHeading text={t<string>('labels.account')} />
+
+              {/*address*/}
+              {!address ? (
+                <ModalSkeletonItem />
+              ) : (
+                <ModalTextItem
+                  label={`${t<string>('labels.address')}:`}
+                  tooltipLabel={address}
+                  value={ellipseAddress(address, {
+                    end: 10,
+                    start: 10,
+                  })}
+                />
+              )}
+            </VStack>
+
+            {/*assets*/}
+            {loading && (
+              <VStack spacing={DEFAULT_GAP / 3} w="full">
+                <ModalSkeletonItem />
+                <ModalSkeletonItem />
+                <ModalSkeletonItem />
+              </VStack>
+            )}
+            {assets.length > 0 && !loading && (
+              <VStack spacing={DEFAULT_GAP / 3} w="full">
+                <ModalSubHeading text={t<string>('labels.assets')} />
+
+                {assets.map((value, index) => (
+                  <ModalItem
+                    key={`account-import-add-asset-${index}`}
+                    label={`${value.name}:`}
+                    value={
+                      <HStack spacing={DEFAULT_GAP / 3}>
+                        {/*icon*/}
+                        <AssetAvatar
+                          asset={value}
+                          fallbackIcon={
+                            <AssetIcon
+                              color={primaryButtonTextColor}
+                              h={3}
+                              w={3}
+                              {...(network && {
+                                networkTheme: network.chakraTheme,
+                              })}
+                            />
+                          }
+                          size="xs"
+                        />
+
+                        {/*symbol*/}
+                        <Text color={subTextColor} fontSize="xs">
+                          {value.symbol}
+                        </Text>
+
+                        {/*type*/}
+                        <AssetBadge size="xs" type={value.type} />
+                      </HStack>
+                    }
+                  />
+                ))}
+              </VStack>
             )}
           </VStack>
+        </ModalBody>
 
-          {/*assets*/}
-          {loading && (
-            <VStack spacing={DEFAULT_GAP / 3} w="full">
-              <ModalSkeletonItem />
-              <ModalSkeletonItem />
-              <ModalSkeletonItem />
-            </VStack>
-          )}
-          {assets.length > 0 && !loading && (
-            <VStack spacing={DEFAULT_GAP / 3} w="full">
-              <ModalSubHeading text={t<string>('labels.assets')} />
-
-              {assets.map((value, index) => (
-                <ModalItem
-                  key={`account-import-add-asset-${index}`}
-                  label={`${value.name}:`}
-                  value={
-                    <HStack spacing={DEFAULT_GAP / 3}>
-                      {/*icon*/}
-                      <AssetAvatar
-                        asset={value}
-                        fallbackIcon={
-                          <AssetIcon
-                            color={primaryButtonTextColor}
-                            h={3}
-                            w={3}
-                            {...(network && {
-                              networkTheme: network.chakraTheme,
-                            })}
-                          />
-                        }
-                        size="xs"
-                      />
-
-                      {/*symbol*/}
-                      <Text color={subTextColor} fontSize="xs">
-                        {value.symbol}
-                      </Text>
-
-                      {/*type*/}
-                      <AssetBadge size="xs" type={value.type} />
-                    </HStack>
-                  }
-                />
-              ))}
-            </VStack>
-          )}
-        </VStack>
-      </ModalBody>
-
-      {/*footer*/}
-      <ModalFooter p={DEFAULT_GAP}>
-        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-          {!settings.security.enablePasswordLock && !passwordLockPassword && (
-            <PasswordInput
-              error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToImportAccount')}
-              onChange={onPasswordChange}
-              onKeyUp={handleKeyUpPasswordInput}
-              inputRef={passwordInputRef}
-              value={password}
-            />
-          )}
-
+        {/*footer*/}
+        <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={DEFAULT_GAP - 2} w="full">
             {/*cancel button*/}
             <Button
@@ -453,9 +413,9 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
               {t<string>('buttons.import')}
             </Button>
           </HStack>
-        </VStack>
-      </ModalFooter>
-    </ModalContent>
+        </ModalFooter>
+      </ModalContent>
+    </>
   );
 };
 

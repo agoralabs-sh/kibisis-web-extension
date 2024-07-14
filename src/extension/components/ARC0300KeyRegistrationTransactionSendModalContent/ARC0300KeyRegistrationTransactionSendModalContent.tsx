@@ -88,7 +88,6 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
 > = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,
@@ -163,7 +162,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   const handleOnAuthenticationModalConfirm = async (
     result: TOnConfirmResult
   ) => {
-    const _functionName = 'handleSendClick';
+    const _functionName = 'handleOnAuthenticationModalConfirm';
     let signedTransaction: Uint8Array;
 
     if (!unsignedTransaction) {

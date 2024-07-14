@@ -19,8 +19,11 @@ import {
   DEFAULT_GAP,
 } from '@extension/constants';
 
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // errors
-import { DecryptionError } from '@extension/errors';
+import { BaseExtensionError, DecryptionError } from '@extension/errors';
 
 // features
 import { create as createNotification } from '@extension/features/notifications';
@@ -30,7 +33,9 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 
 // modals
-import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
 
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
@@ -38,8 +43,8 @@ import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 // selectors
 import {
   useSelectActiveAccount,
-  useSelectNonWatchAccounts,
   useSelectLogger,
+  useSelectNonWatchAccounts,
 } from '@extension/selectors';
 
 // types
@@ -47,16 +52,22 @@ import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
 } from '@extension/types';
+import type { ISeedPhraseInput } from './types';
 
 // utils
 import convertPrivateKeyToSeedPhrase from '@extension/utils/convertPrivateKeyToSeedPhrase';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 
 const ViewSeedPhrasePage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const {
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
   // selectors
   const accounts = useSelectNonWatchAccounts();
   const activeAccount = useSelectActiveAccount();
@@ -65,32 +76,49 @@ const ViewSeedPhrasePage: FC = () => {
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   // state
-  const [password, setPassword] = useState<string | null>(null);
-  const [seedPhrase, setSeedPhrase] = useState<string>(
-    createMaskedSeedPhrase()
-  );
+  const [decrypting, setDecrypting] = useState<boolean>(false);
+  const [seedPhrase, setSeedPhrase] = useState<ISeedPhraseInput>({
+    masked: true,
+    value: createMaskedSeedPhrase(),
+  });
   const [selectedAccount, setSelectedAccount] =
     useState<IAccountWithExtendedProps | null>(null);
-  // misc
-  const decryptSeedPhrase = async () => {
-    const _functionName = 'decryptSeedPhrase';
-    let keyPair: Ed21559KeyPair | null;
+  // handlers
+  const handleAccountSelect = (account: IAccountWithExtendedProps) =>
+    setSelectedAccount(account);
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
+    let keyPair: Ed21559KeyPair | null = null;
 
-    if (!password || !selectedAccount) {
+    if (!selectedAccount) {
       logger?.debug(
-        `${ViewSeedPhrasePage.name}#${_functionName}: no password or account found`
+        `${ViewSeedPhrasePage.name}#${_functionName}: no account selected`
       );
 
       return;
     }
 
+    setDecrypting(true);
+
     // get the private key
     try {
-      keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
-        logger,
-        password,
-        publicKey: selectedAccount.publicKey,
-      });
+      if (result.type === EncryptionMethodEnum.Passkey) {
+        keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+          inputKeyMaterial: result.inputKeyMaterial,
+          logger,
+          publicKey: selectedAccount.publicKey,
+        });
+      }
+
+      if (result.type === EncryptionMethodEnum.Password) {
+        keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+          logger,
+          password: result.password,
+          publicKey: selectedAccount.publicKey,
+        });
+      }
 
       if (!keyPair) {
         throw new DecryptionError(
@@ -101,19 +129,21 @@ const ViewSeedPhrasePage: FC = () => {
       }
 
       // convert the private key to the seed phrase
-      setSeedPhrase(
-        convertPrivateKeyToSeedPhrase({
+      setSeedPhrase({
+        masked: false,
+        value: convertPrivateKeyToSeedPhrase({
           logger,
           privateKey: keyPair.privateKey,
-        })
-      );
+        }),
+      });
     } catch (error) {
-      logger?.error(
-        `${ViewSeedPhrasePage.name}#${_functionName}: ${error.message}`
-      );
+      logger?.error(`${ViewSeedPhrasePage.name}#${_functionName}:`, error);
 
       // reset the seed phrase
-      setSeedPhrase(createMaskedSeedPhrase());
+      setSeedPhrase({
+        masked: true,
+        value: createMaskedSeedPhrase(),
+      });
 
       dispatch(
         createNotification({
@@ -126,26 +156,24 @@ const ViewSeedPhrasePage: FC = () => {
           type: 'error',
         })
       );
-
-      return;
     }
-  };
-  // handlers
-  const handleAccountSelect = (account: IAccountWithExtendedProps) =>
-    setSelectedAccount(account);
-  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
-    // close the password modal
-    onClose();
 
-    setPassword(password);
+    setDecrypting(false);
   };
-  const handleViewClick = () => onOpen();
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
+  const handleViewClick = () => onAuthenticationModalOpen();
 
-  useEffect(() => {
-    if (password) {
-      (async () => await decryptSeedPhrase())();
-    }
-  }, [password, selectedAccount]);
   useEffect(() => {
     let _selectedAccount: IAccountWithExtendedProps;
 
@@ -163,10 +191,12 @@ const ViewSeedPhrasePage: FC = () => {
 
   return (
     <>
-      <ConfirmPasswordModal
-        isOpen={isOpen}
-        onCancel={onClose}
-        onConfirm={handleOnConfirmPasswordModalConfirm}
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onCancel={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
       />
 
       {/*page title*/}
@@ -217,15 +247,15 @@ const ViewSeedPhrasePage: FC = () => {
           </Text>
 
           {/*seed phrase*/}
-          <SeedPhraseDisplay seedPhrase={seedPhrase} />
+          <SeedPhraseDisplay seedPhrase={seedPhrase.value} />
         </VStack>
 
-        {password ? (
+        {!seedPhrase.masked ? (
           // copy seed phrase button
           <CopyButton
             colorScheme={primaryColorScheme}
             size="lg"
-            value={seedPhrase}
+            value={seedPhrase.value}
             variant="solid"
             w="full"
           >
@@ -234,6 +264,7 @@ const ViewSeedPhrasePage: FC = () => {
         ) : (
           // view button
           <Button
+            isLoading={decrypting}
             onClick={handleViewClick}
             rightIcon={<IoEyeOutline />}
             size="lg"

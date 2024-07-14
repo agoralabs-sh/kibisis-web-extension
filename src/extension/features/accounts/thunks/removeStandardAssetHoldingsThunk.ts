@@ -37,7 +37,7 @@ import type {
   IStandardAssetHolding,
 } from '@extension/types';
 import type {
-  IUpdateStandardAssetHoldingsPayload,
+  TUpdateStandardAssetHoldingsPayload,
   IUpdateStandardAssetHoldingsResult,
 } from '../types';
 
@@ -55,11 +55,11 @@ import { findAccountWithoutExtendedProps } from '../utils';
 
 const removeStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return
-  IUpdateStandardAssetHoldingsPayload, // args
+  TUpdateStandardAssetHoldingsPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IUpdateStandardAssetHoldingsResult,
-  IUpdateStandardAssetHoldingsPayload,
+  TUpdateStandardAssetHoldingsPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.RemoveStandardAssetHoldings,

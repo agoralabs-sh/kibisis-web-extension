@@ -11,14 +11,13 @@ import {
   ModalHeader,
   Spinner,
   Text,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import React, {
   ChangeEvent,
   FC,
-  KeyboardEvent,
   ReactNode,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -30,9 +29,6 @@ import { useDispatch } from 'react-redux';
 // components
 import Button from '@extension/components/Button';
 import IconButton from '@extension/components/IconButton';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
 import AddAssetsARC0200AssetItem from './AddAssetsARC0200AssetItem';
 import AddAssetsARC0200AssetSummaryModalContent from './AddAssetsARC0200AssetSummaryModalContent';
 import AddAssetsConfirmingModalContent from './AddAssetsConfirmingModalContent';
@@ -44,6 +40,9 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
+
+// errors
+import { BaseExtensionError } from '@extension/errors';
 
 // features
 import {
@@ -69,6 +68,11 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useIsNewSelectedAsset from './hooks/useIsNewSelectedAsset';
 
+// modals
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
+
 // selectors
 import {
   useSelectAccounts,
@@ -79,10 +83,8 @@ import {
   useSelectAddAssetsSelectedAsset,
   useSelectAddAssetsStandardAssets,
   useSelectLogger,
-  useSelectPasswordLockPassword,
   useSelectSettingsPreferredBlockExplorer,
   useSelectSelectedNetwork,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -114,9 +116,13 @@ import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccount
 
 const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
   const assetContainerRef = useRef<HTMLDivElement | null>(null);
+  const {
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
   // selectors
   const account = useSelectAddAssetsAccount();
   const accounts = useSelectAccounts();
@@ -125,10 +131,8 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const fetching = useSelectAddAssetsFetching();
   const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
   const selectedNetwork = useSelectSelectedNetwork();
   const selectedAsset = useSelectAddAssetsSelectedAsset();
-  const settings = useSelectSettings();
   const standardAssets = useSelectAddAssetsStandardAssets();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -156,14 +160,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
     // if it has not been re-keyed, check if it is a watch account
     return !account.watchAccount;
   }, [account, accounts, selectedNetwork]);
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
   const primaryColor = usePrimaryColor();
   const primaryColorScheme = usePrimaryColorScheme();
   // state
@@ -279,9 +275,11 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
 
     dispatch(setConfirming(false));
   };
-  const handleAddStandardAssetClick = async () => {
-    const _functionName: string = 'handleAddStandardAssetClick';
-    let _password: string | null;
+  const handleAddStandardAssetClick = () => onAuthenticationModalOpen();
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
     let hasQuestBeenCompletedToday: boolean = false;
     let questsSent: boolean = false;
     let questsService: QuestsService;
@@ -295,30 +293,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
 
-    // if there is no password lock
-    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-      // validate the password input
-      if (validatePassword()) {
-        logger.debug(
-          `${AddAssetsModal.name}#${_functionName}: password not valid`
-        );
-
-        return;
-      }
-    }
-
-    _password = settings.security.enablePasswordLock
-      ? passwordLockPassword
-      : password;
-
-    if (!_password) {
-      logger.debug(
-        `${AddAssetsModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
-      );
-
-      return;
-    }
-
     dispatch(setConfirming(true));
 
     try {
@@ -327,7 +301,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
           accountId: account.id,
           assets: [selectedAsset],
           genesisHash: selectedNetwork.genesisHash,
-          password: _password,
+          ...result,
         })
       ).unwrap();
 
@@ -376,10 +350,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
       handleClose();
     } catch (error) {
       switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
         case ErrorCodeEnum.OfflineError:
           dispatch(
             createNotification({
@@ -413,7 +383,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
     dispatch(clearAssets());
   };
   const handleClose = () => {
-    resetPassword();
     setQuery('');
     setQueryARC0200AssetDispatch(null);
     setQueryStandardAssetDispatch(null);
@@ -485,13 +454,18 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
       )
     );
   };
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === 'Enter') {
-      await handleAddStandardAssetClick();
-    }
-  };
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
   const handleOnQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
@@ -525,7 +499,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handlePreviousClick = () => {
     dispatch(setSelectedAsset(null));
-    resetPassword();
   };
   const handleSelectAssetClick = (asset: IAssetTypes) =>
     dispatch(setSelectedAsset(asset));
@@ -677,31 +650,18 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
       // for standard assets, we need a password to authorize the opt-in transaction
       if (selectedAsset.type === AssetTypeEnum.Standard) {
         return (
-          <VStack alignItems="flex-start" spacing={4} w="full">
-            {!settings.security.enablePasswordLock && !passwordLockPassword && (
-              <PasswordInput
-                error={passwordError}
-                hint={t<string>('captions.mustEnterPasswordToAuthorizeOptIn')}
-                inputRef={passwordInputRef}
-                onChange={onPasswordChange}
-                onKeyUp={handleKeyUpPasswordInput}
-                value={password}
-              />
-            )}
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
+            {previousButtonNode}
 
-            <HStack spacing={DEFAULT_GAP - 2} w="full">
-              {previousButtonNode}
-
-              <Button
-                onClick={handleAddStandardAssetClick}
-                size="lg"
-                variant="solid"
-                w="full"
-              >
-                {t<string>('buttons.addAsset')}
-              </Button>
-            </HStack>
-          </VStack>
+            <Button
+              onClick={handleAddStandardAssetClick}
+              size="lg"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.addAsset')}
+            </Button>
+          </HStack>
         );
       }
 
@@ -728,43 +688,43 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
     );
   };
 
-  // only standard assets will have the password submit
-  useEffect(() => {
-    if (
-      selectedAsset &&
-      selectedAsset.type === AssetTypeEnum.Standard &&
-      passwordInputRef.current
-    ) {
-      passwordInputRef.current.focus();
-    }
-  }, [selectedAsset]);
-
   return (
-    <Modal
-      isOpen={isOpen}
-      motionPreset="slideInBottom"
-      onClose={handleClose}
-      size="full"
-      scrollBehavior="inside"
-    >
-      <ModalContent
-        backgroundColor={BODY_BACKGROUND_COLOR}
-        borderTopRadius={theme.radii['3xl']}
-        borderBottomRadius={0}
+    <>
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onCancel={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
+        passwordHint={t<string>('captions.mustEnterPasswordToAuthorizeOptIn')}
+      />
+
+      <Modal
+        isOpen={isOpen}
+        motionPreset="slideInBottom"
+        onClose={handleClose}
+        size="full"
+        scrollBehavior="inside"
       >
-        <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
-          <Heading color={defaultTextColor} size="md" textAlign="center">
-            {t<string>('headings.addAsset')}
-          </Heading>
-        </ModalHeader>
+        <ModalContent
+          backgroundColor={BODY_BACKGROUND_COLOR}
+          borderTopRadius={theme.radii['3xl']}
+          borderBottomRadius={0}
+        >
+          <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
+            <Heading color={defaultTextColor} size="md" textAlign="center">
+              {t<string>('headings.addAsset')}
+            </Heading>
+          </ModalHeader>
 
-        <ModalBody display="flex" px={0}>
-          {renderContent()}
-        </ModalBody>
+          <ModalBody display="flex" px={0}>
+            {renderContent()}
+          </ModalBody>
 
-        <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
