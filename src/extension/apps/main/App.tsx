@@ -69,6 +69,7 @@ import type {
   IAppThunkDispatch,
   IMainRootState,
   ISettings,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -144,17 +145,17 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
           ],
           element: <Root />,
           loader: async () => {
-            let password: string | null;
+            let credentials: TEncryptionCredentials | null;
             let settings: ISettings;
 
             try {
               settings = await (dispatch as IAppThunkDispatch)(
                 fetchSettingsFromStorageThunk()
               ).unwrap(); // fetch the settings from storage
-              password = getState().passwordLock.password;
+              credentials = getState().passwordLock.credentials;
 
-              // if the password lock is on, we need the password
-              if (settings.security.enablePasswordLock && !password) {
+              // if the password lock is on, we need the passkey/password
+              if (settings.security.enablePasswordLock && !credentials) {
                 return redirect(PASSWORD_LOCK_ROUTE);
               }
             } catch (error) {

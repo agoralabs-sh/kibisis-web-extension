@@ -3,7 +3,6 @@ import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import browser from 'webextension-polyfill';
 
 // components
 import Button from '@extension/components/Button';
@@ -31,12 +30,9 @@ import AuthenticationModal, {
 // selectors
 import {
   useSelectLogger,
-  useSelectPasswordLockPassword,
+  useSelectPasswordLockCredentials,
   useSelectPasswordLockSaving,
 } from '@extension/selectors';
-
-// services
-import PasswordService from '@extension/services/PasswordService';
 
 // types
 import type { IAppThunkDispatch } from '@extension/types';
@@ -52,7 +48,7 @@ const PasswordLockPage: FC = () => {
   } = useDisclosure();
   // selectors
   const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
+  const passwordLockPassword = useSelectPasswordLockCredentials();
   const saving = useSelectPasswordLockSaving();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -78,33 +74,8 @@ const PasswordLockPage: FC = () => {
   const handleOnAuthenticationModalConfirm = async (
     result: TOnConfirmResult
   ) => {
-    let isValid: boolean;
-    let passwordService: PasswordService;
-
-    // check if the input is valid
-    if (validatePassword()) {
-      return;
-    }
-
-    passwordService = new PasswordService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
-
-    setVerifying(true);
-
-    isValid = await passwordService.verifyPassword(password);
-
-    setVerifying(false);
-
-    if (!isValid) {
-      setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-      return;
-    }
-
-    // save the password lock password and clear any alarms
-    dispatch(savePasswordLockThunk(password));
+    // save the password lock passkey/password and clear any alarms
+    dispatch(savePasswordLockThunk(result));
   };
 
   useEffect(() => {

@@ -8,9 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   Text,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, KeyboardEvent, useEffect, useRef } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoShieldSlash } from 'react-icons/go';
 import { Radio } from 'react-loader-spinner';
@@ -18,16 +19,10 @@ import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
 import ReEncryptKeysLoadingContent from '@extension/components/ReEncryptKeysLoadingContent';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
-
-// enums
-import { ErrorCodeEnum } from '@extension/enums';
 
 // features
 import { create as createNotification } from '@extension/features/notifications';
@@ -37,6 +32,9 @@ import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useRemovePasskey from './hooks/useRemovePasskey';
+
+// modals
+import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // selectors
 import { useSelectLogger, useSelectPasskeysSaving } from '@extension/selectors';
@@ -54,7 +52,11 @@ import calculateIconSize from '@extension/utils/calculateIconSize';
 const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
+  const {
+    isOpen: isConfirmPasswordModalOpen,
+    onClose: onConfirmPasswordModalClose,
+    onOpen: onConfirmPasswordModalOpen,
+  } = useDisclosure();
   // selectors
   const logger = useSelectLogger();
   const saving = useSelectPasskeysSaving();
@@ -68,14 +70,6 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
     resetAction: resetRemovePasskeyAction,
   } = useRemovePasskey();
   const defaultTextColor = useDefaultTextColor();
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
   const primaryColorCode = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
@@ -86,40 +80,20 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
   // handlers
   const handleCancelClick = async () => handleClose();
   const handleClose = () => {
-    resetPassword();
     resetRemovePasskeyAction();
 
-    if (onClose) {
-      onClose();
-    }
+    onClose && onClose();
   };
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === 'Enter') {
-      await handleRemoveClick();
-    }
-  };
-  const handleRemoveClick = async () => {
-    const _functionName = 'handleRemoveClick';
+  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
     let success: boolean;
 
     if (!removePasskey) {
       return;
     }
 
-    // validate the password input
-    if (validatePassword()) {
-      logger.debug(
-        `${RemovePasskeyModal.name}#${_functionName}: password not valid`
-      );
-
-      return;
-    }
-
     success = await removePasskeyAction({
-      password,
       passkey: removePasskey,
+      password,
     });
 
     if (success) {
@@ -139,6 +113,7 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
       handleClose();
     }
   };
+  const handleRemoveClick = () => onConfirmPasswordModalOpen();
   // renders
   const renderContent = () => {
     const iconSize = calculateIconSize('xl');
@@ -226,75 +201,55 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
     );
   };
 
-  useEffect(() => {
-    if (passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, []);
   // if there is an error from the hook, show a toast
   useEffect(() => {
-    if (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-          break;
-        default:
-          dispatch(
-            createNotification({
-              description: t<string>('errors.descriptions.code', {
-                code: error.code,
-                context: error.code,
-              }),
-              ephemeral: true,
-              title: t<string>('errors.titles.code', { context: error.code }),
-              type: 'error',
-            })
-          );
-          break;
-      }
-    }
+    error &&
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
   }, [error]);
 
   return (
-    <Modal
-      isOpen={!!removePasskey}
-      motionPreset="slideInBottom"
-      onClose={handleClose}
-      size="full"
-      scrollBehavior="inside"
-    >
-      <ModalContent
-        backgroundColor={BODY_BACKGROUND_COLOR}
-        borderTopRadius={theme.radii['3xl']}
-        borderBottomRadius={0}
+    <>
+      {/*confirm password modal*/}
+      <ConfirmPasswordModal
+        hint={t<string>('captions.mustEnterPasswordToReEncryptPrivateKeys')}
+        isOpen={isConfirmPasswordModalOpen}
+        onCancel={onConfirmPasswordModalClose}
+        onConfirm={handleOnConfirmPasswordModalConfirm}
+      />
+
+      <Modal
+        isOpen={!!removePasskey}
+        motionPreset="slideInBottom"
+        onClose={handleClose}
+        size="full"
+        scrollBehavior="inside"
       >
-        <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          <Heading color={defaultTextColor} size="md" textAlign="center">
-            {t<string>('headings.removePasskey')}
-          </Heading>
-        </ModalHeader>
+        <ModalContent
+          backgroundColor={BODY_BACKGROUND_COLOR}
+          borderTopRadius={theme.radii['3xl']}
+          borderBottomRadius={0}
+        >
+          <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
+            <Heading color={defaultTextColor} size="md" textAlign="center">
+              {t<string>('headings.removePasskey')}
+            </Heading>
+          </ModalHeader>
 
-        <ModalBody display="flex" px={DEFAULT_GAP}>
-          {renderContent()}
-        </ModalBody>
+          <ModalBody display="flex" px={DEFAULT_GAP}>
+            {renderContent()}
+          </ModalBody>
 
-        <ModalFooter p={DEFAULT_GAP}>
-          <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-            {/*password input*/}
-            {!isLoading && (
-              <PasswordInput
-                error={passwordError}
-                hint={t<string>(
-                  'captions.mustEnterPasswordToReEncryptPrivateKeys'
-                )}
-                onChange={onPasswordChange}
-                onKeyUp={handleKeyUpPasswordInput}
-                inputRef={passwordInputRef}
-                value={password}
-              />
-            )}
-
-            {/*buttons*/}
+          <ModalFooter p={DEFAULT_GAP}>
             <HStack spacing={DEFAULT_GAP - 2} w="full">
               {/*cancel*/}
               <Button
@@ -318,10 +273,10 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
                 {t<string>('buttons.confirm')}
               </Button>
             </HStack>
-          </VStack>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

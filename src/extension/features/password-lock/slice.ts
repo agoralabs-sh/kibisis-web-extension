@@ -7,6 +7,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { savePasswordLockThunk } from './thunks';
 
 // types
+import type { TEncryptionCredentials } from '@extension/types';
 import type { IState } from './types';
 
 // utils
@@ -14,11 +15,11 @@ import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** Save credentials **/
+    /**save password lock**/
     builder.addCase(
       savePasswordLockThunk.fulfilled,
-      (state: IState, action: PayloadAction<string | null>) => {
-        state.password = action.payload;
+      (state: IState, action: PayloadAction<TEncryptionCredentials | null>) => {
+        state.credentials = action.payload;
         state.saving = false;
       }
     );
@@ -32,14 +33,14 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.PasswordLock,
   reducers: {
-    setPassword: (
+    setCredentials: (
       state: Draft<IState>,
-      action: PayloadAction<string | null>
+      action: PayloadAction<TEncryptionCredentials | null>
     ) => {
-      state.password = action.payload;
+      state.credentials = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setPassword } = slice.actions;
+export const { setCredentials } = slice.actions;

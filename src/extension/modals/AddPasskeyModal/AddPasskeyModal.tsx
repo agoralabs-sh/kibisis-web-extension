@@ -12,7 +12,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, KeyboardEvent, useEffect, useRef } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoShieldLock } from 'react-icons/go';
 import { IoKeyOutline } from 'react-icons/io5';
@@ -27,9 +27,6 @@ import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import PasskeyCapabilities from '@extension/components/PasskeyCapabilities';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
 import ReEncryptKeysLoadingContent from '@extension/components/ReEncryptKeysLoadingContent';
 
 // constants
@@ -38,9 +35,6 @@ import {
   DEFAULT_GAP,
   MODAL_ITEM_HEIGHT,
 } from '@extension/constants';
-
-// enums
-import { ErrorCodeEnum } from '@extension/enums';
 
 // features
 import { create as createNotification } from '@extension/features/notifications';
@@ -51,13 +45,11 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useAddPasskey from './hooks/useAddPasskey';
 
+// modals
+import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
+
 // selectors
-import {
-  useSelectLogger,
-  useSelectPasskeysSaving,
-  useSelectPasswordLockPassword,
-  useSelectSettings,
-} from '@extension/selectors';
+import { useSelectPasskeysSaving } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -73,16 +65,17 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const {
+    isOpen: isConfirmPasswordModalOpen,
+    onClose: onConfirmPasswordModalClose,
+    onOpen: onConfirmPasswordModalOpen,
+  } = useDisclosure();
+  const {
     isOpen: isMoreInformationOpen,
     onOpen: onMoreInformationOpen,
     onClose: onMoreInformationClose,
   } = useDisclosure();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
-  const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
   const saving = useSelectPasskeysSaving();
-  const settings = useSelectSettings();
   // hooks
   const {
     addPasskeyAction,
@@ -94,14 +87,6 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
     resetAction: resetAddPasskeyAction,
   } = useAddPasskey();
   const defaultTextColor = useDefaultTextColor();
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
   const primaryColorCode = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
@@ -112,49 +97,21 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
   // handlers
   const handleCancelClick = async () => handleClose();
   const handleClose = () => {
-    resetPassword();
     resetAddPasskeyAction();
 
-    if (onClose) {
-      onClose();
-    }
+    onClose && onClose();
   };
-  const handleEncryptClick = async () => {
-    const _functionName = 'handleEncryptClick';
-    let _password: string | null;
+  const handleEncryptClick = () => onConfirmPasswordModalOpen();
+  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
     let success: boolean;
 
     if (!addPasskey) {
       return;
     }
 
-    // if there is no password lock
-    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-      // validate the password input
-      if (validatePassword()) {
-        logger.debug(
-          `${AddPasskeyModal.name}#${_functionName}: password not valid`
-        );
-
-        return;
-      }
-    }
-
-    _password = settings.security.enablePasswordLock
-      ? passwordLockPassword
-      : password;
-
-    if (!_password) {
-      logger.debug(
-        `${AddPasskeyModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
-      );
-
-      return;
-    }
-
     success = await addPasskeyAction({
-      password: _password,
       passkey: addPasskey,
+      password,
     });
 
     if (success) {
@@ -172,13 +129,6 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
 
       // close the modal
       handleClose();
-    }
-  };
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === 'Enter') {
-      await handleEncryptClick();
     }
   };
   const handleMoreInformationToggle = (value: boolean) =>
@@ -366,33 +316,20 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
     );
   };
 
-  useEffect(() => {
-    if (passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, []);
   // if there is an error from the hook, show a toast
   useEffect(() => {
-    if (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-          break;
-        default:
-          dispatch(
-            createNotification({
-              description: t<string>('errors.descriptions.code', {
-                code: error.code,
-                context: error.code,
-              }),
-              ephemeral: true,
-              title: t<string>('errors.titles.code', { context: error.code }),
-              type: 'error',
-            })
-          );
-          break;
-      }
-    }
+    error &&
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
   }, [error]);
   // if we have the updated the passkey close the modal
   useEffect(() => {
@@ -414,47 +351,38 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
   }, [passkey]);
 
   return (
-    <Modal
-      isOpen={!!addPasskey}
-      motionPreset="slideInBottom"
-      onClose={handleClose}
-      size="full"
-      scrollBehavior="inside"
-    >
-      <ModalContent
-        backgroundColor={BODY_BACKGROUND_COLOR}
-        borderTopRadius={theme.radii['3xl']}
-        borderBottomRadius={0}
+    <>
+      {/*confirm password modal*/}
+      <ConfirmPasswordModal
+        hint={t<string>('captions.mustEnterPasswordToDecryptPrivateKeys')}
+        isOpen={isConfirmPasswordModalOpen}
+        onCancel={onConfirmPasswordModalClose}
+        onConfirm={handleOnConfirmPasswordModalConfirm}
+      />
+
+      <Modal
+        isOpen={!!addPasskey}
+        motionPreset="slideInBottom"
+        onClose={handleClose}
+        size="full"
+        scrollBehavior="inside"
       >
-        <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          <Heading color={defaultTextColor} size="md" textAlign="center">
-            {t<string>('headings.addPasskey')}
-          </Heading>
-        </ModalHeader>
+        <ModalContent
+          backgroundColor={BODY_BACKGROUND_COLOR}
+          borderTopRadius={theme.radii['3xl']}
+          borderBottomRadius={0}
+        >
+          <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
+            <Heading color={defaultTextColor} size="md" textAlign="center">
+              {t<string>('headings.addPasskey')}
+            </Heading>
+          </ModalHeader>
 
-        <ModalBody display="flex" px={DEFAULT_GAP}>
-          {renderContent()}
-        </ModalBody>
+          <ModalBody display="flex" px={DEFAULT_GAP}>
+            {renderContent()}
+          </ModalBody>
 
-        <ModalFooter p={DEFAULT_GAP}>
-          <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-            {/*password input*/}
-            {!settings.security.enablePasswordLock &&
-              !passwordLockPassword &&
-              !isLoading && (
-                <PasswordInput
-                  error={passwordError}
-                  hint={t<string>(
-                    'captions.mustEnterPasswordToDecryptPrivateKeys'
-                  )}
-                  onChange={onPasswordChange}
-                  onKeyUp={handleKeyUpPasswordInput}
-                  inputRef={passwordInputRef}
-                  value={password}
-                />
-              )}
-
-            {/*buttons*/}
+          <ModalFooter p={DEFAULT_GAP}>
             <HStack spacing={DEFAULT_GAP - 2} w="full">
               {/*cancel*/}
               <Button
@@ -479,10 +407,10 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
                 {t<string>('buttons.encrypt')}
               </Button>
             </HStack>
-          </VStack>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

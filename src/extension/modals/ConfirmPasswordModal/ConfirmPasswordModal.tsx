@@ -23,7 +23,6 @@ import PasswordInput, {
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // errors
-
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -31,7 +30,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import {
   useSelectLogger,
-  useSelectPasswordLockPassword,
+  useSelectPasswordLockCredentials,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -43,6 +42,7 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IProps } from './types';
+import { EncryptionMethodEnum } from '@extension/enums';
 
 const ConfirmPasswordModal: FC<IProps> = ({
   isOpen,
@@ -54,7 +54,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
   const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
+  const passwordLockCredentials = useSelectPasswordLockCredentials();
   const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -121,7 +121,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
   // renders
   const renderContent = () => {
     // show a loader if there is a password lock and password
-    if (settings.security.enablePasswordLock && passwordLockPassword) {
+    if (settings.security.enablePasswordLock && passwordLockCredentials) {
       return (
         <VStack
           alignItems="center"
@@ -170,8 +170,11 @@ const ConfirmPasswordModal: FC<IProps> = ({
   }, []);
   // check if there is a password lock and password lock password present
   useEffect(() => {
-    if (settings.security.enablePasswordLock && passwordLockPassword) {
-      return onConfirm(passwordLockPassword);
+    if (
+      settings.security.enablePasswordLock &&
+      passwordLockCredentials?.type === EncryptionMethodEnum.Password
+    ) {
+      return onConfirm(passwordLockCredentials.password);
     }
   }, [isOpen]);
 

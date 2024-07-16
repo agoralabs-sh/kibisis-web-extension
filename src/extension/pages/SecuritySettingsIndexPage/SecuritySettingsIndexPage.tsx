@@ -34,12 +34,18 @@ import {
   VIEW_SEED_PHRASE_ROUTE,
 } from '@extension/constants';
 
+// errors
+import { BaseExtensionError } from '@extension/errors';
+
 // features
+import { create as createNotification } from '@extension/features/notifications';
 import { savePasswordLockThunk } from '@extension/features/password-lock';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // modals
-import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -58,9 +64,9 @@ const SecuritySettingsIndexPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const {
-    isOpen: isConfirmPasswordModalOpen,
-    onClose: onConfirmPasswordModalClose,
-    onOpen: onConfirmPasswordModalOpen,
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
   const logger = useSelectLogger();
@@ -117,7 +123,7 @@ const SecuritySettingsIndexPage: FC = () => {
 
     // if we are enabling, we need to set the password
     if (event.target.checked) {
-      onConfirmPasswordModalOpen();
+      onAuthenticationModalOpen();
 
       return;
     }
@@ -142,10 +148,10 @@ const SecuritySettingsIndexPage: FC = () => {
       );
     }
   };
-  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
-    const _functionName = 'handleOnConfirmPasswordModalConfirm';
-
-    onConfirmPasswordModalClose();
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
 
     try {
       // enable the lock and wait for the settings to be updated
@@ -160,13 +166,25 @@ const SecuritySettingsIndexPage: FC = () => {
       ).unwrap();
 
       // then... save the new password to the password lock
-      dispatch(savePasswordLockThunk(password));
+      dispatch(savePasswordLockThunk(result));
     } catch (error) {
       logger.debug(
         `${SecuritySettingsIndexPage.name}#${_functionName}: failed save settings`
       );
     }
   };
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
   const handlePasswordTimeoutDurationChange = (option: IOption<number>) => {
     dispatch(
       saveSettingsToStorageThunk({
@@ -181,11 +199,12 @@ const SecuritySettingsIndexPage: FC = () => {
 
   return (
     <>
-      {/*confirm password modal*/}
-      <ConfirmPasswordModal
-        isOpen={isConfirmPasswordModalOpen}
-        onCancel={onConfirmPasswordModalClose}
-        onConfirm={handleOnConfirmPasswordModalConfirm}
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onCancel={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
       />
 
       <PageHeader title={t<string>('titles.page', { context: 'security' })} />

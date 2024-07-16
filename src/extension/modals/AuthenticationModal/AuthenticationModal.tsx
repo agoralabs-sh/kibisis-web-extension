@@ -36,7 +36,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import {
   useSelectLogger,
   useSelectPasskeysPasskey,
-  useSelectPasswordLockPassword,
+  useSelectPasswordLockCredentials,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -63,7 +63,7 @@ const AuthenticationModal: FC<IProps> = ({
   // selectors
   const logger = useSelectLogger();
   const passkey = useSelectPasskeysPasskey();
-  const passwordLockPassword = useSelectPasswordLockPassword();
+  const passwordLockCredentials = useSelectPasswordLockCredentials();
   const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -164,7 +164,7 @@ const AuthenticationModal: FC<IProps> = ({
     }
 
     // show a loader if there is a password lock and password
-    if (settings.security.enablePasswordLock && passwordLockPassword) {
+    if (settings.security.enablePasswordLock && passwordLockCredentials) {
       return (
         <VStack
           alignItems="center"
@@ -246,12 +246,9 @@ const AuthenticationModal: FC<IProps> = ({
         }
       }
 
-      // otherwise, check if there is a password lock and password lock password present
-      if (settings.security.enablePasswordLock && passwordLockPassword) {
-        return onConfirm({
-          password: passwordLockPassword,
-          type: EncryptionMethodEnum.Password,
-        });
+      // otherwise, check if there is a password lock and passkey/password present
+      if (settings.security.enablePasswordLock && passwordLockCredentials) {
+        return onConfirm(passwordLockCredentials);
       }
     })();
   }, [isOpen]);

@@ -67,7 +67,7 @@ import WalletConnectModal from '@extension/modals/WalletConnectModal';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPasswordLockPassword,
+  useSelectPasswordLockCredentials,
   useSelectNotificationsShowingConfetti,
   useSelectSelectedNetwork,
   useSelectSettings,
@@ -81,7 +81,7 @@ const Root: FC = () => {
   const navigate = useNavigate();
   // selectors
   const accounts = useSelectAccounts();
-  const passwordLockPassword = useSelectPasswordLockPassword();
+  const passwordLockPassword = useSelectPasswordLockCredentials();
   const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
   const showingConfetti = useSelectNotificationsShowingConfetti();
