@@ -269,7 +269,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
       {/*authentication*/}
       <AuthenticationModal
         isOpen={isAuthenticationModalOpen}
-        onCancel={onAuthenticationModalClose}
+        onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
         onError={handleAuthenticationError}
         {...(event &&

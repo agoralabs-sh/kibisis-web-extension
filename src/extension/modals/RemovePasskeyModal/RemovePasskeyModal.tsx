@@ -223,7 +223,7 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
       <ConfirmPasswordModal
         hint={t<string>('captions.mustEnterPasswordToReEncryptPrivateKeys')}
         isOpen={isConfirmPasswordModalOpen}
-        onCancel={onConfirmPasswordModalClose}
+        onClose={onConfirmPasswordModalClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
 

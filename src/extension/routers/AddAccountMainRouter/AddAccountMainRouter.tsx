@@ -253,7 +253,7 @@ const AddAccountMainRouter: FC = () => {
     <>
       <AuthenticationModal
         isOpen={isAuthenticationModalOpen}
-        onCancel={handleOnAuthenticationModalClose}
+        onClose={handleOnAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
         onError={handleOnError}
       />

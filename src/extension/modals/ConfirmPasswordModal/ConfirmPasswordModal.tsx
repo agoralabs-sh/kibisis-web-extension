@@ -22,7 +22,9 @@ import PasswordInput, {
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
-// errors
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -42,12 +44,11 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IProps } from './types';
-import { EncryptionMethodEnum } from '@extension/enums';
 
 const ConfirmPasswordModal: FC<IProps> = ({
   isOpen,
   hint,
-  onCancel,
+  onClose,
   onConfirm,
 }) => {
   const { t } = useTranslation();
@@ -103,12 +104,11 @@ const ConfirmPasswordModal: FC<IProps> = ({
     }
 
     onConfirm(password);
-
-    // clean up
-    reset();
+    handleClose();
   };
   const handleClose = () => {
-    onCancel();
+    onClose && onClose();
+
     reset(); // clean up
   };
   const handleKeyUpPasswordInput = async (
@@ -174,7 +174,8 @@ const ConfirmPasswordModal: FC<IProps> = ({
       settings.security.enablePasswordLock &&
       passwordLockCredentials?.type === EncryptionMethodEnum.Password
     ) {
-      return onConfirm(passwordLockCredentials.password);
+      onConfirm(passwordLockCredentials.password);
+      handleClose();
     }
   }, [isOpen]);
 

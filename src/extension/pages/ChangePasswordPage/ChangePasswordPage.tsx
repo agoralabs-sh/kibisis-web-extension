@@ -121,7 +121,7 @@ const ChangePasswordPage: FC = () => {
       />
       <ConfirmPasswordModal
         isOpen={isConfirmPasswordModalOpen}
-        onCancel={onConfirmPasswordModalClose}
+        onClose={onConfirmPasswordModalClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
 

@@ -194,7 +194,7 @@ const ViewSeedPhrasePage: FC = () => {
       {/*authentication modal*/}
       <AuthenticationModal
         isOpen={isAuthenticationModalOpen}
-        onCancel={onAuthenticationModalClose}
+        onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
         onError={handleOnAuthenticationError}
       />

@@ -89,7 +89,7 @@ const PasswordLockPage: FC = () => {
       {/*authentication modal*/}
       <AuthenticationModal
         isOpen={isAuthenticationModalOpen}
-        onCancel={onAuthenticationModalClose}
+        onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
         onError={handleOnAuthenticationError}
         passwordHint={t<string>('captions.mustEnterPasswordToUnlock')}

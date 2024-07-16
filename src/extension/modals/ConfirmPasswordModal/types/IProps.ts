@@ -1,10 +1,9 @@
-// errors
-import { BaseExtensionError } from '@extension/errors';
+// types
+import type { IModalProps } from '@extension/types';
 
-interface IProps {
-  isOpen: boolean;
+interface IProps extends IModalProps {
   hint?: string;
-  onCancel: () => void;
+  isOpen: boolean;
   onConfirm: (password: string) => void;
 }
 

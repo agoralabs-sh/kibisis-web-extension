@@ -259,7 +259,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
       {/*authentication modal*/}
       <AuthenticationModal
         isOpen={isAuthenticationModalOpen}
-        onCancel={onAuthenticationModalClose}
+        onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
         onError={handleAuthenticationError}
         passwordHint={t<string>('captions.mustEnterPasswordToSign')}

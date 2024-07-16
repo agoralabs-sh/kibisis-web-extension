@@ -97,9 +97,9 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
   // handlers
   const handleCancelClick = async () => handleClose();
   const handleClose = () => {
-    resetAddPasskeyAction();
-
     onClose && onClose();
+
+    resetAddPasskeyAction();
   };
   const handleEncryptClick = () => onConfirmPasswordModalOpen();
   const handleOnConfirmPasswordModalConfirm = async (password: string) => {
@@ -356,7 +356,7 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
       <ConfirmPasswordModal
         hint={t<string>('captions.mustEnterPasswordToDecryptPrivateKeys')}
         isOpen={isConfirmPasswordModalOpen}
-        onCancel={onConfirmPasswordModalClose}
+        onClose={onConfirmPasswordModalClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
 

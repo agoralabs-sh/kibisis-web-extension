@@ -309,7 +309,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
       {/*authentication*/}
       <AuthenticationModal
         isOpen={isAuthenticationModalOpen}
-        onCancel={onAuthenticationModalClose}
+        onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
         onError={handleError}
         passwordHint={t<string>('captions.mustEnterPasswordToSendTransaction')}

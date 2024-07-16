@@ -2,12 +2,12 @@
 import { BaseExtensionError } from '@extension/errors';
 
 // types
-import TOnConfirmResult from './TOnConfirmResult';
+import type { IModalProps } from '@extension/types';
+import type TOnConfirmResult from './TOnConfirmResult';
 
-interface IProps {
+interface IProps extends IModalProps {
   isOpen: boolean;
   passwordHint?: string;
-  onCancel: () => void;
   onConfirm: (result: TOnConfirmResult) => void;
   onError?: (error: BaseExtensionError) => void;
 }

@@ -53,7 +53,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 const AuthenticationModal: FC<IProps> = ({
   isOpen,
-  onCancel,
+  onClose,
   onConfirm,
   onError,
   passwordHint,
@@ -120,11 +120,11 @@ const AuthenticationModal: FC<IProps> = ({
       type: EncryptionMethodEnum.Password,
     });
 
-    // clean up
-    reset();
+    handleClose();
   };
   const handleClose = () => {
-    onCancel();
+    onClose && onClose();
+
     reset(); // clean up
   };
   const handleKeyUpPasswordInput = async (
@@ -215,7 +215,6 @@ const AuthenticationModal: FC<IProps> = ({
   }, []);
   useEffect(() => {
     (async () => {
-      let _error: string;
       let inputKeyMaterial: Uint8Array;
 
       if (!isOpen) {
@@ -237,8 +236,7 @@ const AuthenticationModal: FC<IProps> = ({
             type: EncryptionMethodEnum.Passkey,
           });
 
-          // clean up
-          return reset();
+          return handleClose();
         } catch (error) {
           logger.error(`${AuthenticationModal.name}#useEffect:`, error);
 
