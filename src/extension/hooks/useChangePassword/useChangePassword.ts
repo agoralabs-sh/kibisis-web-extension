@@ -10,7 +10,10 @@ import {
 } from '@extension/errors';
 
 // selectors
-import { useSelectLogger } from '@extension/selectors';
+import {
+  useSelectLogger,
+  useSelectPasskeysEnabled,
+} from '@extension/selectors';
 
 // services
 import PasswordService from '@extension/services/PasswordService';
@@ -19,15 +22,16 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 // types
 import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadingContent';
 import type { IPasswordTag, IPrivateKey } from '@extension/types';
-import { IChangePasswordActionOptions, IUseChangePasswordState } from './types';
+import type { IChangePasswordActionOptions, IState } from './types';
 
 // utils
 import { encryptPrivateKeyItemWithDelay } from './utils';
 
-export default function useChangePassword(): IUseChangePasswordState {
+export default function useChangePassword(): IState {
   const _hookName = 'useChangePassword';
   // selectors
   const logger = useSelectLogger();
+  const passkeyEnabled = useSelectPasskeysEnabled();
   // states
   const [encryptionProgressState, setEncryptionProgressState] = useState<
     IEncryptionState[]
@@ -40,7 +44,7 @@ export default function useChangePassword(): IUseChangePasswordState {
   const changePasswordAction = async ({
     currentPassword,
     newPassword,
-  }: IChangePasswordActionOptions) => {
+  }: IChangePasswordActionOptions): Promise<boolean> => {
     const _functionName = 'changePasswordAction';
     const passwordService = new PasswordService({
       logger,
@@ -64,8 +68,9 @@ export default function useChangePassword(): IUseChangePasswordState {
       logger.debug(`${_hookName}#${_functionName}: ${_error}`);
 
       setValidating(false);
+      setError(new MalformedDataError(_error));
 
-      return setError(new MalformedDataError(_error));
+      return false;
     }
 
     if (currentPassword === newPassword) {
@@ -73,7 +78,9 @@ export default function useChangePassword(): IUseChangePasswordState {
         `${_hookName}#${_functionName}: passwords match, ignoring update`
       );
 
-      return setPasswordTag(passwordTag);
+      setPasswordTag(passwordTag);
+
+      return true;
     }
 
     isPasswordValid = await passwordService.verifyPassword(currentPassword);
@@ -82,8 +89,9 @@ export default function useChangePassword(): IUseChangePasswordState {
       logger?.debug(`${_hookName}#${_functionName}: invalid password`);
 
       setValidating(false);
+      setError(new InvalidPasswordError());
 
-      return setError(new InvalidPasswordError());
+      return false;
     }
 
     setValidating(false);
@@ -103,61 +111,72 @@ export default function useChangePassword(): IUseChangePasswordState {
       };
     } catch (error) {
       setEncrypting(false);
+      setError(error);
 
-      return setError(error);
+      return false;
     }
 
     logger?.debug(
       `${_hookName}#${_functionName}: re-encrypted password tag "${passwordTag.id}"`
     );
 
-    privateKeyService = new PrivateKeyService({
-      logger,
-    });
-    privateKeyItems = await privateKeyService.fetchAllFromStorage();
-
-    // set the encryption state for each item to false
-    setEncryptionProgressState(
-      privateKeyItems.map(({ id }) => ({
-        id,
-        encrypted: false,
-      }))
-    );
-
-    // re-encrypt each private key items
-    try {
-      privateKeyItems = await Promise.all(
-        privateKeyItems.map(async (privateKeyItem, index) => {
-          const item = await encryptPrivateKeyItemWithDelay({
-            currentPassword,
-            delay: (index + 1) * 300, // add a staggered delay for the ui to catch up
-            logger,
-            newPassword,
-            privateKeyItem,
-          });
-
-          setEncryptionProgressState((_encryptionProgressState) =>
-            _encryptionProgressState.map((value) =>
-              value.id === privateKeyItem.id
-                ? {
-                    ...value,
-                    encrypted: true,
-                  }
-                : value
-            )
-          );
-
-          return item;
-        })
+    // only re-encrypt the keys if the passkey is not enabled
+    if (!passkeyEnabled) {
+      logger?.debug(
+        `${_hookName}#${_functionName}: re-encrypting private keys`
       );
-    } catch (error) {
-      setEncrypting(false);
 
-      return setError(error);
+      privateKeyService = new PrivateKeyService({
+        logger,
+      });
+      privateKeyItems = await privateKeyService.fetchAllFromStorage();
+
+      // set the encryption state for each item to false
+      setEncryptionProgressState(
+        privateKeyItems.map(({ id }) => ({
+          id,
+          encrypted: false,
+        }))
+      );
+
+      // re-encrypt each private key items
+      try {
+        privateKeyItems = await Promise.all(
+          privateKeyItems.map(async (privateKeyItem, index) => {
+            const item = await encryptPrivateKeyItemWithDelay({
+              currentPassword,
+              delay: (index + 1) * 300, // add a staggered delay for the ui to catch up
+              logger,
+              newPassword,
+              privateKeyItem,
+            });
+
+            setEncryptionProgressState((_encryptionProgressState) =>
+              _encryptionProgressState.map((value) =>
+                value.id === privateKeyItem.id
+                  ? {
+                      ...value,
+                      encrypted: true,
+                    }
+                  : value
+              )
+            );
+
+            return item;
+          })
+        );
+      } catch (error) {
+        setEncrypting(false);
+        setError(error);
+
+        return false;
+      }
+
+      // save the new encrypted items to storage
+      await privateKeyService.saveManyToStorage(privateKeyItems);
+
+      logger?.debug(`${_hookName}#${_functionName}: re-encrypted private keys`);
     }
-
-    // save the new encrypted items to storage
-    await privateKeyService.saveManyToStorage(privateKeyItems);
 
     // save the new password tag to storage
     passwordTag = await passwordService.saveToStorage(passwordTag);
@@ -168,6 +187,8 @@ export default function useChangePassword(): IUseChangePasswordState {
 
     setPasswordTag(passwordTag);
     setEncrypting(false);
+
+    return true;
   };
   const resetAction = () => {
     setEncryptionProgressState([]);

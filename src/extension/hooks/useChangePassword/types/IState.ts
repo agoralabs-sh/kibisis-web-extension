@@ -6,10 +6,10 @@ import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadin
 import type { IPasswordTag } from '@extension/types';
 import type IChangePasswordActionOptions from './IChangePasswordActionOptions';
 
-interface IUseChangePasswordState {
+interface IState {
   changePasswordAction: (
     options: IChangePasswordActionOptions
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   encryptionProgressState: IEncryptionState[];
   encrypting: boolean;
   error: BaseExtensionError | null;
@@ -18,4 +18,4 @@ interface IUseChangePasswordState {
   validating: boolean;
 }
 
-export default IUseChangePasswordState;
+export default IState;

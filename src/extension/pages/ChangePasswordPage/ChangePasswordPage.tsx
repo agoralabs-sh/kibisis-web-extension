@@ -30,7 +30,7 @@ import ChangePasswordLoadingModal from '@extension/modals/ChangePasswordLoadingM
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // types
-import { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 
 const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
@@ -70,14 +70,32 @@ const ChangePasswordPage: FC = () => {
   const handleOnConfirmPasswordModalConfirm = async (
     currentPassword: string
   ) => {
-    onConfirmPasswordModalClose();
+    let success: boolean;
+
+    if (!newPassword) {
+      return;
+    }
 
     // save the new password
-    if (newPassword) {
-      await changePasswordAction({
-        currentPassword,
-        newPassword,
+    success = await changePasswordAction({
+      currentPassword,
+      newPassword,
+    });
+
+    if (success) {
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          title: t<string>('headings.passwordChanged'),
+          type: 'info',
+        })
+      );
+      navigate(`${SETTINGS_ROUTE}${SECURITY_ROUTE}`, {
+        replace: true,
       });
+
+      // clean up
+      reset();
     }
   };
   const reset = () => {
@@ -88,7 +106,7 @@ const ChangePasswordPage: FC = () => {
 
   // if there is an error from the hook, show a toast
   useEffect(() => {
-    if (error) {
+    error &&
       dispatch(
         createNotification({
           description: t<string>('errors.descriptions.code', {
@@ -100,7 +118,6 @@ const ChangePasswordPage: FC = () => {
           type: 'error',
         })
       );
-    }
   }, [error]);
   // if we have the updated password tag navigate back
   useEffect(() => {

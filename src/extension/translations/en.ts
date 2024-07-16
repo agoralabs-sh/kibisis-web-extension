@@ -343,6 +343,7 @@ const translation: IResourceLanguage = {
     offline: 'Offline',
     passkeyAdded: 'Passkey Added!',
     passkeyRemoved: 'Passkey Removed',
+    passwordChanged: 'Password Changed!',
     passwordLock: 'Welcome back',
     reKeyAccount: 'Re-key Account 🔒',
     reKeyAccountSuccessful: 'Successfully Re-Keyed Account!',

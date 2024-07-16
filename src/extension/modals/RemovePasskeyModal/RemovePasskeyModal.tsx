@@ -269,7 +269,7 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
                 variant="solid"
                 w="full"
               >
-                {t<string>('buttons.confirm')}
+                {t<string>('buttons.remove')}
               </Button>
             </HStack>
           </ModalFooter>
