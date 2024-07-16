@@ -37,7 +37,7 @@ import useRemovePasskey from './hooks/useRemovePasskey';
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // selectors
-import { useSelectLogger, useSelectPasskeysSaving } from '@extension/selectors';
+import { useSelectPasskeysSaving } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -58,7 +58,6 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
     onOpen: onConfirmPasswordModalOpen,
   } = useDisclosure();
   // selectors
-  const logger = useSelectLogger();
   const saving = useSelectPasskeysSaving();
   // hooks
   const {

@@ -102,6 +102,7 @@ const PasskeyPage: FC = () => {
       _passkey = await PasskeyService.createPasskeyCredential({
         deviceID: systemInfo.deviceID,
         logger,
+        name: passkeyName,
       });
 
       logger.debug(
@@ -363,7 +364,7 @@ const PasskeyPage: FC = () => {
           {/*icon*/}
           <Icon as={GoShieldLock} color="gray.600" h={iconSize} w={iconSize} />
 
-          {/*instruction*/}
+          {/*captions*/}
           <VStack alignItems="center" spacing={DEFAULT_GAP / 3} w="full">
             <Text
               color={subTextColor}
@@ -382,12 +383,16 @@ const PasskeyPage: FC = () => {
             >
               {t<string>('captions.addPasskey2')}
             </Text>
-          </VStack>
 
-          {/*instructions*/}
-          <Text color={subTextColor} fontSize="sm" textAlign="justify" w="full">
-            {t<string>('captions.addPasskeyInstruction')}
-          </Text>
+            <Text
+              color={subTextColor}
+              fontSize="sm"
+              textAlign="justify"
+              w="full"
+            >
+              {t<string>('captions.addPasskeyInstruction')}
+            </Text>
+          </VStack>
 
           {/*passkey name*/}
           <VStack justifyContent="center" w="full">

@@ -304,13 +304,27 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
               />
             </VStack>
           </MoreInformationAccordion>
-        </VStack>
 
-        {/*captions*/}
-        <VStack alignItems="center" spacing={DEFAULT_GAP / 3} w="full">
-          <Text color={subTextColor} fontSize="sm" textAlign="justify" w="full">
-            {t<string>('captions.encryptWithPasskey')}
-          </Text>
+          {/*instructions*/}
+          <VStack alignItems="center" spacing={DEFAULT_GAP / 3} w="full">
+            <Text
+              color={subTextColor}
+              fontSize="sm"
+              textAlign="justify"
+              w="full"
+            >
+              {t<string>('captions.encryptWithPasskeyInstruction1')}
+            </Text>
+
+            <Text
+              color={subTextColor}
+              fontSize="sm"
+              textAlign="justify"
+              w="full"
+            >
+              {t<string>('captions.encryptWithPasskeyInstruction2')}
+            </Text>
+          </VStack>
         </VStack>
       </VStack>
     );

@@ -64,8 +64,8 @@ const translation: IResourceLanguage = {
     addedAccount: 'Account {{address}} has been added.',
     addPasskey1:
       'Adding a passkey allows you to sign transactions without your password.',
-    addPasskey2: `The passkey will be used to to encrypt/decrypt the private keys.`,
-    addPasskeyInstruction: `Begin by adding a new passkey on your device.`,
+    addPasskey2: `The passkey will be used to to encrypt/decrypt the private keys of your accounts.`,
+    addPasskeyInstruction: `To begin, you will be asked to add a supported passkey.`,
     addressDoesNotMatch: 'This address does not match the signer',
     addWatchAccount: 'Add a watch account by providing a valid address.',
     addWatchAccountComplete: `Press save to confirm adding the watch account.`,
@@ -116,7 +116,8 @@ const translation: IResourceLanguage = {
       'Passwords will only need to be entered due to inactivity.',
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
-    encryptWithPasskey: `To complete the process, the passkey will be requested to re-encrypt the private keys.`,
+    encryptWithPasskeyInstruction1: `1. You will be asked to enter your password to decrypt your private keys.`,
+    encryptWithPasskeyInstruction2: `2. After your password has been confirmed, you will then be asked to use your passkey to re-encrypt the private keys.`,
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     enterWatchAccountAddress:
       'Enter the address of the account you would like to watch.',
@@ -225,9 +226,9 @@ const translation: IResourceLanguage = {
     removePasskey:
       'You are about to remove the passkey "{{name}}". This action will re-enable password authentication.',
     removePasskeyInstruction1:
-      '1. Before you can remove the passkey, you will need to enter your password in order to re-encrypt your keys.',
+      '1. Before you can remove the passkey, you will need to enter your password which will be used to re-encrypt your keys.',
     removePasskeyInstruction2:
-      '2. You will also be asked to decrypt your keys with your passkey.',
+      '2. After your password has been confirmed, you will then be asked to use your passkey to decrypt the private keys.',
     requestingPasskeyPermission:
       'Requesting permission from the passkey "{{name}}".',
     saveMnemonicPhrase1:

@@ -52,7 +52,9 @@ const PasskeyCapabilities: FC<IProps> = ({ capabilities, size = 'sm' }) => {
 
         return (
           <Tooltip key={`passkey-capabilities-${index}`} label={label}>
-            <Icon as={icon} color={subTextColor} h={iconSize} w={iconSize} />
+            <span>
+              <Icon as={icon} color={subTextColor} h={iconSize} w={iconSize} />
+            </span>
           </Tooltip>
         );
       })}
