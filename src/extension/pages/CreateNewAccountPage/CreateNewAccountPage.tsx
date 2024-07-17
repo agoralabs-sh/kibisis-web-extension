@@ -2,8 +2,6 @@ import {
   Checkbox,
   Heading,
   HStack,
-  Input,
-  InputGroup,
   Spacer,
   Text,
   VStack,
@@ -16,12 +14,16 @@ import { useNavigate } from 'react-router-dom';
 // components
 import Button from '@extension/components/Button';
 import CopyButton from '@extension/components/CopyButton';
+import GenericInput from '@extension/components/GenericInput';
 import PageHeader from '@extension/components/PageHeader';
 import SeedPhraseDisplay from '@extension/components/SeedPhraseDisplay';
 import Steps from '@extension/components/Steps';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { ACCOUNT_NAME_BYTE_LIMIT, DEFAULT_GAP } from '@extension/constants';
+
+// enums
+import { StepsEnum } from './enums';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -34,9 +36,6 @@ import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAddAccountPageProps } from '@extension/types';
@@ -52,23 +51,23 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { nextStep, prevStep, activeStep } = useSteps({
-    initialStep: 0,
+    initialStep: StepsEnum.SeedPhrase,
   });
   // selector
   const logger = useSelectLogger();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const primaryColor = usePrimaryColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
-  const [error, setError] = useState<string | null>(null);
-  const [keyPair] = useState<Ed21559KeyPair>(Ed21559KeyPair.generate());
-  const [name, setName] = useState<string>(
-    convertPublicKeyToAVMAddress(keyPair.publicKey)
-  );
   const [copySeedPhraseConfirm, setCopySeedPhraseConfirm] =
     useState<boolean>(false);
+  const [copySeedPhraseError, setCopySeedPhraseError] = useState<string | null>(
+    null
+  );
+  const [keyPair] = useState<Ed21559KeyPair>(Ed21559KeyPair.generate());
+  const [name, setName] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
   // misc
   const seedPhrase = convertPrivateKeyToSeedPhrase({
     logger,
@@ -83,15 +82,21 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   const handleCopySeedPhraseConfirmChange = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    setError(null);
+    setCopySeedPhraseError(null);
     setCopySeedPhraseConfirm(event.target.checked);
   };
-  const handleNextClick = () => nextStep();
+  const handleNextClick = () => {
+    if (activeStep === StepsEnum.AccountName && nameError) {
+      return;
+    }
+
+    nextStep();
+  };
   const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
     setName(event.target.value);
   const handlePreviousClick = () => {
     // if the step is on the first step, navigate back
-    if (activeStep <= 0) {
+    if (activeStep <= StepsEnum.SeedPhrase) {
       navigate(-1);
 
       return;
@@ -99,17 +104,17 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
 
     prevStep();
   };
+  const handleOnNameError = (value: string | null) => setNameError(value);
   const handleSaveClick = async () => {
     if (!copySeedPhraseConfirm) {
-      setError(t<string>('errors.inputs.copySeedPhraseRequired'));
+      setCopySeedPhraseError(t<string>('errors.inputs.copySeedPhraseRequired'));
 
       return;
     }
 
     await onComplete({
-      name:
-        name !== convertPublicKeyToAVMAddress(keyPair.publicKey) ? name : null, //  if the address is the same as the name, ignore
       keyPair,
+      name,
     });
   };
 
@@ -125,7 +130,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
         justifyContent="center"
         pb={DEFAULT_GAP}
         px={DEFAULT_GAP}
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <Steps
@@ -136,7 +141,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
           variant="circles"
         >
           {/*save seed phrase*/}
-          <Step label={stepsLabels[0]}>
+          <Step label={stepsLabels[StepsEnum.SeedPhrase]}>
             <VStack
               alignItems="flex-start"
               p={1}
@@ -184,7 +189,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
           </Step>
 
           {/*name account*/}
-          <Step label={stepsLabels[1]}>
+          <Step label={stepsLabels[StepsEnum.AccountName]}>
             <VStack
               alignItems="flex-start"
               p={1}
@@ -192,7 +197,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
               w="full"
             >
               <Text
-                color={subTextColor}
+                color={defaultTextColor}
                 fontSize="sm"
                 textAlign="left"
                 w="full"
@@ -200,27 +205,16 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
                 {t<string>('captions.nameYourAccount')}
               </Text>
 
-              <VStack w="full">
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  {t<string>('labels.accountName')}
-                </Text>
-
-                <InputGroup size="md">
-                  <Input
-                    focusBorderColor={primaryColor}
-                    isDisabled={saving}
-                    onChange={handleOnNameChange}
-                    placeholder={t<string>('placeholders.nameAccount')}
-                    type="text"
-                    value={name || ''}
-                  />
-                </InputGroup>
-              </VStack>
+              <GenericInput
+                characterLimit={ACCOUNT_NAME_BYTE_LIMIT}
+                label={t<string>('labels.accountName')}
+                isDisabled={saving}
+                onChange={handleOnNameChange}
+                onError={handleOnNameError}
+                placeholder={t<string>('placeholders.nameAccount')}
+                type="text"
+                value={name || ''}
+              />
             </VStack>
           </Step>
         </Steps>
@@ -237,7 +231,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
             </Text>
 
             <Checkbox
-              colorScheme={error ? 'red' : primaryColorScheme}
+              colorScheme={copySeedPhraseError ? 'red' : primaryColorScheme}
               isChecked={copySeedPhraseConfirm}
               isDisabled={saving}
               onChange={handleCopySeedPhraseConfirmChange}
@@ -252,9 +246,9 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
               </Text>
             </Checkbox>
 
-            {error && (
+            {copySeedPhraseError && (
               <Text color="red.500" fontSize="xs" textAlign="left" w="full">
-                {error}
+                {copySeedPhraseError}
               </Text>
             )}
           </VStack>

@@ -98,6 +98,7 @@ const translation: IResourceLanguage = {
     changePassword2:
       'You will be prompted to enter your current password when you press "Change Password".',
     changeTheme: 'Choose between dark and light mode.',
+    charactersRemaining: '{{amount}} characters remaining',
     checkingAuthenticationCredentials: 'Checking authentication credentials.',
     confirmingTransaction:
       'Your transaction(s) are being sent to the network to be processed.',
@@ -288,6 +289,7 @@ const translation: IResourceLanguage = {
       passwordMinLength: 'Must be at least 8 characters',
       passwordTooWeak: 'This password is too weak',
       required: '{{name}} is required',
+      tooLong: 'Too long',
       unknown: `Something doesn't look right`,
     },
     titles: {
@@ -558,7 +560,7 @@ const translation: IResourceLanguage = {
     enterANameForYourAccount: 'Enter a name for your account',
     enterNote: 'Enter an optional note',
     enterPassword: 'Enter password',
-    nameAccount: 'Enter a name for this account (optional)',
+    nameAccount: 'Enter a name for this account',
     passkeyName: 'e.g. Kibisis',
     pleaseSelect: 'Please select...',
   },
