@@ -1,6 +1,6 @@
 import { HStack, Input, InputGroup, Text, VStack } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { randomBytes } from 'tweetnacl';
 
@@ -17,6 +17,7 @@ import type { IProps } from './types';
 
 const GenericInput: FC<IProps> = ({
   characterLimit,
+  error,
   id,
   label,
   onChange,
@@ -31,7 +32,6 @@ const GenericInput: FC<IProps> = ({
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
   // state
-  const [error, setError] = useState<string | null>(null);
   const [charactersRemaining, setCharactersRemaining] = useState<number | null>(
     characterLimit || null
   );
@@ -55,7 +55,7 @@ const GenericInput: FC<IProps> = ({
     let valueAsBytes: number;
 
     // clear error
-    setError(null);
+    onError && onError(null);
 
     // validate any new errors
     _error = _validate(event.target.value);
@@ -73,15 +73,11 @@ const GenericInput: FC<IProps> = ({
     }
 
     if (_error) {
-      setError(_error);
+      onError && onError(_error);
     }
 
     return onChange && onChange(event);
   };
-
-  useEffect(() => {
-    onError && onError(error);
-  }, [error]);
 
   return (
     <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">

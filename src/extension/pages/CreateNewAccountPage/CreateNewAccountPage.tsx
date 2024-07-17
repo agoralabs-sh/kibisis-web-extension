@@ -207,6 +207,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
 
               <GenericInput
                 characterLimit={ACCOUNT_NAME_BYTE_LIMIT}
+                error={nameError}
                 label={t<string>('labels.accountName')}
                 isDisabled={saving}
                 onChange={handleOnNameChange}

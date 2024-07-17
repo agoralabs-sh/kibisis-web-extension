@@ -2,6 +2,7 @@ import { InputProps } from '@chakra-ui/react';
 
 interface IProps extends Omit<InputProps, 'onError'> {
   characterLimit?: number;
+  error?: string | null;
   id?: string;
   label: string;
   onError?: (value: string | null) => void;
