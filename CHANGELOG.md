@@ -1,3 +1,10 @@
+# [1.18.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.1...v1.18.0-beta.2) (2024-07-17)
+
+
+### Features
+
+* add a 32 byte limit on account names ([#268](https://github.com/agoralabs-sh/kibisis-web-extension/issues/268)) ([576cc09](https://github.com/agoralabs-sh/kibisis-web-extension/commit/576cc097a2f6c94cac4acc5f4c3b0b521005e6d3))
+
 # [1.18.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.2...v1.18.0-beta.1) (2024-07-17)
 
 
