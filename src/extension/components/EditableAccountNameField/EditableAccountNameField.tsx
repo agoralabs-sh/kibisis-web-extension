@@ -4,6 +4,8 @@ import {
   HStack,
   Input,
   Skeleton,
+  Stack,
+  Text,
   Tooltip,
   useOutsideClick,
   VStack,
@@ -25,28 +27,27 @@ import { IoCheckmarkOutline, IoCloseOutline } from 'react-icons/io5';
 import IconButton from '@extension/components/IconButton';
 
 // constants
-import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
+import {
+  ACCOUNT_NAME_BYTE_LIMIT,
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+} from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // theme
 import { theme } from '@extension/theme';
 
+// types
+import type { IProps } from './types';
+
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
-
-interface IProps {
-  address: string;
-  isEditing: boolean;
-  isLoading: boolean;
-  name: string | null;
-  onCancel: () => void;
-  onSubmitChange: (value: string | null) => void;
-}
 
 const EditableAccountNameField: FC<IProps> = ({
   address,
@@ -55,41 +56,71 @@ const EditableAccountNameField: FC<IProps> = ({
   isLoading,
   onCancel,
   onSubmitChange,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   const containerRef: MutableRefObject<HTMLDivElement | null> =
     useRef<HTMLDivElement | null>(null);
   const inputRef: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
+  const textBackgroundColor = useTextBackgroundColor();
   // state
-  const [value, setValue] = useState<string>(name || address);
+  const [charactersRemaining, setCharactersRemaining] = useState<number>(
+    ACCOUNT_NAME_BYTE_LIMIT - new TextEncoder().encode(name || '').byteLength
+  );
+  const [value, setValue] = useState<string | null>(name);
+  // misc
+  const reset = () => {
+    setCharactersRemaining(
+      ACCOUNT_NAME_BYTE_LIMIT - new TextEncoder().encode(name || '').byteLength
+    );
+    setValue(name);
+  };
   // handlers
-  const handleCancelClick = () => onCancel();
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) =>
+  const handleCancelClick = () => handleClose();
+  const handleClose = () => {
+    onCancel();
+
+    // clean up
+    reset();
+  };
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const valueAsBytes = new TextEncoder().encode(
+      event.target.value
+    ).byteLength;
+
+    setCharactersRemaining(ACCOUNT_NAME_BYTE_LIMIT - valueAsBytes);
     setValue(event.target.value);
+  };
   const handleOnKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      onSubmitChange(value);
+      handleSubmitClick();
     }
   };
-  const handleSubmitClick = () =>
+  const handleSubmitClick = () => {
+    if (charactersRemaining < 0) {
+      return;
+    }
+
     onSubmitChange(value && value.length > 0 ? value : null);
+
+    // clean up
+    reset();
+  };
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isEditing]);
-  useEffect(() => setValue(name || address), [name, address]);
   // if clicking outside, cancel the edit
   useOutsideClick({
     ref: containerRef,
-    handler: onCancel,
+    handler: handleClose,
   });
 
   if (isLoading) {
@@ -128,6 +159,24 @@ const EditableAccountNameField: FC<IProps> = ({
 
   return (
     <VStack position="relative" ref={containerRef} w="full" zIndex={1}>
+      {/*character limit caption*/}
+      <Stack
+        bottom="calc(100% + var(--chakra-space-2))"
+        position="absolute"
+        right={DEFAULT_GAP / 3}
+      >
+        <Text
+          color={charactersRemaining >= 0 ? subTextColor : 'red.300'}
+          fontSize="xs"
+          textAlign="right"
+          w="full"
+        >
+          {t<string>('captions.charactersRemaining', {
+            amount: charactersRemaining,
+          })}
+        </Text>
+      </Stack>
+
       {/*/input*/}
       <Input
         focusBorderColor={primaryColor}
@@ -138,7 +187,7 @@ const EditableAccountNameField: FC<IProps> = ({
         ref={inputRef}
         size="md"
         type="text"
-        value={value}
+        value={value || ''}
       />
 
       {/*controls*/}
