@@ -1,3 +1,10 @@
+# [1.18.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.2...v1.18.0-beta.1) (2024-07-17)
+
+
+### Features
+
+* implement webauthn to encrypt the private keys ([#266](https://github.com/agoralabs-sh/kibisis-web-extension/issues/266)) ([e3dde7f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e3dde7fb74c251d1ec448b71c8940d247ca20f35))
+
 ## [1.17.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.1...v1.17.2) (2024-07-10)
 
 
