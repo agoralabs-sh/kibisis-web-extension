@@ -1,6 +1,9 @@
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 interface IAddAccountCompleteResult {
   name: string | null;
-  privateKey: Uint8Array;
+  keyPair: Ed21559KeyPair;
 }
 
 export default IAddAccountCompleteResult;

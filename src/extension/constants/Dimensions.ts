@@ -1,8 +1,8 @@
 export const ACCOUNT_PAGE_HEADER_ITEM_HEIGHT = 10; // 2.5rem - 40px
 export const ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT = 60; // px
 export const DEFAULT_GAP = 6;
-export const DEFAULT_POPUP_HEIGHT = 740;
-export const DEFAULT_POPUP_WIDTH = 400;
+export const DEFAULT_POPUP_HEIGHT = 750;
+export const DEFAULT_POPUP_WIDTH = 465;
 export const MODAL_ITEM_HEIGHT = 10; // 10 = 2.5rem = 40px
 export const OPTION_HEIGHT = '57px';
 export const PAGE_ITEM_HEIGHT = 10; // 10 = 2.5rem = 40px

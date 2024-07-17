@@ -19,14 +19,14 @@ import WarningIcon from '@extension/components/WarningIcon';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // theme
 import { theme } from '@extension/theme';
 
 // types
 import type { IAccount, IDecodedJwt } from '@extension/types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 interface IProps {
   decodedJwt: IDecodedJwt;
@@ -69,9 +69,7 @@ const SignBytesJwtContent: FC<IProps> = ({
           {/*warning*/}
           {(!signer ||
             decodedJwt.payload.subject !==
-              AccountService.convertPublicKeyToAlgorandAddress(
-                signer.publicKey
-              )) && (
+              convertPublicKeyToAVMAddress(signer.publicKey)) && (
             <WarningIcon
               tooltipLabel={t<string>('captions.addressDoesNotMatch')}
             />

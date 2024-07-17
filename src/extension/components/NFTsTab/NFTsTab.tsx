@@ -19,7 +19,6 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
 import QuestsService from '@extension/services/QuestsService';
 
 // types
@@ -29,6 +28,9 @@ import type {
   INetwork,
 } from '@extension/types';
 import type { INFTsTabProps } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
   const { t } = useTranslation();
@@ -108,7 +110,7 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
       // if there are new assets acquired, track an action for each new asset
       newARC0072AssetHoldings.forEach(({ id }) =>
         questsService.acquireARC0072Quest(
-          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
+          convertPublicKeyToAVMAddress(account.publicKey),
           {
             appID: id,
             genesisHash: selectedNetwork.genesisHash,

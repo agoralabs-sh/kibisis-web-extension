@@ -54,15 +54,15 @@ const AddAccountRegistrationRouter: FC = () => {
   // misc
   const saveNewAccount = async ({
     arc0200Assets,
+    keyPair,
     name,
-    privateKey,
   }: IRegistrationAddAccountCompleteResult) => {
     try {
       await dispatch(
         saveCredentialsThunk({
           arc0200Assets,
+          keyPair,
           name,
-          privateKey,
         })
       ).unwrap();
 

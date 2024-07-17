@@ -25,11 +25,14 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
 import type { IProps } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const AddressInput: FC<IProps> = ({
   accounts,
@@ -48,7 +51,7 @@ const AddressInput: FC<IProps> = ({
   // handlers
   const handleAccountClick = (account: IAccountWithExtendedProps) => () =>
     onChange(
-      AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+      convertPublicKeyToAVMAddress(PrivateKeyService.decode(account.publicKey))
     );
   const handleHandleOnChange = (event: ChangeEvent<HTMLInputElement>) =>
     onChange(event.target.value);

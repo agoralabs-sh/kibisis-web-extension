@@ -14,7 +14,7 @@ import {
   encode as encodeBase64,
 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
-import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -22,9 +22,6 @@ import { useDispatch } from 'react-redux';
 import Button from '@extension/components/Button';
 import KeyRegistrationTransactionModalBody from '@extension/components/KeyRegistrationTransactionModalBody';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
@@ -32,12 +29,16 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // enums
 import {
   ARC0300QueryEnum,
+  EncryptionMethodEnum,
   ErrorCodeEnum,
   TransactionTypeEnum,
 } from '@extension/enums';
 
 // errors
-import { NotEnoughMinimumBalanceError } from '@extension/errors';
+import {
+  BaseExtensionError,
+  NotEnoughMinimumBalanceError,
+} from '@extension/errors';
 
 // features
 import { updateAccountsThunk } from '@extension/features/accounts';
@@ -46,13 +47,17 @@ import { create as createNotification } from '@extension/features/notifications'
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
+// modals
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
+
 // selectors
 import {
   useSelectAccountByAddress,
   useSelectAccounts,
   useSelectLogger,
   useSelectNetworks,
-  useSelectPasswordLockPassword,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -82,28 +87,27 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   >
 > = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
   const { t } = useTranslation();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
+  const {
+    isOpen: isMoreInformationToggleOpen,
+    onOpen: onMoreInformationOpen,
+    onClose: onMoreInformationClose,
+  } = useDisclosure();
   // selectors
   const account = useSelectAccountByAddress(
     schema.query[ARC0300QueryEnum.Sender]
   );
   const accounts = useSelectAccounts();
   const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
   const networks = useSelectNetworks();
   const settings = useSelectSettings();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
   // states
   const [sending, setSending] = useState<boolean>(false);
   const [unsignedTransaction, setUnsignedTransaction] =
@@ -129,20 +133,12 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     : selectNetworkFromSettings(networks, settings) ||
       selectDefaultNetwork(networks); // if we have the genesis hash get the network, otherwise get the selected network
   const reset = () => {
-    resetPassword();
     setSending(false);
     setUnsignedTransaction(null);
   };
   // handlers
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === 'Enter') {
-      await handleSendClick();
-    }
-  };
   const handleMoreInformationToggle = (value: boolean) =>
-    value ? onOpen() : onClose();
+    value ? onMoreInformationOpen() : onMoreInformationClose();
   const handleOnComplete = () => {
     reset();
     onComplete();
@@ -151,9 +147,22 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     reset();
     onCancel();
   };
-  const handleSendClick = async () => {
-    const _functionName: string = 'handleSendClick';
-    let _password: string | null;
+  const handleError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
     let signedTransaction: Uint8Array;
 
     if (!unsignedTransaction) {
@@ -184,30 +193,6 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
       return;
     }
 
-    // if there is no password lock
-    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-      // validate the password input
-      if (validatePassword()) {
-        logger.debug(
-          `${ARC0300KeyRegistrationTransactionSendModalContent.name}#${_functionName}: password not valid`
-        );
-
-        return;
-      }
-    }
-
-    _password = settings.security.enablePasswordLock
-      ? passwordLockPassword
-      : password;
-
-    if (!_password) {
-      logger.debug(
-        `${ARC0300KeyRegistrationTransactionSendModalContent.name}#${_functionName}: unable to use password from password lock, value is "null"`
-      );
-
-      return;
-    }
-
     setSending(true);
 
     try {
@@ -229,8 +214,16 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
         authAccounts: accounts,
         logger,
         networks,
-        password,
         unsignedTransaction,
+        ...(result.type === EncryptionMethodEnum.Password
+          ? {
+              password: result.password,
+              type: EncryptionMethodEnum.Password,
+            }
+          : {
+              inputKeyMaterial: result.inputKeyMaterial,
+              type: EncryptionMethodEnum.Passkey,
+            }),
       });
 
       await sendTransactionsForNetwork({
@@ -269,9 +262,6 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
       handleOnComplete();
     } catch (error) {
       switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-          break;
         case ErrorCodeEnum.OfflineError:
           dispatch(
             createNotification({
@@ -299,12 +289,8 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
 
     setSending(false);
   };
+  const handleSendClick = () => onAuthenticationModalOpen();
 
-  useEffect(() => {
-    if (passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, []);
   useEffect(() => {
     if (account && network) {
       (async () =>
@@ -319,68 +305,71 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   }, [account, network, schema]);
 
   return (
-    <ModalContent
-      backgroundColor={BODY_BACKGROUND_COLOR}
-      borderTopRadius={theme.radii['3xl']}
-      borderBottomRadius={0}
-    >
-      {/*header*/}
-      <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
-        <Heading color={defaultTextColor} size="md" textAlign="center">
-          {t<string>(
-            isOnlineKeyRegistrationTransaction(schema)
-              ? `headings.transaction_${TransactionTypeEnum.KeyRegistrationOnline}`
-              : `headings.transaction_${TransactionTypeEnum.KeyRegistrationOffline}`
-          )}
-        </Heading>
-      </ModalHeader>
+    <>
+      {/*authentication*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onClose={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleError}
+        passwordHint={t<string>('captions.mustEnterPasswordToSendTransaction')}
+      />
 
-      {/*body*/}
-      <ModalBody display="flex" px={DEFAULT_GAP}>
-        <VStack alignItems="center" flexGrow={1} spacing={DEFAULT_GAP} w="full">
-          <Text color={defaultTextColor} fontSize="s," textAlign="center">
-            {t<string>('captions.keyRegistrationURI', {
-              status: isOnlineKeyRegistrationTransaction(schema)
-                ? 'online'
-                : 'offline',
-            })}
-          </Text>
+      <ModalContent
+        backgroundColor={BODY_BACKGROUND_COLOR}
+        borderTopRadius={theme.radii['3xl']}
+        borderBottomRadius={0}
+      >
+        {/*header*/}
+        <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
+          <Heading color={defaultTextColor} size="md" textAlign="center">
+            {t<string>(
+              isOnlineKeyRegistrationTransaction(schema)
+                ? `headings.transaction_${TransactionTypeEnum.KeyRegistrationOnline}`
+                : `headings.transaction_${TransactionTypeEnum.KeyRegistrationOffline}`
+            )}
+          </Heading>
+        </ModalHeader>
 
-          {!account || !network || !unsignedTransaction ? (
-            <VStack spacing={DEFAULT_GAP / 3} w="full">
-              <ModalSkeletonItem />
-              <ModalSkeletonItem />
-              <ModalSkeletonItem />
-            </VStack>
-          ) : (
-            <KeyRegistrationTransactionModalBody
-              account={account}
-              accounts={accounts}
-              condensed={{
-                expanded: isOpen,
-                onChange: handleMoreInformationToggle,
-              }}
-              network={network}
-              transaction={unsignedTransaction}
-            />
-          )}
-        </VStack>
-      </ModalBody>
+        {/*body*/}
+        <ModalBody display="flex" px={DEFAULT_GAP}>
+          <VStack
+            alignItems="center"
+            flexGrow={1}
+            spacing={DEFAULT_GAP}
+            w="full"
+          >
+            <Text color={defaultTextColor} fontSize="s," textAlign="center">
+              {t<string>('captions.keyRegistrationURI', {
+                status: isOnlineKeyRegistrationTransaction(schema)
+                  ? 'online'
+                  : 'offline',
+              })}
+            </Text>
 
-      {/*footer*/}
-      <ModalFooter p={DEFAULT_GAP}>
-        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-          {!settings.security.enablePasswordLock && !passwordLockPassword && (
-            <PasswordInput
-              error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
-              onChange={onPasswordChange}
-              onKeyUp={handleKeyUpPasswordInput}
-              inputRef={passwordInputRef}
-              value={password}
-            />
-          )}
+            {!account || !network || !unsignedTransaction ? (
+              <VStack spacing={DEFAULT_GAP / 3} w="full">
+                <ModalSkeletonItem />
+                <ModalSkeletonItem />
+                <ModalSkeletonItem />
+              </VStack>
+            ) : (
+              <KeyRegistrationTransactionModalBody
+                account={account}
+                accounts={accounts}
+                condensed={{
+                  expanded: isMoreInformationToggleOpen,
+                  onChange: handleMoreInformationToggle,
+                }}
+                network={network}
+                transaction={unsignedTransaction}
+              />
+            )}
+          </VStack>
+        </ModalBody>
 
+        {/*footer*/}
+        <ModalFooter p={DEFAULT_GAP}>
           <HStack spacing={DEFAULT_GAP - 2} w="full">
             {/*cancel button*/}
             <Button
@@ -404,9 +393,9 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
               {t<string>('buttons.send')}
             </Button>
           </HStack>
-        </VStack>
-      </ModalFooter>
-    </ModalContent>
+        </ModalFooter>
+      </ModalContent>
+    </>
   );
 };
 

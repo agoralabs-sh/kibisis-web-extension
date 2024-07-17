@@ -43,6 +43,8 @@ import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import NativeBalance from '@extension/components/NativeBalance';
 import NetworkSelect from '@extension/components/NetworkSelect';
 import NFTsTab from '@extension/components/NFTsTab';
+import ReKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
+import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 import AccountPageSkeletonContent from './AccountPageSkeletonContent';
 
 // constants
@@ -95,15 +97,14 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAppThunkDispatch, INetwork } from '@extension/types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import WatchAccountBadge from '@extension/components/WatchAccountBadge';
-import ReKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
 import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
 const AccountPage: FC = () => {
@@ -196,8 +197,8 @@ const AccountPage: FC = () => {
         setConfirmModal({
           description: t<string>('captions.removeAccount', {
             address: ellipseAddress(
-              AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
+              convertPublicKeyToAVMAddress(
+                PrivateKeyService.decode(account.publicKey)
               ),
               {
                 end: 10,
@@ -251,8 +252,8 @@ const AccountPage: FC = () => {
     }
 
     if (account && accountInformation && selectedNetwork) {
-      address = AccountService.convertPublicKeyToAlgorandAddress(
-        account.publicKey
+      address = convertPublicKeyToAVMAddress(
+        PrivateKeyService.decode(account.publicKey)
       );
 
       return (
@@ -572,8 +573,8 @@ const AccountPage: FC = () => {
       {account && (
         <>
           <ShareAddressModal
-            address={AccountService.convertPublicKeyToAlgorandAddress(
-              account.publicKey
+            address={convertPublicKeyToAVMAddress(
+              PrivateKeyService.decode(account.publicKey)
             )}
             isOpen={isShareAddressModalOpen}
             onClose={onShareAddressModalClose}

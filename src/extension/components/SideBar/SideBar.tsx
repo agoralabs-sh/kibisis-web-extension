@@ -59,14 +59,14 @@ import {
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
 } from '@extension/types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
@@ -139,9 +139,7 @@ const SideBar: FC = () => {
 
     dispatch(
       initializeSendAsset({
-        fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
-          fromAccount.publicKey
-        ),
+        fromAddress: convertPublicKeyToAVMAddress(fromAccount.publicKey),
         selectedAsset: network.nativeCurrency, // use native currency
       })
     );

@@ -13,11 +13,14 @@ import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAssetTransferTransaction } from '@extension/types';
 import type { IProps } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const AssetTransferTransactionItemContent: FC<
   IProps<IAssetTransferTransaction>
@@ -27,8 +30,9 @@ const AssetTransferTransactionItemContent: FC<
   const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
+  const accountAddress: string = convertPublicKeyToAVMAddress(
+    PrivateKeyService.decode(account.publicKey)
+  );
   const amount: BigNumber = new BigNumber(String(transaction.amount));
 
   return (

@@ -8,7 +8,6 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { Account, generateAccount, secretKeyToMnemonic } from 'algosdk';
 import { Step, useSteps } from 'chakra-ui-steps';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,8 +29,21 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
+// selectors
+import { useSelectLogger } from '@extension/selectors';
+
+// services
+import PrivateKeyService from '@extension/services/PrivateKeyService';
+
 // types
 import type { IAddAccountPageProps } from '@extension/types';
+
+// utils
+import convertPrivateKeyToSeedPhrase from '@extension/utils/convertPrivateKeyToSeedPhrase';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   onComplete,
@@ -42,18 +54,26 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
   });
+  // selector
+  const logger = useSelectLogger();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
-  const [account] = useState<Account>(generateAccount());
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState<string>(account.addr);
+  const [keyPair] = useState<Ed21559KeyPair>(Ed21559KeyPair.generate());
+  const [name, setName] = useState<string>(
+    convertPublicKeyToAVMAddress(keyPair.publicKey)
+  );
   const [copySeedPhraseConfirm, setCopySeedPhraseConfirm] =
     useState<boolean>(false);
   // misc
+  const seedPhrase = convertPrivateKeyToSeedPhrase({
+    logger,
+    privateKey: keyPair.privateKey,
+  });
   const stepsLabels: string[] = [
     t<string>('headings.generateSeedPhrase'),
     t<string>('headings.nameYourAccount'),
@@ -87,8 +107,9 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
     }
 
     await onComplete({
-      name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
-      privateKey: account.sk,
+      name:
+        name !== convertPublicKeyToAVMAddress(keyPair.publicKey) ? name : null, //  if the address is the same as the name, ignore
+      keyPair,
     });
   };
 
@@ -146,16 +167,14 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
                 </Text>
 
                 {/*seed phrase*/}
-                <SeedPhraseDisplay
-                  seedPhrase={secretKeyToMnemonic(account.sk)}
-                />
+                <SeedPhraseDisplay seedPhrase={seedPhrase} />
               </VStack>
 
               {/*copy seed phrase button*/}
               <CopyButton
                 colorScheme={primaryColorScheme}
                 size="md"
-                value={secretKeyToMnemonic(account.sk)}
+                value={seedPhrase}
                 variant="solid"
                 w="full"
               >

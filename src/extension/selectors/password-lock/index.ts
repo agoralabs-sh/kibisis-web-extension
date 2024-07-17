@@ -1,2 +1,2 @@
-export { default as useSelectPasswordLockPassword } from './useSelectPasswordLockPassword';
+export { default as useSelectPasswordLockCredentials } from './useSelectPasswordLockCredentials';
 export { default as useSelectPasswordLockSaving } from './useSelectPasswordLockSaving';

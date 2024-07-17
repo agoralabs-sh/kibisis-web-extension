@@ -13,18 +13,16 @@ import {
   OfflineError,
 } from '@extension/errors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type {
   IAccount,
   IAsyncThunkConfigWithRejectValue,
   IMainRootState,
 } from '@extension/types';
-import type { ISubmitTransactionsThunkPayload } from '../types';
+import type { TSubmitTransactionsThunkPayload } from '../types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
@@ -33,15 +31,18 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 
 const submitTransactionThunk: AsyncThunk<
   string[], // return
-  ISubmitTransactionsThunkPayload, // args
+  TSubmitTransactionsThunkPayload, // args
   IAsyncThunkConfigWithRejectValue<IMainRootState>
 > = createAsyncThunk<
   string[],
-  ISubmitTransactionsThunkPayload,
+  TSubmitTransactionsThunkPayload,
   IAsyncThunkConfigWithRejectValue<IMainRootState>
 >(
   SendAssetsThunkEnum.SubmitTransaction,
-  async ({ password, transactions }, { getState, rejectWithValue }) => {
+  async (
+    { transactions, ...encryptionOptions },
+    { getState, rejectWithValue }
+  ) => {
     const accounts = getState().accounts.items;
     const fromAddress = getState().sendAssets.fromAddress;
     const logger = getState().system.logger;
@@ -65,9 +66,7 @@ const submitTransactionThunk: AsyncThunk<
 
     fromAccount =
       accounts.find(
-        (value) =>
-          AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-          fromAddress
+        (value) => convertPublicKeyToAVMAddress(value.publicKey) === fromAddress
       ) || null;
 
     if (!fromAccount) {
@@ -141,8 +140,8 @@ const submitTransactionThunk: AsyncThunk<
             authAccounts: accounts,
             logger,
             networks,
-            password,
             unsignedTransaction: value,
+            ...encryptionOptions,
           })
         )
       );

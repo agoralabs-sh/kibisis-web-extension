@@ -1,9 +1,12 @@
+// types
+import type { TEncryptionCredentials } from '@extension/types';
+
 /**
- * @property {string | null} password - the password to use to secure accounts.
+ * @property {TEncryptionCredentials | null} credentials - the password or the passkey used to secure accounts.
  * @property {saving} saving - whether the password lock is being saved or not.
  */
 interface IState {
-  password: string | null;
+  credentials: TEncryptionCredentials | null;
   saving: boolean;
 }
 

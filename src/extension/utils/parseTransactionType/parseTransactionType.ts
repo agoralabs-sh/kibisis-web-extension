@@ -10,6 +10,9 @@ import AccountService from '@extension/services/AccountService';
 // types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';
 
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+
 interface IOptions {
   network: INetwork | null;
   sender: IAccount | null;
@@ -102,9 +105,7 @@ export default function parseTransactionType(
         sender,
         network
       );
-      senderAddress = AccountService.convertPublicKeyToAlgorandAddress(
-        sender.publicKey
-      );
+      senderAddress = convertPublicKeyToAVMAddress(sender.publicKey);
 
       // to test if this an opt-in:
       if (

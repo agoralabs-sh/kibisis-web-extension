@@ -17,7 +17,7 @@ const PageItem: FC<IProps> = ({
   ...stackProps
 }) => {
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const defaultTextColor = useDefaultTextColor();
 
   return (
     <HStack

@@ -13,13 +13,16 @@ import { BODY_BACKGROUND_COLOR, OPTION_HEIGHT } from '@extension/constants';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
 import type { IOption, IProps } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const AccountSelect: FC<IProps> = ({
   accounts,
@@ -51,7 +54,7 @@ const AccountSelect: FC<IProps> = ({
     { data }: FilterOptionOption<IOption>,
     inputValue: string
   ) =>
-    AccountService.convertPublicKeyToAlgorandAddress(data.value.publicKey)
+    convertPublicKeyToAVMAddress(PrivateKeyService.decode(data.value.publicKey))
       .toUpperCase()
       .includes(inputValue) ||
     (!!data.value.name && data.value.name.toUpperCase().includes(inputValue));

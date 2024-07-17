@@ -19,8 +19,8 @@ export default function parseARC0300AccountImportSchema(
   searchParams: URLSearchParams,
   options?: IBaseOptions
 ): IARC0300AccountImportSchema | null {
-  const _functionName: string = 'parseARC0300AccountImportSchema';
-  const logger: ILogger | undefined = options?.logger;
+  const _functionName = 'parseARC0300AccountImportSchema';
+  const logger = options?.logger;
   let addressParam: string | null;
   let assets: string[] = [];
   let assetParam: string | null;

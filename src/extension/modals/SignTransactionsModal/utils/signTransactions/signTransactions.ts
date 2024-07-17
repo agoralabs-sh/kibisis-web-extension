@@ -3,18 +3,19 @@ import {
   decode as decodeBase64,
   encode as encodeBase64,
 } from '@stablelib/base64';
-import { encodeAddress, Transaction } from 'algosdk';
+import type { Transaction } from 'algosdk';
 
 // errors
 import { MalformedDataError } from '@extension/errors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { IOptions } from './types';
+import type { TOptions } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import signTransaction from '@extension/utils/signTransaction';
 
@@ -32,8 +33,8 @@ export default async function signTransactions({
   authAccounts,
   logger,
   networks,
-  password,
-}: IOptions): Promise<(string | null)[]> {
+  ...encryptionOptions
+}: TOptions): Promise<(string | null)[]> {
   const _functionName: string = 'signTransactions';
 
   return await Promise.all(
@@ -55,7 +56,9 @@ export default async function signTransactions({
       }
 
       try {
-        signerAddress = encodeAddress(unsignedTransaction.from.publicKey);
+        signerAddress = convertPublicKeyToAVMAddress(
+          unsignedTransaction.from.publicKey
+        );
       } catch (error) {
         logger?.error(`${_functionName}: ${error.message}`);
 
@@ -67,7 +70,7 @@ export default async function signTransactions({
         !accounts.some(
           (value) =>
             value.publicKey ===
-            AccountService.encodePublicKey(unsignedTransaction.from.publicKey)
+            PrivateKeyService.encode(unsignedTransaction.from.publicKey)
         )
       ) {
         // if there is no signed transaction, we have been instructed to sign, so error
@@ -89,11 +92,11 @@ export default async function signTransactions({
 
       try {
         signedTransaction = await signTransaction({
+          ...encryptionOptions,
           accounts,
           authAccounts,
           logger,
           networks,
-          password,
           unsignedTransaction,
         });
 

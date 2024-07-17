@@ -4,7 +4,7 @@ import {
   ISignTransactionsParams,
 } from '@agoralabs-sh/avm-web-provider';
 import { decode as decodeBase64 } from '@stablelib/base64';
-import type { Transaction } from 'algosdk';
+import { Transaction, TransactionType } from 'algosdk';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -33,9 +33,9 @@ import type {
 import type { IState } from './types';
 
 // utils
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 export default function useSignTransactionsModal(): IState {
   const _hookName = 'useSignTransactionsModal';
@@ -104,7 +104,7 @@ export default function useSignTransactionsModal(): IState {
           const encodedGenesisHash: string =
             convertGenesisHashToHex(genesisHash).toUpperCase();
           const unknownAssetIds: string[] = decodedUnsignedTransactions
-            .filter((value) => value.type === 'axfer')
+            .filter((value) => value.type === TransactionType.axfer)
             .filter(
               (transaction) =>
                 !standardAssets[encodedGenesisHash].some(

@@ -7,7 +7,7 @@ import { ProviderMessageReferenceEnum } from '@common/enums';
 
 // features
 import { handleNewEventByIdThunk } from '@extension/features/events';
-import { setPassword } from '@extension/features/password-lock';
+import { setCredentials as setPasswordLockCredentials } from '@extension/features/password-lock';
 
 // messages
 import { ProviderEventAddedMessage } from '@common/messages';
@@ -37,8 +37,8 @@ export default function useOnMainAppMessage(): void {
 
         break;
       case ProviderMessageReferenceEnum.PasswordLockTimeout:
-        // remove the password
-        dispatch(setPassword(null));
+        // remove the password lock credentials
+        dispatch(setPasswordLockCredentials(null));
 
         break;
       default:

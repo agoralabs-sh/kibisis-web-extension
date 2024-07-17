@@ -8,5 +8,5 @@ export type { default as IState } from './IState';
 export type { default as IUpdateAccountsPayload } from './IUpdateAccountsPayload';
 export type { default as IUpdateAssetHoldingsPayload } from './IUpdateAssetHoldingsPayload';
 export type { default as IUpdateAssetHoldingsResult } from './IUpdateAssetHoldingsResult';
-export type { default as IUpdateStandardAssetHoldingsPayload } from './IUpdateStandardAssetHoldingsPayload';
 export type { default as IUpdateStandardAssetHoldingsResult } from './IUpdateStandardAssetHoldingsResult';
+export type { default as TUpdateStandardAssetHoldingsPayload } from './TUpdateStandardAssetHoldingsPayload';

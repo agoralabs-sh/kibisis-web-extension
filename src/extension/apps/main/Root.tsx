@@ -27,6 +27,7 @@ import {
 } from '@extension/features/networks';
 import { fetchFromStorageThunk as fetchNewsFromStorageThunk } from '@extension/features/news';
 import { setShowingConfetti } from '@extension/features/notifications';
+import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
 import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
@@ -50,6 +51,7 @@ import useNotifications from '@extension/hooks/useNotifications';
 import AddAssetsModal, {
   AddAssetsForWatchAccountModal,
 } from '@extension/modals/AddAssetsModal';
+import AddPasskeyModal from '@extension/modals/AddPasskeyModal';
 import ARC0300KeyRegistrationTransactionSendEventModal from '@extension/modals/ARC0300KeyRegistrationTransactionSendEventModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
@@ -65,7 +67,7 @@ import WalletConnectModal from '@extension/modals/WalletConnectModal';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPasswordLockPassword,
+  useSelectPasswordLockCredentials,
   useSelectNotificationsShowingConfetti,
   useSelectSelectedNetwork,
   useSelectSettings,
@@ -79,7 +81,7 @@ const Root: FC = () => {
   const navigate = useNavigate();
   // selectors
   const accounts = useSelectAccounts();
-  const passwordLockPassword = useSelectPasswordLockPassword();
+  const passwordLockPassword = useSelectPasswordLockCredentials();
   const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
   const showingConfetti = useSelectNotificationsShowingConfetti();
@@ -98,6 +100,7 @@ const Root: FC = () => {
   useEffect(() => {
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
+    dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchARC0072AssetsFromStorageThunk());

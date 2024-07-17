@@ -1,9 +1,12 @@
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
 import type { IOptions } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '../convertPublicKeyToAVMAddress';
 
 /**
  * Convenience function that gets a list of authorized accounts for sessions matching the host.
@@ -26,8 +29,8 @@ export default function authorizedAccountsForHost({
             currentValue.authorizedAddresses.some(
               (value) =>
                 value ===
-                AccountService.convertPublicKeyToAlgorandAddress(
-                  account.publicKey
+                convertPublicKeyToAVMAddress(
+                  PrivateKeyService.decode(account.publicKey)
                 )
             ) // and if the account is in the authorized addresses of the host
         ),

@@ -38,6 +38,9 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useUpdateARC0200Assets from '@extension/hooks/useUpdateARC0200Assets';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 // selectors
 import {
   useSelectLogger,
@@ -57,9 +60,10 @@ import type {
 } from '@extension/types';
 
 // utils
-import convertPrivateKeyToAddress from '@extension/utils/convertPrivateKeyToAddress';
+import convertPrivateKeyToAVMAddress from '@extension/utils/convertPrivateKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 interface IProps {
   onComplete: (result: IRegistrationAddAccountCompleteResult) => Promise<void>;
@@ -124,8 +128,8 @@ const ConfirmAccountModalContent: FC<IProps> = ({
 
     await onComplete({
       arc0200Assets: assets,
+      keyPair: Ed21559KeyPair.generateFromPrivateKey(privateKey),
       name: null,
-      privateKey,
     });
   };
 
@@ -134,7 +138,7 @@ const ConfirmAccountModalContent: FC<IProps> = ({
       decodePrivateKeyFromAccountImportSchema(schema);
 
     if (privateKey) {
-      setAddress(convertPrivateKeyToAddress(privateKey));
+      setAddress(convertPrivateKeyToAVMAddress(privateKey));
     }
   }, []);
 

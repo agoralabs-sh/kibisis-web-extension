@@ -19,6 +19,7 @@ import type {
 import type { IOptions } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
 import getAuthorizedAddressesForHost from '@extension/utils/getAuthorizedAddressesForHost';
 
@@ -64,7 +65,7 @@ export default async function authorizedAccountsForEvent({
         accounts.find(
           (value) =>
             value.publicKey ===
-            AccountService.encodePublicKey(currentValue.from.publicKey)
+            convertPublicKeyToAVMAddress(currentValue.from.publicKey)
         ) || null;
       base64EncodedGenesisHash = encodeBase64(currentValue.genesisHash);
       authorizedAddresses = getAuthorizedAddressesForHost(
@@ -93,10 +94,7 @@ export default async function authorizedAccountsForEvent({
         acc.find((value) => value.id === account?.id) ||
         !authorizedAddresses.find(
           (value) =>
-            value ===
-            AccountService.convertPublicKeyToAlgorandAddress(
-              account?.publicKey || ''
-            )
+            value === convertPublicKeyToAVMAddress(account?.publicKey || '')
         ) ||
         (account.watchAccount && !accountInformation.authAddress)
       ) {

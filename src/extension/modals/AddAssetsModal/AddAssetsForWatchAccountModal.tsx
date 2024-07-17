@@ -66,6 +66,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 import QuestsService, {
   QuestNameEnum,
 } from '@extension/services/QuestsService';
@@ -85,6 +86,7 @@ import type {
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isNumericString from '@extension/utils/isNumericString';
 import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
@@ -176,7 +178,9 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
       // track the action if this is a new asset
       if (isNewSelectedAsset) {
         questsSent = await questsService.addARC0200AssetQuest(
-          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey),
+          convertPublicKeyToAVMAddress(
+            PrivateKeyService.decode(account.publicKey)
+          ),
           {
             appID: selectedAsset.id,
             genesisHash: selectedNetwork.genesisHash,

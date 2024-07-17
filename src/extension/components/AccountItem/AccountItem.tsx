@@ -12,12 +12,13 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
@@ -25,8 +26,8 @@ const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
   const defaultSubTextColor = useSubTextColor();
   const defaultTextColor = useDefaultTextColor();
   // misc
-  const address = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
+  const address = convertPublicKeyToAVMAddress(
+    PrivateKeyService.decode(account.publicKey)
   );
 
   return (

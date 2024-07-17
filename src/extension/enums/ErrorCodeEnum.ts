@@ -35,6 +35,11 @@ enum ErrorCodeEnum {
   ScreenCaptureError = 7000,
   ScreenCaptureNotAllowedError = 7001,
   ScreenCaptureNotFoundError = 7002,
+
+  // passkey
+  PasskeyNotSupportedError = 8000,
+  PasskeyCreationError = 8001,
+  UnableToFetchPasskeyError = 8002,
 }
 
 export default ErrorCodeEnum;

@@ -26,35 +26,34 @@ import type {
   IBaseAsyncThunkConfig,
   IMainRootState,
 } from '@extension/types';
-import type { IUndoReKeyAccountThunkPayload } from '../types';
+import type { TUndoReKeyAccountThunkPayload } from '../types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
 
 const undoReKeyAccountThunk: AsyncThunk<
   string | null, // return
-  IUndoReKeyAccountThunkPayload, // args
+  TUndoReKeyAccountThunkPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   string | null,
-  IUndoReKeyAccountThunkPayload,
+  TUndoReKeyAccountThunkPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.UndoReKeyAccount,
   async (
-    { network, password, reKeyAccount },
+    { network, reKeyAccount, ...encryptionOptions },
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
     const logger = getState().system.logger;
     const accountInformation: IAccountInformation | null =
       AccountService.extractAccountInformationForNetwork(reKeyAccount, network);
-    const address = AccountService.convertPublicKeyToAlgorandAddress(
-      reKeyAccount.publicKey
-    );
+    const address = convertPublicKeyToAVMAddress(reKeyAccount.publicKey);
     const networks = getState().networks.items;
     let _error: string;
     let algodClient: Algodv2;
@@ -112,8 +111,8 @@ const undoReKeyAccountThunk: AsyncThunk<
         authAccounts: accounts,
         logger,
         networks,
-        password,
         unsignedTransaction,
+        ...encryptionOptions,
       });
 
       await sendTransactionsForNetwork({

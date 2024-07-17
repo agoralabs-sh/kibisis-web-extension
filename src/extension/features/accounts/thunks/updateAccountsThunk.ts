@@ -19,6 +19,7 @@ import type { IUpdateAccountsPayload } from '../types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import mapAccountWithExtendedPropsToAccount from '@extension/utils/mapAccountWithExtendedPropsToAccount';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
@@ -96,9 +97,7 @@ const updateAccountsThunk: AsyncThunk<
         networkInformation: {
           ...account.networkInformation,
           [encodedGenesisHash]: await updateAccountInformation({
-            address: AccountService.convertPublicKeyToAlgorandAddress(
-              account.publicKey
-            ),
+            address: convertPublicKeyToAVMAddress(account.publicKey),
             currentAccountInformation:
               account.networkInformation[encodedGenesisHash] ||
               AccountService.initializeDefaultAccountInformation(),
@@ -119,9 +118,7 @@ const updateAccountsThunk: AsyncThunk<
           networkTransactions: {
             ...account.networkTransactions,
             [encodedGenesisHash]: await updateAccountTransactions({
-              address: AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
-              ),
+              address: convertPublicKeyToAVMAddress(account.publicKey),
               currentAccountTransactions:
                 account.networkTransactions[encodedGenesisHash] ||
                 AccountService.initializeDefaultAccountTransactions(),

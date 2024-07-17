@@ -7,7 +7,6 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { Account, mnemonicToSecretKey } from 'algosdk';
 import { Step, useSteps } from 'chakra-ui-steps';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,8 +33,14 @@ import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
+
 // selectors
 import { useSelectLogger } from '@extension/selectors';
+
+// services
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -44,6 +49,10 @@ import type {
   IMainRootState,
   IRegistrationRootState,
 } from '@extension/types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import convertSeedPhraseToPrivateKey from '@extension/utils/convertSeedPhraseToPrivateKey';
 
 const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   onComplete,
@@ -64,8 +73,8 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   const { nextStep, prevStep, activeStep } = useSteps({
     initialStep: 0,
   });
-  const [account, setAccount] = useState<Account | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [keyPair, setKeyPair] = useState<Ed21559KeyPair | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [phrases, setPhrases] = useState<string[]>(
     Array.from({ length: 25 }, () => '')
@@ -79,8 +88,9 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   // handlers
   const handleImportClick = async () => {
     const _functionName: string = 'handleImportClick';
+    let address: string;
 
-    if (!account) {
+    if (!keyPair) {
       logger.debug(
         `${ImportAccountViaSeedPhrasePage.name}#${_functionName}: unable to import account, account "null"`
       );
@@ -97,13 +107,15 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
       return;
     }
 
+    address = convertPublicKeyToAVMAddress(keyPair.publicKey);
+
     logger.debug(
-      `${ImportAccountViaSeedPhrasePage.name}#${_functionName}: importing account "${account.addr}"`
+      `${ImportAccountViaSeedPhrasePage.name}#${_functionName}: importing account "${address}"`
     );
 
     await onComplete({
-      name: name !== account.addr ? name : null, //  if the address is the same as the name, ignore
-      privateKey: account.sk,
+      name: name !== address ? name : null, //  if the address is the same as the name, ignore
+      keyPair,
     });
   };
   const handleOnMnemonicPhraseChange = (value: string[]) => setPhrases(value);
@@ -123,7 +135,14 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
         return;
       }
 
-      setAccount(mnemonicToSecretKey(phrases.join(' ')));
+      setKeyPair(
+        Ed21559KeyPair.generateFromPrivateKey(
+          convertSeedPhraseToPrivateKey({
+            logger,
+            seedPhrase: phrases.join(' '),
+          })
+        )
+      );
     }
 
     nextStep();
@@ -140,10 +159,10 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   };
 
   useEffect(() => {
-    if (account && !name) {
-      setName(account.addr);
+    if (keyPair && !name) {
+      setName(convertPublicKeyToAVMAddress(keyPair.publicKey));
     }
-  }, [account]);
+  }, [keyPair]);
 
   return (
     <>

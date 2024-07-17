@@ -1,14 +1,20 @@
 import { sign } from 'tweetnacl';
-import browser from 'webextension-polyfill';
+
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
 
 // errors
-import { DecryptionError, MalformedDataError } from '@extension/errors';
+import { MalformedDataError } from '@extension/errors';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // types
-import type { IOptions } from './types';
+import type { TOptions } from './types';
+
+// utils
+import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
+import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
 
 /**
  * Convenience function that signs an arbitrary bit of data using the supplied signer.
@@ -21,37 +27,39 @@ import type { IOptions } from './types';
 export default async function signBytes({
   bytes,
   logger,
-  password,
   publicKey,
-}: IOptions): Promise<Uint8Array> {
-  const _functionName: string = 'signBytes';
-  const privateKeyService: PrivateKeyService = new PrivateKeyService({
-    logger,
-    passwordTag: browser.runtime.id,
-  });
-  let errorMessage: string;
-  let privateKey: Uint8Array | null;
+  ...encryptionOptions
+}: TOptions): Promise<Uint8Array> {
+  const _functionName = 'signBytes';
+  let keyPair: Ed21559KeyPair | null = null;
   let signature: Uint8Array;
 
-  privateKey = await privateKeyService.getDecryptedPrivateKey(
-    publicKey,
-    password
-  );
+  if (encryptionOptions.type === EncryptionMethodEnum.Password) {
+    keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+      logger,
+      password: encryptionOptions.password,
+      publicKey,
+    });
+  }
 
-  if (!privateKey) {
-    errorMessage = `failed to get private key`;
+  if (encryptionOptions.type === EncryptionMethodEnum.Passkey) {
+    keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+      inputKeyMaterial: encryptionOptions.inputKeyMaterial,
+      logger,
+      publicKey,
+    });
+  }
 
-    logger?.error(errorMessage);
-
-    throw new DecryptionError(errorMessage);
+  if (!keyPair) {
+    throw new MalformedDataError(`failed to get private key from storage`);
   }
 
   try {
-    signature = sign.detached(bytes, privateKey);
+    signature = sign.detached(bytes, keyPair.getSecretKey());
 
     return signature;
   } catch (error) {
-    logger?.error(`${_functionName}: ${error.message}`);
+    logger?.error(`${_functionName}:`, error);
 
     throw new MalformedDataError(error.message);
   }
