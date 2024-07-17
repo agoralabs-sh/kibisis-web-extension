@@ -1,6 +1,9 @@
+// types
+import type { TSizes } from '@extension/types';
+
 interface IProps {
   capabilities: AuthenticatorTransport[];
-  size?: string;
+  size?: TSizes;
 }
 
 export default IProps;
