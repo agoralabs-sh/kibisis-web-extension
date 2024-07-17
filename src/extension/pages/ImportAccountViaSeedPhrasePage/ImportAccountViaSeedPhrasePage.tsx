@@ -1,14 +1,6 @@
-import {
-  Heading,
-  HStack,
-  Input,
-  InputGroup,
-  Spacer,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Heading, HStack, Spacer, Text, VStack } from '@chakra-ui/react';
 import { Step, useSteps } from 'chakra-ui-steps';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -18,18 +10,21 @@ import Button from '@extension/components/Button';
 import EnterMnemonicPhraseInput, {
   validate,
 } from '@extension/components/EnterMnemonicPhraseInput';
+import GenericInput from '@extension/components/GenericInput';
 import PageHeader from '@extension/components/PageHeader';
 import Steps from '@extension/components/Steps';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { ACCOUNT_NAME_BYTE_LIMIT, DEFAULT_GAP } from '@extension/constants';
+
+// enums
+import { StepsEnum } from './enums';
 
 // features
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -38,9 +33,6 @@ import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -66,19 +58,19 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   const logger = useSelectLogger();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const primaryColor = usePrimaryColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // states
   const { nextStep, prevStep, activeStep } = useSteps({
-    initialStep: 0,
+    initialStep: StepsEnum.SeedPhrase,
   });
-  const [error, setError] = useState<string | null>(null);
   const [keyPair, setKeyPair] = useState<Ed21559KeyPair | null>(null);
   const [name, setName] = useState<string | null>(null);
-  const [phrases, setPhrases] = useState<string[]>(
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [seedPhrases, setSeedPhrases] = useState<string[]>(
     Array.from({ length: 25 }, () => '')
   );
+  const [seedPhraseError, setSeedPhraseError] = useState<string | null>(null);
   // misc
   const stepsLabels = [
     t<string>('headings.enterYourSeedPhrase'),
@@ -87,8 +79,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
   // handlers
   const handleImportClick = async () => {
-    const _functionName: string = 'handleImportClick';
-    let address: string;
+    const _functionName = 'handleImportClick';
 
     if (!keyPair) {
       logger.debug(
@@ -107,31 +98,35 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
       return;
     }
 
-    address = convertPublicKeyToAVMAddress(keyPair.publicKey);
-
     logger.debug(
-      `${ImportAccountViaSeedPhrasePage.name}#${_functionName}: importing account "${address}"`
+      `${
+        ImportAccountViaSeedPhrasePage.name
+      }#${_functionName}: importing account "${convertPublicKeyToAVMAddress(
+        keyPair.publicKey
+      )}"`
     );
 
     await onComplete({
-      name: name !== address ? name : null, //  if the address is the same as the name, ignore
       keyPair,
+      name,
     });
   };
-  const handleOnMnemonicPhraseChange = (value: string[]) => setPhrases(value);
+  const handleOnMnemonicPhraseChange = (value: string[]) =>
+    setSeedPhrases(value);
   const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
     setName(event.target.value);
+  const handleOnNameError = (value: string | null) => setNameError(value);
   const handleNextClick = () => {
-    let validateError: string | null;
+    let _seedPhraseError: string | null;
 
     // if this is the first step, validate the mnemonic
-    if (activeStep <= 0) {
-      validateError = validate(phrases, t);
+    if (activeStep <= StepsEnum.SeedPhrase) {
+      _seedPhraseError = validate(seedPhrases, t);
 
-      setError(validateError);
+      setSeedPhraseError(_seedPhraseError);
 
       // if we have an error, deny the next step
-      if (validateError) {
+      if (_seedPhraseError) {
         return;
       }
 
@@ -139,17 +134,21 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
         Ed21559KeyPair.generateFromPrivateKey(
           convertSeedPhraseToPrivateKey({
             logger,
-            seedPhrase: phrases.join(' '),
+            seedPhrase: seedPhrases.join(' '),
           })
         )
       );
+    }
+
+    if (activeStep === StepsEnum.AccountName && nameError) {
+      return;
     }
 
     nextStep();
   };
   const handlePreviousClick = () => {
     // if the step is on the first step, navigate back
-    if (activeStep <= 0) {
+    if (activeStep <= StepsEnum.SeedPhrase) {
       navigate(-1);
 
       return;
@@ -157,12 +156,6 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
 
     prevStep();
   };
-
-  useEffect(() => {
-    if (keyPair && !name) {
-      setName(convertPublicKeyToAVMAddress(keyPair.publicKey));
-    }
-  }, [keyPair]);
 
   return (
     <>
@@ -178,7 +171,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
         justifyContent="center"
         pb={DEFAULT_GAP}
         px={DEFAULT_GAP}
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <Steps
@@ -189,7 +182,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
           variant="circles"
         >
           {/*enter seed phrase inputs*/}
-          <Step label={stepsLabels[0]}>
+          <Step label={stepsLabels[StepsEnum.SeedPhrase]}>
             <VStack
               alignItems="flex-start"
               p={1}
@@ -202,15 +195,15 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
 
               <EnterMnemonicPhraseInput
                 disabled={saving}
-                error={error}
+                error={seedPhraseError}
                 onChange={handleOnMnemonicPhraseChange}
-                phrases={phrases}
+                phrases={seedPhrases}
               />
             </VStack>
           </Step>
 
           {/*name account input*/}
-          <Step label={stepsLabels[1]}>
+          <Step label={stepsLabels[StepsEnum.AccountName]}>
             <VStack
               alignItems="flex-start"
               p={1}
@@ -221,27 +214,17 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
                 {t<string>('captions.nameYourAccount')}
               </Text>
 
-              <VStack w="full">
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  {t<string>('labels.accountName')}
-                </Text>
-
-                <InputGroup size="md">
-                  <Input
-                    focusBorderColor={primaryColor}
-                    isDisabled={saving}
-                    onChange={handleOnNameChange}
-                    placeholder={t<string>('placeholders.nameAccount')}
-                    type="text"
-                    value={name || ''}
-                  />
-                </InputGroup>
-              </VStack>
+              <GenericInput
+                characterLimit={ACCOUNT_NAME_BYTE_LIMIT}
+                error={nameError}
+                label={t<string>('labels.accountName')}
+                isDisabled={saving}
+                onChange={handleOnNameChange}
+                onError={handleOnNameError}
+                placeholder={t<string>('placeholders.nameAccount')}
+                type="text"
+                value={name || ''}
+              />
             </VStack>
           </Step>
         </Steps>

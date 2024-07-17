@@ -21,7 +21,7 @@ import type {
 import type { ISaveNewWatchAccountPayload } from '../types';
 
 // utils
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import convertAVMAddressToPublicKey from '@extension/utils/convertAVMAddressToPublicKey';
 
 const saveNewWatchAccountThunk: AsyncThunk<
   IAccountWithExtendedProps, // return
@@ -55,7 +55,9 @@ const saveNewWatchAccountThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(_error));
     }
 
-    encodedPublicKey = convertPublicKeyToAVMAddress(address);
+    encodedPublicKey = PrivateKeyService.encode(
+      convertAVMAddressToPublicKey(address)
+    );
     account =
       accounts.find((value) => value.publicKey === encodedPublicKey) || null;
 

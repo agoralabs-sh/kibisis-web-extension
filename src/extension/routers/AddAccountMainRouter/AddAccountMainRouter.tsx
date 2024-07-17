@@ -142,9 +142,7 @@ const AddAccountMainRouter: FC = () => {
         ephemeral: true,
         description: t<string>('captions.addedAccount', {
           address: ellipseAddress(
-            convertPublicKeyToAVMAddress(
-              PrivateKeyService.decode(account.publicKey)
-            )
+            convertPublicKeyToAVMAddress(account.publicKey)
           ),
         }),
         title: t<string>('headings.addedAccount'),
