@@ -1,25 +1,20 @@
-import {
-  CircularProgress,
-  CircularProgressLabel,
-  Icon,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoLockClosedOutline, IoLockOpenOutline } from 'react-icons/io5';
+
+// components
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
 import type { IProps } from './types';
-
-// utils
-import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const ReEncryptKeysLoadingContent: FC<IProps> = ({
   encryptionProgressState,
@@ -27,16 +22,14 @@ const ReEncryptKeysLoadingContent: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // hooks
+  const defaultTextColor = useDefaultTextColor();
   const subTextColor = useSubTextColor();
   // misc
   const count = encryptionProgressState.filter(
     ({ encrypted }) => encrypted
   ).length;
-  const iconSize = calculateIconSize('lg');
   const total = encryptionProgressState.length;
   const incomplete = count < total || total <= 0;
-
-  console.log('encryptionProgressState:', encryptionProgressState);
 
   return (
     <VStack
@@ -47,22 +40,12 @@ const ReEncryptKeysLoadingContent: FC<IProps> = ({
       w="full"
     >
       {/*progress*/}
-      <CircularProgress
-        color="green.600"
-        size="100px"
-        thickness="4px"
-        trackColor="gray.600"
-        value={total > 0 ? (count / total) * 100 : 0}
-      >
-        <CircularProgressLabel>
-          <Icon
-            as={incomplete ? IoLockOpenOutline : IoLockClosedOutline}
-            color={incomplete ? 'gray.600' : 'green.600'}
-            h={iconSize}
-            w={iconSize}
-          />
-        </CircularProgressLabel>
-      </CircularProgress>
+      <CircularProgressWithIcon
+        icon={incomplete ? IoLockOpenOutline : IoLockClosedOutline}
+        iconColor={incomplete ? defaultTextColor : 'green.600'}
+        progress={[count, total]}
+        progressColor="green.600"
+      />
 
       {/*caption*/}
       <Text

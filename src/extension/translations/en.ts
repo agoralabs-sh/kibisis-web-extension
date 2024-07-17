@@ -99,7 +99,10 @@ const translation: IResourceLanguage = {
       'You will be prompted to enter your current password when you press "Change Password".',
     changeTheme: 'Choose between dark and light mode.',
     checkingAuthenticationCredentials: 'Checking authentication credentials.',
-    confirmingTransaction: 'Please wait, the transaction is being processed.',
+    confirmingTransaction:
+      'Your transaction(s) are being sent to the network to be processed.',
+    confirmingTransactionWithAmount:
+      '{{number}} transaction(s) are being sent to the network to be processed.',
     connectingToWalletConnect: 'Attempting to connect to WalletConnect.',
     copied: 'Copied!',
     createNewAccount:

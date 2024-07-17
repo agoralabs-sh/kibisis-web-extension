@@ -1,1 +1,2 @@
-export type { default as SendAssetModalSummaryContentProps } from './SendAssetModalSummaryContentProps';
+export type { default as ISendAssetModalConfirmingContentProps } from './ISendAssetModalConfirmingContentProps';
+export type { default as ISendAssetModalSummaryContentProps } from './ISendAssetModalSummaryContentProps';

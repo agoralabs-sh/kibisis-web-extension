@@ -246,10 +246,6 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           ...result,
         })
       ).unwrap();
-      toAccount =
-        accounts.find(
-          (value) => convertPublicKeyToAVMAddress(value.publicKey) === toAddress
-        ) || null;
 
       logger.debug(
         `${
@@ -259,6 +255,10 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           .join(',')}] to the network`
       );
 
+      toAccount =
+        accounts.find(
+          (value) => convertPublicKeyToAVMAddress(value.publicKey) === toAddress
+        ) || null;
       fromAddress = convertPublicKeyToAVMAddress(fromAccount.publicKey);
       questsService = new QuestsService({
         logger,
@@ -383,12 +383,16 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   };
   // renders
   const renderContent = () => {
-    if (confirming) {
-      return <SendAssetModalConfirmingContent />;
-    }
-
     if (!fromAccount || !network || !selectedAsset) {
       return <SendAssetModalContentSkeleton />;
+    }
+
+    if (confirming) {
+      return (
+        <SendAssetModalConfirmingContent
+          numberOfTransactions={transactions?.length}
+        />
+      );
     }
 
     if (transactions && transactions.length > 0) {

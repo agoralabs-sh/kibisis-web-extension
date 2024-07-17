@@ -1,4 +1,7 @@
-export default function calculateIconSize(size: string): number {
+// types
+import type { TSizes } from '@extension/types';
+
+export default function calculateIconSize(size?: TSizes): number {
   switch (size) {
     case 'lg':
       return 10;

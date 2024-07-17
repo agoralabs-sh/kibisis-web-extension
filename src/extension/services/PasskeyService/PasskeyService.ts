@@ -123,6 +123,7 @@ export default class PasskeyService {
           },
           challenge: randomBytes(32),
           extensions: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             prf: {
               eval: {
@@ -306,6 +307,7 @@ export default class PasskeyService {
           ],
           challenge: randomBytes(CHALLENGE_BYTE_SIZE),
           extensions: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             prf: {
               eval: {

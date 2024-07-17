@@ -25,7 +25,7 @@ import useMinimumBalanceRequirementsForTransactions from '@extension/hooks/useMi
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { SendAssetModalSummaryContentProps } from './types';
+import type { ISendAssetModalSummaryContentProps } from './types';
 
 // utils
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
@@ -34,7 +34,7 @@ import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
-const SendAssetModalSummaryContent: FC<SendAssetModalSummaryContentProps> = ({
+const SendAssetModalSummaryContent: FC<ISendAssetModalSummaryContentProps> = ({
   accounts,
   amountInStandardUnits,
   asset,

@@ -22,7 +22,6 @@ import {
   useSelectNetworkByGenesisHash,
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsByGenesisHash,
-  useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
 
 // services
@@ -52,7 +51,6 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   const standardAssets =
     useSelectStandardAssetsByGenesisHash(encodedGenesisHash);
-  const updatingStandardAssets = useSelectStandardAssetsUpdating();
   // states
   const [fetchingAccountInformation, setFetchingAccountInformation] =
     useState<boolean>(false);

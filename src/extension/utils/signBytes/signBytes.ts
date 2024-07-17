@@ -1,5 +1,4 @@
 import { sign } from 'tweetnacl';
-import browser from 'webextension-polyfill';
 
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';

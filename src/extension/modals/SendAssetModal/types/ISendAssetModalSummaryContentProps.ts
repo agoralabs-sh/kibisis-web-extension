@@ -8,7 +8,7 @@ import {
   INetworkWithTransactionParams,
 } from '@extension/types';
 
-interface SendAssetModalSummaryContentProps {
+interface ISendAssetModalSummaryContentProps {
   accounts: IAccountWithExtendedProps[];
   amountInStandardUnits: string;
   asset: IAssetTypes | INativeCurrency;
@@ -19,4 +19,4 @@ interface SendAssetModalSummaryContentProps {
   transactions: Transaction[];
 }
 
-export default SendAssetModalSummaryContentProps;
+export default ISendAssetModalSummaryContentProps;

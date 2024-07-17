@@ -362,7 +362,12 @@ const PasskeyPage: FC = () => {
       <>
         <VStack alignItems="center" flexGrow={1} spacing={DEFAULT_GAP} w="full">
           {/*icon*/}
-          <Icon as={GoShieldLock} color="gray.600" h={iconSize} w={iconSize} />
+          <Icon
+            as={GoShieldLock}
+            color={defaultTextColor}
+            h={iconSize}
+            w={iconSize}
+          />
 
           {/*captions*/}
           <VStack alignItems="center" spacing={DEFAULT_GAP / 3} w="full">
