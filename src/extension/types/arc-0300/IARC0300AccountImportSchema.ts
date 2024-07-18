@@ -3,14 +3,10 @@ import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 
 // types
 import type IARC0300BaseSchema from './IARC0300BaseSchema';
-import type IARC0300AccountImportWithAddressQuery from './IARC0300AccountImportWithAddressQuery';
-import type IARC0300AccountImportWithPrivateKeyQuery from './IARC0300AccountImportWithPrivateKeyQuery';
+import type IARC0300AccountImportQuery from './IARC0300AccountImportQuery';
 
-interface IARC0300AccountImportSchema<
-  Query =
-    | IARC0300AccountImportWithPrivateKeyQuery
-    | IARC0300AccountImportWithAddressQuery
-> extends IARC0300BaseSchema<Query> {
+interface IARC0300AccountImportSchema
+  extends IARC0300BaseSchema<IARC0300AccountImportQuery> {
   authority: ARC0300AuthorityEnum.Account;
   paths: [ARC0300PathEnum.Import];
 }

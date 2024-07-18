@@ -33,7 +33,7 @@ import {
 import {
   IARC0300AccountImportSchema,
   IARC0300AccountImportWithAddressQuery,
-  IARC0300AccountImportWithPrivateKeyQuery,
+  IARC0300AccountImportQuery,
   IARC0300AssetAddSchema,
   IARC0300BaseSchema,
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
@@ -115,7 +115,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                       onComplete={handleClose}
                       onCancel={handlePreviousClick}
                       schema={
-                        arc0300Schema as IARC0300AccountImportSchema<IARC0300AccountImportWithPrivateKeyQuery>
+                        arc0300Schema as IARC0300AccountImportSchema<IARC0300AccountImportQuery>
                       }
                     />
                   );

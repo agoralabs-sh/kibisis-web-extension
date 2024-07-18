@@ -5,7 +5,6 @@ export { default as ARC0072AssetsThunkEnum } from './ARC0072AssetsThunkEnum';
 export { default as ARC0200AssetsThunkEnum } from './ARC0200AssetsThunkEnum';
 export { default as ARC0300AssetTypeEnum } from './ARC0300AssetTypeEnum';
 export { default as ARC0300AuthorityEnum } from './ARC0300AuthorityEnum';
-export { default as ARC0300EncodingEnum } from './ARC0300EncodingEnum';
 export { default as ARC0300PathEnum } from './ARC0300PathEnum';
 export { default as ARC0300QueryEnum } from './ARC0300QueryEnum';
 export { default as AssetTypeEnum } from './AssetTypeEnum';

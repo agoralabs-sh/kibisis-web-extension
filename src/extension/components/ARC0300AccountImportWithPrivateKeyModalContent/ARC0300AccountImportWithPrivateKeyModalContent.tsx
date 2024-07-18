@@ -82,7 +82,7 @@ import { theme } from '@extension/theme';
 import type {
   IAccount,
   IARC0300AccountImportSchema,
-  IARC0300AccountImportWithPrivateKeyQuery,
+  IARC0300AccountImportQuery,
   IARC0300ModalContentProps,
   IAppThunkDispatch,
 } from '@extension/types';
@@ -95,7 +95,7 @@ import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePriv
 
 const ARC0300AccountImportWithPrivateKeyModalContent: FC<
   IARC0300ModalContentProps<
-    IARC0300AccountImportSchema<IARC0300AccountImportWithPrivateKeyQuery>
+    IARC0300AccountImportSchema<IARC0300AccountImportQuery>
   >
 > = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
   const { t } = useTranslation();
