@@ -1,5 +1,6 @@
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import SparkMD5 from 'spark-md5';
+import { randomBytes } from 'tweetnacl';
 
 // constants
 import {
@@ -16,7 +17,6 @@ import {
 
 // types
 import type { IExportAccount, IOptions } from './types';
-import { randomBytes } from 'tweetnacl';
 
 /**
  * Convenience function that creates paginated account import URIs schemes used by ARC-0300 to import an accounts.

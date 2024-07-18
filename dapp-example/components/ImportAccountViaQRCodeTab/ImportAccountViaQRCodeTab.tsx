@@ -2,198 +2,186 @@ import {
   Box,
   Button,
   Checkbox,
-  CheckboxGroup,
   Code,
-  CreateToastFnReturn,
   Flex,
   HStack,
-  Select,
   TabPanel,
   Text,
-  Tooltip,
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { Account, generateAccount } from 'algosdk';
+import { encode as encodeHex } from '@stablelib/hex';
+import { encodeAddress } from 'algosdk';
 import { sanitize } from 'dompurify';
 import { toString } from 'qrcode';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { InfinitySpin } from 'react-loader-spinner';
+import { randomBytes } from 'tweetnacl';
 
-// enums
-import { ARC0300EncodingEnum } from '@extension/enums';
+// constants
+import {
+  EXPORT_ACCOUNT_PAGE_LIMIT,
+  EXPORT_ACCOUNT_QR_CODE_DURATION,
+} from '@extension/constants';
+
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // theme
 import { theme } from '@extension/theme';
 
-// types
-import type { IAccountImportAsset } from './types';
-
 // utils
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
-import createWatchAccountImportURI from '@extension/utils/createWatchAccountImportURI';
 
 const ImportAccountViaQRCodeTab: FC = () => {
-  const toast: CreateToastFnReturn = useToast({
+  const toast = useToast({
     duration: 3000,
     isClosable: true,
     position: 'top',
   });
   // states
-  const [account, setAccount] = useState<Account>(generateAccount());
-  const [addAsWatchAccount, setAddAsWatchAccount] = useState<boolean>(false);
-  const [assets, setAssets] = useState<IAccountImportAsset[]>([
-    {
-      appId: '6779767',
-      checked: false,
-      name: 'Voi Incentive Asset',
-    },
-    {
-      appId: '99',
-      checked: false,
-      name: 'Non-ARC0200 Asset',
-    },
-  ]);
-  const [svgString, setSvgString] = useState<string | null>(null);
-  const [uri, setURI] = useState<string | null>(null);
-  const [encoding, setEncoding] = useState<ARC0300EncodingEnum>(
-    ARC0300EncodingEnum.Hexadecimal
-  );
+  const [addNames, setAddNames] = useState<boolean>(false);
+  const [isPagination, setIsPagination] = useState<boolean>(false);
+  const [keyPairs, setKeyPairs] = useState<Ed21559KeyPair[]>([]);
+  const [multipleAccounts, setMultipleAccounts] = useState<boolean>(false);
+  const [pagination, setPagination] = useState<[number, number]>([1, 1]);
+  const [svgStrings, setSvgStrings] = useState<string[] | null>(null);
+  const [uris, setURIs] = useState<string[] | null>(null);
   // misc
-  const qrCodeSize: number = 350;
-  // handlers
-  const handleAddAsWatchAccountCheckChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => setAddAsWatchAccount(event.target.checked);
-  const handleAssetCheckChange =
-    (appId: string) => (event: ChangeEvent<HTMLInputElement>) => {
-      setAssets(
-        assets.map((value) => {
-          if (value.appId === appId) {
-            return {
-              ...value,
-              checked: event.target.checked,
-            };
-          }
+  const generateKeyPairs = () => {
+    let length = 1; // default to 1 account
 
-          return value;
-        })
-      );
-    };
-  const handleEncodingTypeChange = (event: ChangeEvent<HTMLSelectElement>) =>
-    setEncoding(event.target.value as ARC0300EncodingEnum);
-  const handleGenerateNewAccountClick = () => {
-    const _account: Account = generateAccount();
+    // for multiple account, use the maximum per page and if pagination, add 3 page's worth
+    if (multipleAccounts) {
+      length = isPagination
+        ? EXPORT_ACCOUNT_PAGE_LIMIT * 3 - 2
+        : EXPORT_ACCOUNT_PAGE_LIMIT;
+    }
 
-    setAccount(_account);
+    setPagination([1, Math.ceil(length / EXPORT_ACCOUNT_PAGE_LIMIT)]);
 
-    toast({
-      description: _account.addr,
-      status: 'success',
-      title: 'New Account Generated',
-    });
+    return setKeyPairs(Array.from({ length }, () => Ed21559KeyPair.generate()));
   };
+  const qrCodeSize = 350;
+  // handlers
+  const handleAddNamesCheckChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setAddNames(event.target.checked);
+  const handleGenerateNewAccountsClick = () => generateKeyPairs();
+  const handleMultipleAccountsCheckChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => setMultipleAccounts(event.target.checked);
+  const handlePaginationCheckChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setIsPagination(event.target.checked);
 
   useEffect(() => {
+    const intervalId: number = window.setInterval(() => {
+      setPagination(([current, total]) => {
+        // if the current page is at the total, start again
+        if (current >= total) {
+          return [1, total];
+        }
+
+        return [current + 1, total];
+      });
+    }, EXPORT_ACCOUNT_QR_CODE_DURATION);
+
+    generateKeyPairs();
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
+  useEffect(() => {
     (async () => {
-      let _assets: string[];
-      let _svg: string;
-      let _uri: string;
+      let _svgStrings: string[];
+      let _uris: string[];
 
       try {
-        _assets = assets
-          .filter((value) => value.checked)
-          .map((value) => value.appId);
-        _uri = addAsWatchAccount
-          ? createWatchAccountImportURI({
-              address: account.addr,
-              assets: _assets,
-            })
-          : createAccountImportURI({
-              assets: _assets,
-              encoding,
-              privateKey: account.sk,
-            });
-
-        setURI(_uri);
-
-        _svg = await toString(_uri, {
-          type: 'svg',
-          width: qrCodeSize,
+        _uris = createAccountImportURI({
+          accounts: keyPairs.map(({ privateKey }) => ({
+            privateKey,
+            ...(addNames && {
+              name: encodeHex(randomBytes(16)), // 32-byte string max
+            }),
+          })),
         });
 
-        setSvgString(_svg);
+        setURIs(_uris);
+
+        _svgStrings = await Promise.all(
+          _uris.map(
+            async (value) =>
+              await toString(value, {
+                type: 'svg',
+                width: qrCodeSize,
+              })
+          )
+        );
+
+        setSvgStrings(_svgStrings);
       } catch (error) {
         toast({
           description: error.message,
           status: 'error',
-          title: 'Failed to create QR code!',
+          title: 'Failed to create QR code(s)!',
         });
       }
     })();
-  }, [account, addAsWatchAccount, assets, encoding]);
+  }, [keyPairs]);
+  // regenerate accounts
+  useEffect(
+    () => generateKeyPairs(),
+    [addNames, multipleAccounts, isPagination]
+  );
 
   return (
     <TabPanel w="full">
       <VStack justifyContent="center" spacing={8} w="full">
-        {/*add as a watch account checkbox*/}
+        {/*add names checkbox*/}
         <HStack alignItems="center" spacing={2} w="full">
           <Checkbox
-            isChecked={addAsWatchAccount}
-            onChange={handleAddAsWatchAccountCheckChange}
+            isChecked={addNames}
+            onChange={handleAddNamesCheckChange}
             size="lg"
           />
 
           <Text size="md" w="full">
-            Add as a watch account?
+            Add names?
           </Text>
         </HStack>
 
-        {/*encoding*/}
-        {!addAsWatchAccount && (
-          <HStack spacing={2} w="full">
-            <Text>Encoding:</Text>
+        {/*multiple accounts checkbox*/}
+        <HStack alignItems="center" spacing={2} w="full">
+          <Checkbox
+            isChecked={multipleAccounts}
+            onChange={handleMultipleAccountsCheckChange}
+            size="lg"
+          />
 
-            <Select onChange={handleEncodingTypeChange} value={encoding}>
-              <option value={ARC0300EncodingEnum.Hexadecimal}>
-                Hexadecimal
-              </option>
-              <option value={ARC0300EncodingEnum.Base64URLSafe}>
-                Base64 (URL Safe)
-              </option>
-            </Select>
-          </HStack>
-        )}
+          <Text size="md" w="full">
+            Multiple accounts?
+          </Text>
+        </HStack>
 
-        {/*assets to add*/}
-        <VStack alignItems="flex-start" spacing={4} w="full">
-          <Text>Add Assets:</Text>
+        {/*pagination checkbox*/}
+        <HStack alignItems="center" spacing={2} w="full">
+          <Checkbox
+            isChecked={isPagination}
+            isDisabled={!multipleAccounts}
+            onChange={handlePaginationCheckChange}
+            size="lg"
+          />
 
-          <CheckboxGroup>
-            {assets.map((value, index) => (
-              <HStack key={`account-import-add-asset-${index}`}>
-                <Checkbox
-                  isChecked={value.checked}
-                  onChange={handleAssetCheckChange(value.appId)}
-                  size="lg"
-                  value={value.appId}
-                />
-
-                <Tooltip label={value.name}>
-                  <Text noOfLines={1} size="md" w={200}>
-                    {value.name}
-                  </Text>
-                </Tooltip>
-              </HStack>
-            ))}
-          </CheckboxGroup>
-        </VStack>
+          <Text size="md" w="full">
+            Pagination?
+          </Text>
+        </HStack>
 
         {/*qr code*/}
-        {svgString ? (
+        {svgStrings ? (
           <Box
             dangerouslySetInnerHTML={{
-              __html: sanitize(svgString, {
+              __html: sanitize(svgStrings[pagination[0] - 1], {
                 USE_PROFILES: { svg: true, svgFilters: true },
               }),
             }}
@@ -212,30 +200,53 @@ const ImportAccountViaQRCodeTab: FC = () => {
           </Flex>
         )}
 
-        {/*value*/}
-        <HStack spacing={2} w="full">
-          <Text>Value:</Text>
+        {/*captions*/}
+        <Text fontSize="sm">{`Displaying ${pagination[0]} of ${pagination[1]}`}</Text>
 
-          <Code fontSize="sm" wordBreak="break-word">
-            {uri}
-          </Code>
-        </HStack>
+        {/*value*/}
+        <VStack spacing={2} w="full">
+          <Text>URI(s):</Text>
+
+          <VStack spacing={1} w="full">
+            {uris ? (
+              uris.map((value, index) => (
+                <Code
+                  fontSize="sm"
+                  key={`import-account uri-${index}`}
+                  wordBreak="break-word"
+                >
+                  {value}
+                </Code>
+              ))
+            ) : (
+              <Code fontSize="sm">-</Code>
+            )}
+          </VStack>
+        </VStack>
 
         {/*address*/}
-        <HStack spacing={2} w="full">
-          <Text>Address:</Text>
+        <VStack spacing={2} w="full">
+          <Text>Addresses:</Text>
 
-          <Code fontSize="sm" wordBreak="break-word">
-            {account.addr}
-          </Code>
-        </HStack>
+          <VStack spacing={1} w="full">
+            {keyPairs.map((value, index) => (
+              <Code
+                fontSize="sm"
+                key={`import-account-address-${index}`}
+                wordBreak="break-word"
+              >
+                {encodeAddress(value.publicKey)}
+              </Code>
+            ))}
+          </VStack>
+        </VStack>
 
-        {/*generate new account button*/}
+        {/*generate new accounts button*/}
         <Button
           borderRadius={theme.radii['3xl']}
           colorScheme="primaryLight"
           minW={250}
-          onClick={handleGenerateNewAccountClick}
+          onClick={handleGenerateNewAccountsClick}
           size="lg"
         >
           Generate New Account
