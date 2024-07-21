@@ -9,6 +9,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
+import { decodeURLSafe as decodeBase64URLSafe } from '@stablelib/base64';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -91,12 +92,9 @@ import type {
 import convertPrivateKeyToAVMAddress from '@extension/utils/convertPrivateKeyToAVMAddress';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
 
-const ARC0300AccountImportWithPrivateKeyModalContent: FC<
-  IARC0300ModalContentProps<
-    IARC0300AccountImportSchema<IARC0300AccountImportQuery>
-  >
+const ARC0300AccountImportModalContent: FC<
+  IARC0300ModalContentProps<IARC0300AccountImportSchema>
 > = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
@@ -137,15 +135,18 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
     result: TOnConfirmResult
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
-    const privateKey: Uint8Array | null =
-      decodePrivateKeyFromAccountImportSchema(schema);
+    const privateKey: Uint8Array | null = schema.query[
+      ARC0300QueryEnum.PrivateKey
+    ][0]
+      ? decodeBase64URLSafe(schema.query[ARC0300QueryEnum.PrivateKey][0])
+      : null;
     let account: IAccount | null;
     let questsService: QuestsService;
     let updateAssetHoldingsResult: IUpdateAssetHoldingsResult;
 
     if (!privateKey) {
       logger.debug(
-        `${ARC0300AccountImportWithPrivateKeyModalContent.name}#${_functionName}: failed to decode the private key`
+        `${ARC0300AccountImportModalContent.name}#${_functionName}: failed to decode the private key`
       );
 
       dispatch(
@@ -192,7 +193,7 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
       switch (error.code) {
         case ErrorCodeEnum.PrivateKeyAlreadyExistsError:
           logger.debug(
-            `${ARC0300AccountImportWithPrivateKeyModalContent.name}#${_functionName}: account already exists, carry on`
+            `${ARC0300AccountImportModalContent.name}#${_functionName}: account already exists, carry on`
           );
 
           // clean up and close
@@ -277,8 +278,11 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
   };
 
   useEffect(() => {
-    const privateKey: Uint8Array | null =
-      decodePrivateKeyFromAccountImportSchema(schema);
+    const privateKey: Uint8Array | null = schema.query[
+      ARC0300QueryEnum.PrivateKey
+    ][0]
+      ? decodeBase64URLSafe(schema.query[ARC0300QueryEnum.PrivateKey][0])
+      : null;
 
     if (privateKey) {
       setAddress(convertPrivateKeyToAVMAddress(privateKey));
@@ -419,4 +423,4 @@ const ARC0300AccountImportWithPrivateKeyModalContent: FC<
   );
 };
 
-export default ARC0300AccountImportWithPrivateKeyModalContent;
+export default ARC0300AccountImportModalContent;

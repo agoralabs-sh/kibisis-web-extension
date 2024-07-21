@@ -42,6 +42,7 @@ const translation: IResourceLanguage = {
     scanAWindow: 'Scan A Window',
     scanCurrentTab: 'Scan Current Tab',
     scanUsingCamera: 'Scan Using Camera',
+    selectAccounts: 'Select Accounts',
     send: 'Send',
     sign: 'Sign',
     tryAgain: 'Try Again',
@@ -116,6 +117,7 @@ const translation: IResourceLanguage = {
     defaultConfirm: 'Are you sure?',
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
+    displayingCountOfTotal: 'Displaying {{count}} of {{total}}',
     enablePasswordLock:
       'Passwords will only need to be entered due to inactivity.',
     enableRequest:
@@ -125,7 +127,7 @@ const translation: IResourceLanguage = {
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     enterWatchAccountAddress:
       'Enter the address of the account you would like to watch.',
-    exportAccount: 'Select account to view the QR code to export your account.',
+    exportAccount: 'Select which accounts you would like to export.',
     extraPayment:
       'An extra network payment has been applied as this is the first time the recipient has interacted with the {{symbol}} asset.',
     factoryReset: 'This will remove all accounts, settings and the password.',
@@ -362,6 +364,7 @@ const translation: IResourceLanguage = {
     scanningForQRCode: 'Scanning For QR Code',
     scanQrCode: 'Scan QR Code',
     selectAccount: 'Select Account',
+    selectAccounts: 'Select Accounts',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     screenCaptureDenied: 'Screen Capture Denied',
@@ -526,6 +529,7 @@ const translation: IResourceLanguage = {
     reserveAccount: 'Reserve Account',
     scanQRCode: 'Scan QR Code',
     seedPhrase: 'Seed Phrase',
+    selectAllAccounts: 'Select All Accounts',
     selectionKey: 'VRF Public Key',
     selectWalletAccount: 'Select wallet account',
     sendAsset: 'Send {{nativeCurrency}}/Asset',

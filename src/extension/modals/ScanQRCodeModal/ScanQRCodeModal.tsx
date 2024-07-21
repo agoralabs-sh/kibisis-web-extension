@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 
 // components
-import ARC0300AccountImportWithAddressModalContent from '@extension/components/ARC0300AccountImportWithAddressModalContent';
-import ARC0300AccountImportWithPrivateKeyModalContent from '@extension/components/ARC0300AccountImportWithPrivateKeyModalContent';
+import ARC0300AccountImportModalContent from '@extension/components/ARC0300AccountImportModalContent';
 import ARC0300AssetAddModalContent from '@extension/components/ARC0300AssetAddModalContent';
 import ARC0300KeyRegistrationTransactionSendModalContent from '@extension/components/ARC0300KeyRegistrationTransactionSendModalContent';
 import ScanModeModalContent from '@extension/components/ScanModeModalContent';
@@ -32,7 +31,6 @@ import {
 // types
 import {
   IARC0300AccountImportSchema,
-  IARC0300AccountImportWithAddressQuery,
   IARC0300AccountImportQuery,
   IARC0300AssetAddSchema,
   IARC0300BaseSchema,
@@ -102,43 +100,15 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                     ARC0300PathEnum.Import
                   ))
               ) {
-                // if it is with a private key, add a normal account (password required)
-                if (
-                  Object.keys(arc0300Schema.query).includes(
-                    ARC0300QueryEnum.PrivateKey
-                  )
-                ) {
-                  return (
-                    <ARC0300AccountImportWithPrivateKeyModalContent
-                      cancelButtonIcon={<IoArrowBackOutline />}
-                      cancelButtonLabel={t<string>('buttons.previous')}
-                      onComplete={handleClose}
-                      onCancel={handlePreviousClick}
-                      schema={
-                        arc0300Schema as IARC0300AccountImportSchema<IARC0300AccountImportQuery>
-                      }
-                    />
-                  );
-                }
-
-                // if it is with an address, add a watch account
-                if (
-                  Object.keys(arc0300Schema.query).includes(
-                    ARC0300QueryEnum.Address
-                  )
-                ) {
-                  return (
-                    <ARC0300AccountImportWithAddressModalContent
-                      cancelButtonIcon={<IoArrowBackOutline />}
-                      cancelButtonLabel={t<string>('buttons.previous')}
-                      onComplete={handleClose}
-                      onCancel={handlePreviousClick}
-                      schema={
-                        arc0300Schema as IARC0300AccountImportSchema<IARC0300AccountImportWithAddressQuery>
-                      }
-                    />
-                  );
-                }
+                return (
+                  <ARC0300AccountImportModalContent
+                    cancelButtonIcon={<IoArrowBackOutline />}
+                    cancelButtonLabel={t<string>('buttons.previous')}
+                    onComplete={handleClose}
+                    onCancel={handlePreviousClick}
+                    schema={arc0300Schema as IARC0300AccountImportSchema}
+                  />
+                );
               }
             }
 

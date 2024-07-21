@@ -12,6 +12,7 @@ import AccountService from '@extension/services/AccountService';
 import type { IProps } from './types';
 
 // utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
 import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
 const AccountAvatarWithBadges: FC<IProps> = ({
@@ -23,6 +24,7 @@ const AccountAvatarWithBadges: FC<IProps> = ({
   const accountInformation = network
     ? AccountService.extractAccountInformationForNetwork(account, network)
     : null;
+  const iconSize = calculateIconSize('xs');
   // renders
   const renderWatchAccountBadge = () => {
     const watchAccountBadge = (
@@ -33,7 +35,7 @@ const AccountAvatarWithBadges: FC<IProps> = ({
         p={1}
         placement="top-end"
       >
-        <Icon as={IoEyeOutline} color="white" h={3} w={3} />
+        <Icon as={IoEyeOutline} color="white" h={iconSize} w={iconSize} />
       </AvatarBadge>
     );
 
@@ -73,7 +75,12 @@ const AccountAvatarWithBadges: FC<IProps> = ({
           p={1}
           placement="bottom-end"
         >
-          <Icon as={IoLockClosedOutline} color="white" h={3} w={3} />
+          <Icon
+            as={IoLockClosedOutline}
+            color="white"
+            h={iconSize}
+            w={iconSize}
+          />
         </AvatarBadge>
       )}
     </AccountAvatar>

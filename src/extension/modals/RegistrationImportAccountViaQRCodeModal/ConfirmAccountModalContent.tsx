@@ -8,6 +8,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { decodeURLSafe as decodeBase64URLSafe } from '@stablelib/base64';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
@@ -62,8 +63,6 @@ import type {
 // utils
 import convertPrivateKeyToAVMAddress from '@extension/utils/convertPrivateKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import decodePrivateKeyFromAccountImportSchema from '@extension/utils/decodePrivateKeyFromImportKeySchema';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 interface IProps {
   onComplete: (result: IRegistrationAddAccountCompleteResult) => Promise<void>;
@@ -101,8 +100,11 @@ const ConfirmAccountModalContent: FC<IProps> = ({
   };
   const handleImportClick = async () => {
     const _functionName: string = 'handleImportClick';
-    const privateKey: Uint8Array | null =
-      decodePrivateKeyFromAccountImportSchema(schema);
+    const privateKey: Uint8Array | null = schema.query[
+      ARC0300QueryEnum.PrivateKey
+    ][0]
+      ? decodeBase64URLSafe(schema.query[ARC0300QueryEnum.PrivateKey][0])
+      : null;
 
     if (!privateKey) {
       logger.debug(
@@ -134,8 +136,11 @@ const ConfirmAccountModalContent: FC<IProps> = ({
   };
 
   useEffect(() => {
-    const privateKey: Uint8Array | null =
-      decodePrivateKeyFromAccountImportSchema(schema);
+    const privateKey: Uint8Array | null = schema.query[
+      ARC0300QueryEnum.PrivateKey
+    ][0]
+      ? decodeBase64URLSafe(schema.query[ARC0300QueryEnum.PrivateKey][0])
+      : null;
 
     if (privateKey) {
       setAddress(convertPrivateKeyToAVMAddress(privateKey));
