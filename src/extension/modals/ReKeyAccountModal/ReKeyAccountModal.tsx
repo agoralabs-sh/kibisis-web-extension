@@ -338,6 +338,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
                 label={t<string>('labels.reKeyTo')}
                 onChange={handleAuthAddressChange}
                 onError={handleOnAuthAddressError}
+                required={true}
                 value={authAddress}
               />
             </VStack>

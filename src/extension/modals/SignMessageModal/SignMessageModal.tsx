@@ -234,7 +234,9 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
 
               <AccountSelect
                 accounts={authorizedAccounts}
+                allowWatchAccounts={false}
                 onSelect={handleAccountSelect}
+                required={true}
                 value={signer}
               />
             </>

@@ -42,9 +42,9 @@ import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectActiveAccount,
   useSelectLogger,
-  useSelectNonWatchAccounts,
 } from '@extension/selectors';
 
 // types
@@ -69,7 +69,7 @@ const ViewSeedPhrasePage: FC = () => {
     onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
-  const accounts = useSelectNonWatchAccounts();
+  const accounts = useSelectAccounts();
   const activeAccount = useSelectActiveAccount();
   const logger = useSelectLogger();
   // hooks
@@ -232,7 +232,9 @@ const ViewSeedPhrasePage: FC = () => {
           ) : (
             <AccountSelect
               accounts={accounts}
+              allowWatchAccounts={false}
               onSelect={handleAccountSelect}
+              required={true}
               value={selectedAccount}
             />
           )}

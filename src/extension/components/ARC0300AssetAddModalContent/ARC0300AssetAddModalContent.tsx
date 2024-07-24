@@ -255,7 +255,10 @@ const ARC0300AssetAddModalContent: FC<
 
                 <AccountSelect
                   accounts={accounts}
+                  allowWatchAccounts={true}
+                  disabled={loading || saving}
                   onSelect={handleOnAccountSelect}
+                  required={true}
                   value={account || accounts[0]}
                 />
               </VStack>
