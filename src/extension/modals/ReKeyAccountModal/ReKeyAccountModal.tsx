@@ -6,18 +6,24 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, ReactNode } from 'react';
+import BigNumber from 'bignumber.js';
+import React, { FC, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
+import AddressDisplay from '@extension/components/AddressDisplay';
+import AddressInput from '@extension/components/AddressInput';
 import Button from '@extension/components/Button';
+import InfoIconTooltip from '@extension/components/InfoIconTooltip';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ReKeyAccountConfirmingModalContent from './ReKeyAccountConfirmingModalContent';
-import ReKeyAccountModalContent from './ReKeyAccountModalContent';
 import UndoReKeyAccountModalContent from './UndoReKeyAccountModalContent';
 
 // constants
@@ -38,26 +44,26 @@ import {
 } from '@extension/features/re-key-account';
 
 // hooks
-import { useAddressInput } from '@extension/components/AddressInput';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useReKeyAccountModal from './hooks/useReKeyAccountModal';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
-import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
+import { useSelectAccounts } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
+import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type { IAppThunkDispatch, IModalProps } from '@extension/types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -69,17 +75,9 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   } = useDisclosure();
   // selectors
   const accounts = useSelectAccounts();
-  const logger = useSelectLogger();
   // hooks
-  const {
-    error: authAddressError,
-    onBlur: onAuthAddressBlur,
-    onChange: onAuthAddressChange,
-    reset: resetAuthAddress,
-    validate: validateAuthAddress,
-    value: authAddress,
-  } = useAddressInput();
   const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   const {
     account,
     accountInformation,
@@ -87,6 +85,9 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
     network,
     type: reKeyType,
   } = useReKeyAccountModal();
+  // states
+  const [authAddress, setAuthAddress] = useState<string>('');
+  const [authAddressError, setAuthAddressError] = useState<string | null>(null);
   // misc
   const isOpen = !!account && !!accountInformation;
   const reKeyAccount = async (result: TOnConfirmResult) => {
@@ -96,8 +97,8 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
       !account ||
       !accountInformation ||
       !authAddress ||
-      !network ||
-      validateAuthAddress()
+      authAddressError ||
+      !network
     ) {
       return;
     }
@@ -203,9 +204,11 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
-    resetAuthAddress();
     onClose && onClose();
   };
+  const handleAuthAddressChange = (address: string) => setAuthAddress(address);
+  const handleOnAuthAddressError = (error: string | null) =>
+    setAuthAddressError(error);
   const handleOnAuthenticationModalConfirm = async (
     result: TOnConfirmResult
   ) => {
@@ -263,16 +266,82 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
         }
 
         return (
-          <ReKeyAccountModalContent
-            account={account}
-            accountInformation={accountInformation}
-            accounts={accounts}
-            authAddress={authAddress}
-            authAddressError={authAddressError}
-            network={network}
-            onAuthAddressBlur={onAuthAddressBlur}
-            onAuthAddressChange={onAuthAddressChange}
-          />
+          <VStack flexGrow={1} spacing={DEFAULT_GAP / 2} w="full">
+            <VStack px={DEFAULT_GAP} spacing={DEFAULT_GAP / 2} w="full">
+              {/*descriptions*/}
+              <Text
+                color={defaultTextColor}
+                fontSize="sm"
+                textAlign="left"
+                w="full"
+              >
+                {t<string>('captions.reKeyAccount')}
+              </Text>
+
+              {/*account*/}
+              <ModalItem
+                flexGrow={1}
+                label={`${t<string>('labels.account')}:`}
+                value={
+                  <AddressDisplay
+                    accounts={accounts}
+                    address={convertPublicKeyToAVMAddress(account.publicKey)}
+                    ariaLabel="Re-keyed address"
+                    size="sm"
+                    network={network}
+                  />
+                }
+              />
+
+              {/*current auth account*/}
+              {accountInformation.authAddress && (
+                <ModalItem
+                  flexGrow={1}
+                  label={`${t<string>('labels.currentAuthorizedAccount')}:`}
+                  value={
+                    <AddressDisplay
+                      accounts={accounts}
+                      address={accountInformation.authAddress}
+                      ariaLabel="Current auth address"
+                      colorScheme="green"
+                      size="sm"
+                      network={network}
+                    />
+                  }
+                />
+              )}
+
+              {/*fee*/}
+              <HStack spacing={1} w="full">
+                <ModalAssetItem
+                  amountInAtomicUnits={new BigNumber(network.minFee)}
+                  decimals={network.nativeCurrency.decimals}
+                  icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
+                    color: subTextColor,
+                    h: 3,
+                    w: 3,
+                  })}
+                  label={`${t<string>('labels.fee')}:`}
+                />
+
+                {/*info*/}
+                <InfoIconTooltip
+                  color={subTextColor}
+                  label={t<string>('captions.reKeyFee')}
+                />
+              </HStack>
+
+              {/*re-key to*/}
+              <AddressInput
+                accounts={accounts}
+                allowWatchAccounts={true}
+                label={t<string>('labels.reKeyTo')}
+                onChange={handleAuthAddressChange}
+                onError={handleOnAuthAddressError}
+                value={authAddress}
+              />
+            </VStack>
+          </VStack>
         );
       }
     }

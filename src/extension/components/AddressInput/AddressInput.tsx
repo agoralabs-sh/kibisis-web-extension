@@ -1,31 +1,15 @@
-import {
-  Input,
-  Menu,
-  MenuItem,
-  MenuList,
-  Text,
-  VStack,
-  HStack,
-  MenuButton,
-  Tooltip,
-} from '@chakra-ui/react';
-import React, { ChangeEvent, FC, useRef } from 'react';
+import { HStack, useDisclosure } from '@chakra-ui/react';
+import { isValidAddress } from 'algosdk';
+import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoChevronDown } from 'react-icons/io5';
+import { IoPersonAddOutline } from 'react-icons/io5';
 
 // components
-import AccountItem from '@extension/components/AccountItem';
+import GenericInput from '@extension/components/GenericInput';
 import IconButton from '@extension/components/IconButton';
 
-// constants
-import { ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT } from '@extension/constants';
-
-// hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// modals
+import AccountSelectModal from '@extension/modals/AccountSelectModal';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
@@ -36,87 +20,75 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 
 const AddressInput: FC<IProps> = ({
   accounts,
+  allowWatchAccounts = true,
   disabled,
-  error,
   label,
   onBlur,
   onChange,
+  onError,
   value,
 }) => {
   const { t } = useTranslation();
-  const accountSelectRef = useRef<HTMLInputElement | null>(null);
-  // hooks
-  const defaultTextColor = useDefaultTextColor();
-  const primaryColor = usePrimaryColor();
+  const {
+    isOpen: isAccountSelectModalOpen,
+    onClose: onAccountSelectClose,
+    onOpen: onAccountSelectModalOpen,
+  } = useDisclosure();
+  // misc
+  const validate = (_value: string): string | null => {
+    if (!isValidAddress(_value)) {
+      return t<string>('errors.inputs.invalidAddress');
+    }
+
+    return null;
+  };
   // handlers
-  const handleAccountClick = (account: IAccountWithExtendedProps) => () =>
-    onChange(
-      convertPublicKeyToAVMAddress(PrivateKeyService.decode(account.publicKey))
-    );
+  const handleAccountClick = () => onAccountSelectModalOpen();
   const handleHandleOnChange = (event: ChangeEvent<HTMLInputElement>) =>
     onChange(event.target.value);
+  const handleOnAccountSelect = (_accounts: IAccountWithExtendedProps[]) =>
+    onChange(
+      _accounts[0] ? convertPublicKeyToAVMAddress(_accounts[0].publicKey) : ''
+    );
 
   return (
-    <VStack alignItems="flex-start" w="full">
-      {/*label*/}
-      <Text
-        color={error ? 'red.300' : defaultTextColor}
-        fontSize="sm"
-        textAlign="left"
-      >
-        {label || t<string>('labels.address')}
-      </Text>
+    <>
+      {/*account select modal*/}
+      <AccountSelectModal
+        accounts={accounts}
+        allowWatchAccounts={allowWatchAccounts}
+        isOpen={isAccountSelectModalOpen}
+        multiple={false}
+        onClose={onAccountSelectClose}
+        onSelect={handleOnAccountSelect}
+      />
 
-      <VStack alignItems="flex-start" w="full">
-        <HStack alignItems="center" w="full">
-          {/*input*/}
-          <Input
-            disabled={disabled}
-            focusBorderColor={error ? 'red.300' : primaryColor}
-            isInvalid={!!error}
-            onBlur={onBlur}
-            onChange={handleHandleOnChange}
-            placeholder={t<string>('placeholders.enterAddress')}
-            ref={accountSelectRef}
-            type="text"
-            value={value}
-          />
+      <HStack alignItems="flex-end" w="full">
+        {/*input*/}
+        <GenericInput
+          isDisabled={disabled}
+          label={label || t<string>('labels.address')}
+          onBlur={onBlur}
+          onChange={handleHandleOnChange}
+          onError={onError}
+          placeholder={t<string>('placeholders.enterAddress')}
+          required={true}
+          type="text"
+          validate={validate}
+          value={value}
+        />
 
-          {/*account select*/}
-          <Menu>
-            <Tooltip
-              aria-label={t<string>('labels.selectWalletAccount')}
-              label={t<string>('labels.selectWalletAccount')}
-            >
-              <MenuButton
-                as={IconButton}
-                aria-label={t<string>('labels.selectWalletAccount')}
-                icon={IoChevronDown}
-                size="sm"
-                variant="ghost"
-              />
-            </Tooltip>
-
-            <MenuList w="full">
-              {accounts.map((account, index) => (
-                <MenuItem
-                  key={`address-input-item-${index}`}
-                  minH={`${ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT}px`}
-                  onClick={handleAccountClick(account)}
-                >
-                  <AccountItem account={account} />
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Menu>
-        </HStack>
-
-        {/*error*/}
-        <Text color="red.300" fontSize="xs" textAlign="left">
-          {error}
-        </Text>
-      </VStack>
-    </VStack>
+        {/*account select*/}
+        <IconButton
+          aria-label="Select an account from the list of available accounts"
+          disabled={disabled}
+          icon={IoPersonAddOutline}
+          onClick={handleAccountClick}
+          size="lg"
+          variant="ghost"
+        />
+      </HStack>
+    </>
   );
 };
 

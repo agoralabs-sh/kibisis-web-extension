@@ -20,9 +20,7 @@ import { useDispatch } from 'react-redux';
 
 // components
 import AccountSelect from '@extension/components/AccountSelect';
-import AddressInput, {
-  useAddressInput,
-} from '@extension/components/AddressInput';
+import AddressInput from '@extension/components/AddressInput';
 import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
 import SendAmountInput from './SendAmountInput';
@@ -75,6 +73,7 @@ import {
   useSelectSendAssetFromAccount,
   useSelectSendAssetNote,
   useSelectSendAssetSelectedAsset,
+  useSelectSendAssetToAddress,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
@@ -121,18 +120,12 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const network = useSelectSelectedNetwork();
   const note = useSelectSendAssetNote();
   const selectedAsset = useSelectSendAssetSelectedAsset();
+  const toAddress = useSelectSendAssetToAddress();
   // hooks
-  const {
-    error: toAddressError,
-    onBlur: onToAddressBlur,
-    onChange: onToAddressChange,
-    reset: resetToAddress,
-    validate: validateToAddress,
-    value: toAddress,
-  } = useAddressInput();
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   // state
+  const [toAddressError, setToAddressError] = useState<string | null>(null);
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<string>('0');
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
@@ -160,7 +153,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
     // reset modal input and transactions
     setTransactions(null);
-    resetToAddress();
+
     onClose && onClose();
   };
   const handleFromAccountChange = (account: IAccountWithExtendedProps) =>
@@ -169,7 +162,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     const _functionName = 'handleNextClick';
     let _transactions: Transaction[];
 
-    if (validateToAddress()) {
+    if (toAddressError) {
       return;
     }
 
@@ -223,6 +216,8 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
         type: 'error',
       })
     );
+  const handleOnToAddressError = (error: string | null) =>
+    setToAddressError(error);
   const handlePreviousClick = () => setTransactions(null);
   const handleOnAuthenticationModalConfirm = async (
     result: TOnConfirmResult
@@ -235,7 +230,13 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     let toAccount: IAccount | null;
     let transactionIds: string[];
 
-    if (!fromAccount || !network || !transactions || transactions.length <= 0) {
+    if (
+      !fromAccount ||
+      !network ||
+      !transactions ||
+      transactions.length <= 0 ||
+      !toAddress
+    ) {
       return;
     }
 
@@ -377,10 +378,8 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     }
   };
   const handleSendClick = () => onAuthenticationModalOpen();
-  const handleToAddressChange = (value: string) => {
+  const handleToAddressChange = (value: string) =>
     dispatch(setToAddress(value.length > 0 ? value : null));
-    onToAddressChange(value);
-  };
   // renders
   const renderContent = () => {
     if (!fromAccount || !network || !selectedAsset) {
@@ -395,7 +394,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       );
     }
 
-    if (transactions && transactions.length > 0) {
+    if (toAddress && transactions && transactions.length > 0) {
       return (
         <SendAssetModalSummaryContent
           accounts={accounts}
@@ -472,10 +471,9 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
         <AddressInput
           accounts={accounts}
           disabled={creating}
-          error={toAddressError}
           label={t<string>('labels.to')}
-          onBlur={onToAddressBlur}
           onChange={handleToAddressChange}
+          onError={handleOnToAddressError}
           value={toAddress || ''}
         />
 
