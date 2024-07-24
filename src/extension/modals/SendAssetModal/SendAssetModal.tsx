@@ -6,7 +6,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Text,
   Textarea,
   useDisclosure,
   VStack,
@@ -23,6 +22,7 @@ import AccountSelect from '@extension/components/AccountSelect';
 import AddressInput from '@extension/components/AddressInput';
 import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
+import Label from '@extension/components/Label';
 import SendAmountInput from './SendAmountInput';
 import SendAssetModalConfirmingContent from './SendAssetModalConfirmingContent';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
@@ -33,6 +33,7 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
+import { QuestNameEnum } from '@extension/services/QuestsService';
 
 // errors
 import { BaseExtensionError } from '@extension/errors';
@@ -56,9 +57,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -78,14 +77,13 @@ import {
 } from '@extension/selectors';
 
 // services
-import QuestsService, {
-  QuestNameEnum,
-} from '@extension/services/QuestsService';
+import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
+import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type {
   IAccount,
   IAccountWithExtendedProps,
@@ -98,7 +96,6 @@ import type {
 // utils
 import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransactionAmount';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
-import Label from '@extension/components/Label';
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -424,29 +421,18 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
         />
 
         {/*select asset*/}
-        <VStack w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.asset')}
-          </Text>
-
-          <AssetSelect
-            account={fromAccount}
-            assets={[
-              network.nativeCurrency, // add the native currency to the front
-              ...allAssets,
-            ]}
-            disabled={creating}
-            network={network}
-            onAssetChange={handleAssetChange}
-            value={selectedAsset}
-          />
-        </VStack>
+        <AssetSelect
+          assets={[
+            network.nativeCurrency, // add the native currency to the front
+            ...allAssets,
+          ]}
+          disabled={creating}
+          label={t<string>('labels.asset')}
+          network={network}
+          onSelect={handleAssetChange}
+          required={true}
+          value={selectedAsset}
+        />
 
         {/*from account*/}
         <AccountSelect
@@ -466,6 +452,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           label={t<string>('labels.to')}
           onChange={handleToAddressChange}
           onError={handleOnToAddressError}
+          required={true}
           value={toAddress || ''}
         />
 

@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoWalletOutline } from 'react-icons/io5';
+import { GoSingleSelect } from 'react-icons/go';
 
 // components
 import AccountItem from '@extension/components/AccountItem';
@@ -79,7 +79,7 @@ const AccountSelect: FC<IProps> = ({
             <IconButton
               aria-label="Select an account from the list of available accounts"
               disabled={disabled}
-              icon={IoWalletOutline}
+              icon={GoSingleSelect}
               onClick={handleAccountClick}
               size="lg"
               variant="ghost"

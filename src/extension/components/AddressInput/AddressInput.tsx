@@ -9,7 +9,7 @@ import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import { isValidAddress } from 'algosdk';
 import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoWalletOutline } from 'react-icons/io5';
+import { GoSingleSelect } from 'react-icons/go';
 import { randomBytes } from 'tweetnacl';
 
 // components
@@ -129,7 +129,7 @@ const AddressInput: FC<IProps> = ({
             <IconButton
               aria-label="Select an account from the list of available accounts"
               disabled={disabled}
-              icon={IoWalletOutline}
+              icon={GoSingleSelect}
               onClick={handleAccountClick}
               size="lg"
               variant="ghost"
