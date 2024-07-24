@@ -2,6 +2,9 @@ import { Center, Flex } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { InfinitySpin } from 'react-loader-spinner';
 
+// constants
+import { BODY_BACKGROUND_COLOR } from '@extension/constants';
+
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
@@ -15,7 +18,7 @@ const LoadingPage: FC = () => {
   );
 
   return (
-    <Center as="main" backgroundColor="var(--chakra-colors-chakra-body-bg)">
+    <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
       <Flex
         alignItems="center"
         direction="column"

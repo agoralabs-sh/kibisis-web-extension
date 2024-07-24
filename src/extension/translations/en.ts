@@ -498,7 +498,6 @@ const translation: IResourceLanguage = {
     noAuthAddressAvailable:
       'This account has been re-keyed to the account {{address}}, but the address is not available or is a watch account',
     note: 'Note',
-    noteOptional: 'Note (optional)',
     notSupported: 'Not Supported',
     optional: '(optional)',
     passkeyName: 'Passkey name',
@@ -529,6 +528,7 @@ const translation: IResourceLanguage = {
     reserveAccount: 'Reserve Account',
     scanQRCode: 'Scan QR Code',
     seedPhrase: 'Seed Phrase',
+    selectAccount: 'Select Account',
     selectAllAccounts: 'Select All Accounts',
     selectionKey: 'VRF Public Key',
     selectWalletAccount: 'Select wallet account',

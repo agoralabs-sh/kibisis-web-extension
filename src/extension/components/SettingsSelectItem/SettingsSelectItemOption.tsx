@@ -3,7 +3,7 @@ import React, { FC, ReactEventHandler, useState } from 'react';
 import { IconType } from 'react-icons';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
@@ -37,7 +37,7 @@ const SettingsSelectItemOption: FC<IProps> = ({
   );
   // state
   const [backgroundColor, setBackgroundColor] = useState<string>(
-    isSelected ? primaryColor : 'var(--chakra-colors-chakra-body-bg)'
+    isSelected ? primaryColor : BODY_BACKGROUND_COLOR
   );
   // misc
   const formattedDefaultTextColor: string = isSelected
@@ -51,7 +51,7 @@ const SettingsSelectItemOption: FC<IProps> = ({
   };
   const handleMouseLeave = () => {
     if (!isSelected) {
-      setBackgroundColor('var(--chakra-colors-chakra-body-bg)');
+      setBackgroundColor(BODY_BACKGROUND_COLOR);
     }
   };
 

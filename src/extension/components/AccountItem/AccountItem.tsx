@@ -11,9 +11,6 @@ import { DEFAULT_GAP } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
-
 // types
 import type { IProps } from './types';
 
@@ -26,9 +23,7 @@ const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
   const defaultSubTextColor = useSubTextColor();
   const defaultTextColor = useDefaultTextColor();
   // misc
-  const address = convertPublicKeyToAVMAddress(
-    PrivateKeyService.decode(account.publicKey)
-  );
+  const address = convertPublicKeyToAVMAddress(account.publicKey);
 
   return (
     <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">

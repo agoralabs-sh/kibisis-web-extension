@@ -98,6 +98,7 @@ import type {
 // utils
 import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransactionAmount';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import Label from '@extension/components/Label';
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -448,29 +449,20 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
         </VStack>
 
         {/*from account*/}
-        <VStack alignItems="flex-start" w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.from')}
-          </Text>
-
-          <AccountSelect
-            accounts={availableAccounts}
-            disabled={creating}
-            onSelect={handleFromAccountChange}
-            value={fromAccount}
-          />
-        </VStack>
+        <AccountSelect
+          accounts={availableAccounts}
+          disabled={creating}
+          label={t<string>('labels.from')}
+          onSelect={handleFromAccountChange}
+          required={true}
+          value={fromAccount}
+        />
 
         {/*to address*/}
         <AddressInput
           accounts={accounts}
           disabled={creating}
+          error={toAddressError}
           label={t<string>('labels.to')}
           onChange={handleToAddressChange}
           onError={handleOnToAddressError}
@@ -479,15 +471,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
         {/*note*/}
         <VStack alignItems="flex-start" w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.noteOptional')}
-          </Text>
+          <Label label={t<string>('labels.note')} />
 
           <Textarea
             focusBorderColor={primaryColor}

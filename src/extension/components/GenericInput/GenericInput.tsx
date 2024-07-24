@@ -1,4 +1,4 @@
-import { Input, InputGroup, Text, VStack } from '@chakra-ui/react';
+import { Input, Text, VStack } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,7 @@ import { randomBytes } from 'tweetnacl';
 import Label from '@extension/components/Label';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
 // hooks
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
@@ -85,15 +85,15 @@ const GenericInput: FC<IProps> = ({
       <Label error={error} inputID={_id} label={label} required={required} />
 
       {/*input*/}
-      <InputGroup size="md">
-        <Input
-          {...inputProps}
-          focusBorderColor={error ? 'red.300' : primaryColor}
-          id={_id}
-          isInvalid={!!error}
-          onChange={handleOnChange}
-        />
-      </InputGroup>
+      <Input
+        {...inputProps}
+        focusBorderColor={error ? 'red.300' : primaryColor}
+        id={_id}
+        isInvalid={!!error}
+        h={INPUT_HEIGHT}
+        onChange={handleOnChange}
+        w="full"
+      />
 
       {/*character limit*/}
       {typeof charactersRemaining === 'number' && (

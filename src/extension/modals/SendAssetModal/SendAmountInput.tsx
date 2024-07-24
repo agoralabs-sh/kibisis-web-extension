@@ -120,7 +120,7 @@ const SendAmountInput: FC<IProps> = ({
     onValueChange(maximumTransactionAmountInStandardUnit.toString());
   // renders
   const renderMaximumTransactionAmountLabel = () => {
-    let symbol: string = '';
+    let symbol = '';
     let maximumTransactionAmountLabel: ReactElement;
 
     switch (selectedAsset.type) {
@@ -206,7 +206,7 @@ const SendAmountInput: FC<IProps> = ({
     <VStack w="full">
       <HStack justifyContent="space-between" w="full">
         {/*label*/}
-        <Text color={defaultTextColor} fontSize="sm" textAlign="left">
+        <Text color={defaultTextColor} fontSize="xs" textAlign="left">
           {t<string>('labels.amount')}
         </Text>
 
