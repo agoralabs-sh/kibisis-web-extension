@@ -9,14 +9,19 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
+import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import BigNumber from 'bignumber.js';
 import numbro from 'numbro';
 import React, { FC, FocusEvent, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoInformationCircleOutline } from 'react-icons/io5';
+import { randomBytes } from 'tweetnacl';
+
+// components
+import Label from '@extension/components/Label';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
@@ -33,103 +38,89 @@ import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 import { theme } from '@extension/theme';
 
 // types
-import {
-  IAccount,
-  IAssetTypes,
-  INativeCurrency,
-  INetworkWithTransactionParams,
-} from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
-interface IProps {
-  account: IAccount;
-  disabled?: boolean;
-  network: INetworkWithTransactionParams;
-  maximumTransactionAmount: string;
-  onValueChange: (value: string) => void;
-  selectedAsset: IAssetTypes | INativeCurrency;
-  value: string | null;
-}
-
-const SendAmountInput: FC<IProps> = ({
+const AmountInput: FC<IProps> = ({
   account,
+  asset,
   disabled = false,
+  id,
   network,
   maximumTransactionAmount,
-  onValueChange,
-  selectedAsset,
+  onChange,
+  required = false,
   value,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
-  const textBackgroundColor: string = useTextBackgroundColor();
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
+  const textBackgroundColor = useTextBackgroundColor();
   // misc
-  const balance: BigNumber = new BigNumber(
+  const balance = new BigNumber(
     account.networkInformation[
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
     ]?.atomicBalance || 0
   );
-  const assetDecimals: number = selectedAsset.decimals;
-  const minBalance: BigNumber = new BigNumber(
+  const _id = id || encodeBase64URLSafe(randomBytes(6));
+  const minBalance = new BigNumber(
     account.networkInformation[
       convertGenesisHashToHex(network.genesisHash).toUpperCase()
     ]?.minAtomicBalance || 0
   );
-  const maximumTransactionAmountInStandardUnit: BigNumber =
-    convertToStandardUnit(
-      new BigNumber(maximumTransactionAmount),
-      assetDecimals
-    );
+  const maximumTransactionAmountInStandardUnit = convertToStandardUnit(
+    new BigNumber(maximumTransactionAmount),
+    asset.decimals
+  );
   // handlers
   const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
-    const blurValue: BigNumber = new BigNumber(event.target.value || '0');
+    const blurValue = new BigNumber(event.target.value || '0');
 
     // if the entered value is greater than the maximum allowed, use the max
     if (blurValue.gt(maximumTransactionAmountInStandardUnit)) {
-      onValueChange(maximumTransactionAmountInStandardUnit.toString());
+      onChange(maximumTransactionAmountInStandardUnit.toString());
 
       return;
     }
 
     // format the number to use an absolute value (no negatives), the maximum decimals for the asset and trim any zeroes
-    onValueChange(
+    onChange(
       numbro(blurValue.absoluteValue().toString()).format({
-        mantissa: assetDecimals,
+        mantissa: asset.decimals,
         trimMantissa: true,
       })
     );
   };
   const handleOnChange = (valueAsString: string | undefined) =>
-    onValueChange(valueAsString || '');
+    onChange(valueAsString || '');
   const handleOnFocus = (event: FocusEvent<HTMLInputElement>) => {
     // remove the padded zero
     if (event.target.value === '0') {
-      onValueChange('');
+      onChange('');
     }
   };
   const handleMaximumAmountClick = () =>
-    onValueChange(maximumTransactionAmountInStandardUnit.toString());
+    onChange(maximumTransactionAmountInStandardUnit.toString());
   // renders
   const renderMaximumTransactionAmountLabel = () => {
     let symbol = '';
     let maximumTransactionAmountLabel: ReactElement;
 
-    switch (selectedAsset.type) {
+    switch (asset.type) {
       case AssetTypeEnum.ARC0200:
       case AssetTypeEnum.Native:
-        symbol = selectedAsset.symbol;
+        symbol = asset.symbol;
         break;
       case AssetTypeEnum.Standard:
-        symbol = selectedAsset.unitName || '';
+        symbol = asset.unitName || '';
         break;
       default:
         break;
@@ -150,14 +141,14 @@ const SendAmountInput: FC<IProps> = ({
           <Text color={subTextColor} fontSize="xs" textAlign="right">
             {`${t<string>('labels.max')}: ${formatCurrencyUnit(
               maximumTransactionAmountInStandardUnit,
-              { decimals: selectedAsset.decimals }
+              { decimals: asset.decimals }
             )} ${symbol}`}
           </Text>
         </HStack>
       </Tooltip>
     );
 
-    if (selectedAsset.type === AssetTypeEnum.Native) {
+    if (asset.type === AssetTypeEnum.Native) {
       return (
         <HStack alignItems="center" justifyContent="center" spacing={1}>
           <Tooltip
@@ -166,21 +157,21 @@ const SendAmountInput: FC<IProps> = ({
               'captions.maximumNativeCurrencyTransactionAmount',
               {
                 balance: formatCurrencyUnit(
-                  convertToStandardUnit(balance, selectedAsset.decimals),
-                  { decimals: selectedAsset.decimals }
+                  convertToStandardUnit(balance, asset.decimals),
+                  { decimals: asset.decimals }
                 ),
                 minBalance: formatCurrencyUnit(
-                  convertToStandardUnit(minBalance, selectedAsset.decimals),
-                  { decimals: selectedAsset.decimals }
+                  convertToStandardUnit(minBalance, asset.decimals),
+                  { decimals: asset.decimals }
                 ),
                 minFee: formatCurrencyUnit(
                   convertToStandardUnit(
                     new BigNumber(network.minFee),
-                    selectedAsset.decimals
+                    asset.decimals
                   ),
-                  { decimals: selectedAsset.decimals }
+                  { decimals: asset.decimals }
                 ),
-                nativeCurrencyCode: selectedAsset.symbol,
+                nativeCurrencyCode: asset.symbol,
               }
             )}
           >
@@ -206,9 +197,11 @@ const SendAmountInput: FC<IProps> = ({
     <VStack w="full">
       <HStack justifyContent="space-between" w="full">
         {/*label*/}
-        <Text color={defaultTextColor} fontSize="xs" textAlign="left">
-          {t<string>('labels.amount')}
-        </Text>
+        <Label
+          inputID={_id}
+          label={t<string>('labels.amount')}
+          required={required}
+        />
 
         <Spacer />
 
@@ -221,8 +214,10 @@ const SendAmountInput: FC<IProps> = ({
         <NumberInput
           colorScheme={primaryColorScheme}
           clampValueOnBlur={false}
+          id={_id}
           isDisabled={disabled}
           focusBorderColor={primaryColor}
+          h={INPUT_HEIGHT}
           onBlur={handleOnBlur}
           onChange={handleOnChange}
           onFocus={handleOnFocus}
@@ -239,6 +234,7 @@ const SendAmountInput: FC<IProps> = ({
           }}
           aria-label="Add maximum amount"
           borderRadius={0}
+          h="100%"
           onClick={handleMaximumAmountClick}
           p={0}
           variant="ghost"
@@ -252,4 +248,4 @@ const SendAmountInput: FC<IProps> = ({
   );
 };
 
-export default SendAmountInput;
+export default AmountInput;

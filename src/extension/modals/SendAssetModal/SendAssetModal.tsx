@@ -20,10 +20,10 @@ import { useDispatch } from 'react-redux';
 // components
 import AccountSelect from '@extension/components/AccountSelect';
 import AddressInput from '@extension/components/AddressInput';
+import AmountInput from '@extension/components/AmountInput';
 import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
 import Label from '@extension/components/Label';
-import SendAmountInput from './SendAmountInput';
 import SendAssetModalConfirmingContent from './SendAssetModalConfirmingContent';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
 import SendAssetModalSummaryContent from './SendAssetModalSummaryContent';
@@ -410,13 +410,14 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     return (
       <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/*amount*/}
-        <SendAmountInput
+        <AmountInput
           account={fromAccount}
+          asset={selectedAsset}
           disabled={creating}
           network={network}
           maximumTransactionAmount={maximumTransactionAmount}
-          onValueChange={handleAmountChange}
-          selectedAsset={selectedAsset}
+          onChange={handleAmountChange}
+          required={true}
           value={amountInStandardUnits}
         />
 
