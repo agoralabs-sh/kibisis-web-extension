@@ -295,7 +295,7 @@ describe(`${__dirname}#createAccountImportURI`, () => {
 
           // for pages that are not the last page, they should contain 5 accounts, the last page should contain 1-5 accounts
           expect(value?.query[ARC0300QueryEnum.PrivateKey]).toHaveLength(
-            pagination.page < pagination.total
+            pagination.page < pagination.total - 1
               ? EXPORT_ACCOUNT_PAGE_LIMIT
               : expectedLastPageItems
           );
@@ -303,10 +303,10 @@ describe(`${__dirname}#createAccountImportURI`, () => {
       });
     });
 
-    it('should return a schema for multiple unnamed accounts', () => {
+    it('should return a schema for multiple named accounts', () => {
       // arrange
       const accounts: IExportAccount[] = Array.from(
-        { length: EXPORT_ACCOUNT_PAGE_LIMIT },
+        { length: EXPORT_ACCOUNT_PAGE_LIMIT + 1 },
         () => ({
           name: encodeHex(randomBytes(16)), // 32 byte string max
           privateKey: Ed21559KeyPair.generate().privateKey,
@@ -343,16 +343,17 @@ describe(`${__dirname}#createAccountImportURI`, () => {
 
         if (pagination) {
           expectedLastPageItems =
-            accounts.length - EXPORT_ACCOUNT_PAGE_LIMIT * pagination.total;
+            accounts.length -
+            EXPORT_ACCOUNT_PAGE_LIMIT * (pagination.total - 1);
 
           // for pages that are not the last page, they should contain 5 accounts, the last page should contain 1-5 accounts
           expect(value?.query[ARC0300QueryEnum.Name]).toHaveLength(
-            pagination.page < pagination.total
+            pagination.page < pagination.total - 1
               ? EXPORT_ACCOUNT_PAGE_LIMIT
               : expectedLastPageItems
           );
           expect(value?.query[ARC0300QueryEnum.PrivateKey]).toHaveLength(
-            pagination.page < pagination.total
+            pagination.page < pagination.total - 1
               ? EXPORT_ACCOUNT_PAGE_LIMIT
               : expectedLastPageItems
           );

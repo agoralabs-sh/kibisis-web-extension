@@ -1,6 +1,10 @@
-import { Spinner, Text, VStack } from '@chakra-ui/react';
+import { Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoCubeOutline } from 'react-icons/io5';
+
+// components
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -51,13 +55,8 @@ const RemoveAssetsConfirmingModalContent: FC<
       spacing={DEFAULT_GAP / 2}
       w="full"
     >
-      <Spinner
-        color={primaryColor}
-        emptyColor={defaultTextColor}
-        size="xl"
-        speed="0.65s"
-        thickness="4px"
-      />
+      {/*progress*/}
+      <CircularProgressWithIcon icon={IoCubeOutline} />
 
       {message && (
         <Text
