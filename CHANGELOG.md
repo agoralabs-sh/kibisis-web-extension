@@ -1,3 +1,10 @@
+# [1.18.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.3...v1.18.0-beta.4) (2024-07-26)
+
+
+### Features
+
+* limit navigator request to one with an array of accounts ([#271](https://github.com/agoralabs-sh/kibisis-web-extension/issues/271)) ([9d51da1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/9d51da16cd325534875897ae3083df1218891816))
+
 # [1.18.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.2...v1.18.0-beta.3) (2024-07-26)
 
 
