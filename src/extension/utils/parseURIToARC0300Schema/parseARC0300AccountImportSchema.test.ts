@@ -68,7 +68,7 @@ describe(`${__dirname}#parseARC0300AccountImportSchema`, () => {
       throw new Error('failed to parse uri');
     }
 
-    expect(result.scheme).toBe(ARC_0300_SCHEME);
+    expect(result.scheme).toBe(ARC_0026_SCHEME);
     expect(result.authority).toBe(ARC0300AuthorityEnum.Account);
     expect(result.paths).toEqual([ARC0300PathEnum.Import]);
     expect(
