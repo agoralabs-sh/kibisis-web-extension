@@ -37,6 +37,9 @@ import {
 // types
 import type { IAppThunkDispatch } from '@extension/types';
 
+// utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
+
 const PasswordLockPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
@@ -56,6 +59,7 @@ const PasswordLockPage: FC = () => {
   // states
   const [verifying, setVerifying] = useState<boolean>(false);
   // misc
+  const iconSize = calculateIconSize('xl');
   const isLoading = saving || verifying;
   // handlers
   const handleOnAuthenticationError = (error: BaseExtensionError) =>
@@ -118,7 +122,7 @@ const PasswordLockPage: FC = () => {
             >
               <VStack pb={DEFAULT_GAP} spacing={DEFAULT_GAP / 3} w="full">
                 {/*icon*/}
-                <KibisisIcon color={primaryColor} h={12} w={12} />
+                <KibisisIcon color={primaryColor} h={iconSize} w={iconSize} />
 
                 {/*heading*/}
                 <Heading color={defaultTextColor}>

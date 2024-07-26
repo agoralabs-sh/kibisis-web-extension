@@ -12,19 +12,20 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import { InfinitySpin } from 'react-loader-spinner';
 import { sanitize } from 'dompurify';
 import { toString } from 'qrcode';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoQrCodeOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import PillSwitch from '@extension/components/PillSwitch';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
@@ -32,45 +33,30 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
 // selectors
-import { useSelectSettings } from '@extension/selectors';
+import { useSelectLogger, useSelectSettings } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
 import type { ISettings } from '@extension/types';
+import type { IProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-interface IProps {
-  address: string;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const ShareAddressModal: FC<IProps> = ({
-  address,
-  isOpen,
-  onClose,
-}: IProps) => {
+const ShareAddressModal: FC<IProps> = ({ address, isOpen, onClose }) => {
   const { t } = useTranslation();
   // selectors
+  const logger = useSelectLogger();
   const settings: ISettings = useSelectSettings();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
-  );
-  const textBackgroundColor: string = useTextBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
+  const textBackgroundColor = useTextBackgroundColor();
   // states
   const [pillIndex, setPillIndex] = useState<number>(0);
   const [svgString, setSvgString] = useState<string | null>(null);
   // misc
-  const qrCodeSize: number = 350;
-  // handlers
-  const handlePillChange = (index: number) => setPillIndex(index);
   const getFormatFromIndex = (index: number, value: string): string => {
     switch (index) {
       case 1:
@@ -80,6 +66,10 @@ const ShareAddressModal: FC<IProps> = ({
         return value;
     }
   };
+  const qrCodeSize = 350;
+  // handlers
+  const handleClose = () => onClose && onClose();
+  const handlePillChange = (index: number) => setPillIndex(index);
 
   useEffect(() => {
     (async () => {
@@ -93,7 +83,7 @@ const ShareAddressModal: FC<IProps> = ({
         );
         setSvgString(svg);
       } catch (error) {
-        console.error(error);
+        logger.error(`${ShareAddressModal.name}#useEffect:`, error);
       }
     })();
   }, [pillIndex]);
@@ -102,11 +92,11 @@ const ShareAddressModal: FC<IProps> = ({
     <Modal
       isOpen={isOpen}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
     >
       <ModalContent
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
+        backgroundColor={BODY_BACKGROUND_COLOR}
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
       >
@@ -117,7 +107,7 @@ const ShareAddressModal: FC<IProps> = ({
         </ModalHeader>
 
         <ModalBody px={DEFAULT_GAP}>
-          <VStack alignItems="center" spacing={2} w="full">
+          <VStack alignItems="center" spacing={DEFAULT_GAP / 3} w="full">
             {settings.advanced.allowDidTokenFormat && (
               <PillSwitch
                 index={pillIndex}
@@ -140,7 +130,7 @@ const ShareAddressModal: FC<IProps> = ({
                 justifyContent="center"
                 w={qrCodeSize}
               >
-                <InfinitySpin color={primaryColor} width="200" />
+                <CircularProgressWithIcon icon={IoQrCodeOutline} />
               </Flex>
             )}
             <HStack
@@ -167,6 +157,7 @@ const ShareAddressModal: FC<IProps> = ({
                   </Text>
                 </Tooltip>
               </Box>
+
               <CopyIconButton
                 ariaLabel={t<string>('labels.copyAddress')}
                 tooltipLabel={t<string>('labels.copyAddress')}

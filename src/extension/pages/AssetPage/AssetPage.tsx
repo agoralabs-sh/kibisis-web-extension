@@ -27,7 +27,6 @@ import AssetIcon from '@extension/components/AssetIcon';
 import AssetBadge from '@extension/components/AssetBadge';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
-import LoadingPage from '@extension/components/LoadingPage';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
@@ -55,6 +54,9 @@ import useAssetPage from './hooks/useAssetPage';
 
 // modals
 import ShareAddressModal from '@extension/modals//ShareAddressModal';
+
+// pages
+import SkeletonAssetPage from '@extension/pages/SkeletonAssetPage';
 
 // selectors
 import {
@@ -162,7 +164,7 @@ const AssetPage: FC = () => {
     !assetHolding ||
     fetchingAssets
   ) {
-    return <LoadingPage />;
+    return <SkeletonAssetPage />;
   }
 
   accountAddress = convertPublicKeyToAVMAddress(
