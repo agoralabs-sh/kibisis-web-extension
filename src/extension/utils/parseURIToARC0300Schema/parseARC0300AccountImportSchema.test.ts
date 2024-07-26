@@ -68,7 +68,7 @@ describe(`${__dirname}#parseARC0300AccountImportSchema`, () => {
       throw new Error('failed to parse uri');
     }
 
-    expect(result.scheme).toBe(ARC_0300_SCHEME);
+    expect(result.scheme).toBe(ARC_0026_SCHEME);
     expect(result.authority).toBe(ARC0300AuthorityEnum.Account);
     expect(result.paths).toEqual([ARC0300PathEnum.Import]);
     expect(
@@ -110,7 +110,7 @@ describe(`${__dirname}#parseARC0300AccountImportSchema`, () => {
     ).toBe(true);
   });
 
-  it.only('should return a valid schema with all query params', () => {
+  it('should return a valid schema with all query params', () => {
     // arrange
     const checksum = SparkMD5.ArrayBuffer.hash(randomBytes(32));
     const keyPair = Ed21559KeyPair.generate();

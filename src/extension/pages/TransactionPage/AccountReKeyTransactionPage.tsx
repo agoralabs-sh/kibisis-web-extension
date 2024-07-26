@@ -119,7 +119,7 @@ const AccountReKeyTransactionPage: FC<IProps<IAccountReKeyTransaction>> = ({
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
+                url={explorer.accountURL(transaction.sender)}
               />
             )}
           </HStack>
@@ -146,7 +146,7 @@ const AccountReKeyTransactionPage: FC<IProps<IAccountReKeyTransaction>> = ({
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.authAddr}`}
+                    url={explorer.accountURL(transaction.authAddr)}
                   />
                 )}
               </HStack>
@@ -173,7 +173,7 @@ const AccountReKeyTransactionPage: FC<IProps<IAccountReKeyTransaction>> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.rekeyTo}`}
+                  url={explorer.accountURL(transaction.rekeyTo)}
                 />
               )}
             </HStack>
@@ -227,7 +227,7 @@ const AccountReKeyTransactionPage: FC<IProps<IAccountReKeyTransaction>> = ({
           minButtonHeight={PAGE_ITEM_HEIGHT}
           onChange={handleMoreInformationToggle}
         >
-          <VStack spacing={4} w="full">
+          <VStack spacing={DEFAULT_GAP - 2} w="full">
             {/*id*/}
             <PageItem fontSize="sm" label={t<string>('labels.id')}>
               {transaction.id ? (
@@ -243,19 +243,21 @@ const AccountReKeyTransactionPage: FC<IProps<IAccountReKeyTransaction>> = ({
                       })}
                     </Text>
                   </Tooltip>
+
                   <CopyIconButton
                     ariaLabel={t<string>('labels.copyTransactionId')}
                     tooltipLabel={t<string>('labels.copyTransactionId')}
                     size="sm"
                     value={transaction.id}
                   />
+
                   {explorer && (
                     <OpenTabIconButton
                       size="sm"
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${explorer.transactionPath}/${transaction.id}`}
+                      url={explorer.transactionURL(transaction.id)}
                     />
                   )}
                 </HStack>
@@ -281,21 +283,21 @@ const AccountReKeyTransactionPage: FC<IProps<IAccountReKeyTransaction>> = ({
                       })}
                     </Text>
                   </Tooltip>
+
                   <CopyIconButton
                     ariaLabel={t<string>('labels.copyGroupId')}
                     tooltipLabel={t<string>('labels.copyGroupId')}
                     size="sm"
                     value={transaction.groupId}
                   />
-                  {explorer && explorer.groupPath && (
+
+                  {explorer && (
                     <OpenTabIconButton
                       size="sm"
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${
-                        explorer.groupPath
-                      }/${encodeURIComponent(transaction.groupId)}`}
+                      url={explorer.groupURL(transaction.groupId)}
                     />
                   )}
                 </HStack>

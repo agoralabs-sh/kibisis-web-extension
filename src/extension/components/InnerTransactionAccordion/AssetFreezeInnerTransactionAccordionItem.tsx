@@ -33,7 +33,6 @@ import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 import type {
   IAssetFreezeTransaction,
   IAssetUnfreezeTransaction,
-  IBlockExplorer,
 } from '@extension/types';
 import type { IItemProps } from './types';
 
@@ -45,14 +44,13 @@ const AssetFreezeInnerTransactionAccordionItem: FC<
 > = ({ accounts, color, fontSize, minButtonHeight, network, transaction }) => {
   const { t } = useTranslation();
   // selectors
-  const preferredExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const explorer: IBlockExplorer | null =
+  const explorer =
     network.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
@@ -95,7 +93,7 @@ const AssetFreezeInnerTransactionAccordionItem: FC<
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.assetPath}/${standardAsset.id}`}
+                    url={explorer.assetURL(standardAsset.id)}
                   />
                 )}
               </HStack>
@@ -128,7 +126,7 @@ const AssetFreezeInnerTransactionAccordionItem: FC<
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.frozenAddress}`}
+                    url={explorer.accountURL(transaction.frozenAddress)}
                   />
                 )}
             </HStack>

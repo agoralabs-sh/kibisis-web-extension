@@ -28,7 +28,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
-import { IAssetCreateTransaction, IBlockExplorer } from '@extension/types';
+import type { IAssetCreateTransaction } from '@extension/types';
 import type { IItemProps } from './types';
 
 // utils
@@ -39,14 +39,13 @@ const AssetCreateInnerTransactionAccordionItem: FC<
 > = ({ accounts, color, fontSize, minButtonHeight, network, transaction }) => {
   const { t } = useTranslation();
   // selectors
-  const preferredExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const primaryButtonTextColor: string = usePrimaryButtonTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const explorer: IBlockExplorer | null =
+  const explorer =
     network.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
@@ -91,7 +90,7 @@ const AssetCreateInnerTransactionAccordionItem: FC<
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.creator}`}
+                  url={explorer.accountURL(transaction.creator)}
                 />
               )}
             </HStack>
@@ -184,7 +183,7 @@ const AssetCreateInnerTransactionAccordionItem: FC<
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.clawback}`}
+                      url={explorer.accountURL(transaction.clawback)}
                     />
                   )}
               </HStack>
@@ -210,7 +209,7 @@ const AssetCreateInnerTransactionAccordionItem: FC<
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.freeze}`}
+                    url={explorer.accountURL(transaction.freeze)}
                   />
                 )}
               </HStack>
@@ -236,7 +235,7 @@ const AssetCreateInnerTransactionAccordionItem: FC<
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.manager}`}
+                    url={explorer.accountURL(transaction.manager)}
                   />
                 )}
               </HStack>
@@ -262,7 +261,7 @@ const AssetCreateInnerTransactionAccordionItem: FC<
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.reserve}`}
+                    url={explorer.accountURL(transaction.reserve)}
                   />
                 )}
               </HStack>

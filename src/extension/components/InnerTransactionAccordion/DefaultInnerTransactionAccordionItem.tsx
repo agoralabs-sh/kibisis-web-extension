@@ -23,7 +23,6 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
-import type { IBlockExplorer } from '@extension/types';
 import type { IItemProps } from './types';
 
 // utils
@@ -39,12 +38,11 @@ const DefaultInnerTransactionAccordionItem: FC<IItemProps> = ({
 }) => {
   const { t } = useTranslation();
   // selectors
-  const preferredExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // misc
-  const explorer: IBlockExplorer | null =
+  const explorer =
     network.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
@@ -80,7 +78,7 @@ const DefaultInnerTransactionAccordionItem: FC<IItemProps> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
+                  url={explorer.accountURL(transaction.sender)}
                 />
               )}
             </HStack>

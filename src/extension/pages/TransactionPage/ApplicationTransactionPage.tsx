@@ -109,7 +109,7 @@ const ApplicationTransactionPage: FC<IProps<IApplicationTransaction>> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.applicationPath}/${transaction.applicationId}`}
+                  url={explorer.applicationURL(transaction.applicationId)}
                 />
               )}
             </HStack>
@@ -191,7 +191,7 @@ const ApplicationTransactionPage: FC<IProps<IApplicationTransaction>> = ({
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${explorer.transactionPath}/${transaction.id}`}
+                      url={explorer.transactionURL(transaction.id)}
                     />
                   )}
                 </HStack>
@@ -223,15 +223,13 @@ const ApplicationTransactionPage: FC<IProps<IApplicationTransaction>> = ({
                     size="sm"
                     value={transaction.groupId}
                   />
-                  {explorer && explorer.groupPath && (
+                  {explorer && (
                     <OpenTabIconButton
                       size="sm"
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${
-                        explorer.groupPath
-                      }/${encodeURIComponent(transaction.groupId)}`}
+                      url={explorer.groupURL(transaction.groupId)}
                     />
                   )}
                 </HStack>

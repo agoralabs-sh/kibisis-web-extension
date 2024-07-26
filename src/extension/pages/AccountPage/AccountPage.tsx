@@ -355,7 +355,7 @@ const AccountPage: FC = () => {
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${address}`}
+                  url={explorer.accountURL(address)}
                 />
               )}
 

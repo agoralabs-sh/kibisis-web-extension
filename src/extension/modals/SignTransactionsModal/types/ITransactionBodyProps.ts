@@ -1,16 +1,18 @@
 import type { Transaction } from 'algosdk';
 
+// models
+import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
+
 // types
 import type {
   IAccountWithExtendedProps,
-  IBlockExplorer,
   INetworkWithTransactionParams,
 } from '@extension/types';
 import type ICondensedProps from './ICondensedProps';
 
 interface ITransactionBodyProps {
   accounts: IAccountWithExtendedProps[];
-  blockExplorer: IBlockExplorer | null;
+  blockExplorer: BaseBlockExplorer | null;
   condensed?: ICondensedProps;
   fromAccount: IAccountWithExtendedProps | null;
   hideNetwork?: boolean;

@@ -167,7 +167,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                 tooltipLabel={t<string>('captions.openOn', {
                   name: blockExplorer.canonicalName,
                 })}
-                url={`${blockExplorer.baseUrl}${blockExplorer.assetPath}/${asset.id}`}
+                url={blockExplorer.assetURL(asset.id)}
               />
             )}
           </HStack>
@@ -195,7 +195,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                 tooltipLabel={t<string>('captions.openOn', {
                   name: blockExplorer.canonicalName,
                 })}
-                url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${accountAddress}`}
+                url={blockExplorer.accountURL(accountAddress)}
               />
             )}
           </HStack>
@@ -311,7 +311,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                     tooltipLabel={t<string>('captions.openOn', {
                       name: blockExplorer.canonicalName,
                     })}
-                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.creator}`}
+                    url={blockExplorer.accountURL(asset.creator)}
                   />
                 )}
               </HStack>
@@ -340,7 +340,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                         tooltipLabel={t<string>('captions.openOn', {
                           name: blockExplorer.canonicalName,
                         })}
-                        url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.clawbackAddress}`}
+                        url={blockExplorer.accountURL(asset.clawbackAddress)}
                       />
                     )}
                 </HStack>
@@ -370,7 +370,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                         tooltipLabel={t<string>('captions.openOn', {
                           name: blockExplorer.canonicalName,
                         })}
-                        url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.freezeAddress}`}
+                        url={blockExplorer.accountURL(asset.freezeAddress)}
                       />
                     )}
                 </HStack>
@@ -400,7 +400,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                         tooltipLabel={t<string>('captions.openOn', {
                           name: blockExplorer.canonicalName,
                         })}
-                        url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.managerAddress}`}
+                        url={blockExplorer.accountURL(asset.managerAddress)}
                       />
                     )}
                 </HStack>
@@ -430,7 +430,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
                         tooltipLabel={t<string>('captions.openOn', {
                           name: blockExplorer.canonicalName,
                         })}
-                        url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.reserveAddress}`}
+                        url={blockExplorer.accountURL(asset.reserveAddress)}
                       />
                     )}
                 </HStack>

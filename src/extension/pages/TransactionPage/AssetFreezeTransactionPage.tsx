@@ -103,7 +103,7 @@ const AssetTransferTransactionContent: FC<
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.assetPath}/${standardAsset.id}`}
+                url={explorer.assetURL(standardAsset.id)}
               />
             )}
           </HStack>
@@ -135,7 +135,7 @@ const AssetTransferTransactionContent: FC<
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.frozenAddress}`}
+                  url={explorer.accountURL(transaction.frozenAddress)}
                 />
               )}
           </HStack>
@@ -216,7 +216,7 @@ const AssetTransferTransactionContent: FC<
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${explorer.transactionPath}/${transaction.id}`}
+                      url={explorer.transactionURL(transaction.id)}
                     />
                   )}
                 </HStack>
@@ -248,15 +248,13 @@ const AssetTransferTransactionContent: FC<
                     size="sm"
                     value={transaction.groupId}
                   />
-                  {explorer && explorer.groupPath && (
+                  {explorer && (
                     <OpenTabIconButton
                       size="sm"
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${
-                        explorer.groupPath
-                      }/${encodeURIComponent(transaction.groupId)}`}
+                      url={explorer.groupURL(transaction.groupId)}
                     />
                   )}
                 </HStack>

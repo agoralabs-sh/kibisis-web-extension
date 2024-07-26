@@ -1,4 +1,4 @@
-interface ITokenResponse {
+interface ITokenResult {
   approved: string;
   contractId: number;
   metadataURI: string;
@@ -8,4 +8,4 @@ interface ITokenResponse {
   tokenId: number;
 }
 
-export default ITokenResponse;
+export default ITokenResult;

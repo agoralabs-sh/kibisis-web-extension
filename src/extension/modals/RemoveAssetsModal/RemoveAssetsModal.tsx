@@ -317,7 +317,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.accountPath}/${address}`}
+                url={explorer.accountURL(address)}
               />
             )}
           </HStack>
@@ -399,11 +399,11 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${
+                url={
                   selectedAsset.type === AssetTypeEnum.Standard
-                    ? explorer.assetPath
-                    : explorer.applicationPath
-                }/${selectedAsset.id}`}
+                    ? explorer.assetURL(selectedAsset.id)
+                    : explorer.applicationURL(selectedAsset.id)
+                }
               />
             )}
           </HStack>

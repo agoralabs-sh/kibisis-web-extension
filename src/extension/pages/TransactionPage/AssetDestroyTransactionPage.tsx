@@ -92,7 +92,7 @@ const AssetDestroyTransactionPage: FC<IProps<IAssetDestroyTransaction>> = ({
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.assetPath}/${transaction.assetId}`}
+                url={explorer.assetURL(transaction.assetId)}
               />
             )}
           </HStack>
@@ -116,7 +116,7 @@ const AssetDestroyTransactionPage: FC<IProps<IAssetDestroyTransaction>> = ({
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.creator}`}
+                url={explorer.accountURL(transaction.creator)}
               />
             )}
           </HStack>
@@ -197,7 +197,7 @@ const AssetDestroyTransactionPage: FC<IProps<IAssetDestroyTransaction>> = ({
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${explorer.transactionPath}/${transaction.id}`}
+                      url={explorer.transactionURL(transaction.id)}
                     />
                   )}
                 </HStack>
@@ -229,15 +229,14 @@ const AssetDestroyTransactionPage: FC<IProps<IAssetDestroyTransaction>> = ({
                     size="sm"
                     value={transaction.groupId}
                   />
-                  {explorer && explorer.groupPath && (
+
+                  {explorer && (
                     <OpenTabIconButton
                       size="sm"
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${
-                        explorer.groupPath
-                      }/${encodeURIComponent(transaction.groupId)}`}
+                      url={explorer.groupURL(transaction.groupId)}
                     />
                   )}
                 </HStack>

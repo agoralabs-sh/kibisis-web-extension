@@ -95,10 +95,10 @@ const NFTPage: FC = () => {
     if (nftExplorer) {
       return (
         <Link
-          href={`${nftExplorer.baseURL}${nftExplorer.tokenPath(
-            assetHolding.id,
-            assetHolding.tokenId
-          )}`}
+          href={`${nftExplorer.tokensURL({
+            appID: assetHolding.id,
+            tokenID: assetHolding.tokenId,
+          })}`}
           isExternal={true}
         >
           {imageElement}
@@ -226,7 +226,7 @@ const NFTPage: FC = () => {
                   tooltipLabel={t<string>('captions.openOn', {
                     name: blockExplorer.canonicalName,
                   })}
-                  url={`${blockExplorer.baseUrl}${blockExplorer.applicationPath}/${assetHolding.id}`}
+                  url={blockExplorer.applicationURL(assetHolding.id)}
                 />
               )}
             </HStack>

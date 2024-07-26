@@ -10,11 +10,17 @@ import {
 // enums
 import { AssetTypeEnum, NetworkTypeEnum } from '@extension/enums';
 
+// models
+import AlloBlockExplorer from '@extension/models/AlloBlockExplorer';
+import AVMExplorerBlockExplorer from '@extension/models/AVMExplorerBlockExplorer';
+import NautilusARC0072Indexer from '@extension/models/NautilusARC0072Indexer';
+import NFTNavigatorARC0072Indexer from '@extension/models/NFTNavigatorARC0072Indexer';
+import NFTNavigatorNFTExplorer from '@extension/models/NFTNavigatorNFTExplorer';
+import PeraBlockExplorer from '@extension/models/PeraBlockExplorer';
+import VoiObserverBlockExplorer from '@extension/models/VoiObserverBlockExplorer';
+
 // types
 import type { INetwork } from '@extension/types';
-
-// utils
-import fetchVoiARC0072TokensByOwner from '@extension/utils/fetchVoiARC0072TokensByOwner';
 
 const networks: INetwork[] = [
   /**
@@ -29,26 +35,14 @@ const networks: INetwork[] = [
       },
     ],
     arc0072Indexers: [
-      {
-        canonicalName: 'NFT Navigator',
-        fetchTokensByOwner: fetchVoiARC0072TokensByOwner,
-        id: 'nft-navigator',
-      },
+      new NautilusARC0072Indexer(),
+      new NFTNavigatorARC0072Indexer(),
     ],
     canonicalName: 'Voi',
     chakraTheme: 'voi',
     blockExplorers: [
-      {
-        accountPath: '/account',
-        applicationPath: '/application',
-        assetPath: '/asset',
-        baseUrl: 'https://voi.observer/explorer',
-        blockPath: '/block',
-        canonicalName: 'Voi Observer',
-        groupPath: '/group',
-        id: 'voi-observer',
-        transactionPath: '/transaction',
-      },
+      new VoiObserverBlockExplorer('https://voi.observer/explorer'),
+      new AVMExplorerBlockExplorer('https://avmexplorer.com'),
     ],
     feeSunkAddress:
       'FEES3ZW52HQ7U7LB3OGLUFQX2DCCWPJ2LIMXAH75KYROBZBQRN3Q5OR3GI',
@@ -75,16 +69,7 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    nftExplorers: [
-      {
-        baseURL: 'https://nftnavigator.xyz',
-        canonicalName: 'NFT Navigator',
-        collectionPath: (appId: string) => `/collection/${appId}`,
-        id: 'nft-navigator',
-        tokenPath: (appId: string, tokenId: string) =>
-          `/collection/${appId}/token/${tokenId}`,
-      },
-    ],
+    nftExplorers: [new NFTNavigatorNFTExplorer()],
     type: NetworkTypeEnum.Test,
   },
   /**
@@ -102,28 +87,8 @@ const networks: INetwork[] = [
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
     blockExplorers: [
-      {
-        accountPath: '/address',
-        applicationPath: '/application',
-        assetPath: '/asset',
-        baseUrl: 'https://explorer.perawallet.app',
-        blockPath: '/block',
-        canonicalName: 'Pera Explorer',
-        groupPath: '/tx-group',
-        id: 'pera',
-        transactionPath: '/tx',
-      },
-      {
-        accountPath: '/account',
-        applicationPath: '/application',
-        assetPath: '/asset',
-        baseUrl: 'https://allo.info',
-        blockPath: '/block',
-        canonicalName: 'Allo',
-        groupPath: '/tx/group',
-        id: 'allo',
-        transactionPath: '/tx',
-      },
+      new PeraBlockExplorer('https://explorer.perawallet.app'),
+      new AlloBlockExplorer('https://allo.info'),
     ],
     feeSunkAddress:
       'Y76M3MSY6DKBRHBL7C3NNDXGS5IIMQVQVUAB6MP4XEMMGVF2QWNPL226CA',
@@ -205,17 +170,7 @@ const networks: INetwork[] = [
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
     blockExplorers: [
-      {
-        accountPath: '/address',
-        applicationPath: '/application',
-        assetPath: '/asset',
-        baseUrl: 'https://testnet.explorer.perawallet.app',
-        blockPath: '/block',
-        canonicalName: 'Pera Explorer',
-        groupPath: '/tx-group',
-        id: 'pera',
-        transactionPath: '/tx',
-      },
+      new PeraBlockExplorer('https://testnet.explorer.perawallet.app'),
     ],
     feeSunkAddress:
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',

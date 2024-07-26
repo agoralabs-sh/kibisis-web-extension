@@ -25,10 +25,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
-import type {
-  IAssetDestroyTransaction,
-  IBlockExplorer,
-} from '@extension/types';
+import type { IAssetDestroyTransaction } from '@extension/types';
 import type { IItemProps } from './types';
 
 // utils
@@ -39,13 +36,12 @@ const AssetDeleteInnerTransactionAccordionItem: FC<
 > = ({ accounts, color, fontSize, minButtonHeight, network, transaction }) => {
   const { t } = useTranslation();
   // selectors
-  const preferredExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const explorer: IBlockExplorer | null =
+  const explorer =
     network.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
@@ -81,7 +77,7 @@ const AssetDeleteInnerTransactionAccordionItem: FC<
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.assetPath}/${transaction.assetId}`}
+                  url={explorer.assetURL(transaction.assetId)}
                 />
               )}
             </HStack>
@@ -105,7 +101,7 @@ const AssetDeleteInnerTransactionAccordionItem: FC<
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.creator}`}
+                  url={explorer.accountURL(transaction.creator)}
                 />
               )}
             </HStack>

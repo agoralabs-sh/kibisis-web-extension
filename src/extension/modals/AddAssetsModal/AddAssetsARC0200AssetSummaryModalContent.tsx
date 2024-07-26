@@ -114,7 +114,7 @@ const AddAssetsARC0200AssetSummaryModalContent: FC<
                 tooltipLabel={t<string>('captions.openOn', {
                   name: blockExplorer.canonicalName,
                 })}
-                url={`${blockExplorer.baseUrl}${blockExplorer.applicationPath}/${asset.id}`}
+                url={blockExplorer.applicationURL(asset.id)}
               />
             )}
           </HStack>

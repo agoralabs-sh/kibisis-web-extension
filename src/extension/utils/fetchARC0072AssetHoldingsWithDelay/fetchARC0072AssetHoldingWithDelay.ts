@@ -1,5 +1,8 @@
+// models
+import BaseARC0072Indexer from '@extension/models/BaseARC0072Indexer';
+
 // types
-import type { IARC0072AssetHolding, IARC0072Indexer } from '@extension/types';
+import type { IARC0072AssetHolding } from '@extension/types';
 import type { IOptions } from './types';
 
 // utils
@@ -16,9 +19,9 @@ export default async function fetchARC0072AssetHoldingsWithDelay({
   logger,
   network,
 }: IOptions): Promise<IARC0072AssetHolding[]> {
-  const _functionName: string = 'fetchARC0072AssetHoldingsWithDelay';
-  const arc0072Indexer: IARC0072Indexer | null =
-    getRandomItem<IARC0072Indexer>(network.arc0072Indexers) || null;
+  const _functionName = 'fetchARC0072AssetHoldingsWithDelay';
+  const arc0072Indexer =
+    getRandomItem<BaseARC0072Indexer>(network.arc0072Indexers) || null;
 
   if (!arc0072Indexer) {
     logger?.debug(
@@ -42,10 +45,6 @@ export default async function fetchARC0072AssetHoldingsWithDelay({
       } catch (error) {
         reject(error);
       }
-      return await arc0072Indexer.fetchTokensByOwner({
-        address,
-        logger,
-      });
     }, delay)
   );
 }

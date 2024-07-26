@@ -341,11 +341,11 @@ const AssetPage: FC = () => {
                     tooltipLabel={t<string>('captions.openOn', {
                       name: blockExplorer.canonicalName,
                     })}
-                    url={`${blockExplorer.baseUrl}${
+                    url={
                       asset.type === AssetTypeEnum.Standard
-                        ? blockExplorer.assetPath
-                        : blockExplorer.applicationPath
-                    }/${asset.id}`}
+                        ? blockExplorer.assetURL(asset.id)
+                        : blockExplorer.applicationURL(asset.id)
+                    }
                   />
                 )}
               </HStack>
@@ -435,7 +435,7 @@ const AssetPage: FC = () => {
                                   tooltipLabel={t<string>('captions.openOn', {
                                     name: blockExplorer.canonicalName,
                                   })}
-                                  url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.creator}`}
+                                  url={blockExplorer.accountURL(asset.creator)}
                                 />
                               )}
                           </PageItem>
@@ -466,7 +466,9 @@ const AssetPage: FC = () => {
                                     tooltipLabel={t<string>('captions.openOn', {
                                       name: blockExplorer.canonicalName,
                                     })}
-                                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.clawbackAddress}`}
+                                    url={blockExplorer.accountURL(
+                                      asset.clawbackAddress
+                                    )}
                                   />
                                 )}
                             </PageItem>
@@ -495,7 +497,9 @@ const AssetPage: FC = () => {
                                     tooltipLabel={t<string>('captions.openOn', {
                                       name: blockExplorer.canonicalName,
                                     })}
-                                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.freezeAddress}`}
+                                    url={blockExplorer.accountURL(
+                                      asset.freezeAddress
+                                    )}
                                   />
                                 )}
                             </PageItem>
@@ -527,7 +531,9 @@ const AssetPage: FC = () => {
                                     tooltipLabel={t<string>('captions.openOn', {
                                       name: blockExplorer.canonicalName,
                                     })}
-                                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.managerAddress}`}
+                                    url={blockExplorer.accountURL(
+                                      asset.managerAddress
+                                    )}
                                   />
                                 )}
                             </PageItem>
@@ -559,7 +565,9 @@ const AssetPage: FC = () => {
                                     tooltipLabel={t<string>('captions.openOn', {
                                       name: blockExplorer.canonicalName,
                                     })}
-                                    url={`${blockExplorer.baseUrl}${blockExplorer.accountPath}/${asset.reserveAddress}`}
+                                    url={blockExplorer.accountURL(
+                                      asset.reserveAddress
+                                    )}
                                   />
                                 )}
                             </PageItem>

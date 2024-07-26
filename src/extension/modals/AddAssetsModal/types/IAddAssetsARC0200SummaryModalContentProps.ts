@@ -1,13 +1,15 @@
+// models
+import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
+
 // types
 import type {
   IARC0200Asset,
-  IBlockExplorer,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
 interface IAddAssetsARC0200SummaryModalContentProps {
   asset: IARC0200Asset;
-  blockExplorer: IBlockExplorer | null;
+  blockExplorer: BaseBlockExplorer | null;
   network: INetworkWithTransactionParams;
 }
 
