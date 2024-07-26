@@ -17,7 +17,6 @@ import {
   AccountTabEnum,
   ARC0300AuthorityEnum,
   ARC0300PathEnum,
-  EncryptionMethodEnum,
 } from '@extension/enums';
 
 // errors
@@ -26,7 +25,7 @@ import { BaseExtensionError } from '@extension/errors';
 // features
 import {
   saveActiveAccountDetails,
-  saveNewAccountThunk,
+  saveNewAccountsThunk,
   saveNewWatchAccountThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
@@ -34,32 +33,28 @@ import { setScanQRCodeModal } from '@extension/features/layout';
 import { create as createNotification } from '@extension/features/notifications';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // pages
 import AddAccountTypePage from '@extension/pages/AddAccountTypePage';
-import AddWatchAccountPage, {
-  IAddWatchAccountCompleteResult,
-} from '@extension/pages/AddWatchAccountPage';
+import AddWatchAccountPage from '@extension/pages/AddWatchAccountPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSeedPhrasePage';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectActiveAccountDetails,
   useSelectLogger,
   useSelectAccountsSaving,
 } from '@extension/selectors';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
-
 // types
+import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
+import type { IAddWatchAccountCompleteResult } from '@extension/pages/AddWatchAccountPage';
 import type {
   IAccountWithExtendedProps,
   IAddAccountCompleteResult,
@@ -80,12 +75,34 @@ const AddAccountMainRouter: FC = () => {
     onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
+  const accounts = useSelectAccounts();
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
   const saving = useSelectAccountsSaving();
   // states
   const [keyPair, setKeyPair] = useState<Ed21559KeyPair | null>(null);
   const [name, setName] = useState<string | null>(null);
+  // misc
+  const reset = () => {
+    setKeyPair(null);
+    setName(null);
+  };
+  const updateAccounts = (accountId: string) => {
+    dispatch(
+      updateAccountsThunk({
+        accountIds: [accountId],
+      })
+    );
+    dispatch(
+      saveActiveAccountDetails({
+        accountId,
+        tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
+      })
+    );
+    navigate(ACCOUNTS_ROUTE, {
+      replace: true,
+    });
+  };
   // handlers
   const handleImportAccountViaQRCodeClick = () =>
     dispatch(
@@ -99,6 +116,31 @@ const AddAccountMainRouter: FC = () => {
     name,
     keyPair,
   }: IAddAccountCompleteResult) => {
+    const account =
+      accounts.find(
+        ({ publicKey }) =>
+          convertPublicKeyToAVMAddress(publicKey) ===
+          convertPublicKeyToAVMAddress(keyPair.publicKey)
+      ) || null;
+
+    // if the account is already added
+    if (account) {
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          description: t<string>('captions.accountAlreadyAdded', {
+            address: ellipseAddress(
+              convertPublicKeyToAVMAddress(account.publicKey)
+            ),
+          }),
+          title: t<string>('headings.accountAlreadyAdded'),
+          type: 'info',
+        })
+      );
+
+      return;
+    }
+
     setKeyPair(keyPair);
     setName(name);
 
@@ -110,10 +152,32 @@ const AddAccountMainRouter: FC = () => {
     name,
   }: IAddWatchAccountCompleteResult) => {
     const _functionName = 'handleOnAddWatchAccountComplete';
-    let account: IAccountWithExtendedProps;
+    const account =
+      accounts.find(
+        ({ publicKey }) => convertPublicKeyToAVMAddress(publicKey) === address
+      ) || null;
+    let _account: IAccountWithExtendedProps;
+
+    // if the account is already added
+    if (account) {
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          description: t<string>('captions.accountAlreadyAdded', {
+            address: ellipseAddress(
+              convertPublicKeyToAVMAddress(account.publicKey)
+            ),
+          }),
+          title: t<string>('headings.accountAlreadyAdded'),
+          type: 'info',
+        })
+      );
+
+      return;
+    }
 
     try {
-      account = await dispatch(
+      _account = await dispatch(
         saveNewWatchAccountThunk({
           address,
           name,
@@ -142,7 +206,7 @@ const AddAccountMainRouter: FC = () => {
         ephemeral: true,
         description: t<string>('captions.addedAccount', {
           address: ellipseAddress(
-            convertPublicKeyToAVMAddress(account.publicKey)
+            convertPublicKeyToAVMAddress(_account.publicKey)
           ),
         }),
         title: t<string>('headings.addedAccount'),
@@ -150,33 +214,29 @@ const AddAccountMainRouter: FC = () => {
       })
     );
 
-    updateAccounts(account.id);
+    updateAccounts(_account.id);
     reset();
   };
   const handleOnAuthenticationModalConfirm = async (
     result: TOnConfirmResult
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
-    let account: IAccountWithExtendedProps;
+    let _accounts: IAccountWithExtendedProps[];
 
     if (!keyPair) {
       return;
     }
 
     try {
-      account = await dispatch(
-        saveNewAccountThunk({
-          keyPair,
-          name,
-          ...(result.type === EncryptionMethodEnum.Password
-            ? {
-                password: result.password,
-                type: EncryptionMethodEnum.Password,
-              }
-            : {
-                inputKeyMaterial: result.inputKeyMaterial,
-                type: EncryptionMethodEnum.Passkey,
-              }),
+      _accounts = await dispatch(
+        saveNewAccountsThunk({
+          accounts: [
+            {
+              keyPair,
+              name,
+            },
+          ],
+          ...result,
         })
       ).unwrap();
     } catch (error) {
@@ -202,7 +262,7 @@ const AddAccountMainRouter: FC = () => {
         ephemeral: true,
         description: t<string>('captions.addedAccount', {
           address: ellipseAddress(
-            convertPublicKeyToAVMAddress(account.publicKey)
+            convertPublicKeyToAVMAddress(keyPair.publicKey)
           ),
         }),
         title: t<string>('headings.addedAccount'),
@@ -210,7 +270,7 @@ const AddAccountMainRouter: FC = () => {
       })
     );
 
-    updateAccounts(account.id);
+    updateAccounts(_accounts[0].id);
     reset();
   };
   const handleOnError = (error: BaseExtensionError) =>
@@ -225,27 +285,6 @@ const AddAccountMainRouter: FC = () => {
         type: 'error',
       })
     );
-  // misc
-  const reset = () => {
-    setKeyPair(null);
-    setName(null);
-  };
-  const updateAccounts = (accountId: string) => {
-    dispatch(
-      updateAccountsThunk({
-        accountIds: [accountId],
-      })
-    );
-    dispatch(
-      saveActiveAccountDetails({
-        accountId,
-        tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
-      })
-    );
-    navigate(ACCOUNTS_ROUTE, {
-      replace: true,
-    });
-  };
 
   return (
     <>

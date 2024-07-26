@@ -176,8 +176,6 @@ const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
   useEffect(() => {
     if (uri) {
       onURI(uri);
-
-      reset();
     }
   }, [uri]);
 

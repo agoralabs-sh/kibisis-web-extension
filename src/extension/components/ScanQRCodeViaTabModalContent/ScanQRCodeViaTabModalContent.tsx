@@ -61,9 +61,6 @@ const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
   useEffect(() => {
     if (uri) {
       onURI(uri);
-
-      // stop scanning
-      resetScanAction();
     }
   }, [uri]);
 

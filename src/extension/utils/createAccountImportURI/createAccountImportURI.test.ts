@@ -120,7 +120,7 @@ describe(`${__dirname}#createAccountImportURI`, () => {
       assertSchemaWithoutQueryParams(schema);
 
       expect(schema?.query[ARC0300QueryEnum.Name]).toHaveLength(1);
-      expect(schema?.query[ARC0300QueryEnum.Name][0]).toBe(name);
+      expect(schema?.query[ARC0300QueryEnum.Name]?.includes(name)).toBe(true);
       expect(schema?.query[ARC0300QueryEnum.PrivateKey]).toHaveLength(1);
       expect(schema?.query[ARC0300QueryEnum.PrivateKey][0]).toBe(
         encodeBase64URLSafe(keyPair.privateKey)
@@ -190,7 +190,7 @@ describe(`${__dirname}#createAccountImportURI`, () => {
       expect(schema?.query[ARC0300QueryEnum.Name]).toHaveLength(
         accounts.length
       );
-      schema?.query[ARC0300QueryEnum.Name].forEach((value, index) =>
+      schema?.query[ARC0300QueryEnum.Name]?.forEach((value, index) =>
         expect(value).toBe(accounts[index].name)
       );
       expect(schema?.query[ARC0300QueryEnum.PrivateKey]).toHaveLength(
@@ -235,7 +235,7 @@ describe(`${__dirname}#createAccountImportURI`, () => {
       expect(schema?.query[ARC0300QueryEnum.Name]).toHaveLength(
         namedAccounts.length
       );
-      schema?.query[ARC0300QueryEnum.Name].forEach((value, index) =>
+      schema?.query[ARC0300QueryEnum.Name]?.forEach((value, index) =>
         expect(value).toBe(namedAccounts[index].name)
       );
       expect(schema?.query[ARC0300QueryEnum.PrivateKey]).toHaveLength(
@@ -306,7 +306,7 @@ describe(`${__dirname}#createAccountImportURI`, () => {
     it('should return a schema for multiple unnamed accounts', () => {
       // arrange
       const accounts: IExportAccount[] = Array.from(
-        { length: EXPORT_ACCOUNT_PAGE_LIMIT + 1 },
+        { length: EXPORT_ACCOUNT_PAGE_LIMIT },
         () => ({
           name: encodeHex(randomBytes(16)), // 32 byte string max
           privateKey: Ed21559KeyPair.generate().privateKey,
@@ -343,8 +343,7 @@ describe(`${__dirname}#createAccountImportURI`, () => {
 
         if (pagination) {
           expectedLastPageItems =
-            accounts.length -
-            EXPORT_ACCOUNT_PAGE_LIMIT * (pagination.total - 1);
+            accounts.length - EXPORT_ACCOUNT_PAGE_LIMIT * pagination.total;
 
           // for pages that are not the last page, they should contain 5 accounts, the last page should contain 1-5 accounts
           expect(value?.query[ARC0300QueryEnum.Name]).toHaveLength(

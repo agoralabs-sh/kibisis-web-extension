@@ -51,7 +51,7 @@ const translation: IResourceLanguage = {
     yesImIn: `Yes, I'm In`,
   },
   captions: {
-    accountAlreadyAdded: 'Account already added.',
+    accountAlreadyAdded: 'Account {{address}} already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
     addAssetConfirming:
@@ -63,6 +63,7 @@ const translation: IResourceLanguage = {
     addAssetURI:
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
+    addedAccounts: 'Added {{amount}} accounts.',
     addPasskey1:
       'Adding a passkey allows you to sign transactions without your password.',
     addPasskey2: `The passkey will be used to to encrypt/decrypt the private keys of your accounts.`,
@@ -139,7 +140,7 @@ const translation: IResourceLanguage = {
     groupIdCopied: 'Group ID copied!',
     higherFee:
       'The fee is higher as this is the first time the recipient has interacted with the {{symbol}} asset.',
-    importAccount: 'You are about to import the following account.',
+    importAccounts: 'You are about to import the following account(s).',
     importAccountViaQRCode: `Import an account, including any assets, by scanning a QR code.`,
     importAccountViaSeedPhrase: `Import an existing account using a seed phrase.`,
     importAccountViaSeedPhraseComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
@@ -308,9 +309,10 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    accountAlreadyAdded: 'Account Already Added',
     accounts: 'Accounts',
     addAsset: 'Add Asset',
-    addedAccount: 'Added Account!',
+    addedAccounts: 'Added Account(s)',
     addedAsset: 'Added Asset {{symbol}}!',
     addPasskey: 'Add Passkey',
     addWatchAccount: 'Add A Watch Account',

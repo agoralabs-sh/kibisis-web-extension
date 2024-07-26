@@ -167,8 +167,6 @@ const ScanQRCodeViaScreenCaptureModalContent: FC<
   useEffect(() => {
     if (uri) {
       onURI(uri);
-
-      reset();
     }
   }, [uri]);
 

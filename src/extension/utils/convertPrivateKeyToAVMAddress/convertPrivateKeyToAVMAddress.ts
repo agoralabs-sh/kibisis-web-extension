@@ -17,13 +17,11 @@ export default function convertPrivateKeyToAVMAddress(
   const _functionName = 'convertPrivateKeyToAddress';
 
   try {
-    const publicKey: Uint8Array =
-      sign.keyPair.fromSecretKey(privateKey).publicKey;
+    const publicKey: Uint8Array = sign.keyPair.fromSeed(privateKey).publicKey;
 
     return encodeAddress(publicKey);
   } catch (error) {
-    options?.logger &&
-      options.logger.error(`${_functionName}(): ${error.message}`);
+    options?.logger?.error(`${_functionName}: ${error.message}`);
 
     return null;
   }

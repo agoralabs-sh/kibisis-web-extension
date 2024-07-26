@@ -63,7 +63,7 @@ const ARC0300KeyRegistrationTransactionSendEventModal: FC<IModalProps> = ({
         <ARC0300KeyRegistrationTransactionSendModalContent
           onComplete={handleClose}
           onCancel={handleClose}
-          schema={event.payload}
+          schemaOrSchemas={event.payload}
         />
       ) : (
         <ARC0300KeyRegistrationTransactionSendModalContentSkeleton />

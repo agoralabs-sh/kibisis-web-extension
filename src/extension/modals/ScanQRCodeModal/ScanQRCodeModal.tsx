@@ -41,6 +41,7 @@ import {
 } from '@extension/types';
 
 // utils
+import isARC0300SchemaPaginationComplete from '@extension/utils/isARC0300SchemaPaginationComplete';
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 
 const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
@@ -54,10 +55,10 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   const [scanViaScreenCapture, setScanViaScreenCapture] =
     useState<boolean>(false);
   const [scanViaTab, setScanViaTab] = useState<boolean>(false);
-  const [uri, setURI] = useState<string | null>(null);
+  const [uris, setURIs] = useState<string[]>([]);
   // misc
   const reset = () => {
-    setURI(null);
+    setURIs([]);
     setScanViaCamera(false);
     setScanViaScreenCapture(false);
     setScanViaTab(false);
@@ -68,126 +69,148 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
     reset();
     onClose && onClose();
   };
-  const handleOnURI = (uri: string) => setURI(uri);
+  const handleOnURI = (uri: string) => {
+    const index = uris.findIndex((value) => value === uri);
+
+    // if the uri doesn't exist, add it
+    if (index < 0) {
+      console.log('adding uri: ', uri);
+      setURIs([...uris, uri]);
+      console.log('new uris: ', [...uris, uri]);
+    }
+  };
   const handlePreviousClick = () => reset();
   const handleScanViaCameraClick = () => setScanViaCamera(true);
   const handleScanViaScreenCaptureClick = () => setScanViaScreenCapture(true);
   const handleScanViaTabClick = () => setScanViaTab(true);
   // renders
   const renderContent = () => {
-    let arc0300Schema: IARC0300BaseSchema | null;
+    let primeSchema: IARC0300BaseSchema | null;
+    let schemas: IARC0300BaseSchema[];
 
-    if (uri) {
-      arc0300Schema = parseURIToARC0300Schema(uri, {
-        logger,
-        supportedNetworks: networks,
-      });
+    if (uris.length > 0) {
+      schemas = uris.reduce((acc, currentValue) => {
+        const schema = parseURIToARC0300Schema(currentValue, {
+          logger,
+          supportedNetworks: networks,
+        });
 
-      if (scanQRCodeModal && arc0300Schema) {
-        switch (arc0300Schema.authority) {
-          case ARC0300AuthorityEnum.Account:
+        return !schema ? acc : [...acc, schema];
+      }, []);
+
+      if (!scanQRCodeModal) {
+        // TODO: show loading screening
+
+        return;
+      }
+
+      primeSchema = schemas[0];
+
+      // if the uri cannot be parsed
+      if (!primeSchema) {
+        return (
+          <UnknownURIModalContent
+            onPreviousClick={handlePreviousClick}
+            uri={uris[0]}
+          />
+        );
+      }
+
+      switch (primeSchema.authority) {
+        case ARC0300AuthorityEnum.Account:
+          if (
+            scanQRCodeModal.allowedAuthorities.length <= 0 ||
+            scanQRCodeModal.allowedAuthorities.includes(
+              ARC0300AuthorityEnum.Account
+            )
+          ) {
+            // import
             if (
-              scanQRCodeModal.allowedAuthorities.length <= 0 ||
-              scanQRCodeModal.allowedAuthorities.includes(
-                ARC0300AuthorityEnum.Account
-              )
+              primeSchema.paths[0] === ARC0300PathEnum.Import &&
+              (scanQRCodeModal.allowedParams.length <= 0 ||
+                scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Import))
             ) {
-              // import
-              if (
-                arc0300Schema.paths[0] === ARC0300PathEnum.Import &&
-                (scanQRCodeModal.allowedParams.length <= 0 ||
-                  scanQRCodeModal.allowedParams.includes(
-                    ARC0300PathEnum.Import
-                  ))
-              ) {
+              if (isARC0300SchemaPaginationComplete(schemas)) {
                 return (
                   <ARC0300AccountImportModalContent
                     cancelButtonIcon={<IoArrowBackOutline />}
                     cancelButtonLabel={t<string>('buttons.previous')}
                     onComplete={handleClose}
                     onCancel={handlePreviousClick}
-                    schema={arc0300Schema as IARC0300AccountImportSchema}
+                    schemaOrSchemas={schemas as IARC0300AccountImportSchema[]}
                   />
                 );
               }
             }
+          }
 
-            break;
-          case ARC0300AuthorityEnum.Asset:
+          break;
+        case ARC0300AuthorityEnum.Asset:
+          if (
+            scanQRCodeModal.allowedAuthorities.length <= 0 ||
+            scanQRCodeModal.allowedAuthorities.includes(
+              ARC0300AuthorityEnum.Asset
+            )
+          ) {
+            // add
             if (
-              scanQRCodeModal.allowedAuthorities.length <= 0 ||
-              scanQRCodeModal.allowedAuthorities.includes(
-                ARC0300AuthorityEnum.Asset
-              )
+              primeSchema.paths[0] === ARC0300PathEnum.Add &&
+              (scanQRCodeModal.allowedParams.length <= 0 ||
+                scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Add))
             ) {
-              // add
-              if (
-                arc0300Schema.paths[0] === ARC0300PathEnum.Add &&
-                (scanQRCodeModal.allowedParams.length <= 0 ||
-                  scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Add))
+              return (
+                <ARC0300AssetAddModalContent
+                  cancelButtonIcon={<IoArrowBackOutline />}
+                  cancelButtonLabel={t<string>('buttons.previous')}
+                  onComplete={handleClose}
+                  onCancel={handlePreviousClick}
+                  schemaOrSchemas={primeSchema as IARC0300AssetAddSchema}
+                />
+              );
+            }
+          }
+
+          break;
+        case ARC0300AuthorityEnum.Transaction:
+          if (
+            scanQRCodeModal.allowedAuthorities.length <= 0 ||
+            scanQRCodeModal.allowedAuthorities.includes(
+              ARC0300AuthorityEnum.Transaction
+            )
+          ) {
+            // send
+            if (
+              primeSchema.paths[0] === ARC0300PathEnum.Send &&
+              (scanQRCodeModal.allowedParams.length <= 0 ||
+                scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Send))
+            ) {
+              switch (
+                (primeSchema as TARC0300TransactionSendSchemas).query.type
               ) {
-                return (
-                  <ARC0300AssetAddModalContent
-                    cancelButtonIcon={<IoArrowBackOutline />}
-                    cancelButtonLabel={t<string>('buttons.previous')}
-                    onComplete={handleClose}
-                    onCancel={handlePreviousClick}
-                    schema={arc0300Schema as IARC0300AssetAddSchema}
-                  />
-                );
+                case TransactionType.keyreg:
+                  return (
+                    <ARC0300KeyRegistrationTransactionSendModalContent
+                      cancelButtonIcon={<IoArrowBackOutline />}
+                      cancelButtonLabel={t<string>('buttons.previous')}
+                      onComplete={handleClose}
+                      onCancel={handlePreviousClick}
+                      schemaOrSchemas={
+                        primeSchema as
+                          | IARC0300OfflineKeyRegistrationTransactionSendSchema
+                          | IARC0300OnlineKeyRegistrationTransactionSendSchema
+                      }
+                    />
+                  );
+                default:
+                  break;
               }
             }
+          }
 
-            break;
-          case ARC0300AuthorityEnum.Transaction:
-            if (
-              scanQRCodeModal.allowedAuthorities.length <= 0 ||
-              scanQRCodeModal.allowedAuthorities.includes(
-                ARC0300AuthorityEnum.Transaction
-              )
-            ) {
-              // send
-              if (
-                arc0300Schema.paths[0] === ARC0300PathEnum.Send &&
-                (scanQRCodeModal.allowedParams.length <= 0 ||
-                  scanQRCodeModal.allowedParams.includes(ARC0300PathEnum.Send))
-              ) {
-                switch (
-                  (arc0300Schema as TARC0300TransactionSendSchemas).query.type
-                ) {
-                  case TransactionType.keyreg:
-                    return (
-                      <ARC0300KeyRegistrationTransactionSendModalContent
-                        cancelButtonIcon={<IoArrowBackOutline />}
-                        cancelButtonLabel={t<string>('buttons.previous')}
-                        onComplete={handleClose}
-                        onCancel={handlePreviousClick}
-                        schema={
-                          arc0300Schema as
-                            | IARC0300OfflineKeyRegistrationTransactionSendSchema
-                            | IARC0300OnlineKeyRegistrationTransactionSendSchema
-                        }
-                      />
-                    );
-                  default:
-                    break;
-                }
-              }
-            }
-
-            break;
-          default:
-            break;
-        }
+          break;
+        default:
+          break;
       }
-
-      // if the uri cannot be parsed
-      return (
-        <UnknownURIModalContent
-          onPreviousClick={handlePreviousClick}
-          uri={uri}
-        />
-      );
     }
 
     if (scanViaCamera) {

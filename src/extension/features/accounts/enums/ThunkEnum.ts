@@ -7,7 +7,7 @@ enum ThunkEnum {
   RemoveStandardAssetHoldings = 'accounts/removeStandardAssetHoldings',
   SaveAccountName = 'accounts/saveAccountName',
   SaveActiveAccountDetails = 'accounts/saveActiveAccountDetails',
-  SaveNewAccount = 'accounts/saveNewAccount',
+  SaveNewAccounts = 'accounts/saveNewAccounts',
   SaveNewWatchAccount = 'accounts/saveNewWatchAccount',
   StartPollingForAccounts = 'accounts/startPollingForAccounts',
   StopPollingForAccounts = 'accounts/stopPollingForAccounts',

@@ -88,7 +88,13 @@ import isAssetInAccountHoldings from '@extension/utils/isAssetInAccountHoldings'
 
 const ARC0300AssetAddModalContent: FC<
   IARC0300ModalContentProps<IARC0300AssetAddSchema>
-> = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
+> = ({
+  cancelButtonIcon,
+  cancelButtonLabel,
+  onComplete,
+  onCancel,
+  schemaOrSchemas: schema,
+}) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();

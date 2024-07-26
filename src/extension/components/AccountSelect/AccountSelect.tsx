@@ -24,6 +24,9 @@ import AccountSelectModal from '@extension/modals/AccountSelectModal';
 import type { IAccountWithExtendedProps } from '@extension/types';
 import type { IProps } from './types';
 
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+
 const AccountSelect: FC<IProps> = ({
   accounts,
   allowWatchAccounts,
@@ -64,14 +67,17 @@ const AccountSelect: FC<IProps> = ({
           {/*account view*/}
           <Stack
             borderRadius="md"
-            borderWidth="1px"
+            borderWidth={1}
             flexGrow={1}
             height={INPUT_HEIGHT}
             justifyContent="center"
             px={DEFAULT_GAP - 2}
             w="full"
           >
-            <AccountItem account={value} />
+            <AccountItem
+              address={convertPublicKeyToAVMAddress(value.publicKey)}
+              {...(value.name && { name: value.name })}
+            />
           </Stack>
 
           {/*open account select modal button*/}

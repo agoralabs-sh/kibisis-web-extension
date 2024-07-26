@@ -5,6 +5,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Stack,
   Text,
   useDisclosure,
   VStack,
@@ -16,77 +17,61 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 // components
-import AssetAvatar from '@extension/components/AssetAvatar';
-import AssetBadge from '@extension/components/AssetBadge';
-import AssetIcon from '@extension/components/AssetIcon';
+import AccountItem from '@extension/components/AccountItem';
 import Button from '@extension/components/Button';
-import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
-import ModalItem from '@extension/components/ModalItem';
-import ModalTextItem from '@extension/components/ModalTextItem';
-import ModalSubHeading from '@extension/components/ModalSubHeading';
 
 // constants
 import {
   ACCOUNTS_ROUTE,
   BODY_BACKGROUND_COLOR,
   DEFAULT_GAP,
+  TAB_ITEM_HEIGHT,
 } from '@extension/constants';
 
 // enums
-import {
-  AccountTabEnum,
-  ARC0300QueryEnum,
-  ErrorCodeEnum,
-} from '@extension/enums';
+import { AccountTabEnum, ARC0300QueryEnum } from '@extension/enums';
 
 // errors
 import { BaseExtensionError } from '@extension/errors';
 
 // features
 import {
-  addARC0200AssetHoldingsThunk,
-  IUpdateAssetHoldingsResult,
   saveActiveAccountDetails,
-  saveNewAccountThunk,
+  saveNewAccountsThunk,
 } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useUpdateARC0200Assets from '@extension/hooks/useUpdateARC0200Assets';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectActiveAccountDetails,
   useSelectLogger,
-  useSelectSelectedNetwork,
 } from '@extension/selectors';
 
 // services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
+import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type {
-  IAccount,
+  IAccountWithExtendedProps,
   IARC0300AccountImportSchema,
-  IARC0300AccountImportQuery,
   IARC0300ModalContentProps,
   IAppThunkDispatch,
 } from '@extension/types';
+import type { IARC0300AccountImportItem } from './types';
 
 // utils
 import convertPrivateKeyToAVMAddress from '@extension/utils/convertPrivateKeyToAVMAddress';
@@ -94,8 +79,14 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const ARC0300AccountImportModalContent: FC<
-  IARC0300ModalContentProps<IARC0300AccountImportSchema>
-> = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
+  IARC0300ModalContentProps<IARC0300AccountImportSchema[]>
+> = ({
+  cancelButtonIcon,
+  cancelButtonLabel,
+  onComplete,
+  onCancel,
+  schemaOrSchemas: schemas,
+}) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
@@ -105,24 +96,17 @@ const ARC0300AccountImportModalContent: FC<
     onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
+  const accounts = useSelectAccounts();
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
-  const network = useSelectSelectedNetwork();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const {
-    assets,
-    loading,
-    reset: resetUpdateAssets,
-  } = useUpdateARC0200Assets(schema.query[ARC0300QueryEnum.Asset]);
-  const primaryButtonTextColor = usePrimaryButtonTextColor();
-  const subTextColor = useSubTextColor();
   // states
-  const [address, setAddress] = useState<string | null>(null);
+  const [items, setItems] = useState<IARC0300AccountImportItem[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
   // misc
   const reset = () => {
-    resetUpdateAssets();
+    setItems([]);
     setSaving(false);
   };
   // handlers
@@ -134,123 +118,68 @@ const ARC0300AccountImportModalContent: FC<
   const handleOnAuthenticationModalConfirm = async (
     result: TOnConfirmResult
   ) => {
-    const _functionName = 'handleOnAuthenticationModalConfirm';
-    const privateKey: Uint8Array | null = schema.query[
-      ARC0300QueryEnum.PrivateKey
-    ][0]
-      ? decodeBase64URLSafe(schema.query[ARC0300QueryEnum.PrivateKey][0])
-      : null;
-    let account: IAccount | null;
-    let questsService: QuestsService;
-    let updateAssetHoldingsResult: IUpdateAssetHoldingsResult;
-
-    if (!privateKey) {
-      logger.debug(
-        `${ARC0300AccountImportModalContent.name}#${_functionName}: failed to decode the private key`
-      );
-
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            context: ErrorCodeEnum.ParsingError,
-            type: 'key',
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', {
-            context: ErrorCodeEnum.ParsingError,
-          }),
-          type: 'error',
-        })
-      );
-
-      return;
-    }
+    let _accounts: IAccountWithExtendedProps[];
 
     setSaving(true);
 
     try {
-      account = await dispatch(
-        saveNewAccountThunk({
-          keyPair: Ed21559KeyPair.generateFromPrivateKey(privateKey),
-          name: null,
+      _accounts = await dispatch(
+        saveNewAccountsThunk({
+          accounts: items.map(({ name, privateKey }) => ({
+            keyPair: Ed21559KeyPair.generateFromPrivateKey(privateKey),
+            name: name || null,
+          })),
           ...result,
         })
       ).unwrap();
-
-      // if there are assets, add them to the new account
-      if (assets.length > 0 && network) {
-        updateAssetHoldingsResult = await dispatch(
-          addARC0200AssetHoldingsThunk({
-            accountId: account.id,
-            assets,
-            genesisHash: network.genesisHash,
-          })
-        ).unwrap();
-
-        account = updateAssetHoldingsResult.account;
-      }
     } catch (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.PrivateKeyAlreadyExistsError:
-          logger.debug(
-            `${ARC0300AccountImportModalContent.name}#${_functionName}: account already exists, carry on`
-          );
-
-          // clean up and close
-          handleOnComplete();
-
-          break;
-        default:
-          dispatch(
-            createNotification({
-              description: t<string>('errors.descriptions.code', {
-                code: error.code,
-                context: error.code,
-              }),
-              ephemeral: true,
-              title: t<string>('errors.titles.code', { context: error.code }),
-              type: 'error',
-            })
-          );
-          break;
-      }
+      dispatch(
+        createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
+          ephemeral: true,
+          title: t<string>('errors.titles.code', { context: error.code }),
+          type: 'error',
+        })
+      );
 
       setSaving(false);
 
       return;
     }
 
-    if (account) {
+    if (_accounts.length > 0) {
       dispatch(
         createNotification({
           ephemeral: true,
-          description: t<string>('captions.addedAccount', {
-            address: ellipseAddress(
-              convertPublicKeyToAVMAddress(
-                PrivateKeyService.decode(account.publicKey)
-              )
-            ),
-          }),
-          title: t<string>('headings.addedAccount'),
+          description:
+            _accounts.length > 1
+              ? t<string>('captions.addedAccounts', {
+                  amount: _accounts.length,
+                })
+              : t<string>('captions.addedAccount', {
+                  address: ellipseAddress(
+                    convertPublicKeyToAVMAddress(_accounts[0].publicKey)
+                  ),
+                }),
+          title: t<string>('headings.addedAccounts'),
           type: 'success',
         })
       );
 
-      questsService = new QuestsService({
-        logger,
-      });
-
       // track the action
-      await questsService.importAccountViaQRCodeQuest(
-        convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(account.publicKey)
-        )
+      await new QuestsService({
+        logger,
+      }).importAccountViaQRCodeQuest(
+        convertPublicKeyToAVMAddress(_accounts[0].publicKey)
       );
 
       // go to the account and the assets tab
       dispatch(
         saveActiveAccountDetails({
-          accountId: account.id,
+          accountId: _accounts[0].id,
           tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
         })
       );
@@ -278,15 +207,42 @@ const ARC0300AccountImportModalContent: FC<
   };
 
   useEffect(() => {
-    const privateKey: Uint8Array | null = schema.query[
-      ARC0300QueryEnum.PrivateKey
-    ][0]
-      ? decodeBase64URLSafe(schema.query[ARC0300QueryEnum.PrivateKey][0])
-      : null;
+    setItems(
+      schemas.reduce((acc, schema) => {
+        const privateKeys =
+          schema.query[ARC0300QueryEnum.PrivateKey].map(decodeBase64URLSafe);
+        const addresses = privateKeys.map((value) =>
+          convertPrivateKeyToAVMAddress(value, { logger })
+        );
 
-    if (privateKey) {
-      setAddress(convertPrivateKeyToAVMAddress(privateKey));
-    }
+        return [
+          ...acc,
+          ...addresses.reduce((acc, address, index) => {
+            // if the private key is invalid, or the address already exists, ignore
+            if (
+              !address ||
+              accounts.find(
+                (value) =>
+                  convertPublicKeyToAVMAddress(value.publicKey) === address
+              )
+            ) {
+              return acc;
+            }
+
+            return [
+              ...acc,
+              {
+                address,
+                privateKey: privateKeys[index],
+                ...(schema.query[ARC0300QueryEnum.Name] && {
+                  name: schema.query[ARC0300QueryEnum.Name][index],
+                }),
+              },
+            ];
+          }, []),
+        ];
+      }, [])
+    );
   }, []);
 
   return (
@@ -307,88 +263,47 @@ const ARC0300AccountImportModalContent: FC<
       >
         {/*header*/}
         <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
-          <Heading color={defaultTextColor} size="md" textAlign="center">
-            {t<string>('headings.importAccount')}
-          </Heading>
-        </ModalHeader>
-
-        {/*body*/}
-        <ModalBody display="flex" px={DEFAULT_GAP}>
           <VStack
             alignItems="center"
             flexGrow={1}
-            spacing={DEFAULT_GAP}
+            spacing={DEFAULT_GAP - 2}
             w="full"
           >
+            <Heading color={defaultTextColor} size="md" textAlign="center">
+              {t<string>('headings.importAccount')}
+            </Heading>
+
             <Text color={defaultTextColor} fontSize="sm" textAlign="center">
-              {t<string>('captions.importAccount')}
+              {t<string>('captions.importAccounts')}
             </Text>
+          </VStack>
+        </ModalHeader>
 
-            <VStack spacing={DEFAULT_GAP / 3} w="full">
-              <ModalSubHeading text={t<string>('labels.account')} />
+        {/*body*/}
+        <ModalBody display="flex">
+          <VStack spacing={DEFAULT_GAP / 3} w="full">
+            {items.map(({ address, name }, index) => (
+              <HStack
+                borderRadius="md"
+                borderWidth={1}
+                key={`account-import-account-item-${index}`}
+                justifyContent="center"
+                px={DEFAULT_GAP - 2}
+                py={DEFAULT_GAP / 3}
+                w="full"
+              >
+                <AccountItem address={address} name={name} />
 
-              {/*address*/}
-              {!address ? (
-                <ModalSkeletonItem />
-              ) : (
-                <ModalTextItem
-                  label={`${t<string>('labels.address')}:`}
-                  tooltipLabel={address}
-                  value={ellipseAddress(address, {
-                    end: 10,
-                    start: 10,
-                  })}
-                />
-              )}
-            </VStack>
-
-            {/*assets*/}
-            {loading && (
-              <VStack spacing={DEFAULT_GAP / 3} w="full">
-                <ModalSkeletonItem />
-                <ModalSkeletonItem />
-                <ModalSkeletonItem />
-              </VStack>
-            )}
-            {assets.length > 0 && !loading && (
-              <VStack spacing={DEFAULT_GAP / 3} w="full">
-                <ModalSubHeading text={t<string>('labels.assets')} />
-
-                {assets.map((value, index) => (
-                  <ModalItem
-                    key={`account-import-add-asset-${index}`}
-                    label={`${value.name}:`}
-                    value={
-                      <HStack spacing={DEFAULT_GAP / 3}>
-                        {/*icon*/}
-                        <AssetAvatar
-                          asset={value}
-                          fallbackIcon={
-                            <AssetIcon
-                              color={primaryButtonTextColor}
-                              h={3}
-                              w={3}
-                              {...(network && {
-                                networkTheme: network.chakraTheme,
-                              })}
-                            />
-                          }
-                          size="xs"
-                        />
-
-                        {/*symbol*/}
-                        <Text color={subTextColor} fontSize="xs">
-                          {value.symbol}
-                        </Text>
-
-                        {/*type*/}
-                        <AssetBadge size="xs" type={value.type} />
-                      </HStack>
-                    }
-                  />
-                ))}
-              </VStack>
-            )}
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="center"
+                  w="10%"
+                >
+                  {index + 1}
+                </Text>
+              </HStack>
+            ))}
           </VStack>
         </ModalBody>
 
@@ -408,7 +323,7 @@ const ARC0300AccountImportModalContent: FC<
 
             {/*import button*/}
             <Button
-              isLoading={loading || saving}
+              isLoading={saving}
               onClick={handleImportClick}
               size="lg"
               variant="solid"

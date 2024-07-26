@@ -82,7 +82,7 @@ export default function createAccountImportURIs({
     queryParams.append(ARC0300QueryEnum.Checksum, checksum);
     queryParams.append(
       ARC0300QueryEnum.Page,
-      `${String(index + 1)}:${String(totalPages)}`
+      `${String(index)}:${String(totalPages)}`
     );
 
     return `${ARC_0300_SCHEME}://${ARC0300AuthorityEnum.Account}/${

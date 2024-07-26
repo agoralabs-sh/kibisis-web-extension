@@ -143,7 +143,7 @@ describe(`${__dirname}#parseARC0300AccountImportSchema`, () => {
     expect(result.authority).toBe(ARC0300AuthorityEnum.Account);
     expect(result.paths).toEqual([ARC0300PathEnum.Import]);
     expect(result.query[ARC0300QueryEnum.Checksum]).toBe(checksum);
-    expect(result.query[ARC0300QueryEnum.Name].includes(name)).toBe(true);
+    expect(result.query[ARC0300QueryEnum.Name]?.includes(name)).toBe(true);
     expect(result.query[ARC0300QueryEnum.Page]?.page).toBe(pageCount);
     expect(result.query[ARC0300QueryEnum.Page]?.total).toBe(pageTotal);
     expect(
