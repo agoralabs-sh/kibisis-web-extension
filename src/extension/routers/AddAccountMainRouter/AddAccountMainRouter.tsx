@@ -1,5 +1,5 @@
 import { useDisclosure } from '@chakra-ui/react';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
@@ -19,10 +19,13 @@ import {
   ARC0300PathEnum,
 } from '@extension/enums';
 
+// errors
+import { BaseExtensionError } from '@extension/errors';
+
 // features
 import {
   saveActiveAccountDetails,
-  saveNewAccountThunk,
+  saveNewAccountsThunk,
   saveNewWatchAccountThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
@@ -30,36 +33,36 @@ import { setScanQRCodeModal } from '@extension/features/layout';
 import { create as createNotification } from '@extension/features/notifications';
 
 // modals
-import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
+
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // pages
 import AddAccountTypePage from '@extension/pages/AddAccountTypePage';
-import AddWatchAccountPage, {
-  IAddWatchAccountCompleteResult,
-} from '@extension/pages/AddWatchAccountPage';
+import AddWatchAccountPage from '@extension/pages/AddWatchAccountPage';
 import CreateNewAccountPage from '@extension/pages/CreateNewAccountPage';
 import ImportAccountViaSeedPhrasePage from '@extension/pages/ImportAccountViaSeedPhrasePage';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectActiveAccountDetails,
   useSelectLogger,
-  useSelectPasswordLockPassword,
   useSelectAccountsSaving,
-  useSelectSettings,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
+import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
+import type { IAddWatchAccountCompleteResult } from '@extension/pages/AddWatchAccountPage';
 import type {
   IAccountWithExtendedProps,
-  IAddAccountCompleteResult,
   IAppThunkDispatch,
+  INewAccount,
 } from '@extension/types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AddAccountMainRouter: FC = () => {
@@ -67,47 +70,111 @@ const AddAccountMainRouter: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   const navigate = useNavigate();
   const {
-    isOpen: isConfirmPasswordModalOpen,
-    onClose: onConfirmPasswordModalClose,
-    onOpen: onConfirmPasswordModalOpen,
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
+  const accounts = useSelectAccounts();
   const activeAccountDetails = useSelectActiveAccountDetails();
   const logger = useSelectLogger();
-  const passwordLockPassword = useSelectPasswordLockPassword();
   const saving = useSelectAccountsSaving();
-  const settings = useSelectSettings();
   // states
+  const [keyPair, setKeyPair] = useState<Ed21559KeyPair | null>(null);
   const [name, setName] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
-  const [privateKey, setPrivateKey] = useState<Uint8Array | null>(null);
+  // misc
+  const reset = () => {
+    setKeyPair(null);
+    setName(null);
+  };
+  const updateAccounts = (accountId: string) => {
+    dispatch(
+      updateAccountsThunk({
+        accountIds: [accountId],
+      })
+    );
+    dispatch(
+      saveActiveAccountDetails({
+        accountId,
+        tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
+      })
+    );
+    navigate(ACCOUNTS_ROUTE, {
+      replace: true,
+    });
+  };
   // handlers
-  const handleOnAddAccountComplete = async ({
-    name,
-    privateKey,
-  }: IAddAccountCompleteResult) => {
-    setName(name);
-    setPrivateKey(privateKey);
+  const handleImportAccountViaQRCodeClick = () =>
+    dispatch(
+      setScanQRCodeModal({
+        // only allow account import
+        allowedAuthorities: [ARC0300AuthorityEnum.Account],
+        allowedParams: [ARC0300PathEnum.Import],
+      })
+    );
+  const handleOnAddAccountComplete = async ({ name, keyPair }: INewAccount) => {
+    const account =
+      accounts.find(
+        ({ publicKey }) =>
+          convertPublicKeyToAVMAddress(publicKey) ===
+          convertPublicKeyToAVMAddress(keyPair.publicKey)
+      ) || null;
 
-    // if the password lock is enabled and the password is active, use the password
-    if (settings.security.enablePasswordLock && passwordLockPassword) {
-      setPassword(passwordLockPassword);
+    // if the account is already added
+    if (account) {
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          description: t<string>('captions.accountAlreadyAdded', {
+            address: ellipseAddress(
+              convertPublicKeyToAVMAddress(account.publicKey)
+            ),
+          }),
+          title: t<string>('headings.accountAlreadyAdded'),
+          type: 'info',
+        })
+      );
 
       return;
     }
 
-    // get the password from the modal
-    onConfirmPasswordModalOpen();
+    setKeyPair(keyPair);
+    setName(name);
+
+    onAuthenticationModalOpen();
   };
+  const handleOnAuthenticationModalClose = () => onAuthenticationModalClose();
   const handleOnAddWatchAccountComplete = async ({
     address,
     name,
   }: IAddWatchAccountCompleteResult) => {
     const _functionName = 'handleOnAddWatchAccountComplete';
-    let account: IAccountWithExtendedProps;
+    const account =
+      accounts.find(
+        ({ publicKey }) => convertPublicKeyToAVMAddress(publicKey) === address
+      ) || null;
+    let _account: IAccountWithExtendedProps;
+
+    // if the account is already added
+    if (account) {
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          description: t<string>('captions.accountAlreadyAdded', {
+            address: ellipseAddress(
+              convertPublicKeyToAVMAddress(account.publicKey)
+            ),
+          }),
+          title: t<string>('headings.accountAlreadyAdded'),
+          type: 'info',
+        })
+      );
+
+      return;
+    }
 
     try {
-      account = await dispatch(
+      _account = await dispatch(
         saveNewWatchAccountThunk({
           address,
           name,
@@ -136,7 +203,7 @@ const AddAccountMainRouter: FC = () => {
         ephemeral: true,
         description: t<string>('captions.addedAccount', {
           address: ellipseAddress(
-            AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+            convertPublicKeyToAVMAddress(_account.publicKey)
           ),
         }),
         title: t<string>('headings.addedAccount'),
@@ -144,42 +211,29 @@ const AddAccountMainRouter: FC = () => {
       })
     );
 
-    updateAccounts(account.id);
+    updateAccounts(_account.id);
     reset();
   };
-  const handleOnConfirmPasswordModalClose = () => onConfirmPasswordModalClose();
-  const handleOnConfirmPasswordModalConfirm = async (password: string) => {
-    setPassword(password);
-    onConfirmPasswordModalClose();
-  };
-  const handleImportAccountViaQRCodeClick = () =>
-    dispatch(
-      setScanQRCodeModal({
-        // only allow account import
-        allowedAuthorities: [ARC0300AuthorityEnum.Account],
-        allowedParams: [ARC0300PathEnum.Import],
-      })
-    );
-  // misc
-  const reset = () => {
-    setName(null);
-    setPassword(null);
-    setPrivateKey(null);
-  };
-  const saveNewAccount = async () => {
-    const _functionName = 'saveNewAccount';
-    let account: IAccountWithExtendedProps;
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
+  ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
+    let _accounts: IAccountWithExtendedProps[];
 
-    if (!password || !privateKey) {
+    if (!keyPair) {
       return;
     }
 
     try {
-      account = await dispatch(
-        saveNewAccountThunk({
-          name,
-          password,
-          privateKey,
+      _accounts = await dispatch(
+        saveNewAccountsThunk({
+          accounts: [
+            {
+              keyPair,
+              name,
+            },
+          ],
+          ...result,
         })
       ).unwrap();
     } catch (error) {
@@ -205,7 +259,7 @@ const AddAccountMainRouter: FC = () => {
         ephemeral: true,
         description: t<string>('captions.addedAccount', {
           address: ellipseAddress(
-            AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+            convertPublicKeyToAVMAddress(keyPair.publicKey)
           ),
         }),
         title: t<string>('headings.addedAccount'),
@@ -213,39 +267,29 @@ const AddAccountMainRouter: FC = () => {
       })
     );
 
-    updateAccounts(account.id);
+    updateAccounts(_accounts[0].id);
     reset();
   };
-  const updateAccounts = (accountId: string) => {
+  const handleOnError = (error: BaseExtensionError) =>
     dispatch(
-      updateAccountsThunk({
-        accountIds: [accountId],
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
       })
     );
-    dispatch(
-      saveActiveAccountDetails({
-        accountId,
-        tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
-      })
-    );
-    navigate(ACCOUNTS_ROUTE, {
-      replace: true,
-    });
-  };
-
-  // if we have the password and the private key, we can save a new account
-  useEffect(() => {
-    if (password && privateKey) {
-      (async () => await saveNewAccount())();
-    }
-  }, [password, privateKey]);
 
   return (
     <>
-      <ConfirmPasswordModal
-        isOpen={isConfirmPasswordModalOpen}
-        onCancel={handleOnConfirmPasswordModalClose}
-        onConfirm={handleOnConfirmPasswordModalConfirm}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onClose={handleOnAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnError}
       />
 
       <Routes>

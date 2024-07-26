@@ -16,6 +16,7 @@ import type { IOptions } from './types';
 export default async function createUnsignedARC0200TransferTransactions({
   amountInAtomicUnits,
   asset,
+  authAddress,
   fromAddress,
   logger,
   network,
@@ -32,6 +33,9 @@ export default async function createUnsignedARC0200TransferTransactions({
     amountInAtomicUnits: new BigNumber(amountInAtomicUnits),
     fromAddress,
     toAddress,
+    ...(authAddress && {
+      authAddress,
+    }),
     ...(note && {
       note,
     }),

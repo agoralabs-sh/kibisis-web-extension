@@ -25,13 +25,11 @@ import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { ISideBarAccountItemProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
@@ -47,9 +45,7 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
   const subTextColor = useSubTextColor();
   const activeBackground = useColorModeValue('gray.200', 'whiteAlpha.200');
   // misc
-  const address = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
-  );
+  const address = convertPublicKeyToAVMAddress(account.publicKey);
   const activeProps: Partial<ButtonProps> = active
     ? {
         _hover: {
@@ -74,8 +70,8 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
         {...activeProps}
         borderRadius={0}
         fontSize="md"
-        h={SIDEBAR_ITEM_HEIGHT}
         justifyContent="start"
+        minH={SIDEBAR_ITEM_HEIGHT}
         onClick={handleOnClick}
         p={0}
         variant="ghost"
@@ -98,6 +94,7 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
               flexGrow={1}
               justifyContent="space-evenly"
               spacing={0}
+              w="full"
             >
               <Text
                 color={defaultTextColor}
@@ -105,17 +102,11 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
                 maxW={195}
                 noOfLines={1}
                 textAlign="left"
-                w="full"
               >
                 {account.name}
               </Text>
 
-              <Text
-                color={subTextColor}
-                fontSize="xs"
-                textAlign="left"
-                w="full"
-              >
+              <Text color={subTextColor} fontSize="xs" textAlign="left">
                 {ellipseAddress(address, {
                   end: 10,
                   start: 10,
@@ -128,7 +119,6 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
               flexGrow={1}
               fontSize="sm"
               textAlign="left"
-              w="full"
             >
               {ellipseAddress(address, {
                 end: 10,

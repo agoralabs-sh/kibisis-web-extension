@@ -38,6 +38,7 @@ import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as newsReducer } from '@extension/features/news';
 import { reducer as notificationsReducer } from '@extension/features/notifications';
+import { reducer as passkeysReducer } from '@extension/features/passkeys';
 import { reducer as passwordLockReducer } from '@extension/features/password-lock';
 import { reducer as reKeyAccountReducer } from '@extension/features/re-key-account';
 import { reducer as removeAssetsReducer } from '@extension/features/remove-assets';
@@ -53,9 +54,9 @@ import { reducer as systemReducer } from '@extension/features/system';
 // pages
 import AccountPage from '@extension/pages/AccountPage';
 import AssetPage from '@extension/pages/AssetPage';
-import LoadingPage from '@extension/pages/LoadingPage';
 import NFTPage from '@extension/pages/NFTPage';
 import PasswordLockPage from '@extension/pages/PasswordLockPage';
+import SplashPage from '@extension/pages/SplashPage';
 import TransactionPage from '@extension/pages/TransactionPage';
 
 // routers
@@ -68,6 +69,7 @@ import type {
   IAppThunkDispatch,
   IMainRootState,
   ISettings,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -143,17 +145,17 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
           ],
           element: <Root />,
           loader: async () => {
-            let password: string | null;
+            let credentials: TEncryptionCredentials | null;
             let settings: ISettings;
 
             try {
               settings = await (dispatch as IAppThunkDispatch)(
                 fetchSettingsFromStorageThunk()
               ).unwrap(); // fetch the settings from storage
-              password = getState().passwordLock.password;
+              credentials = getState().passwordLock.credentials;
 
-              // if the password lock is on, we need the password
-              if (settings.security.enablePasswordLock && !password) {
+              // if the password lock is on, we need the passkey/password
+              if (settings.security.enablePasswordLock && !credentials) {
                 return redirect(PASSWORD_LOCK_ROUTE);
               }
             } catch (error) {
@@ -187,6 +189,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       networks: networksReducer,
       news: newsReducer,
       notifications: notificationsReducer,
+      passkeys: passkeysReducer,
       passwordLock: passwordLockReducer,
       reKeyAccount: reKeyAccountReducer,
       removeAssets: removeAssetsReducer,
@@ -203,7 +206,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       <I18nextProvider i18n={i18next}>
         <ThemeProvider initialColorMode={initialColorMode}>
           <RouterProvider
-            fallbackElement={<LoadingPage />}
+            fallbackElement={<SplashPage />}
             router={createRouter(store)}
           />
         </ThemeProvider>

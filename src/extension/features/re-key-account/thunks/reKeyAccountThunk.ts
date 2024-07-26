@@ -26,35 +26,34 @@ import type {
   IBaseAsyncThunkConfig,
   IMainRootState,
 } from '@extension/types';
-import type { IReKeyAccountThunkPayload } from '../types';
+import type { TReKeyAccountThunkPayload } from '../types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
 
 const reKeyAccountThunk: AsyncThunk<
   string | null, // return
-  IReKeyAccountThunkPayload, // args
+  TReKeyAccountThunkPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   string | null,
-  IReKeyAccountThunkPayload,
+  TReKeyAccountThunkPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.ReKeyAccount,
   async (
-    { authorizedAddress, network, password, reKeyAccount },
+    { authorizedAddress, network, reKeyAccount, ...encryptionOptions },
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
     const logger = getState().system.logger;
     const accountInformation: IAccountInformation | null =
       AccountService.extractAccountInformationForNetwork(reKeyAccount, network);
-    const address = AccountService.convertPublicKeyToAlgorandAddress(
-      reKeyAccount.publicKey
-    );
+    const address = convertPublicKeyToAVMAddress(reKeyAccount.publicKey);
     const networks = getState().networks.items;
     let _error: string;
     let algodClient: Algodv2;
@@ -100,11 +99,11 @@ const reKeyAccountThunk: AsyncThunk<
 
     try {
       signedTransaction = await signTransaction({
+        ...encryptionOptions,
         accounts,
         authAccounts: accounts,
         logger,
         networks,
-        password,
         unsignedTransaction,
       });
 

@@ -1,7 +1,7 @@
 import { Text, VStack, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -26,22 +26,37 @@ import useChangePassword from '@extension/hooks/useChangePassword';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
+import ChangePasswordLoadingModal from '@extension/modals/ChangePasswordLoadingModal';
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // types
-import { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 
 const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
+  const {
+    isOpen: isConfirmPasswordModalOpen,
+    onClose: onConfirmPasswordModalClose,
+    onOpen: onConfirmPasswordModalOpen,
+  } = useDisclosure();
   // hooks
-  const { changePassword, error, passwordTag, saving } = useChangePassword();
-  const subTextColor: string = useSubTextColor();
+  const {
+    changePasswordAction,
+    encryptionProgressState,
+    encrypting,
+    error,
+    passwordTag,
+    resetAction,
+    validating,
+  } = useChangePassword();
+  const subTextColor = useSubTextColor();
   // state
   const [newPassword, setNewPassword] = useState<string | null>(null);
   const [score, setScore] = useState<number>(-1);
+  // misc
+  const isLoading = encrypting || validating;
   // handlers
   const handlePasswordChange = (newPassword: string, newScore: number) => {
     setNewPassword(newPassword);
@@ -49,52 +64,84 @@ const ChangePasswordPage: FC = () => {
   };
   const handleChangeClick = () => {
     if (!validate(newPassword || '', score, t)) {
-      onOpen();
+      onConfirmPasswordModalOpen();
     }
   };
   const handleOnConfirmPasswordModalConfirm = async (
     currentPassword: string
   ) => {
-    onClose();
+    let success: boolean;
+
+    if (!newPassword) {
+      return;
+    }
 
     // save the new password
-    if (newPassword) {
-      await changePassword(newPassword, currentPassword);
+    success = await changePasswordAction({
+      currentPassword,
+      newPassword,
+    });
+
+    if (success) {
+      dispatch(
+        createNotification({
+          ephemeral: true,
+          title: t<string>('headings.passwordChanged'),
+          type: 'info',
+        })
+      );
+      navigate(`${SETTINGS_ROUTE}${SECURITY_ROUTE}`, {
+        replace: true,
+      });
+
+      // clean up
+      reset();
     }
+  };
+  const reset = () => {
+    setNewPassword(null);
+    setScore(-1);
+    resetAction();
   };
 
   // if there is an error from the hook, show a toast
   useEffect(() => {
-    if (error) {
+    error &&
       dispatch(
         createNotification({
+          description: t<string>('errors.descriptions.code', {
+            code: error.code,
+            context: error.code,
+          }),
           ephemeral: true,
-          description: error.message,
-          title: `${error.code}: ${error.name}`,
+          title: t<string>('errors.titles.code', { context: error.code }),
           type: 'error',
         })
       );
-    }
   }, [error]);
   // if we have the updated password tag navigate back
   useEffect(() => {
     if (passwordTag) {
-      setNewPassword(null);
-      setScore(-1);
-
       navigate(`${SETTINGS_ROUTE}${SECURITY_ROUTE}`, {
         replace: true,
       });
+
+      reset();
     }
   }, [passwordTag]);
 
   return (
     <>
+      <ChangePasswordLoadingModal
+        encryptionProgressState={encryptionProgressState}
+        isOpen={isLoading}
+      />
       <ConfirmPasswordModal
-        isOpen={isOpen}
-        onCancel={onClose}
+        isOpen={isConfirmPasswordModalOpen}
+        onClose={onConfirmPasswordModalClose}
         onConfirm={handleOnConfirmPasswordModalConfirm}
       />
+
       <PageHeader
         title={t<string>('titles.page', { context: 'changePassword' })}
       />
@@ -116,7 +163,7 @@ const ChangePasswordPage: FC = () => {
           </Text>
 
           <CreatePasswordInput
-            disabled={saving}
+            disabled={isLoading}
             label={t<string>('labels.newPassword')}
             onChange={handlePasswordChange}
             score={score}
@@ -125,7 +172,7 @@ const ChangePasswordPage: FC = () => {
         </VStack>
 
         <Button
-          isLoading={saving}
+          isLoading={isLoading}
           onClick={handleChangeClick}
           size="lg"
           variant="solid"

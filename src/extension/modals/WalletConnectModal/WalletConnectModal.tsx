@@ -49,9 +49,6 @@ import {
   useSelectWalletConnectModalOpen,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // theme
 import { theme } from '@extension/theme';
 
@@ -59,6 +56,7 @@ import { theme } from '@extension/theme';
 import { IAccount, INetwork } from '@extension/types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 interface IProps {
@@ -250,8 +248,7 @@ const WalletConnectModal: FC<IProps> = ({ onClose }: IProps) => {
 
     accountNodes = accounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
-        const address: string =
-          AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
+        const address: string = convertPublicKeyToAVMAddress(account.publicKey);
 
         return [
           ...acc,

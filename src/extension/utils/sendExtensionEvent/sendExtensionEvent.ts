@@ -9,10 +9,12 @@ import { ProviderEventAddedMessage } from '@common/messages';
 // services
 import AppWindowManagerService from '@extension/services/AppWindowManagerService';
 import EventQueueService from '@extension/services/EventQueueService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IOptions } from './types';
+
+// utils
+import isExtensionInitialized from '@extension/utils/isExtensionInitialized';
 
 /**
  * Convenience function that adds an even to the event queue and, if the main app is open, posts a message. However, if
@@ -31,14 +33,8 @@ export default async function sendExtensionEvent({
   const _eventQueueService =
     eventQueueService || new EventQueueService(baseOptions);
   const _functionName = 'sendExtensionEvent';
-  const _privateKeyService =
-    privateKeyService ||
-    new PrivateKeyService({
-      passwordTag: browser.runtime.id,
-      ...baseOptions,
-    });
   const { logger } = baseOptions;
-  const isInitialized = await _privateKeyService.isInitialized();
+  const isInitialized = await isExtensionInitialized();
   const mainAppWindows = await _appWindowManagerService.getByType(
     AppTypeEnum.MainApp
   );

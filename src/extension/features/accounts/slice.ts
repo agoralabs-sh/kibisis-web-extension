@@ -13,7 +13,7 @@ import {
   removeStandardAssetHoldingsThunk,
   saveAccountNameThunk,
   saveActiveAccountDetails,
-  saveNewAccountThunk,
+  saveNewAccountsThunk,
   saveNewWatchAccountThunk,
   startPollingForAccountsThunk,
   stopPollingForAccountsThunk,
@@ -272,24 +272,24 @@ const slice = createSlice({
         state.activeAccountDetails = action.payload;
       }
     );
-    /** save new account **/
+    /** save new accounts **/
     builder.addCase(
-      saveNewAccountThunk.fulfilled,
-      (state: IState, action: PayloadAction<IAccountWithExtendedProps>) => {
+      saveNewAccountsThunk.fulfilled,
+      (state: IState, action: PayloadAction<IAccountWithExtendedProps[]>) => {
         if (action.payload) {
           state.items = upsertItemsById<IAccountWithExtendedProps>(
             state.items,
-            [action.payload]
+            action.payload
           );
         }
 
         state.saving = false;
       }
     );
-    builder.addCase(saveNewAccountThunk.pending, (state: IState) => {
+    builder.addCase(saveNewAccountsThunk.pending, (state: IState) => {
       state.saving = true;
     });
-    builder.addCase(saveNewAccountThunk.rejected, (state: IState) => {
+    builder.addCase(saveNewAccountsThunk.rejected, (state: IState) => {
       state.saving = false;
     });
     /** save new watch account **/

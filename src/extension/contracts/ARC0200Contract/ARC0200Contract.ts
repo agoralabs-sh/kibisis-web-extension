@@ -105,17 +105,20 @@ export default class ARC0200Contract extends BaseContract {
 
   public async buildUnsignedTransferTransactions({
     amountInAtomicUnits,
+    authAddress,
     fromAddress,
     note,
     toAddress,
   }: ITransferOptions): Promise<Transaction[]> {
     const _functionName: string = 'buildUnsignedTransferTransactions';
+    let _error: string;
     let abiMethod: ABIMethod;
     let appArgs: Uint8Array[];
     let appWriteTransaction: Transaction;
     let toBalance: BigNumber;
     let paymentTransaction: Transaction | null = null;
     let boxStorageAmount: BigNumber;
+    let boxReferences: algosdk.modelsv2.BoxReference[] | null;
     let encodedAmount: Uint8Array;
     let encodedToAddress: Uint8Array;
     let suggestedParams: SuggestedParams;
@@ -157,10 +160,19 @@ export default class ARC0200Contract extends BaseContract {
       appArgs = [encodedToAddress, encodedAmount];
       toBalance = await this.balanceOf(toAddress);
       suggestedParams = await this.algodClient.getTransactionParams().do();
+      boxReferences = await this.determineBoxReferences({
+        abiMethod,
+        appArgs,
+        authAddress,
+        fromAddress,
+        suggestedParams,
+      });
 
-      const [fromBoxName, toBoxName] = [fromAddress, toAddress].map(
-        ARC0200Contract.parseBoxNameFromAddress
-      );
+      if (!boxReferences) {
+        throw new Error(
+          `failed to get box references for sender "${fromAddress}" and recipient "${toAddress}"`
+        );
+      }
 
       // if the balance is zero, we will need to create a payment transaction to fund a box
       if (toBalance.lte(0)) {
@@ -169,7 +181,7 @@ export default class ARC0200Contract extends BaseContract {
         );
 
         boxStorageAmount = calculateAppMbrForBox(
-          new BigNumber(toBoxName.length),
+          new BigNumber(boxReferences[0].name.length),
           new BigNumber(encodedAmount.length)
         );
         paymentTransaction = makePaymentTxnWithSuggestedParams(
@@ -188,15 +200,14 @@ export default class ARC0200Contract extends BaseContract {
       appWriteTransaction = await this.createWriteApplicationTransaction({
         abiMethod,
         appArgs,
+        boxes: boxReferences.map(({ name }: algosdk.modelsv2.BoxReference) => ({
+          appIndex: new BigNumber(this.appId).toNumber(),
+          name,
+        })),
         fromAddress,
         note,
         suggestedParams,
-        boxes: [fromBoxName, toBoxName].map((value) => ({
-          appIndex: new BigNumber(this.appId).toNumber(),
-          name: value,
-        })),
       });
-
       transactions = [
         ...(paymentTransaction ? [paymentTransaction] : []),
         appWriteTransaction,

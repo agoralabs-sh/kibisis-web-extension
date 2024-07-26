@@ -33,13 +33,14 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccountUndoReKeyTransaction } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
@@ -64,14 +65,16 @@ const AccountUndoReKeyTransactionPage: FC<
   const isAuthAddressKnown =
     accounts.findIndex(
       (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.authAddr
+        convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(value.publicKey)
+        ) === transaction.authAddr
     ) > -1;
   const isSenderKnown =
     accounts.findIndex(
       (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        transaction.sender
+        convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(value.publicKey)
+        ) === transaction.sender
     ) > -1;
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>

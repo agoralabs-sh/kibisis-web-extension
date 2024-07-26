@@ -16,13 +16,11 @@ import { DEFAULT_GAP } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { IUndoReKeyAccountModalContentProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const UndoReKeyAccountModalContent: FC<IUndoReKeyAccountModalContentProps> = ({
@@ -51,9 +49,7 @@ const UndoReKeyAccountModalContent: FC<IUndoReKeyAccountModalContentProps> = ({
           value={
             <AddressDisplay
               accounts={accounts}
-              address={AccountService.convertPublicKeyToAlgorandAddress(
-                account.publicKey
-              )}
+              address={convertPublicKeyToAVMAddress(account.publicKey)}
               ariaLabel="Account address"
               size="sm"
               network={network}

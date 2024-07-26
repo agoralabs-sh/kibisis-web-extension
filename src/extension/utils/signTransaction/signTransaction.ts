@@ -1,9 +1,13 @@
 import { encode as encodeBase64 } from '@stablelib/base64';
-import { encodeAddress } from 'algosdk';
-import browser from 'webextension-polyfill';
+
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
 
 // errors
 import { MalformedDataError } from '@extension/errors';
+
+// models
+import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -14,7 +18,12 @@ import type {
   IAccountInformation,
   IAccountWithExtendedProps,
 } from '@extension/types';
-import type { IOptions } from './types';
+import type { TOptions } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
+import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 
 /**
  * Convenience function that signs a transactions for a given network.
@@ -29,26 +38,25 @@ export default async function signTransaction({
   authAccounts = [],
   logger,
   networks,
-  password,
   unsignedTransaction,
-}: IOptions): Promise<Uint8Array> {
+  ...encryptionOptions
+}: TOptions): Promise<Uint8Array> {
   const _functionName = 'signTransaction';
   const base64EncodedGenesisHash = encodeBase64(
     unsignedTransaction.genesisHash
   );
-  const privateKeyService = new PrivateKeyService({
-    logger,
-    passwordTag: browser.runtime.id,
-  });
   const network =
     networks.find((value) => value.genesisHash === base64EncodedGenesisHash) ||
     null;
-  const signerAddress = encodeAddress(unsignedTransaction.from.publicKey);
+  const signerAddress = convertPublicKeyToAVMAddress(
+    unsignedTransaction.from.publicKey
+  );
   let _error: string;
   let account: IAccountWithExtendedProps | null;
   let accountInformation: IAccountInformation | null;
   let authAccount: IAccountWithExtendedProps | null;
-  let privateKey: Uint8Array | null;
+  let keyPair: Ed21559KeyPair | null = null;
+  let publicKey: string | Uint8Array = unsignedTransaction.from.publicKey;
 
   logger?.debug(
     `${_functionName}: signing transaction "${unsignedTransaction.txID()}"`
@@ -68,7 +76,7 @@ export default async function signTransaction({
     accounts.find(
       (value) =>
         value.publicKey ===
-        AccountService.encodePublicKey(unsignedTransaction.from.publicKey)
+        PrivateKeyService.encode(unsignedTransaction.from.publicKey)
     ) || null;
 
   if (!account) {
@@ -92,11 +100,6 @@ export default async function signTransaction({
     throw new MalformedDataError(_error);
   }
 
-  privateKey = await privateKeyService.getDecryptedPrivateKey(
-    unsignedTransaction.from.publicKey,
-    password
-  );
-
   // if the account is re-keyed, attempt to get the auth account's private key to sign
   if (accountInformation.authAddress) {
     authAccount =
@@ -104,9 +107,7 @@ export default async function signTransaction({
         (value) =>
           accountInformation?.authAddress &&
           value.publicKey ===
-            AccountService.convertAlgorandAddressToPublicKey(
-              accountInformation.authAddress
-            )
+            convertPublicKeyToAVMAddress(accountInformation.authAddress)
       ) || null;
 
     if (!authAccount) {
@@ -117,13 +118,30 @@ export default async function signTransaction({
       throw new MalformedDataError(_error);
     }
 
-    privateKey = await privateKeyService.getDecryptedPrivateKey(
-      AccountService.decodePublicKey(authAccount.publicKey),
-      password
-    );
+    publicKey = authAccount.publicKey;
   }
 
-  if (!privateKey) {
+  logger?.debug(
+    `${_functionName}: decrypting private key using "${encryptionOptions.type}" encryption method`
+  );
+
+  if (encryptionOptions.type === EncryptionMethodEnum.Password) {
+    keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+      logger,
+      password: encryptionOptions.password,
+      publicKey,
+    });
+  }
+
+  if (encryptionOptions.type === EncryptionMethodEnum.Passkey) {
+    keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+      inputKeyMaterial: encryptionOptions.inputKeyMaterial,
+      logger,
+      publicKey,
+    });
+  }
+
+  if (!keyPair) {
     _error = `failed to get private key for ${
       accountInformation.authAddress
         ? `the re-keyed account "${signerAddress}" with auth address "${accountInformation.authAddress}"`
@@ -136,9 +154,9 @@ export default async function signTransaction({
   }
 
   try {
-    return unsignedTransaction.signTxn(privateKey);
+    return unsignedTransaction.signTxn(keyPair.getSecretKey());
   } catch (error) {
-    logger?.error(`${_functionName}: ${error.message}`);
+    logger?.error(`${_functionName}:`, error);
 
     throw new MalformedDataError(error.message);
   }

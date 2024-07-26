@@ -1,6 +1,5 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { isValidAddress } from 'algosdk';
-import browser from 'webextension-polyfill';
 
 // errors
 import { MalformedDataError } from '@extension/errors';
@@ -21,6 +20,9 @@ import type {
 } from '@extension/types';
 import type { ISaveNewWatchAccountPayload } from '../types';
 
+// utils
+import convertAVMAddressToPublicKey from '@extension/utils/convertAVMAddressToPublicKey';
+
 const saveNewWatchAccountThunk: AsyncThunk<
   IAccountWithExtendedProps, // return
   ISaveNewWatchAccountPayload, // args
@@ -35,9 +37,9 @@ const saveNewWatchAccountThunk: AsyncThunk<
     const logger = getState().system.logger;
     const accountService = new AccountService({ logger });
     const accounts = await accountService.getAllAccounts();
+    let _error: string;
     let account: IAccount | null;
     let encodedPublicKey: string;
-    let errorMessage: string;
     let privateKeyItem: IPrivateKey | null;
     let privateKeyService: PrivateKeyService;
 
@@ -46,15 +48,16 @@ const saveNewWatchAccountThunk: AsyncThunk<
     );
 
     if (!isValidAddress(address)) {
-      errorMessage = `address "${address}" is not valid`;
+      _error = `address "${address}" is not valid`;
 
-      logger.debug(`${ThunkEnum.SaveNewWatchAccount}: ${errorMessage}`);
+      logger.debug(`${ThunkEnum.SaveNewWatchAccount}: ${_error}`);
 
-      return rejectWithValue(new MalformedDataError(errorMessage));
+      return rejectWithValue(new MalformedDataError(_error));
     }
 
-    encodedPublicKey =
-      AccountService.convertAlgorandAddressToPublicKey(address);
+    encodedPublicKey = PrivateKeyService.encode(
+      convertAVMAddressToPublicKey(address)
+    );
     account =
       accounts.find((value) => value.publicKey === encodedPublicKey) || null;
 
@@ -66,9 +69,8 @@ const saveNewWatchAccountThunk: AsyncThunk<
     if (account) {
       privateKeyService = new PrivateKeyService({
         logger,
-        passwordTag: browser.runtime.id,
       });
-      privateKeyItem = await privateKeyService.getPrivateKeyByPublicKey(
+      privateKeyItem = await privateKeyService.fetchFromStorageByPublicKey(
         encodedPublicKey
       );
 

@@ -9,6 +9,7 @@ const translation: IResourceLanguage = {
     add: 'Add',
     addAccount: 'Add Account',
     addAsset: 'Add Asset',
+    addPasskey: 'Add Passkey',
     allow: 'Allow',
     approve: 'Approve',
     cancel: 'Cancel',
@@ -22,6 +23,7 @@ const translation: IResourceLanguage = {
     create: 'Create',
     dismiss: 'Dismiss',
     download: 'Download',
+    encrypt: 'Encrypt',
     getStarted: 'Get Started',
     hide: 'Hide',
     import: 'Import',
@@ -34,11 +36,13 @@ const translation: IResourceLanguage = {
     reject: 'Reject',
     remove: 'Remove',
     removeAllSessions: 'Remove All Sessions',
+    removePasskey: 'Remove Passkey',
     reset: 'Reset',
     save: 'Save',
     scanAWindow: 'Scan A Window',
     scanCurrentTab: 'Scan Current Tab',
     scanUsingCamera: 'Scan Using Camera',
+    selectAccounts: 'Select Accounts',
     send: 'Send',
     sign: 'Sign',
     tryAgain: 'Try Again',
@@ -47,7 +51,7 @@ const translation: IResourceLanguage = {
     yesImIn: `Yes, I'm In`,
   },
   captions: {
-    accountAlreadyAdded: 'Account already added.',
+    accountAlreadyAdded: 'Account {{address}} already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
     addAssetConfirming:
@@ -59,6 +63,11 @@ const translation: IResourceLanguage = {
     addAssetURI:
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
+    addedAccounts: 'Added {{amount}} accounts.',
+    addPasskey1:
+      'Adding a passkey allows you to sign transactions without your password.',
+    addPasskey2: `The passkey will be used to to encrypt/decrypt the private keys of your accounts.`,
+    addPasskeyInstruction: `To begin, you will be asked to add a supported passkey.`,
     addressDoesNotMatch: 'This address does not match the signer',
     addWatchAccount: 'Add a watch account by providing a valid address.',
     addWatchAccountComplete: `Press save to confirm adding the watch account.`,
@@ -91,7 +100,12 @@ const translation: IResourceLanguage = {
     changePassword2:
       'You will be prompted to enter your current password when you press "Change Password".',
     changeTheme: 'Choose between dark and light mode.',
-    confirmingTransaction: 'Please wait, the transaction is being processed.',
+    charactersRemaining: '{{amount}} characters remaining',
+    checkingAuthenticationCredentials: 'Checking authentication credentials.',
+    confirmingTransaction:
+      'Your transaction(s) are being sent to the network to be processed.',
+    confirmingTransactionWithAmount:
+      '{{number}} transaction(s) are being sent to the network to be processed.',
     connectingToWalletConnect: 'Attempting to connect to WalletConnect.',
     copied: 'Copied!',
     createNewAccount:
@@ -104,14 +118,17 @@ const translation: IResourceLanguage = {
     defaultConfirm: 'Are you sure?',
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
+    displayingCountOfTotal: 'Displaying {{count}} of {{total}}',
     enablePasswordLock:
       'Passwords will only need to be entered due to inactivity.',
     enableRequest:
       'An application is requesting to connect. Select which accounts you would like to enable:',
+    encryptWithPasskeyInstruction1: `1. You will be asked to enter your password to decrypt your private keys.`,
+    encryptWithPasskeyInstruction2: `2. After your password has been confirmed, you will then be asked to use your passkey to re-encrypt the private keys.`,
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     enterWatchAccountAddress:
       'Enter the address of the account you would like to watch.',
-    exportAccount: 'Select account to view the QR code to export your account.',
+    exportAccount: 'Select which accounts you would like to export.',
     extraPayment:
       'An extra network payment has been applied as this is the first time the recipient has interacted with the {{symbol}} asset.',
     factoryReset: 'This will remove all accounts, settings and the password.',
@@ -123,7 +140,7 @@ const translation: IResourceLanguage = {
     groupIdCopied: 'Group ID copied!',
     higherFee:
       'The fee is higher as this is the first time the recipient has interacted with the {{symbol}} asset.',
-    importAccount: 'You are about to import the following account.',
+    importAccounts: 'You are about to import the following account(s).',
     importAccountViaQRCode: `Import an account, including any assets, by scanning a QR code.`,
     importAccountViaSeedPhrase: `Import an existing account using a seed phrase.`,
     importAccountViaSeedPhraseComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
@@ -149,8 +166,10 @@ const translation: IResourceLanguage = {
     mustEnterPasswordToAuthorizeUndoReKey:
       'You must enter your password to authorize the undo re-key.',
     mustEnterPasswordToConfirm: 'You must enter your password to confirm.',
+    mustEnterPasswordToDecryptPrivateKeys: `Enter your password to decrypt the private keys.`,
     mustEnterPasswordToImportAccount:
       'You must enter your password to import this account.',
+    mustEnterPasswordToReEncryptPrivateKeys: `Enter your password to re-encrypt the private keys.`,
     mustEnterPasswordToSign: 'Enter your password to sign.',
     mustEnterPasswordToSignSecurityToken:
       'Enter your password to sign this security token.',
@@ -164,6 +183,7 @@ const translation: IResourceLanguage = {
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
+    noAccountsToImport: 'No accounts to import.',
     noAccountsFound:
       'You can create a new account or import an existing account.',
     noAssetsFound: 'You have not added any assets. Try adding one now.',
@@ -179,12 +199,19 @@ const translation: IResourceLanguage = {
       'Standard assets require an "opt-in" fee. This is a transaction of the asset with a "0" amount sent to yourself.',
     optOutFee:
       'Standard assets require an "opt-out" fee. This is a transaction of the asset with a "0" amount sent to yourself.',
+    passkeyAdded: 'Passkey {{name}} added!',
+    passkeyRemoved: 'Passkey {{name}} removed.',
+    passkeyNotSupported1:
+      'Unfortunately your browser does not support passkeys.',
+    passkeyNotSupported2:
+      'Try updating your browser to the latest or a newer version.',
     passwordLockDescription: 'Please re-enter your password to unlock.',
     passwordScoreInfo:
       'To conform with our <2>Strong Password Policy</2>, you are required to use a sufficiently strong password. Password must be at least 8 characters.',
     preferredBlockExplorer: 'Used when opening chain information in new tabs.',
     preferredNFTExplorer: 'Used when opening NFTs.',
     questComplete: 'You have successfully completed a quest!',
+    reEncryptingKeys: 'Re-encrypting {{count}} of {{total}} accounts.',
     reKeyAccount:
       'You are about to re-key an account with an authorized address.',
     reKeyAccountConfirming: 'Please wait while the account is re-keyed.',
@@ -204,9 +231,18 @@ const translation: IResourceLanguage = {
       'Please wait while we confirm the opt-out of the asset {{symbol}} with the network.',
     [`removeAssetConfirming_${AssetTypeEnum.ARC0200}`]:
       'Hiding asset {{symbol}}.',
+    removePasskey:
+      'You are about to remove the passkey "{{name}}". This action will re-enable password authentication.',
+    removePasskeyInstruction1:
+      '1. Before you can remove the passkey, you will need to enter your password which will be used to re-encrypt your keys.',
+    removePasskeyInstruction2:
+      '2. After your password has been confirmed, you will then be asked to use your passkey to decrypt the private keys.',
+    requestingPasskeyPermission:
+      'Requesting permission from the passkey "{{name}}".',
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
+    scannedQrCodes: 'Scanning {{count}} of {{total}} codes',
     scanningForQrCode:
       'Scanning for a QR Code. Make sure the QR code is visible in the background.',
     screenCaptureViaQRCodeScanNotAllowed1:
@@ -244,6 +280,10 @@ const translation: IResourceLanguage = {
       code_4001: 'Your balance will fall below the minimum balance required.',
       code_4002: 'Standard assets must have a zero balance.',
       code_6000: 'There was an error starting the camera.',
+      code_8000: 'The device does not support passkey for encryption.',
+      code_8001: 'Failed to create a passkey on the device.',
+      code_8002:
+        'Failed to communicate with the passkey device. Please try again',
     },
     inputs: {
       copySeedPhraseRequired:
@@ -254,6 +294,7 @@ const translation: IResourceLanguage = {
       passwordMinLength: 'Must be at least 8 characters',
       passwordTooWeak: 'This password is too weak',
       required: '{{name}} is required',
+      tooLong: 'Too long',
       unknown: `Something doesn't look right`,
     },
     titles: {
@@ -264,12 +305,19 @@ const translation: IResourceLanguage = {
       code_4001: '4001 Minimum Balance Required',
       code_4002: '4002 Assets Need A Zero Balance',
       code_6000: '6000 Camera Error',
+      code_8000: '8000 Passkey Not Supported',
+      code_8001: '8001 Passkey Creation Failure',
+      code_8002: '8002 Passkey Communication Failed',
     },
   },
   headings: {
+    accountAlreadyAdded: 'Account Already Added',
+    accounts: 'Accounts',
     addAsset: 'Add Asset',
-    addedAccount: 'Added Account!',
+    addedAccount: 'Added Account',
+    addedAccounts: 'Added Account(s)',
     addedAsset: 'Added Asset {{symbol}}!',
+    addPasskey: 'Add Passkey',
     addWatchAccount: 'Add A Watch Account',
     allowMainNetConfirm: 'Allow MainNet Networks',
     analyticsAndTracking: 'Analytics & Tracking',
@@ -284,6 +332,7 @@ const translation: IResourceLanguage = {
     congratulations: 'Congratulations!',
     createNewAccount: 'Create A New Account',
     dangerZone: 'Danger Zone',
+    details: 'Details',
     developer: 'Developer',
     enterAnAddress: 'Enter an address',
     enterYourSeedPhrase: 'Enter your seed phrase',
@@ -304,6 +353,9 @@ const translation: IResourceLanguage = {
     numberOfTransactions: '{{number}} transaction',
     numberOfTransactions_multiple: '{{number}} atomic transactions',
     offline: 'Offline',
+    passkeyAdded: 'Passkey Added!',
+    passkeyRemoved: 'Passkey Removed',
+    passwordChanged: 'Password Changed!',
     passwordLock: 'Welcome back',
     reKeyAccount: 'Re-key Account 🔒',
     reKeyAccountSuccessful: 'Successfully Re-Keyed Account!',
@@ -313,9 +365,12 @@ const translation: IResourceLanguage = {
     [`removeAsset_${AssetTypeEnum.ARC0200}`]: 'Hide {{symbol}}',
     removedAsset: 'Asset {{symbol}} Removed!',
     [`removedAsset_${AssetTypeEnum.ARC0200}`]: 'Asset {{symbol}} Hidden!',
-    scanningForQRCode: 'Scanning For QR Code',
-    scanQrCode: 'Scan QR Code',
+    removePasskey: 'Remove Passkey',
+    scanQrCode: 'Scan QR Code(s)',
     selectAccount: 'Select Account',
+    selectAccounts: 'Select Accounts',
+    selectAsset: 'Select Asset',
+    selectAssets: 'Select Assets',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     screenCaptureDenied: 'Screen Capture Denied',
@@ -369,6 +424,7 @@ const translation: IResourceLanguage = {
     accountToFreeze: 'Account To Freeze',
     accountToUnfreeze: 'Account To Unfreeze',
     addAccount: 'Add Account',
+    algorithm: 'Algorithm',
     allowActionTracking: 'Allow certain actions to be tracked?',
     allowBetaNet: 'Allow BetaNet networks?',
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
@@ -383,18 +439,24 @@ const translation: IResourceLanguage = {
     authorizedAccounts: 'Authorized Accounts',
     authorizedAddresses: 'Authorized Addresses',
     balance: 'Balance',
+    capabilities: 'Capabilities',
     chain: 'Chain',
     clawbackAccount: 'Clawback Account',
     connectWallet: 'Connect Wallet',
     copyAddress: 'Copy Address',
     copyApplicationId: 'Copy Application ID',
     copyAssetId: 'Copy Asset ID',
+    copyCredentialID: 'Copy Credential ID',
     copyGroupId: 'Copy Group ID',
+    copyId: 'Copy ID',
+    copyPublicKey: 'Copy Public Key',
     copySeedPhraseConfirm:
       'I confirm I have copied my seed phrase to a secure place.',
     copyTransactionId: 'Copy Transaction ID',
+    copyUserID: 'Copy User ID',
     copyValue: 'Copy {{value}}',
     creatorAccount: 'Creator Account',
+    credentialID: 'Credential ID',
     currentAuthorizedAccount: 'Current Authorized Account',
     dark: 'Dark',
     date: 'Date',
@@ -402,8 +464,11 @@ const translation: IResourceLanguage = {
     default: 'Default',
     defaultFrozen: 'Default Frozen',
     did: 'DID',
+    disabled: 'Disabled',
     editAccountName: 'Rename account',
+    enabled: 'Enabled',
     enablePasswordLock: 'Enable password lock?',
+    experimental: 'Experimental',
     expirationDate: 'Expiration Date',
     extensionId: 'Extension ID',
     extraPayment: 'Extra Payment',
@@ -439,7 +504,9 @@ const translation: IResourceLanguage = {
     noAuthAddressAvailable:
       'This account has been re-keyed to the account {{address}}, but the address is not available or is a watch account',
     note: 'Note',
-    noteOptional: 'Note (optional)',
+    notSupported: 'Not Supported',
+    optional: '(optional)',
+    passkeyName: 'Passkey name',
     password: 'Password',
     passwordLockDuration: 'Never',
     passwordLockDuration_60000: '1 minute',
@@ -451,6 +518,7 @@ const translation: IResourceLanguage = {
     passwordLockTimeout: 'Password lock timeout',
     preferredBlockExplorer: 'Preferred Block Explorer',
     preferredNFTExplorer: 'Preferred NFT Explorer',
+    publicKey: 'Public Key',
     reKey: 'Re-key',
     reKeyed: 'Re-keyed',
     reKeyedAccount: 'Re-keyed Account',
@@ -466,6 +534,10 @@ const translation: IResourceLanguage = {
     reserveAccount: 'Reserve Account',
     scanQRCode: 'Scan QR Code',
     seedPhrase: 'Seed Phrase',
+    selectAccount: 'Select Account',
+    selectAllAccounts: 'Select All Accounts',
+    selectAllAssets: 'Select All Assets',
+    selectAsset: 'Select Asset',
     selectionKey: 'VRF Public Key',
     selectWalletAccount: 'Select wallet account',
     sendAsset: 'Send {{nativeCurrency}}/Asset',
@@ -481,9 +553,11 @@ const translation: IResourceLanguage = {
     type: 'Type',
     undoReKey: 'Undo Re-key',
     unitName: 'Unit Name',
+    unknown: 'Unknown',
     unknownApp: 'Unknown App',
     unknownHost: 'unknown host',
     url: 'URL',
+    userID: 'User ID',
     value: 'Value',
     version: 'Version',
     voteFirst: 'Voting First Round',
@@ -498,7 +572,8 @@ const translation: IResourceLanguage = {
     enterANameForYourAccount: 'Enter a name for your account',
     enterNote: 'Enter an optional note',
     enterPassword: 'Enter password',
-    nameAccount: 'Enter a name for this account (optional)',
+    nameAccount: 'Enter a name for this account',
+    passkeyName: 'e.g. Kibisis',
     pleaseSelect: 'Please select...',
   },
   titles: {
@@ -517,6 +592,7 @@ const translation: IResourceLanguage = {
     page_importAccountViaQRCode: 'Import An Account Via QR Code',
     page_importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',
     page_passwordLock: 'Enter Your Password',
+    page_passkey: 'Passkey',
     page_privacy: 'Privacy',
     page_security: 'Security',
     page_sessions: 'Sessions',

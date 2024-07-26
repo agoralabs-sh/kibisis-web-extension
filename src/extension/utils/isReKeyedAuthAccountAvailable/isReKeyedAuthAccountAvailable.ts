@@ -1,8 +1,11 @@
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IOptions } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 /**
  * Convenience function that checks if an account's re-keyed auth account is present in a list of accounts, and is NOT a
@@ -16,8 +19,9 @@ export default function isReKeyedAuthAccountAvailable({
 }: IOptions): boolean {
   const reKeyedAccount = accounts.find(
     (value) =>
-      AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-      authAddress
+      convertPublicKeyToAVMAddress(
+        PrivateKeyService.decode(value.publicKey)
+      ) === authAddress
   );
 
   // if the account exists and is not a watch account (it has a private key present)

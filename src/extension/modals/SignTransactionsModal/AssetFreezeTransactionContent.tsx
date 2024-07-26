@@ -33,6 +33,7 @@ import { useSelectLogger } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -43,7 +44,9 @@ import type {
 import type { IAssetTransactionBodyProps } from './types';
 
 // utils
+import convertAVMAddressToPublicKey from '@extension/utils/convertAVMAddressToPublicKey';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
@@ -172,9 +175,7 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
       account =
         accounts.find(
           (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === freezeAddress
+            convertPublicKeyToAVMAddress(value.publicKey) === freezeAddress
         ) || null;
 
       // if we have this account, just use ut
@@ -191,8 +192,9 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
       ).toUpperCase();
       account = {
         ...AccountService.initializeDefaultAccount({
-          publicKey:
-            AccountService.convertAlgorandAddressToPublicKey(freezeAddress),
+          publicKey: PrivateKeyService.encode(
+            convertAVMAddressToPublicKey(freezeAddress)
+          ),
         }),
         watchAccount: false,
       };

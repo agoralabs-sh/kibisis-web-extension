@@ -1,3 +1,38 @@
+# [1.18.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.2...v1.18.0-beta.3) (2024-07-26)
+
+
+### Features
+
+* allow arrays of private keys and account names when exporting/importing an account via a qr code ([#270](https://github.com/agoralabs-sh/kibisis-web-extension/issues/270)) ([656b95f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/656b95f1d5c7399008ed21debf8d2e18b9554baf))
+
+# [1.18.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.1...v1.18.0-beta.2) (2024-07-17)
+
+
+### Features
+
+* add a 32 byte limit on account names ([#268](https://github.com/agoralabs-sh/kibisis-web-extension/issues/268)) ([576cc09](https://github.com/agoralabs-sh/kibisis-web-extension/commit/576cc097a2f6c94cac4acc5f4c3b0b521005e6d3))
+
+# [1.18.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.2...v1.18.0-beta.1) (2024-07-17)
+
+
+### Features
+
+* implement webauthn to encrypt the private keys ([#266](https://github.com/agoralabs-sh/kibisis-web-extension/issues/266)) ([e3dde7f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e3dde7fb74c251d1ec448b71c8940d247ca20f35))
+
+## [1.17.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.1...v1.17.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* sign button no longer relies for account update ([#265](https://github.com/agoralabs-sh/kibisis-web-extension/issues/265)) ([bbcba58](https://github.com/agoralabs-sh/kibisis-web-extension/commit/bbcba58449a3eb3c2dcaa051b3b1a15d58af5111))
+
+## [1.17.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.0...v1.17.1) (2024-07-03)
+
+
+### Bug Fixes
+
+* add auth address when simulating a transaction to get the box references ([#262](https://github.com/agoralabs-sh/kibisis-web-extension/issues/262)) ([1862666](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1862666eccc6d8cbfe27cff58d9428e0bdb49545))
+
 # [1.17.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.16.0...v1.17.0) (2024-06-17)
 
 

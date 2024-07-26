@@ -49,9 +49,6 @@ import {
   useSelectSessionsSaving,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // theme
 import { theme } from '@extension/theme';
 
@@ -61,6 +58,7 @@ import type { IProps } from './types';
 
 // utils
 import availableAccountsForNetwork from '@extension/utils/availableAccountsForNetwork';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
@@ -144,9 +142,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
     accountNodes = availableAccountsForNetwork({ accounts, network }).reduce<
       ReactNode[]
     >((acc, account, currentIndex, availableAccounts) => {
-      const address: string = AccountService.convertPublicKeyToAlgorandAddress(
-        account.publicKey
-      );
+      const address: string = convertPublicKeyToAVMAddress(account.publicKey);
 
       return [
         ...acc,

@@ -7,6 +7,7 @@ export const EVENT_QUEUE_ITEM_KEY: string = 'event_queue';
 export const NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX: string =
   'network_transaction_params_';
 export const NEWS_KEY: string = 'news';
+export const PASSKEY_CREDENTIAL_KEY: string = 'passkey_credential';
 export const PASSWORD_LOCK_ITEM_KEY: string = 'password_lock';
 export const PASSWORD_TAG_ITEM_KEY: string = 'password_tag';
 export const PRIVATE_KEY_ITEM_KEY_PREFIX: string = 'private_key_';

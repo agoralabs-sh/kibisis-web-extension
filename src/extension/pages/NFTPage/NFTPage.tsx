@@ -16,7 +16,6 @@ import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 // components
 import AssetBadge from '@extension/components/AssetBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
-import LoadingPage from '@extension/components/LoadingPage';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
 import PageItem from '@extension/components/PageItem';
@@ -32,19 +31,17 @@ import useNFTPage from './hooks/useNFTPage';
 // images
 import nftPlaceholderImage from '@extension/images/placeholder_nft.png';
 
+// pages
+import SkeletonAssetPage from '@extension/pages/SkeletonAssetPage';
+
 // selectors
 import {
   useSelectSettingsPreferredBlockExplorer,
   useSelectSettingsPreferredNFTExplorer,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
-// types
-import type { IBlockExplorer, INFTExplorer } from '@extension/types';
-
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const NFTPage: FC = () => {
@@ -52,17 +49,15 @@ const NFTPage: FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { appId, tokenId } = useParams();
   // selectors
-  const blockExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
-  const nftExplorer: INFTExplorer | null =
-    useSelectSettingsPreferredNFTExplorer();
+  const blockExplorer = useSelectSettingsPreferredBlockExplorer();
+  const nftExplorer = useSelectSettingsPreferredNFTExplorer();
   // hooks
   const { account, accountInformation, asset, assetHolding } = useNFTPage({
     appId: appId || null,
     tokenId: tokenId || null,
   });
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   // handlers
   const reset = () =>
     navigate(ACCOUNTS_ROUTE, {
@@ -123,12 +118,10 @@ const NFTPage: FC = () => {
   }, []);
 
   if (!account || !accountInformation || !assetHolding) {
-    return <LoadingPage />;
+    return <SkeletonAssetPage />;
   }
 
-  accountAddress = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
-  );
+  accountAddress = convertPublicKeyToAVMAddress(account.publicKey);
 
   return (
     <>

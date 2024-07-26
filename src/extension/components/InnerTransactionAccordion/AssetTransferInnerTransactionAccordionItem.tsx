@@ -29,7 +29,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -39,6 +39,7 @@ import type {
 import type { IItemProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const AssetTransferInnerTransactionAccordionItem: FC<
@@ -61,8 +62,9 @@ const AssetTransferInnerTransactionAccordionItem: FC<
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   // misc
-  const accountAddress: string =
-    AccountService.convertPublicKeyToAlgorandAddress(account.publicKey);
+  const accountAddress: string = convertPublicKeyToAVMAddress(
+    PrivateKeyService.decode(account.publicKey)
+  );
   const amount: BigNumber = new BigNumber(String(transaction.amount));
   const explorer: IBlockExplorer | null =
     network.blockExplorers.find(

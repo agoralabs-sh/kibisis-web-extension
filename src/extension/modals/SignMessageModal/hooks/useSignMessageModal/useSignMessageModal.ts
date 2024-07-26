@@ -9,13 +9,10 @@ import { EventTypeEnum } from '@extension/enums';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectEvents,
-  useSelectNonWatchAccounts,
   useSelectSessions,
 } from '@extension/selectors';
-
-// services
-import AccountService from '@extension/services/AccountService';
 
 // types
 import type {
@@ -26,10 +23,11 @@ import type { IUseSignMessageModalState } from './types';
 
 // utils
 import authorizedAccountsForHost from '@extension/utils/authorizedAccountsForHost';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 export default function useSignMessageModal(): IUseSignMessageModalState {
   // selectors
-  const accounts = useSelectNonWatchAccounts();
+  const accounts = useSelectAccounts();
   const events = useSelectEvents();
   const sessions = useSelectSessions();
   // state
@@ -67,9 +65,8 @@ export default function useSignMessageModal(): IUseSignMessageModalState {
       setSigner(
         authorizedAccounts.find(
           (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === event.payload.message.params?.signer
+            convertPublicKeyToAVMAddress(value.publicKey) ===
+            event.payload.message.params?.signer
         ) ||
           authorizedAccounts[0] ||
           null

@@ -6,44 +6,37 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Text,
   Textarea,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import { Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, {
-  ChangeEvent,
-  FC,
-  KeyboardEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
 import AccountSelect from '@extension/components/AccountSelect';
-import AddressInput, {
-  useAddressInput,
-} from '@extension/components/AddressInput';
+import AddressInput from '@extension/components/AddressInput';
+import AmountInput from '@extension/components/AmountInput';
 import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
-import SendAmountInput from './SendAmountInput';
+import Label from '@extension/components/Label';
 import SendAssetModalConfirmingContent from './SendAssetModalConfirmingContent';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
 import SendAssetModalSummaryContent from './SendAssetModalSummaryContent';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
+import { QuestNameEnum } from '@extension/services/QuestsService';
+
+// errors
+import { BaseExtensionError } from '@extension/errors';
 
 // features
 import { updateAccountsThunk } from '@extension/features/accounts';
@@ -63,13 +56,15 @@ import {
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
+// modals
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
+
 // selectors
 import {
   useSelectAccounts,
   useSelectARC0200AssetsBySelectedNetwork,
   useSelectAvailableAccountsForSelectedNetwork,
   useSelectLogger,
-  useSelectPasswordLockPassword,
   useSelectSelectedNetwork,
   useSelectSendAssetAmountInStandardUnits,
   useSelectSendAssetConfirming,
@@ -77,20 +72,18 @@ import {
   useSelectSendAssetFromAccount,
   useSelectSendAssetNote,
   useSelectSendAssetSelectedAsset,
-  useSelectSettings,
+  useSelectSendAssetToAddress,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
-import QuestsService, {
-  QuestNameEnum,
-} from '@extension/services/QuestsService';
+import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
+import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type {
   IAccount,
   IAccountWithExtendedProps,
@@ -102,11 +95,16 @@ import type {
 
 // utils
 import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransactionAmount';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const passwordInputRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useDispatch<IAppThunkDispatch>();
+  const {
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
   // selectors
   const accounts = useSelectAccounts();
   const amountInStandardUnits = useSelectSendAssetAmountInStandardUnits();
@@ -119,29 +117,13 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const logger = useSelectLogger();
   const network = useSelectSelectedNetwork();
   const note = useSelectSendAssetNote();
-  const passwordLockPassword = useSelectPasswordLockPassword();
   const selectedAsset = useSelectSendAssetSelectedAsset();
-  const settings = useSelectSettings();
+  const toAddress = useSelectSendAssetToAddress();
   // hooks
-  const {
-    error: toAddressError,
-    onBlur: onToAddressBlur,
-    onChange: onToAddressChange,
-    reset: resetToAddress,
-    validate: validateToAddress,
-    value: toAddress,
-  } = useAddressInput();
-  const defaultTextColor: string = useDefaultTextColor();
-  const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    reset: resetPassword,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
-  const primaryColor: string = usePrimaryColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
   // state
+  const [toAddressError, setToAddressError] = useState<string | null>(null);
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<string>('0');
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
@@ -169,23 +151,16 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
     // reset modal input and transactions
     setTransactions(null);
-    resetToAddress();
-    resetPassword();
+
     onClose && onClose();
   };
   const handleFromAccountChange = (account: IAccountWithExtendedProps) =>
-    dispatch(
-      setFromAddress(
-        AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
-        ).toUpperCase()
-      )
-    );
+    dispatch(setFromAddress(convertPublicKeyToAVMAddress(account.publicKey)));
   const handleNextClick = async () => {
-    const _functionName: string = 'handleNextClick';
+    const _functionName = 'handleNextClick';
     let _transactions: Transaction[];
 
-    if (validateToAddress()) {
+    if (toAddressError) {
       return;
     }
 
@@ -227,20 +202,25 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     dispatch(
       setNote(event.target.value.length > 0 ? event.target.value : null)
     );
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
+  const handleOnToAddressError = (error: string | null) =>
+    setToAddressError(error);
+  const handlePreviousClick = () => setTransactions(null);
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
   ) => {
-    if (event.key === 'Enter') {
-      await handleSendClick();
-    }
-  };
-  const handlePreviousClick = () => {
-    resetPassword();
-    setTransactions(null);
-  };
-  const handleSendClick = async () => {
-    const _functionName: string = 'handleSendClick';
-    let _password: string | null;
+    const _functionName = 'handleOnAuthenticationModalConfirm';
     let fromAddress: string;
     let hasQuestBeenCompletedToday: boolean = false;
     let questsService: QuestsService;
@@ -248,48 +228,23 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     let toAccount: IAccount | null;
     let transactionIds: string[];
 
-    if (!fromAccount || !network || !transactions || transactions.length <= 0) {
-      return;
-    }
-
-    // if there is no password lock
-    if (!settings.security.enablePasswordLock && !passwordLockPassword) {
-      // validate the password input
-      if (validatePassword()) {
-        logger.debug(
-          `${SendAssetModal.name}#${_functionName}: password not valid`
-        );
-
-        return;
-      }
-    }
-
-    _password = settings.security.enablePasswordLock
-      ? passwordLockPassword
-      : password;
-
-    if (!_password) {
-      logger.debug(
-        `${SendAssetModal.name}#${_functionName}: unable to use password from password lock, value is "null"`
-      );
-
+    if (
+      !fromAccount ||
+      !network ||
+      !transactions ||
+      transactions.length <= 0 ||
+      !toAddress
+    ) {
       return;
     }
 
     try {
       transactionIds = await dispatch(
         submitTransactionThunk({
-          password: _password,
           transactions,
+          ...result,
         })
       ).unwrap();
-      toAccount =
-        accounts.find(
-          (value) =>
-            AccountService.convertPublicKeyToAlgorandAddress(
-              value.publicKey
-            ) === toAddress
-        ) || null;
 
       logger.debug(
         `${
@@ -299,9 +254,11 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           .join(',')}] to the network`
       );
 
-      fromAddress = AccountService.convertPublicKeyToAlgorandAddress(
-        fromAccount.publicKey
-      );
+      toAccount =
+        accounts.find(
+          (value) => convertPublicKeyToAVMAddress(value.publicKey) === toAddress
+        ) || null;
+      fromAddress = convertPublicKeyToAVMAddress(fromAccount.publicKey);
       questsService = new QuestsService({
         logger,
       });
@@ -393,10 +350,6 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       handleClose();
     } catch (error) {
       switch (error.code) {
-        case ErrorCodeEnum.InvalidPasswordError:
-          setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-          break;
         case ErrorCodeEnum.OfflineError:
           dispatch(
             createNotification({
@@ -422,21 +375,24 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       }
     }
   };
-  const handleToAddressChange = (value: string) => {
+  const handleSendClick = () => onAuthenticationModalOpen();
+  const handleToAddressChange = (value: string) =>
     dispatch(setToAddress(value.length > 0 ? value : null));
-    onToAddressChange(value);
-  };
   // renders
   const renderContent = () => {
-    if (confirming) {
-      return <SendAssetModalConfirmingContent />;
-    }
-
     if (!fromAccount || !network || !selectedAsset) {
       return <SendAssetModalContentSkeleton />;
     }
 
-    if (transactions && transactions.length > 0) {
+    if (confirming) {
+      return (
+        <SendAssetModalConfirmingContent
+          numberOfTransactions={transactions?.length}
+        />
+      );
+    }
+
+    if (toAddress && transactions && transactions.length > 0) {
       return (
         <SendAssetModalSummaryContent
           accounts={accounts}
@@ -454,60 +410,40 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     return (
       <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/*amount*/}
-        <SendAmountInput
+        <AmountInput
           account={fromAccount}
+          asset={selectedAsset}
           disabled={creating}
           network={network}
           maximumTransactionAmount={maximumTransactionAmount}
-          onValueChange={handleAmountChange}
-          selectedAsset={selectedAsset}
+          onChange={handleAmountChange}
+          required={true}
           value={amountInStandardUnits}
         />
 
         {/*select asset*/}
-        <VStack w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.asset')}
-          </Text>
-
-          <AssetSelect
-            account={fromAccount}
-            assets={[
-              network.nativeCurrency, // add the native currency to the front
-              ...allAssets,
-            ]}
-            disabled={creating}
-            network={network}
-            onAssetChange={handleAssetChange}
-            value={selectedAsset}
-          />
-        </VStack>
+        <AssetSelect
+          assets={[
+            network.nativeCurrency, // add the native currency to the front
+            ...allAssets,
+          ]}
+          disabled={creating}
+          label={t<string>('labels.asset')}
+          network={network}
+          onSelect={handleAssetChange}
+          required={true}
+          value={selectedAsset}
+        />
 
         {/*from account*/}
-        <VStack alignItems="flex-start" w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.from')}
-          </Text>
-
-          <AccountSelect
-            accounts={availableAccounts}
-            disabled={creating}
-            onSelect={handleFromAccountChange}
-            value={fromAccount}
-          />
-        </VStack>
+        <AccountSelect
+          accounts={availableAccounts}
+          disabled={creating}
+          label={t<string>('labels.from')}
+          onSelect={handleFromAccountChange}
+          required={true}
+          value={fromAccount}
+        />
 
         {/*to address*/}
         <AddressInput
@@ -515,22 +451,15 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           disabled={creating}
           error={toAddressError}
           label={t<string>('labels.to')}
-          onBlur={onToAddressBlur}
           onChange={handleToAddressChange}
+          onError={handleOnToAddressError}
+          required={true}
           value={toAddress || ''}
         />
 
         {/*note*/}
         <VStack alignItems="flex-start" w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.noteOptional')}
-          </Text>
+          <Label label={t<string>('labels.note')} />
 
           <Textarea
             focusBorderColor={primaryColor}
@@ -552,39 +481,21 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
     if (transactions && transactions.length > 0) {
       return (
-        <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-          {!settings.security.enablePasswordLock && !passwordLockPassword && (
-            <PasswordInput
-              error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToSendTransaction')}
-              onChange={onPasswordChange}
-              onKeyUp={handleKeyUpPasswordInput}
-              inputRef={passwordInputRef}
-              value={password}
-            />
-          )}
+        <HStack spacing={DEFAULT_GAP - 2} w="full">
+          <Button
+            leftIcon={<IoArrowBackOutline />}
+            onClick={handlePreviousClick}
+            size="lg"
+            variant="outline"
+            w="full"
+          >
+            {t<string>('buttons.previous')}
+          </Button>
 
-          <HStack spacing={DEFAULT_GAP - 2} w="full">
-            <Button
-              leftIcon={<IoArrowBackOutline />}
-              onClick={handlePreviousClick}
-              size="lg"
-              variant="outline"
-              w="full"
-            >
-              {t<string>('buttons.previous')}
-            </Button>
-
-            <Button
-              onClick={handleSendClick}
-              size="lg"
-              variant="solid"
-              w="full"
-            >
-              {t<string>('buttons.send')}
-            </Button>
-          </HStack>
-        </VStack>
+          <Button onClick={handleSendClick} size="lg" variant="solid" w="full">
+            {t<string>('buttons.send')}
+          </Button>
+        </HStack>
       );
     }
 
@@ -643,11 +554,6 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   };
 
   useEffect(() => {
-    if (transactions && transactions.length > 0 && passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, [transactions]);
-  useEffect(() => {
     let newMaximumTransactionAmount: BigNumber;
 
     if (fromAccount && network && selectedAsset) {
@@ -674,29 +580,40 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   }, [fromAccount, network, selectedAsset]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      motionPreset="slideInBottom"
-      onClose={handleClose}
-      size="full"
-      scrollBehavior="inside"
-    >
-      <ModalContent
-        backgroundColor="var(--chakra-colors-chakra-body-bg)"
-        borderTopRadius={theme.radii['3xl']}
-        borderBottomRadius={0}
+    <>
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onClose={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
+        passwordHint={t<string>('captions.mustEnterPasswordToSendTransaction')}
+      />
+
+      <Modal
+        isOpen={isOpen}
+        motionPreset="slideInBottom"
+        onClose={handleClose}
+        size="full"
+        scrollBehavior="inside"
       >
-        <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
-          {renderHeader()}
-        </ModalHeader>
+        <ModalContent
+          backgroundColor={BODY_BACKGROUND_COLOR}
+          borderTopRadius={theme.radii['3xl']}
+          borderBottomRadius={0}
+        >
+          <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
+            {renderHeader()}
+          </ModalHeader>
 
-        <ModalBody display="flex" px={DEFAULT_GAP}>
-          {renderContent()}
-        </ModalBody>
+          <ModalBody display="flex" px={DEFAULT_GAP}>
+            {renderContent()}
+          </ModalBody>
 
-        <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter p={DEFAULT_GAP}>{renderFooter()}</ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

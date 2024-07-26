@@ -2,6 +2,7 @@
 import type { IState as IAccountsState } from '@extension/features/accounts';
 import type { IState as IEventsState } from '@extension/features/events';
 import type { IState as INetworksState } from '@extension/features/networks';
+import type { IState as IPasskeysState } from '@extension/features/passkeys';
 import type { IState as IPasswordLockState } from '@extension/features/password-lock';
 import type { IState as ISessionsState } from '@extension/features/sessions';
 import type { IState as ISettingsState } from '@extension/features/settings';
@@ -14,6 +15,7 @@ interface IBackgroundRootState extends IBaseRootState {
   accounts: IAccountsState;
   events: IEventsState;
   networks: INetworksState;
+  passkeys: IPasskeysState;
   passwordLock: IPasswordLockState;
   sessions: ISessionsState;
   settings: ISettingsState;

@@ -5,11 +5,14 @@ import type { IAccountWithExtendedProps } from '@extension/types';
 
 interface IProps {
   accounts: IAccountWithExtendedProps[];
+  allowWatchAccounts?: boolean;
   disabled?: boolean;
-  error: string | null;
+  error?: string | null;
   label?: string;
-  onBlur: (event: FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
   onChange: (value: string) => void;
+  onError?: (error: string | null) => void;
+  required?: boolean;
   value: string;
 }
 

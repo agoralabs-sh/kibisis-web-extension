@@ -1,136 +1,135 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { encode as encodeHex } from '@stablelib/hex';
-import { sign } from 'tweetnacl';
+import { encode as encodeUtf8 } from '@stablelib/utf8';
 import browser from 'webextension-polyfill';
 
 // enums
-import { RegisterThunkEnum } from '@extension/enums';
+import { EncryptionMethodEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // errors
 import { InvalidPasswordError } from '@extension/errors';
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PasswordService from '@extension/services/PasswordService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
   IAccount,
   IAsyncThunkConfigWithRejectValue,
-  INetwork,
+  INewAccount,
+  IPasswordTag,
   IPrivateKey,
   IRegistrationRootState,
 } from '@extension/types';
-import type { ISaveCredentialsPayload } from '../types';
-
-// utils
-import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-import initializeARC0200AssetHoldingFromARC0200Asset from '@extension/utils/initializeARC0200AssetHoldingFromARC0200Asset';
 
 const saveCredentialsThunk: AsyncThunk<
-  IAccount, // return
-  ISaveCredentialsPayload, // args
+  IAccount[], // return
+  INewAccount[], // args
   IAsyncThunkConfigWithRejectValue<IRegistrationRootState>
 > = createAsyncThunk<
-  IAccount,
-  ISaveCredentialsPayload,
+  IAccount[],
+  INewAccount[],
   IAsyncThunkConfigWithRejectValue<IRegistrationRootState>
 >(
-  RegisterThunkEnum.SaveCredentials,
-  async (
-    { arc0200Assets, name, privateKey },
-    { getState, rejectWithValue }
-  ) => {
+  ThunkEnum.SaveCredentials,
+  async (accounts, { getState, rejectWithValue }) => {
     const logger = getState().system.logger;
-    const networks = getState().networks.items;
     const password = getState().registration.password;
-    let account: IAccount;
-    let accountService: AccountService;
-    let defaultNetwork: INetwork;
-    let encodedGenesisHash: string;
-    let encodedPublicKey: string;
-    let privateKeyItem: IPrivateKey | null;
+    let _accounts: IAccount[] = [];
+    let passwordService: PasswordService;
+    let passwordTagItem: IPasswordTag;
+    let privateKeyItem: IPrivateKey;
+    let privateKeyItems: IPrivateKey[] = [];
     let privateKeyService: PrivateKeyService;
 
     if (!password) {
-      logger.error(`${RegisterThunkEnum.SaveCredentials}: no password found`);
+      logger.error(`${ThunkEnum.SaveCredentials}: no password found`);
 
       return rejectWithValue(new InvalidPasswordError());
     }
 
+    passwordService = new PasswordService({
+      logger,
+      passwordTag: browser.runtime.id,
+    });
+    privateKeyService = new PrivateKeyService({
+      logger,
+    });
+
     try {
-      logger.debug(
-        `${RegisterThunkEnum.SaveCredentials}: inferring public key`
-      );
-
-      encodedPublicKey = encodeHex(
-        sign.keyPair.fromSecretKey(privateKey).publicKey
-      );
-      privateKeyService = new PrivateKeyService({
-        logger,
-        passwordTag: browser.runtime.id,
-      });
+      // reset any previous keys/credentials
+      await passwordService.removeFromStorage();
+      await privateKeyService.removeAllFromStorage();
 
       logger.debug(
-        `${RegisterThunkEnum.SaveCredentials}: saving private key, with encoded public key "${encodedPublicKey}", to storage`
+        `${ThunkEnum.SaveCredentials}: removed previous credentials from storage`
       );
 
-      // reset any previous credentials, set the password and the account
-      await privateKeyService.reset();
-      await privateKeyService.setPassword(password);
-
-      privateKeyItem = await privateKeyService.setPrivateKey(
-        privateKey,
-        password
+      // save the password and the keys
+      passwordTagItem = await passwordService.saveToStorage(
+        PasswordService.createPasswordTag({
+          encryptedTag: await PasswordService.encryptBytes({
+            data: encodeUtf8(passwordService.getPasswordTag()),
+            logger,
+            password,
+          }),
+        })
       );
     } catch (error) {
-      logger.error(`${RegisterThunkEnum.SaveCredentials}: ${error.message}`);
+      logger.error(`${ThunkEnum.SaveCredentials}:`, error);
+
+      // clean up, we errored
+      await passwordService.removeFromStorage();
+      await privateKeyService.removeAllFromStorage();
 
       return rejectWithValue(error);
     }
 
+    logger.debug(`${ThunkEnum.SaveCredentials}: saved password tag to storage`);
+
+    for (const { keyPair, name } of accounts) {
+      privateKeyItem = PrivateKeyService.createPrivateKey({
+        encryptedPrivateKey: await PasswordService.encryptBytes({
+          data: keyPair.privateKey,
+          logger,
+          password,
+        }),
+        encryptionID: passwordTagItem.id,
+        encryptionMethod: EncryptionMethodEnum.Password,
+        publicKey: keyPair.publicKey,
+      });
+
+      privateKeyItems.push(privateKeyItem);
+      _accounts.push(
+        AccountService.initializeDefaultAccount({
+          createdAt: privateKeyItem.createdAt,
+          publicKey: privateKeyItem.publicKey,
+          ...(name && {
+            name,
+          }),
+        })
+      );
+    }
+
+    // save the private keys to storage
+    await privateKeyService.saveManyToStorage(privateKeyItems);
+
     logger.debug(
-      `${RegisterThunkEnum.SaveCredentials}: successfully saved credentials`
+      `${ThunkEnum.SaveCredentials}: successfully saved ${privateKeyItems.length} keys to storage`
     );
 
-    defaultNetwork = selectDefaultNetwork(networks);
-    encodedGenesisHash = convertGenesisHashToHex(
-      defaultNetwork.genesisHash
-    ).toUpperCase();
-    account = AccountService.initializeDefaultAccount({
-      publicKey: encodedPublicKey,
-      ...(privateKeyItem && {
-        createdAt: privateKeyItem.createdAt,
-      }),
-      ...(name && {
-        name,
-      }),
-    });
-    // add any supplied arc-0200 assets
-    account = {
-      ...account,
-      networkInformation: {
-        [encodedGenesisHash]: {
-          ...account.networkInformation[encodedGenesisHash],
-          arc200AssetHoldings: arc0200Assets.map(
-            initializeARC0200AssetHoldingFromARC0200Asset
-          ),
-        },
-      },
-    };
-    accountService = new AccountService({
+    // save the accounts to storage
+    await new AccountService({
       logger,
-    });
-
-    // save the account to storage
-    await accountService.saveAccounts([account]);
+    }).saveAccounts(_accounts);
 
     logger.debug(
-      `${RegisterThunkEnum.SaveCredentials}: saved account for "${encodedPublicKey}" to storage`
+      `${ThunkEnum.SaveCredentials}: successfully saved ${_accounts.length} accounts to storage`
     );
 
-    return account;
+    return _accounts;
   }
 );
 

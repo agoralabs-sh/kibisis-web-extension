@@ -21,7 +21,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -29,6 +29,9 @@ import type {
   IARC0200AssetTransferTransaction,
 } from '@extension/types';
 import type { IProps } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const ARC0200AssetTransferTransactionItemContent: FC<
   IProps<IARC0200AssetTransferTransaction>
@@ -44,8 +47,8 @@ const ARC0200AssetTransferTransactionItemContent: FC<
   const [asset, setAsset] = useState<IARC0200Asset | null>(null);
   // misc
   const amount = new BigNumber(String(transaction.amount));
-  const senderAddress = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
+  const senderAddress = convertPublicKeyToAVMAddress(
+    PrivateKeyService.decode(account.publicKey)
   );
 
   useEffect(() => {

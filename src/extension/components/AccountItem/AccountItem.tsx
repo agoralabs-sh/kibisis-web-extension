@@ -1,5 +1,5 @@
 import { Center, HStack, Text, VStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 
 // components
 import AccountAvatar from '@extension/components/AccountAvatar';
@@ -11,23 +11,21 @@ import { DEFAULT_GAP } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type { IProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
+const AccountItem: FC<IProps> = ({
+  address,
+  name,
+  subTextColor,
+  textColor,
+}) => {
   // hooks
   const defaultSubTextColor = useSubTextColor();
   const defaultTextColor = useDefaultTextColor();
-  // misc
-  const address = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
-  );
 
   return (
     <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
@@ -36,7 +34,7 @@ const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
         <AccountAvatar />
       </Center>
 
-      {account.name ? (
+      {name ? (
         <VStack
           alignItems="flex-start"
           flexGrow={1}
@@ -50,7 +48,7 @@ const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
             noOfLines={1}
             textAlign="left"
           >
-            {account.name}
+            {name}
           </Text>
           <Text
             color={subTextColor || defaultSubTextColor}

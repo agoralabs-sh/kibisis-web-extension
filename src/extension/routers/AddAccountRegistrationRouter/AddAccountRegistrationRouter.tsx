@@ -37,9 +37,8 @@ import {
 
 // types
 import type {
-  IAddAccountCompleteResult,
   IAppThunkDispatch,
-  IRegistrationAddAccountCompleteResult,
+  INewAccount,
   IRegistrationRootState,
 } from '@extension/types';
 
@@ -52,19 +51,9 @@ const AddAccountRegistrationRouter: FC = () => {
     useSelectRegistrationImportAccountViaQRCodeOpen();
   const saving = useSelectRegistrationSaving();
   // misc
-  const saveNewAccount = async ({
-    arc0200Assets,
-    name,
-    privateKey,
-  }: IRegistrationAddAccountCompleteResult) => {
+  const saveNewAccount = async (accounts: INewAccount[]) => {
     try {
-      await dispatch(
-        saveCredentialsThunk({
-          arc0200Assets,
-          name,
-          privateKey,
-        })
-      ).unwrap();
+      await dispatch(saveCredentialsThunk(accounts)).unwrap();
 
       // send a message that registration has been completed
       dispatch(sendRegistrationCompletedThunk());
@@ -86,21 +75,17 @@ const AddAccountRegistrationRouter: FC = () => {
               type: 'error',
             })
           );
+
           break;
       }
     }
   };
   // handlers
   const handleOnImportAccountViaQRCodeComplete = async (
-    result: IRegistrationAddAccountCompleteResult
-  ) => await saveNewAccount(result);
-  const handleOnAddAccountComplete = async (
-    result: IAddAccountCompleteResult
-  ) =>
-    await saveNewAccount({
-      ...result,
-      arc0200Assets: [],
-    });
+    accounts: INewAccount[]
+  ) => await saveNewAccount(accounts);
+  const handleOnAddAccountComplete = async (account: INewAccount) =>
+    await saveNewAccount([account]);
   const handleOnImportAccountViaQRCodeClose = () =>
     dispatch(setImportAccountViaQRCodeOpen(false));
   const handleOnImportAccountViaQRCodeOpen = () =>

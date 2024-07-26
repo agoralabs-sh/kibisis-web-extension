@@ -14,6 +14,7 @@ import { reducer as eventsReducer } from '@extension/features/events';
 import { reducer as layoutReducer } from '@extension/features/layout';
 import { reducer as messagesReducer } from '@extension/features/messages';
 import { reducer as networksReducer } from '@extension/features/networks';
+import { reducer as passkeysReducer } from '@extension/features/passkeys';
 import { reducer as passwordLockReducer } from '@extension/features/password-lock';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
 import { reducer as settingsReducer } from '@extension/features/settings';
@@ -35,6 +36,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       layout: layoutReducer,
       messages: messagesReducer,
       networks: networksReducer,
+      passkeys: passkeysReducer,
       passwordLock: passwordLockReducer,
       sessions: sessionsReducer,
       settings: settingsReducer,

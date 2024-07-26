@@ -1,10 +1,10 @@
 // types
-import type { IRegistrationAddAccountCompleteResult } from '@extension/types';
+import type { INewAccount } from '@extension/types';
 
 interface IProps {
   isOpen: boolean;
   onClose: () => void;
-  onComplete: (result: IRegistrationAddAccountCompleteResult) => Promise<void>;
+  onComplete: (accounts: INewAccount[]) => Promise<void>;
   saving: boolean;
 }
 

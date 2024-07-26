@@ -1,116 +1,87 @@
-import { Center, Flex, Heading, VStack } from '@chakra-ui/react';
-import React, {
-  FC,
-  KeyboardEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { Center, Flex, Heading, useDisclosure, VStack } from '@chakra-ui/react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
-import browser from 'webextension-polyfill';
+import { useNavigate } from 'react-router-dom';
 
 // components
-import KibisisIcon from '@extension/components/KibisisIcon';
 import Button from '@extension/components/Button';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
+import KibisisIcon from '@extension/components/KibisisIcon';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
+// errors
+import { BaseExtensionError } from '@extension/errors';
+
 // features
+import { create as createNotification } from '@extension/features/notifications';
 import { savePasswordLockThunk } from '@extension/features/password-lock';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
+// modals
+import AuthenticationModal, {
+  TOnConfirmResult,
+} from '@extension/modals/AuthenticationModal';
+
 // selectors
 import {
   useSelectLogger,
-  useSelectPasswordLockPassword,
+  useSelectPasswordLockCredentials,
   useSelectPasswordLockSaving,
 } from '@extension/selectors';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
-
 // types
-import type { ILogger } from '@common/types';
 import type { IAppThunkDispatch } from '@extension/types';
+
+// utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const PasswordLockPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
-  const navigate: NavigateFunction = useNavigate();
-  const passwordInputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
-  // selectors
-  const logger: ILogger = useSelectLogger();
-  const passwordLockPassword: string | null = useSelectPasswordLockPassword();
-  const saving: boolean = useSelectPasswordLockSaving();
-  // hooks
-  const defaultTextColor: string = useDefaultTextColor();
+  const dispatch = useDispatch<IAppThunkDispatch>();
+  const navigate = useNavigate();
   const {
-    error: passwordError,
-    onChange: onPasswordChange,
-    setError: setPasswordError,
-    validate: validatePassword,
-    value: password,
-  } = usePassword();
-  const primaryColor: string = usePrimaryColor();
+    isOpen: isAuthenticationModalOpen,
+    onClose: onAuthenticationModalClose,
+    onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
+  // selectors
+  const logger = useSelectLogger();
+  const passwordLockPassword = useSelectPasswordLockCredentials();
+  const saving = useSelectPasswordLockSaving();
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
   // states
   const [verifying, setVerifying] = useState<boolean>(false);
   // misc
-  const isLoading: boolean = saving || verifying;
+  const iconSize = calculateIconSize('xl');
+  const isLoading = saving || verifying;
   // handlers
-  const handleKeyUpPasswordInput = async (
-    event: KeyboardEvent<HTMLInputElement>
+  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
+  const handleUnlockClick = () => onAuthenticationModalOpen();
+  const handleOnAuthenticationModalConfirm = async (
+    result: TOnConfirmResult
   ) => {
-    if (event.key === 'Enter') {
-      await handleConfirmClick();
-    }
-  };
-  const handleConfirmClick = async () => {
-    let isValid: boolean;
-    let privateKeyService: PrivateKeyService;
-
-    // check if the input is valid
-    if (validatePassword()) {
-      return;
-    }
-
-    privateKeyService = new PrivateKeyService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
-
-    setVerifying(true);
-
-    isValid = await privateKeyService.verifyPassword(password);
-
-    setVerifying(false);
-
-    if (!isValid) {
-      setPasswordError(t<string>('errors.inputs.invalidPassword'));
-
-      return;
-    }
-
-    // save the password lock password and clear any alarms
-    dispatch(savePasswordLockThunk(password));
+    // save the password lock passkey/password and clear any alarms
+    dispatch(savePasswordLockThunk(result));
   };
 
-  // focus on password input
-  useEffect(() => {
-    if (passwordInputRef.current) {
-      passwordInputRef.current.focus();
-    }
-  }, []);
   useEffect(() => {
     if (passwordLockPassword) {
       navigate(-1);
@@ -118,56 +89,61 @@ const PasswordLockPage: FC = () => {
   }, [passwordLockPassword]);
 
   return (
-    <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
-      <Flex
-        alignItems="center"
-        direction="column"
-        justifyContent="center"
-        minH="100vh"
-        w="full"
-      >
-        <VStack
-          flexGrow={1}
-          pb={DEFAULT_GAP}
-          px={DEFAULT_GAP}
-          spacing={2}
+    <>
+      {/*authentication modal*/}
+      <AuthenticationModal
+        isOpen={isAuthenticationModalOpen}
+        onClose={onAuthenticationModalClose}
+        onConfirm={handleOnAuthenticationModalConfirm}
+        onError={handleOnAuthenticationError}
+        passwordHint={t<string>('captions.mustEnterPasswordToUnlock')}
+      />
+
+      <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
+        <Flex
+          alignItems="center"
+          direction="column"
+          justifyContent="center"
+          minH="100vh"
           w="full"
         >
-          <VStack flexGrow={1} justifyContent="center" spacing={2} w="full">
-            <VStack pb={DEFAULT_GAP} spacing={2} w="full">
-              {/*icon*/}
-              <KibisisIcon color={primaryColor} h={12} w={12} />
-
-              {/*heading*/}
-              <Heading color={defaultTextColor}>
-                {t<string>('headings.passwordLock')}
-              </Heading>
-            </VStack>
-
-            {/*password input*/}
-            <PasswordInput
-              disabled={isLoading}
-              error={passwordError}
-              hint={t<string>('captions.mustEnterPasswordToUnlock')}
-              inputRef={passwordInputRef}
-              onChange={onPasswordChange}
-              onKeyUp={handleKeyUpPasswordInput}
-              value={password || ''}
-            />
-          </VStack>
-
-          {/*confirm button*/}
-          <Button
-            isLoading={isLoading}
-            onClick={handleConfirmClick}
-            size="lg"
+          <VStack
+            flexGrow={1}
+            pb={DEFAULT_GAP}
+            px={DEFAULT_GAP}
+            spacing={DEFAULT_GAP / 3}
             w="full"
           >
-            {t<string>('buttons.confirm')}
-          </Button>
-        </VStack>
-      </Flex>
-    </Center>
+            <VStack
+              flexGrow={1}
+              justifyContent="center"
+              spacing={DEFAULT_GAP / 3}
+              w="full"
+            >
+              <VStack pb={DEFAULT_GAP} spacing={DEFAULT_GAP / 3} w="full">
+                {/*icon*/}
+                <KibisisIcon color={primaryColor} h={iconSize} w={iconSize} />
+
+                {/*heading*/}
+                <Heading color={defaultTextColor}>
+                  {t<string>('headings.passwordLock')}
+                </Heading>
+              </VStack>
+            </VStack>
+
+            {/*unlock button*/}
+            <Button
+              isLoading={isLoading}
+              onClick={handleUnlockClick}
+              size="lg"
+              w="full"
+            >
+              {t<string>('buttons.unlock')}
+            </Button>
+          </VStack>
+        </Flex>
+      </Center>
+    </>
   );
 };
 

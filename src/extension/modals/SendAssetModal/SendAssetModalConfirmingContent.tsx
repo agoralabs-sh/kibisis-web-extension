@@ -1,38 +1,45 @@
-import { Spinner, Text, VStack } from '@chakra-ui/react';
+import { Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoSwapVerticalOutline } from 'react-icons/io5';
+
+// components
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
-const SendAssetModalConfirmingContent: FC = () => {
+// types
+import type { ISendAssetModalConfirmingContentProps } from './types';
+
+const SendAssetModalConfirmingContent: FC<
+  ISendAssetModalConfirmingContentProps
+> = ({ numberOfTransactions }) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
+  const defaultTextColor = useDefaultTextColor();
 
   return (
     <VStack
       alignItems="center"
       flexGrow={1}
       justifyContent="center"
-      spacing={DEFAULT_GAP / 2}
+      spacing={DEFAULT_GAP - 2}
       w="full"
     >
-      <Spinner
-        color={primaryColor}
-        emptyColor={defaultTextColor}
-        size="xl"
-        speed="0.65s"
-        thickness="4px"
-      />
+      {/*progress*/}
+      <CircularProgressWithIcon icon={IoSwapVerticalOutline} />
 
+      {/*captions*/}
       <Text color={defaultTextColor} fontSize="md" textAlign="center" w="full">
-        {t<string>('captions.confirmingTransaction')}
+        {numberOfTransactions
+          ? t<string>('captions.confirmingTransactionWithAmountWithAmount', {
+              number: numberOfTransactions,
+            })
+          : t<string>('captions.confirmingTransactionWithAmount')}
       </Text>
     </VStack>
   );

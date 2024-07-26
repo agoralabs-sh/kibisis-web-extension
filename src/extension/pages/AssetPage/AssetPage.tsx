@@ -27,7 +27,6 @@ import AssetIcon from '@extension/components/AssetIcon';
 import AssetBadge from '@extension/components/AssetBadge';
 import Button from '@extension/components/Button';
 import CopyIconButton from '@extension/components/CopyIconButton';
-import LoadingPage from '@extension/components/LoadingPage';
 import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
 import PageHeader from '@extension/components/PageHeader';
@@ -56,6 +55,9 @@ import useAssetPage from './hooks/useAssetPage';
 // modals
 import ShareAddressModal from '@extension/modals//ShareAddressModal';
 
+// pages
+import SkeletonAssetPage from '@extension/pages/SkeletonAssetPage';
+
 // selectors
 import {
   useSelectAccounts,
@@ -66,7 +68,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAppThunkDispatch } from '@extension/types';
@@ -74,6 +76,7 @@ import type { IAppThunkDispatch } from '@extension/types';
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isAccountKnown from '@extension/utils/isAccountKnown';
 
@@ -122,8 +125,8 @@ const AssetPage: FC = () => {
 
     dispatch(
       initializeSendAsset({
-        fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
+        fromAddress: convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(account.publicKey)
         ),
         selectedAsset: asset,
       })
@@ -161,11 +164,11 @@ const AssetPage: FC = () => {
     !assetHolding ||
     fetchingAssets
   ) {
-    return <LoadingPage />;
+    return <SkeletonAssetPage />;
   }
 
-  accountAddress = AccountService.convertPublicKeyToAlgorandAddress(
-    account.publicKey
+  accountAddress = convertPublicKeyToAVMAddress(
+    PrivateKeyService.decode(account.publicKey)
   );
 
   return (

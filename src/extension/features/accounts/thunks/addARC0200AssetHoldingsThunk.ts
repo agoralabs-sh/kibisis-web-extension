@@ -11,6 +11,7 @@ import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -28,6 +29,7 @@ import type {
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import initializeARC0200AssetHoldingFromARC0200Asset from '@extension/utils/initializeARC0200AssetHoldingFromARC0200Asset';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
@@ -102,8 +104,8 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
       networkInformation: {
         ...account.networkInformation,
         [encodedGenesisHash]: await updateAccountInformation({
-          address: AccountService.convertPublicKeyToAlgorandAddress(
-            account.publicKey
+          address: convertPublicKeyToAVMAddress(
+            PrivateKeyService.decode(account.publicKey)
           ),
           currentAccountInformation: {
             ...currentAccountInformation,

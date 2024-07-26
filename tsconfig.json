@@ -36,6 +36,7 @@
       "@extension/hooks/*": ["src/extension/hooks/*"],
       "@extension/images/*": ["src/extension/images/*"],
       "@extension/modals/*": ["src/extension/modals/*"],
+      "@extension/models/*": ["src/extension/models/*"],
       "@extension/pages/*": ["src/extension/pages/*"],
       "@extension/routers/*": ["src/extension/routers/*"],
       "@extension/selectors": ["src/extension/selectors"],

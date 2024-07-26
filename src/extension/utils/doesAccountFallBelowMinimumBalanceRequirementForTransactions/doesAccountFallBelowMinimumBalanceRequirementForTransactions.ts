@@ -3,10 +3,14 @@ import BigNumber from 'bignumber.js';
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccountInformation } from '@extension/types';
 import type { IOptions } from './types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 /**
  * Convenience function to determine if an account balance will fall below the minimum balance requirement (MBR) with the
@@ -33,8 +37,8 @@ export default function doesAccountFallBelowMinimumBalanceRequirementForTransact
 
   if (!accountInformation) {
     logger?.debug(
-      `${_functionName}: unable to get account information for account "${AccountService.convertPublicKeyToAlgorandAddress(
-        account.publicKey
+      `${_functionName}: unable to get account information for account "${convertPublicKeyToAVMAddress(
+        PrivateKeyService.decode(account.publicKey)
       )}" on network "${network.genesisId}"`
     );
 

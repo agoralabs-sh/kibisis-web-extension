@@ -9,6 +9,7 @@ enum StoreNameEnum {
   Networks = 'networks',
   News = 'news',
   Notifications = 'notifications',
+  Passkeys = 'passkeys',
   PasswordLock = 'password-lock',
   Register = 'register',
   ReKeyAccount = 're-key-account',

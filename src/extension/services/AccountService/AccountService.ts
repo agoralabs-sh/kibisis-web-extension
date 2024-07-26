@@ -1,5 +1,3 @@
-import { decode as decodeAsHex, encode as encodeHex } from '@stablelib/hex';
-import { decodeAddress, encodeAddress } from 'algosdk';
 import { v4 as uuid } from 'uuid';
 
 // config
@@ -13,9 +11,6 @@ import {
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
-
-// errors
-import { DecodingError } from '@extension/errors';
 
 // services
 import StorageManager from '../StorageManager';
@@ -48,49 +43,6 @@ export default class AccountService {
   /**
    * public static functions
    */
-
-  /**
-   * Convenience function that simply converts an Algorand address to hexadecimal encoded public key.
-   * @param {string} address - the Algorand address to convert.
-   * @returns {string} a hexadecimal encoded public key from the Algrand address.
-   */
-  public static convertAlgorandAddressToPublicKey(address: string): string {
-    return AccountService.encodePublicKey(decodeAddress(address).publicKey);
-  }
-
-  /**
-   * Convenience function that simply converts a hexadecimal encoded public key to an Algorand address.
-   * @param {string} encodedPublicKey - the hexadecimal encoded public key.
-   * @returns {string} an Algorand address derived from the hexadecimal encoded public key.
-   */
-  public static convertPublicKeyToAlgorandAddress(
-    encodedPublicKey: string
-  ): string {
-    return encodeAddress(AccountService.decodePublicKey(encodedPublicKey));
-  }
-
-  /**
-   * Convenience function that simply decodes a hexadecimal encoded public key and returns it as bytes.
-   * @param {string} encodedPublicKey - a hexadecimal encoded public key.
-   * @returns {Uint8Array} the decoded public key.
-   * @throws {DecodingError} if the supplied string is not hexadecimal.
-   */
-  public static decodePublicKey(encodedPublicKey: string): Uint8Array {
-    try {
-      return decodeAsHex(encodedPublicKey.toUpperCase());
-    } catch (error) {
-      throw new DecodingError(`failed to decode public key: ${error.message}`);
-    }
-  }
-
-  /**
-   * Convenience function that simply encodes a raw public key to hexadecimal in uppercase.
-   * @param {Uint8Array} publicKey - the raw public key.
-   * @returns {string} a hexadecimal encoded public key.
-   */
-  public static encodePublicKey(publicKey: Uint8Array): string {
-    return encodeHex(publicKey).toUpperCase();
-  }
 
   /**
    * Convenience function that extracts the account information for a given network.

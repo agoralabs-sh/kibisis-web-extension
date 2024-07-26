@@ -15,6 +15,9 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
+
 const GetStartedPage: FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -22,13 +25,26 @@ const GetStartedPage: FC = () => {
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
+  // misc
+  const iconSize = calculateIconSize('xl');
   // handlers
   const handleGetStartedClick = () => navigate(CREATE_PASSWORD_ROUTE);
 
   return (
-    <VStack flexGrow={1} pb={DEFAULT_GAP} px={DEFAULT_GAP} spacing={2} w="full">
-      <VStack flexGrow={1} justifyContent="center" spacing={2} w="full">
-        <KibisisIcon color={primaryColor} h={12} w={12} />
+    <VStack
+      flexGrow={1}
+      pb={DEFAULT_GAP}
+      px={DEFAULT_GAP}
+      spacing={DEFAULT_GAP / 3}
+      w="full"
+    >
+      <VStack
+        flexGrow={1}
+        justifyContent="center"
+        spacing={DEFAULT_GAP / 3}
+        w="full"
+      >
+        <KibisisIcon color={primaryColor} h={iconSize} w={iconSize} />
 
         <Heading color={defaultTextColor}>{__APP_TITLE__}</Heading>
 

@@ -25,6 +25,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -35,13 +36,14 @@ import type {
   IStandardAsset,
 } from '@extension/types';
 import type {
-  IUpdateStandardAssetHoldingsPayload,
   IUpdateStandardAssetHoldingsResult,
+  TUpdateStandardAssetHoldingsPayload,
 } from '../types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
@@ -52,16 +54,16 @@ import { findAccountWithoutExtendedProps } from '../utils';
 
 const addStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return
-  IUpdateStandardAssetHoldingsPayload, // args
+  TUpdateStandardAssetHoldingsPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IUpdateStandardAssetHoldingsResult,
-  IUpdateStandardAssetHoldingsPayload,
+  TUpdateStandardAssetHoldingsPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.AddStandardAssetHoldings,
   async (
-    { accountId, assets, genesisHash, password },
+    { accountId, assets, genesisHash, ...encryptionOptions },
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
@@ -121,8 +123,8 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       );
     }
 
-    address = AccountService.convertPublicKeyToAlgorandAddress(
-      account.publicKey
+    address = convertPublicKeyToAVMAddress(
+      PrivateKeyService.decode(account.publicKey)
     );
     accountInformation =
       AccountService.extractAccountInformationForNetwork(account, network) ||
@@ -192,11 +194,11 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       signedTransactions = await Promise.all(
         unsignedTransactions.map((value) =>
           signTransaction({
+            ...encryptionOptions,
             accounts,
             authAccounts: accounts,
             logger,
             networks,
-            password,
             unsignedTransaction: value,
           })
         )

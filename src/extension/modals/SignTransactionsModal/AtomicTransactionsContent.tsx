@@ -38,6 +38,7 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -50,6 +51,7 @@ import type { IAtomicTransactionsContentProps } from './types';
 // utils
 import computeGroupId from '@common/utils/computeGroupId';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import parseTransactionType from '@extension/utils/parseTransactionType';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
@@ -280,10 +282,9 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
             watchAccount: true,
           };
           accountInformation = await updateAccountInformation({
-            address:
-              AccountService.convertPublicKeyToAlgorandAddress(
-                encodedPublicKey
-              ),
+            address: convertPublicKeyToAVMAddress(
+              PrivateKeyService.decode(encodedPublicKey)
+            ),
             currentAccountInformation:
               account.networkInformation[encodedGenesisHash] ||
               AccountService.initializeDefaultAccountInformation(),

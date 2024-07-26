@@ -16,9 +16,6 @@ import { removeEventByIdThunk } from '@extension/features/events';
 // messages
 import { ClientResponseMessage } from '@common/messages';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type {
   IAccount,
@@ -26,6 +23,9 @@ import type {
   IMainRootState,
 } from '@extension/types';
 import type { IEnableResponseThunkPayload } from '../types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const sendEnableResponseThunk: AsyncThunk<
   void, // return
@@ -77,9 +77,7 @@ const sendEnableResponseThunk: AsyncThunk<
                 const account: IAccount | null =
                   accounts.find(
                     (value) =>
-                      AccountService.convertPublicKeyToAlgorandAddress(
-                        value.publicKey
-                      ) === address
+                      convertPublicKeyToAVMAddress(value.publicKey) === address
                   ) || null;
 
                 return {

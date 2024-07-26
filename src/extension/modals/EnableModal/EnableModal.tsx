@@ -48,7 +48,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -61,6 +61,7 @@ import type {
 } from '@extension/types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import mapSessionFromEnableRequest from '@extension/utils/mapSessionFromEnableRequest';
 
@@ -187,8 +188,8 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
 
     accountNodes = availableAccounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
-        const address = AccountService.convertPublicKeyToAlgorandAddress(
-          account.publicKey
+        const address = convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(account.publicKey)
         );
 
         return [
@@ -272,8 +273,8 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
       authorizedAddresses.length <= 0
     ) {
       setAuthorizedAddresses([
-        AccountService.convertPublicKeyToAlgorandAddress(
-          availableAccounts[0].publicKey
+        convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(availableAccounts[0].publicKey)
         ),
       ]);
     }

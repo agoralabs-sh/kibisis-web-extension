@@ -1,17 +1,21 @@
-import { Icon, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Icon, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { IoArrowDownOutline } from 'react-icons/io5';
+import {
+  IoArrowDownOutline,
+  IoLockClosedOutline,
+  IoLockOpenOutline,
+} from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // types
 import type { IConfirmingModalContentProps } from './types';
@@ -25,8 +29,7 @@ const ReKeyAccountConfirmingModalContent: FC<IConfirmingModalContentProps> = ({
 }) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
+  const defaultTextColor = useDefaultTextColor();
 
   return (
     <VStack
@@ -37,13 +40,11 @@ const ReKeyAccountConfirmingModalContent: FC<IConfirmingModalContentProps> = ({
       spacing={DEFAULT_GAP / 2}
       w="full"
     >
-      <Spinner
-        color={primaryColor}
-        emptyColor={defaultTextColor}
-        size="xl"
-        speed="0.65s"
-        thickness="4px"
+      {/*progress*/}
+      <CircularProgressWithIcon
+        icon={reKeyType === 'undo' ? IoLockOpenOutline : IoLockClosedOutline}
       />
+
       {/*description*/}
       <Text color={defaultTextColor} fontSize="md" textAlign="center" w="full">
         {t<string>(

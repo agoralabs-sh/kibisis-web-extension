@@ -1,13 +1,11 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-// components
-import LoadingPage from '@extension/components/LoadingPage';
-
 // features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
+import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
@@ -21,6 +19,9 @@ import ARC0300KeyRegistrationTransactionSendEventModal from '@extension/modals/A
 import EnableModal from '@extension/modals/EnableModal';
 import SignMessageModal from '@extension/modals/SignMessageModal';
 import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
+
+// pages
+import SplashPage from '@extension/pages/SplashPage';
 
 // selectors
 import { useSelectSelectedNetwork } from '@extension/selectors';
@@ -47,6 +48,7 @@ const Root: FC = () => {
       return;
     }
 
+    dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());
@@ -74,7 +76,7 @@ const Root: FC = () => {
         onClose={handleModalClose}
       />
 
-      <LoadingPage />
+      <SplashPage />
     </>
   );
 };

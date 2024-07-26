@@ -37,14 +37,15 @@ import type {
   IStandardAssetHolding,
 } from '@extension/types';
 import type {
-  IUpdateStandardAssetHoldingsPayload,
+  TUpdateStandardAssetHoldingsPayload,
   IUpdateStandardAssetHoldingsResult,
 } from '../types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
-import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
@@ -54,16 +55,16 @@ import { findAccountWithoutExtendedProps } from '../utils';
 
 const removeStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return
-  IUpdateStandardAssetHoldingsPayload, // args
+  TUpdateStandardAssetHoldingsPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IUpdateStandardAssetHoldingsResult,
-  IUpdateStandardAssetHoldingsPayload,
+  TUpdateStandardAssetHoldingsPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.RemoveStandardAssetHoldings,
   async (
-    { accountId, assets, genesisHash, password },
+    { accountId, assets, genesisHash, ...encryptionOptions },
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
@@ -126,9 +127,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       );
     }
 
-    address = AccountService.convertPublicKeyToAlgorandAddress(
-      account.publicKey
-    );
+    address = convertPublicKeyToAVMAddress(account.publicKey);
     accountInformation =
       AccountService.extractAccountInformationForNetwork(account, network) ||
       AccountService.initializeDefaultAccountInformation();
@@ -216,8 +215,8 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
             authAccounts: accounts,
             logger,
             networks,
-            password,
             unsignedTransaction: value,
+            ...encryptionOptions,
           })
         )
       );

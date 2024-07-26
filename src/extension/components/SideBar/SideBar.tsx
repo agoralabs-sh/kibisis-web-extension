@@ -30,6 +30,7 @@ import SideBarSkeletonAccountItem from './SideBarSkeletonAccountItem';
 import {
   ACCOUNTS_ROUTE,
   ADD_ACCOUNT_ROUTE,
+  BODY_BACKGROUND_COLOR,
   SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
   SIDEBAR_MAX_WIDTH,
@@ -59,14 +60,14 @@ import {
   useSelectSelectedNetwork,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
 } from '@extension/types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
@@ -139,9 +140,7 @@ const SideBar: FC = () => {
 
     dispatch(
       initializeSendAsset({
-        fromAddress: AccountService.convertPublicKeyToAlgorandAddress(
-          fromAccount.publicKey
-        ),
+        fromAddress: convertPublicKeyToAVMAddress(fromAccount.publicKey),
         selectedAsset: network.nativeCurrency, // use native currency
       })
     );
@@ -186,7 +185,7 @@ const SideBar: FC = () => {
 
   return (
     <VStack
-      backgroundColor="var(--chakra-colors-chakra-body-bg)"
+      backgroundColor={BODY_BACKGROUND_COLOR}
       borderRightColor={borderColor}
       borderRightStyle="solid"
       borderRightWidth={SIDEBAR_BORDER_WIDTH}

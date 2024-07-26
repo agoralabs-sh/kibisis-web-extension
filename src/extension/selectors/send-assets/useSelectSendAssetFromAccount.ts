@@ -3,14 +3,14 @@ import { useSelector } from 'react-redux';
 // selectors
 import useSelectAccounts from '../accounts/useSelectAccounts';
 
-// services
-import AccountService from '@extension/services/AccountService';
-
 // types
 import type {
   IAccountWithExtendedProps,
   IMainRootState,
 } from '@extension/types';
+
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 export default function useSelectSendAssetFromAccount(): IAccountWithExtendedProps | null {
   const accounts = useSelectAccounts();
@@ -24,9 +24,7 @@ export default function useSelectSendAssetFromAccount(): IAccountWithExtendedPro
 
   return (
     accounts.find(
-      (value) =>
-        AccountService.convertPublicKeyToAlgorandAddress(value.publicKey) ===
-        fromAddress
+      (value) => convertPublicKeyToAVMAddress(value.publicKey) === fromAddress
     ) || null
   );
 }

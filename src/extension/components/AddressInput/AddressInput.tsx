@@ -1,119 +1,143 @@
 import {
-  Input,
-  Menu,
-  MenuItem,
-  MenuList,
-  Text,
-  VStack,
   HStack,
-  MenuButton,
+  Input,
   Tooltip,
+  useDisclosure,
+  VStack,
 } from '@chakra-ui/react';
-import React, { ChangeEvent, FC, useRef } from 'react';
+import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
+import { isValidAddress } from 'algosdk';
+import React, { ChangeEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoChevronDown } from 'react-icons/io5';
+import { GoSingleSelect } from 'react-icons/go';
+import { randomBytes } from 'tweetnacl';
 
 // components
-import AccountItem from '@extension/components/AccountItem';
 import IconButton from '@extension/components/IconButton';
+import Label from '@extension/components/Label';
 
 // constants
-import { ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT } from '@extension/constants';
+import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
 // hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// modals
+import AccountSelectModal from '@extension/modals/AccountSelectModal';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
 import type { IProps } from './types';
 
+// utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+
 const AddressInput: FC<IProps> = ({
   accounts,
-  disabled,
+  allowWatchAccounts = true,
   error,
+  disabled,
   label,
   onBlur,
   onChange,
+  onError,
+  required = false,
   value,
 }) => {
   const { t } = useTranslation();
-  const accountSelectRef = useRef<HTMLInputElement | null>(null);
+  const {
+    isOpen: isAccountSelectModalOpen,
+    onClose: onAccountSelectClose,
+    onOpen: onAccountSelectModalOpen,
+  } = useDisclosure();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
+  // misc
+  const id = encodeBase64URLSafe(randomBytes(6));
+  const validate = (_value: string): string | null => {
+    if (value.length <= 0 && required) {
+      return t<string>('errors.inputs.required', { name: label });
+    }
+
+    if (!isValidAddress(_value)) {
+      return t<string>('errors.inputs.invalidAddress');
+    }
+
+    return null;
+  };
   // handlers
-  const handleAccountClick = (account: IAccountWithExtendedProps) => () =>
+  const handleAccountClick = () => onAccountSelectModalOpen();
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    let _error: string | null;
+
+    // clear error
+    onError && onError(null);
+
+    // validate any new errors
+    _error = validate(event.target.value);
+
+    if (_error) {
+      onError && onError(_error);
+    }
+
+    return onChange && onChange(event.target.value);
+  };
+  const handleOnAccountSelect = (_accounts: IAccountWithExtendedProps[]) =>
     onChange(
-      AccountService.convertPublicKeyToAlgorandAddress(account.publicKey)
+      _accounts[0] ? convertPublicKeyToAVMAddress(_accounts[0].publicKey) : ''
     );
-  const handleHandleOnChange = (event: ChangeEvent<HTMLInputElement>) =>
-    onChange(event.target.value);
 
   return (
-    <VStack alignItems="flex-start" w="full">
-      {/*label*/}
-      <Text
-        color={error ? 'red.300' : defaultTextColor}
-        fontSize="sm"
-        textAlign="left"
-      >
-        {label || t<string>('labels.address')}
-      </Text>
+    <>
+      {/*account select modal*/}
+      <AccountSelectModal
+        accounts={accounts}
+        allowWatchAccounts={allowWatchAccounts}
+        isOpen={isAccountSelectModalOpen}
+        multiple={false}
+        onClose={onAccountSelectClose}
+        onSelect={handleOnAccountSelect}
+      />
 
-      <VStack alignItems="flex-start" w="full">
-        <HStack alignItems="center" w="full">
+      <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
+        {/*label*/}
+        <Label
+          error={error}
+          inputID={id}
+          label={label || t<string>('labels.address')}
+          required={required}
+        />
+
+        <HStack justifyContent="center" spacing={DEFAULT_GAP / 3} w="full">
           {/*input*/}
           <Input
-            disabled={disabled}
             focusBorderColor={error ? 'red.300' : primaryColor}
+            id={id}
+            isDisabled={disabled}
             isInvalid={!!error}
+            h={INPUT_HEIGHT}
             onBlur={onBlur}
-            onChange={handleHandleOnChange}
+            onChange={handleOnChange}
             placeholder={t<string>('placeholders.enterAddress')}
-            ref={accountSelectRef}
             type="text"
             value={value}
+            w="full"
           />
 
-          {/*account select*/}
-          <Menu>
-            <Tooltip
-              aria-label={t<string>('labels.selectWalletAccount')}
-              label={t<string>('labels.selectWalletAccount')}
-            >
-              <MenuButton
-                as={IconButton}
-                aria-label={t<string>('labels.selectWalletAccount')}
-                icon={IoChevronDown}
-                size="sm"
-                variant="ghost"
-              />
-            </Tooltip>
-
-            <MenuList w="full">
-              {accounts.map((account, index) => (
-                <MenuItem
-                  key={`address-input-item-${index}`}
-                  minH={`${ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT}px`}
-                  onClick={handleAccountClick(account)}
-                >
-                  <AccountItem account={account} />
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Menu>
+          {/*open account select modal button*/}
+          <Tooltip label={t<string>('labels.selectAccount')}>
+            <IconButton
+              aria-label="Select an account from the list of available accounts"
+              disabled={disabled}
+              icon={GoSingleSelect}
+              onClick={handleAccountClick}
+              size="lg"
+              variant="ghost"
+            />
+          </Tooltip>
         </HStack>
-
-        {/*error*/}
-        <Text color="red.300" fontSize="xs" textAlign="left">
-          {error}
-        </Text>
       </VStack>
-    </VStack>
+    </>
   );
 };
 
