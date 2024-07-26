@@ -12,6 +12,7 @@ import { AssetTypeEnum, NetworkTypeEnum } from '@extension/enums';
 
 // models
 import AlloBlockExplorer from '@extension/models/AlloBlockExplorer';
+import AVMExplorerBlockExplorer from '@extension/models/AVMExplorerBlockExplorer';
 import NautilusARC0072Indexer from '@extension/models/NautilusARC0072Indexer';
 import NFTNavigatorARC0072Indexer from '@extension/models/NFTNavigatorARC0072Indexer';
 import NFTNavigatorNFTExplorer from '@extension/models/NFTNavigatorNFTExplorer';
@@ -41,6 +42,7 @@ const networks: INetwork[] = [
     chakraTheme: 'voi',
     blockExplorers: [
       new VoiObserverBlockExplorer('https://voi.observer/explorer'),
+      new AVMExplorerBlockExplorer('https://avmexplorer.com'),
     ],
     feeSunkAddress:
       'FEES3ZW52HQ7U7LB3OGLUFQX2DCCWPJ2LIMXAH75KYROBZBQRN3Q5OR3GI',
