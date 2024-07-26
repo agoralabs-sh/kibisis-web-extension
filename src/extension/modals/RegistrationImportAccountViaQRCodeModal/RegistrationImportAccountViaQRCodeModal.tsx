@@ -46,10 +46,11 @@ import type {
 import type { IProps } from './types';
 
 // utils
+import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import determinePaginationFromARC0300Schemas from '@extension/utils/determinePaginationFromARC0300Schemas';
+import flattenAccountImportSchemaToNewAccounts from '@extension/utils/flattenAccountImportSchemaToNewAccounts';
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
 import isARC0300SchemaPaginationComplete from '@extension/utils/isARC0300SchemaPaginationComplete';
-import flattenAccountImportSchemaToNewAccounts from '@extension/utils/flattenAccountImportSchemaToNewAccounts';
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
   isOpen,
@@ -99,6 +100,7 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
   // renders
   const renderContent = () => {
     let accounts: INewAccount[];
+    let pagination: [number, number] | null = null;
     let primeSchema: IARC0300BaseSchema | null;
     let schemas: IARC0300BaseSchema[];
 
@@ -223,6 +225,8 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
           </ModalContent>
         );
       }
+
+      pagination = determinePaginationFromARC0300Schemas(schemas);
     }
 
     if (scanViaCamera) {
@@ -230,6 +234,7 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
         <ScanQRCodeViaCameraModalContent
           onPreviousClick={handlePreviousClick}
           onURI={handleOnURI}
+          {...(pagination && { pagination })}
         />
       );
     }
@@ -239,6 +244,7 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
         <ScanQRCodeViaScreenCaptureModalContent
           onPreviousClick={handlePreviousClick}
           onURI={handleOnURI}
+          {...(pagination && { pagination })}
         />
       );
     }
@@ -248,6 +254,7 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
         <ScanQRCodeViaTabModalContent
           onPreviousClick={handlePreviousClick}
           onURI={handleOnURI}
+          {...(pagination && { pagination })}
         />
       );
     }
