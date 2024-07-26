@@ -110,7 +110,7 @@ describe(`${__dirname}#parseARC0300AccountImportSchema`, () => {
     ).toBe(true);
   });
 
-  it.only('should return a valid schema with all query params', () => {
+  it('should return a valid schema with all query params', () => {
     // arrange
     const checksum = SparkMD5.ArrayBuffer.hash(randomBytes(32));
     const keyPair = Ed21559KeyPair.generate();
