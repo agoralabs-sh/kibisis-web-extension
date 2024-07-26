@@ -19,8 +19,8 @@ const DefaultTransactionItemContent: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
 
   return (
     <>

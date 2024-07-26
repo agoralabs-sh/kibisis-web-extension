@@ -1,14 +1,16 @@
-import { HStack, Input, InputGroup, Text, VStack } from '@chakra-ui/react';
+import { Input, Text, VStack } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { randomBytes } from 'tweetnacl';
 
+// components
+import Label from '@extension/components/Label';
+
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
 // hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -28,7 +30,6 @@ const GenericInput: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
   // state
@@ -81,35 +82,18 @@ const GenericInput: FC<IProps> = ({
 
   return (
     <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
-      <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-        {/*label*/}
-        <Text
-          as={'label'}
-          color={error ? 'red.300' : defaultTextColor}
-          htmlFor={_id}
-          textAlign="left"
-        >
-          {`${label}${required ? '' : ` ${t<string>('labels.optional')}`}`}
-        </Text>
-
-        {/*error*/}
-        {error && (
-          <Text color="red.300" fontSize="xs" textAlign="right">
-            {error}
-          </Text>
-        )}
-      </HStack>
+      <Label error={error} inputID={_id} label={label} required={required} />
 
       {/*input*/}
-      <InputGroup size="md">
-        <Input
-          {...inputProps}
-          focusBorderColor={error ? 'red.300' : primaryColor}
-          id={_id}
-          isInvalid={!!error}
-          onChange={handleOnChange}
-        />
-      </InputGroup>
+      <Input
+        {...inputProps}
+        focusBorderColor={error ? 'red.300' : primaryColor}
+        id={_id}
+        isInvalid={!!error}
+        h={INPUT_HEIGHT}
+        onChange={handleOnChange}
+        w="full"
+      />
 
       {/*character limit*/}
       {typeof charactersRemaining === 'number' && (

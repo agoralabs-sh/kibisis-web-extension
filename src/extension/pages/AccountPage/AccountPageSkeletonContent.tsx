@@ -37,11 +37,9 @@ const AccountPageSkeletonContent: FC<IProps> = ({
       <HStack alignItems="center" w="full">
         {/*name/address*/}
         <Skeleton>
-          <Skeleton>
-            <Heading color={defaultTextColor} size="md" textAlign="left">
-              {faker.random.alphaNumeric(12).toUpperCase()}
-            </Heading>
-          </Skeleton>
+          <Heading color={defaultTextColor} size="md" textAlign="left">
+            {faker.random.alphaNumeric(12).toUpperCase()}
+          </Heading>
         </Skeleton>
 
         <Spacer />

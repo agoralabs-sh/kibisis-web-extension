@@ -70,8 +70,8 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
         {...activeProps}
         borderRadius={0}
         fontSize="md"
-        h={SIDEBAR_ITEM_HEIGHT}
         justifyContent="start"
+        minH={SIDEBAR_ITEM_HEIGHT}
         onClick={handleOnClick}
         p={0}
         variant="ghost"
@@ -94,6 +94,7 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
               flexGrow={1}
               justifyContent="space-evenly"
               spacing={0}
+              w="full"
             >
               <Text
                 color={defaultTextColor}
@@ -101,17 +102,11 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
                 maxW={195}
                 noOfLines={1}
                 textAlign="left"
-                w="full"
               >
                 {account.name}
               </Text>
 
-              <Text
-                color={subTextColor}
-                fontSize="xs"
-                textAlign="left"
-                w="full"
-              >
+              <Text color={subTextColor} fontSize="xs" textAlign="left">
                 {ellipseAddress(address, {
                   end: 10,
                   start: 10,
@@ -124,7 +119,6 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
               flexGrow={1}
               fontSize="sm"
               textAlign="left"
-              w="full"
             >
               {ellipseAddress(address, {
                 end: 10,

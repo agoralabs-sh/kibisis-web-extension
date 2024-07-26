@@ -54,9 +54,9 @@ import { reducer as systemReducer } from '@extension/features/system';
 // pages
 import AccountPage from '@extension/pages/AccountPage';
 import AssetPage from '@extension/pages/AssetPage';
-import LoadingPage from '@extension/pages/LoadingPage';
 import NFTPage from '@extension/pages/NFTPage';
 import PasswordLockPage from '@extension/pages/PasswordLockPage';
+import SplashPage from '@extension/pages/SplashPage';
 import TransactionPage from '@extension/pages/TransactionPage';
 
 // routers
@@ -206,7 +206,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       <I18nextProvider i18n={i18next}>
         <ThemeProvider initialColorMode={initialColorMode}>
           <RouterProvider
-            fallbackElement={<LoadingPage />}
+            fallbackElement={<SplashPage />}
             router={createRouter(store)}
           />
         </ThemeProvider>

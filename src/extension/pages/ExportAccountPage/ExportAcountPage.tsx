@@ -1,7 +1,5 @@
 import {
   Box,
-  Button,
-  Code,
   Icon,
   Spacer,
   Text,
@@ -16,13 +14,16 @@ import { IoEyeOffOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
-import AccountSelect from '@extension/components/AccountSelect';
-import CopyButton from '@extension/components/CopyButton';
+import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import PageHeader from '@extension/components/PageHeader';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import {
+  DEFAULT_GAP,
+  EXPORT_ACCOUNT_PAGE_LIMIT,
+  EXPORT_ACCOUNT_QR_CODE_DURATION,
+} from '@extension/constants';
 
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
@@ -35,12 +36,13 @@ import { create as createNotification } from '@extension/features/notifications'
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // images
 import qrCodePlaceholderImage from '@extension/images/placeholder_qr_code.png';
 
 // modals
+import AccountSelectModal from '@extension/modals/AccountSelectModal';
 import AuthenticationModal, {
   TOnConfirmResult,
 } from '@extension/modals/AuthenticationModal';
@@ -49,25 +51,22 @@ import AuthenticationModal, {
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // selectors
-import {
-  useSelectAccounts,
-  useSelectActiveAccount,
-  useSelectLogger,
-} from '@extension/selectors';
+import { useSelectAccounts, useSelectLogger } from '@extension/selectors';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// theme
+import { theme } from '@extension/theme';
 
 // types
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
 } from '@extension/types';
+import type { IExportAccount } from '@extension/utils/createAccountImportURI';
 
 // utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
-import createWatchAccountImportURI from '@extension/utils/createWatchAccountImportURI';
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
 
@@ -75,77 +74,44 @@ const ExportAccountPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
   const {
+    isOpen: isAccountSelectModalOpen,
+    onClose: onAccountSelectClose,
+    onOpen: onAccountSelectModalOpen,
+  } = useDisclosure();
+  const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,
     onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
   const accounts = useSelectAccounts();
-  const activeAccount = useSelectActiveAccount();
   const logger = useSelectLogger();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // states
-  const [selectedAccount, setSelectedAccount] =
-    useState<IAccountWithExtendedProps | null>(null);
-  const [svgString, setSvgString] = useState<string | null>(null);
-  const [uri, setURI] = useState<string | null>(null);
-  // misc
+  const [pagination, setPagination] = useState<[number, number]>([1, 1]);
+  const [selectedAccounts, setSelectedAccounts] = useState<
+    IAccountWithExtendedProps[] | null
+  >(null);
+  const [svgStrings, setSvgStrings] = useState<string[] | null>(null);
+  //
+  const placeholderIconSize = calculateIconSize('md');
   const qrCodeSize = 300;
-  const createQRCodeForWatchAccount = async () => {
-    const _functionName = 'createQRCodeForWatchAccount';
-    let _svgString: string;
-    let _uri: string;
-
-    if (!selectedAccount) {
-      logger.debug(
-        `${ExportAccountPage.name}#${_functionName}: no account selected`
-      );
-
-      return;
-    }
-
-    try {
-      _uri = createWatchAccountImportURI({
-        address: convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(selectedAccount.publicKey)
-        ),
-        assets: [],
-      });
-      _svgString = await toString(_uri, {
-        type: 'svg',
-        width: qrCodeSize,
-      });
-
-      setSvgString(_svgString);
-      setURI(_uri);
-    } catch (error) {
-      logger.error(`${ExportAccountPage.name}#${_functionName}:`, error);
-
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            code: error.code,
-            context: error.code,
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', { context: error.code }),
-          type: 'error',
-        })
-      );
-
-      setSvgString(null);
-      setURI(null);
-
-      return;
-    }
+  const reset = () => {
+    setPagination([1, 1]);
+    setSelectedAccounts(null);
+    setSvgStrings(null);
   };
   // handlers
-  const handleOnAccountSelect = async (account: IAccountWithExtendedProps) => {
-    setSvgString(null);
-    setURI(null);
-    setSelectedAccount(account);
+  const handleOnAccountSelect = (_accounts: IAccountWithExtendedProps[]) => {
+    if (_accounts.length <= 0) {
+      return;
+    }
+
+    setSelectedAccounts(_accounts);
+
+    return onAuthenticationModalOpen();
   };
   const handleOnAuthenticationError = (error: BaseExtensionError) =>
     dispatch(
@@ -163,54 +129,72 @@ const ExportAccountPage: FC = () => {
     result: TOnConfirmResult
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
-    let _svgString: string;
-    let _uri: string;
+    let _svgStrings: string[];
     let keyPair: Ed21559KeyPair | null = null;
+    let uris: string[];
 
-    if (!selectedAccount) {
+    if (!selectedAccounts) {
       logger.debug(
-        `${ExportAccountPage.name}#${_functionName}: no account selected`
+        `${ExportAccountPage.name}#${_functionName}: no accounts selected`
       );
 
       return;
     }
 
     try {
-      if (result.type === EncryptionMethodEnum.Passkey) {
-        keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
-          inputKeyMaterial: result.inputKeyMaterial,
-          logger,
-          publicKey: selectedAccount.publicKey,
-        });
-      }
+      uris = createAccountImportURI({
+        accounts: await Promise.all(
+          selectedAccounts.map<Promise<IExportAccount>>(
+            async ({ name, publicKey }) => {
+              if (result.type === EncryptionMethodEnum.Passkey) {
+                keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+                  inputKeyMaterial: result.inputKeyMaterial,
+                  logger,
+                  publicKey,
+                });
+              }
 
-      if (result.type === EncryptionMethodEnum.Password) {
-        keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
-          logger,
-          password: result.password,
-          publicKey: selectedAccount.publicKey,
-        });
-      }
+              if (result.type === EncryptionMethodEnum.Password) {
+                keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+                  logger,
+                  password: result.password,
+                  publicKey,
+                });
+              }
 
-      if (!keyPair) {
-        throw new DecryptionError(
-          `failed to get private key for account "${convertPublicKeyToAVMAddress(
-            PrivateKeyService.decode(selectedAccount.publicKey)
-          )}"`
-        );
-      }
+              if (!keyPair) {
+                throw new DecryptionError(
+                  `failed to get private key for account "${convertPublicKeyToAVMAddress(
+                    publicKey
+                  )}"`
+                );
+              }
 
-      _uri = createAccountImportURI({
-        assets: [],
-        privateKey: keyPair.privateKey,
+              return {
+                privateKey: keyPair.privateKey,
+                ...(name && {
+                  name,
+                }),
+              };
+            }
+          )
+        ),
       });
-      _svgString = await toString(_uri, {
-        type: 'svg',
-        width: qrCodeSize,
-      });
+      _svgStrings = await Promise.all(
+        uris.map(
+          async (value) =>
+            await toString(value, {
+              type: 'svg',
+              width: qrCodeSize,
+            })
+        )
+      );
 
-      setSvgString(_svgString);
-      setURI(_uri);
+      setSvgStrings(_svgStrings);
+      setPagination([
+        1,
+        Math.ceil(selectedAccounts.length / EXPORT_ACCOUNT_PAGE_LIMIT),
+      ]); // set the pagination
     } catch (error) {
       logger.error(`${ExportAccountPage.name}#${_functionName}:`, error);
 
@@ -226,22 +210,27 @@ const ExportAccountPage: FC = () => {
         })
       );
 
-      setSvgString(null);
-      setURI(null);
+      reset();
     }
   };
-  const handleViewClick = () => onAuthenticationModalOpen();
+  const handleSelectAccountsClick = () => onAccountSelectModalOpen();
 
   useEffect(() => {
-    if (selectedAccount && selectedAccount.watchAccount) {
-      (async () => await createQRCodeForWatchAccount())();
-    }
-  }, [selectedAccount]);
-  useEffect(() => {
-    if (activeAccount && !selectedAccount) {
-      setSelectedAccount(activeAccount);
-    }
-  }, [activeAccount]);
+    const intervalId: number = window.setInterval(() => {
+      setPagination(([current, total]) => {
+        // if the current page is at the total, start again
+        if (current >= total) {
+          return [1, total];
+        }
+
+        return [current + 1, total];
+      });
+    }, EXPORT_ACCOUNT_QR_CODE_DURATION);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   return (
     <>
@@ -253,6 +242,16 @@ const ExportAccountPage: FC = () => {
         onError={handleOnAuthenticationError}
       />
 
+      {/*account select modal*/}
+      <AccountSelectModal
+        accounts={accounts}
+        allowWatchAccounts={false}
+        isOpen={isAccountSelectModalOpen}
+        multiple={true}
+        onClose={onAccountSelectClose}
+        onSelect={handleOnAccountSelect}
+      />
+
       <PageHeader
         title={t<string>('titles.page', { context: 'exportAccount' })}
       />
@@ -261,11 +260,11 @@ const ExportAccountPage: FC = () => {
         flexGrow={1}
         pb={DEFAULT_GAP}
         px={DEFAULT_GAP}
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <VStack flexGrow={1} spacing={DEFAULT_GAP} w="full">
-          {!selectedAccount ? (
+          {accounts.length <= 0 ? (
             <>
               {/*empty state*/}
               <Spacer />
@@ -279,78 +278,74 @@ const ExportAccountPage: FC = () => {
               <Text
                 color={defaultTextColor}
                 fontSize="sm"
-                textAlign="left"
+                textAlign="center"
                 w="full"
               >
                 {t<string>('captions.exportAccount')}
               </Text>
 
-              {/*account select*/}
-              <AccountSelect
-                accounts={accounts}
-                onSelect={handleOnAccountSelect}
-                value={selectedAccount}
-              />
-
               {/*qr code*/}
-              {!svgString ? (
-                <Button
+              {!svgStrings ? (
+                <Box
+                  blur="8px"
+                  borderRadius={theme.radii['md']}
+                  filter="auto"
                   h={`${qrCodeSize}px`}
-                  onClick={handleViewClick}
-                  position="relative"
-                  variant="unstyled"
+                  sx={{
+                    alignItems: 'center',
+                    background: `url(${qrCodePlaceholderImage}) center/cover no-repeat`,
+                    boxSize: `${qrCodeSize}px`,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    zIndex: 1,
+                  }}
                   w={`${qrCodeSize}px`}
                 >
+                  <Icon
+                    as={IoEyeOffOutline}
+                    color="gray.600"
+                    h={placeholderIconSize}
+                    w={placeholderIconSize}
+                  />
+                </Box>
+              ) : (
+                <>
                   <Box
-                    blur="8px"
-                    filter="auto"
-                    h="full"
-                    sx={{
-                      alignItems: 'center',
-                      background: `url(${qrCodePlaceholderImage}) center/cover no-repeat`,
-                      boxSize: 'full',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      textAlign: 'center',
-                      zIndex: 1,
+                    borderRadius={theme.radii['md']}
+                    dangerouslySetInnerHTML={{
+                      __html: sanitize(svgStrings[pagination[0] - 1], {
+                        USE_PROFILES: { svg: true, svgFilters: true },
+                      }),
                     }}
+                  />
+
+                  <Text
+                    color={subTextColor}
+                    fontSize="sm"
+                    textAlign="center"
                     w="full"
                   >
-                    <Icon as={IoEyeOffOutline} color="gray.600" h={6} w={6} />
-                  </Box>
-                </Button>
-              ) : (
-                <Box
-                  dangerouslySetInnerHTML={{
-                    __html: sanitize(svgString, {
-                      USE_PROFILES: { svg: true, svgFilters: true },
-                    }),
-                  }}
-                />
-              )}
-
-              {/*uri*/}
-              {uri && (
-                <Code fontSize="sm" wordBreak="break-word">
-                  {uri}
-                </Code>
+                    {t<string>('captions.displayingCountOfTotal', {
+                      count: pagination[0],
+                      total: pagination[1],
+                    })}
+                  </Text>
+                </>
               )}
             </>
           )}
         </VStack>
 
-        {/*copy button*/}
-        {uri && (
-          <CopyButton
-            colorScheme={primaryColorScheme}
-            size="md"
-            value={uri}
-            variant="solid"
-            w="full"
-          >
-            {t<string>('buttons.copyURI')}
-          </CopyButton>
-        )}
+        {/*select accounts button*/}
+        <Button
+          onClick={handleSelectAccountsClick}
+          size="lg"
+          variant="solid"
+          w="full"
+        >
+          {t<string>('buttons.selectAccounts')}
+        </Button>
       </VStack>
     </>
   );

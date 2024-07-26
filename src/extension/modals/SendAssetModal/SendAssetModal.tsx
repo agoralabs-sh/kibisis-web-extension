@@ -6,7 +6,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Text,
   Textarea,
   useDisclosure,
   VStack,
@@ -20,12 +19,11 @@ import { useDispatch } from 'react-redux';
 
 // components
 import AccountSelect from '@extension/components/AccountSelect';
-import AddressInput, {
-  useAddressInput,
-} from '@extension/components/AddressInput';
+import AddressInput from '@extension/components/AddressInput';
+import AmountInput from '@extension/components/AmountInput';
 import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
-import SendAmountInput from './SendAmountInput';
+import Label from '@extension/components/Label';
 import SendAssetModalConfirmingContent from './SendAssetModalConfirmingContent';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
 import SendAssetModalSummaryContent from './SendAssetModalSummaryContent';
@@ -35,6 +33,7 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
+import { QuestNameEnum } from '@extension/services/QuestsService';
 
 // errors
 import { BaseExtensionError } from '@extension/errors';
@@ -58,9 +57,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -75,18 +72,18 @@ import {
   useSelectSendAssetFromAccount,
   useSelectSendAssetNote,
   useSelectSendAssetSelectedAsset,
+  useSelectSendAssetToAddress,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
 // services
-import QuestsService, {
-  QuestNameEnum,
-} from '@extension/services/QuestsService';
+import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
+import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type {
   IAccount,
   IAccountWithExtendedProps,
@@ -121,18 +118,12 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const network = useSelectSelectedNetwork();
   const note = useSelectSendAssetNote();
   const selectedAsset = useSelectSendAssetSelectedAsset();
+  const toAddress = useSelectSendAssetToAddress();
   // hooks
-  const {
-    error: toAddressError,
-    onBlur: onToAddressBlur,
-    onChange: onToAddressChange,
-    reset: resetToAddress,
-    validate: validateToAddress,
-    value: toAddress,
-  } = useAddressInput();
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   // state
+  const [toAddressError, setToAddressError] = useState<string | null>(null);
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<string>('0');
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
@@ -160,7 +151,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
     // reset modal input and transactions
     setTransactions(null);
-    resetToAddress();
+
     onClose && onClose();
   };
   const handleFromAccountChange = (account: IAccountWithExtendedProps) =>
@@ -169,7 +160,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     const _functionName = 'handleNextClick';
     let _transactions: Transaction[];
 
-    if (validateToAddress()) {
+    if (toAddressError) {
       return;
     }
 
@@ -223,6 +214,8 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
         type: 'error',
       })
     );
+  const handleOnToAddressError = (error: string | null) =>
+    setToAddressError(error);
   const handlePreviousClick = () => setTransactions(null);
   const handleOnAuthenticationModalConfirm = async (
     result: TOnConfirmResult
@@ -235,7 +228,13 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     let toAccount: IAccount | null;
     let transactionIds: string[];
 
-    if (!fromAccount || !network || !transactions || transactions.length <= 0) {
+    if (
+      !fromAccount ||
+      !network ||
+      !transactions ||
+      transactions.length <= 0 ||
+      !toAddress
+    ) {
       return;
     }
 
@@ -377,10 +376,8 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     }
   };
   const handleSendClick = () => onAuthenticationModalOpen();
-  const handleToAddressChange = (value: string) => {
+  const handleToAddressChange = (value: string) =>
     dispatch(setToAddress(value.length > 0 ? value : null));
-    onToAddressChange(value);
-  };
   // renders
   const renderContent = () => {
     if (!fromAccount || !network || !selectedAsset) {
@@ -395,7 +392,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       );
     }
 
-    if (transactions && transactions.length > 0) {
+    if (toAddress && transactions && transactions.length > 0) {
       return (
         <SendAssetModalSummaryContent
           accounts={accounts}
@@ -413,60 +410,40 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     return (
       <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/*amount*/}
-        <SendAmountInput
+        <AmountInput
           account={fromAccount}
+          asset={selectedAsset}
           disabled={creating}
           network={network}
           maximumTransactionAmount={maximumTransactionAmount}
-          onValueChange={handleAmountChange}
-          selectedAsset={selectedAsset}
+          onChange={handleAmountChange}
+          required={true}
           value={amountInStandardUnits}
         />
 
         {/*select asset*/}
-        <VStack w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.asset')}
-          </Text>
-
-          <AssetSelect
-            account={fromAccount}
-            assets={[
-              network.nativeCurrency, // add the native currency to the front
-              ...allAssets,
-            ]}
-            disabled={creating}
-            network={network}
-            onAssetChange={handleAssetChange}
-            value={selectedAsset}
-          />
-        </VStack>
+        <AssetSelect
+          assets={[
+            network.nativeCurrency, // add the native currency to the front
+            ...allAssets,
+          ]}
+          disabled={creating}
+          label={t<string>('labels.asset')}
+          network={network}
+          onSelect={handleAssetChange}
+          required={true}
+          value={selectedAsset}
+        />
 
         {/*from account*/}
-        <VStack alignItems="flex-start" w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.from')}
-          </Text>
-
-          <AccountSelect
-            accounts={availableAccounts}
-            disabled={creating}
-            onSelect={handleFromAccountChange}
-            value={fromAccount}
-          />
-        </VStack>
+        <AccountSelect
+          accounts={availableAccounts}
+          disabled={creating}
+          label={t<string>('labels.from')}
+          onSelect={handleFromAccountChange}
+          required={true}
+          value={fromAccount}
+        />
 
         {/*to address*/}
         <AddressInput
@@ -474,22 +451,15 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           disabled={creating}
           error={toAddressError}
           label={t<string>('labels.to')}
-          onBlur={onToAddressBlur}
           onChange={handleToAddressChange}
+          onError={handleOnToAddressError}
+          required={true}
           value={toAddress || ''}
         />
 
         {/*note*/}
         <VStack alignItems="flex-start" w="full">
-          {/*label*/}
-          <Text
-            color={defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-            w="full"
-          >
-            {t<string>('labels.noteOptional')}
-          </Text>
+          <Label label={t<string>('labels.note')} />
 
           <Textarea
             focusBorderColor={primaryColor}

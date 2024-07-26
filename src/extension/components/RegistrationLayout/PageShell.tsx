@@ -2,7 +2,7 @@ import { Center, Flex, FlexProps } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 interface IProps extends FlexProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface IProps extends FlexProps {
 }
 
 const PageShell: FC<IProps> = ({ children, withPadding = false }: IProps) => (
-  <Center as="main" backgroundColor="var(--chakra-colors-chakra-body-bg)">
+  <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
     <Flex
       alignItems="center"
       direction="column"

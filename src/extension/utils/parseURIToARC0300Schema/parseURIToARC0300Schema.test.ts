@@ -9,7 +9,7 @@ import type { IOptions } from './types';
 import createLogger from '@common/utils/createLogger';
 import parseURIToARC0300Schema from './parseURIToARC0300Schema';
 
-describe(`${__dirname}#parseURIToARC0300Schema()`, () => {
+describe(`${__dirname}#parseURIToARC0300Schema`, () => {
   const options: IOptions = {
     logger: createLogger('debug'),
     supportedNetworks: networks,

@@ -42,6 +42,7 @@ const translation: IResourceLanguage = {
     scanAWindow: 'Scan A Window',
     scanCurrentTab: 'Scan Current Tab',
     scanUsingCamera: 'Scan Using Camera',
+    selectAccounts: 'Select Accounts',
     send: 'Send',
     sign: 'Sign',
     tryAgain: 'Try Again',
@@ -50,7 +51,7 @@ const translation: IResourceLanguage = {
     yesImIn: `Yes, I'm In`,
   },
   captions: {
-    accountAlreadyAdded: 'Account already added.',
+    accountAlreadyAdded: 'Account {{address}} already added.',
     addAsset:
       'Enter an asset ID, name, symbol or application ID (for ARC-200).',
     addAssetConfirming:
@@ -62,6 +63,7 @@ const translation: IResourceLanguage = {
     addAssetURI:
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
+    addedAccounts: 'Added {{amount}} accounts.',
     addPasskey1:
       'Adding a passkey allows you to sign transactions without your password.',
     addPasskey2: `The passkey will be used to to encrypt/decrypt the private keys of your accounts.`,
@@ -116,6 +118,7 @@ const translation: IResourceLanguage = {
     defaultConfirm: 'Are you sure?',
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
+    displayingCountOfTotal: 'Displaying {{count}} of {{total}}',
     enablePasswordLock:
       'Passwords will only need to be entered due to inactivity.',
     enableRequest:
@@ -125,7 +128,7 @@ const translation: IResourceLanguage = {
     enterSeedPhrase: `Add your seed phrase to import your account.`,
     enterWatchAccountAddress:
       'Enter the address of the account you would like to watch.',
-    exportAccount: 'Select account to view the QR code to export your account.',
+    exportAccount: 'Select which accounts you would like to export.',
     extraPayment:
       'An extra network payment has been applied as this is the first time the recipient has interacted with the {{symbol}} asset.',
     factoryReset: 'This will remove all accounts, settings and the password.',
@@ -137,7 +140,7 @@ const translation: IResourceLanguage = {
     groupIdCopied: 'Group ID copied!',
     higherFee:
       'The fee is higher as this is the first time the recipient has interacted with the {{symbol}} asset.',
-    importAccount: 'You are about to import the following account.',
+    importAccounts: 'You are about to import the following account(s).',
     importAccountViaQRCode: `Import an account, including any assets, by scanning a QR code.`,
     importAccountViaSeedPhrase: `Import an existing account using a seed phrase.`,
     importAccountViaSeedPhraseComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
@@ -180,6 +183,7 @@ const translation: IResourceLanguage = {
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
+    noAccountsToImport: 'No accounts to import.',
     noAccountsFound:
       'You can create a new account or import an existing account.',
     noAssetsFound: 'You have not added any assets. Try adding one now.',
@@ -238,6 +242,7 @@ const translation: IResourceLanguage = {
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
+    scannedQrCodes: 'Scanning {{count}} of {{total}} codes',
     scanningForQrCode:
       'Scanning for a QR Code. Make sure the QR code is visible in the background.',
     screenCaptureViaQRCodeScanNotAllowed1:
@@ -306,9 +311,11 @@ const translation: IResourceLanguage = {
     },
   },
   headings: {
+    accountAlreadyAdded: 'Account Already Added',
     accounts: 'Accounts',
     addAsset: 'Add Asset',
-    addedAccount: 'Added Account!',
+    addedAccount: 'Added Account',
+    addedAccounts: 'Added Account(s)',
     addedAsset: 'Added Asset {{symbol}}!',
     addPasskey: 'Add Passkey',
     addWatchAccount: 'Add A Watch Account',
@@ -359,9 +366,11 @@ const translation: IResourceLanguage = {
     removedAsset: 'Asset {{symbol}} Removed!',
     [`removedAsset_${AssetTypeEnum.ARC0200}`]: 'Asset {{symbol}} Hidden!',
     removePasskey: 'Remove Passkey',
-    scanningForQRCode: 'Scanning For QR Code',
-    scanQrCode: 'Scan QR Code',
+    scanQrCode: 'Scan QR Code(s)',
     selectAccount: 'Select Account',
+    selectAccounts: 'Select Accounts',
+    selectAsset: 'Select Asset',
+    selectAssets: 'Select Assets',
     sendAsset: 'Send {{asset}}',
     shareAddress: 'Share Address',
     screenCaptureDenied: 'Screen Capture Denied',
@@ -495,7 +504,6 @@ const translation: IResourceLanguage = {
     noAuthAddressAvailable:
       'This account has been re-keyed to the account {{address}}, but the address is not available or is a watch account',
     note: 'Note',
-    noteOptional: 'Note (optional)',
     notSupported: 'Not Supported',
     optional: '(optional)',
     passkeyName: 'Passkey name',
@@ -526,6 +534,10 @@ const translation: IResourceLanguage = {
     reserveAccount: 'Reserve Account',
     scanQRCode: 'Scan QR Code',
     seedPhrase: 'Seed Phrase',
+    selectAccount: 'Select Account',
+    selectAllAccounts: 'Select All Accounts',
+    selectAllAssets: 'Select All Assets',
+    selectAsset: 'Select Asset',
     selectionKey: 'VRF Public Key',
     selectWalletAccount: 'Select wallet account',
     sendAsset: 'Send {{nativeCurrency}}/Asset',

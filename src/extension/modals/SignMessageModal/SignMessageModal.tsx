@@ -224,7 +224,10 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
                 'labels.addressToSign'
               )}:`}</Text>
 
-              <AccountItem account={signer} />
+              <AccountItem
+                address={convertPublicKeyToAVMAddress(signer.publicKey)}
+                {...(signer.name && { name: signer.name })}
+              />
             </>
           ) : (
             <>
@@ -234,7 +237,9 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
 
               <AccountSelect
                 accounts={authorizedAccounts}
+                allowWatchAccounts={false}
                 onSelect={handleAccountSelect}
+                required={true}
                 value={signer}
               />
             </>

@@ -36,14 +36,14 @@ const saveAccountNameThunk: AsyncThunk<
 
   if (!account) {
     logger.debug(
-      `${ThunkEnum.SaveNewAccount}: no account found for "${accountId}", ignoring`
+      `${ThunkEnum.SaveAccountName}: no account found for "${accountId}", ignoring`
     );
 
     return null;
   }
 
   logger.debug(
-    `${ThunkEnum.SaveNewAccount}: ${
+    `${ThunkEnum.SaveAccountName}: ${
       name
         ? `updating account "${accountId}" with new name "${name}"`
         : `removing account name for account "${accountId}"`

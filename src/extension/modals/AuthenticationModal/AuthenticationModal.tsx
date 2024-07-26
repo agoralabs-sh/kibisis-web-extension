@@ -5,20 +5,19 @@ import {
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoLockClosedOutline } from 'react-icons/io5';
 import { Radio } from 'react-loader-spinner';
 import browser from 'webextension-polyfill';
 
 // components
 import Button from '@extension/components/Button';
-import PasswordInput, {
-  usePassword,
-} from '@extension/components/PasswordInput';
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
+import PasswordInput from '@extension/components/PasswordInput';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
@@ -26,10 +25,9 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
 
-// errors
-
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
+import { usePassword } from '@extension/components/PasswordInput';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
@@ -49,7 +47,6 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IProps } from './types';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 const AuthenticationModal: FC<IProps> = ({
   isOpen,
@@ -66,7 +63,6 @@ const AuthenticationModal: FC<IProps> = ({
   const passwordLockCredentials = useSelectPasswordLockCredentials();
   const settings = useSelectSettings();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const primaryColorCode = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
@@ -173,14 +169,8 @@ const AuthenticationModal: FC<IProps> = ({
           spacing={DEFAULT_GAP}
           w="full"
         >
-          {/*loader*/}
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor={defaultTextColor}
-            color={defaultTextColor}
-            size="lg"
-          />
+          {/*progress*/}
+          <CircularProgressWithIcon icon={IoLockClosedOutline} />
 
           {/*caption*/}
           <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">

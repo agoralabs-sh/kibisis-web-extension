@@ -9,8 +9,8 @@ import { EventTypeEnum } from '@extension/enums';
 
 // selectors
 import {
+  useSelectAccounts,
   useSelectEvents,
-  useSelectNonWatchAccounts,
   useSelectSessions,
 } from '@extension/selectors';
 
@@ -27,7 +27,7 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 
 export default function useSignMessageModal(): IUseSignMessageModalState {
   // selectors
-  const accounts = useSelectNonWatchAccounts();
+  const accounts = useSelectAccounts();
   const events = useSelectEvents();
   const sessions = useSelectSessions();
   // state

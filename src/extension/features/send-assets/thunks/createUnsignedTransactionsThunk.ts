@@ -15,18 +15,13 @@ import {
 
 // services
 import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { ILogger } from '@common/types';
 import type {
   IAccount,
   IAccountInformation,
-  IAssetTypes,
   IAsyncThunkConfigWithRejectValue,
-  INativeCurrency,
   IMainRootState,
-  INetworkWithTransactionParams,
 } from '@extension/types';
 
 // utils
@@ -48,20 +43,18 @@ const createUnsignedTransactionsThunk: AsyncThunk<
 >(
   SendAssetsThunkEnum.CreateUnsignedTransactions,
   async (_, { getState, rejectWithValue }) => {
-    const amountInStandardUnits: string =
+    const amountInStandardUnits =
       getState().sendAssets.amountInStandardUnits.length > 0
         ? getState().sendAssets.amountInStandardUnits
         : '0';
-    const asset: IAssetTypes | INativeCurrency | null =
-      getState().sendAssets.selectedAsset;
-    const fromAddress: string | null = getState().sendAssets.fromAddress;
-    const logger: ILogger = getState().system.logger;
-    const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const online: boolean = getState().system.online;
-    const network: INetworkWithTransactionParams | null =
-      selectNetworkFromSettings(networks, getState().settings);
-    const note: string | null = getState().sendAssets.note;
-    const toAddress: string | null = getState().sendAssets.toAddress;
+    const asset = getState().sendAssets.selectedAsset;
+    const fromAddress = getState().sendAssets.fromAddress;
+    const logger = getState().system.logger;
+    const networks = getState().networks.items;
+    const online = getState().system.online;
+    const network = selectNetworkFromSettings(networks, getState().settings);
+    const note = getState().sendAssets.note;
+    const toAddress = getState().sendAssets.toAddress;
     let _error: string;
     let fromAccountInformation: IAccountInformation | null;
     let amountInAtomicUnits: string;
@@ -79,10 +72,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
 
     fromAccount =
       getState().accounts.items.find(
-        (value) =>
-          convertPublicKeyToAVMAddress(
-            PrivateKeyService.decode(value.publicKey)
-          ) === fromAddress
+        (value) => convertPublicKeyToAVMAddress(value.publicKey) === fromAddress
       ) || null;
 
     if (!fromAccount) {

@@ -1,17 +1,13 @@
 // enums
 import {
   ARC0300AuthorityEnum,
-  ARC0300EncodingEnum,
   ARC0300PathEnum,
   ARC0300QueryEnum,
 } from '@extension/enums';
 
 // types
-import type { IBaseOptions, ILogger } from '@common/types';
+import type { IBaseOptions } from '@common/types';
 import type { IARC0300AccountImportSchema } from '@extension/types';
-
-// utils
-import isNumericString from '@extension/utils/isNumericString';
 
 export default function parseARC0300AccountImportSchema(
   scheme: string,
@@ -21,84 +17,52 @@ export default function parseARC0300AccountImportSchema(
 ): IARC0300AccountImportSchema | null {
   const _functionName = 'parseARC0300AccountImportSchema';
   const logger = options?.logger;
-  let addressParam: string | null;
-  let assets: string[] = [];
-  let assetParam: string | null;
-  let encoding: ARC0300EncodingEnum;
-  let encodingParam: string | null;
-  let privateKeyParam: string | null;
+  let checksumParam: string | null;
+  let nameParams: string[];
+  let pagination: number[] = [];
+  let pageParam: string | null;
+  let privateKeyParams: string[];
 
   if (paths[0] !== ARC0300PathEnum.Import) {
-    logger?.debug(`${_functionName}: invalid account import uri`);
-
-    return null;
-  }
-
-  assetParam = searchParams.get(ARC0300QueryEnum.Asset);
-
-  // if we have an asset param, get the list of assets
-  if (assetParam) {
-    assets = assetParam.split(',').filter((value) => isNumericString(value));
-  }
-
-  privateKeyParam = searchParams.get(ARC0300QueryEnum.PrivateKey);
-
-  if (!privateKeyParam) {
     logger?.debug(
-      `${_functionName}: no private key param found, attempting to parse watch account`
+      `${_functionName}: invalid account import uri, no /import path found`
     );
 
-    addressParam = searchParams.get(ARC0300QueryEnum.Address);
-
-    if (!addressParam) {
-      logger?.debug(
-        `${_functionName}: no address param found and no private key param found`
-      );
-
-      return null;
-    }
-
-    return {
-      authority: ARC0300AuthorityEnum.Account,
-      paths: [ARC0300PathEnum.Import],
-      query: {
-        [ARC0300QueryEnum.Address]: addressParam,
-        [ARC0300QueryEnum.Asset]: assets,
-      },
-      scheme,
-    };
+    return null;
   }
 
-  encodingParam = searchParams.get(ARC0300QueryEnum.Encoding);
+  checksumParam = searchParams.get(ARC0300QueryEnum.Checksum);
+  nameParams = searchParams.getAll(ARC0300QueryEnum.Name);
+  pageParam = searchParams.get(ARC0300QueryEnum.Page);
+  privateKeyParams = searchParams.getAll(ARC0300QueryEnum.PrivateKey);
 
-  if (!encodingParam) {
-    logger?.debug(`${_functionName}: no encoding param found`);
+  if (privateKeyParams.length <= 0) {
+    logger?.debug(
+      `${_functionName}: invalid account import uri, no private keys found`
+    );
 
     return null;
   }
 
-  switch (encodingParam) {
-    case ARC0300EncodingEnum.Base64URLSafe:
-      encoding = ARC0300EncodingEnum.Base64URLSafe;
-      break;
-    case ARC0300EncodingEnum.Hexadecimal:
-      encoding = ARC0300EncodingEnum.Hexadecimal;
-      break;
-    default:
-      logger?.debug(
-        `${_functionName}: unknown encoding param "${encodingParam}" for method "${ARC0300PathEnum.Import}"`
-      );
-
-      return null;
+  if (pageParam) {
+    pagination = pageParam.split(':').map((value) => parseInt(value));
   }
 
   return {
     authority: ARC0300AuthorityEnum.Account,
     paths: [ARC0300PathEnum.Import],
     query: {
-      [ARC0300QueryEnum.Asset]: assets,
-      [ARC0300QueryEnum.Encoding]: encoding,
-      [ARC0300QueryEnum.PrivateKey]: privateKeyParam,
+      [ARC0300QueryEnum.Name]: nameParams,
+      [ARC0300QueryEnum.PrivateKey]: privateKeyParams,
+      ...(checksumParam && {
+        [ARC0300QueryEnum.Checksum]: checksumParam,
+      }),
+      ...(pageParam && {
+        [ARC0300QueryEnum.Page]: {
+          page: pagination[0],
+          total: pagination[1],
+        },
+      }),
     },
     scheme,
   };

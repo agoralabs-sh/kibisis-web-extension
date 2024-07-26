@@ -1,8 +1,8 @@
 // types
-import type IAddAccountCompleteResult from '../accounts/IAddAccountCompleteResult';
+import type INewAccount from '../accounts/INewAccount';
 
 interface IProps {
-  onComplete: (result: IAddAccountCompleteResult) => Promise<void>;
+  onComplete: (account: INewAccount) => Promise<void>;
   saving: boolean;
 }
 

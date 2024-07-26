@@ -1,19 +1,18 @@
 // types
 import type {
-  IAccount,
   IAssetTypes,
   INativeCurrency,
   INetworkWithTransactionParams,
 } from '@extension/types';
 
 interface IProps {
-  account: IAccount;
   assets: (IAssetTypes | INativeCurrency)[];
   disabled?: boolean;
+  label?: string;
   network: INetworkWithTransactionParams;
-  onAssetChange: (value: IAssetTypes | INativeCurrency) => void;
+  onSelect: (account: IAssetTypes | INativeCurrency) => void;
+  required?: boolean;
   value: IAssetTypes | INativeCurrency;
-  width?: string | number;
 }
 
 export default IProps;

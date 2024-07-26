@@ -1,4 +1,6 @@
 import {
+  CircularProgress,
+  Code,
   Heading,
   Icon,
   Link,
@@ -6,7 +8,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -16,10 +17,12 @@ import {
   IoAlertCircleOutline,
   IoArrowBackOutline,
   IoBanOutline,
+  IoQrCodeOutline,
 } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 import QRCodeFrameIcon from './QRCodeFrameIcon';
 
 // constants
@@ -44,10 +47,10 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IScanQRCodeModalContentProps } from '@extension/types';
-
 const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
   onPreviousClick,
   onURI,
+  pagination,
 }) => {
   const videoRef: MutableRefObject<HTMLVideoElement | null> =
     useRef<HTMLVideoElement | null>(null);
@@ -65,12 +68,8 @@ const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
     startScanningAction,
     uri,
   } = useCaptureQRCode();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
-  );
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   // misc
   const reset = () => {
     // stop scanning and stop streaming
@@ -85,7 +84,34 @@ const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
   // renders
   const renderBody = () => {
     if (stream) {
-      return <QRCodeFrameIcon color="white" h="20rem" w="20rem" />;
+      return (
+        <>
+          <QRCodeFrameIcon color="white" flexGrow={1} h="20rem" w="20rem" />
+
+          {pagination && (
+            <>
+              {/*progress*/}
+              <CircularProgress
+                color="green.500"
+                size="50px"
+                thickness="3px"
+                trackColor="whiteAlpha.500"
+                value={
+                  pagination[1] > 0 ? (pagination[0] / pagination[1]) * 100 : 0
+                }
+              />
+
+              {/*captions*/}
+              <Code borderRadius="md" fontSize="xs">
+                {t<string>('captions.scannedQrCodes', {
+                  count: pagination[0],
+                  total: pagination[1],
+                })}
+              </Code>
+            </>
+          )}
+        </>
+      );
     }
 
     if (error) {
@@ -141,17 +167,11 @@ const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
 
     return (
       <>
-        {/*loader*/}
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor={defaultTextColor}
-          color={primaryColor}
-          size="xl"
-        />
+        {/*progress*/}
+        <CircularProgressWithIcon icon={IoQrCodeOutline} />
 
         {/*caption*/}
-        <Text color={defaultTextColor} fontSize="md" textAlign="center">
+        <Text color={defaultTextColor} fontSize="sm" textAlign="center">
           {t<string>('captions.loadingCameraStream')}
         </Text>
       </>
@@ -176,8 +196,6 @@ const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
   useEffect(() => {
     if (uri) {
       onURI(uri);
-
-      reset();
     }
   }, [uri]);
 
@@ -239,7 +257,7 @@ const ScanQRCodeViaCameraModalContent: FC<IScanQRCodeModalContentProps> = ({
           leftIcon={<IoArrowBackOutline />}
           onClick={handlePreviousClick}
           size="lg"
-          variant="outline"
+          variant="solid"
           w="full"
         >
           {t<string>('buttons.previous')}

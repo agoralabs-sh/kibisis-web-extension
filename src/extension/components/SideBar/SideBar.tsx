@@ -30,6 +30,7 @@ import SideBarSkeletonAccountItem from './SideBarSkeletonAccountItem';
 import {
   ACCOUNTS_ROUTE,
   ADD_ACCOUNT_ROUTE,
+  BODY_BACKGROUND_COLOR,
   SETTINGS_ROUTE,
   SIDEBAR_BORDER_WIDTH,
   SIDEBAR_MAX_WIDTH,
@@ -184,7 +185,7 @@ const SideBar: FC = () => {
 
   return (
     <VStack
-      backgroundColor="var(--chakra-colors-chakra-body-bg)"
+      backgroundColor={BODY_BACKGROUND_COLOR}
       borderRightColor={borderColor}
       borderRightStyle="solid"
       borderRightWidth={SIDEBAR_BORDER_WIDTH}

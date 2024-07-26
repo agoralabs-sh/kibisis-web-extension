@@ -85,7 +85,13 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     | IARC0300OfflineKeyRegistrationTransactionSendSchema
     | IARC0300OnlineKeyRegistrationTransactionSendSchema
   >
-> = ({ cancelButtonIcon, cancelButtonLabel, onComplete, onCancel, schema }) => {
+> = ({
+  cancelButtonIcon,
+  cancelButtonLabel,
+  onComplete,
+  onCancel,
+  schemaOrSchemas: schema,
+}) => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   const {

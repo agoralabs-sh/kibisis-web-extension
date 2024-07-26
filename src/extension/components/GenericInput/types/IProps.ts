@@ -1,4 +1,4 @@
-import { InputProps } from '@chakra-ui/react';
+import type { InputProps } from '@chakra-ui/react';
 
 interface IProps extends Omit<InputProps, 'onError'> {
   characterLimit?: number;

@@ -1,10 +1,8 @@
-// enums
-import { ARC0300EncodingEnum } from '@extension/enums';
+// types
+import type IExportAccount from './IExportAccount';
 
 interface IOptions {
-  assets: string[];
-  encoding?: ARC0300EncodingEnum;
-  privateKey: Uint8Array;
+  accounts: IExportAccount[];
 }
 
 export default IOptions;
