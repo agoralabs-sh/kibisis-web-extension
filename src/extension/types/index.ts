@@ -22,7 +22,6 @@ export * from './networks';
 export * from './notifications';
 export * from './password-lock';
 export * from './redux';
-export * from './registration';
 export * from './sessions';
 export * from './settings';
 export * from './states';

@@ -29,9 +29,8 @@ import {
 } from '@extension/selectors';
 
 // types
-import {
+import type {
   IARC0300AccountImportSchema,
-  IARC0300AccountImportQuery,
   IARC0300AssetAddSchema,
   IARC0300BaseSchema,
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
@@ -74,9 +73,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
 
     // if the uri doesn't exist, add it
     if (index < 0) {
-      console.log('adding uri: ', uri);
       setURIs([...uris, uri]);
-      console.log('new uris: ', [...uris, uri]);
     }
   };
   const handlePreviousClick = () => reset();

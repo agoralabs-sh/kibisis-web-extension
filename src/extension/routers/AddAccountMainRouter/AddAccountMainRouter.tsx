@@ -57,8 +57,8 @@ import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type { IAddWatchAccountCompleteResult } from '@extension/pages/AddWatchAccountPage';
 import type {
   IAccountWithExtendedProps,
-  IAddAccountCompleteResult,
   IAppThunkDispatch,
+  INewAccount,
 } from '@extension/types';
 
 // utils
@@ -112,10 +112,7 @@ const AddAccountMainRouter: FC = () => {
         allowedParams: [ARC0300PathEnum.Import],
       })
     );
-  const handleOnAddAccountComplete = async ({
-    name,
-    keyPair,
-  }: IAddAccountCompleteResult) => {
+  const handleOnAddAccountComplete = async ({ name, keyPair }: INewAccount) => {
     const account =
       accounts.find(
         ({ publicKey }) =>

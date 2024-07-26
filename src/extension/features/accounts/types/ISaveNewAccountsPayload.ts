@@ -1,6 +1,5 @@
 // types
-import type { TEncryptionCredentials } from '@extension/types';
-import type INewAccount from './INewAccount';
+import type { INewAccount, TEncryptionCredentials } from '@extension/types';
 
 interface ISaveNewAccountsPayloadFragment {
   accounts: INewAccount[];

@@ -5,12 +5,11 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Stack,
+  Spacer,
   Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import { decodeURLSafe as decodeBase64URLSafe } from '@stablelib/base64';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -25,11 +24,10 @@ import {
   ACCOUNTS_ROUTE,
   BODY_BACKGROUND_COLOR,
   DEFAULT_GAP,
-  TAB_ITEM_HEIGHT,
 } from '@extension/constants';
 
 // enums
-import { AccountTabEnum, ARC0300QueryEnum } from '@extension/enums';
+import { AccountTabEnum } from '@extension/enums';
 
 // errors
 import { BaseExtensionError } from '@extension/errors';
@@ -46,9 +44,6 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
-
-// models
-import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // selectors
 import {
@@ -70,13 +65,14 @@ import type {
   IARC0300AccountImportSchema,
   IARC0300ModalContentProps,
   IAppThunkDispatch,
+  INewAccount,
 } from '@extension/types';
-import type { IARC0300AccountImportItem } from './types';
 
 // utils
-import convertPrivateKeyToAVMAddress from '@extension/utils/convertPrivateKeyToAVMAddress';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import flattenAccountImportSchemaToNewAccounts from '@extension/utils/flattenAccountImportSchemaToNewAccounts';
+import EmptyState from '@extension/components/EmptyState';
 
 const ARC0300AccountImportModalContent: FC<
   IARC0300ModalContentProps<IARC0300AccountImportSchema[]>
@@ -102,7 +98,7 @@ const ARC0300AccountImportModalContent: FC<
   // hooks
   const defaultTextColor = useDefaultTextColor();
   // states
-  const [items, setItems] = useState<IARC0300AccountImportItem[]>([]);
+  const [items, setItems] = useState<INewAccount[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
   // misc
   const reset = () => {
@@ -125,10 +121,7 @@ const ARC0300AccountImportModalContent: FC<
     try {
       _accounts = await dispatch(
         saveNewAccountsThunk({
-          accounts: items.map(({ name, privateKey }) => ({
-            keyPair: Ed21559KeyPair.generateFromPrivateKey(privateKey),
-            name: name || null,
-          })),
+          accounts: items,
           ...result,
         })
       ).unwrap();
@@ -205,43 +198,64 @@ const ARC0300AccountImportModalContent: FC<
     reset();
     onComplete();
   };
+  // renders
+  const renderBody = () => {
+    if (items.length <= 0) {
+      return (
+        <VStack
+          alignItems="center"
+          flexGrow={1}
+          justifyContent="center"
+          p={DEFAULT_GAP}
+          w="full"
+        >
+          <Spacer />
+
+          <EmptyState text={t<string>('captions.noAccountsToImport')} />
+
+          <Spacer />
+        </VStack>
+      );
+    }
+
+    return (
+      <VStack spacing={DEFAULT_GAP / 3} w="full">
+        {items.map(({ keyPair, name }, index) => (
+          <HStack
+            borderRadius="md"
+            borderWidth={1}
+            key={`account-import-account-item-${index}`}
+            justifyContent="center"
+            px={DEFAULT_GAP - 2}
+            py={DEFAULT_GAP / 3}
+            w="full"
+          >
+            <AccountItem
+              address={convertPublicKeyToAVMAddress(keyPair.publicKey)}
+              {...(name && { name })}
+            />
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="center"
+              w="10%"
+            >
+              {index + 1}
+            </Text>
+          </HStack>
+        ))}
+      </VStack>
+    );
+  };
 
   useEffect(() => {
     setItems(
-      schemas.reduce((acc, schema) => {
-        const privateKeys =
-          schema.query[ARC0300QueryEnum.PrivateKey].map(decodeBase64URLSafe);
-        const addresses = privateKeys.map((value) =>
-          convertPrivateKeyToAVMAddress(value, { logger })
-        );
-
-        return [
-          ...acc,
-          ...addresses.reduce((acc, address, index) => {
-            // if the private key is invalid, or the address already exists, ignore
-            if (
-              !address ||
-              accounts.find(
-                (value) =>
-                  convertPublicKeyToAVMAddress(value.publicKey) === address
-              )
-            ) {
-              return acc;
-            }
-
-            return [
-              ...acc,
-              {
-                address,
-                privateKey: privateKeys[index],
-                ...(schema.query[ARC0300QueryEnum.Name] && {
-                  name: schema.query[ARC0300QueryEnum.Name][index],
-                }),
-              },
-            ];
-          }, []),
-        ];
-      }, [])
+      flattenAccountImportSchemaToNewAccounts({
+        accounts,
+        schemas,
+        logger,
+      })
     );
   }, []);
 
@@ -280,32 +294,7 @@ const ARC0300AccountImportModalContent: FC<
         </ModalHeader>
 
         {/*body*/}
-        <ModalBody display="flex">
-          <VStack spacing={DEFAULT_GAP / 3} w="full">
-            {items.map(({ address, name }, index) => (
-              <HStack
-                borderRadius="md"
-                borderWidth={1}
-                key={`account-import-account-item-${index}`}
-                justifyContent="center"
-                px={DEFAULT_GAP - 2}
-                py={DEFAULT_GAP / 3}
-                w="full"
-              >
-                <AccountItem address={address} name={name} />
-
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="center"
-                  w="10%"
-                >
-                  {index + 1}
-                </Text>
-              </HStack>
-            ))}
-          </VStack>
-        </ModalBody>
+        <ModalBody display="flex">{renderBody()}</ModalBody>
 
         {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>

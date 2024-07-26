@@ -183,6 +183,7 @@ const translation: IResourceLanguage = {
     nameYourAccount: `Give your account a nickname. Don't worry you can change this later on.`,
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
+    noAccountsToImport: 'No accounts to import.',
     noAccountsFound:
       'You can create a new account or import an existing account.',
     noAssetsFound: 'You have not added any assets. Try adding one now.',
