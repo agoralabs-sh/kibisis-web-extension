@@ -1,3 +1,10 @@
+# [1.18.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.2...v1.18.0-beta.3) (2024-07-26)
+
+
+### Features
+
+* allow arrays of private keys and account names when exporting/importing an account via a qr code ([#270](https://github.com/agoralabs-sh/kibisis-web-extension/issues/270)) ([656b95f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/656b95f1d5c7399008ed21debf8d2e18b9554baf))
+
 # [1.18.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.1...v1.18.0-beta.2) (2024-07-17)
 
 
