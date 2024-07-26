@@ -4,19 +4,19 @@ import { ARC0027MethodEnum } from '@agoralabs-sh/avm-web-provider';
 import { NetworkTypeEnum } from '@extension/enums';
 
 // models
+import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
 import BaseARC0072Indexer from '@extension/models/BaseARC0072Indexer';
 import BaseNFTExplorer from '@extension/models/BaseNFTExplorer';
 
 // types
 import type { INativeCurrency } from '../assets';
 import type IChainNamespace from './IChainNamespace';
-import type IBlockExplorer from './IBlockExplorer';
 import type INode from './INode';
 
 interface INetwork {
   algods: INode[];
   arc0072Indexers: BaseARC0072Indexer[];
-  blockExplorers: IBlockExplorer[];
+  blockExplorers: BaseBlockExplorer[];
   canonicalName: string;
   chakraTheme: string;
   feeSunkAddress: string;

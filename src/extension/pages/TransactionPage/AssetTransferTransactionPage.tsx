@@ -156,7 +156,7 @@ const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
+                url={explorer.accountURL(transaction.sender)}
               />
             )}
           </HStack>
@@ -180,7 +180,7 @@ const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.receiver}`}
+                url={explorer.accountURL(transaction.receiver)}
               />
             )}
           </HStack>
@@ -261,7 +261,7 @@ const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${explorer.transactionPath}/${transaction.id}`}
+                      url={explorer.transactionURL(transaction.id)}
                     />
                   )}
                 </HStack>
@@ -293,15 +293,13 @@ const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
                     size="sm"
                     value={transaction.groupId}
                   />
-                  {explorer && explorer.groupPath && (
+                  {explorer && (
                     <OpenTabIconButton
                       size="sm"
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${
-                        explorer.groupPath
-                      }/${encodeURIComponent(transaction.groupId)}`}
+                      url={explorer.groupURL(transaction.groupId)}
                     />
                   )}
                 </HStack>
@@ -326,7 +324,7 @@ const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.assetPath}/${standardAsset.id}`}
+                    url={explorer.assetURL(standardAsset.id)}
                   />
                 )}
               </HStack>

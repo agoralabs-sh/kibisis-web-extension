@@ -97,7 +97,7 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.assetPath}/${transaction.assetId}`}
+                url={explorer.assetURL(transaction.assetId)}
               />
             )}
           </HStack>
@@ -121,7 +121,7 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
                 tooltipLabel={t<string>('captions.openOn', {
                   name: explorer.canonicalName,
                 })}
-                url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.creator}`}
+                url={explorer.accountURL(transaction.creator)}
               />
             )}
           </HStack>
@@ -146,7 +146,7 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.clawback}`}
+                  url={explorer.accountURL(transaction.clawback)}
                 />
               )}
             </HStack>
@@ -172,7 +172,7 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.freeze}`}
+                  url={explorer.accountURL(transaction.freeze)}
                 />
               )}
             </HStack>
@@ -198,7 +198,7 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.manager}`}
+                  url={explorer.accountURL(transaction.manager)}
                 />
               )}
             </HStack>
@@ -224,7 +224,7 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.reserve}`}
+                  url={explorer.accountURL(transaction.reserve)}
                 />
               )}
             </HStack>
@@ -306,7 +306,7 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${explorer.transactionPath}/${transaction.id}`}
+                      url={explorer.transactionURL(transaction.id)}
                     />
                   )}
                 </HStack>
@@ -338,15 +338,13 @@ const AssetConfigTransactionPage: FC<IProps<IAssetConfigTransaction>> = ({
                     size="sm"
                     value={transaction.groupId}
                   />
-                  {explorer && explorer.groupPath && (
+                  {explorer && (
                     <OpenTabIconButton
                       size="sm"
                       tooltipLabel={t<string>('captions.openOn', {
                         name: explorer.canonicalName,
                       })}
-                      url={`${explorer.baseUrl}${
-                        explorer.groupPath
-                      }/${encodeURIComponent(transaction.groupId)}`}
+                      url={explorer.groupURL(transaction.groupId)}
                     />
                   )}
                 </HStack>

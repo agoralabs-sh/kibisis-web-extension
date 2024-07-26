@@ -226,7 +226,7 @@ const NFTPage: FC = () => {
                   tooltipLabel={t<string>('captions.openOn', {
                     name: blockExplorer.canonicalName,
                   })}
-                  url={`${blockExplorer.baseUrl}${blockExplorer.applicationPath}/${assetHolding.id}`}
+                  url={blockExplorer.applicationURL(assetHolding.id)}
                 />
               )}
             </HStack>

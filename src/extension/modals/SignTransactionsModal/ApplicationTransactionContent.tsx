@@ -165,7 +165,7 @@ const ApplicationTransactionContent: FC<ITransactionBodyProps> = ({
               tooltipLabel={t<string>('captions.openOn', {
                 name: blockExplorer.canonicalName,
               })}
-              url={`${blockExplorer.baseUrl}${blockExplorer.applicationPath}/${transaction.appIndex}`}
+              url={blockExplorer.applicationURL(String(transaction.appIndex))}
             />
           )}
         </HStack>

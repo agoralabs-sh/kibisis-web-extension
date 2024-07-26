@@ -17,6 +17,7 @@ import { sendFactoryResetThunk } from '@extension/features/messages';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // models
+import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
 import BaseNFTExplorer from '@extension/models/BaseNFTExplorer';
 
 // selectors
@@ -28,14 +29,14 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch, IBlockExplorer } from '@extension/types';
+import type { IAppThunkDispatch } from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const preferredBlockExplorer = useSelectSettingsPreferredBlockExplorer();
   const preferredNFTExplorer = useSelectSettingsPreferredNFTExplorer();
@@ -63,7 +64,7 @@ const GeneralSettingsPage: FC = () => {
       })
     );
   const handlePreferredBlockExplorerChange = (option: IOption<string>) => {
-    let explorer: IBlockExplorer | null;
+    let explorer: BaseBlockExplorer | null;
 
     if (selectedNetwork) {
       explorer =

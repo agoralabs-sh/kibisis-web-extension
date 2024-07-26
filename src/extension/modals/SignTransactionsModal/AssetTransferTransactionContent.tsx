@@ -125,7 +125,7 @@ const AssetTransferTransactionContent: FC<IAssetTransactionBodyProps> = ({
               tooltipLabel={t<string>('captions.openOn', {
                 name: blockExplorer.canonicalName,
               })}
-              url={`${blockExplorer.baseUrl}${blockExplorer.assetPath}/${asset.id}`}
+              url={blockExplorer.assetURL(asset.id)}
             />
           )}
         </HStack>

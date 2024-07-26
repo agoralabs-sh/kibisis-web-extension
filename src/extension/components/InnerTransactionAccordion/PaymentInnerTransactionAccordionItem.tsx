@@ -25,7 +25,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 
 // types
-import type { IBlockExplorer, IPaymentTransaction } from '@extension/types';
+import type { IPaymentTransaction } from '@extension/types';
 import type { IItemProps } from './types';
 
 // utils
@@ -46,8 +46,7 @@ const PaymentInnerTransactionAccordionItem: FC<
 }) => {
   const { t } = useTranslation();
   // selectors
-  const preferredExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // misc
@@ -55,7 +54,7 @@ const PaymentInnerTransactionAccordionItem: FC<
     account.publicKey
   );
   const amount: BigNumber = new BigNumber(String(transaction.amount));
-  const explorer: IBlockExplorer | null =
+  const explorer =
     network.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
@@ -125,7 +124,7 @@ const PaymentInnerTransactionAccordionItem: FC<
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
+                  url={explorer.accountURL(transaction.sender)}
                 />
               )}
             </HStack>
@@ -149,7 +148,7 @@ const PaymentInnerTransactionAccordionItem: FC<
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.receiver}`}
+                  url={explorer.accountURL(transaction.receiver)}
                 />
               )}
             </HStack>

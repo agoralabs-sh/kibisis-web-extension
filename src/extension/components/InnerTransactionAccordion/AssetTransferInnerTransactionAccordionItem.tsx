@@ -32,10 +32,7 @@ import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type {
-  IAssetTransferTransaction,
-  IBlockExplorer,
-} from '@extension/types';
+import type { IAssetTransferTransaction } from '@extension/types';
 import type { IItemProps } from './types';
 
 // utils
@@ -55,8 +52,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<
 }) => {
   const { t } = useTranslation();
   // selectors
-  const preferredExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
+  const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   // hooks
   const { standardAsset, updating } = useStandardAssetById(transaction.assetId);
   const defaultTextColor: string = useDefaultTextColor();
@@ -66,7 +62,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<
     PrivateKeyService.decode(account.publicKey)
   );
   const amount: BigNumber = new BigNumber(String(transaction.amount));
-  const explorer: IBlockExplorer | null =
+  const explorer =
     network.blockExplorers.find(
       (value) => value.id === preferredExplorer?.id
     ) ||
@@ -148,7 +144,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<
                     tooltipLabel={t<string>('captions.openOn', {
                       name: explorer.canonicalName,
                     })}
-                    url={`${explorer.baseUrl}${explorer.assetPath}/${standardAsset.id}`}
+                    url={explorer.assetURL(standardAsset.id)}
                   />
                 )}
               </HStack>
@@ -173,7 +169,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.sender}`}
+                  url={explorer.accountURL(transaction.sender)}
                 />
               )}
             </HStack>
@@ -197,7 +193,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<
                   tooltipLabel={t<string>('captions.openOn', {
                     name: explorer.canonicalName,
                   })}
-                  url={`${explorer.baseUrl}${explorer.accountPath}/${transaction.receiver}`}
+                  url={explorer.accountURL(transaction.receiver)}
                 />
               )}
             </HStack>
