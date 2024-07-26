@@ -10,11 +10,12 @@ import {
 // enums
 import { AssetTypeEnum, NetworkTypeEnum } from '@extension/enums';
 
+// models
+import NautilusARC0072Indexer from '@extension/models/NautilusARC0072Indexer';
+import NFTNavigatorARC0072Indexer from '@extension/models/NFTNavigatorARC0072Indexer';
+
 // types
 import type { INetwork } from '@extension/types';
-
-// utils
-import fetchVoiARC0072TokensByOwner from '@extension/utils/fetchVoiARC0072TokensByOwner';
 
 const networks: INetwork[] = [
   /**
@@ -29,11 +30,8 @@ const networks: INetwork[] = [
       },
     ],
     arc0072Indexers: [
-      {
-        canonicalName: 'NFT Navigator',
-        fetchTokensByOwner: fetchVoiARC0072TokensByOwner,
-        id: 'nft-navigator',
-      },
+      new NautilusARC0072Indexer(),
+      new NFTNavigatorARC0072Indexer(),
     ],
     canonicalName: 'Voi',
     chakraTheme: 'voi',

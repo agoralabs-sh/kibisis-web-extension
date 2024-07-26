@@ -16,8 +16,8 @@ export default async function fetchARC0072AssetHoldingsWithDelay({
   logger,
   network,
 }: IOptions): Promise<IARC0072AssetHolding[]> {
-  const _functionName: string = 'fetchARC0072AssetHoldingsWithDelay';
-  const arc0072Indexer: IARC0072Indexer | null =
+  const _functionName = 'fetchARC0072AssetHoldingsWithDelay';
+  const arc0072Indexer =
     getRandomItem<IARC0072Indexer>(network.arc0072Indexers) || null;
 
   if (!arc0072Indexer) {
