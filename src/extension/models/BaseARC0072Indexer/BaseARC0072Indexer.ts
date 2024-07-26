@@ -9,11 +9,12 @@ import {
 } from '@extension/errors';
 
 // types
+import type { IARC0072AssetHolding } from '@extension/types';
 import type {
-  IARC0072AssetHolding,
-  IARC0072IndexerFetchTokensByOwnerOptions,
-} from '@extension/types';
-import type { INewOptions, ITokensResponse } from './types';
+  IFetchTokensByOwnerOptions,
+  INewOptions,
+  ITokensResponse,
+} from './types';
 
 export default abstract class BaseARC0072Indexer {
   // protected variables
@@ -36,9 +37,7 @@ export default abstract class BaseARC0072Indexer {
   public async fetchTokensByOwner({
     address,
     logger,
-  }: IARC0072IndexerFetchTokensByOwnerOptions): Promise<
-    IARC0072AssetHolding[]
-  > {
+  }: IFetchTokensByOwnerOptions): Promise<IARC0072AssetHolding[]> {
     const _functionName = 'fetchTokensByOwner';
     let _error: string;
     let response: Response;

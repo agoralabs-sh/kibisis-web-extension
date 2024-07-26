@@ -95,10 +95,10 @@ const NFTPage: FC = () => {
     if (nftExplorer) {
       return (
         <Link
-          href={`${nftExplorer.baseURL}${nftExplorer.tokenPath(
-            assetHolding.id,
-            assetHolding.tokenId
-          )}`}
+          href={`${nftExplorer.tokensURL({
+            appID: assetHolding.id,
+            tokenID: assetHolding.tokenId,
+          })}`}
           isExternal={true}
         >
           {imageElement}

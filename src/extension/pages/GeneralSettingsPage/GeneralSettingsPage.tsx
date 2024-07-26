@@ -16,6 +16,9 @@ import { setConfirmModal } from '@extension/features/layout';
 import { sendFactoryResetThunk } from '@extension/features/messages';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 
+// models
+import BaseNFTExplorer from '@extension/models/BaseNFTExplorer';
+
 // selectors
 import {
   useSelectSelectedNetwork,
@@ -25,13 +28,7 @@ import {
 } from '@extension/selectors';
 
 // types
-import type {
-  IAppThunkDispatch,
-  IBlockExplorer,
-  INetwork,
-  INFTExplorer,
-  ISettings,
-} from '@extension/types';
+import type { IAppThunkDispatch, IBlockExplorer } from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
@@ -40,12 +37,10 @@ const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
   // selectors
-  const preferredBlockExplorer: IBlockExplorer | null =
-    useSelectSettingsPreferredBlockExplorer();
-  const preferredNFTExplorer: INFTExplorer | null =
-    useSelectSettingsPreferredNFTExplorer();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const settings: ISettings = useSelectSettings();
+  const preferredBlockExplorer = useSelectSettingsPreferredBlockExplorer();
+  const preferredNFTExplorer = useSelectSettingsPreferredNFTExplorer();
+  const selectedNetwork = useSelectSelectedNetwork();
+  const settings = useSelectSettings();
   // misc
   const blockExplorerOptions: IOption<string>[] =
     selectedNetwork?.blockExplorers.map((value) => ({
@@ -95,7 +90,7 @@ const GeneralSettingsPage: FC = () => {
     }
   };
   const handlePreferredNFTExplorerChange = (option: IOption<string>) => {
-    let explorer: INFTExplorer | null;
+    let explorer: BaseNFTExplorer | null;
 
     if (selectedNetwork) {
       explorer =

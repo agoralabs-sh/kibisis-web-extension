@@ -13,6 +13,7 @@ import { AssetTypeEnum, NetworkTypeEnum } from '@extension/enums';
 // models
 import NautilusARC0072Indexer from '@extension/models/NautilusARC0072Indexer';
 import NFTNavigatorARC0072Indexer from '@extension/models/NFTNavigatorARC0072Indexer';
+import NFTNavigatorNFTExplorer from '@extension/models/NFTNavigatorNFTExplorer';
 
 // types
 import type { INetwork } from '@extension/types';
@@ -73,16 +74,7 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    nftExplorers: [
-      {
-        baseURL: 'https://nftnavigator.xyz',
-        canonicalName: 'NFT Navigator',
-        collectionPath: (appId: string) => `/collection/${appId}`,
-        id: 'nft-navigator',
-        tokenPath: (appId: string, tokenId: string) =>
-          `/collection/${appId}/token/${tokenId}`,
-      },
-    ],
+    nftExplorers: [new NFTNavigatorNFTExplorer()],
     type: NetworkTypeEnum.Test,
   },
   /**

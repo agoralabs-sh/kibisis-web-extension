@@ -3,17 +3,19 @@ import { ARC0027MethodEnum } from '@agoralabs-sh/avm-web-provider';
 // enums
 import { NetworkTypeEnum } from '@extension/enums';
 
+// models
+import BaseARC0072Indexer from '@extension/models/BaseARC0072Indexer';
+import BaseNFTExplorer from '@extension/models/BaseNFTExplorer';
+
 // types
-import type { IARC0072Indexer } from '../arc-0072';
 import type { INativeCurrency } from '../assets';
 import type IChainNamespace from './IChainNamespace';
 import type IBlockExplorer from './IBlockExplorer';
-import type INFTExplorer from './INFTExplorer';
 import type INode from './INode';
 
 interface INetwork {
   algods: INode[];
-  arc0072Indexers: IARC0072Indexer[];
+  arc0072Indexers: BaseARC0072Indexer[];
   blockExplorers: IBlockExplorer[];
   canonicalName: string;
   chakraTheme: string;
@@ -24,7 +26,7 @@ interface INetwork {
   methods: ARC0027MethodEnum[];
   namespace: IChainNamespace;
   nativeCurrency: INativeCurrency;
-  nftExplorers: INFTExplorer[];
+  nftExplorers: BaseNFTExplorer[];
   type: NetworkTypeEnum;
 }
 
