@@ -4,16 +4,16 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoArrowBackOutline } from 'react-icons/io5';
+import { IoArrowBackOutline, IoQrCodeOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
@@ -34,6 +34,7 @@ import type { IScanQRCodeModalContentProps } from '@extension/types';
 const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
   onPreviousClick,
   onURI,
+  pagination,
 }) => {
   const { t } = useTranslation();
   // hooks
@@ -42,8 +43,8 @@ const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
     startScanningAction,
     uri,
   } = useCaptureQRCode();
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = useColorModeValue(
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = useColorModeValue(
     theme.colors.primaryLight['500'],
     theme.colors.primaryDark['500']
   );
@@ -73,7 +74,7 @@ const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
       {/*header*/}
       <ModalHeader display="flex" justifyContent="center" px={DEFAULT_GAP}>
         <Heading color={defaultTextColor} size="md" textAlign="center">
-          {t<string>('headings.scanningForQRCode')}
+          {t<string>('headings.scanQrCode')}
         </Heading>
       </ModalHeader>
 
@@ -83,19 +84,26 @@ const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
           alignItems="center"
           flexGrow={1}
           justifyContent="center"
-          spacing={4}
+          spacing={DEFAULT_GAP}
           w="full"
         >
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor={defaultTextColor}
-            color={primaryColor}
-            size="xl"
+          {/*progress*/}
+          <CircularProgressWithIcon
+            icon={IoQrCodeOutline}
+            {...(pagination && {
+              progress: pagination,
+              progressColor: 'green.600',
+            })}
           />
 
-          <Text color={defaultTextColor} fontSize="md" textAlign="center">
-            {t<string>('captions.scanningForQrCode')}
+          {/*captions*/}
+          <Text color={defaultTextColor} fontSize="sm" textAlign="center">
+            {pagination
+              ? t<string>('captions.scannedQrCodes', {
+                  count: pagination[0],
+                  total: pagination[1],
+                })
+              : t<string>('captions.scanningForQrCode')}
           </Text>
         </VStack>
       </ModalBody>

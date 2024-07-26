@@ -2,6 +2,7 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Icon,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
@@ -24,6 +25,7 @@ const CircularProgressWithIcon: FC<IProps> = ({
   // hooks
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
+  const trackColor = useColorModeValue('gray.300', 'whiteAlpha.400');
   // misc
   const iconSize = calculateIconSize('lg');
 
@@ -33,7 +35,7 @@ const CircularProgressWithIcon: FC<IProps> = ({
       isIndeterminate={!progress}
       size="100px"
       thickness="4px"
-      trackColor={subTextColor}
+      trackColor={trackColor}
       {...(progress && {
         value: progress[1] > 0 ? (progress[0] / progress[1]) * 100 : 0,
       })}

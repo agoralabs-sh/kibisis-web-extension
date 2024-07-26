@@ -42,6 +42,7 @@ import type {
 // utils
 import isARC0300SchemaPaginationComplete from '@extension/utils/isARC0300SchemaPaginationComplete';
 import parseURIToARC0300Schema from '@extension/utils/parseURIToARC0300Schema';
+import determinePaginationFromARC0300Schemas from '@extension/utils/determinePaginationFromARC0300Schemas';
 
 const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -50,6 +51,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   const networks = useSelectNetworks();
   const scanQRCodeModal = useSelectScanQRCodeModal();
   // state
+  // const [pagination, setPagination] = useState<[number, number] | null>(null);
   const [scanViaCamera, setScanViaCamera] = useState<boolean>(false);
   const [scanViaScreenCapture, setScanViaScreenCapture] =
     useState<boolean>(false);
@@ -82,6 +84,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   const handleScanViaTabClick = () => setScanViaTab(true);
   // renders
   const renderContent = () => {
+    let pagination: [number, number] | null = null;
     let primeSchema: IARC0300BaseSchema | null;
     let schemas: IARC0300BaseSchema[];
 
@@ -138,6 +141,9 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                   />
                 );
               }
+
+              // set pagination to update ui
+              pagination = determinePaginationFromARC0300Schemas(schemas);
             }
           }
 
@@ -215,6 +221,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
         <ScanQRCodeViaCameraModalContent
           onPreviousClick={handlePreviousClick}
           onURI={handleOnURI}
+          {...(pagination && { pagination })}
         />
       );
     }
@@ -224,6 +231,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
         <ScanQRCodeViaScreenCaptureModalContent
           onPreviousClick={handlePreviousClick}
           onURI={handleOnURI}
+          {...(pagination && { pagination })}
         />
       );
     }
@@ -233,6 +241,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
         <ScanQRCodeViaTabModalContent
           onPreviousClick={handlePreviousClick}
           onURI={handleOnURI}
+          {...(pagination && { pagination })}
         />
       );
     }

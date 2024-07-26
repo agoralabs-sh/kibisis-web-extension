@@ -242,6 +242,7 @@ const translation: IResourceLanguage = {
     saveMnemonicPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
     saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
+    scannedQrCodes: 'Scanning {{count}} of {{total}} codes',
     scanningForQrCode:
       'Scanning for a QR Code. Make sure the QR code is visible in the background.',
     screenCaptureViaQRCodeScanNotAllowed1:
@@ -313,6 +314,7 @@ const translation: IResourceLanguage = {
     accountAlreadyAdded: 'Account Already Added',
     accounts: 'Accounts',
     addAsset: 'Add Asset',
+    addedAccount: 'Added Account',
     addedAccounts: 'Added Account(s)',
     addedAsset: 'Added Asset {{symbol}}!',
     addPasskey: 'Add Passkey',
@@ -364,8 +366,7 @@ const translation: IResourceLanguage = {
     removedAsset: 'Asset {{symbol}} Removed!',
     [`removedAsset_${AssetTypeEnum.ARC0200}`]: 'Asset {{symbol}} Hidden!',
     removePasskey: 'Remove Passkey',
-    scanningForQRCode: 'Scanning For QR Code',
-    scanQrCode: 'Scan QR Code',
+    scanQrCode: 'Scan QR Code(s)',
     selectAccount: 'Select Account',
     selectAccounts: 'Select Accounts',
     selectAsset: 'Select Asset',

@@ -6,7 +6,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -16,10 +15,12 @@ import {
   IoAlertCircleOutline,
   IoArrowBackOutline,
   IoBanOutline,
+  IoQrCodeOutline,
 } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 
 // constants
 import {
@@ -46,7 +47,7 @@ import type { IScanQRCodeModalContentProps } from '@extension/types';
 
 const ScanQRCodeViaScreenCaptureModalContent: FC<
   IScanQRCodeModalContentProps
-> = ({ onPreviousClick, onURI }) => {
+> = ({ onPreviousClick, onURI, pagination }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const { t } = useTranslation();
   // hooks
@@ -63,10 +64,6 @@ const ScanQRCodeViaScreenCaptureModalContent: FC<
     uri,
   } = useCaptureQRCode();
   const defaultTextColor = useDefaultTextColor();
-  const primaryColor = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
-  );
   const subTextColor = useSubTextColor();
   // misc
   const reset = () => {
@@ -134,16 +131,23 @@ const ScanQRCodeViaScreenCaptureModalContent: FC<
 
     return (
       <>
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor={defaultTextColor}
-          color={primaryColor}
-          size="xl"
+        {/*progress*/}
+        <CircularProgressWithIcon
+          icon={IoQrCodeOutline}
+          {...(pagination && {
+            progress: pagination,
+            progressColor: 'green.600',
+          })}
         />
 
-        <Text color={defaultTextColor} fontSize="md" textAlign="center">
-          {t<string>('captions.scanningForQrCode')}
+        {/*captions*/}
+        <Text color={defaultTextColor} fontSize="sm" textAlign="center">
+          {pagination
+            ? t<string>('captions.scannedQrCodes', {
+                count: pagination[0],
+                total: pagination[1],
+              })
+            : t<string>('captions.scanningForQrCode')}
         </Text>
       </>
     );
