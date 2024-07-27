@@ -6,9 +6,6 @@ import { Outlet, useNavigate } from 'react-router-dom';
 // components
 import MainLayout from '@extension/components/MainLayout';
 
-// constants
-import { PASSWORD_LOCK_ROUTE } from '@extension/constants';
-
 // features
 import { reset as resetAddAsset } from '@extension/features/add-assets';
 import {
@@ -47,7 +44,6 @@ import useNotifications from '@extension/hooks/useNotifications';
 import AddAssetsModal, {
   AddAssetsForWatchAccountModal,
 } from '@extension/modals/AddAssetsModal';
-import AddPasskeyModal from '@extension/modals/AddPasskeyModal';
 import ARC0300KeyRegistrationTransactionSendEventModal from '@extension/modals/ARC0300KeyRegistrationTransactionSendEventModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
 import EnableModal from '@extension/modals/EnableModal';
@@ -62,10 +58,8 @@ import VoiageToMainnetModal from '@extension/modals/VoiageToMainnetModal';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPasswordLockCredentials,
   useSelectNotificationsShowingConfetti,
   useSelectSelectedNetwork,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // types
@@ -73,12 +67,9 @@ import type { IAppThunkDispatch } from '@extension/types';
 
 const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
-  const navigate = useNavigate();
   // selectors
   const accounts = useSelectAccounts();
-  const passwordLockPassword = useSelectPasswordLockCredentials();
   const selectedNetwork = useSelectSelectedNetwork();
-  const settings = useSelectSettings();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
@@ -119,12 +110,6 @@ const Root: FC = () => {
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [selectedNetwork]);
-  // when the password lock is updated, if it is empty and the password lock is enabled, lock the screen
-  useEffect(() => {
-    if (settings.security.enablePasswordLock && !passwordLockPassword) {
-      navigate(PASSWORD_LOCK_ROUTE);
-    }
-  }, [passwordLockPassword]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications

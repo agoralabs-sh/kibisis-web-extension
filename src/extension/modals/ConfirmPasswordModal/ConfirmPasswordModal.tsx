@@ -121,7 +121,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
   // renders
   const renderContent = () => {
     // show a loader if there is a password lock and password
-    if (settings.security.enablePasswordLock && passwordLockCredentials) {
+    if (settings.security.enableCredentialLock && passwordLockCredentials) {
       return (
         <VStack
           alignItems="center"
@@ -165,7 +165,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
   // check if there is a password lock and password lock password present
   useEffect(() => {
     if (
-      settings.security.enablePasswordLock &&
+      settings.security.enableCredentialLock &&
       passwordLockCredentials?.type === EncryptionMethodEnum.Password
     ) {
       onConfirm(passwordLockCredentials.password);

@@ -9,7 +9,6 @@ import { BaseProviderMessage } from '@common/messages';
 
 // services
 import AppWindowManagerService from '../AppWindowManagerService';
-import PasswordLockService from '../PasswordLockService';
 import StorageManager from '../StorageManager';
 
 // types
@@ -18,34 +17,30 @@ import type { IAppWindow } from '@extension/types';
 
 export default class ProviderMessageHandler {
   // private variables
-  private readonly appWindowManagerService: AppWindowManagerService;
-  private readonly logger: ILogger | null;
-  private readonly passwordLockService: PasswordLockService;
-  private readonly storageManager: StorageManager;
+  private readonly _appWindowManagerService: AppWindowManagerService;
+  private readonly _logger: ILogger | null;
+  private readonly _storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
     const storageManager: StorageManager = new StorageManager();
 
-    this.appWindowManagerService = new AppWindowManagerService({
+    this._appWindowManagerService = new AppWindowManagerService({
       logger,
       storageManager,
     });
-    this.logger = logger || null;
-    this.passwordLockService = new PasswordLockService({
-      logger,
-    });
-    this.storageManager = storageManager;
+    this._logger = logger || null;
+    this._storageManager = storageManager;
   }
 
   /**
    * private functions
    */
 
-  private async handleFactoryResetMessage(): Promise<void> {
+  private async _handleFactoryResetMessage(): Promise<void> {
     const backgroundAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.BackgroundApp);
+      await this._appWindowManagerService.getByType(AppTypeEnum.BackgroundApp);
     const mainAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+      await this._appWindowManagerService.getByType(AppTypeEnum.MainApp);
 
     // remove the main app if it exists
     if (mainAppWindows.length > 0) {
@@ -66,28 +61,20 @@ export default class ProviderMessageHandler {
     }
 
     // remove everything from storage
-    await this.storageManager.removeAll();
+    await this._storageManager.removeAll();
   }
 
-  private async handlePasswordLockClearMessage(): Promise<void> {
-    const _functionName: string = 'handlePasswordLockClearMessage';
-
-    await this.passwordLockService.clearAlarm();
-
-    this.logger?.debug(
-      `${ProviderMessageHandler.name}#${_functionName}: password lock cleared`
-    );
-  }
-
-  private async handleRegistrationCompletedMessage(): Promise<void> {
+  private async _handleRegistrationCompletedMessage(): Promise<void> {
     const mainAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.MainApp);
+      await this._appWindowManagerService.getByType(AppTypeEnum.MainApp);
     const registrationAppWindows: IAppWindow[] =
-      await this.appWindowManagerService.getByType(AppTypeEnum.RegistrationApp);
+      await this._appWindowManagerService.getByType(
+        AppTypeEnum.RegistrationApp
+      );
 
     // if there is no main app windows, create a new one
     if (mainAppWindows.length <= 0) {
-      await this.appWindowManagerService.createWindow({
+      await this._appWindowManagerService.createWindow({
         type: AppTypeEnum.MainApp,
         ...(registrationAppWindows[0] && {
           left: registrationAppWindows[0].left,
@@ -111,19 +98,17 @@ export default class ProviderMessageHandler {
    */
 
   public async onMessage(message: BaseProviderMessage): Promise<void> {
-    const _functionName: string = 'onMessage';
+    const _functionName = 'onMessage';
 
-    this.logger?.debug(
+    this._logger?.debug(
       `${ProviderMessageHandler.name}#${_functionName}: message "${message.reference}" received`
     );
 
     switch (message.reference) {
       case ProviderMessageReferenceEnum.FactoryReset:
-        return await this.handleFactoryResetMessage();
-      case ProviderMessageReferenceEnum.PasswordLockClear:
-        return this.handlePasswordLockClearMessage();
+        return await this._handleFactoryResetMessage();
       case ProviderMessageReferenceEnum.RegistrationCompleted:
-        return await this.handleRegistrationCompletedMessage();
+        return await this._handleRegistrationCompletedMessage();
       default:
         break;
     }

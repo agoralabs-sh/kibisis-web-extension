@@ -8,6 +8,7 @@ import {
   redirect,
   RouterProvider,
 } from 'react-router-dom';
+import { Alarms } from 'webextension-polyfill';
 
 // components
 import ThemeProvider from '@extension/components/ThemeProvider';
@@ -20,7 +21,7 @@ import {
   ASSETS_ROUTE,
   NFTS_ROUTE,
   SETTINGS_ROUTE,
-  PASSWORD_LOCK_ROUTE,
+  CREDENTIAL_LOCK_ROUTE,
   TRANSACTIONS_ROUTE,
 } from '@extension/constants';
 
@@ -29,6 +30,7 @@ import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as addAssetsReducer } from '@extension/features/add-assets';
 import { reducer as arc0072AssetsReducer } from '@extension/features/arc0072-assets';
 import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
+import { reducer as credentialLockReducer } from '@extension/features/credential-lock';
 import { reducer as eventsReducer } from '@extension/features/events';
 import {
   reducer as layoutReducer,
@@ -39,7 +41,6 @@ import { reducer as networksReducer } from '@extension/features/networks';
 import { reducer as newsReducer } from '@extension/features/news';
 import { reducer as notificationsReducer } from '@extension/features/notifications';
 import { reducer as passkeysReducer } from '@extension/features/passkeys';
-import { reducer as passwordLockReducer } from '@extension/features/password-lock';
 import { reducer as reKeyAccountReducer } from '@extension/features/re-key-account';
 import { reducer as removeAssetsReducer } from '@extension/features/remove-assets';
 import { reducer as sendAssetsReducer } from '@extension/features/send-assets';
@@ -54,14 +55,17 @@ import { reducer as systemReducer } from '@extension/features/system';
 // pages
 import AccountPage from '@extension/pages/AccountPage';
 import AssetPage from '@extension/pages/AssetPage';
+import CredentialLockPage from '@extension/pages/CredentialLockPage';
 import NFTPage from '@extension/pages/NFTPage';
-import PasswordLockPage from '@extension/pages/PasswordLockPage';
 import SplashPage from '@extension/pages/SplashPage';
 import TransactionPage from '@extension/pages/TransactionPage';
 
 // routers
 import AddAccountRouter from '@extension/routers/AddAccountMainRouter';
 import SettingsRouter from '@extension/routers/SettingsRouter';
+
+// services
+import CredentialLockService from '@extension/services/CredentialLockService';
 
 // types
 import type {
@@ -145,21 +149,25 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
           ],
           element: <Root />,
           loader: async () => {
-            let credentials: TEncryptionCredentials | null;
+            const credentialLockService = new CredentialLockService({ logger });
+            let credentialsLockAlarm: Alarms.Alarm | null;
             let settings: ISettings;
 
             try {
               settings = await (dispatch as IAppThunkDispatch)(
                 fetchSettingsFromStorageThunk()
               ).unwrap(); // fetch the settings from storage
-              credentials = getState().passwordLock.credentials;
+              credentialsLockAlarm = await credentialLockService.getAlarm(); // if the alarm is active, it has not timed out
 
-              // if the password lock is on, we need the passkey/password
-              if (settings.security.enablePasswordLock && !credentials) {
-                return redirect(PASSWORD_LOCK_ROUTE);
+              // if the credential lock is enabled and the alarm has timed out, lock the screen
+              if (
+                settings.security.enableCredentialLock &&
+                !credentialsLockAlarm
+              ) {
+                return redirect(CREDENTIAL_LOCK_ROUTE);
               }
             } catch (error) {
-              logger.debug(`${_functionName}: failed to get settings`);
+              logger.error(`${_functionName}:`, error);
             }
 
             return null;
@@ -167,8 +175,8 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
           path: '/',
         },
         {
-          element: <PasswordLockPage />,
-          path: `${PASSWORD_LOCK_ROUTE}/*`,
+          element: <CredentialLockPage />,
+          path: `${CREDENTIAL_LOCK_ROUTE}/*`,
         },
       ],
       path: '/',
@@ -183,6 +191,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       addAssets: addAssetsReducer,
       arc0072Assets: arc0072AssetsReducer,
       arc0200Assets: arc200AssetsReducer,
+      credentialLock: credentialLockReducer,
       events: eventsReducer,
       layout: layoutReducer,
       messages: messagesReducer,
@@ -190,7 +199,6 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       news: newsReducer,
       notifications: notificationsReducer,
       passkeys: passkeysReducer,
-      passwordLock: passwordLockReducer,
       reKeyAccount: reKeyAccountReducer,
       removeAssets: removeAssetsReducer,
       sendAssets: sendAssetsReducer,

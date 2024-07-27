@@ -160,7 +160,7 @@ const AuthenticationModal: FC<IProps> = ({
     }
 
     // show a loader if there is a password lock and password
-    if (settings.security.enablePasswordLock && passwordLockCredentials) {
+    if (settings.security.enableCredentialLock && passwordLockCredentials) {
       return (
         <VStack
           alignItems="center"
@@ -235,7 +235,7 @@ const AuthenticationModal: FC<IProps> = ({
       }
 
       // otherwise, check if there is a password lock and passkey/password present
-      if (settings.security.enablePasswordLock && passwordLockCredentials) {
+      if (settings.security.enableCredentialLock && passwordLockCredentials) {
         return onConfirm(passwordLockCredentials);
       }
     })();
