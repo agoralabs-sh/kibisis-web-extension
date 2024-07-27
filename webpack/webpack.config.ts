@@ -110,19 +110,6 @@ const configs: (
       },
     ],
   };
-  tsLoaderRule = {
-    exclude: /node_modules/,
-    test: /\.tsx?$/,
-    use: [
-      {
-        loader: 'ts-loader',
-        options: {
-          configFile: resolve(process.cwd(), 'tsconfig.build.json'),
-          transpileOnly: true,
-        },
-      },
-    ],
-  };
 
   switch (target) {
     case TargetEnum.Chrome:
@@ -219,6 +206,22 @@ const configs: (
         maxAssetSize: maxSize,
         maxEntrypointSize: 10000000, // 10 MB
       };
+      tsLoaderRule = {
+        exclude: /node_modules/,
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'thread-loader',
+          },
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: resolve(process.cwd(), 'tsconfig.build.json'),
+              happyPackMode: true,
+            },
+          },
+        ],
+      };
       break;
     // default to development
     case EnvironmentEnum.Development:
@@ -235,6 +238,19 @@ const configs: (
         pathinfo: false,
       };
       performance = false;
+      tsLoaderRule = {
+        exclude: /node_modules/,
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: resolve(process.cwd(), 'tsconfig.build.json'),
+              transpileOnly: true,
+            },
+          },
+        ],
+      };
       break;
   }
 
