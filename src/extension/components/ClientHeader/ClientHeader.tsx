@@ -32,11 +32,7 @@ const ClientHeader: FC<IProps> = ({
     <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
       <HStack alignItems="center" spacing={DEFAULT_GAP / 3} w="full">
         {/*icon */}
-        <SessionAvatar
-          iconUrl={iconUrl}
-          name={name}
-          isWalletConnect={isWalletConnect}
-        />
+        <SessionAvatar iconUrl={iconUrl} name={name} />
 
         <VStack
           alignItems="flex-start"

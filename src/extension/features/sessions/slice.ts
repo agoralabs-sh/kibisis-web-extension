@@ -1,5 +1,4 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
-import { IWeb3Wallet } from '@walletconnect/web3wallet/dist/types';
+import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
@@ -8,10 +7,8 @@ import { StoreNameEnum } from '@extension/enums';
 import {
   clearSessionsThunk,
   fetchSessionsThunk,
-  initializeWalletConnectThunk,
   removeAuthorizedAddressThunk,
   removeSessionByIdThunk,
-  removeSessionByTopicThunk,
   setSessionThunk,
 } from './thunks';
 
@@ -48,20 +45,6 @@ const slice = createSlice({
     });
     builder.addCase(fetchSessionsThunk.rejected, (state: IState) => {
       state.fetching = false;
-    });
-    /**initialize walletconnect**/
-    builder.addCase(
-      initializeWalletConnectThunk.fulfilled,
-      (state: IState, action: PayloadAction<IWeb3Wallet>) => {
-        state.web3Wallet = action.payload;
-        state.initializingWalletConnect = false;
-      }
-    );
-    builder.addCase(initializeWalletConnectThunk.pending, (state: IState) => {
-      state.initializingWalletConnect = true;
-    });
-    builder.addCase(initializeWalletConnectThunk.rejected, (state: IState) => {
-      state.initializingWalletConnect = false;
     });
     /**remove authorized address**/
     builder.addCase(
@@ -100,25 +83,6 @@ const slice = createSlice({
     builder.addCase(removeSessionByIdThunk.rejected, (state: IState) => {
       state.saving = false;
     });
-    /**remove session by topic**/
-    builder.addCase(
-      removeSessionByTopicThunk.fulfilled,
-      (state: IState, action: PayloadAction<string | null>) => {
-        if (action.payload) {
-          state.items = state.items.filter(
-            (value) => value.id !== action.payload
-          );
-        }
-
-        state.saving = false;
-      }
-    );
-    builder.addCase(removeSessionByTopicThunk.pending, (state: IState) => {
-      state.saving = true;
-    });
-    builder.addCase(removeSessionByTopicThunk.rejected, (state: IState) => {
-      state.saving = false;
-    });
     /**set session**/
     builder.addCase(
       setSessionThunk.fulfilled,
@@ -137,15 +101,10 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.Sessions,
   reducers: {
-    closeWalletConnectModal: (state: Draft<IState>) => {
-      state.walletConnectModalOpen = false;
-    },
-    openWalletConnectModal: (state: Draft<IState>) => {
-      state.walletConnectModalOpen = true;
+    noop: () => {
+      return;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { closeWalletConnectModal, openWalletConnectModal } =
-  slice.actions;

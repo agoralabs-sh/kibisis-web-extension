@@ -39,26 +39,35 @@ const configs: (
   environment = EnvironmentEnum.Development,
   target = TargetEnum.Firefox,
 }: IWebpackEnvironmentVariables) => {
-  let buildPath: string;
+  // misc
   let commonConfig: Configuration;
   let dappExamplePort: number;
-  let definePlugin: DefinePlugin;
   let devtool: string | false | undefined;
-  let extensionPath: string;
-  let fontLoaderRule: RuleSetRule;
-  let handleBarsLoaderRule: RuleSetRule;
-  let imageLoaderRule: RuleSetRule;
-  let manifestPaths: string[];
   let maxSize: number;
+  // paths
+  let buildPath: string;
+  let extensionPath: string;
+  let manifestPaths: string[];
+  let tsConfigBuildPath: string;
+  // performance
   let optimization: Record<string, unknown>;
   let output: Record<string, unknown>;
   let performance: Record<string, unknown> | false;
+  // plugins
+  let definePlugin: DefinePlugin;
+  // rules
+  let fontLoaderRule: RuleSetRule;
+  let handleBarsLoaderRule: RuleSetRule;
+  let imageLoaderRule: RuleSetRule;
   let stylesLoaderRule: RuleSetRule;
   let tsLoaderRule: RuleSetRule;
 
   // load .env file
   config();
 
+  extensionPath = resolve(SRC_PATH, 'extension');
+  tsConfigBuildPath = resolve(process.cwd(), 'tsconfig.build.json');
+  commonConfig = createCommonConfig();
   dappExamplePort = 8080;
   definePlugin = new DefinePlugin({
     __APP_TITLE__: JSON.stringify(APP_TITLE),
@@ -68,11 +77,7 @@ const configs: (
     __PROVIDER_ID__: JSON.stringify(process.env.PROVIDER_ID),
     __TARGET__: JSON.stringify(target),
     __VERSION__: JSON.stringify(version),
-    __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
-      process.env.WALLET_CONNECT_PROJECT_ID
-    ),
   });
-  extensionPath = resolve(SRC_PATH, 'extension');
   fontLoaderRule = {
     test: /\.(svg?.+|ttf?.+|woff?.+|woff2?.+)$/,
     type: 'asset/resource',
@@ -92,7 +97,6 @@ const configs: (
     },
   };
   maxSize = 4000000; // 4 MB
-  commonConfig = createCommonConfig();
   stylesLoaderRule = {
     test: /\.css$/i,
     use: [
@@ -106,6 +110,22 @@ const configs: (
         loader: 'css-loader',
         options: {
           url: true,
+        },
+      },
+    ],
+  };
+  tsLoaderRule = {
+    exclude: /node_modules/,
+    test: /\.tsx?$/,
+    use: [
+      {
+        loader: 'thread-loader',
+      },
+      {
+        loader: 'ts-loader',
+        options: {
+          configFile: tsConfigBuildPath,
+          happyPackMode: true,
         },
       },
     ],
@@ -206,18 +226,7 @@ const configs: (
         maxAssetSize: maxSize,
         maxEntrypointSize: 10000000, // 10 MB
       };
-      tsLoaderRule = {
-        exclude: /node_modules/,
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              configFile: resolve(process.cwd(), 'tsconfig.build.json'),
-            },
-          },
-        ],
-      };
+
       break;
     // default to development
     case EnvironmentEnum.Development:
@@ -234,19 +243,7 @@ const configs: (
         pathinfo: false,
       };
       performance = false;
-      tsLoaderRule = {
-        exclude: /node_modules/,
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              configFile: resolve(process.cwd(), 'tsconfig.build.json'),
-              transpileOnly: true,
-            },
-          },
-        ],
-      };
+
       break;
   }
 
@@ -407,9 +404,6 @@ const configs: (
       plugins: [
         new DefinePlugin({
           __PROVIDER_ID__: JSON.stringify(process.env.PROVIDER_ID),
-          __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
-            process.env.WALLET_CONNECT_PROJECT_ID
-          ),
         }),
         new HtmlWebpackPlugin({
           chunks: ['main'],
