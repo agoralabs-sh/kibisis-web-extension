@@ -23,7 +23,6 @@ import { setConfirmModal } from '@extension/features/layout';
 import {
   clearSessionsThunk,
   removeSessionByIdThunk,
-  removeSessionByTopicThunk,
 } from '@extension/features/sessions';
 
 // hooks
@@ -40,7 +39,7 @@ import {
 } from '@extension/selectors';
 
 // types
-import { IAppThunkDispatch, ISession } from '@extension/types';
+import type { IAppThunkDispatch, ISession } from '@extension/types';
 
 const SessionsSettingsPage: FC = () => {
   const { t } = useTranslation();
@@ -66,18 +65,7 @@ const SessionsSettingsPage: FC = () => {
       })
     );
   const handleRemoveSession = (id: string) => {
-    const session = sessions.find((value) => value.id === id) || null;
-
-    if (session) {
-      // if this is a walletconnect session, remove by topic
-      if (session.walletConnectMetadata) {
-        dispatch(
-          removeSessionByTopicThunk(session.walletConnectMetadata.topic)
-        );
-
-        return;
-      }
-
+    if (sessions.find((value) => value.id === id)) {
       dispatch(removeSessionByIdThunk(id));
     }
   };

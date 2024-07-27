@@ -5,7 +5,6 @@ export type { default as IFetchAssetWithDelayOptions } from './IFetchAssetWithDe
 export type { default as ITinyManAssetResponse } from './ITinyManAssetResponse';
 export type { default as IUpdateAssetInformationByIdOptions } from './IUpdateAssetInformationByIdOptions';
 export type { default as IVestigeFiAssetResponse } from './IVestigeFiAssetResponse';
-export type { default as IWalletConnectSessionMetadata } from './IWalletConnectSessionMetadata';
 export * from './accounts';
 export * from './algod';
 export * from './arc-0072';

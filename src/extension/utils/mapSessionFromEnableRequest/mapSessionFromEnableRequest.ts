@@ -1,14 +1,8 @@
 import { v4 as uuid } from 'uuid';
 
 // types
-import { IClientInformation } from '@common/types';
-import { INetwork, ISession } from '@extension/types';
-
-export interface IOptions {
-  authorizedAddresses: string[];
-  clientInfo: IClientInformation;
-  network: INetwork;
-}
+import type { ISession } from '@extension/types';
+import type { IOptions } from './types';
 
 export default function mapSessionFromEnableRequest({
   authorizedAddresses,
@@ -29,6 +23,5 @@ export default function mapSessionFromEnableRequest({
     iconUrl: clientInfo.iconUrl,
     id,
     usedAt: now.getTime(),
-    walletConnectMetadata: null,
   };
 }

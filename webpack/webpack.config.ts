@@ -77,9 +77,6 @@ const configs: (
     __PROVIDER_ID__: JSON.stringify(process.env.PROVIDER_ID),
     __TARGET__: JSON.stringify(target),
     __VERSION__: JSON.stringify(version),
-    __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
-      process.env.WALLET_CONNECT_PROJECT_ID
-    ),
   });
   fontLoaderRule = {
     test: /\.(svg?.+|ttf?.+|woff?.+|woff2?.+)$/,
@@ -407,9 +404,6 @@ const configs: (
       plugins: [
         new DefinePlugin({
           __PROVIDER_ID__: JSON.stringify(process.env.PROVIDER_ID),
-          __WALLET_CONNECT_PROJECT_ID__: JSON.stringify(
-            process.env.WALLET_CONNECT_PROJECT_ID
-          ),
         }),
         new HtmlWebpackPlugin({
           chunks: ['main'],

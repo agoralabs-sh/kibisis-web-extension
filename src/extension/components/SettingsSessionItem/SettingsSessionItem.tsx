@@ -58,7 +58,6 @@ const SettingsSessionItem: FC<IProps> = ({
       <SessionAvatar
         name={session.appName}
         iconUrl={session.iconUrl || undefined}
-        isWalletConnect={!!session.walletConnectMetadata}
         size="sm"
       />
 

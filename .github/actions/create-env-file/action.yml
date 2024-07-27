@@ -25,5 +25,4 @@ runs:
         echo "POSTHOG_API_HOST=${{ inputs.posthog_api_host }}" >> .env
         echo "POSTHOG_PROJECT_ID=${{ inputs.posthog_project_id }}" >> .env
         echo "PROVIDER_ID=${{ inputs.provider_id }}" >> .env
-        echo "WALLET_CONNECT_PROJECT_ID=${{ inputs.walletconnect_project_id }}" >> .env
       shell: bash

@@ -31,11 +31,7 @@ import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from 
 import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
 import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
-import {
-  closeWalletConnectModal,
-  fetchSessionsThunk,
-  initializeWalletConnectThunk,
-} from '@extension/features/sessions';
+import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
@@ -62,7 +58,6 @@ import SendAssetModal from '@extension/modals/SendAssetModal';
 import SignMessageModal from '@extension/modals/SignMessageModal';
 import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 import VoiageToMainnetModal from '@extension/modals/VoiageToMainnetModal';
-import WalletConnectModal from '@extension/modals/WalletConnectModal';
 
 // selectors
 import {
@@ -93,8 +88,6 @@ const Root: FC = () => {
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
-  const handleWalletConnectModalClose = () =>
-    dispatch(closeWalletConnectModal());
 
   // 1. fetch the required data
   useEffect(() => {
@@ -106,7 +99,6 @@ const Root: FC = () => {
     dispatch(fetchARC0072AssetsFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
     dispatch(fetchNewsFromStorageThunk());
-    dispatch(initializeWalletConnectThunk());
     dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());
   }, []);
@@ -161,7 +153,6 @@ const Root: FC = () => {
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />
-      <WalletConnectModal onClose={handleWalletConnectModalClose} />
 
       {/*information modals*/}
       <VoiageToMainnetModal />

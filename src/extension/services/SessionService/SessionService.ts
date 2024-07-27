@@ -5,8 +5,8 @@ import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 import StorageManager from '../StorageManager';
 
 // types
-import { IBaseOptions, ILogger } from '@common/types';
-import { ISession } from '@extension/types';
+import type { IBaseOptions, ILogger } from '@common/types';
+import type { ISession } from '@extension/types';
 
 export default class SessionService {
   // private variables
@@ -59,20 +59,6 @@ export default class SessionService {
    */
   public async getById(id: string): Promise<ISession | null> {
     return await this.storageManager.getItem(this.createItemKey(id));
-  }
-
-  /**
-   * Gets the session for a given WalletConnect topic.
-   * @param {string} topic - the WalletConnect topic to search for.
-   * @returns {Promise<ISession | null>} the session or null.
-   */
-  public async getByTopic(topic: string): Promise<ISession | null> {
-    const sessions: ISession[] = await this.getAll();
-
-    return (
-      sessions.find((value) => value.walletConnectMetadata?.topic === topic) ||
-      null
-    );
   }
 
   /**
