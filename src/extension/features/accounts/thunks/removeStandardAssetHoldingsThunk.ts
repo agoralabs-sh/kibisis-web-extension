@@ -70,7 +70,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     const accounts = getState().accounts.items;
     const logger = getState().system.logger;
     const networks = getState().networks.items;
-    const online = getState().system.online;
+    const online = getState().system.networkConnectivity.online;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountInformation: IAccountInformation;
     let accountBalanceInAtomicUnits: BigNumber;

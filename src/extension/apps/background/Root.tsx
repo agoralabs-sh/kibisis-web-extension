@@ -35,7 +35,9 @@ import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
 
 const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
-  const selectedNetwork = useSelectSelectedNetwork();
+  // selectors
+  const network = useSelectSelectedNetwork();
+  // misc
   const url = new URL(window.location.href);
   const eventId = decodeURLSearchParam('eventId', url.searchParams);
   // handlers
@@ -58,10 +60,10 @@ const Root: FC = () => {
   }, []);
   // fetch accounts when the selected network has been found
   useEffect(() => {
-    if (selectedNetwork) {
+    if (network) {
       dispatch(fetchAccountsFromStorageThunk());
     }
-  }, [selectedNetwork]);
+  }, [network]);
   useEffect(() => {
     if (eventId) {
       dispatch(handleNewEventByIdThunk(eventId));

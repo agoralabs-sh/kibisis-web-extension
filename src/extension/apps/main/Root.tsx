@@ -32,12 +32,14 @@ import { reset as resetSendAsset } from '@extension/features/send-assets';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
-import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
+import {
+  fetchFromStorageThunk as fetchSystemInfoFromStorageThunk,
+  startPollingForNetworkConnectivityThunk,
+} from '@extension/features/system';
 
 // hooks
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
-import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
 import useOnNewAssets from '@extension/hooks/useOnNewAssets';
 import useNotifications from '@extension/hooks/useNotifications';
 
@@ -70,7 +72,7 @@ const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const accounts = useSelectAccounts();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const network = useSelectSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
@@ -94,10 +96,11 @@ const Root: FC = () => {
     dispatch(fetchNewsFromStorageThunk());
     dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());
+    dispatch(startPollingForNetworkConnectivityThunk());
   }, []);
   // 2. when the selected network has been fetched from storage
   useEffect(() => {
-    if (selectedNetwork) {
+    if (network) {
       // fetch accounts when no accounts exist
       if (accounts.length < 1) {
         dispatch(
@@ -111,11 +114,10 @@ const Root: FC = () => {
       // fetch the most recent transaction params for the selected network
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
-  }, [selectedNetwork]);
+  }, [network]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications
-  useOnNetworkConnectivity(); // listen to network connectivity
   useOnMainAppMessage(); // handle incoming messages
 
   return (

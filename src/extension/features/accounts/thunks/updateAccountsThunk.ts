@@ -51,7 +51,7 @@ const updateAccountsThunk: AsyncThunk<
   ) => {
     const logger = getState().system.logger;
     const networks = getState().networks.items;
-    const online = getState().system.online;
+    const online = getState().system.networkConnectivity.online;
     const selectedNetwork = selectNetworkFromSettings(
       networks,
       getState().settings

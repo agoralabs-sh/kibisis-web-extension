@@ -40,7 +40,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
 >(ThunkEnum.FetchAccountsFromStorage, async (options, { getState }) => {
   const logger = getState().system.logger;
   const networks = getState().networks.items;
-  const online = getState().system.online;
+  const online = getState().system.networkConnectivity.online;
   const accountService = new AccountService({
     logger,
   });

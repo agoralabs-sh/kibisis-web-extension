@@ -1,11 +1,11 @@
 // types
 import type { ILogger } from '@common/types';
-import type { ISystemInfo } from '@extension/types';
+import type { INetworkConnectivity, ISystemInfo } from '@extension/types';
 
 interface IState {
   info: ISystemInfo | null;
   logger: ILogger;
-  online: boolean;
+  networkConnectivity: INetworkConnectivity;
 }
 
 export default IState;

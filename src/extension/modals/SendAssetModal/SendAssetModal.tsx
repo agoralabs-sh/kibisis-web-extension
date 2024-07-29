@@ -185,34 +185,40 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     } catch (error) {
       logger.error(`${SendAssetModal.name}#${_functionName}:`, error);
 
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            code: error.code,
-            context: error.code,
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', { context: error.code }),
-          type: 'error',
-        })
-      );
+      handleOnError(error);
+
+      return;
+    }
+  };
+  const handleOnError = (error: BaseExtensionError) => {
+    switch (error.code) {
+      case ErrorCodeEnum.OfflineError:
+        dispatch(
+          createNotification({
+            ephemeral: true,
+            title: t<string>('headings.offline'),
+            type: 'error',
+          })
+        );
+        break;
+      default:
+        dispatch(
+          createNotification({
+            description: t<string>('errors.descriptions.code', {
+              code: error.code,
+              context: error.code,
+            }),
+            ephemeral: true,
+            title: t<string>('errors.titles.code', { context: error.code }),
+            type: 'error',
+          })
+        );
+        break;
     }
   };
   const handleNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
     dispatch(
       setNote(event.target.value.length > 0 ? event.target.value : null)
-    );
-  const handleOnAuthenticationError = (error: BaseExtensionError) =>
-    dispatch(
-      createNotification({
-        description: t<string>('errors.descriptions.code', {
-          code: error.code,
-          context: error.code,
-        }),
-        ephemeral: true,
-        title: t<string>('errors.titles.code', { context: error.code }),
-        type: 'error',
-      })
     );
   const handleOnToAddressError = (error: string | null) =>
     setToAddressError(error);
@@ -349,30 +355,9 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       // clean up
       handleClose();
     } catch (error) {
-      switch (error.code) {
-        case ErrorCodeEnum.OfflineError:
-          dispatch(
-            createNotification({
-              ephemeral: true,
-              title: t<string>('headings.offline'),
-              type: 'error',
-            })
-          );
-          break;
-        default:
-          dispatch(
-            createNotification({
-              description: t<string>('errors.descriptions.code', {
-                code: error.code,
-                context: error.code,
-              }),
-              ephemeral: true,
-              title: t<string>('errors.titles.code', { context: error.code }),
-              type: 'error',
-            })
-          );
-          break;
-      }
+      handleOnError(error);
+
+      return;
     }
   };
   const handleSendClick = () => onAuthenticationModalOpen();
@@ -586,7 +571,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
         isOpen={isAuthenticationModalOpen}
         onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
-        onError={handleOnAuthenticationError}
+        onError={handleOnError}
         passwordHint={t<string>('captions.mustEnterPasswordToSendTransaction')}
       />
 

@@ -195,15 +195,13 @@ const AmountInput: FC<IProps> = ({
 
   return (
     <VStack w="full">
-      <HStack justifyContent="space-between" w="full">
+      <HStack w="full">
         {/*label*/}
         <Label
           inputID={_id}
           label={t<string>('labels.amount')}
           required={required}
         />
-
-        <Spacer />
 
         {/*maximum amount*/}
         {renderMaximumTransactionAmountLabel()}
