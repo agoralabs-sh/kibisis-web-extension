@@ -11,8 +11,11 @@ import KibisisIcon from '@extension/components/KibisisIcon';
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // errors
-import { BaseExtensionError } from '@extension/errors';
+import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
 // features
 import { enableThunk as enableCredentialLockThunk } from '@extension/features/credential-lock';
@@ -68,6 +71,12 @@ const CredentialLockPage: FC = () => {
 
     // reactivate the credential lock timeout alarm and decrypt the keys
     try {
+      if (result.type === EncryptionMethodEnum.Unencrypted) {
+        throw new MalformedDataError(
+          'enabling credential lock requires encryption credentials'
+        );
+      }
+
       await dispatch(enableCredentialLockThunk(result)).unwrap();
 
       // if complete, navigate back
@@ -76,6 +85,8 @@ const CredentialLockPage: FC = () => {
       logger.error(`${CredentialLockPage.name}#${_functionName}:`, error);
 
       handleOnError(error);
+
+      return;
     }
   };
   const handleOnError = (error: BaseExtensionError) =>
@@ -96,6 +107,7 @@ const CredentialLockPage: FC = () => {
     <>
       {/*authentication modal*/}
       <AuthenticationModal
+        forceAuthentication={true}
         isOpen={isAuthenticationModalOpen}
         onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}

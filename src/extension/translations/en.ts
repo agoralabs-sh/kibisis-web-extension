@@ -47,6 +47,7 @@ const translation: IResourceLanguage = {
     sign: 'Sign',
     tryAgain: 'Try Again',
     undo: 'Undo',
+    unlock: 'Unlock',
     view: 'View',
     yesImIn: `Yes, I'm In`,
   },

@@ -70,7 +70,7 @@ export default async function savePrivateKeyItemWithPasskey({
       passkey,
     });
     privateKeyItem = await _privateKeyService.saveToStorage(
-      PrivateKeyService.createPrivateKey({
+      PrivateKeyService.create({
         encryptedPrivateKey,
         encryptionID: passkey.id,
         encryptionMethod: EncryptionMethodEnum.Passkey,

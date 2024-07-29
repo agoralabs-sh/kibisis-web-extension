@@ -1,7 +1,7 @@
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
 
-interface ICreatePrivateKeyOptions {
+interface ICreateOptions {
   encryptedPrivateKey: Uint8Array;
   encryptionID: string;
   encryptionMethod: EncryptionMethodEnum;
@@ -9,4 +9,4 @@ interface ICreatePrivateKeyOptions {
   publicKey: Uint8Array;
 }
 
-export default ICreatePrivateKeyOptions;
+export default ICreateOptions;

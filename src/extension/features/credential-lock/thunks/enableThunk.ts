@@ -18,7 +18,8 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 import type {
   IAsyncThunkConfigWithRejectValue,
   IMainRootState,
-  TEncryptionCredentials,
+  IPasskeyEncryptionCredentials,
+  IPasswordEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -29,15 +30,14 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
  */
 const enableThunk: AsyncThunk<
   void, // return
-  TEncryptionCredentials, // args
+  IPasskeyEncryptionCredentials | IPasswordEncryptionCredentials, // args
   IAsyncThunkConfigWithRejectValue<IMainRootState>
 > = createAsyncThunk<
   void,
-  TEncryptionCredentials,
+  IPasskeyEncryptionCredentials | IPasswordEncryptionCredentials,
   IAsyncThunkConfigWithRejectValue<IMainRootState>
 >(ThunkEnum.Enable, async (credentials, { getState, rejectWithValue }) => {
   const logger = getState().system.logger;
-  const passkey = getState().passkeys.passkey;
   const { credentialLockTimeoutDuration } = getState().settings.security;
   const credentialLockService = new CredentialLockService({
     logger,
@@ -52,26 +52,29 @@ const enableThunk: AsyncThunk<
   try {
     privateKeyItems = await Promise.all(
       privateKeyItems.map(async (value) => {
+        const privateKeyItem = await PrivateKeyService.upgrade({
+          encryptionCredentials: credentials,
+          logger,
+          privateKeyItem: value,
+        });
         let decryptedPrivateKey: Uint8Array | null = null;
 
         if (credentials.type === EncryptionMethodEnum.Password) {
           decryptedPrivateKey = await PasswordService.decryptBytes({
-            data: PrivateKeyService.decode(value.encryptedPrivateKey),
+            data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
             logger,
             password: credentials.password,
           });
         }
 
         if (credentials.type === EncryptionMethodEnum.Passkey) {
-          if (!passkey) {
-            throw new DecryptionError(`failed to get passkey information`);
-          }
-
           decryptedPrivateKey = await PasskeyService.decryptBytes({
-            encryptedBytes: PrivateKeyService.decode(value.encryptedPrivateKey),
+            encryptedBytes: PrivateKeyService.decode(
+              privateKeyItem.encryptedPrivateKey
+            ),
             inputKeyMaterial: credentials.inputKeyMaterial,
             logger,
-            passkey,
+            passkey: credentials.passkey,
           });
         }
 
@@ -84,7 +87,7 @@ const enableThunk: AsyncThunk<
         }
 
         return {
-          ...value,
+          ...privateKeyItem,
           privateKey: PrivateKeyService.encode(decryptedPrivateKey),
         };
       })

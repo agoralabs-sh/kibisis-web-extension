@@ -21,6 +21,7 @@ import type {
 import type { TOptions } from './types';
 
 // utils
+import convertAVMAddressToPublicKey from '@extension/utils/convertAVMAddressToPublicKey';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
@@ -108,7 +109,9 @@ export default async function signTransaction({
         (value) =>
           accountInformation?.authAddress &&
           value.publicKey ===
-            convertPublicKeyToAVMAddress(accountInformation.authAddress)
+            PrivateKeyService.encode(
+              convertAVMAddressToPublicKey(accountInformation.authAddress)
+            )
       ) || null;
 
     if (!authAccount) {

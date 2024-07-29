@@ -35,7 +35,7 @@ import {
 } from '@extension/constants';
 
 // errors
-import { BaseExtensionError } from '@extension/errors';
+import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
 // features
 import {
@@ -64,6 +64,7 @@ import type {
   IAppThunkDispatch,
   TEncryptionCredentials,
 } from '@extension/types';
+import { EncryptionMethodEnum } from '@extension/enums';
 
 const SecuritySettingsIndexPage: FC = () => {
   const { t } = useTranslation();
@@ -161,6 +162,12 @@ const SecuritySettingsIndexPage: FC = () => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
 
     try {
+      if (result.type === EncryptionMethodEnum.Unencrypted) {
+        throw new MalformedDataError(
+          'enabling credential lock requires encryption credentials'
+        );
+      }
+
       // enable the lock and wait for the settings to be updated
       await dispatch(
         saveSettingsToStorageThunk({

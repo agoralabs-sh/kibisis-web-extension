@@ -244,6 +244,7 @@ const AuthenticationModal: FC<IProps> = ({
 
           onConfirm({
             inputKeyMaterial,
+            passkey,
             type: EncryptionMethodEnum.Passkey,
           });
 
