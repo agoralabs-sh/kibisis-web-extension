@@ -8,7 +8,6 @@ import {
   redirect,
   RouterProvider,
 } from 'react-router-dom';
-import { Alarms } from 'webextension-polyfill';
 
 // components
 import ThemeProvider from '@extension/components/ThemeProvider';
@@ -19,18 +18,24 @@ import {
   ACCOUNTS_ROUTE,
   ADD_ACCOUNT_ROUTE,
   ASSETS_ROUTE,
+  CREDENTIAL_LOCK_ROUTE,
   NFTS_ROUTE,
   SETTINGS_ROUTE,
-  CREDENTIAL_LOCK_ROUTE,
   TRANSACTIONS_ROUTE,
 } from '@extension/constants';
+
+// enums
+import { CredentialLockActivationStateEnum } from '@extension/enums';
 
 // features
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as addAssetsReducer } from '@extension/features/add-assets';
 import { reducer as arc0072AssetsReducer } from '@extension/features/arc0072-assets';
 import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
-import { reducer as credentialLockReducer } from '@extension/features/credential-lock';
+import {
+  fetchActivatedThunk as fetchCredentialLockActivated,
+  reducer as credentialLockReducer,
+} from '@extension/features/credential-lock';
 import { reducer as eventsReducer } from '@extension/features/events';
 import {
   reducer as layoutReducer,
@@ -45,10 +50,7 @@ import { reducer as reKeyAccountReducer } from '@extension/features/re-key-accou
 import { reducer as removeAssetsReducer } from '@extension/features/remove-assets';
 import { reducer as sendAssetsReducer } from '@extension/features/send-assets';
 import { reducer as sessionsReducer } from '@extension/features/sessions';
-import {
-  fetchSettingsFromStorageThunk,
-  reducer as settingsReducer,
-} from '@extension/features/settings';
+import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as standardAssetsReducer } from '@extension/features/standard-assets';
 import { reducer as systemReducer } from '@extension/features/system';
 
@@ -64,16 +66,11 @@ import TransactionPage from '@extension/pages/TransactionPage';
 import AddAccountRouter from '@extension/routers/AddAccountMainRouter';
 import SettingsRouter from '@extension/routers/SettingsRouter';
 
-// services
-import CredentialLockService from '@extension/services/CredentialLockService';
-
 // types
 import type {
   IAppProps,
   IAppThunkDispatch,
   IMainRootState,
-  ISettings,
-  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -149,20 +146,15 @@ const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
           ],
           element: <Root />,
           loader: async () => {
-            const credentialLockService = new CredentialLockService({ logger });
-            let credentialsLockAlarm: Alarms.Alarm | null;
-            let settings: ISettings;
-
             try {
-              settings = await (dispatch as IAppThunkDispatch)(
-                fetchSettingsFromStorageThunk()
-              ).unwrap(); // fetch the settings from storage
-              credentialsLockAlarm = await credentialLockService.getAlarm(); // if the alarm is active, it has not timed out
+              const credentialLockActivated = await (
+                dispatch as IAppThunkDispatch
+              )(fetchCredentialLockActivated()).unwrap();
 
               // if the credential lock is enabled and the alarm has timed out, lock the screen
               if (
-                settings.security.enableCredentialLock &&
-                !credentialsLockAlarm
+                credentialLockActivated ===
+                CredentialLockActivationStateEnum.Active
               ) {
                 return redirect(CREDENTIAL_LOCK_ROUTE);
               }

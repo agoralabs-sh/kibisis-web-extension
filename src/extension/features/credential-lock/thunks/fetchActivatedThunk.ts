@@ -24,6 +24,7 @@ const fetchActivatedThunk: AsyncThunk<
 >(ThunkEnum.FetchActivated, async (_, { getState }) => {
   const logger = getState().system.logger;
   const enabled = getState().settings.security.enableCredentialLock;
+  const duration = getState().settings.security.credentialLockTimeoutDuration;
   const credentialLockService = new CredentialLockService({
     logger,
   });
@@ -33,8 +34,8 @@ const fetchActivatedThunk: AsyncThunk<
     return null;
   }
 
-  // if there is no alarm, the lock is active
-  return !alarm
+  // if there is no alarm and the duration is not set to 0 ("never"), the lock is active
+  return !alarm && duration > 0
     ? CredentialLockActivationStateEnum.Active
     : CredentialLockActivationStateEnum.Inactive;
 });
