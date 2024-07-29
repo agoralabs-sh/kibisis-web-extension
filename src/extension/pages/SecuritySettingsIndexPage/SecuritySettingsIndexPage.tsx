@@ -60,8 +60,10 @@ import {
 import PasskeyService from '@extension/services/PasskeyService';
 
 // types
-import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
-import type { IAppThunkDispatch } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  TEncryptionCredentials,
+} from '@extension/types';
 
 const SecuritySettingsIndexPage: FC = () => {
   const { t } = useTranslation();
@@ -154,7 +156,7 @@ const SecuritySettingsIndexPage: FC = () => {
     }
   };
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
 

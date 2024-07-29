@@ -58,8 +58,11 @@ import { useSelectAccounts } from '@extension/selectors';
 import { theme } from '@extension/theme';
 
 // types
-import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
-import type { IAppThunkDispatch, IModalProps } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IModalProps,
+  TEncryptionCredentials,
+} from '@extension/types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
@@ -90,7 +93,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const [authAddressError, setAuthAddressError] = useState<string | null>(null);
   // misc
   const isOpen = !!account && !!accountInformation;
-  const reKeyAccount = async (result: TOnConfirmResult) => {
+  const reKeyAccount = async (result: TEncryptionCredentials) => {
     let transactionId: string | null;
 
     if (
@@ -136,7 +139,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
       handleError(error);
     }
   };
-  const undoReKeyAccount = async (result: TOnConfirmResult) => {
+  const undoReKeyAccount = async (result: TEncryptionCredentials) => {
     let transactionId: string | null;
 
     if (!account || !accountInformation || !network) {
@@ -210,7 +213,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const handleOnAuthAddressError = (error: string | null) =>
     setAuthAddressError(error);
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     if (reKeyType === 'rekey') {
       return await reKeyAccount(result);

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 
 // features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
+import { fetchActivatedThunk as fetchCredentialLockActivatedThunk } from '@extension/features/credential-lock';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
@@ -49,6 +50,7 @@ const Root: FC = () => {
     }
 
     dispatch(fetchPasskeyCredentialFromStorageThunk());
+    dispatch(fetchCredentialLockActivatedThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());

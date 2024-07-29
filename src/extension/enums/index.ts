@@ -8,6 +8,7 @@ export { default as ARC0300AuthorityEnum } from './ARC0300AuthorityEnum';
 export { default as ARC0300PathEnum } from './ARC0300PathEnum';
 export { default as ARC0300QueryEnum } from './ARC0300QueryEnum';
 export { default as AssetTypeEnum } from './AssetTypeEnum';
+export { default as CredentialLockActivationStateEnum } from './CredentialLockActivationStateEnum';
 export { default as EncryptionMethodEnum } from './EncryptionMethodEnum';
 export { default as EventTypeEnum } from './EventTypeEnum';
 export { default as ErrorCodeEnum } from './ErrorCodeEnum';

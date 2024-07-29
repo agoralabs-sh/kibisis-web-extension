@@ -44,9 +44,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useSignMessageModal from './hooks/useSignMessageModal';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -66,6 +64,7 @@ import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
   IModalProps,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -134,7 +133,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
     onClose && onClose();
   };
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
     let questsService: QuestsService;

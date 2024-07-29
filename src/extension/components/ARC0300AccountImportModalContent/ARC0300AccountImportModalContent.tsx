@@ -27,10 +27,10 @@ import {
 } from '@extension/constants';
 
 // enums
-import { AccountTabEnum } from '@extension/enums';
+import { AccountTabEnum, EncryptionMethodEnum } from '@extension/enums';
 
 // errors
-import { BaseExtensionError } from '@extension/errors';
+import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
 // features
 import {
@@ -59,13 +59,13 @@ import QuestsService from '@extension/services/QuestsService';
 import { theme } from '@extension/theme';
 
 // types
-import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type {
   IAccountWithExtendedProps,
+  IAppThunkDispatch,
   IARC0300AccountImportSchema,
   IARC0300ModalContentProps,
-  IAppThunkDispatch,
   INewAccount,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -112,13 +112,19 @@ const ARC0300AccountImportModalContent: FC<
   };
   const handleImportClick = () => onAuthenticationModalOpen();
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     let _accounts: IAccountWithExtendedProps[];
 
     setSaving(true);
 
     try {
+      if (result.type === EncryptionMethodEnum.Unencrypted) {
+        throw new MalformedDataError(
+          'adding accounts require encryption credentials'
+        );
+      }
+
       _accounts = await dispatch(
         saveNewAccountsThunk({
           accounts: items,
@@ -126,21 +132,9 @@ const ARC0300AccountImportModalContent: FC<
         })
       ).unwrap();
     } catch (error) {
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            code: error.code,
-            context: error.code,
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', { context: error.code }),
-          type: 'error',
-        })
-      );
+      handleOnError(error);
 
-      setSaving(false);
-
-      return;
+      return setSaving(false);
     }
 
     if (_accounts.length > 0) {
@@ -182,7 +176,11 @@ const ARC0300AccountImportModalContent: FC<
     // clean up and close
     handleOnComplete();
   };
-  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+  const handleOnComplete = () => {
+    reset();
+    onComplete();
+  };
+  const handleOnError = (error: BaseExtensionError) =>
     dispatch(
       createNotification({
         description: t<string>('errors.descriptions.code', {
@@ -194,10 +192,6 @@ const ARC0300AccountImportModalContent: FC<
         type: 'error',
       })
     );
-  const handleOnComplete = () => {
-    reset();
-    onComplete();
-  };
   // renders
   const renderBody = () => {
     if (items.length <= 0) {
@@ -263,10 +257,11 @@ const ARC0300AccountImportModalContent: FC<
     <>
       {/*authentication modal*/}
       <AuthenticationModal
+        forceAuthentication={true}
         isOpen={isAuthenticationModalOpen}
         onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
-        onError={handleOnAuthenticationError}
+        onError={handleOnError}
         passwordHint={t<string>('captions.mustEnterPasswordToImportAccount')}
       />
 

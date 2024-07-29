@@ -14,6 +14,7 @@ import {
 } from '@extension/features/accounts';
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
+import { fetchActivatedThunk as fetchCredentialLockActivatedThunk } from '@extension/features/credential-lock';
 import {
   setConfirmModal,
   setScanQRCodeModal,
@@ -89,6 +90,7 @@ const Root: FC = () => {
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchARC0072AssetsFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
+    dispatch(fetchCredentialLockActivatedThunk());
     dispatch(fetchNewsFromStorageThunk());
     dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());

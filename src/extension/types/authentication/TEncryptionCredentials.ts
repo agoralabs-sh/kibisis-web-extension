@@ -1,14 +1,15 @@
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
 
+// types
+import IPasskeyEncryptionCredentials from './IPasskeyEncryptionCredentials';
+import IPasswordEncryptionCredentials from './IPasswordEncryptionCredentials';
+
 type TEncryptionCredentials =
+  | IPasskeyEncryptionCredentials
+  | IPasswordEncryptionCredentials
   | {
-      password: string;
-      type: EncryptionMethodEnum.Password;
-    }
-  | {
-      inputKeyMaterial: Uint8Array;
-      type: EncryptionMethodEnum.Passkey;
+      type: EncryptionMethodEnum.Unencrypted;
     };
 
 export default TEncryptionCredentials;

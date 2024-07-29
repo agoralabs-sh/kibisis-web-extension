@@ -23,19 +23,22 @@ import PasswordInput from '@extension/components/PasswordInput';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import { EncryptionMethodEnum } from '@extension/enums';
+import {
+  CredentialLockActivationStateEnum,
+  EncryptionMethodEnum,
+} from '@extension/enums';
 
 // hooks
-import useColorModeValue from '@extension/hooks/useColorModeValue';
 import { usePassword } from '@extension/components/PasswordInput';
+import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
+  useSelectCredentialLockActivated,
   useSelectLogger,
   useSelectPasskeysPasskey,
-  useSelectPasswordLockCredentials,
-  useSelectSettings,
+  useSelectSettingsCredentialLockEnabled,
 } from '@extension/selectors';
 
 // services
@@ -49,6 +52,7 @@ import { theme } from '@extension/theme';
 import type { IProps } from './types';
 
 const AuthenticationModal: FC<IProps> = ({
+  forceAuthentication = false,
   isOpen,
   onClose,
   onConfirm,
@@ -58,10 +62,10 @@ const AuthenticationModal: FC<IProps> = ({
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
+  const credentialLockActivated = useSelectCredentialLockActivated();
   const logger = useSelectLogger();
   const passkey = useSelectPasskeysPasskey();
-  const passwordLockCredentials = useSelectPasswordLockCredentials();
-  const settings = useSelectSettings();
+  const credentialLockEnabled = useSelectSettingsCredentialLockEnabled();
   // hooks
   const primaryColorCode = useColorModeValue(
     theme.colors.primaryLight['500'],
@@ -132,6 +136,31 @@ const AuthenticationModal: FC<IProps> = ({
   };
   // renders
   const renderContent = () => {
+    // if the credential lock is enabled and in active, show a loader
+    if (
+      !forceAuthentication &&
+      credentialLockEnabled &&
+      credentialLockActivated === CredentialLockActivationStateEnum.Inactive
+    ) {
+      return (
+        <VStack
+          alignItems="center"
+          flexGrow={1}
+          justifyContent="center"
+          spacing={DEFAULT_GAP}
+          w="full"
+        >
+          {/*progress*/}
+          <CircularProgressWithIcon icon={IoLockClosedOutline} />
+
+          {/*caption*/}
+          <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">
+            {t<string>('captions.checkingAuthenticationCredentials')}
+          </Text>
+        </VStack>
+      );
+    }
+
     // show a loader for passkeys
     if (passkey) {
       return (
@@ -154,27 +183,6 @@ const AuthenticationModal: FC<IProps> = ({
             {t<string>('captions.requestingPasskeyPermission', {
               name: passkey.name,
             })}
-          </Text>
-        </VStack>
-      );
-    }
-
-    // show a loader if there is a password lock and password
-    if (settings.security.enableCredentialLock && passwordLockCredentials) {
-      return (
-        <VStack
-          alignItems="center"
-          flexGrow={1}
-          justifyContent="center"
-          spacing={DEFAULT_GAP}
-          w="full"
-        >
-          {/*progress*/}
-          <CircularProgressWithIcon icon={IoLockClosedOutline} />
-
-          {/*caption*/}
-          <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">
-            {t<string>('captions.checkingAuthenticationCredentials')}
           </Text>
         </VStack>
       );
@@ -211,6 +219,19 @@ const AuthenticationModal: FC<IProps> = ({
         return;
       }
 
+      // if the credentials lock is enabled and not activated use the unencrypted keys
+      if (
+        !forceAuthentication &&
+        credentialLockEnabled &&
+        credentialLockActivated === CredentialLockActivationStateEnum.Inactive
+      ) {
+        onConfirm({
+          type: EncryptionMethodEnum.Unencrypted,
+        });
+
+        return handleClose();
+      }
+
       // if there is a passkey, attempt to fetch the passkey input key material
       if (passkey) {
         try {
@@ -232,11 +253,6 @@ const AuthenticationModal: FC<IProps> = ({
 
           return onError && onError(error);
         }
-      }
-
-      // otherwise, check if there is a password lock and passkey/password present
-      if (settings.security.enableCredentialLock && passwordLockCredentials) {
-        return onConfirm(passwordLockCredentials);
       }
     })();
   }, [isOpen]);

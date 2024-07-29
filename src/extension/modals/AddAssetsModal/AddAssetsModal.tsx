@@ -69,9 +69,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useIsNewSelectedAsset from './hooks/useIsNewSelectedAsset';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -106,6 +104,7 @@ import type {
   IAssetTypes,
   IModalProps,
   IStandardAsset,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -277,7 +276,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleAddStandardAssetClick = () => onAuthenticationModalOpen();
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     let hasQuestBeenCompletedToday: boolean = false;
     let questsSent: boolean = false;

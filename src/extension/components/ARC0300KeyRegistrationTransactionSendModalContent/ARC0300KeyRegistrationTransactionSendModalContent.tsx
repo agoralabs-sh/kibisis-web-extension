@@ -48,9 +48,7 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -70,6 +68,7 @@ import type {
   IARC0300ModalContentProps,
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
   IARC0300OnlineKeyRegistrationTransactionSendSchema,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -166,7 +165,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
       })
     );
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
     let signedTransaction: Uint8Array;
@@ -221,15 +220,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
         logger,
         networks,
         unsignedTransaction,
-        ...(result.type === EncryptionMethodEnum.Password
-          ? {
-              password: result.password,
-              type: EncryptionMethodEnum.Password,
-            }
-          : {
-              inputKeyMaterial: result.inputKeyMaterial,
-              type: EncryptionMethodEnum.Passkey,
-            }),
+        ...result,
       });
 
       await sendTransactionsForNetwork({

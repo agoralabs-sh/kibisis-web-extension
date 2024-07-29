@@ -24,6 +24,7 @@ import type { TOptions } from './types';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
+import fetchDecryptedKeyPairFromStorageWithUnencrypted from '@extension/utils/fetchDecryptedKeyPairFromStorageWithUnencrypted';
 
 /**
  * Convenience function that signs a transactions for a given network.
@@ -125,20 +126,32 @@ export default async function signTransaction({
     `${_functionName}: decrypting private key using "${encryptionOptions.type}" encryption method`
   );
 
-  if (encryptionOptions.type === EncryptionMethodEnum.Password) {
-    keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
-      logger,
-      password: encryptionOptions.password,
-      publicKey,
-    });
-  }
+  switch (encryptionOptions.type) {
+    case EncryptionMethodEnum.Passkey:
+      keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+        inputKeyMaterial: encryptionOptions.inputKeyMaterial,
+        logger,
+        publicKey,
+      });
 
-  if (encryptionOptions.type === EncryptionMethodEnum.Passkey) {
-    keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
-      inputKeyMaterial: encryptionOptions.inputKeyMaterial,
-      logger,
-      publicKey,
-    });
+      break;
+    case EncryptionMethodEnum.Password:
+      keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+        logger,
+        password: encryptionOptions.password,
+        publicKey,
+      });
+
+      break;
+    case EncryptionMethodEnum.Unencrypted:
+      keyPair = await fetchDecryptedKeyPairFromStorageWithUnencrypted({
+        logger,
+        publicKey,
+      });
+
+      break;
+    default:
+      break;
   }
 
   if (!keyPair) {

@@ -33,9 +33,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
@@ -51,6 +49,7 @@ import {
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  TEncryptionCredentials,
 } from '@extension/types';
 import type { ISeedPhraseInput } from './types';
 
@@ -59,6 +58,7 @@ import convertPrivateKeyToSeedPhrase from '@extension/utils/convertPrivateKeyToS
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
+import fetchDecryptedKeyPairFromStorageWithUnencrypted from '@extension/utils/fetchDecryptedKeyPairFromStorageWithUnencrypted';
 
 const ViewSeedPhrasePage: FC = () => {
   const { t } = useTranslation();
@@ -87,7 +87,7 @@ const ViewSeedPhrasePage: FC = () => {
   const handleAccountSelect = (account: IAccountWithExtendedProps) =>
     setSelectedAccount(account);
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
     let keyPair: Ed21559KeyPair | null = null;
@@ -104,20 +104,32 @@ const ViewSeedPhrasePage: FC = () => {
 
     // get the private key
     try {
-      if (result.type === EncryptionMethodEnum.Passkey) {
-        keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
-          inputKeyMaterial: result.inputKeyMaterial,
-          logger,
-          publicKey: selectedAccount.publicKey,
-        });
-      }
+      switch (result.type) {
+        case EncryptionMethodEnum.Passkey:
+          keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+            inputKeyMaterial: result.inputKeyMaterial,
+            logger,
+            publicKey: selectedAccount.publicKey,
+          });
 
-      if (result.type === EncryptionMethodEnum.Password) {
-        keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
-          logger,
-          password: result.password,
-          publicKey: selectedAccount.publicKey,
-        });
+          break;
+        case EncryptionMethodEnum.Password:
+          keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+            logger,
+            password: result.password,
+            publicKey: selectedAccount.publicKey,
+          });
+
+          break;
+        case EncryptionMethodEnum.Unencrypted:
+          keyPair = await fetchDecryptedKeyPairFromStorageWithUnencrypted({
+            logger,
+            publicKey: selectedAccount.publicKey,
+          });
+
+          break;
+        default:
+          break;
       }
 
       if (!keyPair) {

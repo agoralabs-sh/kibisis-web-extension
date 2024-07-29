@@ -17,10 +17,11 @@ import {
   AccountTabEnum,
   ARC0300AuthorityEnum,
   ARC0300PathEnum,
+  EncryptionMethodEnum,
 } from '@extension/enums';
 
 // errors
-import { BaseExtensionError } from '@extension/errors';
+import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
 // features
 import {
@@ -53,12 +54,12 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type { IAddWatchAccountCompleteResult } from '@extension/pages/AddWatchAccountPage';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
   INewAccount,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -183,17 +184,7 @@ const AddAccountMainRouter: FC = () => {
     } catch (error) {
       logger.error(`${AddAccountMainRouter.name}#${_functionName}:`, error);
 
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            code: error.code,
-            context: error.code,
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', { context: error.code }),
-          type: 'error',
-        })
-      );
+      handleOnError(error);
 
       return;
     }
@@ -215,7 +206,7 @@ const AddAccountMainRouter: FC = () => {
     reset();
   };
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
     let _accounts: IAccountWithExtendedProps[];
@@ -225,6 +216,12 @@ const AddAccountMainRouter: FC = () => {
     }
 
     try {
+      if (result.type === EncryptionMethodEnum.Unencrypted) {
+        throw new MalformedDataError(
+          'adding accounts require encryption credentials'
+        );
+      }
+
       _accounts = await dispatch(
         saveNewAccountsThunk({
           accounts: [
@@ -239,17 +236,7 @@ const AddAccountMainRouter: FC = () => {
     } catch (error) {
       logger.error(`${AddAccountMainRouter.name}#${_functionName}:`, error);
 
-      dispatch(
-        createNotification({
-          description: t<string>('errors.descriptions.code', {
-            code: error.code,
-            context: error.code,
-          }),
-          ephemeral: true,
-          title: t<string>('errors.titles.code', { context: error.code }),
-          type: 'error',
-        })
-      );
+      handleOnError(error);
 
       return;
     }
@@ -286,6 +273,7 @@ const AddAccountMainRouter: FC = () => {
   return (
     <>
       <AuthenticationModal
+        forceAuthentication={true}
         isOpen={isAuthenticationModalOpen}
         onClose={handleOnAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}

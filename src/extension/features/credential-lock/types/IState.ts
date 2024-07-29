@@ -1,7 +1,13 @@
+// enums
+import { CredentialLockActivationStateEnum } from '@extension/enums';
+
 /**
- * @property {saving} saving - whether the password lock is being saved or not.
+ * @property {CredentialLockActivationStateEnum | null} activated - whether the credential lock is activated or not. If
+ * the value is null, the credential lock has not been enabled.
+ * @property {boolean} saving - whether the credential lock is being saved or not.
  */
 interface IState {
+  activated: CredentialLockActivationStateEnum | null;
   saving: boolean;
 }
 

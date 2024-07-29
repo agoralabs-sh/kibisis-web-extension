@@ -32,8 +32,10 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
-import type { IAppThunkDispatch } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  TEncryptionCredentials,
+} from '@extension/types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
@@ -60,7 +62,7 @@ const CredentialLockPage: FC = () => {
   const isLoading = saving || verifying;
   // handlers
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
 

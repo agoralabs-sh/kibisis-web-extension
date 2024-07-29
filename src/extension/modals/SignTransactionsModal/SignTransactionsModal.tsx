@@ -52,9 +52,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useSignTransactionsModal from './hooks/useSignTransactionsModal';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -72,6 +70,7 @@ import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
   IModalProps,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -128,7 +127,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
     onClose && onClose();
   };
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     let authorizedAccounts: IAccountWithExtendedProps[];
     let stxns: (string | null)[];
@@ -153,15 +152,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
         authAccounts: accounts,
         logger,
         networks,
-        ...(result.type === EncryptionMethodEnum.Password
-          ? {
-              password: result.password,
-              type: EncryptionMethodEnum.Password,
-            }
-          : {
-              inputKeyMaterial: result.inputKeyMaterial,
-              type: EncryptionMethodEnum.Passkey,
-            }),
+        ...result,
       });
 
       // send a response

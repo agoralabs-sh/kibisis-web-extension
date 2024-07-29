@@ -83,7 +83,6 @@ import QuestsService from '@extension/services/QuestsService';
 import { theme } from '@extension/theme';
 
 // types
-import type { TOnConfirmResult } from '@extension/modals/AuthenticationModal';
 import type {
   IAccount,
   IAccountWithExtendedProps,
@@ -91,6 +90,7 @@ import type {
   IAssetTypes,
   IModalProps,
   INativeCurrency,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -218,7 +218,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     setToAddressError(error);
   const handlePreviousClick = () => setTransactions(null);
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
     let fromAddress: string;
