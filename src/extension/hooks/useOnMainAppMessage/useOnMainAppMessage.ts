@@ -6,7 +6,7 @@ import browser from 'webextension-polyfill';
 import { ProviderMessageReferenceEnum } from '@common/enums';
 
 // features
-import { activateThunk as activateCredentialLockThunk } from '@extension/features/credential-lock';
+import { setActive as setCredentialLockActive } from '@extension/features/credential-lock';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 
 // messages
@@ -37,7 +37,7 @@ export default function useOnMainAppMessage(): void {
 
         break;
       case ProviderMessageReferenceEnum.CredentialLockActivated:
-        dispatch(activateCredentialLockThunk());
+        dispatch(setCredentialLockActive(true));
 
         break;
       default:

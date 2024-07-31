@@ -217,6 +217,7 @@ const SecuritySettingsIndexPage: FC = () => {
     <>
       {/*authentication modal*/}
       <AuthenticationModal
+        forceAuthentication={true}
         isOpen={isAuthenticationModalOpen}
         onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}

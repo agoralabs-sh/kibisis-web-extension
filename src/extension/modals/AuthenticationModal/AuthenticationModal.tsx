@@ -35,7 +35,7 @@ import {
   useSelectCredentialLockActive,
   useSelectLogger,
   useSelectPasskeysPasskey,
-  useSelectSettingsCredentialLockEnabled,
+  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -62,7 +62,7 @@ const AuthenticationModal: FC<IProps> = ({
   const credentialLockActive = useSelectCredentialLockActive();
   const logger = useSelectLogger();
   const passkey = useSelectPasskeysPasskey();
-  const credentialLockEnabled = useSelectSettingsCredentialLockEnabled();
+  const { security } = useSelectSettings();
   // hooks
   const primaryColorCode = useColorModeValue(
     theme.colors.primaryLight['500'],
@@ -134,7 +134,12 @@ const AuthenticationModal: FC<IProps> = ({
   // renders
   const renderContent = () => {
     // if the credential lock is not active, show a loader
-    if (!forceAuthentication || !credentialLockActive) {
+    if (
+      !forceAuthentication ||
+      (!credentialLockActive &&
+        security.enableCredentialLock &&
+        security.credentialLockTimeoutDuration > 0)
+    ) {
       return (
         <VStack
           alignItems="center"
@@ -213,7 +218,12 @@ const AuthenticationModal: FC<IProps> = ({
       }
 
       // if the credentials lock is not activated use the unencrypted keys
-      if (!forceAuthentication || !credentialLockActive) {
+      if (
+        !forceAuthentication ||
+        (!credentialLockActive &&
+          security.enableCredentialLock &&
+          security.credentialLockTimeoutDuration > 0)
+      ) {
         onConfirm({
           type: EncryptionMethodEnum.Unencrypted,
         });

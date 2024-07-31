@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import Confetti from 'react-confetti';
 import { useDispatch } from 'react-redux';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 // components
 import MainLayout from '@extension/components/MainLayout';
@@ -14,6 +14,7 @@ import {
 } from '@extension/features/accounts';
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
+import { fetchActiveThunk as fetchCredentialLockActiveThunk } from '@extension/features/credential-lock';
 import {
   setConfirmModal,
   setScanQRCodeModal,
@@ -63,6 +64,7 @@ import {
   useSelectAccounts,
   useSelectNotificationsShowingConfetti,
   useSelectSelectedNetwork,
+  useSelectSettings,
 } from '@extension/selectors';
 
 // types
@@ -73,6 +75,7 @@ const Root: FC = () => {
   // selectors
   const accounts = useSelectAccounts();
   const network = useSelectSelectedNetwork();
+  const settings = useSelectSettings();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
@@ -85,6 +88,7 @@ const Root: FC = () => {
 
   // 1. fetch the required data
   useEffect(() => {
+    dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());

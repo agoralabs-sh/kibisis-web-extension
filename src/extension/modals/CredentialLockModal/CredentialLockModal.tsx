@@ -40,6 +40,7 @@ import {
   useSelectLogger,
   useSelectCredentialLockActive,
   useSelectCredentialLockSaving,
+  useSelectSettings,
 } from '@extension/selectors';
 
 // theme
@@ -66,6 +67,7 @@ const CredentialLockModal: FC = () => {
   const active = useSelectCredentialLockActive();
   const logger = useSelectLogger();
   const saving = useSelectCredentialLockSaving();
+  const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
@@ -74,6 +76,10 @@ const CredentialLockModal: FC = () => {
   // misc
   const iconSize = calculateIconSize('xl');
   const isLoading = saving || verifying;
+  const isOpen =
+    active &&
+    settings.security.enableCredentialLock &&
+    settings.security.credentialLockTimeoutDuration > 0;
   // handlers
   const handleClose = () => setVerifying(false);
   const handleOnAuthenticationModalConfirm = async (
@@ -126,7 +132,7 @@ const CredentialLockModal: FC = () => {
       />
 
       <Modal
-        isOpen={active}
+        isOpen={isOpen}
         motionPreset="slideInBottom"
         onClose={handleClose}
         size="full"

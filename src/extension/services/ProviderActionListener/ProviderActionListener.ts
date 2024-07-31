@@ -90,6 +90,19 @@ export default class ProviderActionListener {
    * private functions
    */
 
+  private async _clearCredentialLockAlarm(): Promise<void> {
+    let alarm = await this._credentialLockService.getAlarm();
+
+    // clear the alarm if the credential lock alarm
+    if (!alarm || !this._isClearingCredentialLockAlarm) {
+      this._isClearingCredentialLockAlarm = true;
+
+      await this._credentialLockService.clearAlarm();
+
+      this._isClearingCredentialLockAlarm = false;
+    }
+  }
+
   private async _getMainWindow(
     includeTabs: boolean = false
   ): Promise<Windows.Window | null> {
@@ -141,13 +154,13 @@ export default class ProviderActionListener {
   }
 
   private async _restartCredentialLockAlarm(): Promise<void> {
-    let credentialLockAlarm = await this._credentialLockService.getAlarm();
+    let alarm = await this._credentialLockService.getAlarm();
     let settings: ISettings = await this._settingsService.getAll();
 
     // restart the alarm if the credential lock is not active, is enabled and the duration is not set to 0 ("never")
     if (
       !this._isRestartingCredentialLockAlarm &&
-      !credentialLockAlarm &&
+      !alarm &&
       settings.security.enableCredentialLock &&
       settings.security.credentialLockTimeoutDuration > 0
     ) {
@@ -249,10 +262,11 @@ export default class ProviderActionListener {
       `${ProviderActionListener.name}#${_functionName}: previous account detected and no main app window open, creating an new one`
     );
 
-    // if there is no main app window up, we can open the app
+    // if there is no main app window up, we can open the app and clear the credentials lock alarm
     await this._appWindowManagerService.createWindow({
       type: AppTypeEnum.MainApp,
     });
+    await this._clearCredentialLockAlarm();
   }
 
   public async onFocusChanged(windowId: number): Promise<void> {
@@ -265,14 +279,7 @@ export default class ProviderActionListener {
           `${ProviderActionListener.name}#${_functionName}: main window with id "${windowId}" has focus`
         );
 
-        if (!this._isClearingCredentialLockAlarm) {
-          this._isClearingCredentialLockAlarm = true;
-
-          // clear the credential lock alarm
-          await this._credentialLockService.clearAlarm();
-
-          this._isClearingCredentialLockAlarm = false;
-        }
+        await this._clearCredentialLockAlarm();
 
         return;
       }
