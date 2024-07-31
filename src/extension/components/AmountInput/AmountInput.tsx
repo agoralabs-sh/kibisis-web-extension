@@ -150,7 +150,12 @@ const AmountInput: FC<IProps> = ({
 
     if (asset.type === AssetTypeEnum.Native) {
       return (
-        <HStack alignItems="center" justifyContent="center" spacing={1}>
+        <HStack
+          alignItems="center"
+          justifyContent="flex-end"
+          spacing={1}
+          w="full"
+        >
           <Tooltip
             aria-label="Maximum transaction amount"
             label={t<string>(
@@ -195,7 +200,7 @@ const AmountInput: FC<IProps> = ({
 
   return (
     <VStack w="full">
-      <HStack w="full">
+      <HStack justifyContent="space-between" spacing={1} w="full">
         {/*label*/}
         <Label
           inputID={_id}
@@ -207,7 +212,7 @@ const AmountInput: FC<IProps> = ({
         {renderMaximumTransactionAmountLabel()}
       </HStack>
 
-      <HStack spacing={1} w="full">
+      <HStack alignItems="center" spacing={1} w="full">
         {/*input*/}
         <NumberInput
           colorScheme={primaryColorScheme}
@@ -215,14 +220,13 @@ const AmountInput: FC<IProps> = ({
           id={_id}
           isDisabled={disabled}
           focusBorderColor={primaryColor}
-          h={INPUT_HEIGHT}
           onBlur={handleOnBlur}
           onChange={handleOnChange}
           onFocus={handleOnFocus}
           value={value || undefined}
           w="full"
         >
-          <NumberInputField textAlign="right" />
+          <NumberInputField h={INPUT_HEIGHT} textAlign="right" />
         </NumberInput>
 
         {/*maximum button*/}
