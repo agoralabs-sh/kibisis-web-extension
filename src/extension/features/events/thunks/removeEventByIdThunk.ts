@@ -7,28 +7,33 @@ import { EventsThunkEnum } from '@extension/enums';
 import EventQueueService from '@extension/services/EventQueueService';
 
 // types
-import type { IBaseAsyncThunkConfig } from '@extension/types';
+import type {
+  IBackgroundRootState,
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+} from '@extension/types';
 
 const removeEventByIdThunk: AsyncThunk<
   string, // return
   string, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<string, string, IBaseAsyncThunkConfig>(
-  EventsThunkEnum.RemoveEventById,
-  async (eventId, { getState }) => {
-    const logger = getState().system.logger;
-    const eventQueueService = new EventQueueService({
-      logger,
-    });
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
+> = createAsyncThunk<
+  string,
+  string,
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
+>(EventsThunkEnum.RemoveEventById, async (eventId, { getState }) => {
+  const logger = getState().system.logger;
+  const eventQueueService = new EventQueueService({
+    logger,
+  });
 
-    logger.debug(
-      `${EventsThunkEnum.RemoveEventById}: removing event "${eventId}"`
-    );
+  logger.debug(
+    `${EventsThunkEnum.RemoveEventById}: removing event "${eventId}"`
+  );
 
-    await eventQueueService.removeById(eventId);
+  await eventQueueService.removeById(eventId);
 
-    return eventId;
-  }
-);
+  return eventId;
+});
 
 export default removeEventByIdThunk;

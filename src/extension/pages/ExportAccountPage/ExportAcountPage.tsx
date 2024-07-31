@@ -58,6 +58,7 @@ import { theme } from '@extension/theme';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IMainRootState,
   TEncryptionCredentials,
 } from '@extension/types';
 import type { IExportAccount } from '@extension/utils/createAccountImportURI';
@@ -72,7 +73,7 @@ import fetchDecryptedKeyPairFromStorageWithUnencrypted from '@extension/utils/fe
 
 const ExportAccountPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAccountSelectModalOpen,
     onClose: onAccountSelectClose,

@@ -18,7 +18,11 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadingContent';
-import type { IAppThunkDispatch, IPrivateKey } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  IPrivateKey,
+} from '@extension/types';
 import type { IRemovePasskeyActionOptions, IState } from './types';
 
 // utils
@@ -26,7 +30,7 @@ import { encryptPrivateKeyItemAndDelay } from './utils';
 
 export default function useRemovePasskey(): IState {
   const _hookName = 'useAddPasskey';
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const logger = useSelectLogger();
   // states

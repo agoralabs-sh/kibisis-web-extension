@@ -29,14 +29,14 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const preferredBlockExplorer = useSelectSettingsPreferredBlockExplorer();
   const preferredNFTExplorer = useSelectSettingsPreferredNFTExplorer();

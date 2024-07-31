@@ -1,10 +1,7 @@
 // types
-import type IMainRootState from '../states/IMainRootState';
-import type IRegistrationRootState from '../states/IRegistrationRootState';
+import type IBaseRootState from '../states/IBaseRootState';
 
-interface IBaseAsyncThunkConfig<
-  State = IMainRootState | IRegistrationRootState
-> {
+interface IBaseAsyncThunkConfig<State extends IBaseRootState> {
   state: State;
 }
 

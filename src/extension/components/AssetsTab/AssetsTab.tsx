@@ -41,34 +41,29 @@ import {
 
 // types
 import type {
-  IAccountInformation,
   IStandardAsset,
-  INetwork,
   IARC0200Asset,
   IAppThunkDispatch,
+  IMainRootState,
 } from '@extension/types';
-import type { IAssetsTabAssetHolding, IProps } from './types';
+import type { IProps } from './types';
 
 const AssetsTab: FC<IProps> = ({ account }) => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
-  const arc0200Assets: IARC0200Asset[] =
-    useSelectARC0200AssetsBySelectedNetwork();
-  const fetchingARC0200Assets: boolean = useSelectARC0200AssetsFetching();
-  const fetchingStandardAssets: boolean = useSelectStandardAssetsFetching();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
-  const standardAssets: IStandardAsset[] =
-    useSelectStandardAssetsBySelectedNetwork();
-  const updatingARC0200Assets: boolean = useSelectARC0200AssetsUpdating();
-  const updatingStandardAssets: boolean = useSelectStandardAssetsUpdating();
+  const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
+  const fetchingARC0200Assets = useSelectARC0200AssetsFetching();
+  const fetchingStandardAssets = useSelectStandardAssetsFetching();
+  const selectedNetwork = useSelectSelectedNetwork();
+  const standardAssets = useSelectStandardAssetsBySelectedNetwork();
+  const updatingARC0200Assets = useSelectARC0200AssetsUpdating();
+  const updatingStandardAssets = useSelectStandardAssetsUpdating();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const accountInformation: IAccountInformation | null = useAccountInformation(
-    account.id
-  );
+  const defaultTextColor = useDefaultTextColor();
+  const accountInformation = useAccountInformation(account.id);
   // misc
-  const allAssetHoldings: IAssetsTabAssetHolding[] = accountInformation
+  const allAssetHoldings = accountInformation
     ? [
         ...accountInformation.arc200AssetHoldings.map(({ amount, id }) => ({
           amount,

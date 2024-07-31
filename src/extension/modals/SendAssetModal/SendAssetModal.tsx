@@ -88,6 +88,7 @@ import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
   IAssetTypes,
+  IMainRootState,
   IModalProps,
   INativeCurrency,
   TEncryptionCredentials,
@@ -99,7 +100,7 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,

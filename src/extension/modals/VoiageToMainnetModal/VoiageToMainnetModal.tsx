@@ -44,12 +44,12 @@ import {
 import { theme } from '@extension/theme';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 const VoiageToMainnetModal: FC = () => {
   const { t } = useTranslation();
   const name = 'voiage-to-mainnet';
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const initialRef = createRef<HTMLButtonElement>();
   // selectors
   const fetching = useSelectNewsFetching();

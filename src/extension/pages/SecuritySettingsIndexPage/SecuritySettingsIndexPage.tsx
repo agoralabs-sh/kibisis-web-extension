@@ -61,13 +61,14 @@ import PasskeyService from '@extension/services/PasskeyService';
 // types
 import type {
   IAppThunkDispatch,
+  IMainRootState,
   TEncryptionCredentials,
 } from '@extension/types';
 import { EncryptionMethodEnum } from '@extension/enums';
 
 const SecuritySettingsIndexPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,

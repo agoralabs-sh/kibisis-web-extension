@@ -10,9 +10,10 @@ import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import {
+import type {
   IAccount,
   IActiveAccountDetails,
+  IBackgroundRootState,
   IBaseAsyncThunkConfig,
   IMainRootState,
 } from '@extension/types';
@@ -32,11 +33,11 @@ import updateAccountTransactions from '@extension/utils/updateAccountTransaction
 const fetchAccountsFromStorageThunk: AsyncThunk<
   IFetchAccountsFromStorageResult, // return
   IFetchAccountsFromStoragePayload | undefined, // args
-  IBaseAsyncThunkConfig<IMainRootState>
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   IFetchAccountsFromStorageResult,
   IFetchAccountsFromStoragePayload | undefined,
-  IBaseAsyncThunkConfig<IMainRootState>
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(ThunkEnum.FetchAccountsFromStorage, async (options, { getState }) => {
   const logger = getState().system.logger;
   const networks = getState().networks.items;

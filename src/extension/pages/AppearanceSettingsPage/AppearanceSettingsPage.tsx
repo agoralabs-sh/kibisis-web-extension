@@ -17,13 +17,13 @@ import { saveSettingsToStorageThunk } from '@extension/features/settings';
 import { useSelectSettings } from '@extension/selectors';
 
 // types
-import { IAppThunkDispatch, ISettings } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 const AppearanceSettingsPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
-  const settings: ISettings = useSelectSettings();
+  const settings = useSelectSettings();
   // misc
   const themeOptions: IOption<ColorMode>[] = [
     {

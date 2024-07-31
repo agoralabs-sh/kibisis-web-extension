@@ -71,7 +71,7 @@ import {
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 // utils
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
@@ -82,7 +82,7 @@ import isAccountKnown from '@extension/utils/isAccountKnown';
 
 const AssetPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const navigate = useNavigate();
   const { assetId } = useParams();
   const {

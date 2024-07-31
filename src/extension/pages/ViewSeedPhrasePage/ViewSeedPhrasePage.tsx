@@ -49,6 +49,7 @@ import {
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IMainRootState,
   TEncryptionCredentials,
 } from '@extension/types';
 import type { ISeedPhraseInput } from './types';
@@ -62,7 +63,7 @@ import fetchDecryptedKeyPairFromStorageWithUnencrypted from '@extension/utils/fe
 
 const ViewSeedPhrasePage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,

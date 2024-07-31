@@ -14,6 +14,7 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 import type {
   IAccountWithExtendedProps,
   IAsyncThunkConfigWithRejectValue,
+  IMainRootState,
   IPrivateKey,
 } from '@extension/types';
 import type { ISaveNewAccountsPayload } from '../types';
@@ -25,11 +26,11 @@ import savePrivateKeyItemWithPassword from '@extension/utils/savePrivateKeyItemW
 const saveNewAccountsThunk: AsyncThunk<
   IAccountWithExtendedProps[], // return
   ISaveNewAccountsPayload, // args
-  IAsyncThunkConfigWithRejectValue
+  IAsyncThunkConfigWithRejectValue<IMainRootState>
 > = createAsyncThunk<
   IAccountWithExtendedProps[],
   ISaveNewAccountsPayload,
-  IAsyncThunkConfigWithRejectValue
+  IAsyncThunkConfigWithRejectValue<IMainRootState>
 >(
   ThunkEnum.SaveNewAccounts,
   async ({ accounts, ...encryptionOptions }, { getState, rejectWithValue }) => {

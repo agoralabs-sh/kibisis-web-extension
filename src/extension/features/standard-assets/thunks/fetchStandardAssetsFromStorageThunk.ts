@@ -7,8 +7,12 @@ import { StandardAssetsThunkEnum } from '@extension/enums';
 import StandardAssetService from '@extension/services/StandardAssetService';
 
 // types
-import { ILogger } from '@common/types';
-import { IStandardAsset, IMainRootState, INetwork } from '@extension/types';
+import type {
+  IBackgroundRootState,
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+  IStandardAsset,
+} from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
@@ -16,15 +20,15 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 const fetchStandardAssetsFromStorageThunk: AsyncThunk<
   Record<string, IStandardAsset[]>, // return
   undefined, // args
-  Record<string, never>
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   Record<string, IStandardAsset[]>,
   undefined,
-  { state: IMainRootState }
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(StandardAssetsThunkEnum.FetchAssetsFromStorage, async (_, { getState }) => {
-  const logger: ILogger = getState().system.logger;
-  const networks: INetwork[] = getState().networks.items;
-  const assetService: StandardAssetService = new StandardAssetService({
+  const logger = getState().system.logger;
+  const networks = getState().networks.items;
+  const assetService = new StandardAssetService({
     logger,
   });
   const assetItems: Record<string, IStandardAsset[]> = {};
@@ -36,9 +40,8 @@ const fetchStandardAssetsFromStorageThunk: AsyncThunk<
   await Promise.all(
     networks.map(
       async (network) =>
-        (assetItems[
-          convertGenesisHashToHex(network.genesisHash).toUpperCase()
-        ] = await assetService.getByGenesisHash(network.genesisHash))
+        (assetItems[convertGenesisHashToHex(network.genesisHash)] =
+          await assetService.getByGenesisHash(network.genesisHash))
     )
   );
 

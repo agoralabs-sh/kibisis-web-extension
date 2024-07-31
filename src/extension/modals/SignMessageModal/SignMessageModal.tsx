@@ -63,6 +63,7 @@ import { theme } from '@extension/theme';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IMainRootState,
   IModalProps,
   TEncryptionCredentials,
 } from '@extension/types';
@@ -70,10 +71,12 @@ import type {
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import signBytes from '@extension/utils/signBytes';
+import IBackgroundRootState from '../../types/states/IBackgroundRootState';
 
 const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch =
+    useDispatch<IAppThunkDispatch<IBackgroundRootState | IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,

@@ -36,9 +36,6 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // contexts
 import { MultipleTransactionsContext } from './contexts';
 
-// enums
-import { EncryptionMethodEnum } from '@extension/enums';
-
 // errors
 import { BaseExtensionError } from '@extension/errors';
 
@@ -69,6 +66,8 @@ import { theme } from '@extension/theme';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IBackgroundRootState,
+  IMainRootState,
   IModalProps,
   TEncryptionCredentials,
 } from '@extension/types';
@@ -81,7 +80,8 @@ import signTransactions from './utils/signTransactions';
 
 const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch =
+    useDispatch<IAppThunkDispatch<IBackgroundRootState | IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,

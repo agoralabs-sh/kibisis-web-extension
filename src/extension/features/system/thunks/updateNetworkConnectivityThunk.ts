@@ -4,7 +4,11 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // types
-import type { IBaseAsyncThunkConfig, INode } from '@extension/types';
+import type {
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+  INode,
+} from '@extension/types';
 
 // utils
 import getRandomItem from '@common/utils/getRandomItem';
@@ -13,8 +17,8 @@ import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSetting
 const updateNetworkConnectivityThunk: AsyncThunk<
   boolean, // return
   undefined, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<boolean, undefined, IBaseAsyncThunkConfig>(
+  IBaseAsyncThunkConfig<IMainRootState>
+> = createAsyncThunk<boolean, undefined, IBaseAsyncThunkConfig<IMainRootState>>(
   ThunkEnum.UpdateNetworkConnectivity,
   async (_, { getState }) => {
     const logger = getState().system.logger;

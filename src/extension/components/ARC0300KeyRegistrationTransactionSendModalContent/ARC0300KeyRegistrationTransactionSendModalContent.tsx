@@ -68,6 +68,7 @@ import type {
   IARC0300ModalContentProps,
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
   IARC0300OnlineKeyRegistrationTransactionSendSchema,
+  IMainRootState,
   TEncryptionCredentials,
 } from '@extension/types';
 
@@ -92,7 +93,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   schemaOrSchemas: schema,
 }) => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,

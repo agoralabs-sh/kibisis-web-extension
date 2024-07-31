@@ -5,18 +5,17 @@ import browser, { Windows } from 'webextension-polyfill';
 import { ThunkEnum } from '../enums';
 
 // types
-import type { ILogger } from '@common/types';
-import type { IBaseAsyncThunkConfig } from '@extension/types';
+import type { IBaseAsyncThunkConfig, IBaseRootState } from '@extension/types';
 
 const closeCurrentWindowThunk: AsyncThunk<
   void, // return
   undefined, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<void, undefined, IBaseAsyncThunkConfig>(
+  IBaseAsyncThunkConfig<IBaseRootState>
+> = createAsyncThunk<void, undefined, IBaseAsyncThunkConfig<IBaseRootState>>(
   ThunkEnum.CloseCurrentWindow,
   async (_, { getState }) => {
-    const logger: ILogger = getState().system.logger;
-    const window: Windows.Window = await browser.windows.getCurrent();
+    const logger = getState().system.logger;
+    const window = await browser.windows.getCurrent();
 
     if (window.id) {
       logger.debug(

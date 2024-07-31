@@ -4,13 +4,13 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // types
-import type { IBaseAsyncThunkConfig } from '@extension/types';
+import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
 
 const stopPollingForNetworkConnectivityThunk: AsyncThunk<
   void, // return
   undefined, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<void, undefined, IBaseAsyncThunkConfig>(
+  IBaseAsyncThunkConfig<IMainRootState>
+> = createAsyncThunk<void, undefined, IBaseAsyncThunkConfig<IMainRootState>>(
   ThunkEnum.StopPollingForNetworkConnectivity,
   (_, { getState }) => {
     const logger = getState().system.logger;

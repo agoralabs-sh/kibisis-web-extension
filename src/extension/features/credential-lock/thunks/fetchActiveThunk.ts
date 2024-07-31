@@ -4,7 +4,11 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // types
-import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
+import type {
+  IBackgroundRootState,
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+} from '@extension/types';
 
 // utils
 import isCredentialLockActive from '@extension/utils/isCredentialLockActive';
@@ -15,14 +19,15 @@ import isCredentialLockActive from '@extension/utils/isCredentialLockActive';
 const fetchActiveThunk: AsyncThunk<
   boolean, // return
   undefined, // args
-  IBaseAsyncThunkConfig<IMainRootState>
-> = createAsyncThunk<boolean, undefined, IBaseAsyncThunkConfig<IMainRootState>>(
-  ThunkEnum.FetchActive,
-  async (_, { getState }) => {
-    const logger = getState().system.logger;
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
+> = createAsyncThunk<
+  boolean,
+  undefined,
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
+>(ThunkEnum.FetchActive, async (_, { getState }) => {
+  const logger = getState().system.logger;
 
-    return await isCredentialLockActive({ logger });
-  }
-);
+  return await isCredentialLockActive({ logger });
+});
 
 export default fetchActiveThunk;

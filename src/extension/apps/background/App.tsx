@@ -22,12 +22,12 @@ import { reducer as standardAssetsReducer } from '@extension/features/standard-a
 import { reducer as systemReducer } from '@extension/features/system';
 
 // types
-import { IAppProps, IBackgroundRootState } from '@extension/types';
+import type { IAppProps, IBackgroundRootState } from '@extension/types';
 
 // utils
 import makeStore from '@extension/utils/makeStore';
 
-const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
+const App: FC<IAppProps> = ({ i18next, initialColorMode }) => {
   const store: Store<IBackgroundRootState> = makeStore<IBackgroundRootState>(
     combineReducers({
       accounts: accountsReducer,

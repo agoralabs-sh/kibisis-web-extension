@@ -60,6 +60,7 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAppThunkDispatch,
+  IMainRootState,
   IModalProps,
   TEncryptionCredentials,
 } from '@extension/types';
@@ -70,7 +71,7 @@ import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,

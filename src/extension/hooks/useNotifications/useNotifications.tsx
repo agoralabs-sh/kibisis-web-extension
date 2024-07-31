@@ -19,10 +19,14 @@ import {
 import { useSelectNotShowingNotifications } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch, INotification } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  INotification,
+} from '@extension/types';
 
 export default function useNotifications(): void {
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const toast = useToast({
     containerStyle: {
       margin: '0',

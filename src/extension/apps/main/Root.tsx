@@ -64,18 +64,16 @@ import {
   useSelectAccounts,
   useSelectNotificationsShowingConfetti,
   useSelectSelectedNetwork,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 const Root: FC = () => {
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const accounts = useSelectAccounts();
   const network = useSelectSelectedNetwork();
-  const settings = useSelectSettings();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());

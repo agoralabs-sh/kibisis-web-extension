@@ -15,6 +15,7 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 // types
 import type {
   IAsyncThunkConfigWithRejectValue,
+  IBackgroundRootState,
   IMainRootState,
   IPasskeyEncryptionCredentials,
   IPasswordEncryptionCredentials,
@@ -29,11 +30,11 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 const deactivateThunk: AsyncThunk<
   void, // return
   IPasskeyEncryptionCredentials | IPasswordEncryptionCredentials, // args
-  IAsyncThunkConfigWithRejectValue<IMainRootState>
+  IAsyncThunkConfigWithRejectValue<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   void,
   IPasskeyEncryptionCredentials | IPasswordEncryptionCredentials,
-  IAsyncThunkConfigWithRejectValue<IMainRootState>
+  IAsyncThunkConfigWithRejectValue<IBackgroundRootState | IMainRootState>
 >(ThunkEnum.Deactivate, async (credentials, { getState, rejectWithValue }) => {
   const logger = getState().system.logger;
   const privateKeyService = new PrivateKeyService({

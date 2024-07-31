@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 
 // features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
+import { fetchActiveThunk as fetchCredentialsLockActiveThunk } from '@extension/features/credential-lock';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
@@ -24,22 +25,18 @@ import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 import SplashPage from '@extension/pages/SplashPage';
 
 // selectors
-import {
-  useSelectSelectedNetwork,
-  useSelectSettings,
-} from '@extension/selectors';
+import { useSelectSelectedNetwork } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IBackgroundRootState } from '@extension/types';
 
 // utils
 import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
 
 const Root: FC = () => {
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IBackgroundRootState>>();
   // selectors
   const network = useSelectSelectedNetwork();
-  const settings = useSelectSettings();
   // misc
   const url = new URL(window.location.href);
   const eventId = decodeURLSearchParam('eventId', url.searchParams);
@@ -54,6 +51,7 @@ const Root: FC = () => {
       return;
     }
 
+    dispatch(fetchCredentialsLockActiveThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());

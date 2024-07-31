@@ -58,6 +58,7 @@ import type { IAddWatchAccountCompleteResult } from '@extension/pages/AddWatchAc
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IMainRootState,
   INewAccount,
   TEncryptionCredentials,
 } from '@extension/types';
@@ -68,7 +69,7 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const AddAccountMainRouter: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const navigate = useNavigate();
   const {
     isOpen: isAuthenticationModalOpen,

@@ -17,11 +17,11 @@ import { useSelectLogger } from '@extension/selectors';
 
 // types
 import type { TProviderMessages } from '@common/types';
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 export default function useOnMainAppMessage(): void {
   const _functionName = 'useOnMainAppMessage';
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const logger = useSelectLogger();
   const handleMessage = async (message: TProviderMessages) => {

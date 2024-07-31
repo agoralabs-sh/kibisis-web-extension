@@ -10,7 +10,9 @@ import StorageManager from '@extension/services/StorageManager';
 
 // types
 import type {
+  IBackgroundRootState,
   IBaseAsyncThunkConfig,
+  IMainRootState,
   INetworkWithTransactionParams,
   ITransactionParams,
 } from '@extension/types';
@@ -23,11 +25,11 @@ import { updateTransactionParams } from '../utils';
 const fetchTransactionParamsFromStorageThunk: AsyncThunk<
   INetworkWithTransactionParams[], // return
   undefined, // args
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   INetworkWithTransactionParams[],
   undefined,
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(ThunkEnum.FetchTransactionParamsFromStorageThunk, async (_, { getState }) => {
   const logger = getState().system.logger;
   const networks = getState().networks.items;

@@ -10,13 +10,13 @@ import { ThunkEnum } from '../enums';
 import updateNetworkConnectivityThunk from './updateNetworkConnectivityThunk';
 
 // types
-import type { IBaseAsyncThunkConfig } from '@extension/types';
+import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
 
 const startPollingForNetworkConnectivityThunk: AsyncThunk<
   number, // return
   undefined, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<number, undefined, IBaseAsyncThunkConfig>(
+  IBaseAsyncThunkConfig<IMainRootState>
+> = createAsyncThunk<number, undefined, IBaseAsyncThunkConfig<IMainRootState>>(
   ThunkEnum.StartPollingForNetworkConnectivity,
   (_, { dispatch, getState }) => {
     const logger = getState().system.logger;

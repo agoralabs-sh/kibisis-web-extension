@@ -20,13 +20,14 @@ import { useSelectEvents } from '@extension/selectors';
 import type {
   IAppThunkDispatch,
   IARC0300KeyRegistrationTransactionSendEvent,
+  IMainRootState,
   IModalProps,
 } from '@extension/types';
 
 const ARC0300KeyRegistrationTransactionSendEventModal: FC<IModalProps> = ({
   onClose,
 }) => {
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const events = useSelectEvents();
   // state

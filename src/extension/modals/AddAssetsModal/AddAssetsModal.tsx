@@ -102,6 +102,7 @@ import type {
   IAppThunkDispatchReturn,
   IARC0200Asset,
   IAssetTypes,
+  IMainRootState,
   IModalProps,
   IStandardAsset,
   TEncryptionCredentials,
@@ -115,7 +116,7 @@ import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccount
 
 const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const assetContainerRef = useRef<HTMLDivElement | null>(null);
   const {
     isOpen: isAuthenticationModalOpen,

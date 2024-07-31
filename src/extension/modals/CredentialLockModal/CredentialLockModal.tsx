@@ -49,6 +49,7 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAppThunkDispatch,
+  IMainRootState,
   TEncryptionCredentials,
 } from '@extension/types';
 
@@ -57,7 +58,7 @@ import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const CredentialLockModal: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,

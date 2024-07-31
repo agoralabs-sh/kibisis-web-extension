@@ -64,6 +64,7 @@ import type {
   IAppThunkDispatch,
   IARC0300AccountImportSchema,
   IARC0300ModalContentProps,
+  IMainRootState,
   INewAccount,
   TEncryptionCredentials,
 } from '@extension/types';
@@ -84,7 +85,7 @@ const ARC0300AccountImportModalContent: FC<
   schemaOrSchemas: schemas,
 }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const navigate = useNavigate();
   const {
     isOpen: isAuthenticationModalOpen,
