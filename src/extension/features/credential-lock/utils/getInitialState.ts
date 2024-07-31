@@ -3,7 +3,7 @@ import type { IState } from '../types';
 
 export default function getInitialState(): IState {
   return {
-    activated: null,
+    active: false,
     saving: false,
   };
 }

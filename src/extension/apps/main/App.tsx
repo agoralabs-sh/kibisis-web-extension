@@ -2,12 +2,7 @@ import { combineReducers, Store } from '@reduxjs/toolkit';
 import React, { FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
-import {
-  createHashRouter,
-  Navigate,
-  redirect,
-  RouterProvider,
-} from 'react-router-dom';
+import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 // components
 import ThemeProvider from '@extension/components/ThemeProvider';
@@ -18,24 +13,17 @@ import {
   ACCOUNTS_ROUTE,
   ADD_ACCOUNT_ROUTE,
   ASSETS_ROUTE,
-  CREDENTIAL_LOCK_ROUTE,
   NFTS_ROUTE,
   SETTINGS_ROUTE,
   TRANSACTIONS_ROUTE,
 } from '@extension/constants';
-
-// enums
-import { CredentialLockActivationStateEnum } from '@extension/enums';
 
 // features
 import { reducer as accountsReducer } from '@extension/features/accounts';
 import { reducer as addAssetsReducer } from '@extension/features/add-assets';
 import { reducer as arc0072AssetsReducer } from '@extension/features/arc0072-assets';
 import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
-import {
-  fetchActivatedThunk as fetchCredentialLockActivated,
-  reducer as credentialLockReducer,
-} from '@extension/features/credential-lock';
+import { reducer as credentialLockReducer } from '@extension/features/credential-lock';
 import { reducer as eventsReducer } from '@extension/features/events';
 import {
   reducer as layoutReducer,
@@ -57,7 +45,6 @@ import { reducer as systemReducer } from '@extension/features/system';
 // pages
 import AccountPage from '@extension/pages/AccountPage';
 import AssetPage from '@extension/pages/AssetPage';
-import CredentialLockPage from '@extension/pages/CredentialLockPage';
 import NFTPage from '@extension/pages/NFTPage';
 import SplashPage from '@extension/pages/SplashPage';
 import TransactionPage from '@extension/pages/TransactionPage';
@@ -67,110 +54,75 @@ import AddAccountRouter from '@extension/routers/AddAccountMainRouter';
 import SettingsRouter from '@extension/routers/SettingsRouter';
 
 // types
-import type {
-  IAppProps,
-  IAppThunkDispatch,
-  IMainRootState,
-} from '@extension/types';
+import type { IAppProps, IMainRootState } from '@extension/types';
 
 // utils
 import makeStore from '@extension/utils/makeStore';
 
-const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
-  const _functionName = 'createRouter';
-  const logger = getState().system.logger;
-
+const createRouter = ({ dispatch }: Store<IMainRootState>) => {
   return createHashRouter([
     {
       children: [
         {
-          children: [
-            {
-              element: <Navigate replace={true} to={ACCOUNTS_ROUTE} />,
-              path: '/',
-            },
-            {
-              element: <AccountPage />,
-              loader: () => {
-                dispatch(setSideBar(true));
-
-                return null;
-              },
-              path: `${ACCOUNTS_ROUTE}/*`,
-            },
-            {
-              element: <AddAccountRouter />,
-              loader: () => {
-                dispatch(setSideBar(false));
-
-                return null;
-              },
-              path: `${ADD_ACCOUNT_ROUTE}/*`,
-            },
-            {
-              element: <AssetPage />,
-              loader: () => {
-                dispatch(setSideBar(true));
-
-                return null;
-              },
-              path: `${ASSETS_ROUTE}/:assetId`,
-            },
-            {
-              element: <NFTPage />,
-              loader: () => {
-                dispatch(setSideBar(true));
-
-                return null;
-              },
-              path: `${NFTS_ROUTE}/:appId/:tokenId`,
-            },
-            {
-              element: <SettingsRouter />,
-              loader: () => {
-                dispatch(setSideBar(true));
-
-                return null;
-              },
-              path: `${SETTINGS_ROUTE}/*`,
-            },
-            {
-              element: <TransactionPage />,
-              loader: () => {
-                dispatch(setSideBar(true));
-
-                return null;
-              },
-              path: `${TRANSACTIONS_ROUTE}/:transactionId`,
-            },
-          ],
-          element: <Root />,
-          loader: async () => {
-            try {
-              const credentialLockActivated = await (
-                dispatch as IAppThunkDispatch
-              )(fetchCredentialLockActivated()).unwrap();
-
-              // if the credential lock is enabled and the alarm has timed out, lock the screen
-              if (
-                credentialLockActivated ===
-                CredentialLockActivationStateEnum.Active
-              ) {
-                return redirect(CREDENTIAL_LOCK_ROUTE);
-              }
-            } catch (error) {
-              logger.error(`${_functionName}:`, error);
-            }
-
-            return null;
-          },
+          element: <Navigate replace={true} to={ACCOUNTS_ROUTE} />,
           path: '/',
         },
         {
-          element: <CredentialLockPage />,
-          path: `${CREDENTIAL_LOCK_ROUTE}/*`,
+          element: <AccountPage />,
+          loader: () => {
+            dispatch(setSideBar(true));
+
+            return null;
+          },
+          path: `${ACCOUNTS_ROUTE}/*`,
+        },
+        {
+          element: <AddAccountRouter />,
+          loader: () => {
+            dispatch(setSideBar(false));
+
+            return null;
+          },
+          path: `${ADD_ACCOUNT_ROUTE}/*`,
+        },
+        {
+          element: <AssetPage />,
+          loader: () => {
+            dispatch(setSideBar(true));
+
+            return null;
+          },
+          path: `${ASSETS_ROUTE}/:assetId`,
+        },
+        {
+          element: <NFTPage />,
+          loader: () => {
+            dispatch(setSideBar(true));
+
+            return null;
+          },
+          path: `${NFTS_ROUTE}/:appId/:tokenId`,
+        },
+        {
+          element: <SettingsRouter />,
+          loader: () => {
+            dispatch(setSideBar(true));
+
+            return null;
+          },
+          path: `${SETTINGS_ROUTE}/*`,
+        },
+        {
+          element: <TransactionPage />,
+          loader: () => {
+            dispatch(setSideBar(true));
+
+            return null;
+          },
+          path: `${TRANSACTIONS_ROUTE}/:transactionId`,
         },
       ],
+      element: <Root />,
       path: '/',
     },
   ]);

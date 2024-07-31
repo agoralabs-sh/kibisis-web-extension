@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 
 // features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
-import { fetchActivatedThunk as fetchCredentialLockActivatedThunk } from '@extension/features/credential-lock';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
@@ -25,7 +24,10 @@ import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 import SplashPage from '@extension/pages/SplashPage';
 
 // selectors
-import { useSelectSelectedNetwork } from '@extension/selectors';
+import {
+  useSelectSelectedNetwork,
+  useSelectSettings,
+} from '@extension/selectors';
 
 // types
 import type { IAppThunkDispatch } from '@extension/types';
@@ -37,6 +39,7 @@ const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch>();
   // selectors
   const network = useSelectSelectedNetwork();
+  const settings = useSelectSettings();
   // misc
   const url = new URL(window.location.href);
   const eventId = decodeURLSearchParam('eventId', url.searchParams);
@@ -52,7 +55,6 @@ const Root: FC = () => {
     }
 
     dispatch(fetchPasskeyCredentialFromStorageThunk());
-    dispatch(fetchCredentialLockActivatedThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchSessionsThunk());

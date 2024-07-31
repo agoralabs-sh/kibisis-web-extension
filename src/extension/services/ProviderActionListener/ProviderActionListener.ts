@@ -140,6 +140,27 @@ export default class ProviderActionListener {
     );
   }
 
+  private async _restartCredentialLockAlarm(): Promise<void> {
+    let credentialLockAlarm = await this._credentialLockService.getAlarm();
+    let settings: ISettings = await this._settingsService.getAll();
+
+    // restart the alarm if the credential lock is not active, is enabled and the duration is not set to 0 ("never")
+    if (
+      !this._isRestartingCredentialLockAlarm &&
+      !credentialLockAlarm &&
+      settings.security.enableCredentialLock &&
+      settings.security.credentialLockTimeoutDuration > 0
+    ) {
+      this._isRestartingCredentialLockAlarm = true;
+
+      await this._credentialLockService.restartAlarm(
+        settings.security.credentialLockTimeoutDuration
+      );
+
+      this._isRestartingCredentialLockAlarm = false;
+    }
+  }
+
   /**
    * public functions
    */
@@ -237,8 +258,6 @@ export default class ProviderActionListener {
   public async onFocusChanged(windowId: number): Promise<void> {
     const _functionName = 'onFocusChanged';
     const mainWindow = await this._getMainWindow();
-    let credentialLockAlarm: Alarms.Alarm | null;
-    let settings: ISettings;
 
     if (mainWindow) {
       if (windowId === mainWindow.id) {
@@ -262,28 +281,7 @@ export default class ProviderActionListener {
         `${ProviderActionListener.name}#${_functionName}: main window has lost focus to window with id "${windowId}"`
       );
 
-      credentialLockAlarm = await this._credentialLockService.getAlarm();
-      settings = await this._settingsService.getAll();
-
-      // restart the alarm if the credential lock is not active, is enabled and the duration is not set to 0 ("never")
-      if (
-        !this._isRestartingCredentialLockAlarm &&
-        !credentialLockAlarm &&
-        settings.security.enableCredentialLock &&
-        settings.security.credentialLockTimeoutDuration > 0
-      ) {
-        this._isRestartingCredentialLockAlarm = true;
-
-        await this._credentialLockService.restartAlarm(
-          settings.security.credentialLockTimeoutDuration
-        );
-
-        this._isRestartingCredentialLockAlarm = false;
-
-        return;
-      }
-
-      return;
+      await this._restartCredentialLockAlarm();
     }
   }
 
@@ -362,6 +360,10 @@ export default class ProviderActionListener {
       this._logger?.debug(
         `${ProviderActionListener.name}#${_functionName}: removed "${appWindow.type}" window`
       );
+
+      if (appWindow.type === AppTypeEnum.MainApp) {
+        await this._restartCredentialLockAlarm();
+      }
 
       await this._appWindowManagerService.removeById(windowId);
     }

@@ -41,7 +41,6 @@ import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 import {
   disableThunk as disableCredentialLockThunk,
   enableThunk as enableCredentialLockThunk,
-  updateDurationThunk as updateCredentialLockDurationThunk,
 } from '@extension/features/credential-lock';
 import { create as createNotification } from '@extension/features/notifications';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
@@ -135,7 +134,7 @@ const SecuritySettingsIndexPage: FC = () => {
     }
 
     try {
-      // disable the password lock and wait for the settings to be updated
+      // wait for the settings to be updated
       await dispatch(
         saveSettingsToStorageThunk({
           ...settings,
@@ -145,7 +144,7 @@ const SecuritySettingsIndexPage: FC = () => {
           },
         })
       ).unwrap();
-      // then... remove the decrypted private keys and clear the credential lock alarm
+      // then... remove the decrypted private keys and remove and alarms
       await dispatch(disableCredentialLockThunk()).unwrap();
     } catch (error) {
       logger.error(
@@ -168,7 +167,7 @@ const SecuritySettingsIndexPage: FC = () => {
         );
       }
 
-      // enable the lock and wait for the settings to be updated
+      //  wait for the settings to be updated
       await dispatch(
         saveSettingsToStorageThunk({
           ...settings,
@@ -178,7 +177,7 @@ const SecuritySettingsIndexPage: FC = () => {
           },
         })
       ).unwrap();
-      // then... decrypt the keys and create a credential lock alarm
+      // then... decrypt the keys
       await dispatch(enableCredentialLockThunk(result)).unwrap();
     } catch (error) {
       logger.error(
@@ -212,8 +211,6 @@ const SecuritySettingsIndexPage: FC = () => {
         },
       })
     );
-    // restart the credential lock alarm, if it is active
-    dispatch(updateCredentialLockDurationThunk(value));
   };
 
   return (

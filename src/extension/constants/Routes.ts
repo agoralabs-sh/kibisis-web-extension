@@ -7,7 +7,6 @@ export const APPEARANCE_ROUTE: string = '/appearance';
 export const ASSETS_ROUTE: string = '/assets';
 export const CREATE_NEW_ACCOUNT_ROUTE: string = '/create-new-account';
 export const CREATE_PASSWORD_ROUTE: string = '/create-password';
-export const CREDENTIAL_LOCK_ROUTE: string = '/credential-lock';
 export const CHANGE_PASSWORD_ROUTE: string = '/change-password';
 export const EXPORT_ACCOUNT_ROUTE: string = '/export-account';
 export const GENERAL_ROUTE: string = '/general';

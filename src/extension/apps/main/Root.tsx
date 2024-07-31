@@ -14,7 +14,6 @@ import {
 } from '@extension/features/accounts';
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
-import { fetchActivatedThunk as fetchCredentialLockActivatedThunk } from '@extension/features/credential-lock';
 import {
   setConfirmModal,
   setScanQRCodeModal,
@@ -49,6 +48,7 @@ import AddAssetsModal, {
 } from '@extension/modals/AddAssetsModal';
 import ARC0300KeyRegistrationTransactionSendEventModal from '@extension/modals/ARC0300KeyRegistrationTransactionSendEventModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
+import CredentialLockModal from '@extension/modals/CredentialLockModal';
 import EnableModal from '@extension/modals/EnableModal';
 import ReKeyAccountModal from '@extension/modals/ReKeyAccountModal';
 import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
@@ -92,7 +92,6 @@ const Root: FC = () => {
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchARC0072AssetsFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
-    dispatch(fetchCredentialLockActivatedThunk());
     dispatch(fetchNewsFromStorageThunk());
     dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());
@@ -127,6 +126,7 @@ const Root: FC = () => {
       )}
 
       {/*top-level modals*/}
+      <CredentialLockModal />
       <ConfirmModal onClose={handleConfirmClose} />
 
       {/*event modals*/}

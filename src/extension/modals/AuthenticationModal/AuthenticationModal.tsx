@@ -23,10 +23,7 @@ import PasswordInput from '@extension/components/PasswordInput';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
-import {
-  CredentialLockActivationStateEnum,
-  EncryptionMethodEnum,
-} from '@extension/enums';
+import { EncryptionMethodEnum } from '@extension/enums';
 
 // hooks
 import { usePassword } from '@extension/components/PasswordInput';
@@ -35,7 +32,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
-  useSelectCredentialLockActivated,
+  useSelectCredentialLockActive,
   useSelectLogger,
   useSelectPasskeysPasskey,
   useSelectSettingsCredentialLockEnabled,
@@ -62,7 +59,7 @@ const AuthenticationModal: FC<IProps> = ({
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
-  const credentialLockActivated = useSelectCredentialLockActivated();
+  const credentialLockActive = useSelectCredentialLockActive();
   const logger = useSelectLogger();
   const passkey = useSelectPasskeysPasskey();
   const credentialLockEnabled = useSelectSettingsCredentialLockEnabled();
@@ -136,12 +133,8 @@ const AuthenticationModal: FC<IProps> = ({
   };
   // renders
   const renderContent = () => {
-    // if the credential lock is enabled and in active, show a loader
-    if (
-      !forceAuthentication &&
-      credentialLockEnabled &&
-      credentialLockActivated === CredentialLockActivationStateEnum.Inactive
-    ) {
+    // if the credential lock is not active, show a loader
+    if (!forceAuthentication || !credentialLockActive) {
       return (
         <VStack
           alignItems="center"
@@ -219,12 +212,8 @@ const AuthenticationModal: FC<IProps> = ({
         return;
       }
 
-      // if the credentials lock is enabled and not activated use the unencrypted keys
-      if (
-        !forceAuthentication &&
-        credentialLockEnabled &&
-        credentialLockActivated === CredentialLockActivationStateEnum.Inactive
-      ) {
+      // if the credentials lock is not activated use the unencrypted keys
+      if (!forceAuthentication || !credentialLockActive) {
         onConfirm({
           type: EncryptionMethodEnum.Unencrypted,
         });

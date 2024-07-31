@@ -9,6 +9,7 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
+import { Alarms } from 'webextension-polyfill';
 
 /**
  * Removes all decrypted the private keys and clears the credential lock alarm.
@@ -27,6 +28,7 @@ const disableThunk: AsyncThunk<
     const privateKeyService = new PrivateKeyService({
       logger,
     });
+    let alarm: Alarms.Alarm | null;
     let privateKeyItems = await privateKeyService.fetchAllFromStorage();
 
     // remove all the decrypted private keys
@@ -39,9 +41,11 @@ const disableThunk: AsyncThunk<
 
     logger.debug(`${ThunkEnum.Disable}: removed decrypted private keys`);
 
-    await credentialLockService.clearAlarm();
+    alarm = await credentialLockService.getAlarm();
 
-    logger.debug(`${ThunkEnum.Disable}: cleared credential lock alarm`);
+    if (alarm) {
+      await credentialLockService.clearAlarm();
+    }
   }
 );
 

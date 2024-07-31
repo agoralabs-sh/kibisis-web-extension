@@ -8,8 +8,8 @@ import { ThunkEnum } from '../enums';
 import { DecryptionError } from '@extension/errors';
 
 // services
-import PasskeyService from '@extension/services/PasskeyService';
 import PasswordService from '@extension/services/PasswordService';
+import PasskeyService from '@extension/services/PasskeyService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -24,9 +24,9 @@ import type {
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 /**
- * Decrypts all the private keys and creates a credential lock alarm.
+ * Deactivates the credential lock by decrypting the private keys.
  */
-const enableThunk: AsyncThunk<
+const deactivateThunk: AsyncThunk<
   void, // return
   IPasskeyEncryptionCredentials | IPasswordEncryptionCredentials, // args
   IAsyncThunkConfigWithRejectValue<IMainRootState>
@@ -34,7 +34,7 @@ const enableThunk: AsyncThunk<
   void,
   IPasskeyEncryptionCredentials | IPasswordEncryptionCredentials,
   IAsyncThunkConfigWithRejectValue<IMainRootState>
->(ThunkEnum.Enable, async (credentials, { getState, rejectWithValue }) => {
+>(ThunkEnum.Deactivate, async (credentials, { getState, rejectWithValue }) => {
   const logger = getState().system.logger;
   const privateKeyService = new PrivateKeyService({
     logger,
@@ -85,20 +85,22 @@ const enableThunk: AsyncThunk<
       })
     );
   } catch (error) {
-    logger.error(`${ThunkEnum.Enable}:`, error);
+    logger.error(`${ThunkEnum.Deactivate}:`, error);
 
     return rejectWithValue(error);
   }
 
   logger.debug(
-    `${ThunkEnum.Enable}: decrypted ${privateKeyItems.length} private keys`
+    `${ThunkEnum.Deactivate}: decrypted ${privateKeyItems.length} private keys`
   );
 
   await privateKeyService.saveManyToStorage(privateKeyItems);
 
-  logger.debug(`${ThunkEnum.Enable}: saved decrypted private keys to storage`);
+  logger.debug(
+    `${ThunkEnum.Deactivate}: saved decrypted private keys to storage`
+  );
 
   return;
 });
 
-export default enableThunk;
+export default deactivateThunk;

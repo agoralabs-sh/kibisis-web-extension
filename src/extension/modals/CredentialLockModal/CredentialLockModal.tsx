@@ -1,8 +1,15 @@
-import { Center, Flex, Heading, useDisclosure, VStack } from '@chakra-ui/react';
+import {
+  Heading,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 
 // components
 import Button from '@extension/components/Button';
@@ -18,7 +25,7 @@ import { EncryptionMethodEnum } from '@extension/enums';
 import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
 // features
-import { enableThunk as enableCredentialLockThunk } from '@extension/features/credential-lock';
+import { deactivateThunk as deactivateCredentialLockThunk } from '@extension/features/credential-lock';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
@@ -31,8 +38,12 @@ import AuthenticationModal from '@extension/modals/AuthenticationModal';
 // selectors
 import {
   useSelectLogger,
-  useSelectPasswordLockSaving,
+  useSelectCredentialLockActive,
+  useSelectCredentialLockSaving,
 } from '@extension/selectors';
+
+// theme
+import { theme } from '@extension/theme';
 
 // types
 import type {
@@ -43,18 +54,18 @@ import type {
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
 
-const CredentialLockPage: FC = () => {
+const CredentialLockModal: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch>();
-  const navigate = useNavigate();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,
     onOpen: onAuthenticationModalOpen,
   } = useDisclosure();
   // selectors
+  const active = useSelectCredentialLockActive();
   const logger = useSelectLogger();
-  const saving = useSelectPasswordLockSaving();
+  const saving = useSelectCredentialLockSaving();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
@@ -64,30 +75,29 @@ const CredentialLockPage: FC = () => {
   const iconSize = calculateIconSize('xl');
   const isLoading = saving || verifying;
   // handlers
+  const handleClose = () => setVerifying(false);
   const handleOnAuthenticationModalConfirm = async (
     result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
 
-    // reactivate the credential lock timeout alarm and decrypt the keys
     try {
       if (result.type === EncryptionMethodEnum.Unencrypted) {
         throw new MalformedDataError(
-          'enabling credential lock requires encryption credentials'
+          'deactivating credential lock requires encryption credentials'
         );
       }
 
-      await dispatch(enableCredentialLockThunk(result)).unwrap();
+      setVerifying(true);
 
-      // if complete, navigate back
-      navigate(-1);
+      await dispatch(deactivateCredentialLockThunk(result)).unwrap();
     } catch (error) {
-      logger.error(`${CredentialLockPage.name}#${_functionName}:`, error);
+      logger.error(`${CredentialLockModal.name}#${_functionName}:`, error);
 
       handleOnError(error);
-
-      return;
     }
+
+    setVerifying(false);
   };
   const handleOnError = (error: BaseExtensionError) =>
     dispatch(
@@ -101,7 +111,7 @@ const CredentialLockPage: FC = () => {
         type: 'error',
       })
     );
-  const handleUnlockClick = () => onAuthenticationModalOpen();
+  const handleUnlockClick = async () => onAuthenticationModalOpen();
 
   return (
     <>
@@ -115,38 +125,33 @@ const CredentialLockPage: FC = () => {
         passwordHint={t<string>('captions.mustEnterPasswordToUnlock')}
       />
 
-      <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
-        <Flex
-          alignItems="center"
-          direction="column"
-          justifyContent="center"
-          minH="100vh"
-          w="full"
+      <Modal
+        isOpen={active}
+        motionPreset="slideInBottom"
+        onClose={handleClose}
+        size="full"
+        scrollBehavior="inside"
+      >
+        <ModalContent
+          backgroundColor={BODY_BACKGROUND_COLOR}
+          borderTopRadius={theme.radii['3xl']}
+          borderBottomRadius={0}
         >
-          <VStack
-            flexGrow={1}
-            pb={DEFAULT_GAP}
-            px={DEFAULT_GAP}
-            spacing={DEFAULT_GAP / 3}
-            w="full"
-          >
-            <VStack
-              flexGrow={1}
-              justifyContent="center"
-              spacing={DEFAULT_GAP / 3}
-              w="full"
-            >
-              <VStack pb={DEFAULT_GAP} spacing={DEFAULT_GAP / 3} w="full">
+          <ModalBody display="flex" p={DEFAULT_GAP}>
+            <VStack flexGrow={1} justifyContent="center" spacing={0} w="full">
+              <VStack spacing={DEFAULT_GAP / 3} w="full">
                 {/*icon*/}
                 <KibisisIcon color={primaryColor} h={iconSize} w={iconSize} />
 
                 {/*heading*/}
                 <Heading color={defaultTextColor}>
-                  {t<string>('headings.passwordLock')}
+                  {t<string>('headings.welcomeBack')}
                 </Heading>
               </VStack>
             </VStack>
+          </ModalBody>
 
+          <ModalFooter p={DEFAULT_GAP}>
             {/*unlock button*/}
             <Button
               isLoading={isLoading}
@@ -156,11 +161,11 @@ const CredentialLockPage: FC = () => {
             >
               {t<string>('buttons.unlock')}
             </Button>
-          </VStack>
-        </Flex>
-      </Center>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
 
-export default CredentialLockPage;
+export default CredentialLockModal;

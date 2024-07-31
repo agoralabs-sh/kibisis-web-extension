@@ -357,7 +357,6 @@ const translation: IResourceLanguage = {
     passkeyAdded: 'Passkey Added!',
     passkeyRemoved: 'Passkey Removed',
     passwordChanged: 'Password Changed!',
-    passwordLock: 'Welcome back',
     reKeyAccount: 'Re-key Account 🔒',
     reKeyAccountSuccessful: 'Successfully Re-Keyed Account!',
     removeAccount: 'Remove Account',
@@ -415,6 +414,7 @@ const translation: IResourceLanguage = {
     unknownAccount: 'Unknown Account',
     unknownNetwork: 'Unknown Network',
     unknownQRCode: 'Unknown QR Code',
+    welcomeBack: 'Welcome back',
   },
   labels: {
     account: 'Account',
