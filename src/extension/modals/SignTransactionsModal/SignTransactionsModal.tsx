@@ -129,6 +129,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const handleOnAuthenticationModalConfirm = async (
     result: TEncryptionCredentials
   ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
     let authorizedAccounts: IAccountWithExtendedProps[];
     let stxns: (string | null)[];
 
@@ -168,6 +169,8 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
       handleClose();
     } catch (error) {
+      logger.error(`${SignTransactionsModal.name}#${_functionName}:`, error);
+
       switch (error.code) {
         case ARC0027ErrorCodeEnum.UnauthorizedSignerError:
           dispatch(
@@ -181,17 +184,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
           handleClose();
           break;
         default:
-          dispatch(
-            createNotification({
-              description: t<string>('errors.descriptions.code', {
-                code: error.code,
-                context: error.code,
-              }),
-              ephemeral: true,
-              title: t<string>('errors.titles.code', { context: error.code }),
-              type: 'error',
-            })
-          );
+          handleOnError(error);
 
           break;
       }
@@ -199,7 +192,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
     setSigning(false);
   };
-  const handleAuthenticationError = (error: BaseExtensionError) =>
+  const handleOnError = (error: BaseExtensionError) =>
     dispatch(
       createNotification({
         description: t<string>('errors.descriptions.code', {
@@ -262,7 +255,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
         isOpen={isAuthenticationModalOpen}
         onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
-        onError={handleAuthenticationError}
+        onError={handleOnError}
         {...(event &&
           event.payload.message.params && {
             passwordHint: t<string>(

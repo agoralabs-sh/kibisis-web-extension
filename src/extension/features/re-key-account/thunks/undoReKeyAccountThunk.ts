@@ -77,7 +77,7 @@ const undoReKeyAccountThunk: AsyncThunk<
       return null;
     }
 
-    algodClient = createAlgodClient(network, { logger });
+    algodClient = createAlgodClient(network);
     suggestedParams = await algodClient.getTransactionParams().do();
     unsignedTransaction = makePaymentTxnWithSuggestedParams(
       address,

@@ -22,6 +22,7 @@ import type { ISaveNewAccountsPayload } from '../types';
 // utils
 import savePrivateKeyItemWithPasskey from '@extension/utils/savePrivateKeyItemWithPasskey';
 import savePrivateKeyItemWithPassword from '@extension/utils/savePrivateKeyItemWithPassword';
+import isCredentialLockActive from '@extension/utils/isCredentialLockActive';
 
 const saveNewAccountsThunk: AsyncThunk<
   IAccountWithExtendedProps[], // return
@@ -35,9 +36,23 @@ const saveNewAccountsThunk: AsyncThunk<
   ThunkEnum.SaveNewAccounts,
   async ({ accounts, ...encryptionOptions }, { getState, rejectWithValue }) => {
     const logger = getState().system.logger;
+    const { credentialLockTimeoutDuration, enableCredentialLock } =
+      getState().settings.security;
     let _accounts: IAccountWithExtendedProps[] = [];
+    let credentialLockActive: boolean;
     let encodedPublicKey: string;
     let privateKeyItem: IPrivateKey | null = null;
+    let saveUnencryptedPrivateKey: boolean;
+
+    credentialLockActive = await isCredentialLockActive({ logger });
+    // save the unencrypted key if:
+    // * the credential lock is enabled and the timeout is set to 0 ("never")
+    // * the credential lock is enabled, the timeout has a duration and the credential lock is not currently active
+    saveUnencryptedPrivateKey =
+      (enableCredentialLock && credentialLockTimeoutDuration <= 0) ||
+      (enableCredentialLock &&
+        credentialLockTimeoutDuration > 0 &&
+        !credentialLockActive);
 
     for (const { keyPair, name } of accounts) {
       encodedPublicKey = PrivateKeyService.encode(keyPair.publicKey);
@@ -48,6 +63,7 @@ const saveNewAccountsThunk: AsyncThunk<
             inputKeyMaterial: encryptionOptions.inputKeyMaterial,
             keyPair,
             logger,
+            saveUnencryptedPrivateKey,
           });
         }
 
@@ -56,6 +72,7 @@ const saveNewAccountsThunk: AsyncThunk<
             keyPair,
             logger,
             password: encryptionOptions.password,
+            saveUnencryptedPrivateKey,
           });
         }
       } catch (error) {

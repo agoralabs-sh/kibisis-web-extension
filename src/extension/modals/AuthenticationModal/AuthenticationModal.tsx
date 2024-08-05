@@ -32,10 +32,9 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
-  useSelectCredentialLockActive,
+  useSelectIsCredentialsRequired,
   useSelectLogger,
   useSelectPasskeysPasskey,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // services
@@ -59,10 +58,9 @@ const AuthenticationModal: FC<IProps> = ({
   const { t } = useTranslation();
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
-  const credentialLockActive = useSelectCredentialLockActive();
+  const isCredentialsRequired = useSelectIsCredentialsRequired();
   const logger = useSelectLogger();
   const passkey = useSelectPasskeysPasskey();
-  const { security } = useSelectSettings();
   // hooks
   const primaryColorCode = useColorModeValue(
     theme.colors.primaryLight['500'],
@@ -134,12 +132,7 @@ const AuthenticationModal: FC<IProps> = ({
   // renders
   const renderContent = () => {
     // if the credential lock is not active, show a loader
-    if (
-      !forceAuthentication ||
-      (!credentialLockActive &&
-        security.enableCredentialLock &&
-        security.credentialLockTimeoutDuration > 0)
-    ) {
+    if (!forceAuthentication && !isCredentialsRequired) {
       return (
         <VStack
           alignItems="center"
@@ -217,13 +210,8 @@ const AuthenticationModal: FC<IProps> = ({
         return;
       }
 
-      // if the credentials lock is not activated use the unencrypted keys
-      if (
-        !forceAuthentication ||
-        (!credentialLockActive &&
-          security.enableCredentialLock &&
-          security.credentialLockTimeoutDuration > 0)
-      ) {
+      // if we are not forcing authentication and if the credentials are not required, use the unencrypted keys
+      if (!forceAuthentication && !isCredentialsRequired) {
         onConfirm({
           type: EncryptionMethodEnum.Unencrypted,
         });

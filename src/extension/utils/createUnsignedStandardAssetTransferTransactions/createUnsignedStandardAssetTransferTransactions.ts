@@ -25,7 +25,7 @@ export default async function createUnsignedStandardAssetTransferTransactions({
   note,
   toAddress,
 }: IOptions): Promise<Transaction[]> {
-  const algodClient: Algodv2 = createAlgodClient(network, { logger });
+  const algodClient: Algodv2 = createAlgodClient(network);
   const suggestedParams: SuggestedParams = await algodClient
     .getTransactionParams()
     .do();

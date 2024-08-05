@@ -164,9 +164,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       return rejectWithValue(new NotEnoughMinimumBalanceError(_error));
     }
 
-    algodClient = createAlgodClient(network, {
-      logger,
-    });
+    algodClient = createAlgodClient(network);
 
     try {
       suggestedParams = await algodClient.getTransactionParams().do();

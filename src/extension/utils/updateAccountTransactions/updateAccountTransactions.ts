@@ -1,10 +1,8 @@
-import { Indexer } from 'algosdk';
-
 // constants
 import { DEFAULT_TRANSACTION_INDEXER_LIMIT } from '@extension/constants';
 
 // types
-import {
+import type {
   IAccountTransactions,
   IAlgorandAccountTransaction,
 } from '@extension/types';
@@ -19,7 +17,7 @@ import refreshTransactions from '../refreshTransactions';
 /**
  * Gets the account transactions.
  * @param {IOptions} options - options needed to fetch account transactions.
- * @returns {Promise<IAccountTransactions>} the updated account information.
+ * @returns {Promise<IAccountTransactions>} a promise that resolves to the updated account transactions.
  */
 export default async function updateAccountTransactions({
   address,
@@ -29,7 +27,7 @@ export default async function updateAccountTransactions({
   network,
   refresh = false,
 }: IOptions): Promise<IAccountTransactions> {
-  const client: Indexer = getIndexerClient(network, {
+  const client = getIndexerClient(network, {
     logger,
   });
   let algorandAccountTransaction: IAlgorandAccountTransaction;
@@ -43,15 +41,6 @@ export default async function updateAccountTransactions({
         value.completedAt && value.completedAt > acc ? value.completedAt : acc,
       0
     );
-
-    logger &&
-      logger.debug(
-        `${
-          updateAccountTransactions.name
-        }: 'refreshing account transactions for "${address}" on "${
-          network.genesisId
-        }" from "${new Date(mostRecentTransactionTime).toString()}"`
-      );
 
     return {
       ...currentAccountTransactions,
@@ -69,11 +58,6 @@ export default async function updateAccountTransactions({
       ],
     };
   }
-
-  logger &&
-    logger.debug(
-      `${updateAccountTransactions.name}: 'updating account transactions for "${address}" on "${network.genesisId}"`
-    );
 
   try {
     algorandAccountTransaction =
@@ -96,10 +80,10 @@ export default async function updateAccountTransactions({
       ],
     };
   } catch (error) {
-    logger &&
-      logger.error(
-        `${updateAccountTransactions.name}: failed to get account transactions for "${address}" on ${network.genesisId}: ${error.message}`
-      );
+    logger?.error(
+      `${updateAccountTransactions.name}: failed to get account transactions for "${address}" on ${network.genesisId}:`,
+      error
+    );
 
     return currentAccountTransactions;
   }

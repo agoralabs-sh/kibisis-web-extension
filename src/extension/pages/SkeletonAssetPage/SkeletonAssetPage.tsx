@@ -34,11 +34,12 @@ const SkeletonAssetPage: FC = () => {
       >
         <SkeletonCircle size="24" />
 
-        {Array.from({ length: 3 }, () => (
+        {Array.from({ length: 3 }, (_, index) => (
           <HStack
             alignItems="center"
             h={PAGE_ITEM_HEIGHT}
             justifyContent="space-between"
+            key={`skeleton-asset-page-item-${index}`}
             spacing={1}
             w="full"
           >

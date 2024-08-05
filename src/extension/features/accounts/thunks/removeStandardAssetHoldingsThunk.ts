@@ -181,9 +181,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       return rejectWithValue(new NotAZeroBalanceError(errorMessage));
     }
 
-    algodClient = createAlgodClient(network, {
-      logger,
-    });
+    algodClient = createAlgodClient(network);
 
     try {
       suggestedParams = await algodClient.getTransactionParams().do();

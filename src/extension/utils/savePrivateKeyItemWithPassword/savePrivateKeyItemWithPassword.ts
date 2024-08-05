@@ -29,6 +29,7 @@ export default async function savePrivateKeyItemWithPassword({
   password,
   passwordService,
   privateKeyService,
+  saveUnencryptedPrivateKey = false,
 }: IOptions): Promise<IPrivateKey | null> {
   const _functionName = 'savePrivateKeyItemWithPassword';
   const _passwordService =
@@ -87,6 +88,9 @@ export default async function savePrivateKeyItemWithPassword({
         encryptionID: passwordTagItem.id,
         encryptionMethod: EncryptionMethodEnum.Password,
         publicKey: keyPair.publicKey,
+        ...(saveUnencryptedPrivateKey && {
+          privateKey: keyPair.privateKey,
+        }),
       })
     );
   }

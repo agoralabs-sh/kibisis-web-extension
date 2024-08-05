@@ -5,7 +5,7 @@ interface ICreateOptions {
   encryptedPrivateKey: Uint8Array;
   encryptionID: string;
   encryptionMethod: EncryptionMethodEnum;
-  privateKey?: string;
+  privateKey?: Uint8Array;
   publicKey: Uint8Array;
 }
 

@@ -26,6 +26,7 @@ export default async function savePrivateKeyItemWithPasskey({
   logger,
   passkeyService,
   privateKeyService,
+  saveUnencryptedPrivateKey = false,
 }: IOptions): Promise<IPrivateKey | null> {
   const _functionName = 'savePrivateKeyItemWithPasskey';
   const _passkeyService =
@@ -75,6 +76,9 @@ export default async function savePrivateKeyItemWithPasskey({
         encryptionID: passkey.id,
         encryptionMethod: EncryptionMethodEnum.Passkey,
         publicKey: keyPair.publicKey,
+        ...(saveUnencryptedPrivateKey && {
+          privateKey: keyPair.privateKey,
+        }),
       })
     );
   }

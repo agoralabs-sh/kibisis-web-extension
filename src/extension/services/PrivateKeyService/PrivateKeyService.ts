@@ -72,7 +72,7 @@ export default class PrivateKeyService {
       encryptionID,
       encryptionMethod,
       id: uuid(),
-      privateKey: privateKey || null,
+      privateKey: privateKey ? PrivateKeyService.encode(privateKey) : null,
       publicKey: PrivateKeyService.encode(publicKey),
       updatedAt: now.getTime(),
       version: PrivateKeyService.latestVersion,

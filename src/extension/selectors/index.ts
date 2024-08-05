@@ -5,6 +5,7 @@ export * from './arc-0200-assets';
 export * from './credential-lock';
 export * from './events';
 export * from './layout';
+export * from './misc';
 export * from './networks';
 export * from './news';
 export * from './notifications';
