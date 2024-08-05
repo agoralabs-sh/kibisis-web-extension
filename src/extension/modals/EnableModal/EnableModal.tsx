@@ -221,6 +221,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
                 <Text color={defaultTextColor} fontSize="md" textAlign="left">
                   {account.name}
                 </Text>
+
                 <Text color={subTextColor} fontSize="sm" textAlign="left">
                   {ellipseAddress(address, {
                     end: 10,

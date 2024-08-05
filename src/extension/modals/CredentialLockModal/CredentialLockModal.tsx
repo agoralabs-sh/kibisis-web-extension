@@ -1,14 +1,19 @@
 import {
   Heading,
+  Icon,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
+  Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { GoShieldLock } from 'react-icons/go';
+import { IoLockOpenOutline } from 'react-icons/io5';
+import { PiPassword } from 'react-icons/pi';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -31,6 +36,7 @@ import { create as createNotification } from '@extension/features/notifications'
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
@@ -40,6 +46,7 @@ import {
   useSelectLogger,
   useSelectCredentialLockActive,
   useSelectCredentialLockSaving,
+  useSelectPasskeysPasskey,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -67,17 +74,21 @@ const CredentialLockModal: FC = () => {
   // selectors
   const active = useSelectCredentialLockActive();
   const logger = useSelectLogger();
+  const passkey = useSelectPasskeysPasskey();
   const saving = useSelectCredentialLockSaving();
   const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
   // states
   const [verifying, setVerifying] = useState<boolean>(false);
   // misc
+  const authenticationTypeIconSize = calculateIconSize('md');
   const iconSize = calculateIconSize('xl');
   const isLoading = saving || verifying;
   const isOpen =
+    !saving &&
     active &&
     settings.security.enableCredentialLock &&
     settings.security.credentialLockTimeoutDuration > 0;
@@ -145,15 +156,43 @@ const CredentialLockModal: FC = () => {
           borderBottomRadius={0}
         >
           <ModalBody display="flex" p={DEFAULT_GAP}>
-            <VStack flexGrow={1} justifyContent="center" spacing={0} w="full">
-              <VStack spacing={DEFAULT_GAP / 3} w="full">
-                {/*icon*/}
-                <KibisisIcon color={primaryColor} h={iconSize} w={iconSize} />
+            <VStack
+              flexGrow={1}
+              justifyContent="center"
+              spacing={DEFAULT_GAP}
+              w="full"
+            >
+              {/*icon*/}
+              <KibisisIcon color={primaryColor} h={iconSize} w={iconSize} />
 
+              <VStack
+                justifyContent="center"
+                spacing={DEFAULT_GAP / 3}
+                w="full"
+              >
                 {/*heading*/}
-                <Heading color={defaultTextColor}>
+                <Heading color={defaultTextColor} textAlign="center" w="full">
                   {t<string>('headings.welcomeBack')}
                 </Heading>
+
+                {/*caption*/}
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="center"
+                  w="full"
+                >
+                  {t<string>('captions.removeCredentialLock', {
+                    context: passkey ? 'passkey' : 'password',
+                  })}
+                </Text>
+
+                <Icon
+                  as={passkey ? GoShieldLock : PiPassword}
+                  color={subTextColor}
+                  h={authenticationTypeIconSize}
+                  w={authenticationTypeIconSize}
+                />
               </VStack>
             </VStack>
           </ModalBody>
@@ -163,6 +202,7 @@ const CredentialLockModal: FC = () => {
             <Button
               isLoading={isLoading}
               onClick={handleUnlockClick}
+              rightIcon={<IoLockOpenOutline />}
               size="lg"
               w="full"
             >

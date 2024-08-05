@@ -18,11 +18,10 @@ import createAlgodClient from '@common/utils/createAlgodClient';
  * @returns {Promise<Transaction>} a promise that resolves to an unsigned key registration transaction.
  */
 export default async function createUnsignedKeyRegistrationTransactionFromSchema({
-  logger,
   network,
   schema,
 }: IOptions): Promise<Transaction> {
-  const algodClient = createAlgodClient(network, { logger });
+  const algodClient = createAlgodClient(network);
   const suggestedParams = await algodClient.getTransactionParams().do();
 
   return makeKeyRegistrationTxnWithSuggestedParamsFromObject({

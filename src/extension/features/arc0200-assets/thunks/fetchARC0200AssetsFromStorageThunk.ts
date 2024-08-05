@@ -36,7 +36,7 @@ const fetchARC0200AssetsFromStorageThunk: AsyncThunk<
     const assetItems: Record<string, IARC0200Asset[]> = {};
 
     logger.debug(
-      `${ARC0200AssetsThunkEnum.FetchARC0200AssetsFromStorage}: fetching arc200 assets from storage`
+      `${ARC0200AssetsThunkEnum.FetchARC0200AssetsFromStorage}: fetching arc-0200 assets from storage`
     );
 
     await Promise.all(
