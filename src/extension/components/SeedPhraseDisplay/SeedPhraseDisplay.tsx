@@ -13,7 +13,7 @@ const SeedPhraseDisplay: FC<IProps> = ({ seedPhrase }) => {
             <GridItem
               colEnd={2}
               colStart={2}
-              key={`seed-display-phrase-item-${index}`}
+              key={`seed-phrase-display-item-${index}`}
             >
               <Code w="full">{value}</Code>
             </GridItem>
