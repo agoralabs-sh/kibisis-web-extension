@@ -13,7 +13,7 @@ import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoShieldLock } from 'react-icons/go';
 import { IoLockOpenOutline } from 'react-icons/io5';
-import { PiPassword } from 'react-icons/pi';
+import { MdOutlinePassword } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -188,7 +188,7 @@ const CredentialLockModal: FC = () => {
                 </Text>
 
                 <Icon
-                  as={passkey ? GoShieldLock : PiPassword}
+                  as={passkey ? GoShieldLock : MdOutlinePassword}
                   color={subTextColor}
                   h={authenticationTypeIconSize}
                   w={authenticationTypeIconSize}
