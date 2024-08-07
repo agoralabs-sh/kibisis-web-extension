@@ -30,8 +30,8 @@
     "node": ">=20.9.0"
   },
   "scripts": {
-    "analyze:chrome": "yarn build:chrome --analyze",
-    "analyze:firefox": "yarn build:firefox --analyze",
+    "analyze:chrome:apps": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-apps --env environment=production --env target=chrome --analyze",
+    "analyze:firefox:apps": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-apps --env environment=production --env target=firefox --analyze",
     "build:chrome": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=chrome",
     "build:edge": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=edge",
     "build:firefox": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=firefox",

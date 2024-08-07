@@ -43,9 +43,7 @@ import qrCodePlaceholderImage from '@extension/images/placeholder_qr_code.png';
 
 // modals
 import AccountSelectModal from '@extension/modals/AccountSelectModal';
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
@@ -60,6 +58,8 @@ import { theme } from '@extension/theme';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IMainRootState,
+  TEncryptionCredentials,
 } from '@extension/types';
 import type { IExportAccount } from '@extension/utils/createAccountImportURI';
 
@@ -69,10 +69,11 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 import createAccountImportURI from '@extension/utils/createAccountImportURI';
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
+import fetchDecryptedKeyPairFromStorageWithUnencrypted from '@extension/utils/fetchDecryptedKeyPairFromStorageWithUnencrypted';
 
 const ExportAccountPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAccountSelectModalOpen,
     onClose: onAccountSelectClose,
@@ -113,20 +114,8 @@ const ExportAccountPage: FC = () => {
 
     return onAuthenticationModalOpen();
   };
-  const handleOnAuthenticationError = (error: BaseExtensionError) =>
-    dispatch(
-      createNotification({
-        description: t<string>('errors.descriptions.code', {
-          code: error.code,
-          context: error.code,
-        }),
-        ephemeral: true,
-        title: t<string>('errors.titles.code', { context: error.code }),
-        type: 'error',
-      })
-    );
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
     let _svgStrings: string[];
@@ -146,20 +135,35 @@ const ExportAccountPage: FC = () => {
         accounts: await Promise.all(
           selectedAccounts.map<Promise<IExportAccount>>(
             async ({ name, publicKey }) => {
-              if (result.type === EncryptionMethodEnum.Passkey) {
-                keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
-                  inputKeyMaterial: result.inputKeyMaterial,
-                  logger,
-                  publicKey,
-                });
-              }
+              switch (result.type) {
+                case EncryptionMethodEnum.Passkey:
+                  keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+                    inputKeyMaterial: result.inputKeyMaterial,
+                    logger,
+                    publicKey,
+                  });
 
-              if (result.type === EncryptionMethodEnum.Password) {
-                keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
-                  logger,
-                  password: result.password,
-                  publicKey,
-                });
+                  break;
+                case EncryptionMethodEnum.Password:
+                  keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+                    logger,
+                    password: result.password,
+                    publicKey,
+                  });
+
+                  break;
+                case EncryptionMethodEnum.Unencrypted:
+                  keyPair =
+                    await fetchDecryptedKeyPairFromStorageWithUnencrypted({
+                      logger,
+                      publicKey,
+                    });
+
+                  break;
+                default:
+                  keyPair = null;
+
+                  break;
               }
 
               if (!keyPair) {
@@ -213,6 +217,18 @@ const ExportAccountPage: FC = () => {
       reset();
     }
   };
+  const handleOnError = (error: BaseExtensionError) =>
+    dispatch(
+      createNotification({
+        description: t<string>('errors.descriptions.code', {
+          code: error.code,
+          context: error.code,
+        }),
+        ephemeral: true,
+        title: t<string>('errors.titles.code', { context: error.code }),
+        type: 'error',
+      })
+    );
   const handleSelectAccountsClick = () => onAccountSelectModalOpen();
 
   useEffect(() => {
@@ -239,7 +255,7 @@ const ExportAccountPage: FC = () => {
         isOpen={isAuthenticationModalOpen}
         onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
-        onError={handleOnAuthenticationError}
+        onError={handleOnError}
       />
 
       {/*account select modal*/}

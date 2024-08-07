@@ -7,13 +7,13 @@ import { ThunkEnum } from '../enums';
 import PasskeyService from '@extension/services/PasskeyService';
 
 // types
-import type { IBaseAsyncThunkConfig } from '@extension/types';
+import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
 
 const removeFromStorageThunk: AsyncThunk<
   void, // return
   void, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<void, void, IBaseAsyncThunkConfig>(
+  IBaseAsyncThunkConfig<IMainRootState>
+> = createAsyncThunk<void, void, IBaseAsyncThunkConfig<IMainRootState>>(
   ThunkEnum.RemoveFromStorage,
   async () => {
     const passkeyService = new PasskeyService();

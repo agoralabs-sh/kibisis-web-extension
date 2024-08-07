@@ -1,5 +1,8 @@
 import browser from 'webextension-polyfill';
 
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // errors
 import { InvalidPasswordError } from '@extension/errors';
 
@@ -68,22 +71,18 @@ export default async function fetchDecryptedKeyPairFromStorageWithPassword({
     return null;
   }
 
+  privateKeyItem = await PrivateKeyService.upgrade({
+    encryptionCredentials: {
+      password,
+      type: EncryptionMethodEnum.Password,
+    },
+    logger,
+    privateKeyItem,
+  });
+
   logger?.debug(
     `${_functionName}: decrypting private key for public key "${_publicKey}"`
   );
-
-  // this is the legacy version, we need to convert the "secret key" to a private key
-  if (privateKeyItem.version <= 0) {
-    decryptedPrivateKey = await PasswordService.decryptBytes({
-      data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
-      logger,
-      password,
-    });
-
-    return Ed21559KeyPair.generateFromPrivateKey(
-      PrivateKeyService.extractPrivateKeyFromSecretKey(decryptedPrivateKey)
-    );
-  }
 
   decryptedPrivateKey = await PasswordService.decryptBytes({
     data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),

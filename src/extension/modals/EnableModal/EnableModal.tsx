@@ -56,6 +56,8 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAppThunkDispatch,
+  IBackgroundRootState,
+  IMainRootState,
   IModalProps,
   ISession,
 } from '@extension/types';
@@ -67,7 +69,8 @@ import mapSessionFromEnableRequest from '@extension/utils/mapSessionFromEnableRe
 
 const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch =
+    useDispatch<IAppThunkDispatch<IBackgroundRootState | IMainRootState>>();
   // selectors
   const fetching = useSelectAccountsFetching();
   const saving = useSelectSessionsSaving();
@@ -218,6 +221,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
                 <Text color={defaultTextColor} fontSize="md" textAlign="left">
                   {account.name}
                 </Text>
+
                 <Text color={subTextColor} fontSize="sm" textAlign="left">
                   {ellipseAddress(address, {
                     end: 10,

@@ -27,17 +27,17 @@ import { useSelectSettings } from '@extension/selectors';
 // types
 import type {
   IAppThunkDispatch,
+  IMainRootState,
   IPrivacySettings,
-  ISettings,
 } from '@extension/types';
 
 const PrivacySettingsPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
-  const settings: ISettings = useSelectSettings();
+  const settings = useSelectSettings();
   // hooks
-  const primaryColorScheme: string = usePrimaryColorScheme();
+  const primaryColorScheme = usePrimaryColorScheme();
   // handlers
   const handleOnSwitchChange =
     (key: keyof IPrivacySettings) => (event: ChangeEvent<HTMLInputElement>) => {

@@ -39,11 +39,15 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch, ISession } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  ISession,
+} from '@extension/types';
 
 const SessionsSettingsPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const fetching = useSelectSessionsFetching();
   const sessions = useSelectSessions();

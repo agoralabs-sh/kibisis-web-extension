@@ -53,7 +53,7 @@ export default class BaseContract {
     this.appId = appId;
     this.logger =
       logger || createLogger(__ENV__ === 'development' ? 'debug' : 'error');
-    this.algodClient = createAlgodClient(network, { logger });
+    this.algodClient = createAlgodClient(network);
     this.network = network;
   }
 

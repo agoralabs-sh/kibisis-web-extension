@@ -1,6 +1,11 @@
+/**
+ * @property {number} credentialLockTimeoutDuration - the duration, in milliseconds, for when the credential lock alarm
+ * is fired.
+ * @property {boolean} enableCredentialLock - whether the credential lock is enabled.
+ */
 interface ISecuritySettings {
-  enablePasswordLock: boolean;
-  passwordLockTimeoutDuration: number;
+  credentialLockTimeoutDuration: number;
+  enableCredentialLock: boolean;
 }
 
 export default ISecuritySettings;

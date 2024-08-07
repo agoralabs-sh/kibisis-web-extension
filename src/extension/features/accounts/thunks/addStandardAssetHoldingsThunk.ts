@@ -69,7 +69,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     const accounts = getState().accounts.items;
     const logger = getState().system.logger;
     const networks = getState().networks.items;
-    const online = getState().system.online;
+    const online = getState().system.networkConnectivity.online;
     let _error: string;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountBalanceInAtomicUnits: BigNumber;
@@ -164,9 +164,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       return rejectWithValue(new NotEnoughMinimumBalanceError(_error));
     }
 
-    algodClient = createAlgodClient(network, {
-      logger,
-    });
+    algodClient = createAlgodClient(network);
 
     try {
       suggestedParams = await algodClient.getTransactionParams().do();

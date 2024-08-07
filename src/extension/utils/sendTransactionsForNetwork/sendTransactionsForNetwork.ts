@@ -25,7 +25,7 @@ export default async function sendTransactionsForNetwork({
   let sentRawTransaction: { txId: string };
   let transactionsResponse: IAlgorandPendingTransactionResponse;
 
-  algodClient = createAlgodClient(network, { logger });
+  algodClient = createAlgodClient(network);
 
   logger?.debug(
     `${_functionName}: sending transactions to the network "${network.genesisId}"`

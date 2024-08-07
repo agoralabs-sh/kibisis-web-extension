@@ -47,6 +47,7 @@ const translation: IResourceLanguage = {
     sign: 'Sign',
     tryAgain: 'Try Again',
     undo: 'Undo',
+    unlock: 'Unlock',
     view: 'View',
     yesImIn: `Yes, I'm In`,
   },
@@ -231,6 +232,11 @@ const translation: IResourceLanguage = {
       'Please wait while we confirm the opt-out of the asset {{symbol}} with the network.',
     [`removeAssetConfirming_${AssetTypeEnum.ARC0200}`]:
       'Hiding asset {{symbol}}.',
+    removeCredentialLock: 'You will need to authenticate to unlock.',
+    removeCredentialLock_passkey:
+      'You will need to authenticate with your passkey to unlock.',
+    removeCredentialLock_password:
+      'You will need to enter your password to unlock.',
     removePasskey:
       'You are about to remove the passkey "{{name}}". This action will re-enable password authentication.',
     removePasskeyInstruction1:
@@ -356,7 +362,6 @@ const translation: IResourceLanguage = {
     passkeyAdded: 'Passkey Added!',
     passkeyRemoved: 'Passkey Removed',
     passwordChanged: 'Password Changed!',
-    passwordLock: 'Welcome back',
     reKeyAccount: 'Re-key Account 🔒',
     reKeyAccountSuccessful: 'Successfully Re-Keyed Account!',
     removeAccount: 'Remove Account',
@@ -414,6 +419,7 @@ const translation: IResourceLanguage = {
     unknownAccount: 'Unknown Account',
     unknownNetwork: 'Unknown Network',
     unknownQRCode: 'Unknown QR Code',
+    welcomeBack: 'Welcome back',
   },
   labels: {
     account: 'Account',

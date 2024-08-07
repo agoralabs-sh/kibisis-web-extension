@@ -27,7 +27,9 @@ import {
 // types
 import type {
   IAppThunkDispatch,
+  IBackgroundRootState,
   IClientRequestEvent,
+  IMainRootState,
   INetwork,
 } from '@extension/types';
 import type { IState } from './types';
@@ -39,7 +41,8 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 
 export default function useSignTransactionsModal(): IState {
   const _hookName = 'useSignTransactionsModal';
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch =
+    useDispatch<IAppThunkDispatch<IBackgroundRootState | IMainRootState>>();
   // selectors
   const events = useSelectEvents();
   const logger = useSelectLogger();

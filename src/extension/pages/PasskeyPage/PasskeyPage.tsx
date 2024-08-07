@@ -53,14 +53,18 @@ import {
 import PasskeyService from '@extension/services/PasskeyService';
 
 // types
-import { IAppThunkDispatch, IPasskeyCredential } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  IPasskeyCredential,
+} from '@extension/types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const PasskeyPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isMoreInformationOpen,
     onOpen: onMoreInformationOpen,

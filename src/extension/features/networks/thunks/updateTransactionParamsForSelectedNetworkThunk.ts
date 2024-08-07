@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // enums
-import { NetworksThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // services
 import StorageManager from '@extension/services/StorageManager';
@@ -30,11 +30,11 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
   undefined,
   { state: IMainRootState }
 >(
-  NetworksThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk,
+  ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk,
   async (_, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const online: boolean = getState().system.online;
+    const online: boolean = getState().system.networkConnectivity.online;
     const selectedNetwork: INetworkWithTransactionParams | null =
       selectNetworkFromSettings(networks, getState().settings);
     const storageManager: StorageManager = new StorageManager();
@@ -42,7 +42,7 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
 
     if (!online) {
       logger.debug(
-        `${NetworksThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: the extension appears to be offline, skipping`
+        `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: the extension appears to be offline, skipping`
       );
 
       return null;
@@ -50,7 +50,7 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
 
     if (!selectedNetwork) {
       logger.debug(
-        `${NetworksThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: no network selected, skipping`
+        `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: no network selected, skipping`
       );
 
       return null;
@@ -61,7 +61,7 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
     });
 
     logger.debug(
-      `${NetworksThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: saving updated transaction params for network "${selectedNetwork.genesisId}" to storage`
+      `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: saving updated transaction params for network "${selectedNetwork.genesisId}" to storage`
     );
 
     // save the updated params to storage

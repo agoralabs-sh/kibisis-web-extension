@@ -41,31 +41,26 @@ export default async function encryptPrivateKeyItemAndDelay({
       let decryptedPrivateKey: Uint8Array;
       let passwordTagItem: IPasswordTag | null;
       let reEncryptedPrivateKey: Uint8Array;
-      let version: number = privateKeyItem.version;
+      let _privateKeyItem: IPrivateKey;
 
       try {
+        _privateKeyItem = await PrivateKeyService.upgrade({
+          encryptionCredentials: {
+            inputKeyMaterial,
+            passkey,
+            type: EncryptionMethodEnum.Passkey,
+          },
+          logger,
+          privateKeyItem,
+        });
         decryptedPrivateKey = await PasskeyService.decryptBytes({
           encryptedBytes: PrivateKeyService.decode(
-            privateKeyItem.encryptedPrivateKey
+            _privateKeyItem.encryptedPrivateKey
           ),
           inputKeyMaterial,
           passkey,
           logger,
         }); // decrypt the private key with the passkey
-
-        // if the saved private key is a legacy item, it is using the "secret key" form - the private key concatenated to the public key
-        if (privateKeyItem.version <= 0) {
-          logger?.debug(
-            `${_functionName}: key "${privateKeyItem}" on legacy version "${privateKeyItem.version}", updating`
-          );
-
-          decryptedPrivateKey =
-            PrivateKeyService.extractPrivateKeyFromSecretKey(
-              decryptedPrivateKey
-            );
-          version = PrivateKeyService.latestVersion; // update to the latest version
-        }
-
         reEncryptedPrivateKey = await PasswordService.encryptBytes({
           data: decryptedPrivateKey,
           logger,
@@ -85,12 +80,10 @@ export default async function encryptPrivateKeyItemAndDelay({
       }
 
       return resolve({
-        ...privateKeyItem,
+        ..._privateKeyItem,
         encryptedPrivateKey: PrivateKeyService.encode(reEncryptedPrivateKey),
         encryptionID: passwordTagItem.id,
         encryptionMethod: EncryptionMethodEnum.Password,
-        updatedAt: new Date().getTime(),
-        version,
       });
     }, delay);
   });

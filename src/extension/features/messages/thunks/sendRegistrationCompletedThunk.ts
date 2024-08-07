@@ -8,20 +8,22 @@ import { MessagesThunkEnum } from '@extension/enums';
 import { ProviderRegistrationCompletedMessage } from '@common/messages';
 
 // types
-import type { IBaseAsyncThunkConfig } from '@extension/types';
+import type {
+  IBaseAsyncThunkConfig,
+  IRegistrationRootState,
+} from '@extension/types';
 
 const sendRegistrationCompletedThunk: AsyncThunk<
   void, // return
   undefined, // args
-  IBaseAsyncThunkConfig
-> = createAsyncThunk<void, undefined, IBaseAsyncThunkConfig>(
-  MessagesThunkEnum.SendRegistrationCompleted,
-  async () => {
-    // send the message
-    await browser.runtime.sendMessage(
-      new ProviderRegistrationCompletedMessage()
-    );
-  }
-);
+  IBaseAsyncThunkConfig<IRegistrationRootState>
+> = createAsyncThunk<
+  void,
+  undefined,
+  IBaseAsyncThunkConfig<IRegistrationRootState>
+>(MessagesThunkEnum.SendRegistrationCompleted, async () => {
+  // send the message
+  await browser.runtime.sendMessage(new ProviderRegistrationCompletedMessage());
+});
 
 export default sendRegistrationCompletedThunk;

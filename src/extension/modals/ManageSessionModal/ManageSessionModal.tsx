@@ -53,7 +53,11 @@ import {
 import { theme } from '@extension/theme';
 
 // types
-import type { IAppThunkDispatch, INetwork } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  INetwork,
+} from '@extension/types';
 import type { IProps } from './types';
 
 // utils
@@ -63,7 +67,7 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const accounts = useSelectAccounts();
   const fetching = useSelectAccountsFetching();

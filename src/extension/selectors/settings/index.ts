@@ -1,4 +1,5 @@
 export { default as useSelectSettings } from './useSelectSettings';
+export { default as useSelectSettingsCredentialLockEnabled } from './useSelectSettingsCredentialLockEnabled';
 export { default as useSelectSettingsColorMode } from './useSelectColorMode';
 export { default as useSelectSettingsDebugLogging } from './useSelectDebugLogging';
 export { default as useSelectSettingsFetching } from './useSelectSettingsFetching';

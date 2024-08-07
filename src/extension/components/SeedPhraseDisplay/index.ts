@@ -1,3 +1,3 @@
 export { default } from './SeedPhraseDisplay';
+export { default as SeedPhraseDisplaySkeleton } from './SeedPhraseDisplaySkeleton';
 export * from './types';
-export { default as createMaskedSeedPhrase } from './utils/createMaskedSeedPhrase';

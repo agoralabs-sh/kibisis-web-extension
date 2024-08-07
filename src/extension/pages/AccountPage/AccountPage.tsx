@@ -100,7 +100,11 @@ import {
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import type { IAppThunkDispatch, INetwork } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  INetwork,
+} from '@extension/types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
@@ -109,7 +113,7 @@ import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccount
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,

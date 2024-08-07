@@ -10,7 +10,9 @@ import ARC0072AssetService from '@extension/services/ARC0072AssetService';
 import type { ILogger } from '@common/types';
 import type {
   IARC0072Asset,
+  IBackgroundRootState,
   IBaseAsyncThunkConfig,
+  IMainRootState,
   INetwork,
 } from '@extension/types';
 
@@ -20,11 +22,11 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 const fetchARC0072AssetsFromStorageThunk: AsyncThunk<
   Record<string, IARC0072Asset[]>, // return
   undefined, // args
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   Record<string, IARC0072Asset[]>,
   undefined,
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(
   ARC0072AssetsThunkEnum.FetchARC0072AssetsFromStorage,
   async (_, { getState }) => {

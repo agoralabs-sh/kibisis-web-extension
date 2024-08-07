@@ -9,6 +9,8 @@ import { EncryptionMethodEnum } from '@extension/enums';
  * @property {EncryptionMethodEnum} encryptionMethod - the encryption method used to encrypt the private key.
  * @property {string} id - a unique v4 UUID compliant string.
  * @property {string} publicKey - the hexadecimal encoded public key.
+ * @property {string | null} privateKey - the unencrypted hexadecimal encoded private key. This will only be decrypted
+ * when the password lock enabled and not timed out.
  * @property {number} updatedAt - the time in milliseconds since the UNIX epoch for when the resource was updated.
  * @property {number} version - the version of this resource.
  */
@@ -18,6 +20,7 @@ interface IPrivateKey {
   encryptionID: string;
   encryptionMethod: EncryptionMethodEnum;
   id: string;
+  privateKey: string | null;
   publicKey: string;
   updatedAt: number;
   version: number;

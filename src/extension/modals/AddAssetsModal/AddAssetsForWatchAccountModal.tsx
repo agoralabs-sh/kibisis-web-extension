@@ -81,6 +81,7 @@ import type {
   IAppThunkDispatchReturn,
   IARC0200Asset,
   IAssetTypes,
+  IMainRootState,
   IModalProps,
 } from '@extension/types';
 
@@ -92,7 +93,7 @@ import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccount
 
 const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const assetContainerRef = useRef<HTMLDivElement | null>(null);
   // selectors
   const account = useSelectAddAssetsAccount();

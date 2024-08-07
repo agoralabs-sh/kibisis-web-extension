@@ -17,15 +17,10 @@ import {
 
 // types
 import type {
-  IAccount,
-  IAccountInformation,
   IAppThunkDispatch,
-  IARC0072Asset,
   IARC0072AssetHolding,
-  IARC0200Asset,
   IARC0200AssetHolding,
-  INetwork,
-  IStandardAsset,
+  IMainRootState,
   IStandardAssetHolding,
 } from '@extension/types';
 
@@ -36,25 +31,22 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
  * Checks for changes in the accounts and gets new asset information if any new assets.
  */
 export default function useOnNewAssets(): void {
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
-  const accounts: IAccount[] = useSelectAccounts();
-  const arc0072Assets: IARC0072Asset[] =
-    useSelectARC0072AssetsBySelectedNetwork();
-  const arc0200Assets: IARC0200Asset[] =
-    useSelectARC0200AssetsBySelectedNetwork();
-  const standardAssets: IStandardAsset[] =
-    useSelectStandardAssetsBySelectedNetwork();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const accounts = useSelectAccounts();
+  const arc0072Assets = useSelectARC0072AssetsBySelectedNetwork();
+  const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
+  const standardAssets = useSelectStandardAssetsBySelectedNetwork();
+  const selectedNetwork = useSelectSelectedNetwork();
 
   // check for any new arc-0072 assets
   useEffect(() => {
     if (accounts.length > 0 && arc0072Assets && selectedNetwork) {
       accounts.forEach((account) => {
-        const encodedGenesisHash: string = convertGenesisHashToHex(
+        const encodedGenesisHash = convertGenesisHashToHex(
           selectedNetwork.genesisHash
         ).toUpperCase();
-        const accountInformation: IAccountInformation | null =
+        const accountInformation =
           account.networkInformation[encodedGenesisHash] || null;
         let newARC0072AssetHoldings: IARC0072AssetHolding[];
 
@@ -84,10 +76,10 @@ export default function useOnNewAssets(): void {
   useEffect(() => {
     if (accounts.length > 0 && arc0200Assets && selectedNetwork) {
       accounts.forEach((account) => {
-        const encodedGenesisHash: string = convertGenesisHashToHex(
+        const encodedGenesisHash = convertGenesisHashToHex(
           selectedNetwork.genesisHash
         ).toUpperCase();
-        const accountInformation: IAccountInformation | null =
+        const accountInformation =
           account.networkInformation[encodedGenesisHash] || null;
         let newARC0200AssetHoldings: IARC0200AssetHolding[];
 
@@ -117,10 +109,10 @@ export default function useOnNewAssets(): void {
   useEffect(() => {
     if (accounts.length > 0 && standardAssets && selectedNetwork) {
       accounts.forEach((account) => {
-        const encodedGenesisHash: string = convertGenesisHashToHex(
+        const encodedGenesisHash = convertGenesisHashToHex(
           selectedNetwork.genesisHash
         ).toUpperCase();
-        const accountInformation: IAccountInformation | null =
+        const accountInformation =
           account.networkInformation[encodedGenesisHash] || null;
         let newStandardAssetHoldings: IStandardAssetHolding[];
 

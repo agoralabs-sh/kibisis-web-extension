@@ -20,6 +20,7 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadingContent';
 import type {
   IAppThunkDispatch,
+  IMainRootState,
   IPasskeyCredential,
   IPrivateKey,
 } from '@extension/types';
@@ -30,7 +31,7 @@ import { encryptPrivateKeyItemWithDelay } from './utils';
 
 export default function useAddPasskey(): IState {
   const _hookName = 'useAddPasskey';
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const logger = useSelectLogger();
   // states

@@ -1,2 +1,3 @@
-export type { default as ICreatePrivateKeyOptions } from './ICreatePrivateKeyOptions';
+export type { default as ICreateOptions } from './ICreateOptions';
 export type { default as INewOptions } from './INewOptions';
+export type { default as IUpgradeOptions } from './IUpgradeOptions';

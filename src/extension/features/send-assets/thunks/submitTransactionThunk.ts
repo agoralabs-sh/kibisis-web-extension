@@ -49,7 +49,7 @@ const submitTransactionThunk: AsyncThunk<
     const genesisHash =
       uniqueGenesisHashesFromTransactions(transactions).pop() || null;
     const networks = getState().networks.items;
-    const online = getState().system.online;
+    const online = getState().system.networkConnectivity.online;
     const network =
       networks.find((value) => value.genesisHash === genesisHash) || null;
     let _error: string;

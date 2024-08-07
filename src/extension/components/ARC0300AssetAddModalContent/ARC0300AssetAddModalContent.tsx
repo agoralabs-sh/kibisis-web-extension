@@ -79,6 +79,7 @@ import type {
   IAppThunkDispatch,
   IARC0300AssetAddSchema,
   IARC0300ModalContentProps,
+  IMainRootState,
 } from '@extension/types';
 
 // utils
@@ -96,7 +97,7 @@ const ARC0300AssetAddModalContent: FC<
   schemaOrSchemas: schema,
 }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // selectors

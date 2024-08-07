@@ -1,1 +1,1 @@
-export type { default as ISeedPhraseInput } from './ISeedPhraseInput';
+export type { default as IAccountAndSeedPhraseValue } from './IAccountAndSeedPhraseValue';

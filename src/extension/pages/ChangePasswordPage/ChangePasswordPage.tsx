@@ -30,11 +30,11 @@ import ChangePasswordLoadingModal from '@extension/modals/ChangePasswordLoadingM
 import ConfirmPasswordModal from '@extension/modals/ConfirmPasswordModal';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 const ChangePasswordPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const navigate = useNavigate();
   const {
     isOpen: isConfirmPasswordModalOpen,

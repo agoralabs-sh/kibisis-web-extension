@@ -16,6 +16,7 @@ import type {
   IAccount,
   IAccountWithExtendedProps,
   IAsyncThunkConfigWithRejectValue,
+  IMainRootState,
   IPrivateKey,
 } from '@extension/types';
 import type { ISaveNewWatchAccountPayload } from '../types';
@@ -26,11 +27,11 @@ import convertAVMAddressToPublicKey from '@extension/utils/convertAVMAddressToPu
 const saveNewWatchAccountThunk: AsyncThunk<
   IAccountWithExtendedProps, // return
   ISaveNewWatchAccountPayload, // args
-  IAsyncThunkConfigWithRejectValue
+  IAsyncThunkConfigWithRejectValue<IMainRootState>
 > = createAsyncThunk<
   IAccountWithExtendedProps,
   ISaveNewWatchAccountPayload,
-  IAsyncThunkConfigWithRejectValue
+  IAsyncThunkConfigWithRejectValue<IMainRootState>
 >(
   ThunkEnum.SaveNewWatchAccount,
   async ({ address, name }, { getState, rejectWithValue }) => {

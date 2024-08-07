@@ -19,7 +19,6 @@ export * from './layout';
 export * from './modals';
 export * from './networks';
 export * from './notifications';
-export * from './password-lock';
 export * from './redux';
 export * from './sessions';
 export * from './settings';

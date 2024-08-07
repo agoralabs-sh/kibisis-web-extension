@@ -51,7 +51,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
     const fromAddress = getState().sendAssets.fromAddress;
     const logger = getState().system.logger;
     const networks = getState().networks.items;
-    const online = getState().system.online;
+    const online = getState().system.networkConnectivity.online;
     const network = selectNetworkFromSettings(networks, getState().settings);
     const note = getState().sendAssets.note;
     const toAddress = getState().sendAssets.toAddress;

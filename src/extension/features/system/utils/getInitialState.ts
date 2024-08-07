@@ -8,6 +8,10 @@ export default function getInitialState(): IState {
   return {
     info: null,
     logger: createLogger(__ENV__ === 'development' ? 'debug' : 'error'),
-    online: true,
+    networkConnectivity: {
+      checking: false,
+      online: true,
+      pollingID: null,
+    },
   };
 }

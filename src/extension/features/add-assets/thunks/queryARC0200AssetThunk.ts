@@ -49,7 +49,7 @@ const queryARC0200AssetThunk: AsyncThunk<
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentARC200Assets = getState().addAssets.arc200Assets;
     const logger = getState().system.logger;
-    const online = getState().system.online;
+    const online = getState().system.networkConnectivity.online;
     const selectedNetwork = selectNetworkFromSettings(
       getState().networks.items,
       getState().settings

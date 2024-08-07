@@ -13,17 +13,21 @@ import { MessagesThunkEnum } from '@extension/enums';
 import { ClientResponseMessage } from '@common/messages';
 
 // types
-import type { IBaseAsyncThunkConfig } from '@extension/types';
+import type {
+  IBackgroundRootState,
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+} from '@extension/types';
 import type { ISignMessageResponseThunkPayload } from '../types';
 
 const sendSignMessageResponseThunk: AsyncThunk<
   void, // return
   ISignMessageResponseThunkPayload, // args
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   void,
   ISignMessageResponseThunkPayload,
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(
   MessagesThunkEnum.SendSignMessageResponse,
   async ({ error, event, signature, signer }, { getState }) => {

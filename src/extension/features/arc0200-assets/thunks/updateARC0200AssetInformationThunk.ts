@@ -10,8 +10,12 @@ import { ARC0200AssetsThunkEnum } from '@extension/enums';
 import ARC0200AssetService from '@extension/services/ARC0200AssetService';
 
 // types
-import type { ILogger } from '@common/types';
-import type { IARC0200Asset, IBaseAsyncThunkConfig } from '@extension/types';
+import type {
+  IARC0200Asset,
+  IBackgroundRootState,
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+} from '@extension/types';
 import type {
   IUpdateARC0200AssetInformationPayload,
   IUpdateARC0200AssetInformationResult,
@@ -24,15 +28,15 @@ import upsertItemsById from '@extension/utils/upsertItemsById';
 const updateARC0200AssetInformationThunk: AsyncThunk<
   IUpdateARC0200AssetInformationResult, // return
   IUpdateARC0200AssetInformationPayload, // args
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   IUpdateARC0200AssetInformationResult,
   IUpdateARC0200AssetInformationPayload,
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(
   ARC0200AssetsThunkEnum.UpdateARC0200AssetInformation,
   async ({ ids, network }, { getState }) => {
-    const logger: ILogger = getState().system.logger;
+    const logger = getState().system.logger;
     let asset: IARC0200Asset | null;
     let currentAssets: IARC0200Asset[];
     let id: string;

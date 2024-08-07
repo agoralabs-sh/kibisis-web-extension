@@ -1,11 +1,15 @@
 // types
-import type { INewAccount, TEncryptionCredentials } from '@extension/types';
+import type {
+  INewAccount,
+  IPasskeyEncryptionCredentials,
+  IPasswordEncryptionCredentials,
+} from '@extension/types';
 
 interface ISaveNewAccountsPayloadFragment {
   accounts: INewAccount[];
 }
 
 type TSaveNewAccountsPayload = ISaveNewAccountsPayloadFragment &
-  TEncryptionCredentials;
+  (IPasskeyEncryptionCredentials | IPasswordEncryptionCredentials);
 
 export default TSaveNewAccountsPayload;

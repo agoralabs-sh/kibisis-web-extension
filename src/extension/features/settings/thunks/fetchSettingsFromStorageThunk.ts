@@ -7,23 +7,27 @@ import { SettingsThunkEnum } from '@extension/enums';
 import SettingsService from '@extension/services/SettingsService';
 
 // types
-import { ILogger } from '@common/types';
-import { IMainRootState, ISettings } from '@extension/types';
+import type {
+  IBaseAsyncThunkConfig,
+  IBaseRootState,
+  ISettings,
+} from '@extension/types';
 
 const fetchSettingsFromStorageThunk: AsyncThunk<
   ISettings, // return
   undefined, // args
-  Record<string, never>
-> = createAsyncThunk<ISettings, undefined, { state: IMainRootState }>(
-  SettingsThunkEnum.FetchSettingsFromStorage,
-  async (_, { getState }) => {
-    const logger: ILogger = getState().system.logger;
-    const settingsService: SettingsService = new SettingsService({
-      logger,
-    });
+  IBaseAsyncThunkConfig<IBaseRootState>
+> = createAsyncThunk<
+  ISettings,
+  undefined,
+  IBaseAsyncThunkConfig<IBaseRootState>
+>(SettingsThunkEnum.FetchSettingsFromStorage, async (_, { getState }) => {
+  const logger = getState().system.logger;
+  const settingsService = new SettingsService({
+    logger,
+  });
 
-    return await settingsService.getAll();
-  }
-);
+  return await settingsService.getAll();
+});
 
 export default fetchSettingsFromStorageThunk;

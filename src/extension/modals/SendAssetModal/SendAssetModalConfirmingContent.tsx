@@ -36,10 +36,10 @@ const SendAssetModalConfirmingContent: FC<
       {/*captions*/}
       <Text color={defaultTextColor} fontSize="md" textAlign="center" w="full">
         {numberOfTransactions
-          ? t<string>('captions.confirmingTransactionWithAmountWithAmount', {
+          ? t<string>('captions.confirmingTransactionWithAmount', {
               number: numberOfTransactions,
             })
-          : t<string>('captions.confirmingTransactionWithAmount')}
+          : t<string>('captions.confirmingTransaction')}
       </Text>
     </VStack>
   );

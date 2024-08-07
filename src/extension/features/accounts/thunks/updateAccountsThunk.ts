@@ -51,11 +51,8 @@ const updateAccountsThunk: AsyncThunk<
   ) => {
     const logger = getState().system.logger;
     const networks = getState().networks.items;
-    const online = getState().system.online;
-    const selectedNetwork = selectNetworkFromSettings(
-      networks,
-      getState().settings
-    );
+    const network = selectNetworkFromSettings(networks, getState().settings);
+    const online = getState().system.networkConnectivity.online;
     let accountService: AccountService;
     let accounts = getState().accounts.items.map((value) =>
       mapAccountWithExtendedPropsToAccount(value)
@@ -70,7 +67,7 @@ const updateAccountsThunk: AsyncThunk<
       return [];
     }
 
-    if (!selectedNetwork) {
+    if (!network) {
       logger.debug(
         `${ThunkEnum.UpdateAccounts}: no network selected, skipping`
       );
@@ -88,9 +85,16 @@ const updateAccountsThunk: AsyncThunk<
     accountService = new AccountService({
       logger,
     });
-    encodedGenesisHash = convertGenesisHashToHex(
-      selectedNetwork.genesisHash
-    ).toUpperCase();
+    encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
+
+    logger?.debug(
+      `${
+        ThunkEnum.UpdateAccounts
+      }: updating account information for accounts [${accounts
+        .map(({ publicKey }) => convertPublicKeyToAVMAddress(publicKey))
+        .join(',')}] for network "${network.genesisId}"`
+    );
+
     accounts = await Promise.all(
       accounts.map(async (account, index) => ({
         ...account,
@@ -104,7 +108,7 @@ const updateAccountsThunk: AsyncThunk<
             delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
             forceUpdate: forceInformationUpdate,
             logger,
-            network: selectedNetwork,
+            network: network,
           }),
         },
       }))
@@ -112,6 +116,14 @@ const updateAccountsThunk: AsyncThunk<
 
     // ignore transaction updates it account information only has been specified
     if (!informationOnly) {
+      logger?.debug(
+        `${
+          ThunkEnum.UpdateAccounts
+        }: updating account transaction for accounts [${accounts
+          .map(({ publicKey }) => convertPublicKeyToAVMAddress(publicKey))
+          .join(',')}] for network "${network.genesisId}"`
+      );
+
       accounts = await Promise.all(
         accounts.map(async (account, index) => ({
           ...account,
@@ -124,7 +136,7 @@ const updateAccountsThunk: AsyncThunk<
                 AccountService.initializeDefaultAccountTransactions(),
               delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               logger,
-              network: selectedNetwork,
+              network: network,
               refresh: refreshTransactions,
             }),
           },

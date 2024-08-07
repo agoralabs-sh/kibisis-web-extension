@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 
 // features
 import { fetchAccountsFromStorageThunk } from '@extension/features/accounts';
+import { fetchActiveThunk as fetchCredentialsLockActiveThunk } from '@extension/features/credential-lock';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
@@ -27,14 +28,16 @@ import SplashPage from '@extension/pages/SplashPage';
 import { useSelectSelectedNetwork } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IBackgroundRootState } from '@extension/types';
 
 // utils
 import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
 
 const Root: FC = () => {
-  const dispatch = useDispatch<IAppThunkDispatch>();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const dispatch = useDispatch<IAppThunkDispatch<IBackgroundRootState>>();
+  // selectors
+  const network = useSelectSelectedNetwork();
+  // misc
   const url = new URL(window.location.href);
   const eventId = decodeURLSearchParam('eventId', url.searchParams);
   // handlers
@@ -48,6 +51,7 @@ const Root: FC = () => {
       return;
     }
 
+    dispatch(fetchCredentialsLockActiveThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
@@ -56,10 +60,10 @@ const Root: FC = () => {
   }, []);
   // fetch accounts when the selected network has been found
   useEffect(() => {
-    if (selectedNetwork) {
+    if (network) {
       dispatch(fetchAccountsFromStorageThunk());
     }
-  }, [selectedNetwork]);
+  }, [network]);
   useEffect(() => {
     if (eventId) {
       dispatch(handleNewEventByIdThunk(eventId));

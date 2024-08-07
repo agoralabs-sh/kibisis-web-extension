@@ -279,7 +279,6 @@ const configs: (
      * extension apps
      */
     merge(commonConfig, {
-      dependencies: [ConfigNameEnum.ExtensionScripts],
       devtool,
       entry: {
         ['background-app']: resolve(

@@ -16,17 +16,21 @@ import { removeEventByIdThunk } from '@extension/features/events';
 import { ClientResponseMessage } from '@common/messages';
 
 // types
-import type { IBaseAsyncThunkConfig } from '@extension/types';
+import type {
+  IBackgroundRootState,
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+} from '@extension/types';
 import type { ISignTransactionsResponseThunkPayload } from '../types';
 
 const sendSignTransactionsResponseThunk: AsyncThunk<
   void, // return
   ISignTransactionsResponseThunkPayload, // args
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   void,
   ISignTransactionsResponseThunkPayload,
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(
   MessagesThunkEnum.SendSignTransactionsResponse,
   async ({ error, event, stxns }, { dispatch, getState }) => {
