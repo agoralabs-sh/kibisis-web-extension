@@ -14,6 +14,7 @@ import {
 import type {
   IAppThunkDispatch,
   IARC0200Asset,
+  IMainRootState,
   INetwork,
 } from '@extension/types';
 import type { IUseUpdateARC0200AssetsState } from './types';
@@ -21,11 +22,10 @@ import type { IUseUpdateARC0200AssetsState } from './types';
 export default function useUpdateARC0200Assets(
   assetIDs: string[]
 ): IUseUpdateARC0200AssetsState {
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
-  const arc0200Assets: IARC0200Asset[] =
-    useSelectARC0200AssetsBySelectedNetwork();
-  const network: INetwork | null = useSelectSelectedNetwork();
+  const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
+  const network = useSelectSelectedNetwork();
   // states
   const [assets, setAssets] = useState<IARC0200Asset[]>([]);
   const [loading, setLoading] = useState<boolean>(false);

@@ -10,31 +10,20 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoLockClosedOutline } from 'react-icons/io5';
 import browser from 'webextension-polyfill';
 
 // components
 import Button from '@extension/components/Button';
-import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 import PasswordInput from '@extension/components/PasswordInput';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
-// enums
-import { EncryptionMethodEnum } from '@extension/enums';
-
 // hooks
 import { usePassword } from '@extension/components/PasswordInput';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectLogger,
-  useSelectPasswordLockCredentials,
-  useSelectSettings,
-} from '@extension/selectors';
+import { useSelectLogger } from '@extension/selectors';
 
 // services
 import PasswordService from '@extension/services/PasswordService';
@@ -55,10 +44,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
   // selectors
   const logger = useSelectLogger();
-  const passwordLockCredentials = useSelectPasswordLockCredentials();
-  const settings = useSelectSettings();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const {
     error: passwordError,
     onChange: onPasswordChange,
@@ -67,7 +53,6 @@ const ConfirmPasswordModal: FC<IProps> = ({
     validate: validatePassword,
     value: password,
   } = usePassword();
-  const subTextColor = useSubTextColor();
   // states
   const [verifying, setVerifying] = useState<boolean>(false);
   // misc
@@ -118,43 +103,6 @@ const ConfirmPasswordModal: FC<IProps> = ({
       await handleConfirmClick();
     }
   };
-  // renders
-  const renderContent = () => {
-    // show a loader if there is a password lock and password
-    if (settings.security.enablePasswordLock && passwordLockCredentials) {
-      return (
-        <VStack
-          alignItems="center"
-          flexGrow={1}
-          justifyContent="center"
-          spacing={DEFAULT_GAP}
-          w="full"
-        >
-          {/*progress*/}
-          <CircularProgressWithIcon icon={IoLockClosedOutline} />
-
-          {/*caption*/}
-          <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">
-            {t<string>('captions.checkingAuthenticationCredentials')}
-          </Text>
-        </VStack>
-      );
-    }
-
-    return (
-      <VStack w="full">
-        <PasswordInput
-          disabled={verifying}
-          error={passwordError}
-          hint={hint || t<string>('captions.mustEnterPasswordToConfirm')}
-          inputRef={passwordInputRef}
-          onChange={onPasswordChange}
-          onKeyUp={handleKeyUpPasswordInput}
-          value={password || ''}
-        />
-      </VStack>
-    );
-  };
 
   // set focus when opening
   useEffect(() => {
@@ -162,16 +110,6 @@ const ConfirmPasswordModal: FC<IProps> = ({
       passwordInputRef.current.focus();
     }
   }, []);
-  // check if there is a password lock and password lock password present
-  useEffect(() => {
-    if (
-      settings.security.enablePasswordLock &&
-      passwordLockCredentials?.type === EncryptionMethodEnum.Password
-    ) {
-      onConfirm(passwordLockCredentials.password);
-      handleClose();
-    }
-  }, [isOpen]);
 
   return (
     <Modal
@@ -192,7 +130,19 @@ const ConfirmPasswordModal: FC<IProps> = ({
         minH={0}
       >
         {/*content*/}
-        <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+        <ModalBody px={DEFAULT_GAP}>
+          <VStack w="full">
+            <PasswordInput
+              disabled={verifying}
+              error={passwordError}
+              hint={hint || t<string>('captions.mustEnterPasswordToConfirm')}
+              inputRef={passwordInputRef}
+              onChange={onPasswordChange}
+              onKeyUp={handleKeyUpPasswordInput}
+              value={password || ''}
+            />
+          </VStack>
+        </ModalBody>
 
         {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>

@@ -55,7 +55,7 @@ import { useSelectPasskeysSaving } from '@extension/selectors';
 import { theme } from '@extension/theme';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
@@ -63,7 +63,7 @@ import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isConfirmPasswordModalOpen,
     onClose: onConfirmPasswordModalClose,

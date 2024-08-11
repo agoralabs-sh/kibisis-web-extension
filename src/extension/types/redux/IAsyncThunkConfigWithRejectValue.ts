@@ -3,11 +3,10 @@ import { BaseExtensionError } from '@extension/errors';
 
 // types
 import type IBaseAsyncThunkConfig from './IBaseAsyncThunkConfig';
-import type IMainRootState from '../states/IMainRootState';
-import type IRegistrationRootState from '../states/IRegistrationRootState';
+import type IBaseRootState from '../states/IBaseRootState';
 
 interface IAsyncThunkConfigWithRejectValue<
-  State = IMainRootState | IRegistrationRootState,
+  State extends IBaseRootState,
   RejectValue = BaseExtensionError
 > extends IBaseAsyncThunkConfig<State> {
   rejectValue?: RejectValue;

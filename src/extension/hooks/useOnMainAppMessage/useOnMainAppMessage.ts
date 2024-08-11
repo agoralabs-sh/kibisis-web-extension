@@ -6,8 +6,8 @@ import browser from 'webextension-polyfill';
 import { ProviderMessageReferenceEnum } from '@common/enums';
 
 // features
+import { setActive as setCredentialLockActive } from '@extension/features/credential-lock';
 import { handleNewEventByIdThunk } from '@extension/features/events';
-import { setCredentials as setPasswordLockCredentials } from '@extension/features/password-lock';
 
 // messages
 import { ProviderEventAddedMessage } from '@common/messages';
@@ -17,11 +17,11 @@ import { useSelectLogger } from '@extension/selectors';
 
 // types
 import type { TProviderMessages } from '@common/types';
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 export default function useOnMainAppMessage(): void {
   const _functionName = 'useOnMainAppMessage';
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const logger = useSelectLogger();
   const handleMessage = async (message: TProviderMessages) => {
@@ -36,9 +36,8 @@ export default function useOnMainAppMessage(): void {
         );
 
         break;
-      case ProviderMessageReferenceEnum.PasswordLockTimeout:
-        // remove the password lock credentials
-        dispatch(setPasswordLockCredentials(null));
+      case ProviderMessageReferenceEnum.CredentialLockActivated:
+        dispatch(setCredentialLockActive(true));
 
         break;
       default:

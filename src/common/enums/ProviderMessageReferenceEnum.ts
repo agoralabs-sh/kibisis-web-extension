@@ -1,9 +1,8 @@
 enum ProviderMessageReferenceEnum {
   // messages sent from the extension internally within the extension
-  FactoryReset = 'provider:factory_reset',
+  CredentialLockActivated = 'provider:credential_lock_activated',
   EventAdded = 'provider:event_added',
-  PasswordLockClear = 'provider:password_lock_clear',
-  PasswordLockTimeout = 'provider:password_lock_timeout',
+  FactoryReset = 'provider:factory_reset',
   RegistrationCompleted = 'provider:registration_completed',
 }
 

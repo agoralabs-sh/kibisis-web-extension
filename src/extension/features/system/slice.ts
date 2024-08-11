@@ -4,7 +4,12 @@ import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '@extension/enums';
 
 // thunks
-import { fetchFromStorageThunk } from './thunks';
+import {
+  fetchFromStorageThunk,
+  startPollingForNetworkConnectivityThunk,
+  stopPollingForTransactionsParamsThunk,
+  updateNetworkConnectivityThunk,
+} from './thunks';
 
 // types
 import type { ILogger } from '@common/types';
@@ -23,6 +28,40 @@ const slice = createSlice({
         state.info = action.payload;
       }
     );
+    /** start polling for network connectivity **/
+    builder.addCase(
+      startPollingForNetworkConnectivityThunk.fulfilled,
+      (state: IState, action: PayloadAction<number>) => {
+        state.networkConnectivity.pollingID = action.payload;
+      }
+    );
+    /** stop polling for network connectivity **/
+    builder.addCase(
+      stopPollingForTransactionsParamsThunk.fulfilled,
+      (state: IState) => {
+        state.networkConnectivity.pollingID = null;
+      }
+    );
+    /** update network connectivity **/
+    builder.addCase(
+      updateNetworkConnectivityThunk.fulfilled,
+      (state: IState, action: PayloadAction<boolean>) => {
+        state.networkConnectivity = {
+          ...state.networkConnectivity,
+          checking: false,
+          online: action.payload,
+        };
+      }
+    );
+    builder.addCase(updateNetworkConnectivityThunk.pending, (state: IState) => {
+      state.networkConnectivity.checking = true;
+    });
+    builder.addCase(
+      updateNetworkConnectivityThunk.rejected,
+      (state: IState) => {
+        state.networkConnectivity.checking = false;
+      }
+    );
   },
   initialState: getInitialState(),
   name: StoreNameEnum.System,
@@ -30,11 +69,8 @@ const slice = createSlice({
     setLogger: (state: Draft<IState>, action: PayloadAction<ILogger>) => {
       state.logger = action.payload;
     },
-    setOnline: (state: Draft<IState>, action: PayloadAction<boolean>) => {
-      state.online = action.payload;
-    },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setLogger, setOnline } = slice.actions;
+export const { setLogger } = slice.actions;

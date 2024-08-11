@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { NETWORK_TRANSACTION_PARAMS_REFRESH_INTERVAL } from '@extension/constants';
 
 // enums
-import { NetworksThunkEnum } from '@extension/enums';
+import { ThunkEnum } from '../enums';
 
 // thunks
 import updateTransactionParamsForSelectedNetworkThunk from './updateTransactionParamsForSelectedNetworkThunk';
@@ -18,12 +18,12 @@ const startPollingForTransactionsParamsThunk: AsyncThunk<
   undefined, // args
   Record<string, never>
 > = createAsyncThunk<number, undefined, { state: IMainRootState }>(
-  NetworksThunkEnum.StartPollingForTransactionParams,
+  ThunkEnum.StartPollingForTransactionParams,
   (_, { dispatch, getState }) => {
-    const logger: ILogger = getState().system.logger;
+    const logger = getState().system.logger;
 
     logger.debug(
-      `${NetworksThunkEnum.StartPollingForTransactionParams}: started polling for network transaction params`
+      `${ThunkEnum.StartPollingForTransactionParams}: started polling for network transaction params`
     );
 
     return window.setInterval(

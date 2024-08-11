@@ -69,9 +69,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useIsNewSelectedAsset from './hooks/useIsNewSelectedAsset';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -104,8 +102,10 @@ import type {
   IAppThunkDispatchReturn,
   IARC0200Asset,
   IAssetTypes,
+  IMainRootState,
   IModalProps,
   IStandardAsset,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -116,7 +116,7 @@ import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccount
 
 const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const assetContainerRef = useRef<HTMLDivElement | null>(null);
   const {
     isOpen: isAuthenticationModalOpen,
@@ -277,7 +277,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleAddStandardAssetClick = () => onAuthenticationModalOpen();
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     let hasQuestBeenCompletedToday: boolean = false;
     let questsSent: boolean = false;

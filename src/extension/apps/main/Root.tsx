@@ -1,13 +1,10 @@
 import React, { FC, useEffect } from 'react';
 import Confetti from 'react-confetti';
 import { useDispatch } from 'react-redux';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 // components
 import MainLayout from '@extension/components/MainLayout';
-
-// constants
-import { PASSWORD_LOCK_ROUTE } from '@extension/constants';
 
 // features
 import { reset as resetAddAsset } from '@extension/features/add-assets';
@@ -17,6 +14,7 @@ import {
 } from '@extension/features/accounts';
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
+import { fetchActiveThunk as fetchCredentialLockActiveThunk } from '@extension/features/credential-lock';
 import {
   setConfirmModal,
   setScanQRCodeModal,
@@ -34,12 +32,14 @@ import { reset as resetSendAsset } from '@extension/features/send-assets';
 import { fetchSessionsThunk } from '@extension/features/sessions';
 import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
-import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
+import {
+  fetchFromStorageThunk as fetchSystemInfoFromStorageThunk,
+  startPollingForNetworkConnectivityThunk,
+} from '@extension/features/system';
 
 // hooks
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
-import useOnNetworkConnectivity from '@extension/hooks/useOnNetworkConnectivity';
 import useOnNewAssets from '@extension/hooks/useOnNewAssets';
 import useNotifications from '@extension/hooks/useNotifications';
 
@@ -47,9 +47,9 @@ import useNotifications from '@extension/hooks/useNotifications';
 import AddAssetsModal, {
   AddAssetsForWatchAccountModal,
 } from '@extension/modals/AddAssetsModal';
-import AddPasskeyModal from '@extension/modals/AddPasskeyModal';
 import ARC0300KeyRegistrationTransactionSendEventModal from '@extension/modals/ARC0300KeyRegistrationTransactionSendEventModal';
 import ConfirmModal from '@extension/modals/ConfirmModal';
+import CredentialLockModal from '@extension/modals/CredentialLockModal';
 import EnableModal from '@extension/modals/EnableModal';
 import ReKeyAccountModal from '@extension/modals/ReKeyAccountModal';
 import RemoveAssetsModal from '@extension/modals/RemoveAssetsModal';
@@ -62,23 +62,18 @@ import VoiageToMainnetModal from '@extension/modals/VoiageToMainnetModal';
 // selectors
 import {
   useSelectAccounts,
-  useSelectPasswordLockCredentials,
   useSelectNotificationsShowingConfetti,
   useSelectSelectedNetwork,
-  useSelectSettings,
 } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 const Root: FC = () => {
-  const dispatch = useDispatch<IAppThunkDispatch>();
-  const navigate = useNavigate();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const accounts = useSelectAccounts();
-  const passwordLockPassword = useSelectPasswordLockCredentials();
-  const selectedNetwork = useSelectSelectedNetwork();
-  const settings = useSelectSettings();
+  const network = useSelectSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
@@ -91,6 +86,7 @@ const Root: FC = () => {
 
   // 1. fetch the required data
   useEffect(() => {
+    dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
@@ -101,10 +97,11 @@ const Root: FC = () => {
     dispatch(fetchNewsFromStorageThunk());
     dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());
+    dispatch(startPollingForNetworkConnectivityThunk());
   }, []);
   // 2. when the selected network has been fetched from storage
   useEffect(() => {
-    if (selectedNetwork) {
+    if (network) {
       // fetch accounts when no accounts exist
       if (accounts.length < 1) {
         dispatch(
@@ -118,17 +115,10 @@ const Root: FC = () => {
       // fetch the most recent transaction params for the selected network
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
-  }, [selectedNetwork]);
-  // when the password lock is updated, if it is empty and the password lock is enabled, lock the screen
-  useEffect(() => {
-    if (settings.security.enablePasswordLock && !passwordLockPassword) {
-      navigate(PASSWORD_LOCK_ROUTE);
-    }
-  }, [passwordLockPassword]);
+  }, [network]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications
-  useOnNetworkConnectivity(); // listen to network connectivity
   useOnMainAppMessage(); // handle incoming messages
 
   return (
@@ -138,6 +128,7 @@ const Root: FC = () => {
       )}
 
       {/*top-level modals*/}
+      <CredentialLockModal />
       <ConfirmModal onClose={handleConfirmClose} />
 
       {/*event modals*/}

@@ -5,15 +5,20 @@ import { v4 as uuid } from 'uuid';
 // constants
 import { PRIVATE_KEY_ITEM_KEY_PREFIX } from '@extension/constants';
 
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // services
 import StorageManager from '../StorageManager';
 
 // types
 import type { IPrivateKey } from '@extension/types';
-import type { ICreatePrivateKeyOptions, INewOptions } from './types';
-import { EncryptionMethodEnum } from '@extension/enums';
-
-//
+import type { ICreateOptions, INewOptions, IUpgradeOptions } from './types';
+import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
+import { DecryptionError, MalformedDataError } from '@extension/errors';
+import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
+import PasswordService from '@extension/services/PasswordService';
+import PasskeyService from '@extension/services/PasskeyService';
 
 /**
  * Handles all interactions with the private key item in storage. This does not deal with any encryption/decryption,
@@ -25,10 +30,13 @@ import { EncryptionMethodEnum } from '@extension/enums';
  * * The `encryptedPrivateKey` property is replaced with the actual private key (seed) rather than the "secret key"
  * (private key concentrated to the public key).
  * * `passwordTagId` has been replaced with `encryptionID` and `encryptionMethod`
+ * @version 2:
+ * * The new `privateKey` property is the unencrypted private key that is non-nullified when the password lock feature is
+ * enabled and not timed out.
  */
 export default class PrivateKeyService {
   // public static variables
-  public static readonly latestVersion: number = 1;
+  public static readonly latestVersion: number = 2;
 
   // private variables
   private readonly storageManager: StorageManager;
@@ -43,18 +51,19 @@ export default class PrivateKeyService {
 
   /**
    * Convenience function that creates a new private key item.
-   * @param {ICreatePrivateKeyOptions} options - the raw encrypted private key, the raw public key and the encryption
+   * @param {ICreateOptions} options - the raw encrypted private key, the raw public key and the encryption
    * method & ID.
    * @returns {IPrivateKey} an initialized private key item.
    * @public
    * @static
    */
-  public static createPrivateKey({
+  public static create({
     encryptedPrivateKey,
     encryptionID,
     encryptionMethod,
+    privateKey,
     publicKey,
-  }: ICreatePrivateKeyOptions): IPrivateKey {
+  }: ICreateOptions): IPrivateKey {
     const now = new Date();
 
     return {
@@ -63,6 +72,7 @@ export default class PrivateKeyService {
       encryptionID,
       encryptionMethod,
       id: uuid(),
+      privateKey: privateKey ? PrivateKeyService.encode(privateKey) : null,
       publicKey: PrivateKeyService.encode(publicKey),
       updatedAt: now.getTime(),
       version: PrivateKeyService.latestVersion,
@@ -110,6 +120,90 @@ export default class PrivateKeyService {
     return secretKey.slice(0, sign.seedLength); // get the first 32 bytes, this is the private key (seed)
   }
 
+  public static async upgrade({
+    encryptionCredentials,
+    logger,
+    privateKeyItem,
+  }: IUpgradeOptions): Promise<IPrivateKey> {
+    let _functionName = 'upgrade';
+    let _privateKeyItem: IPrivateKey = privateKeyItem;
+    let decryptedPrivateKey: Uint8Array;
+    let encryptedPrivateKey: Uint8Array;
+
+    if (privateKeyItem.version >= PrivateKeyService.latestVersion) {
+      return privateKeyItem;
+    }
+
+    logger?.debug(
+      `${PrivateKeyService.name}#${_functionName}: key "${privateKeyItem.id}" on legacy version "${privateKeyItem.version}"`
+    );
+
+    switch (encryptionCredentials.type) {
+      case EncryptionMethodEnum.Passkey:
+        decryptedPrivateKey = await PasskeyService.decryptBytes({
+          encryptedBytes: PrivateKeyService.decode(
+            privateKeyItem.encryptedPrivateKey
+          ),
+          inputKeyMaterial: encryptionCredentials.inputKeyMaterial,
+          passkey: encryptionCredentials.passkey,
+          logger,
+        }); // decrypt the private key with the passkey
+
+        break;
+      case EncryptionMethodEnum.Password:
+        decryptedPrivateKey = await PasswordService.decryptBytes({
+          data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+          logger,
+          password: encryptionCredentials.password,
+        }); // decrypt the private key with the current password
+
+        break;
+      default:
+        throw new MalformedDataError('no credentials found');
+    }
+
+    // un-versioned or version 0 use the "secret key" form - the private key concatenated to the public key
+    if (privateKeyItem.version <= 0) {
+      decryptedPrivateKey =
+        PrivateKeyService.extractPrivateKeyFromSecretKey(decryptedPrivateKey);
+
+      switch (encryptionCredentials.type) {
+        case EncryptionMethodEnum.Passkey:
+          encryptedPrivateKey = await PasskeyService.encryptBytes({
+            bytes: decryptedPrivateKey,
+            inputKeyMaterial: encryptionCredentials.inputKeyMaterial,
+            passkey: encryptionCredentials.passkey,
+            logger,
+          }); // re-encrypt the private key with the passkey
+
+          break;
+        case EncryptionMethodEnum.Password:
+          encryptedPrivateKey = await PasswordService.encryptBytes({
+            data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+            logger,
+            password: encryptionCredentials.password,
+          }); // re-encrypt the private key with the current password
+
+          break;
+        default:
+          throw new MalformedDataError('no credentials found');
+      }
+
+      _privateKeyItem = {
+        ..._privateKeyItem,
+        encryptedPrivateKey: PrivateKeyService.encode(encryptedPrivateKey),
+        privateKey: _privateKeyItem.privateKey
+          ? PrivateKeyService.encode(decryptedPrivateKey)
+          : null,
+      };
+    }
+
+    return {
+      ..._privateKeyItem,
+      version: PrivateKeyService.latestVersion, // update to the latest version
+    };
+  }
+
   /**
    * private functions
    */
@@ -125,7 +219,8 @@ export default class PrivateKeyService {
   }
 
   /**
-   * Sanitizes the private key item, only returning properties that are in the private key item.
+   * Sanitizes the private key item, only returning properties that are in the private key item. This function acts as
+   * a way to "upgrade" the private keys to handle the changes between versions.
    * @param {IPrivateKey} item - the private key item to sanitize.
    * @returns {IPrivateKey} the sanitized private key item.
    * @private
@@ -136,12 +231,14 @@ export default class PrivateKeyService {
     encryptionID,
     id,
     passwordTagId,
+    privateKey,
     publicKey,
     encryptionMethod,
     updatedAt,
     version,
   }: IPrivateKey): IPrivateKey {
     const _version = !version ? 0 : version; // if there is no version, start at zero (legacy)
+    const _privateKey = !privateKey ? null : privateKey; // if there is no unencrypted private key (version <2) use null
     let _encryptionID = encryptionID;
     let _encryptionMethod = encryptionMethod;
 
@@ -160,6 +257,7 @@ export default class PrivateKeyService {
       encryptedPrivateKey,
       encryptionID: _encryptionID,
       encryptionMethod: _encryptionMethod,
+      privateKey: _privateKey,
       publicKey,
       updatedAt,
       version: _version,
@@ -260,7 +358,10 @@ export default class PrivateKeyService {
       _items.reduce<Record<string, IPrivateKey>>(
         (acc, currentValue) => ({
           ...acc,
-          [this._createPrivateKeyItemKey(currentValue.publicKey)]: currentValue,
+          [this._createPrivateKeyItemKey(currentValue.publicKey)]: {
+            ...currentValue,
+            updatedAt: new Date().getTime(),
+          },
         }),
         {}
       )
@@ -279,7 +380,10 @@ export default class PrivateKeyService {
     const _item = this._sanitize(item);
 
     await this.storageManager.setItems({
-      [this._createPrivateKeyItemKey(_item.publicKey)]: _item,
+      [this._createPrivateKeyItemKey(_item.publicKey)]: {
+        ..._item,
+        updatedAt: new Date().getTime(),
+      },
     });
 
     return _item;

@@ -9,17 +9,18 @@ import PasskeyService from '@extension/services/PasskeyService';
 // types
 import type {
   IBaseAsyncThunkConfig,
+  IMainRootState,
   IPasskeyCredential,
 } from '@extension/types';
 
 const saveToStorageThunk: AsyncThunk<
   IPasskeyCredential, // return
   IPasskeyCredential, // args
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IPasskeyCredential,
   IPasskeyCredential,
-  IBaseAsyncThunkConfig
+  IBaseAsyncThunkConfig<IMainRootState>
 >(ThunkEnum.SaveToStorage, async (credential) => {
   const passkeyService = new PasskeyService();
 

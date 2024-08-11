@@ -35,17 +35,18 @@ import {
 } from '@extension/constants';
 
 // errors
-import { BaseExtensionError } from '@extension/errors';
+import { BaseExtensionError, MalformedDataError } from '@extension/errors';
 
 // features
+import {
+  disableThunk as disableCredentialLockThunk,
+  enableThunk as enableCredentialLockThunk,
+} from '@extension/features/credential-lock';
 import { create as createNotification } from '@extension/features/notifications';
-import { savePasswordLockThunk } from '@extension/features/password-lock';
 import { saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -58,11 +59,16 @@ import {
 import PasskeyService from '@extension/services/PasskeyService';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  TEncryptionCredentials,
+} from '@extension/types';
+import { EncryptionMethodEnum } from '@extension/enums';
 
 const SecuritySettingsIndexPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,
@@ -121,7 +127,7 @@ const SecuritySettingsIndexPage: FC = () => {
   ) => {
     const _functionName = 'handleEnablePasswordLockSwitchChange';
 
-    // if we are enabling, we need to set the password
+    // if we are enabling, we need to get the credentials
     if (event.target.checked) {
       onAuthenticationModalOpen();
 
@@ -129,51 +135,61 @@ const SecuritySettingsIndexPage: FC = () => {
     }
 
     try {
-      // disable the password lock and wait for the settings to be updated
+      // wait for the settings to be updated
       await dispatch(
         saveSettingsToStorageThunk({
           ...settings,
           security: {
             ...settings.security,
-            enablePasswordLock: false,
+            enableCredentialLock: false,
           },
         })
       ).unwrap();
-
-      // ...then remove the password from the password lock
-      dispatch(savePasswordLockThunk(null));
+      // then... remove the decrypted private keys and remove and alarms
+      await dispatch(disableCredentialLockThunk()).unwrap();
     } catch (error) {
-      logger.debug(
-        `${SecuritySettingsIndexPage.name}#${_functionName}: failed save settings`
+      logger.error(
+        `${SecuritySettingsIndexPage.name}#${_functionName}:`,
+        error
       );
+
+      handleOnError(error);
     }
   };
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
 
     try {
-      // enable the lock and wait for the settings to be updated
+      if (result.type === EncryptionMethodEnum.Unencrypted) {
+        throw new MalformedDataError(
+          'enabling credential lock requires encryption credentials'
+        );
+      }
+
+      //  wait for the settings to be updated
       await dispatch(
         saveSettingsToStorageThunk({
           ...settings,
           security: {
             ...settings.security,
-            enablePasswordLock: true,
+            enableCredentialLock: true,
           },
         })
       ).unwrap();
-
-      // then... save the new password to the password lock
-      dispatch(savePasswordLockThunk(result));
+      // then... decrypt the keys
+      await dispatch(enableCredentialLockThunk(result)).unwrap();
     } catch (error) {
-      logger.debug(
-        `${SecuritySettingsIndexPage.name}#${_functionName}: failed save settings`
+      logger.error(
+        `${SecuritySettingsIndexPage.name}#${_functionName}:`,
+        error
       );
+
+      handleOnError(error);
     }
   };
-  const handleOnAuthenticationError = (error: BaseExtensionError) =>
+  const handleOnError = (error: BaseExtensionError) =>
     dispatch(
       createNotification({
         description: t<string>('errors.descriptions.code', {
@@ -185,13 +201,14 @@ const SecuritySettingsIndexPage: FC = () => {
         type: 'error',
       })
     );
-  const handlePasswordTimeoutDurationChange = (option: IOption<number>) => {
+  const handlePasswordTimeoutDurationChange = ({ value }: IOption<number>) => {
+    // update the settings
     dispatch(
       saveSettingsToStorageThunk({
         ...settings,
         security: {
           ...settings.security,
-          passwordLockTimeoutDuration: option.value,
+          credentialLockTimeoutDuration: value,
         },
       })
     );
@@ -201,10 +218,11 @@ const SecuritySettingsIndexPage: FC = () => {
     <>
       {/*authentication modal*/}
       <AuthenticationModal
+        forceAuthentication={true}
         isOpen={isAuthenticationModalOpen}
         onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
-        onError={handleOnAuthenticationError}
+        onError={handleOnError}
       />
 
       <PageHeader title={t<string>('titles.page', { context: 'security' })} />
@@ -215,7 +233,7 @@ const SecuritySettingsIndexPage: FC = () => {
 
         {/*enable password lock*/}
         <SettingsSwitchItem
-          checked={settings.security.enablePasswordLock}
+          checked={settings.security.enableCredentialLock}
           description={t<string>('captions.enablePasswordLock')}
           label={t<string>('labels.enablePasswordLock')}
           onChange={handleEnablePasswordLockSwitchChange}
@@ -223,7 +241,7 @@ const SecuritySettingsIndexPage: FC = () => {
 
         {/*password lock duration*/}
         <SettingsSelectItem
-          disabled={!settings.security.enablePasswordLock}
+          disabled={!settings.security.enableCredentialLock}
           emptyOptionLabel={t<string>('placeholders.pleaseSelect')}
           label={t<string>('labels.passwordLockTimeout')}
           onChange={handlePasswordTimeoutDurationChange}
@@ -231,7 +249,7 @@ const SecuritySettingsIndexPage: FC = () => {
           value={
             durationOptions.find(
               (value) =>
-                value.value === settings.security.passwordLockTimeoutDuration
+                value.value === settings.security.credentialLockTimeoutDuration
             ) || {
               label: t<string>('labels.passwordLockDuration', {
                 context: PASSWORD_LOCK_DURATION_NORMAL,

@@ -7,23 +7,28 @@ import { SessionsThunkEnum } from '@extension/enums';
 import SessionService from '@extension/services/SessionService';
 
 // types
-import { ILogger } from '@common/types';
-import { IMainRootState, ISession } from '@extension/types';
+import type {
+  IBackgroundRootState,
+  IBaseAsyncThunkConfig,
+  IMainRootState,
+  ISession,
+} from '@extension/types';
 
 const fetchSessionsThunk: AsyncThunk<
   ISession[], // return
   undefined, // args
-  Record<string, never>
-> = createAsyncThunk<ISession[], undefined, { state: IMainRootState }>(
-  SessionsThunkEnum.FetchSessions,
-  async (_, { getState }) => {
-    const logger: ILogger = getState().system.logger;
-    const sessionService: SessionService = new SessionService({
-      logger,
-    });
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
+> = createAsyncThunk<
+  ISession[],
+  undefined,
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
+>(SessionsThunkEnum.FetchSessions, async (_, { getState }) => {
+  const logger = getState().system.logger;
+  const sessionService = new SessionService({
+    logger,
+  });
 
-    return await sessionService.getAll();
-  }
-);
+  return await sessionService.getAll();
+});
 
 export default fetchSessionsThunk;

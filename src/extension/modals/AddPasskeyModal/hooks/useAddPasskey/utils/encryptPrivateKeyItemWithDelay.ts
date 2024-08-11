@@ -24,34 +24,26 @@ export default async function encryptPrivateKeyItemWithDelay({
   password,
   privateKeyItem,
 }: IEncryptPrivateKeyItemWithDelayOptions): Promise<IPrivateKey> {
-  const _functionName = 'encryptPrivateKeyItemWithDelay';
-
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
       let decryptedPrivateKey: Uint8Array;
       let reEncryptedPrivateKey: Uint8Array;
-      let version: number = privateKeyItem.version;
+      let _privateKeyItem: IPrivateKey;
 
       try {
+        _privateKeyItem = await PrivateKeyService.upgrade({
+          encryptionCredentials: {
+            password,
+            type: EncryptionMethodEnum.Password,
+          },
+          logger,
+          privateKeyItem,
+        });
         decryptedPrivateKey = await PasswordService.decryptBytes({
-          data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+          data: PrivateKeyService.decode(_privateKeyItem.encryptedPrivateKey),
           logger,
           password,
         }); // decrypt the private key with the current password
-
-        // if the saved private key is a legacy item, it is using the "secret key" form - the private key concatenated to the public key
-        if (privateKeyItem.version <= 0) {
-          logger?.debug(
-            `${_functionName}: key "${privateKeyItem}" on legacy version "${privateKeyItem.version}", updating`
-          );
-
-          decryptedPrivateKey =
-            PrivateKeyService.extractPrivateKeyFromSecretKey(
-              decryptedPrivateKey
-            );
-          version = PrivateKeyService.latestVersion; // update to the latest version
-        }
-
         reEncryptedPrivateKey = await PasskeyService.encryptBytes({
           bytes: decryptedPrivateKey,
           inputKeyMaterial,
@@ -67,8 +59,6 @@ export default async function encryptPrivateKeyItemWithDelay({
         encryptedPrivateKey: PrivateKeyService.encode(reEncryptedPrivateKey),
         encryptionID: passkey.id,
         encryptionMethod: EncryptionMethodEnum.Passkey,
-        updatedAt: new Date().getTime(),
-        version,
       });
     }, delay);
   });

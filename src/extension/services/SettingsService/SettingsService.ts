@@ -63,8 +63,8 @@ export default class SettingsService {
         allowActionTracking: false,
       },
       security: {
-        passwordLockTimeoutDuration: PASSWORD_LOCK_DURATION_NORMAL,
-        enablePasswordLock: false,
+        credentialLockTimeoutDuration: PASSWORD_LOCK_DURATION_NORMAL,
+        enableCredentialLock: false,
       },
     };
   }

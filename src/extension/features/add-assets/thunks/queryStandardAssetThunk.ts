@@ -51,7 +51,7 @@ const queryStandardAssetThunk: AsyncThunk<
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentStandardAssets = getState().addAssets.standardAssets;
     const logger = getState().system.logger;
-    const online = getState().system.online;
+    const online = getState().system.networkConnectivity.online;
     const selectedNetwork = selectNetworkFromSettings(
       getState().networks.items,
       getState().settings

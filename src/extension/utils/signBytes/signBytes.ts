@@ -15,6 +15,7 @@ import type { TOptions } from './types';
 // utils
 import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
 import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
+import fetchDecryptedKeyPairFromStorageWithUnencrypted from '@extension/utils/fetchDecryptedKeyPairFromStorageWithUnencrypted';
 
 /**
  * Convenience function that signs an arbitrary bit of data using the supplied signer.
@@ -34,20 +35,32 @@ export default async function signBytes({
   let keyPair: Ed21559KeyPair | null = null;
   let signature: Uint8Array;
 
-  if (encryptionOptions.type === EncryptionMethodEnum.Password) {
-    keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
-      logger,
-      password: encryptionOptions.password,
-      publicKey,
-    });
-  }
+  switch (encryptionOptions.type) {
+    case EncryptionMethodEnum.Passkey:
+      keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
+        inputKeyMaterial: encryptionOptions.inputKeyMaterial,
+        logger,
+        publicKey,
+      });
 
-  if (encryptionOptions.type === EncryptionMethodEnum.Passkey) {
-    keyPair = await fetchDecryptedKeyPairFromStorageWithPasskey({
-      inputKeyMaterial: encryptionOptions.inputKeyMaterial,
-      logger,
-      publicKey,
-    });
+      break;
+    case EncryptionMethodEnum.Password:
+      keyPair = await fetchDecryptedKeyPairFromStorageWithPassword({
+        logger,
+        password: encryptionOptions.password,
+        publicKey,
+      });
+
+      break;
+    case EncryptionMethodEnum.Unencrypted:
+      keyPair = await fetchDecryptedKeyPairFromStorageWithUnencrypted({
+        logger,
+        publicKey,
+      });
+
+      break;
+    default:
+      break;
   }
 
   if (!keyPair) {

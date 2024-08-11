@@ -54,9 +54,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -72,7 +70,11 @@ import {
 import { theme } from '@extension/theme';
 
 // types
-import type { IAppThunkDispatch } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  TEncryptionCredentials,
+} from '@extension/types';
 import type { IRemoveAssetsModalProps } from './types';
 
 // utils
@@ -81,7 +83,7 @@ import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
 const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const navigate = useNavigate();
   const {
     isOpen: isAuthenticationModalOpen,
@@ -156,7 +158,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
   const handleRemoveStandardAssetClick = async () =>
     onAuthenticationModalOpen();
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
     if (
       !selectedNetwork ||

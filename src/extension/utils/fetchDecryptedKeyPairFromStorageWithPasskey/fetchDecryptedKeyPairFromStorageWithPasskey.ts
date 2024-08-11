@@ -1,3 +1,6 @@
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
+
 // errors
 import { MalformedDataError } from '@extension/errors';
 
@@ -60,10 +63,6 @@ export default async function fetchDecryptedKeyPairFromStorageWithPasskey({
     return null;
   }
 
-  logger?.debug(
-    `${_functionName}: decrypting private key for public key "${_publicKey}"`
-  );
-
   passkey = await _passkeyService.fetchFromStorage();
 
   if (!passkey) {
@@ -74,21 +73,19 @@ export default async function fetchDecryptedKeyPairFromStorageWithPasskey({
     throw new MalformedDataError(_error);
   }
 
-  // this is the legacy version, we need to convert the "secret key" to a private key
-  if (privateKeyItem.version <= 0) {
-    decryptedPrivateKey = await PasskeyService.decryptBytes({
-      encryptedBytes: PrivateKeyService.decode(
-        privateKeyItem.encryptedPrivateKey
-      ),
+  privateKeyItem = await PrivateKeyService.upgrade({
+    encryptionCredentials: {
       inputKeyMaterial,
-      logger,
       passkey,
-    });
+      type: EncryptionMethodEnum.Passkey,
+    },
+    logger,
+    privateKeyItem,
+  });
 
-    return Ed21559KeyPair.generateFromPrivateKey(
-      PrivateKeyService.extractPrivateKeyFromSecretKey(decryptedPrivateKey)
-    );
-  }
+  logger?.debug(
+    `${_functionName}: decrypting private key for public key "${_publicKey}"`
+  );
 
   decryptedPrivateKey = await PasskeyService.decryptBytes({
     encryptedBytes: PrivateKeyService.decode(

@@ -22,12 +22,13 @@ import { useSelectSettings } from '@extension/selectors';
 import type {
   IAdvancedSettings,
   IAppThunkDispatch,
+  IMainRootState,
   ISettings,
 } from '@extension/types';
 
 const AdvancedSettingsPage: FC = () => {
   const { t } = useTranslation();
-  const dispatch: IAppThunkDispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const settings: ISettings = useSelectSettings();
   // handlers

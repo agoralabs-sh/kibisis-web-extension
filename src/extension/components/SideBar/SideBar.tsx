@@ -64,6 +64,7 @@ import {
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IMainRootState,
 } from '@extension/types';
 
 // utils
@@ -71,7 +72,7 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const navigate = useNavigate();
   // selectors
   const accounts = useSelectAccounts();

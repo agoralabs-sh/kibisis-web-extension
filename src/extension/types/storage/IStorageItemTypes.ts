@@ -10,7 +10,6 @@ import type {
 } from '../authentication';
 import type { TEvents } from '../events';
 import type { IAppWindow } from '../layout';
-import type { IPasswordLock } from '../password-lock';
 import type { ITransactionParams } from '../networks';
 import type { ISession } from '../sessions';
 import type {
@@ -34,7 +33,6 @@ type IStorageItemTypes =
   | TEvents[]
   | INewsItem[]
   | IPasskeyCredential
-  | IPasswordLock
   | IPasswordTag
   | IPrivacySettings
   | IPrivateKey

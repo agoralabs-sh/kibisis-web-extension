@@ -34,9 +34,7 @@ export default async function updateStandardAssetInformationById(
   let client: Algodv2;
   let verifiedAsset: ITinyManAssetResponse | null;
 
-  client = createAlgodClient(network, {
-    logger,
-  });
+  client = createAlgodClient(network);
 
   try {
     standardAssetInformation = await fetchStandardAssetInformationWithDelay({

@@ -9,6 +9,7 @@ import { MalformedDataError } from '@extension/errors';
 
 // services
 import AccountService from '@extension/services/AccountService';
+import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -65,7 +66,7 @@ export default async function authorizedAccountsForEvent({
         accounts.find(
           (value) =>
             value.publicKey ===
-            convertPublicKeyToAVMAddress(currentValue.from.publicKey)
+            PrivateKeyService.encode(currentValue.from.publicKey)
         ) || null;
       base64EncodedGenesisHash = encodeBase64(currentValue.genesisHash);
       authorizedAddresses = getAuthorizedAddressesForHost(

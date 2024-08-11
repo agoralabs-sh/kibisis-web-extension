@@ -90,7 +90,7 @@ const saveCredentialsThunk: AsyncThunk<
     logger.debug(`${ThunkEnum.SaveCredentials}: saved password tag to storage`);
 
     for (const { keyPair, name } of accounts) {
-      privateKeyItem = PrivateKeyService.createPrivateKey({
+      privateKeyItem = PrivateKeyService.create({
         encryptedPrivateKey: await PasswordService.encryptBytes({
           data: keyPair.privateKey,
           logger,

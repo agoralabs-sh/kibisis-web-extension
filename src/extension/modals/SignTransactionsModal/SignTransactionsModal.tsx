@@ -36,9 +36,6 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // contexts
 import { MultipleTransactionsContext } from './contexts';
 
-// enums
-import { EncryptionMethodEnum } from '@extension/enums';
-
 // errors
 import { BaseExtensionError } from '@extension/errors';
 
@@ -52,9 +49,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useSignTransactionsModal from './hooks/useSignTransactionsModal';
 
 // modals
-import AuthenticationModal, {
-  TOnConfirmResult,
-} from '@extension/modals/AuthenticationModal';
+import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // selectors
 import {
@@ -71,7 +66,10 @@ import { theme } from '@extension/theme';
 import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
+  IBackgroundRootState,
+  IMainRootState,
   IModalProps,
+  TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
@@ -82,7 +80,8 @@ import signTransactions from './utils/signTransactions';
 
 const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<IAppThunkDispatch>();
+  const dispatch =
+    useDispatch<IAppThunkDispatch<IBackgroundRootState | IMainRootState>>();
   const {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,
@@ -128,8 +127,9 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
     onClose && onClose();
   };
   const handleOnAuthenticationModalConfirm = async (
-    result: TOnConfirmResult
+    result: TEncryptionCredentials
   ) => {
+    const _functionName = 'handleOnAuthenticationModalConfirm';
     let authorizedAccounts: IAccountWithExtendedProps[];
     let stxns: (string | null)[];
 
@@ -153,15 +153,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
         authAccounts: accounts,
         logger,
         networks,
-        ...(result.type === EncryptionMethodEnum.Password
-          ? {
-              password: result.password,
-              type: EncryptionMethodEnum.Password,
-            }
-          : {
-              inputKeyMaterial: result.inputKeyMaterial,
-              type: EncryptionMethodEnum.Passkey,
-            }),
+        ...result,
       });
 
       // send a response
@@ -177,6 +169,8 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
       handleClose();
     } catch (error) {
+      logger.error(`${SignTransactionsModal.name}#${_functionName}:`, error);
+
       switch (error.code) {
         case ARC0027ErrorCodeEnum.UnauthorizedSignerError:
           dispatch(
@@ -190,17 +184,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
           handleClose();
           break;
         default:
-          dispatch(
-            createNotification({
-              description: t<string>('errors.descriptions.code', {
-                code: error.code,
-                context: error.code,
-              }),
-              ephemeral: true,
-              title: t<string>('errors.titles.code', { context: error.code }),
-              type: 'error',
-            })
-          );
+          handleOnError(error);
 
           break;
       }
@@ -208,7 +192,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
 
     setSigning(false);
   };
-  const handleAuthenticationError = (error: BaseExtensionError) =>
+  const handleOnError = (error: BaseExtensionError) =>
     dispatch(
       createNotification({
         description: t<string>('errors.descriptions.code', {
@@ -271,7 +255,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
         isOpen={isAuthenticationModalOpen}
         onClose={onAuthenticationModalClose}
         onConfirm={handleOnAuthenticationModalConfirm}
-        onError={handleAuthenticationError}
+        onError={handleOnError}
         {...(event &&
           event.payload.message.params && {
             passwordHint: t<string>(
