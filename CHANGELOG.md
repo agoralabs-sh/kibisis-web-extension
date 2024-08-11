@@ -1,3 +1,10 @@
+# [1.18.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.4...v1.18.0-beta.5) (2024-08-11)
+
+
+### Features
+
+* credential lock persists when closing ([#275](https://github.com/agoralabs-sh/kibisis-web-extension/issues/275)) ([7b050ed](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7b050edca537aef2c2a4310a84b6bffa968a018b))
+
 # [1.18.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.3...v1.18.0-beta.4) (2024-07-26)
 
 
