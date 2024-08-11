@@ -59,7 +59,7 @@ import type { IAppProps, IMainRootState } from '@extension/types';
 // utils
 import makeStore from '@extension/utils/makeStore';
 
-const createRouter = ({ dispatch, getState }: Store<IMainRootState>) => {
+const createRouter = ({ dispatch }: Store<IMainRootState>) => {
   return createHashRouter([
     {
       children: [

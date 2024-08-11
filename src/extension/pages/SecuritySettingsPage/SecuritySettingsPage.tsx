@@ -66,7 +66,7 @@ import type {
 } from '@extension/types';
 import { EncryptionMethodEnum } from '@extension/enums';
 
-const SecuritySettingsIndexPage: FC = () => {
+const SecuritySettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
@@ -148,10 +148,7 @@ const SecuritySettingsIndexPage: FC = () => {
       // then... remove the decrypted private keys and remove and alarms
       await dispatch(disableCredentialLockThunk()).unwrap();
     } catch (error) {
-      logger.error(
-        `${SecuritySettingsIndexPage.name}#${_functionName}:`,
-        error
-      );
+      logger.error(`${SecuritySettingsPage.name}#${_functionName}:`, error);
 
       handleOnError(error);
     }
@@ -181,10 +178,7 @@ const SecuritySettingsIndexPage: FC = () => {
       // then... decrypt the keys
       await dispatch(enableCredentialLockThunk(result)).unwrap();
     } catch (error) {
-      logger.error(
-        `${SecuritySettingsIndexPage.name}#${_functionName}:`,
-        error
-      );
+      logger.error(`${SecuritySettingsPage.name}#${_functionName}:`, error);
 
       handleOnError(error);
     }
@@ -320,4 +314,4 @@ const SecuritySettingsIndexPage: FC = () => {
   );
 };
 
-export default SecuritySettingsIndexPage;
+export default SecuritySettingsPage;

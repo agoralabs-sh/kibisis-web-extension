@@ -247,12 +247,7 @@ const AccountPage: FC = () => {
     let address: string;
 
     if (fetchingAccounts || fetchingSettings) {
-      return (
-        <AccountPageSkeletonContent
-          network={networks[0]}
-          {...headerContainerProps}
-        />
-      );
+      return <AccountPageSkeletonContent {...headerContainerProps} />;
     }
 
     if (account && accountInformation && selectedNetwork) {

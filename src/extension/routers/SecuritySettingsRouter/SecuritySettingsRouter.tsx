@@ -13,12 +13,12 @@ import {
 import ChangePasswordPage from '@extension/pages/ChangePasswordPage';
 import ExportAccountPage from '@extension/pages/ExportAccountPage';
 import PasskeyPage from '@extension/pages/PasskeyPage';
-import SecuritySettingsIndexPage from '@extension/pages/SecuritySettingsIndexPage';
+import SecuritySettingsPage from '@extension/pages/SecuritySettingsPage';
 import ViewSeedPhrasePage from '@extension/pages/ViewSeedPhrasePage';
 
 const SecuritySettingsRouter: FC = () => (
   <Routes>
-    <Route element={<SecuritySettingsIndexPage />} path="/" />
+    <Route element={<SecuritySettingsPage />} path="/" />
     <Route element={<ChangePasswordPage />} path={CHANGE_PASSWORD_ROUTE} />
     <Route element={<PasskeyPage />} path={PASSKEY_ROUTE} />
     <Route element={<ExportAccountPage />} path={EXPORT_ACCOUNT_ROUTE} />

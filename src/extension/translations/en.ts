@@ -596,6 +596,7 @@ const translation: IResourceLanguage = {
     page_changePassword: 'Change Password',
     page_createNewAccount: 'Create A New Account',
     page_createPassword: 'Secure Your Device',
+    page_customNetworks: 'Custom Networks',
     page_exportAccount: 'Export Account',
     page_general: 'General',
     page_importAccountViaQRCode: 'Import An Account Via QR Code',

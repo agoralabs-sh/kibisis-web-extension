@@ -1,15 +1,23 @@
 import { VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoGlobeOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
 import PageHeader from '@extension/components/PageHeader';
 import SettingsButtonItem from '@extension/components/SettingsButtonItem';
-import SettingsSelectItem, {
-  IOption,
-} from '@extension/components/SettingsSelectItem';
+import SettingsLinkItem from '@extension/components/SettingsLinkItem';
+import SettingsSelectItem from '@extension/components/SettingsSelectItem';
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
+
+// constants
+import {
+  CUSTOM_NETWORKS_ROUTE,
+  DEFAULT_GAP,
+  GENERAL_ROUTE,
+  SETTINGS_ROUTE,
+} from '@extension/constants';
 
 // features
 import { setConfirmModal } from '@extension/features/layout';
@@ -29,6 +37,7 @@ import {
 } from '@extension/selectors';
 
 // types
+import type { IOption } from '@extension/components/SettingsSelectItem';
 import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 // utils
@@ -38,18 +47,18 @@ const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
+  const network = useSelectSelectedNetwork();
   const preferredBlockExplorer = useSelectSettingsPreferredBlockExplorer();
   const preferredNFTExplorer = useSelectSettingsPreferredNFTExplorer();
-  const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
   // misc
   const blockExplorerOptions: IOption<string>[] =
-    selectedNetwork?.blockExplorers.map((value) => ({
+    network?.blockExplorers.map((value) => ({
       label: value.canonicalName,
       value: value.id,
     })) || [];
   const nftExplorerOptions: IOption<string>[] =
-    selectedNetwork?.nftExplorers.map((value) => ({
+    network?.nftExplorers.map((value) => ({
       label: value.canonicalName,
       value: value.id,
     })) || [];
@@ -66,11 +75,10 @@ const GeneralSettingsPage: FC = () => {
   const handlePreferredBlockExplorerChange = (option: IOption<string>) => {
     let explorer: BaseBlockExplorer | null;
 
-    if (selectedNetwork) {
+    if (network) {
       explorer =
-        selectedNetwork.blockExplorers.find(
-          (value) => value.id === option.value
-        ) || null;
+        network.blockExplorers.find((value) => value.id === option.value) ||
+        null;
 
       if (explorer) {
         dispatch(
@@ -80,9 +88,8 @@ const GeneralSettingsPage: FC = () => {
               ...settings.general,
               preferredBlockExplorerIds: {
                 ...settings.general.preferredBlockExplorerIds,
-                [convertGenesisHashToHex(
-                  selectedNetwork.genesisHash
-                ).toUpperCase()]: explorer.id,
+                [convertGenesisHashToHex(network.genesisHash).toUpperCase()]:
+                  explorer.id,
               },
             },
           })
@@ -93,11 +100,9 @@ const GeneralSettingsPage: FC = () => {
   const handlePreferredNFTExplorerChange = (option: IOption<string>) => {
     let explorer: BaseNFTExplorer | null;
 
-    if (selectedNetwork) {
+    if (network) {
       explorer =
-        selectedNetwork.nftExplorers.find(
-          (value) => value.id === option.value
-        ) || null;
+        network.nftExplorers.find((value) => value.id === option.value) || null;
 
       if (explorer) {
         dispatch(
@@ -107,9 +112,8 @@ const GeneralSettingsPage: FC = () => {
               ...settings.general,
               preferredNFTExplorerIds: {
                 ...settings.general.preferredNFTExplorerIds,
-                [convertGenesisHashToHex(
-                  selectedNetwork.genesisHash
-                ).toUpperCase()]: explorer.id,
+                [convertGenesisHashToHex(network.genesisHash).toUpperCase()]:
+                  explorer.id,
               },
             },
           })
@@ -124,7 +128,7 @@ const GeneralSettingsPage: FC = () => {
       <PageHeader title={t<string>('titles.page', { context: 'general' })} />
 
       {/*content*/}
-      <VStack spacing={4} w="full">
+      <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/* network */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.network')} />
@@ -155,6 +159,13 @@ const GeneralSettingsPage: FC = () => {
                 (value) => value.value === preferredNFTExplorer?.id
               ) || nftExplorerOptions[0]
             }
+          />
+
+          {/*custom networks*/}
+          <SettingsLinkItem
+            icon={IoGlobeOutline}
+            label={t<string>('titles.page', { context: 'customNetworks' })}
+            to={`${SETTINGS_ROUTE}${GENERAL_ROUTE}${CUSTOM_NETWORKS_ROUTE}`}
           />
         </VStack>
 
