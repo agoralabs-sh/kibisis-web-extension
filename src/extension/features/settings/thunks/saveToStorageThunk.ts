@@ -48,9 +48,7 @@ const saveToStorageThunk: AsyncThunk<
       selectedNetwork.type === NetworkTypeEnum.Stable)
   ) {
     selectedNetwork = selectDefaultNetwork(networks);
-    encodedGenesisHash = convertGenesisHashToHex(
-      selectedNetwork.genesisHash
-    ).toUpperCase();
+    encodedGenesisHash = convertGenesisHashToHex(selectedNetwork.genesisHash);
 
     settings.general.preferredBlockExplorerIds[encodedGenesisHash] =
       selectedNetwork.blockExplorers[0]?.id || null;
