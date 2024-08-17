@@ -1,4 +1,5 @@
 // types
+import type { ICustomNodeItem } from '@extension/services/CustomNodesService';
 import type { INewsItem } from '@extension/services/NewsService';
 import type { IQuestItem } from '@extension/services/QuestsService';
 import type { IAccount, IActiveAccountDetails } from '../accounts';
@@ -29,6 +30,7 @@ type IStorageItemTypes =
   | IAppWindow
   | IARC0072Asset[]
   | IARC0200Asset[]
+  | ICustomNodeItem[]
   | IGeneralSettings
   | TEvents[]
   | INewsItem[]
