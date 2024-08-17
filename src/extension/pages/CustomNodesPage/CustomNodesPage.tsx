@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import React, { type FC, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAdd } from 'react-icons/io5';
+import { IoAddOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
@@ -186,8 +186,8 @@ const CustomNodesPage: FC = () => {
           {/*add custom node button*/}
           <Button
             aria-label={t<string>('buttons.addCustomNode')}
-            leftIcon={<IoAdd />}
             onClick={handleAddCustomNodeClick}
+            rightIcon={<IoAddOutline />}
             size="sm"
             variant="solid"
           >
