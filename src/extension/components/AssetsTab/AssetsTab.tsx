@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAdd } from 'react-icons/io5';
+import { IoAddOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -168,8 +168,8 @@ const AssetsTab: FC<IProps> = ({ account }) => {
 
           {/*add asset*/}
           <Button
-            leftIcon={<IoAdd />}
             onClick={handleAddAssetClick}
+            rightIcon={<IoAddOutline />}
             size="sm"
             variant="solid"
           >
@@ -198,7 +198,7 @@ const AssetsTab: FC<IProps> = ({ account }) => {
         {/*empty state*/}
         <EmptyState
           button={{
-            icon: IoAdd,
+            icon: IoAddOutline,
             label: t<string>('buttons.addAsset'),
             onClick: handleAddAssetClick,
           }}

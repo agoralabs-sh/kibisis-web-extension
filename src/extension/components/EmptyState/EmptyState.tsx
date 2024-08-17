@@ -1,32 +1,19 @@
-import {
-  ButtonProps,
-  Heading,
-  StackProps,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import React, { FC, MouseEvent } from 'react';
-import { IconType } from 'react-icons';
+import { ButtonProps, Heading, Text, VStack } from '@chakra-ui/react';
+import React, { type FC } from 'react';
 
 // components
 import Button from '@extension/components/Button';
 import EmptyIcon from '@extension/components/EmptyIcon';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-interface IButtonProps {
-  colorScheme?: string;
-  icon?: IconType;
-  label: string;
-  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
-}
-interface IProps extends StackProps {
-  button?: IButtonProps;
-  description?: string;
-  text: string;
-}
+// types
+import type { IProps } from './types';
 
 const EmptyState: FC<IProps> = ({
   button,
@@ -46,7 +33,7 @@ const EmptyState: FC<IProps> = ({
           colorScheme: button.colorScheme,
         }),
         ...(button.icon && {
-          leftIcon: <button.icon />,
+          rightIcon: <button.icon />,
         }),
       };
 
@@ -60,15 +47,17 @@ const EmptyState: FC<IProps> = ({
     <VStack
       alignItems="center"
       justifyContent="center"
-      p={4}
-      spacing={3}
+      p={DEFAULT_GAP - 2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
       {...stackProps}
     >
       <EmptyIcon h={20} w={20} />
+
       <Heading color={defaultTextColor} size="md" textAlign="center">
         {text}
       </Heading>
+
       {description && (
         <Text color={subTextColor} fontSize="sm" textAlign="center">
           {description}
