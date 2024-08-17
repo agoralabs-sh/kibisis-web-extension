@@ -4,7 +4,11 @@ import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import { StoreNameEnum } from '@extension/enums';
 
 // thunks
-import { fetchFromStorageThunk, saveToStorageThunk } from './thunks';
+import {
+  fetchFromStorageThunk,
+  removeByIDFromStorageThunk,
+  saveToStorageThunk,
+} from './thunks';
 
 // types
 import type { ICustomNodeItem } from '@extension/services/CustomNodesService';
@@ -28,6 +32,20 @@ const slice = createSlice({
     });
     builder.addCase(fetchFromStorageThunk.rejected, (state: IState) => {
       state.fetching = false;
+    });
+    /** remove by id from storage **/
+    builder.addCase(
+      removeByIDFromStorageThunk.fulfilled,
+      (state: IState, action: PayloadAction<ICustomNodeItem[]>) => {
+        state.items = action.payload;
+        state.saving = false;
+      }
+    );
+    builder.addCase(removeByIDFromStorageThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(removeByIDFromStorageThunk.rejected, (state: IState) => {
+      state.saving = false;
     });
     /** save to storage **/
     builder.addCase(

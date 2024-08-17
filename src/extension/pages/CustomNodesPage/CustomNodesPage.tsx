@@ -7,9 +7,10 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { type FC, type ReactElement } from 'react';
+import React, { type FC, type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAddOutline } from 'react-icons/io5';
+import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
@@ -21,6 +22,11 @@ import ScrollableContainer from '@extension/components/ScrollableContainer';
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
+// features
+import { setConfirmModal } from '@extension/features/layout';
+import { create as createNotification } from '@extension/features/notifications';
+import { removeByIDFromStorageThunk as removeCustomNodeByIDFromStorageThunk } from '@extension/features/custom-nodes';
+
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -28,6 +34,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
 import AddCustomNodeModal from '@extension/modals/AddCustomNodeModal';
+import ViewCustomNodeModal from '@extension/modals/ViewCustomNodeModal';
 
 // selectors
 import {
@@ -36,10 +43,17 @@ import {
   useSelectNetworks,
   useSelectSettings,
 } from '@extension/selectors';
+
+// types
+import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
+
+// utils
 import isNetworkSupportedFromSettings from '@extension/utils/isNetworkSupportedFromSettings';
+import { ICustomNodeItem } from '@extension/services/CustomNodesService';
 
 const CustomNodesPage: FC = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
     isOpen: isAddCustomModalOpen,
     onClose: onAddCustomModalClose,
@@ -54,11 +68,50 @@ const CustomNodesPage: FC = () => {
   const fetching = useSelectCustomNodesFetching();
   const networks = useSelectNetworks();
   const settings = useSelectSettings();
+  // states
+  const [viewCustomNodeItem, setViewCustomNodeItem] =
+    useState<ICustomNodeItem | null>(null);
   // handlers
   const handleAddCustomNodeClick = () => onAddCustomModalOpen();
   const handleAddCustomNodeModalClose = () => onAddCustomModalClose();
-  const handleRemoveCustomNodeClick = (id: string) => {};
-  const handleSelectCustomNodeClick = (id: string) => {};
+  const handleRemoveCustomNodeClick = (id: string) => {
+    const item = customNodeItems.find((value) => value.id === id) || null;
+
+    if (!item) {
+      return;
+    }
+
+    dispatch(
+      setConfirmModal({
+        description: t<string>('captions.removeCustomNodeConfirm', {
+          name: item.name,
+        }),
+        onConfirm: () => {
+          dispatch(removeCustomNodeByIDFromStorageThunk(item.id));
+          dispatch(
+            createNotification({
+              description: t<string>('captions.removedCustomNode', {
+                name: item.name,
+              }),
+              title: t<string>('headings.removedCustomNode'),
+              type: 'info',
+            })
+          );
+        },
+        title: t<string>('headings.removeCustomNode'),
+      })
+    );
+  };
+  const handleSelectCustomNodeClick = (id: string) => {
+    const item = customNodeItems.find((value) => value.id === id) || null;
+
+    if (!item) {
+      return;
+    }
+
+    setViewCustomNodeItem(item);
+  };
+  const handleViewCustomNodeClose = () => setViewCustomNodeItem(null);
   // renders
   const renderContent = () => {
     const nodes: ReactElement[] = customNodeItems
@@ -136,6 +189,10 @@ const CustomNodesPage: FC = () => {
       <AddCustomNodeModal
         isOpen={isAddCustomModalOpen}
         onClose={handleAddCustomNodeModalClose}
+      />
+      <ViewCustomNodeModal
+        item={viewCustomNodeItem}
+        onClose={handleViewCustomNodeClose}
       />
 
       {/*page title*/}

@@ -25,8 +25,6 @@ import {
 
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
 import ManageSessionModal from '@extension/modals/ManageSessionModal';

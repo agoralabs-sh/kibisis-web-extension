@@ -20,10 +20,10 @@ import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
+import CustomNodeSummaryModalContent from '@extension/components/CustomNodeSummaryModalContent';
 import GenericInput from '@extension/components/GenericInput';
 import ModalSubHeading from '@extension/components/ModalSubHeading';
 import AddCustomNodeLoadingModalContent from './AddCustomNodeLoadingModalContent';
-import AddCustomNodeSummaryModalContent from './AddCustomNodeSummaryModalContent';
 
 // constants
 import {
@@ -378,7 +378,7 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
 
     if (customNode && network) {
       return (
-        <AddCustomNodeSummaryModalContent
+        <CustomNodeSummaryModalContent
           customNode={customNode}
           network={network}
         />
@@ -387,6 +387,9 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
 
     return (
       <VStack flexGrow={1} spacing={DEFAULT_GAP / 3} w="full">
+        {/*general details*/}
+        <ModalSubHeading text={t<string>('headings.generalDetails')} />
+
         {/*name*/}
         <GenericInput
           characterLimit={CUSTOM_NODE_BYTE_LIMIT}

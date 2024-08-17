@@ -249,6 +249,8 @@ const translation: IResourceLanguage = {
       'You will need to authenticate with your passkey to unlock.',
     removeCredentialLock_password:
       'You will need to enter your password to unlock.',
+    removeCustomNodeConfirm: 'Are you sure you want to remove "{{name}}"?',
+    removedCustomNode: 'The custom node {{name}} has been removed.',
     removePasskey:
       'You are about to remove the passkey "{{name}}". This action will re-enable password authentication.',
     removePasskeyInstruction1:
@@ -339,7 +341,7 @@ const translation: IResourceLanguage = {
     addedAsset: 'Added Asset {{symbol}}!',
     addPasskey: 'Add Passkey',
     addWatchAccount: 'Add A Watch Account',
-    algodDetails: 'Node (algod) Details',
+    algodDetails: 'Algod Details',
     allowMainNetConfirm: 'Allow MainNet Networks',
     analyticsAndTracking: 'Analytics & Tracking',
     almostThere: 'Almost There...',
@@ -352,6 +354,7 @@ const translation: IResourceLanguage = {
     confirm: 'Confirm',
     congratulations: 'Congratulations!',
     createNewAccount: 'Create A New Account',
+    customNode: 'Custom Node',
     customNodeAdded: 'Custom Node Added!',
     dangerZone: 'Danger Zone',
     details: 'Details',
@@ -361,6 +364,7 @@ const translation: IResourceLanguage = {
     enterYourSeedPhrase: 'Enter your seed phrase',
     factoryReset: 'Factory Reset',
     failedToGetCustomNodeDetails: 'Failed To Connect To Node',
+    generalDetails: 'General Details',
     generateSeedPhrase: 'Generate seed phrase',
     hiddenAsset: 'Asset {{symbol}} Hidden!',
     importAccount: 'Import Account',
@@ -390,6 +394,8 @@ const translation: IResourceLanguage = {
     [`removeAsset_${AssetTypeEnum.ARC0200}`]: 'Hide {{symbol}}',
     removedAsset: 'Asset {{symbol}} Removed!',
     [`removedAsset_${AssetTypeEnum.ARC0200}`]: 'Asset {{symbol}} Hidden!',
+    removeCustomNode: 'Remove Custom Node',
+    removedCustomNode: 'Removed Custom Node',
     removePasskey: 'Remove Passkey',
     scanQrCode: 'Scan QR Code(s)',
     selectAccount: 'Select Account',

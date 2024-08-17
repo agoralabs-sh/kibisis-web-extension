@@ -12,15 +12,16 @@ import ModalSubHeading from '@extension/components/ModalSubHeading';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // types
-import type { IAddCustomNodeSummaryModalContentProps } from './types';
+import type { IProps } from './types';
 
-const AddCustomNodeSummaryModalContent: FC<
-  IAddCustomNodeSummaryModalContentProps
-> = ({ customNode, network }) => {
+const CustomNodeSummaryModalContent: FC<IProps> = ({ customNode, network }) => {
   const { t } = useTranslation();
 
   return (
     <VStack flexGrow={1} spacing={DEFAULT_GAP / 3} w="full">
+      {/*general details*/}
+      <ModalSubHeading text={t<string>('headings.generalDetails')} />
+
       {/*name*/}
       <ModalTextItem
         label={`${t<string>('labels.name')}:`}
@@ -103,4 +104,4 @@ const AddCustomNodeSummaryModalContent: FC<
   );
 };
 
-export default AddCustomNodeSummaryModalContent;
+export default CustomNodeSummaryModalContent;
