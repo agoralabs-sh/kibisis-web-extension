@@ -15,6 +15,7 @@ import {
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import { fetchActiveThunk as fetchCredentialLockActiveThunk } from '@extension/features/credential-lock';
+import { fetchFromStorageThunk as fetchCustomNodesFromStorageThunk } from '@extension/features/custom-nodes';
 import {
   setConfirmModal,
   setScanQRCodeModal,
@@ -86,6 +87,7 @@ const Root: FC = () => {
 
   // 1. fetch the required data
   useEffect(() => {
+    dispatch(fetchCustomNodesFromStorageThunk());
     dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());

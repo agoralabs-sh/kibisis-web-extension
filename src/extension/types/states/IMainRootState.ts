@@ -3,6 +3,7 @@ import type { IState as IAccountsState } from '@extension/features/accounts';
 import type { IState as IAddAssetsState } from '@extension/features/add-assets';
 import type { IState as IARC0072AssetsState } from '@extension/features/arc0072-assets';
 import type { IState as ICredentialLockState } from '@extension/features/credential-lock';
+import type { IState as ICustomNodesState } from '@extension/features/custom-nodes';
 import type { IState as IEventsState } from '@extension/features/events';
 import type { IState as INetworksState } from '@extension/features/networks';
 import type { IState as INewsState } from '@extension/features/news';
@@ -23,6 +24,7 @@ interface IMainRootState extends IBaseRootState {
   addAssets: IAddAssetsState;
   arc0072Assets: IARC0072AssetsState;
   credentialLock: ICredentialLockState;
+  customNodes: ICustomNodesState;
   events: IEventsState;
   networks: INetworksState;
   news: INewsState;

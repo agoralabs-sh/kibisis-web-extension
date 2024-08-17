@@ -13,7 +13,7 @@ import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
 // constants
 import {
-  CUSTOM_NETWORKS_ROUTE,
+  CUSTOM_NODES_ROUTE,
   DEFAULT_GAP,
   GENERAL_ROUTE,
   SETTINGS_ROUTE,
@@ -164,8 +164,8 @@ const GeneralSettingsPage: FC = () => {
           {/*custom networks*/}
           <SettingsLinkItem
             icon={IoGlobeOutline}
-            label={t<string>('titles.page', { context: 'customNetworks' })}
-            to={`${SETTINGS_ROUTE}${GENERAL_ROUTE}${CUSTOM_NETWORKS_ROUTE}`}
+            label={t<string>('titles.page', { context: 'customNodes' })}
+            to={`${SETTINGS_ROUTE}${GENERAL_ROUTE}${CUSTOM_NODES_ROUTE}`}
           />
         </VStack>
 

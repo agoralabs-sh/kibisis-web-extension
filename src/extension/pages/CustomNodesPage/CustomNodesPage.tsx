@@ -15,15 +15,12 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectRegistrationPassword,
-  useSelectRegistrationScore,
-} from '@extension/selectors';
+import {} from '@extension/selectors';
 
 // types
 import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
-const CustomNetworksPage: FC = () => {
+const CustomNodesPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // hooks
@@ -45,9 +42,14 @@ const CustomNetworksPage: FC = () => {
         px={DEFAULT_GAP}
         spacing={DEFAULT_GAP / 3}
         w="full"
-      ></VStack>
+      >
+        {/*caption*/}
+        <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
+          {t<string>('captions.customNodes')}
+        </Text>
+      </VStack>
     </>
   );
 };
 
-export default CustomNetworksPage;
+export default CustomNodesPage;

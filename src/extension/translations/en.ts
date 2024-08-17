@@ -114,6 +114,8 @@ const translation: IResourceLanguage = {
     createPassword1: `First, let's create a new password to secure this device.`,
     createPassword2:
       'This password will be used to encrypt your private keys, so make it strong!',
+    customNodes:
+      'Here you can add a custom node which will appear in the network selection list.',
     debugLogging:
       'Debugging information will be output to the extension console.',
     defaultConfirm: 'Are you sure?',
@@ -596,7 +598,7 @@ const translation: IResourceLanguage = {
     page_changePassword: 'Change Password',
     page_createNewAccount: 'Create A New Account',
     page_createPassword: 'Secure Your Device',
-    page_customNetworks: 'Custom Networks',
+    page_customNodes: 'Custom Nodes',
     page_exportAccount: 'Export Account',
     page_general: 'General',
     page_importAccountViaQRCode: 'Import An Account Via QR Code',

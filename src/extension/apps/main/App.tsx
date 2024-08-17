@@ -24,6 +24,7 @@ import { reducer as addAssetsReducer } from '@extension/features/add-assets';
 import { reducer as arc0072AssetsReducer } from '@extension/features/arc0072-assets';
 import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
 import { reducer as credentialLockReducer } from '@extension/features/credential-lock';
+import { reducer as customNodesReducer } from '@extension/features/custom-nodes';
 import { reducer as eventsReducer } from '@extension/features/events';
 import {
   reducer as layoutReducer,
@@ -136,6 +137,7 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
       arc0072Assets: arc0072AssetsReducer,
       arc0200Assets: arc200AssetsReducer,
       credentialLock: credentialLockReducer,
+      customNodes: customNodesReducer,
       events: eventsReducer,
       layout: layoutReducer,
       messages: messagesReducer,
