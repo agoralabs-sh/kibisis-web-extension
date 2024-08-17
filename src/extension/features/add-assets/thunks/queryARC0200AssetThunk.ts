@@ -25,7 +25,7 @@ import type {
 } from '../types';
 
 // utils
-import getIndexerClient from '@common/utils/getIndexerClient';
+import createIndexerClientFromNetwork from '@common/utils/createIndexerClientFromNetwork';
 import selectAssetsForNetwork from '@extension/utils/selectAssetsForNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import searchAlgorandApplicationsWithDelay from '@extension/utils/searchAlgorandApplicationsWithDelay';
@@ -98,9 +98,7 @@ const queryARC0200AssetThunk: AsyncThunk<
       getState().arc0200Assets.items,
       selectedNetwork.genesisHash
     );
-    indexerClient = getIndexerClient(selectedNetwork, {
-      logger,
-    });
+    indexerClient = createIndexerClientFromNetwork(selectedNetwork);
 
     try {
       algorandSearchApplicationResult =

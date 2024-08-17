@@ -8,7 +8,7 @@ import type { IAlgorandPendingTransactionResponse } from '@extension/types';
 import type { IOptions } from './types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
+import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 
 /**
  * Convenience function that sends signed transactions to the network.
@@ -25,7 +25,7 @@ export default async function sendTransactionsForNetwork({
   let sentRawTransaction: { txId: string };
   let transactionsResponse: IAlgorandPendingTransactionResponse;
 
-  algodClient = createAlgodClient(network);
+  algodClient = createAlgodClientFromNetwork(network);
 
   logger?.debug(
     `${_functionName}: sending transactions to the network "${network.genesisId}"`

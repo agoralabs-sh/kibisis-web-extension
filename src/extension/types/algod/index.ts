@@ -19,3 +19,5 @@ export type { default as IAlgorandTealKeyValue } from './IAlgorandTealKeyValue';
 export type { default as IAlgorandTealValue } from './IAlgorandTealValue';
 export type { default as IAlgorandTransaction } from './IAlgorandTransaction';
 export type { default as IAlgorandTransactionParams } from './IAlgorandTransactionParams';
+export type { default as IAVMVersions } from './IAVMVersions';
+export type { default as IAVMVersionsBuild } from './IAVMVersionsBuild';

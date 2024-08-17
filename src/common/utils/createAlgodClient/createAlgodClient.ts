@@ -1,18 +1,17 @@
 import { Algodv2 } from 'algosdk';
 
 // types
-import type { INetwork, INode } from '@extension/types';
-
-// utils
-import getRandomItem from '@common/utils/getRandomItem';
+import type { IOptions } from './types';
 
 /**
- * Gets a random algod node from the given network.
- * @param {INetwork} network - the network to choose the node from.
+ * Creates an algod node client.
+ * @param {IOptions} options - a url, an optional port and optional token.
  * @returns {Algodv2} an initialized algod client.
  */
-export default function createAlgodClient(network: INetwork): Algodv2 {
-  const algod = getRandomItem<INode>(network.algods);
-
-  return new Algodv2('', algod.url, algod.port);
+export default function createAlgodClient({
+  port,
+  token,
+  url,
+}: IOptions): Algodv2 {
+  return new Algodv2(token || '', url, port || '');
 }

@@ -9,7 +9,7 @@ import type {
 import type { IOptions } from './types';
 
 // utils
-import getIndexerClient from '@common/utils/getIndexerClient';
+import createIndexerClientFromNetwork from '@common/utils/createIndexerClientFromNetwork';
 import lookupAlgorandAccountTransactionsWithDelay from '../lookupAlgorandAccountTransactionsWithDelay';
 import mapAlgorandTransactionToTransaction from '../mapAlgorandTransactionToTransaction';
 import refreshTransactions from '../refreshTransactions';
@@ -27,9 +27,7 @@ export default async function updateAccountTransactions({
   network,
   refresh = false,
 }: IOptions): Promise<IAccountTransactions> {
-  const client = getIndexerClient(network, {
-    logger,
-  });
+  const client = createIndexerClientFromNetwork(network);
   let algorandAccountTransaction: IAlgorandAccountTransaction;
   let mostRecentTransactionTime: number;
 

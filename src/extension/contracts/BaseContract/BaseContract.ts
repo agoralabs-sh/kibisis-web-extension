@@ -38,7 +38,7 @@ import {
 } from './types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
+import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 import createLogger from '@common/utils/createLogger';
 
 export default class BaseContract {
@@ -53,7 +53,7 @@ export default class BaseContract {
     this.appId = appId;
     this.logger =
       logger || createLogger(__ENV__ === 'development' ? 'debug' : 'error');
-    this.algodClient = createAlgodClient(network);
+    this.algodClient = createAlgodClientFromNetwork(network);
     this.network = network;
   }
 

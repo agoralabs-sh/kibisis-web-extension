@@ -57,17 +57,18 @@ import type {
   IClientRequestEvent,
   INetwork,
   ISession,
+  ISettings,
 } from '@extension/types';
 
 // utils
 import authorizedAccountsForHost from '@extension/utils/authorizedAccountsForHost';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import decodeUnsignedTransaction from '@extension/utils/decodeUnsignedTransaction';
-import fetchSupportedNetworks from '@extension/utils/fetchSupportedNetworks';
-import isNetworkSupported from '@extension/utils/isNetworkSupported';
+import isNetworkSupportedFromSettings from '@extension/utils/isNetworkSupportedFromSettings';
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import sendExtensionEvent from '@extension/utils/sendExtensionEvent';
+import supportedNetworksFromSettings from '@extension/utils/supportedNetworksFromSettings';
 import verifyTransactionGroups from '@extension/utils/verifyTransactionGroups';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
@@ -252,9 +253,10 @@ export default class ClientMessageHandler {
     message: ClientRequestMessage<IDiscoverParams>,
     originTabId: number
   ): Promise<void> {
-    const supportedNetworks: INetwork[] = await fetchSupportedNetworks(
-      this.settingsService
-    );
+    const supportedNetworks = supportedNetworksFromSettings({
+      networks,
+      settings: await this.settingsService.getAll(),
+    });
 
     return await this.sendResponse(
       new ClientResponseMessage<IDiscoverResult>({
@@ -293,10 +295,11 @@ export default class ClientMessageHandler {
     // get the network if a genesis hash is present
     if (message.params?.genesisHash) {
       if (
-        !(await isNetworkSupported(
-          message.params.genesisHash,
-          this.settingsService
-        ))
+        !isNetworkSupportedFromSettings({
+          genesisHash: message.params.genesisHash,
+          networks,
+          settings: await this.settingsService.getAll(),
+        })
       ) {
         this.logger?.debug(
           `${ClientMessageHandler.name}#${_functionName}: genesis hash "${message.params.genesisHash}" is not supported`
@@ -578,7 +581,10 @@ export default class ClientMessageHandler {
       );
     }
 
-    supportedNetworks = await fetchSupportedNetworks(this.settingsService);
+    supportedNetworks = supportedNetworksFromSettings({
+      networks,
+      settings: await this.settingsService.getAll(),
+    });
     unsupportedTransactionsByNetwork = decodedUnsignedTransactions.filter(
       (transaction) =>
         supportedNetworks.every(

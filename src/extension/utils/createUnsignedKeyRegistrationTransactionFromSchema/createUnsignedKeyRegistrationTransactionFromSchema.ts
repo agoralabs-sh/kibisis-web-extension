@@ -10,7 +10,7 @@ import { ARC0300QueryEnum } from '@extension/enums';
 import type { IOptions } from './types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
+import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 
 /**
  * Convenience function that creates a key registration transaction from a URI schema.
@@ -21,7 +21,7 @@ export default async function createUnsignedKeyRegistrationTransactionFromSchema
   network,
   schema,
 }: IOptions): Promise<Transaction> {
-  const algodClient = createAlgodClient(network);
+  const algodClient = createAlgodClientFromNetwork(network);
   const suggestedParams = await algodClient.getTransactionParams().do();
 
   return makeKeyRegistrationTxnWithSuggestedParamsFromObject({

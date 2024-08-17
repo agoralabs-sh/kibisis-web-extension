@@ -9,7 +9,7 @@ import {
 import type { IOptions } from './types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
+import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 
 /**
  * Convenience function that creates the transactions to make a payment.
@@ -24,7 +24,7 @@ export default async function createUnsignedPaymentTransactions({
   note,
   toAddress,
 }: IOptions): Promise<Transaction[]> {
-  const algodClient: Algodv2 = createAlgodClient(network);
+  const algodClient = createAlgodClientFromNetwork(network);
   const suggestedParams: SuggestedParams = await algodClient
     .getTransactionParams()
     .do();

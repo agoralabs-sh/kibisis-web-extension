@@ -13,7 +13,7 @@ import type {
 import type { IOptions } from './types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
+import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 import algorandAccountInformationWithDelay from '../algorandAccountInformationWithDelay';
 import fetchARC0072AssetHoldingsWithDelay from '../fetchARC0072AssetHoldingsWithDelay';
 import fetchARC0200AssetHoldingWithDelay from '../fetchARC0200AssetHoldingWithDelay';
@@ -56,7 +56,7 @@ export default async function updateAccountInformation({
     return currentAccountInformation;
   }
 
-  client = createAlgodClient(network);
+  client = createAlgodClientFromNetwork(network);
 
   try {
     algorandAccountInformation = await algorandAccountInformationWithDelay({

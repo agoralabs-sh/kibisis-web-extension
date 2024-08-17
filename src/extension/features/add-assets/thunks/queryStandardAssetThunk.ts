@@ -27,7 +27,7 @@ import type {
 } from '../types';
 
 // utils
-import getIndexerClient from '@common/utils/getIndexerClient';
+import createIndexerClientFromNetwork from '@common/utils/createIndexerClientFromNetwork';
 import fetchVerifiedStandardAssetList from '@extension/utils/fetchVerifiedStandardAssetList';
 import mapStandardAssetFromAlgorandAsset from '@extension/utils/mapStandardAssetFromAlgorandAsset';
 import searchAlgorandAssetsWithDelay from '@extension/utils/searchAlgorandAssetsWithDelay';
@@ -98,9 +98,7 @@ const queryStandardAssetThunk: AsyncThunk<
       return currentStandardAssets;
     }
 
-    indexerClient = getIndexerClient(selectedNetwork, {
-      logger,
-    });
+    indexerClient = createIndexerClientFromNetwork(selectedNetwork);
 
     try {
       algorandSearchAssetsResult = await searchAlgorandAssetsWithDelay({

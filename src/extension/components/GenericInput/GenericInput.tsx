@@ -24,7 +24,6 @@ import Label from '@extension/components/Label';
 import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
 // hooks
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -46,7 +45,6 @@ const GenericInput: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
   // state

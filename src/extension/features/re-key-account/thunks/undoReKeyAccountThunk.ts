@@ -29,7 +29,7 @@ import type {
 import type { TUndoReKeyAccountThunkPayload } from '../types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
+import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
@@ -77,7 +77,7 @@ const undoReKeyAccountThunk: AsyncThunk<
       return null;
     }
 
-    algodClient = createAlgodClient(network);
+    algodClient = createAlgodClientFromNetwork(network);
     suggestedParams = await algodClient.getTransactionParams().do();
     unsignedTransaction = makePaymentTxnWithSuggestedParams(
       address,

@@ -29,7 +29,7 @@ import type {
 import type { TReKeyAccountThunkPayload } from '../types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
+import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
@@ -69,7 +69,7 @@ const reKeyAccountThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(_error));
     }
 
-    algodClient = createAlgodClient(network);
+    algodClient = createAlgodClientFromNetwork(network);
     suggestedParams = await algodClient.getTransactionParams().do();
     unsignedTransaction = makePaymentTxnWithSuggestedParams(
       address,

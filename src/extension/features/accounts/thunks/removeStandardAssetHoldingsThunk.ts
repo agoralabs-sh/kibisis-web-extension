@@ -42,7 +42,7 @@ import type {
 } from '../types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
+import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
@@ -181,7 +181,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       return rejectWithValue(new NotAZeroBalanceError(errorMessage));
     }
 
-    algodClient = createAlgodClient(network);
+    algodClient = createAlgodClientFromNetwork(network);
 
     try {
       suggestedParams = await algodClient.getTransactionParams().do();
