@@ -110,6 +110,7 @@ import type {
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
+import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -382,9 +383,11 @@ const AccountPage: FC = () => {
                   {canReKeyAccount() && (
                     <MenuItem
                       color={defaultTextColor}
+                      fontSize="sm"
                       icon={
                         <Icon
                           as={IoLockClosedOutline}
+                          boxSize={calculateIconSize()}
                           color={defaultTextColor}
                         />
                       }
@@ -402,9 +405,11 @@ const AccountPage: FC = () => {
                     }) && (
                       <MenuItem
                         color={defaultTextColor}
+                        fontSize="sm"
                         icon={
                           <Icon
                             as={IoLockOpenOutline}
+                            boxSize={calculateIconSize()}
                             color={defaultTextColor}
                           />
                         }
@@ -417,7 +422,14 @@ const AccountPage: FC = () => {
                   {/*remove account*/}
                   <MenuItem
                     color={defaultTextColor}
-                    icon={<Icon as={IoTrashOutline} color={defaultTextColor} />}
+                    fontSize="sm"
+                    icon={
+                      <Icon
+                        as={IoTrashOutline}
+                        boxSize={calculateIconSize()}
+                        color={defaultTextColor}
+                      />
+                    }
                     onClick={handleRemoveAccountClick}
                   >
                     {t<string>('labels.removeAccount')}
@@ -441,8 +453,6 @@ const AccountPage: FC = () => {
             </HStack>
           </VStack>
 
-          <Spacer />
-
           {/*assets/nfts/activity tabs*/}
           <Tabs
             colorScheme={primaryColorScheme}
@@ -452,7 +462,7 @@ const AccountPage: FC = () => {
             isLazy={true}
             m={0}
             onChange={handleTabChange}
-            sx={{ display: 'flex', flexDirection: 'column' }}
+            sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
             w="full"
           >
             <TabList>
@@ -463,7 +473,6 @@ const AccountPage: FC = () => {
 
             <TabPanels
               flexGrow={1}
-              h="70dvh"
               sx={{ display: 'flex', flexDirection: 'column' }}
             >
               <AssetsTab account={account} />

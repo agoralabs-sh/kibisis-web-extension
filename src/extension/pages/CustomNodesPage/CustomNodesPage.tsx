@@ -16,6 +16,7 @@ import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import CustomNodeItem from '@extension/components/CustomNodeItem';
 import PageHeader from '@extension/components/PageHeader';
+import ScrollableContainer from '@extension/components/ScrollableContainer';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -80,7 +81,7 @@ const CustomNodesPage: FC = () => {
 
         return isSecondNodeAvailable ? 1 : 0;
       })
-      .reduce((acc, currentValue) => {
+      .reduce((acc, currentValue, index) => {
         const network =
           networks.find(
             (value) => value.genesisHash === currentValue.genesisHash
@@ -90,6 +91,7 @@ const CustomNodesPage: FC = () => {
           ? [
               ...acc,
               <CustomNodeItem
+                key={`custom-page-custom-node-item-${index}`}
                 item={currentValue}
                 isDisabled={
                   !isNetworkSupportedFromSettings({
@@ -107,16 +109,25 @@ const CustomNodesPage: FC = () => {
       }, []);
 
     return nodes.length > 0 ? (
-      nodes
+      <ScrollableContainer
+        direction="column"
+        flexGrow={1}
+        m={0}
+        p={0}
+        spacing={0}
+        w="full"
+      >
+        {nodes}
+      </ScrollableContainer>
     ) : (
-      <>
+      <VStack flexGrow={1} w="full">
         <Spacer />
 
         {/*empty state*/}
         <EmptyState text={t<string>('headings.noCustomNodesFound')} />
 
         <Spacer />
-      </>
+      </VStack>
     );
   };
 
@@ -132,63 +143,61 @@ const CustomNodesPage: FC = () => {
         title={t<string>('titles.page', { context: 'customNodes' })}
       />
 
-      <VStack flexGrow={1} w="full">
-        <VStack
-          borderBottomColor={borderColor}
-          borderBottomStyle="solid"
-          borderBottomWidth="1px"
-          pb={DEFAULT_GAP / 3}
-          px={DEFAULT_GAP}
-          spacing={DEFAULT_GAP / 3}
+      <VStack
+        borderBottomColor={borderColor}
+        borderBottomStyle="solid"
+        borderBottomWidth="1px"
+        pb={DEFAULT_GAP / 3}
+        px={DEFAULT_GAP}
+        spacing={DEFAULT_GAP / 3}
+        w="full"
+      >
+        {/*caption*/}
+        <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
+          {t<string>('captions.customNodes')}
+        </Text>
+
+        {/*controls*/}
+        <HStack
+          alignItems="center"
+          justifyContent="flex-start"
+          px={DEFAULT_GAP / 2}
+          py={DEFAULT_GAP / 3}
+          spacing={1}
           w="full"
         >
-          {/*caption*/}
-          <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
-            {t<string>('captions.customNodes')}
-          </Text>
-
-          {/*controls*/}
-          <HStack
-            alignItems="center"
-            justifyContent="flex-start"
-            px={DEFAULT_GAP / 2}
-            py={DEFAULT_GAP / 3}
-            spacing={1}
-            w="full"
-          >
-            {/*fetching*/}
-            {fetching && (
-              <Tooltip
-                aria-label="Fetching custom nodes from storage spinner"
-                label={t<string>('captions.fetchingCustomNodes')}
-              >
-                <Spinner
-                  thickness="1px"
-                  speed="0.65s"
-                  color={defaultTextColor}
-                  size="sm"
-                />
-              </Tooltip>
-            )}
-
-            <Spacer />
-
-            {/*add custom node button*/}
-            <Button
-              aria-label={t<string>('buttons.addCustomNode')}
-              leftIcon={<IoAdd />}
-              onClick={handleAddCustomNodeClick}
-              size="sm"
-              variant="solid"
+          {/*fetching*/}
+          {fetching && (
+            <Tooltip
+              aria-label="Fetching custom nodes from storage spinner"
+              label={t<string>('captions.fetchingCustomNodes')}
             >
-              {t<string>('buttons.addCustomNode')}
-            </Button>
-          </HStack>
-        </VStack>
+              <Spinner
+                thickness="1px"
+                speed="0.65s"
+                color={defaultTextColor}
+                size="sm"
+              />
+            </Tooltip>
+          )}
 
-        {/*list of custom nodes*/}
-        {renderContent()}
+          <Spacer />
+
+          {/*add custom node button*/}
+          <Button
+            aria-label={t<string>('buttons.addCustomNode')}
+            leftIcon={<IoAdd />}
+            onClick={handleAddCustomNodeClick}
+            size="sm"
+            variant="solid"
+          >
+            {t<string>('buttons.addCustomNode')}
+          </Button>
+        </HStack>
       </VStack>
+
+      {/*list of custom nodes*/}
+      {renderContent()}
     </>
   );
 };

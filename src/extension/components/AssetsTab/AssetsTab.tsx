@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import AssetTabLoadingItem from '@extension/components/AssetTabLoadingItem';
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
+import ScrollableContainer from '@extension/components/ScrollableContainer';
 import AssetTabARC0200AssetItem from './AssetTabARC0200AssetItem';
 import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 
@@ -137,7 +138,7 @@ const AssetsTab: FC<IProps> = ({ account }) => {
     }
 
     return assetNodes.length > 0 ? (
-      <VStack flexGrow={1} w="full">
+      <>
         {/*controls*/}
         <HStack
           alignItems="center"
@@ -177,12 +178,21 @@ const AssetsTab: FC<IProps> = ({ account }) => {
         </HStack>
 
         {/*asset list*/}
-        <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
+        <ScrollableContainer
+          direction="column"
+          flexGrow={1}
+          m={0}
+          pb={8}
+          pt={0}
+          px={0}
+          spacing={0}
+          w="full"
+        >
           {assetNodes}
-        </VStack>
-      </VStack>
+        </ScrollableContainer>
+      </>
     ) : (
-      <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
+      <VStack flexGrow={1} w="full">
         <Spacer />
 
         {/*empty state*/}
@@ -206,7 +216,6 @@ const AssetsTab: FC<IProps> = ({ account }) => {
       flexGrow={1}
       m={0}
       p={0}
-      overflowY="scroll"
       sx={{ display: 'flex', flexDirection: 'column' }}
       w="full"
     >

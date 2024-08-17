@@ -7,7 +7,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { faker } from '@faker-js/faker';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 
 // components
 import { NetworkSelectSkeleton } from '@extension/components/NetworkSelect';

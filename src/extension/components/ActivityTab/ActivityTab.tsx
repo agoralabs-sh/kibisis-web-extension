@@ -1,10 +1,10 @@
-import { Spacer, VStack } from '@chakra-ui/react';
-import React, { FC, ReactNode } from 'react';
+import { Spacer, TabPanel, VStack } from '@chakra-ui/react';
+import React, { type FC, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
 import EmptyState from '@extension/components/EmptyState';
-import ScrollableTabPanel from '@extension/components/ScrollableTabPanel';
+import ScrollableContainer from '@extension/components/ScrollableContainer';
 import TransactionItem, {
   TransactionItemSkeleton,
 } from '@extension/components/TransactionItem';
@@ -59,32 +59,41 @@ const ActivityTab: FC<IProps> = ({
     }
 
     return nodes.length > 0 ? (
-      nodes
+      <ScrollableContainer
+        direction="column"
+        flexGrow={1}
+        m={0}
+        onScrollEnd={handleScrollEnd}
+        pb={8}
+        pt={0}
+        px={0}
+        spacing={0}
+        w="full"
+      >
+        {nodes}
+      </ScrollableContainer>
     ) : (
-      <>
+      <VStack flexGrow={1} w="full">
         <Spacer />
 
         {/* empty state */}
         <EmptyState text={t<string>('headings.noTransactionsFound')} />
 
         <Spacer />
-      </>
+      </VStack>
     );
   };
 
   return (
-    <ScrollableTabPanel
+    <TabPanel
       flexGrow={1}
       m={0}
-      onScrollEnd={handleScrollEnd}
       p={0}
       sx={{ display: 'flex', flexDirection: 'column' }}
       w="full"
     >
-      <VStack flexGrow={1} m={0} pb={8} pt={0} px={0} spacing={0} w="full">
-        {renderContent()}
-      </VStack>
-    </ScrollableTabPanel>
+      {renderContent()}
+    </TabPanel>
   );
 };
 
