@@ -1,16 +1,30 @@
-import { Input, Text, VStack } from '@chakra-ui/react';
+import {
+  Input,
+  InputGroup,
+  InputRightElement,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, {
+  type ChangeEvent,
+  type FocusEvent,
+  type FC,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { randomBytes } from 'tweetnacl';
 
 // components
+import InformationIcon from '@extension/components/InformationIcon';
 import Label from '@extension/components/Label';
 
 // constants
 import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
 // hooks
+import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -21,7 +35,9 @@ const GenericInput: FC<IProps> = ({
   characterLimit,
   error,
   id,
+  informationText,
   label,
+  onBlur,
   onChange,
   onError,
   required = false,
@@ -30,6 +46,7 @@ const GenericInput: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // hooks
+  const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
   // state
@@ -50,6 +67,13 @@ const GenericInput: FC<IProps> = ({
     return null;
   };
   // handlers
+  const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
+    const _error = _validate(event.target.value);
+
+    onError && onError(_error);
+
+    return onBlur && onBlur(event);
+  };
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     let _charactersRemaining: number;
     let _error: string | null;
@@ -73,9 +97,7 @@ const GenericInput: FC<IProps> = ({
       }
     }
 
-    if (_error) {
-      onError && onError(_error);
-    }
+    onError && onError(_error);
 
     return onChange && onChange(event);
   };
@@ -85,15 +107,29 @@ const GenericInput: FC<IProps> = ({
       <Label error={error} inputID={_id} label={label} required={required} />
 
       {/*input*/}
-      <Input
-        {...inputProps}
-        focusBorderColor={error ? 'red.300' : primaryColor}
-        id={_id}
-        isInvalid={!!error}
-        h={INPUT_HEIGHT}
-        onChange={handleOnChange}
-        w="full"
-      />
+      <InputGroup size="md">
+        <Input
+          {...inputProps}
+          focusBorderColor={error ? 'red.300' : primaryColor}
+          id={_id}
+          isInvalid={!!error}
+          h={INPUT_HEIGHT}
+          onBlur={handleOnBlur}
+          onChange={handleOnChange}
+          w="full"
+        />
+
+        {informationText && (
+          <InputRightElement h={INPUT_HEIGHT}>
+            <Stack alignItems="center" h={INPUT_HEIGHT} justifyContent="center">
+              <InformationIcon
+                ariaLabel="Information icon"
+                tooltipLabel={informationText}
+              />
+            </Stack>
+          </InputRightElement>
+        )}
+      </InputGroup>
 
       {/*character limit*/}
       {typeof charactersRemaining === 'number' && (

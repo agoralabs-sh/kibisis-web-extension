@@ -59,7 +59,7 @@ const AdvancedSettingsPage: FC = () => {
     }
 
     dispatch(
-      saveToStorageThunk({
+      saveSettingsToStorageThunk({
         ...settings,
         advanced: {
           ...settings.advanced,
@@ -72,7 +72,7 @@ const AdvancedSettingsPage: FC = () => {
     (key: keyof IAdvancedSettings) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       dispatch(
-        saveToStorageThunk({
+        saveSettingsToStorageThunk({
           ...settings,
           advanced: {
             ...settings.advanced,

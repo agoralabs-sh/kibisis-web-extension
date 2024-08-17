@@ -13,6 +13,7 @@ export * from './arc-0300';
 export * from './asset-holdings';
 export * from './assets';
 export * from './authentication';
+export * from './components';
 export * from './events';
 export * from './i18n';
 export * from './layout';

@@ -24,15 +24,8 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-interface IProps {
-  disabled?: boolean;
-  error: string | null;
-  hint: string | null;
-  inputRef?: MutableRefObject<HTMLInputElement | null>;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
-  value: string;
-}
+// types
+import type { IProps } from './types';
 
 const PasswordInput: FC<IProps> = ({
   disabled,
@@ -42,12 +35,12 @@ const PasswordInput: FC<IProps> = ({
   onKeyUp,
   onChange,
   value,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
   // state
   const [show, setShow] = useState<boolean>(false);
   // misc

@@ -4,6 +4,7 @@ interface IProps extends Omit<InputProps, 'onError'> {
   characterLimit?: number;
   error?: string | null;
   id?: string;
+  informationText?: string;
   label: string;
   onError?: (value: string | null) => void;
   required?: boolean;

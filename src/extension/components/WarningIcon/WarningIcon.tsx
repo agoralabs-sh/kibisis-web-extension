@@ -1,27 +1,23 @@
 import { Icon, Tooltip } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 
-interface IProps {
-  tooltipLabel: string;
-}
+// types
+import type { IIconWithTooltipProps } from '@extension/types';
 
-const WarningIcon: FC<IProps> = ({ tooltipLabel }: IProps) => {
-  // misc
-  const height: string = '1em';
-
+const WarningIcon: FC<IIconWithTooltipProps> = ({
+  ariaLabel,
+  tooltipLabel,
+}) => {
   return (
-    <Tooltip
-      aria-label={`Tooltip with label "${tooltipLabel}"`}
-      label={tooltipLabel}
-    >
+    <Tooltip label={tooltipLabel}>
       <span
         style={{
-          height,
-          lineHeight: height,
+          height: '1em',
+          lineHeight: '1em',
         }}
       >
-        <Icon as={IoWarningOutline} color="yellow.500" />
+        <Icon aria-label={ariaLabel} as={IoWarningOutline} color="yellow.500" />
       </span>
     </Tooltip>
   );
