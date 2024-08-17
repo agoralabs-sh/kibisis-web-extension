@@ -1,24 +1,28 @@
 import { Code, HStack, Text, Tooltip } from '@chakra-ui/react';
 import React, { FC } from 'react';
 
+// components
+import CopyIconButton from '@extension/components/CopyIconButton';
+
 // constants
-import { MODAL_ITEM_HEIGHT } from '@extension/constants';
+import { DEFAULT_GAP, MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import WarningIcon from '@extension/components/WarningIcon';
 
 // types
-import { IProps } from './types';
+import type { IProps } from './types';
 
 const ModalTextItem: FC<IProps> = ({
+  copyButtonLabel,
   isCode = false,
   label,
   tooltipLabel,
   value,
   warningLabel,
   ...stackProps
-}: IProps) => {
+}) => {
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // renders
@@ -43,7 +47,7 @@ const ModalTextItem: FC<IProps> = ({
       alignItems="center"
       justifyContent="space-between"
       minH={MODAL_ITEM_HEIGHT}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
       {...stackProps}
     >
@@ -52,7 +56,12 @@ const ModalTextItem: FC<IProps> = ({
         {label}
       </Text>
 
-      <HStack flexGrow={1} justifyContent="flex-end" spacing={2} w="full">
+      <HStack
+        flexGrow={1}
+        justifyContent="flex-end"
+        spacing={DEFAULT_GAP / 3}
+        w="full"
+      >
         {/*value*/}
         {tooltipLabel ? (
           <Tooltip
@@ -63,6 +72,16 @@ const ModalTextItem: FC<IProps> = ({
           </Tooltip>
         ) : (
           renderValue()
+        )}
+
+        {/*copy button*/}
+        {copyButtonLabel && (
+          <CopyIconButton
+            ariaLabel={copyButtonLabel}
+            tooltipLabel={copyButtonLabel}
+            size="sm"
+            value={value}
+          />
         )}
 
         {/*warning*/}
