@@ -13,7 +13,7 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // features
 import { setConfirmModal } from '@extension/features/layout';
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // selectors
 import { useSelectSettings } from '@extension/selectors';
@@ -59,7 +59,7 @@ const AdvancedSettingsPage: FC = () => {
     }
 
     dispatch(
-      saveSettingsToStorageThunk({
+      saveToStorageThunk({
         ...settings,
         advanced: {
           ...settings.advanced,
@@ -72,7 +72,7 @@ const AdvancedSettingsPage: FC = () => {
     (key: keyof IAdvancedSettings) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       dispatch(
-        saveSettingsToStorageThunk({
+        saveToStorageThunk({
           ...settings,
           advanced: {
             ...settings.advanced,

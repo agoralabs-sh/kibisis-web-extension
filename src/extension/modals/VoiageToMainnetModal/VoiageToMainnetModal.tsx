@@ -24,7 +24,7 @@ import Warning from '@extension/components/Warning';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 import { saveToStorageThunk } from '@extension/features/news';
 
 // hooks

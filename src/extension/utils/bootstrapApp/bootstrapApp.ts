@@ -1,6 +1,6 @@
 import I18next, { i18n } from 'i18next';
-import { createElement, FC } from 'react';
-import { createRoot, Root } from 'react-dom/client';
+import { createElement, type FC } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
 import { initReactI18next } from 'react-i18next';
 
 // constants
@@ -13,12 +13,12 @@ import StorageManager from '@extension/services/StorageManager';
 import { en } from '@extension/translations';
 
 // types
-import { IAppearanceSettings, IAppProps } from '@extension/types';
+import type { IAppearanceSettings, IAppProps } from '@extension/types';
 
 export default function bootstrapApp(app: FC<IAppProps>): () => Promise<void> {
   return async (): Promise<void> => {
-    const rootElement: HTMLElement | null = document.getElementById('root');
-    const storageManager: StorageManager = new StorageManager();
+    const rootElement = document.getElementById('root');
+    const storageManager = new StorageManager();
     let appearanceSettings: IAppearanceSettings | null;
     let i18next: i18n;
     let root: Root;

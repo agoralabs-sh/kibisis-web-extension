@@ -69,7 +69,7 @@ import {
   setAccountAndType as setReKeyAccount,
   TReKeyType,
 } from '@extension/features/re-key-account';
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';

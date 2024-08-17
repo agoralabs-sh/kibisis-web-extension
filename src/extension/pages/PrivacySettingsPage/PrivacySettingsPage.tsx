@@ -16,7 +16,7 @@ import {
 } from '@extension/constants';
 
 // features
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // hooks
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';

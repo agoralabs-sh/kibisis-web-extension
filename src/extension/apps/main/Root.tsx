@@ -30,7 +30,7 @@ import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
 import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
 import { fetchSessionsThunk } from '@extension/features/sessions';
-import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
+import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import {
   fetchFromStorageThunk as fetchSystemInfoFromStorageThunk,

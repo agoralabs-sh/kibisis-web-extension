@@ -8,7 +8,7 @@ import { BODY_BACKGROUND_COLOR } from '@extension/constants';
 
 // features
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
-import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
+import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
 
 // types

@@ -43,7 +43,7 @@ import {
   enableThunk as enableCredentialLockThunk,
 } from '@extension/features/credential-lock';
 import { create as createNotification } from '@extension/features/notifications';
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';

@@ -8,7 +8,7 @@ import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { fetchSessionsThunk } from '@extension/features/sessions';
-import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
+import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
 

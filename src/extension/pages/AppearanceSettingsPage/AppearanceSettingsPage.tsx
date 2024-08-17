@@ -11,7 +11,7 @@ import SettingsSelectItem, {
 } from '@extension/components/SettingsSelectItem';
 
 // features
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // selectors
 import { useSelectSettings } from '@extension/selectors';

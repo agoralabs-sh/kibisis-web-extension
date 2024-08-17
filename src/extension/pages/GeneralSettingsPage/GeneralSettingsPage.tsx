@@ -22,7 +22,7 @@ import {
 // features
 import { setConfirmModal } from '@extension/features/layout';
 import { sendFactoryResetThunk } from '@extension/features/messages';
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // models
 import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
