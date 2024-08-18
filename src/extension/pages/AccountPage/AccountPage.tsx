@@ -83,6 +83,7 @@ import {
   useSelectActiveAccountInformation,
   useSelectActiveAccountTransactions,
   useSelectAccountsFetching,
+  useSelectCustomNodesItems,
   useSelectSettingsFetching,
   useSelectIsOnline,
   useSelectNetworks,
@@ -106,7 +107,6 @@ import type {
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
-import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const AccountPage: FC = () => {
   const { t } = useTranslation();
@@ -123,6 +123,7 @@ const AccountPage: FC = () => {
   const accounts = useSelectAccounts();
   const accountTransactions = useSelectActiveAccountTransactions();
   const activeAccountDetails = useSelectActiveAccountDetails();
+  const customNodes = useSelectCustomNodesItems();
   const fetchingAccounts = useSelectAccountsFetching();
   const fetchingSettings = useSelectSettingsFetching();
   const online = useSelectIsOnline();
@@ -138,6 +139,7 @@ const AccountPage: FC = () => {
   // state
   const [isEditing, setIsEditing] = useState<boolean>(false);
   // misc
+  const _context = 'account-page';
   const canReKeyAccount = () => {
     if (!account || !accountInformation) {
       return false;
@@ -278,7 +280,9 @@ const AccountPage: FC = () => {
 
               {/*network selection*/}
               <NetworkSelect
-                network={selectedNetwork}
+                context={_context}
+                customNodes={customNodes}
+                selectedNetwork={selectedNetwork}
                 networks={networks}
                 onSelect={handleNetworkSelect}
               />
@@ -368,7 +372,7 @@ const AccountPage: FC = () => {
 
               {/*overflow menu*/}
               <OverflowMenu
-                context="account-page"
+                context={_context}
                 items={[
                   // re-key
                   ...(canReKeyAccount()

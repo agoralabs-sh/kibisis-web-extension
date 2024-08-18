@@ -9,11 +9,12 @@ import BaseARC0072Indexer from '@extension/models/BaseARC0072Indexer';
 import BaseNFTExplorer from '@extension/models/BaseNFTExplorer';
 
 // types
+import type { IBaseWithDiscriminator } from '@common/types';
 import type { INativeCurrency } from '../assets';
 import type IChainNamespace from './IChainNamespace';
 import type INode from './INode';
 
-interface INetwork {
+interface INetwork extends IBaseWithDiscriminator<'INetwork'> {
   algods: INode[];
   arc0072Indexers: BaseARC0072Indexer[];
   blockExplorers: BaseBlockExplorer[];

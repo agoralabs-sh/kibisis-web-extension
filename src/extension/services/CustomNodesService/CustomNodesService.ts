@@ -26,15 +26,20 @@ export default class CustomNodesService {
     genesisHash,
     indexer,
     name,
-  }: Omit<ICustomNodeItem, 'id'>): ICustomNodeItem {
+  }: Omit<ICustomNodeItem, 'discriminator' | 'id'>): ICustomNodeItem {
     return {
       algod,
+      discriminator: 'ICustomNodeItem',
       genesisHash,
       id: uuid(),
       indexer,
       name,
     };
   }
+
+  /**
+   * private functions
+   */
 
   /**
    * public functions

@@ -1,5 +1,5 @@
-import { HStack, Tag, TagLabel } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { HStack, Tag, TagLabel, type TagProps } from '@chakra-ui/react';
+import React, { type FC } from 'react';
 
 // enums
 import { NetworkTypeEnum } from '@extension/enums';
@@ -14,7 +14,7 @@ import type { IProps } from './types';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import mapIconSizeToSize from './utils/mapIconSizeToSize';
 
-const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
+const NetworkBadge: FC<IProps> = ({ customNode, network, size = 'sm' }) => {
   // selectors
   const colorMode = useSelectSettingsColorMode();
   // misc
@@ -22,76 +22,114 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
     network.nativeCurrency.iconUrl,
     {
       color: network.chakraTheme,
-      h: mapIconSizeToSize(size),
+      boxSize: mapIconSizeToSize(size),
       mr: 2,
-      w: mapIconSizeToSize(size),
     }
   );
+  // renders
+  const renderNetworkTypeTag = () => {
+    const defaultProps: Partial<TagProps> = {
+      size,
+      variant: 'solid',
+      borderRightRadius: 'full',
+    };
 
-  switch (network.type) {
-    case NetworkTypeEnum.Beta:
-      return (
-        <HStack alignItems="center" justifyContent="flex-start" spacing={0}>
-          <Tag
-            borderLeftRadius="full"
-            colorScheme={network.chakraTheme}
-            size={size}
-            variant={colorMode === 'dark' ? 'solid' : 'outline'}
-          >
-            {nativeCurrencyIcon}
-
-            <TagLabel>{network.canonicalName}</TagLabel>
-          </Tag>
-
-          <Tag
-            borderRightRadius="full"
-            colorScheme="blue"
-            size={size}
-            variant={colorMode === 'dark' ? 'solid' : 'subtle'}
-          >
+    switch (network.type) {
+      case NetworkTypeEnum.Beta:
+        return (
+          <Tag {...defaultProps} colorScheme="blue">
             <TagLabel>BetaNet</TagLabel>
           </Tag>
-        </HStack>
-      );
-    case NetworkTypeEnum.Test:
+        );
+      case NetworkTypeEnum.Test:
+        return (
+          <Tag {...defaultProps} colorScheme="yellow">
+            <TagLabel>TestNet</TagLabel>
+          </Tag>
+        );
+      default:
+        return null;
+    }
+  };
+  const renderTags = () => {
+    if (customNode) {
       return (
-        <HStack alignItems="center" justifyContent="flex-start" spacing={0}>
+        <>
+          {/*custom node name*/}
           <Tag
             borderLeftRadius="full"
+            colorScheme="green"
+            size={size}
+            variant="solid"
+          >
+            <TagLabel>{customNode.name}</TagLabel>
+          </Tag>
+
+          {/*network name*/}
+          <Tag
             colorScheme={network.chakraTheme}
             size={size}
-            variant={colorMode === 'dark' ? 'solid' : 'outline'}
+            variant="solid"
+            {...(network.type === NetworkTypeEnum.Stable
+              ? {
+                  // mainnet will not have a network type tag
+                  borderRightRadius: 'full',
+                }
+              : {
+                  borderRadius: 'none',
+                })}
           >
             {nativeCurrencyIcon}
 
             <TagLabel>{network.canonicalName}</TagLabel>
           </Tag>
 
-          <Tag
-            borderRightRadius="full"
-            colorScheme="yellow"
-            size={size}
-            variant={colorMode === 'dark' ? 'solid' : 'subtle'}
-          >
-            <TagLabel>TestNet</TagLabel>
-          </Tag>
-        </HStack>
+          {/*network type*/}
+          {renderNetworkTypeTag()}
+        </>
       );
-    case NetworkTypeEnum.Stable:
-    default:
+    }
+
+    if (network.type === NetworkTypeEnum.Stable) {
       return (
         <Tag
           borderRadius="full"
           colorScheme={network.chakraTheme}
           size={size}
-          variant={colorMode === 'dark' ? 'solid' : 'outline'}
+          variant="solid"
         >
           {nativeCurrencyIcon}
 
           <TagLabel>{network.canonicalName}</TagLabel>
         </Tag>
       );
-  }
+    }
+
+    return (
+      <>
+        {/*network name*/}
+        <Tag
+          borderLeftRadius="full"
+          colorScheme={network.chakraTheme}
+          size={size}
+          variant="solid"
+        >
+          {nativeCurrencyIcon}
+
+          <TagLabel>{network.canonicalName}</TagLabel>
+        </Tag>
+
+        {/*network type*/}
+        {renderNetworkTypeTag()}
+      </>
+    );
+  };
+
+  return (
+    <HStack alignItems="center" justifyContent="flex-start" spacing={0}>
+      {renderTags()}
+    </HStack>
+  );
 };
 
 export default NetworkBadge;
