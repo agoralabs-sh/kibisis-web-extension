@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAddOutline, IoCloseOutline } from 'react-icons/io5';
+import { IoAddCircleOutline, IoAddOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -175,7 +175,7 @@ const AssetsTab: FC<IProps> = ({ account }) => {
           <Tooltip label={t<string>('buttons.addAsset')}>
             <IconButton
               aria-label="Add asset"
-              icon={IoAddOutline}
+              icon={IoAddCircleOutline}
               onClick={handleAddAssetClick}
               size="sm"
               variant="ghost"

@@ -190,9 +190,13 @@ const AccountPage: FC = () => {
         general: {
           ...settings.general,
           selectedNetworkGenesisHash: value.genesisHash,
-          ...(value.discriminator === 'ICustomNodeItem' && {
-            selectedCustomNetworkId: value.id,
-          }),
+          ...(value.discriminator === 'ICustomNodeItem'
+            ? {
+                selectedCustomNetworkId: value.id,
+              }
+            : {
+                selectedCustomNetworkId: null, // if there is no custom node, remove it from the settings
+              }),
         },
       })
     );

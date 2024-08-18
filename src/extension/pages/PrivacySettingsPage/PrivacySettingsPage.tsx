@@ -55,6 +55,7 @@ const PrivacySettingsPage: FC = () => {
   return (
     <>
       <PageHeader title={t<string>('titles.page', { context: 'privacy' })} />
+
       <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/*analytics & tracking*/}
         <VStack w="full">
