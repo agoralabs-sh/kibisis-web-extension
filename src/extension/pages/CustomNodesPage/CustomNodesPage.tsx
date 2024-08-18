@@ -114,7 +114,7 @@ const CustomNodesPage: FC = () => {
   const handleViewCustomNodeClose = () => setViewCustomNodeItem(null);
   // renders
   const renderContent = () => {
-    const nodes: ReactElement[] = customNodeItems
+    const nodes: ReactElement[] = [...customNodeItems]
       // first sort the nodes, putting disabled ones at the back
       .sort((first, second) => {
         const isFirstNodeAvailable = isNetworkSupportedFromSettings({
@@ -128,11 +128,15 @@ const CustomNodesPage: FC = () => {
           settings,
         });
 
-        if (isFirstNodeAvailable) {
+        if (isFirstNodeAvailable && !isSecondNodeAvailable) {
           return -1;
         }
 
-        return isSecondNodeAvailable ? 1 : 0;
+        if (!isFirstNodeAvailable && isSecondNodeAvailable) {
+          return 1;
+        }
+
+        return 0;
       })
       .reduce((acc, currentValue, index) => {
         const network =
