@@ -23,7 +23,7 @@ import {
 } from 'react-icons/io5';
 
 // components
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import IconButton from '@extension/components/IconButton';
 
 // constants
@@ -86,7 +86,7 @@ const CustomNodeItem: FC<IProps> = ({
           </Tooltip>
 
           {/*network*/}
-          <ChainBadge network={network} size="sm" />
+          <NetworkBadge network={network} size="sm" />
         </HStack>
 
         <HStack justifyContent="flex-end" spacing={DEFAULT_GAP / 3} w="full">

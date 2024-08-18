@@ -10,7 +10,7 @@ import React, { FC } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 
 // components
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 
 // types
 import type { IProps } from './types';
@@ -21,7 +21,7 @@ const NetworkSelect: FC<IProps> = ({ network, networks, onSelect }) => {
       <MenuButton borderRadius="full" p={0} transition="all 0.2s">
         <HStack justifyContent="space-between" w="full">
           <Icon as={IoChevronDown} />
-          <ChainBadge network={network} />
+          <NetworkBadge network={network} />
         </HStack>
       </MenuButton>
 
@@ -32,7 +32,7 @@ const NetworkSelect: FC<IProps> = ({ network, networks, onSelect }) => {
             minH="48px"
             onClick={() => onSelect(value)}
           >
-            <ChainBadge network={value} />
+            <NetworkBadge network={value} />
           </MenuItem>
         ))}
       </MenuList>

@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 // components
 import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
 import Button from '@extension/components/Button';
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import ClientHeader, {
   ClientHeaderSkeleton,
 } from '@extension/components/ClientHeader';
@@ -237,7 +237,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
         />
 
         {/*network*/}
-        {network && <ChainBadge network={network} />}
+        {network && <NetworkBadge network={network} />}
 
         {/*creation date*/}
         <Text color={defaultTextColor} fontSize="xs" textAlign="center">

@@ -18,7 +18,7 @@ import {
 } from 'react-icons/io5';
 
 // components
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import IconButton from '@extension/components/IconButton';
 import SessionAvatar from '@extension/components/SessionAvatar';
 
@@ -94,7 +94,7 @@ const SettingsSessionItem: FC<IProps> = ({
           </Tooltip>
 
           {/*network*/}
-          <ChainBadge network={network} size="sm" />
+          <NetworkBadge network={network} size="sm" />
         </HStack>
 
         <HStack

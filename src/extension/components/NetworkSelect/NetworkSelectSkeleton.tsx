@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 
 // components
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 
 // types
 import { INetwork } from '@extension/types';
@@ -16,7 +16,7 @@ const NetworkSelectSkeleton: FC<IProps> = ({ network }: IProps) => (
   <HStack justifyContent="flex-end" w="full">
     <Skeleton>
       <ChakraButton rightIcon={<IoChevronDown />} variant="ghost">
-        <ChainBadge network={network} />
+        <NetworkBadge network={network} />
       </ChakraButton>
     </Skeleton>
   </HStack>

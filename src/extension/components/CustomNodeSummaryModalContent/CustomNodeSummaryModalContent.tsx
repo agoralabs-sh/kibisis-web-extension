@@ -3,7 +3,7 @@ import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
 import ModalSubHeading from '@extension/components/ModalSubHeading';
@@ -32,7 +32,7 @@ const CustomNodeSummaryModalContent: FC<IProps> = ({ customNode, network }) => {
       {/*type*/}
       <ModalItem
         label={`${t<string>('labels.chain')}:`}
-        value={<ChainBadge network={network} />}
+        value={<NetworkBadge network={network} />}
       />
 
       {/*algod details*/}
