@@ -39,8 +39,11 @@ const NetworkSelect: FC<IProps> = ({
           <Icon as={IoChevronDown} />
 
           <NetworkBadge
-            customNode={selectedCustomNode}
             network={selectedNetwork}
+            {...(selectedNetwork.genesisHash ===
+              selectedCustomNode?.genesisHash && {
+              customNode: selectedCustomNode,
+            })}
           />
         </HStack>
       </MenuButton>

@@ -61,7 +61,6 @@ const ActivityTab: FC<IProps> = ({
     return nodes.length > 0 ? (
       <ScrollableContainer
         direction="column"
-        flexGrow={1}
         m={0}
         onScrollEnd={handleScrollEnd}
         pb={8}
@@ -86,7 +85,7 @@ const ActivityTab: FC<IProps> = ({
 
   return (
     <TabPanel
-      flexGrow={1}
+      height="70vh"
       m={0}
       p={0}
       sx={{ display: 'flex', flexDirection: 'column' }}

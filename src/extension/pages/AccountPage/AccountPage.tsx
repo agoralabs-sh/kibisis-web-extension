@@ -97,6 +97,7 @@ import {
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
+import { ICustomNodeItem } from '@extension/services/CustomNodesService';
 import type {
   IAppThunkDispatch,
   IMainRootState,
@@ -133,7 +134,6 @@ const AccountPage: FC = () => {
   const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
@@ -169,17 +169,6 @@ const AccountPage: FC = () => {
     }
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
-  const handleNetworkSelect = (network: INetwork) => {
-    dispatch(
-      saveSettingsToStorageThunk({
-        ...settings,
-        general: {
-          ...settings.general,
-          selectedNetworkGenesisHash: network.genesisHash,
-        },
-      })
-    );
-  };
   const handleEditAccountNameCancel = () => setIsEditing(false);
   const handleEditAccountNameClick = () => setIsEditing(!isEditing);
   const handleEditAccountNameSubmit = (value: string | null) => {
@@ -194,6 +183,28 @@ const AccountPage: FC = () => {
 
     setIsEditing(false);
   };
+  const handleNetworkSelect = (value: ICustomNodeItem | INetwork) => {
+    dispatch(
+      saveSettingsToStorageThunk({
+        ...settings,
+        general: {
+          ...settings.general,
+          selectedNetworkGenesisHash: value.genesisHash,
+          ...(value.discriminator === 'ICustomNodeItem' && {
+            selectedCustomNetworkId: value.id,
+          }),
+        },
+      })
+    );
+  };
+  const handleReKeyAccountClick = (type: TReKeyType) => () =>
+    account &&
+    dispatch(
+      setReKeyAccount({
+        account,
+        type,
+      })
+    );
   const handleRemoveAccountClick = () => {
     if (account) {
       dispatch(
@@ -228,14 +239,6 @@ const AccountPage: FC = () => {
       );
     }
   };
-  const handleReKeyAccountClick = (type: TReKeyType) => () =>
-    account &&
-    dispatch(
-      setReKeyAccount({
-        account,
-        type,
-      })
-    );
   // renders
   const renderContent = () => {
     const headerContainerProps: StackProps = {
@@ -282,9 +285,14 @@ const AccountPage: FC = () => {
               <NetworkSelect
                 context={_context}
                 customNodes={customNodes}
-                selectedNetwork={selectedNetwork}
                 networks={networks}
                 onSelect={handleNetworkSelect}
+                selectedCustomNode={customNodes.find(
+                  (value) =>
+                    value.id === settings.general.selectedCustomNetworkId &&
+                    value.genesisHash === selectedNetwork.genesisHash
+                )}
+                selectedNetwork={selectedNetwork}
               />
             </HStack>
 
@@ -423,6 +431,8 @@ const AccountPage: FC = () => {
             </HStack>
           </VStack>
 
+          <Spacer />
+
           {/*assets/nfts/activity tabs*/}
           <Tabs
             colorScheme={primaryColorScheme}
@@ -432,7 +442,7 @@ const AccountPage: FC = () => {
             isLazy={true}
             m={0}
             onChange={handleTabChange}
-            sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
+            sx={{ display: 'flex', flexDirection: 'column' }}
             w="full"
           >
             <TabList>
@@ -441,10 +451,7 @@ const AccountPage: FC = () => {
               <Tab>{t<string>('labels.activity')}</Tab>
             </TabList>
 
-            <TabPanels
-              flexGrow={1}
-              sx={{ display: 'flex', flexDirection: 'column' }}
-            >
+            <TabPanels sx={{ display: 'flex', flexDirection: 'column' }}>
               <AssetsTab account={account} />
 
               <NFTsTab account={account} />

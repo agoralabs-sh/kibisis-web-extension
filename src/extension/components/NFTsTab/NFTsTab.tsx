@@ -70,7 +70,6 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
       // asset list
       <ScrollableContainer
         direction="column"
-        flexGrow={1}
         m={0}
         pb={8}
         pt={0}
@@ -130,7 +129,7 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
 
   return (
     <TabPanel
-      flexGrow={1}
+      height="70vh"
       m={0}
       p={0}
       sx={{ display: 'flex', flexDirection: 'column' }}

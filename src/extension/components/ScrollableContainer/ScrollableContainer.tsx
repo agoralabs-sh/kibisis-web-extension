@@ -9,13 +9,14 @@ const ScrollableContainer: FC<IProps> = ({
   onScrollEnd,
   ...stackProps
 }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   // handlers
   const handleScroll = () => {
-    if (onScrollEnd && ref.current) {
+    if (onScrollEnd && scrollContainerRef.current) {
       if (
-        ref.current.scrollHeight -
-          (ref.current.clientHeight + ref.current.scrollTop) ===
+        scrollContainerRef.current.scrollHeight -
+          (scrollContainerRef.current.clientHeight +
+            scrollContainerRef.current.scrollTop) ===
         0
       ) {
         onScrollEnd();
@@ -24,8 +25,15 @@ const ScrollableContainer: FC<IProps> = ({
   };
 
   return (
-    <Stack onScroll={handleScroll} overflowY="scroll" ref={ref} {...stackProps}>
-      {children}
+    <Stack
+      flexGrow={1}
+      onScroll={handleScroll}
+      overflowY="scroll"
+      ref={scrollContainerRef}
+      spacing={0}
+      w="full"
+    >
+      <Stack {...stackProps}>{children}</Stack>
     </Stack>
   );
 };
