@@ -1,10 +1,5 @@
 import {
   HStack,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Tag,
   TagLabel,
   TagRightIcon,
@@ -17,14 +12,13 @@ import { useTranslation } from 'react-i18next';
 import {
   IoCheckmarkCircleOutline,
   IoCloseCircleOutline,
-  IoEllipsisVerticalOutline,
   IoEyeOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 
 // components
 import NetworkBadge from '@extension/components/NetworkBadge';
-import IconButton from '@extension/components/IconButton';
+import OverflowMenu from '@extension/components/OverflowMenu';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -35,9 +29,6 @@ import useItemBorderColor from '@extension/hooks/useItemBorderColor';
 
 // types
 import type { IProps } from './types';
-
-// utils
-import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const CustomNodeItem: FC<IProps> = ({
   item,
@@ -120,48 +111,23 @@ const CustomNodeItem: FC<IProps> = ({
       </VStack>
 
       {/*overflow menu*/}
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          aria-label="Overflow menu"
-          icon={IoEllipsisVerticalOutline}
-          variant="ghost"
-        />
-
-        <MenuList>
-          <MenuItem
-            color={defaultTextColor}
-            fontSize="sm"
-            icon={
-              <Icon
-                as={IoEyeOutline}
-                boxSize={calculateIconSize()}
-                color={defaultTextColor}
-              />
-            }
-            minH={DEFAULT_GAP * 2}
-            onClick={handleOnSelectClick}
-          >
-            {t<string>('labels.view')}
-          </MenuItem>
-
-          <MenuItem
-            color={defaultTextColor}
-            fontSize="sm"
-            icon={
-              <Icon
-                as={IoTrashOutline}
-                boxSize={calculateIconSize()}
-                color={defaultTextColor}
-              />
-            }
-            minH={DEFAULT_GAP * 2}
-            onClick={handleOnRemoveClick}
-          >
-            {t<string>('labels.remove')}
-          </MenuItem>
-        </MenuList>
-      </Menu>
+      <OverflowMenu
+        context={item.id}
+        items={[
+          // view
+          {
+            icon: IoEyeOutline,
+            label: t<string>('labels.view'),
+            onSelect: handleOnSelectClick,
+          },
+          // remove
+          {
+            icon: IoTrashOutline,
+            label: t<string>('labels.remove'),
+            onSelect: handleOnRemoveClick,
+          },
+        ]}
+      />
     </HStack>
   );
 };

@@ -1,10 +1,6 @@
 import {
   HStack,
   Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Spacer,
   StackProps,
   Tab,
@@ -23,7 +19,6 @@ import {
   IoAdd,
   IoCloudOfflineOutline,
   IoCreateOutline,
-  IoEllipsisVerticalOutline,
   IoLockClosedOutline,
   IoLockOpenOutline,
   IoQrCodeOutline,
@@ -40,6 +35,7 @@ import EditableAccountNameField from '@extension/components/EditableAccountNameF
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
+import OverflowMenu from '@extension/components/OverflowMenu';
 import NativeBalance from '@extension/components/NativeBalance';
 import NetworkSelect from '@extension/components/NetworkSelect';
 import NFTsTab from '@extension/components/NFTsTab';
@@ -371,71 +367,41 @@ const AccountPage: FC = () => {
               </Tooltip>
 
               {/*overflow menu*/}
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  aria-label="Overflow menu"
-                  icon={IoEllipsisVerticalOutline}
-                  variant="ghost"
-                />
-                <MenuList>
-                  {/*re-key*/}
-                  {canReKeyAccount() && (
-                    <MenuItem
-                      color={defaultTextColor}
-                      fontSize="sm"
-                      icon={
-                        <Icon
-                          as={IoLockClosedOutline}
-                          boxSize={calculateIconSize()}
-                          color={defaultTextColor}
-                        />
-                      }
-                      onClick={handleReKeyAccountClick('rekey')}
-                    >
-                      {t<string>('labels.reKey')}
-                    </MenuItem>
-                  )}
-
-                  {/*undo re-key*/}
-                  {accountInformation.authAddress &&
-                    isReKeyedAuthAccountAvailable({
-                      accounts,
-                      authAddress: accountInformation.authAddress,
-                    }) && (
-                      <MenuItem
-                        color={defaultTextColor}
-                        fontSize="sm"
-                        icon={
-                          <Icon
-                            as={IoLockOpenOutline}
-                            boxSize={calculateIconSize()}
-                            color={defaultTextColor}
-                          />
-                        }
-                        onClick={handleReKeyAccountClick('undo')}
-                      >
-                        {t<string>('labels.undoReKey')}
-                      </MenuItem>
-                    )}
-
-                  {/*remove account*/}
-                  <MenuItem
-                    color={defaultTextColor}
-                    fontSize="sm"
-                    icon={
-                      <Icon
-                        as={IoTrashOutline}
-                        boxSize={calculateIconSize()}
-                        color={defaultTextColor}
-                      />
-                    }
-                    onClick={handleRemoveAccountClick}
-                  >
-                    {t<string>('labels.removeAccount')}
-                  </MenuItem>
-                </MenuList>
-              </Menu>
+              <OverflowMenu
+                context="account-page"
+                items={[
+                  // re-key
+                  ...(canReKeyAccount()
+                    ? [
+                        {
+                          icon: IoLockClosedOutline,
+                          label: t<string>('labels.reKey'),
+                          onSelect: handleReKeyAccountClick('rekey'),
+                        },
+                      ]
+                    : []),
+                  // undo re-key
+                  ...(accountInformation.authAddress &&
+                  isReKeyedAuthAccountAvailable({
+                    accounts,
+                    authAddress: accountInformation.authAddress,
+                  })
+                    ? [
+                        {
+                          icon: IoLockOpenOutline,
+                          label: t<string>('labels.undoReKey'),
+                          onSelect: handleReKeyAccountClick('undo'),
+                        },
+                      ]
+                    : []),
+                  // remove account
+                  {
+                    icon: IoTrashOutline,
+                    label: t<string>('labels.removeAccount'),
+                    onSelect: handleRemoveAccountClick,
+                  },
+                ]}
+              />
             </HStack>
 
             {/*badges*/}

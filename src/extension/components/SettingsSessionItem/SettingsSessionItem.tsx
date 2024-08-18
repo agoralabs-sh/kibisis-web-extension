@@ -1,25 +1,11 @@
-import {
-  HStack,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-  Tooltip,
-  VStack,
-} from '@chakra-ui/react';
+import { HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
 import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  IoEllipsisVerticalOutline,
-  IoUnlinkOutline,
-  IoWalletOutline,
-} from 'react-icons/io5';
+import { IoUnlinkOutline, IoWalletOutline } from 'react-icons/io5';
 
 // components
 import NetworkBadge from '@extension/components/NetworkBadge';
-import IconButton from '@extension/components/IconButton';
+import OverflowMenu from '@extension/components/OverflowMenu';
 import SessionAvatar from '@extension/components/SessionAvatar';
 
 // constants
@@ -32,9 +18,6 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
 import type { IProps } from './types';
-
-// utils
-import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const SettingsSessionItem: FC<IProps> = ({
   item,
@@ -129,48 +112,21 @@ const SettingsSessionItem: FC<IProps> = ({
       </VStack>
 
       {/*overflow menu*/}
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          aria-label="Overflow menu"
-          icon={IoEllipsisVerticalOutline}
-          variant="ghost"
-        />
-
-        <MenuList>
-          <MenuItem
-            color={defaultTextColor}
-            fontSize="sm"
-            icon={
-              <Icon
-                as={IoWalletOutline}
-                boxSize={calculateIconSize()}
-                color={defaultTextColor}
-              />
-            }
-            minH={DEFAULT_GAP * 2}
-            onClick={handleOnSelectClick}
-          >
-            {t<string>('labels.manage')}
-          </MenuItem>
-
-          <MenuItem
-            color={defaultTextColor}
-            fontSize="sm"
-            icon={
-              <Icon
-                as={IoUnlinkOutline}
-                boxSize={calculateIconSize()}
-                color={defaultTextColor}
-              />
-            }
-            minH={DEFAULT_GAP * 2}
-            onClick={handleOnDisconnectClick}
-          >
-            {t<string>('labels.disconnect')}
-          </MenuItem>
-        </MenuList>
-      </Menu>
+      <OverflowMenu
+        context={item.id}
+        items={[
+          {
+            icon: IoWalletOutline,
+            label: t<string>('labels.manage'),
+            onSelect: handleOnSelectClick,
+          },
+          {
+            icon: IoUnlinkOutline,
+            label: t<string>('labels.disconnect'),
+            onSelect: handleOnSelectClick,
+          },
+        ]}
+      />
     </HStack>
   );
 };
