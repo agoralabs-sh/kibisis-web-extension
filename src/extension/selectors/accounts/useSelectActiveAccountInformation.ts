@@ -1,5 +1,5 @@
 // selectors
-import useSelectSelectedNetwork from '../networks/useSelectSelectedNetwork';
+import useSelectSettingsSelectedNetwork from '../settings/useSelectSettingsSelectedNetwork';
 import useSelectActiveAccount from './useSelectActiveAccount';
 
 // services
@@ -16,7 +16,7 @@ import type { IAccountInformation } from '@extension/types';
  */
 export default function useSelectActiveAccountInformation(): IAccountInformation | null {
   const account = useSelectActiveAccount();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
 
   if (!account || !network) {
     return null;

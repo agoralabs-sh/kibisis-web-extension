@@ -10,7 +10,7 @@ import type {
  * Gets the currently selected network from the settings.
  * @returns {INetworkWithTransactionParams | null} the current selected network.
  */
-export default function useSelectSelectedNetwork(): INetworkWithTransactionParams | null {
+export default function useSelectSettingsSelectedNetwork(): INetworkWithTransactionParams | null {
   return useSelector<IMainRootState, INetworkWithTransactionParams | null>(
     (state) =>
       state.networks.items.find(

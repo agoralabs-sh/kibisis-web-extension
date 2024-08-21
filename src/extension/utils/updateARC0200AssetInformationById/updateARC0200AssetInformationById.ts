@@ -11,14 +11,15 @@ import mapARC0200AssetFromARC0200AssetInformation from '../mapARC0200AssetFromAR
 
 /**
  * Gets the ARC-0200 asset information.
- * @param {string} id - the app ID of the ARC200 asset to fetch.
  * @param {IOptions} options - options needed to fetch the ARC200 asset information.
  * @returns {Promise<IARC0200Asset | null>} the ARC-0200 asset information, or null if there was an error.
  */
-export default async function updateARC0200AssetInformationById(
-  id: string,
-  { delay = 0, logger, network }: IUpdateAssetInformationByIdOptions
-): Promise<IARC0200Asset | null> {
+export default async function updateARC0200AssetInformationById({
+  customNodeOrNetwork,
+  delay = 0,
+  id,
+  logger,
+}: IUpdateAssetInformationByIdOptions): Promise<IARC0200Asset | null> {
   const _functionName: string = 'updateARC0200AssetInformationById';
   let assetInformation: IARC0200AssetInformation | null;
 
@@ -27,7 +28,6 @@ export default async function updateARC0200AssetInformationById(
       delay,
       id,
       logger,
-      network,
     });
 
     if (!assetInformation) {

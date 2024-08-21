@@ -9,7 +9,7 @@ import {
 import type { IOptions } from './types';
 
 // utils
-import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
+import createAlgodClientFromCustomNodeItemOrNetwork from '@common/utils/createAlgodClientFromCustomNodeItemOrNetwork';
 
 /**
  * Convenience function that creates the transactions to make a payment.
@@ -18,16 +18,14 @@ import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNet
  */
 export default async function createUnsignedPaymentTransactions({
   amountInAtomicUnits,
+  customNodeOrNetwork,
   fromAddress,
-  logger,
-  network,
   note,
   toAddress,
 }: IOptions): Promise<Transaction[]> {
-  const algodClient = createAlgodClientFromNetwork(network);
-  const suggestedParams: SuggestedParams = await algodClient
-    .getTransactionParams()
-    .do();
+  const algodClient =
+    createAlgodClientFromCustomNodeItemOrNetwork(customNodeOrNetwork);
+  const suggestedParams = await algodClient.getTransactionParams().do();
 
   return [
     makePaymentTxnWithSuggestedParams(

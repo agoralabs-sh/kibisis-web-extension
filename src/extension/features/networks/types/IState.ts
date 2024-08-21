@@ -1,5 +1,5 @@
 // types
-import { INetworkWithTransactionParams } from '@extension/types';
+import type { INetworkWithTransactionParams, INode } from '@extension/types';
 
 /**
  * @property {boolean} fetching - true when fetching transaction params from storage.
@@ -9,7 +9,9 @@ import { INetworkWithTransactionParams } from '@extension/types';
  * @property {boolean} updating - true when updating transaction params for the selected network.
  */
 interface IState {
+  algod: INode | null;
   fetching: boolean;
+  indexer: INode | null;
   items: INetworkWithTransactionParams[];
   pollingId: number | null;
   saving: boolean;

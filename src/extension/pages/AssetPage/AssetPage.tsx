@@ -62,7 +62,7 @@ import SkeletonAssetPage from '@extension/pages/SkeletonAssetPage';
 import {
   useSelectAccounts,
   useSelectAvailableAccountsForSelectedNetwork,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsFetching,
 } from '@extension/selectors';
@@ -100,7 +100,7 @@ const AssetPage: FC = () => {
   const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const fetchingAssets = useSelectStandardAssetsFetching();
   const blockExplorer = useSelectSettingsPreferredBlockExplorer();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   // hooks
   const {
     account,

@@ -37,7 +37,7 @@ import {
   useSelectARC0200AssetsUpdating,
   useSelectStandardAssetsFetching,
   useSelectStandardAssetsBySelectedNetwork,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
 
@@ -57,7 +57,7 @@ const AssetsTab: FC<IProps> = ({ account }) => {
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   const fetchingARC0200Assets = useSelectARC0200AssetsFetching();
   const fetchingStandardAssets = useSelectStandardAssetsFetching();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const standardAssets = useSelectStandardAssetsBySelectedNetwork();
   const updatingARC0200Assets = useSelectARC0200AssetsUpdating();
   const updatingStandardAssets = useSelectStandardAssetsUpdating();

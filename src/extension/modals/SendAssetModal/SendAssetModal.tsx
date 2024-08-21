@@ -65,7 +65,7 @@ import {
   useSelectARC0200AssetsBySelectedNetwork,
   useSelectAvailableAccountsForSelectedNetwork,
   useSelectLogger,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectSendAssetAmountInStandardUnits,
   useSelectSendAssetConfirming,
   useSelectSendAssetCreating,
@@ -116,7 +116,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const creating = useSelectSendAssetCreating();
   const fromAccount = useSelectSendAssetFromAccount();
   const logger = useSelectLogger();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   const note = useSelectSendAssetNote();
   const selectedAsset = useSelectSendAssetSelectedAsset();
   const toAddress = useSelectSendAssetToAddress();

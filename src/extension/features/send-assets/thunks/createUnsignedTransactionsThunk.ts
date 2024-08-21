@@ -31,6 +31,7 @@ import createUnsignedARC0200TransferTransactions from '@extension/utils/createUn
 import createUnsignedPaymentTransactions from '@extension/utils/createUnsignedPaymentTransactions';
 import createUnsignedStandardAssetTransferTransactions from '@extension/utils/createUnsignedStandardAssetTransferTransactions';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
+import selectCustomNodeFromSettings from '@extension/utils/selectCustomNodeFromSettings';
 
 const createUnsignedTransactionsThunk: AsyncThunk<
   Transaction[], // return
@@ -48,11 +49,20 @@ const createUnsignedTransactionsThunk: AsyncThunk<
         ? getState().sendAssets.amountInStandardUnits
         : '0';
     const asset = getState().sendAssets.selectedAsset;
+    const customNodes = getState().customNodes.items;
     const fromAddress = getState().sendAssets.fromAddress;
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
-    const network = selectNetworkFromSettings(networks, getState().settings);
+    const settings = getState().settings;
+    const customNode = selectCustomNodeFromSettings({
+      customNodes,
+      settings,
+    });
+    const network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
     const note = getState().sendAssets.note;
     const toAddress = getState().sendAssets.toAddress;
     let _error: string;
@@ -134,6 +144,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
             amountInAtomicUnits,
             asset,
             authAddress: fromAccountInformation.authAddress,
+            customNode,
             fromAddress,
             logger,
             network,
@@ -144,18 +155,18 @@ const createUnsignedTransactionsThunk: AsyncThunk<
           return await createUnsignedStandardAssetTransferTransactions({
             amountInAtomicUnits,
             asset,
+            customNodeOrNetwork: customNode || network,
             fromAddress,
             logger,
-            network,
             note,
             toAddress,
           });
         case AssetTypeEnum.Native:
           return await createUnsignedPaymentTransactions({
             amountInAtomicUnits,
+            customNodeOrNetwork: customNode || network,
             fromAddress,
             logger,
-            network,
             note,
             toAddress,
           });

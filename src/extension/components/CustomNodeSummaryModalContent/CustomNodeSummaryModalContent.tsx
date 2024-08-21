@@ -47,7 +47,7 @@ const CustomNodeSummaryModalContent: FC<IProps> = ({ customNode, network }) => {
       />
 
       {/*algod port*/}
-      {customNode.algod.port.length > 0 && (
+      {customNode.algod.port && (
         <ModalTextItem
           isCode={true}
           label={`${t<string>('labels.port')}:`}
@@ -80,7 +80,7 @@ const CustomNodeSummaryModalContent: FC<IProps> = ({ customNode, network }) => {
           />
 
           {/*indexer port*/}
-          {customNode.indexer.port.length > 0 && (
+          {customNode.indexer.port && (
             <ModalTextItem
               isCode={true}
               label={`${t<string>('labels.port')}:`}

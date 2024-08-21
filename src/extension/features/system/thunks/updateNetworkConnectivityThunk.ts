@@ -22,10 +22,12 @@ const updateNetworkConnectivityThunk: AsyncThunk<
   ThunkEnum.UpdateNetworkConnectivity,
   async (_, { getState }) => {
     const logger = getState().system.logger;
-    const network = selectNetworkFromSettings(
-      getState().networks.items,
-      getState().settings
-    );
+    const networks = getState().networks.items;
+    const settings = getState().settings;
+    const network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
     let result: Response;
 
     if (!network) {

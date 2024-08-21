@@ -30,7 +30,7 @@ import BaseNFTExplorer from '@extension/models/BaseNFTExplorer';
 
 // selectors
 import {
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectSettings,
   useSelectSettingsPreferredBlockExplorer,
   useSelectSettingsPreferredNFTExplorer,
@@ -47,7 +47,7 @@ const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   const preferredBlockExplorer = useSelectSettingsPreferredBlockExplorer();
   const preferredNFTExplorer = useSelectSettingsPreferredNFTExplorer();
   const settings = useSelectSettings();

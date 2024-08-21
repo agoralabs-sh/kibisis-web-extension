@@ -40,7 +40,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 
 // selectors
-import { useSelectSelectedNetwork } from '@extension/selectors';
+import { useSelectSettingsSelectedNetwork } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -61,7 +61,7 @@ const AssetSelectModal: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // selectors
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();

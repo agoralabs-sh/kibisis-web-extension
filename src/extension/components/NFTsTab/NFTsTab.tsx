@@ -16,7 +16,7 @@ import usePrevious from '@extension/hooks/usePrevious';
 import {
   useSelectARC0072AssetsFetching,
   useSelectLogger,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // services
@@ -38,7 +38,7 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
   // selectors
   const fetchingARC0072Assets = useSelectARC0072AssetsFetching();
   const logger = useSelectLogger();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   // hooks
   const accountInformation = useAccountInformation(account.id);
   const previousARC0027AssetHoldings = usePrevious<

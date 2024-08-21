@@ -1,6 +1,6 @@
 // selectors
+import useSelectSettingsSelectedNetwork from '../settings/useSelectSettingsSelectedNetwork';
 import useSelectAccounts from './useSelectAccounts';
-import useSelectSelectedNetwork from '../networks/useSelectSelectedNetwork';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
@@ -16,7 +16,7 @@ import availableAccountsForNetwork from '@extension/utils/availableAccountsForNe
  */
 export default function useSelectAvailableAccountsForSelectedNetwork(): IAccountWithExtendedProps[] {
   const accounts = useSelectAccounts();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
 
   if (!network) {
     return [];

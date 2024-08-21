@@ -51,8 +51,12 @@ const updateAccountsThunk: AsyncThunk<
   ) => {
     const logger = getState().system.logger;
     const networks = getState().networks.items;
-    const network = selectNetworkFromSettings(networks, getState().settings);
     const online = getState().system.networkConnectivity.online;
+    const settings = getState().settings;
+    const network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
     let accountService: AccountService;
     let accounts = getState().accounts.items.map((value) =>
       mapAccountWithExtendedPropsToAccount(value)

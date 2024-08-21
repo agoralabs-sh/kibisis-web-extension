@@ -49,11 +49,13 @@ const queryARC0200AssetThunk: AsyncThunk<
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentARC200Assets = getState().addAssets.arc200Assets;
     const logger = getState().system.logger;
+    const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
-    const selectedNetwork = selectNetworkFromSettings(
-      getState().networks.items,
-      getState().settings
-    );
+    const settings = getState().settings;
+    const network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
     let algorandSearchApplicationResult: IAlgorandSearchApplicationsResult;
     let arc200Assets: IARC0200Asset[];
     let indexerClient: Indexer;
@@ -77,7 +79,7 @@ const queryARC0200AssetThunk: AsyncThunk<
       return currentARC200Assets;
     }
 
-    if (!selectedNetwork) {
+    if (!network) {
       logger.debug(
         `${AddAssetThunkEnum.QueryARC200Asset}: no network selected`
       );
@@ -96,9 +98,9 @@ const queryARC0200AssetThunk: AsyncThunk<
 
     arc200Assets = selectAssetsForNetwork(
       getState().arc0200Assets.items,
-      selectedNetwork.genesisHash
+      network.genesisHash
     );
-    indexerClient = createIndexerClientFromNetwork(selectedNetwork);
+    indexerClient = createIndexerClientFromNetwork(network);
 
     try {
       algorandSearchApplicationResult =
@@ -124,7 +126,7 @@ const queryARC0200AssetThunk: AsyncThunk<
           arc200Asset = await updateARC0200AssetInformationById(String(id), {
             delay: index * NODE_REQUEST_DELAY,
             logger,
-            network: selectedNetwork,
+            network,
           });
         }
 

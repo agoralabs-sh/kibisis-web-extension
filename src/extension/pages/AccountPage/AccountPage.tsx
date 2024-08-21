@@ -89,7 +89,7 @@ import {
   useSelectNetworks,
   useSelectSettingsPreferredBlockExplorer,
   useSelectAccountsSaving,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -131,7 +131,7 @@ const AccountPage: FC = () => {
   const networks = useSelectNetworks();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const savingAccounts = useSelectAccountsSaving();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const settings = useSelectSettings();
   // hooks
   const primaryColorScheme = usePrimaryColorScheme();
@@ -574,6 +574,7 @@ const AccountPage: FC = () => {
         alignItems="center"
         justifyContent="flex-start"
         flexGrow={1}
+        mt={DEFAULT_GAP / 3}
         w="full"
       >
         {renderContent()}

@@ -34,11 +34,11 @@ const fetchTransactionParamsFromStorageThunk: AsyncThunk<
   const logger = getState().system.logger;
   const networks = getState().networks.items;
   const online = getState().system.networkConnectivity.online;
-  const selectedNetwork =
-    selectNetworkFromSettings<INetworkWithTransactionParams>(
-      networks,
-      getState().settings
-    );
+  const settings = getState().settings;
+  const network = selectNetworkFromSettings({
+    networks,
+    settings,
+  });
   const storageManager = new StorageManager();
   let storageItems: Record<string, unknown>;
   let updatedNetworks: INetworkWithTransactionParams[];
@@ -80,15 +80,15 @@ const fetchTransactionParamsFromStorageThunk: AsyncThunk<
   }, networks);
 
   // if we are not online or there is no selected network, do not fetch the latest transaction params
-  if (!online || !selectedNetwork) {
+  if (!online || !network) {
     return updatedNetworks;
   }
 
   // otherwise, update the transaction params
   return await Promise.all(
     updatedNetworks.map(async (value) =>
-      value.genesisHash === selectedNetwork.genesisHash
-        ? await updateTransactionParams(selectedNetwork, { logger })
+      value.genesisHash === network.genesisHash
+        ? await updateTransactionParams(network, { logger })
         : value
     )
   );

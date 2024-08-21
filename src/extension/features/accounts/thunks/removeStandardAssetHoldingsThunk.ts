@@ -42,7 +42,7 @@ import type {
 } from '../types';
 
 // utils
-import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
+import createAlgodClientFromSettings from '@common/utils/createAlgodClientFromSettings';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';

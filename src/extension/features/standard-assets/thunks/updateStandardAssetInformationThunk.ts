@@ -10,13 +10,12 @@ import { StandardAssetsThunkEnum } from '@extension/enums';
 import StandardAssetService from '@extension/services/StandardAssetService';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type {
+  IBaseAsyncThunkConfig,
   IMainRootState,
   IStandardAsset,
-  ITinyManAssetResponse,
 } from '@extension/types';
-import {
+import type {
   IUpdateStandardAssetInformationPayload,
   IUpdateStandardAssetInformationResult,
 } from '../types';
@@ -29,20 +28,19 @@ import upsertItemsById from '@extension/utils/upsertItemsById';
 const updateStandardAssetInformationThunk: AsyncThunk<
   IUpdateStandardAssetInformationResult, // return
   IUpdateStandardAssetInformationPayload, // args
-  Record<string, never>
+  IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   IUpdateStandardAssetInformationResult,
   IUpdateStandardAssetInformationPayload,
-  { state: IMainRootState }
+  IBaseAsyncThunkConfig<IMainRootState>
 >(
   StandardAssetsThunkEnum.UpdateStandardAssetInformation,
   async ({ ids, network }, { getState }) => {
-    const logger: ILogger = getState().system.logger;
-    const verifiedAssetList: ITinyManAssetResponse[] =
-      await fetchVerifiedStandardAssetList({
-        logger,
-        network,
-      });
+    const logger = getState().system.logger;
+    const verifiedAssetList = await fetchVerifiedStandardAssetList({
+      logger,
+      network,
+    });
     let asset: IStandardAsset | null;
     let currentAssets: IStandardAsset[];
     let id: string;
@@ -54,8 +52,9 @@ const updateStandardAssetInformationThunk: AsyncThunk<
       id = ids[i];
 
       try {
-        asset = await updateStandardAssetInformationById(id, {
+        asset = await updateStandardAssetInformationById({
           delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          id,
           logger,
           network,
           verifiedAssetList,

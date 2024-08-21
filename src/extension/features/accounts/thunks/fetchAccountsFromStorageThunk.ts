@@ -42,13 +42,14 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   const logger = getState().system.logger;
   const networks = getState().networks.items;
   const online = getState().system.networkConnectivity.online;
+  const settings = getState().settings;
   const accountService = new AccountService({
     logger,
   });
-  const selectedNetwork = selectNetworkFromSettings(
+  const network = selectNetworkFromSettings({
     networks,
-    getState().settings
-  );
+    settings,
+  });
   let accounts: IAccount[];
   let activeAccountDetails: IActiveAccountDetails | null;
   let encodedGenesisHash: string;
@@ -61,15 +62,15 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   accounts = accounts.sort((a, b) => a.createdAt - b.createdAt); // sort by created at date (oldest first)
   activeAccountDetails = await accountService.getActiveAccountDetails();
 
-  if (online && selectedNetwork) {
+  if (online && network) {
     encodedGenesisHash = convertGenesisHashToHex(
-      selectedNetwork.genesisHash
+      network.genesisHash
     ).toUpperCase();
 
     // update the account information for selected network
     if (options?.updateInformation) {
       logger.debug(
-        `${ThunkEnum.FetchAccountsFromStorage}: updating account information for "${selectedNetwork.genesisId}"`
+        `${ThunkEnum.FetchAccountsFromStorage}: updating account information for "${network.genesisId}"`
       );
 
       accounts = await Promise.all(
@@ -86,7 +87,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
                 AccountService.initializeDefaultAccountInformation(),
               delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               logger,
-              network: selectedNetwork,
+              network,
             }),
           },
         }))
@@ -99,7 +100,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
     // update the accounts transactions for selected network
     if (options?.updateTransactions) {
       logger.debug(
-        `${ThunkEnum.FetchAccountsFromStorage}: updating account transactions for "${selectedNetwork.genesisId}"`
+        `${ThunkEnum.FetchAccountsFromStorage}: updating account transactions for "${network.genesisId}"`
       );
 
       accounts = await Promise.all(
@@ -116,7 +117,7 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
                 AccountService.initializeDefaultAccountTransactions(),
               delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               logger,
-              network: selectedNetwork,
+              network,
             }),
           },
         }))

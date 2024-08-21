@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 // selectors
 import {
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectStandardAssetsBySelectedNetwork,
   useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
@@ -15,7 +15,7 @@ export default function useStandardAssetById(
   id: string
 ): IUseStandardAssetByIdState {
   // selectors
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const standardAssets = useSelectStandardAssetsBySelectedNetwork();
   const updatingStandardAssets = useSelectStandardAssetsUpdating();
   // state

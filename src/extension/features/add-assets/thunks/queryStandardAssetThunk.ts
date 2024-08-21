@@ -51,11 +51,13 @@ const queryStandardAssetThunk: AsyncThunk<
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentStandardAssets = getState().addAssets.standardAssets;
     const logger = getState().system.logger;
+    const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
-    const selectedNetwork = selectNetworkFromSettings(
-      getState().networks.items,
-      getState().settings
-    );
+    const settings = getState().settings;
+    const network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
     let algorandSearchAssetsResult: IAlgorandSearchAssetsResult;
     let indexerClient: Indexer;
     let verifiedStandardAssets: ITinyManAssetResponse[];
@@ -81,7 +83,7 @@ const queryStandardAssetThunk: AsyncThunk<
       return currentStandardAssets;
     }
 
-    if (!selectedNetwork) {
+    if (!network) {
       logger.debug(
         `${AddAssetThunkEnum.QueryStandardAsset}: no network selected`
       );
@@ -98,7 +100,7 @@ const queryStandardAssetThunk: AsyncThunk<
       return currentStandardAssets;
     }
 
-    indexerClient = createIndexerClientFromNetwork(selectedNetwork);
+    indexerClient = createIndexerClientFromNetwork(network);
 
     try {
       algorandSearchAssetsResult = await searchAlgorandAssetsWithDelay({
@@ -112,7 +114,7 @@ const queryStandardAssetThunk: AsyncThunk<
       });
       verifiedStandardAssets = await fetchVerifiedStandardAssetList({
         logger,
-        network: selectedNetwork,
+        network,
       });
 
       for (

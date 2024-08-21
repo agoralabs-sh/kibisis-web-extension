@@ -13,19 +13,17 @@ import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSetting
  */
 export default function useSelectARC0200AssetsBySelectedNetwork(): IARC0200Asset[] {
   return useSelector<IMainRootState, IARC0200Asset[]>((state) => {
-    const selectedNetwork: INetwork | null = selectNetworkFromSettings(
-      state.networks.items,
-      state.settings
-    );
+    const network = selectNetworkFromSettings({
+      networks: state.networks.items,
+      settings: state.settings,
+    });
 
-    if (!selectedNetwork) {
+    if (!network) {
       return [];
     }
 
     return state.arc0200Assets.items
-      ? state.arc0200Assets.items[
-          convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
-        ]
+      ? state.arc0200Assets.items[convertGenesisHashToHex(network.genesisHash)]
       : [];
   });
 }

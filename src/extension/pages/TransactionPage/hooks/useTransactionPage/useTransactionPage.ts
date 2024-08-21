@@ -5,7 +5,7 @@ import {
   useSelectAccounts,
   useSelectActiveAccount,
   useSelectActiveAccountTransactions,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // types
@@ -19,7 +19,7 @@ export default function useTransactionPage(
   const account = useSelectActiveAccount();
   const accounts = useSelectAccounts();
   const accountTransactions = useSelectActiveAccountTransactions();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   // state
   const [transaction, setTransaction] = useState<ITransactions | null>(null);
 

@@ -41,7 +41,7 @@ import type {
 } from '../types';
 
 // utils
-import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
+import createAlgodClientFromSettings from '@common/utils/createAlgodClientFromSettings';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
@@ -67,9 +67,11 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
+    const customNodes = getState().customNodes.items;
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
+    const settings = getState().settings;
     let _error: string;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountBalanceInAtomicUnits: BigNumber;
@@ -164,7 +166,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       return rejectWithValue(new NotEnoughMinimumBalanceError(_error));
     }
 
-    algodClient = createAlgodClientFromNetwork(network);
+    algodClient = createAlgodClientFromSettings(network);
 
     try {
       suggestedParams = await algodClient.getTransactionParams().do();

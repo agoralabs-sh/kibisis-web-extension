@@ -60,7 +60,7 @@ import {
   useSelectAddAssetsFetching,
   useSelectAddAssetsSelectedAsset,
   useSelectLogger,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
@@ -103,7 +103,7 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const fetching = useSelectAddAssetsFetching();
   const logger = useSelectLogger();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const selectedAsset = useSelectAddAssetsSelectedAsset();
   // hooks
   const defaultTextColor = useDefaultTextColor();

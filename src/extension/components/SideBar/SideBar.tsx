@@ -58,7 +58,7 @@ import {
   useSelectActiveAccount,
   useSelectActiveAccountDetails,
   useSelectAvailableAccountsForSelectedNetwork,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // types
@@ -82,7 +82,7 @@ const SideBar: FC = () => {
   const activeAccountDetails = useSelectActiveAccountDetails();
   const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const fetchingAccounts = useSelectAccountsFetching();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   // hooks
   const borderColor = useBorderColor();
   const defaultTextColor = useDefaultTextColor();

@@ -25,7 +25,7 @@ import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 import SplashPage from '@extension/pages/SplashPage';
 
 // selectors
-import { useSelectSelectedNetwork } from '@extension/selectors';
+import { useSelectSettingsSelectedNetwork } from '@extension/selectors';
 
 // types
 import type { IAppThunkDispatch, IBackgroundRootState } from '@extension/types';
@@ -36,7 +36,7 @@ import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
 const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch<IBackgroundRootState>>();
   // selectors
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   // misc
   const url = new URL(window.location.href);
   const eventId = decodeURLSearchParam('eventId', url.searchParams);

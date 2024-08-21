@@ -8,12 +8,13 @@ import {
   fetchTransactionParamsFromStorageThunk,
   startPollingForTransactionsParamsThunk,
   stopPollingForTransactionsParamsThunk,
+  updateNodesThunk,
   updateTransactionParamsForSelectedNetworkThunk,
 } from './thunks';
 
 // types
 import type { INetworkWithTransactionParams } from '@extension/types';
-import type { IState } from './types';
+import type { IState, IUpdateNodesThunkResult } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -55,6 +56,14 @@ const slice = createSlice({
       stopPollingForTransactionsParamsThunk.fulfilled,
       (state: IState) => {
         state.pollingId = null;
+      }
+    );
+    /** update nodes **/
+    builder.addCase(
+      updateNodesThunk.fulfilled,
+      (state: IState, action: PayloadAction<IUpdateNodesThunkResult>) => {
+        state.algod = action.payload.algod;
+        state.indexer = action.payload.indexer;
       }
     );
     /** update transaction params **/

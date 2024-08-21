@@ -17,6 +17,7 @@ export default async function createUnsignedARC0200TransferTransactions({
   amountInAtomicUnits,
   asset,
   authAddress,
+  customNode,
   fromAddress,
   logger,
   network,
@@ -25,6 +26,7 @@ export default async function createUnsignedARC0200TransferTransactions({
 }: IOptions): Promise<Transaction[]> {
   const contract: ARC0200Contract = new ARC0200Contract({
     appId: asset.id,
+    customNode,
     logger,
     network,
   });

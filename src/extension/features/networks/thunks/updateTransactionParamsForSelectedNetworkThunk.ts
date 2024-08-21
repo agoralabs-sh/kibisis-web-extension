@@ -1,7 +1,10 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // constants
-import { NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX } from '@extension/constants';
+import {
+  NETWORK_TRANSACTION_PARAMS_ANTIQUATED_TIMEOUT,
+  NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX,
+} from '@extension/constants';
 
 // enums
 import { ThunkEnum } from '../enums';
@@ -10,8 +13,9 @@ import { ThunkEnum } from '../enums';
 import StorageManager from '@extension/services/StorageManager';
 
 // types
-import { ILogger } from '@common/types';
-import {
+import type {
+  IAlgorandTransactionParams,
+  IBaseAsyncThunkConfig,
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
@@ -19,26 +23,28 @@ import {
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import { updateTransactionParams } from '@extension/features/networks';
+import transactionParams from '@extension/utils/transactionParams';
 
 const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
   INetworkWithTransactionParams | null, // return
   undefined, // args
-  Record<string, never>
+  IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
   INetworkWithTransactionParams | null,
   undefined,
-  { state: IMainRootState }
+  IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk,
   async (_, { getState }) => {
-    const logger: ILogger = getState().system.logger;
-    const networks: INetworkWithTransactionParams[] = getState().networks.items;
-    const online: boolean = getState().system.networkConnectivity.online;
-    const selectedNetwork: INetworkWithTransactionParams | null =
-      selectNetworkFromSettings(networks, getState().settings);
+    const algodNode = getState().networks.algod;
+    const logger = getState().system.logger;
+    const networks = getState().networks.items;
+    const online = getState().system.networkConnectivity.online;
+    const settings = getState().settings;
     const storageManager: StorageManager = new StorageManager();
-    let updatedNetwork: INetworkWithTransactionParams;
+    let avmTransactionParams: IAlgorandTransactionParams;
+    let network: INetworkWithTransactionParams | null;
+    let updatedAt: Date;
 
     if (!online) {
       logger.debug(
@@ -48,7 +54,12 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
       return null;
     }
 
-    if (!selectedNetwork) {
+    network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
+
+    if (!network) {
       logger.debug(
         `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: no network selected, skipping`
       );
@@ -56,26 +67,84 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
       return null;
     }
 
-    updatedNetwork = await updateTransactionParams(selectedNetwork, {
-      logger,
-    });
+    if (!algodNode) {
+      logger.debug(
+        `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: no algod node selected, skipping`
+      );
+
+      return network;
+    }
+
+    if (
+      network.updatedAt &&
+      network.updatedAt + NETWORK_TRANSACTION_PARAMS_ANTIQUATED_TIMEOUT >
+        new Date().getTime()
+    ) {
+      logger?.debug(
+        `${
+          ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk
+        }: last updated "${new Date(network.updatedAt).toString()}", skipping`
+      );
+
+      return network;
+    }
+
+    try {
+      avmTransactionParams = await transactionParams({
+        algodNode,
+        logger,
+      });
+    } catch (error) {
+      logger?.error(
+        `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: failed to get transaction params for network "${network.genesisId}":`,
+        error
+      );
+
+      return network;
+    }
 
     logger.debug(
-      `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: saving updated transaction params for network "${selectedNetwork.genesisId}" to storage`
+      `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: saving updated transaction params for network "${network.genesisId}" to storage`
     );
+
+    // check if the genesis hashes match
+    if (avmTransactionParams['genesis-hash'] !== network.genesisHash) {
+      logger?.debug(
+        `${ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk}: requested network genesis hash "${network.genesisHash}" does not match the returned genesis hash "${avmTransactionParams['genesis-hash']}", ignoring`
+      );
+
+      return network;
+    }
+
+    updatedAt = new Date();
+
+    logger?.debug(
+      `${
+        ThunkEnum.UpdateTransactionParamsForSelectedNetworkThunk
+      }: successfully updated transaction params for network "${
+        network.genesisId
+      }" at "${updatedAt.toString()}"`
+    );
+
+    network = {
+      ...network,
+      fee: avmTransactionParams.fee.toString(),
+      minFee: avmTransactionParams['min-fee'].toString(),
+      updatedAt: updatedAt.getTime(),
+    };
 
     // save the updated params to storage
     await storageManager.setItems({
       [`${NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX}${convertGenesisHashToHex(
-        updatedNetwork.genesisHash
-      ).toUpperCase()}`]: {
-        fee: updatedNetwork.fee,
-        minFee: updatedNetwork.minFee,
-        updatedAt: updatedNetwork.updatedAt,
+        network.genesisHash
+      )}`]: {
+        fee: network.fee,
+        minFee: network.minFee,
+        updatedAt: network.updatedAt,
       },
     });
 
-    return updatedNetwork;
+    return network;
   }
 );
 

@@ -36,7 +36,7 @@ import {
   useSelectNewsFetching,
   useSelectNewsItemByName,
   useSelectNewsSaving,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -55,7 +55,7 @@ const VoiageToMainnetModal: FC = () => {
   const fetching = useSelectNewsFetching();
   const newsItem = useSelectNewsItemByName(name);
   const saving = useSelectNewsSaving();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();

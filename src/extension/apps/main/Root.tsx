@@ -23,6 +23,7 @@ import {
 import {
   fetchTransactionParamsFromStorageThunk,
   startPollingForTransactionsParamsThunk,
+  updateNodesThunk,
 } from '@extension/features/networks';
 import { fetchFromStorageThunk as fetchNewsFromStorageThunk } from '@extension/features/news';
 import { setShowingConfetti } from '@extension/features/notifications';
@@ -64,7 +65,8 @@ import VoiageToMainnetModal from '@extension/modals/VoiageToMainnetModal';
 import {
   useSelectAccounts,
   useSelectNotificationsShowingConfetti,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedCustomNode,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // types
@@ -74,7 +76,8 @@ const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const accounts = useSelectAccounts();
-  const network = useSelectSelectedNetwork();
+  const customNode = useSelectSettingsSelectedCustomNode();
+  const network = useSelectSettingsSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
@@ -87,21 +90,24 @@ const Root: FC = () => {
 
   // 1. fetch the required data
   useEffect(() => {
+    // general
     dispatch(fetchCustomNodesFromStorageThunk());
     dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSessionsThunk());
+    dispatch(fetchNewsFromStorageThunk());
+    // assets
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchARC0072AssetsFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
-    dispatch(fetchNewsFromStorageThunk());
+    // polling
     dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());
     dispatch(startPollingForNetworkConnectivityThunk());
   }, []);
-  // 2. when the selected network has been fetched from storage
+  // 2a. when the selected network has been updated, fetch the account data and transaction params
   useEffect(() => {
     if (network) {
       // fetch accounts when no accounts exist
@@ -118,6 +124,12 @@ const Root: FC = () => {
       dispatch(fetchTransactionParamsFromStorageThunk());
     }
   }, [network]);
+  // 2b. when the selected network or the custom node has been updated, update the nodes
+  useEffect(() => {
+    if (network) {
+      dispatch(updateNodesThunk());
+    }
+  }, [customNode, network]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications

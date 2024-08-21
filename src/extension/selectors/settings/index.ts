@@ -6,3 +6,5 @@ export { default as useSelectSettingsFetching } from './useSelectSettingsFetchin
 export { default as useSelectSettingsPreferredBlockExplorer } from './useSelectSettingsPreferredBlockExplorer';
 export { default as useSelectSettingsPreferredNFTExplorer } from './useSelectSettingsPreferredNFTExplorer';
 export { default as useSelectSettingsSaving } from './useSelectSettingsSaving';
+export { default as useSelectSettingsSelectedCustomNode } from './useSelectSettingsSelectedCustomNode';
+export { default as useSelectSettingsSelectedNetwork } from './useSelectSettingsSelectedNetwork';

@@ -38,7 +38,7 @@ import {
 } from './types';
 
 // utils
-import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
+import createAlgodClientFromCustomNodeItemOrNetwork from '@common/utils/createAlgodClientFromCustomNodeItemOrNetwork';
 import createLogger from '@common/utils/createLogger';
 
 export default class BaseContract {
@@ -49,11 +49,13 @@ export default class BaseContract {
   protected readonly logger: ILogger;
   protected network: INetwork;
 
-  constructor({ appId, logger, network }: INewBaseContractOptions) {
+  constructor({ appId, customNode, logger, network }: INewBaseContractOptions) {
     this.appId = appId;
     this.logger =
       logger || createLogger(__ENV__ === 'development' ? 'debug' : 'error');
-    this.algodClient = createAlgodClientFromNetwork(network);
+    this.algodClient = createAlgodClientFromCustomNodeItemOrNetwork(
+      customNode || network
+    );
     this.network = network;
   }
 

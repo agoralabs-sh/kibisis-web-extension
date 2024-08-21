@@ -30,7 +30,6 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
         url: 'https://testnet-api.voi.nodly.io',
       },
     ],
@@ -52,7 +51,6 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
         url: 'https://testnet-idx.voi.nodly.io',
       },
     ],
@@ -80,7 +78,6 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
         url: 'https://mainnet-api.algonode.cloud',
       },
     ],
@@ -99,7 +96,6 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
         url: 'https://mainnet-idx.algonode.cloud',
       },
     ],
@@ -124,7 +120,6 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
         url: 'https://betanet-api.algonode.cloud',
       },
     ],
@@ -140,7 +135,6 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
         url: 'https://betanet-idx.algonode.cloud',
       },
     ],
@@ -165,7 +159,6 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
         url: 'https://testnet-api.algonode.cloud',
       },
     ],
@@ -183,7 +176,6 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
         url: 'https://testnet-idx.algonode.cloud',
       },
     ],
