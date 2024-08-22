@@ -30,6 +30,9 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://testnet-api.voi.nodly.io',
       },
     ],
@@ -43,7 +46,6 @@ const networks: INetwork[] = [
       new VoiObserverBlockExplorer('https://voi.observer/explorer'),
       new AVMExplorerBlockExplorer('https://avmexplorer.com'),
     ],
-    discriminator: 'INetwork',
     feeSunkAddress:
       'FEES3ZW52HQ7U7LB3OGLUFQX2DCCWPJ2LIMXAH75KYROBZBQRN3Q5OR3GI',
     genesisId: 'voitest-v1',
@@ -51,6 +53,9 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://testnet-idx.voi.nodly.io',
       },
     ],
@@ -78,6 +83,9 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://mainnet-api.algonode.cloud',
       },
     ],
@@ -88,7 +96,6 @@ const networks: INetwork[] = [
       new PeraBlockExplorer('https://explorer.perawallet.app'),
       new AlloBlockExplorer('https://allo.info'),
     ],
-    discriminator: 'INetwork',
     feeSunkAddress:
       'Y76M3MSY6DKBRHBL7C3NNDXGS5IIMQVQVUAB6MP4XEMMGVF2QWNPL226CA',
     genesisId: 'mainnet-v1.0',
@@ -96,6 +103,9 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://mainnet-idx.algonode.cloud',
       },
     ],
@@ -120,6 +130,9 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://betanet-api.algonode.cloud',
       },
     ],
@@ -127,7 +140,6 @@ const networks: INetwork[] = [
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
     blockExplorers: [],
-    discriminator: 'INetwork',
     feeSunkAddress:
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
     genesisId: 'betanet-v1.0',
@@ -135,6 +147,9 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://betanet-idx.algonode.cloud',
       },
     ],
@@ -159,6 +174,9 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://testnet-api.algonode.cloud',
       },
     ],
@@ -168,7 +186,6 @@ const networks: INetwork[] = [
     blockExplorers: [
       new PeraBlockExplorer('https://testnet.explorer.perawallet.app'),
     ],
-    discriminator: 'INetwork',
     feeSunkAddress:
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
     genesisId: 'testnet-v1.0',
@@ -176,6 +193,9 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://testnet-idx.algonode.cloud',
       },
     ],

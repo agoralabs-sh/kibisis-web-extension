@@ -1,11 +1,12 @@
 // types
 import type { IBaseOptions } from '@common/types';
-import type { TCustomNodeItemOrNetwork } from '@extension/types';
+import type { INetwork } from '@extension/types';
 
 interface IOptions extends IBaseOptions {
   amountInAtomicUnits: string;
-  customNodeOrNetwork: TCustomNodeItemOrNetwork;
   fromAddress: string;
+  network: INetwork;
+  nodeID: string | null;
   note: string | null;
   toAddress: string;
 }

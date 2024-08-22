@@ -7,9 +7,7 @@ import type { IState } from '../types';
 
 export default function getInitialState(): IState {
   return {
-    algod: null,
     fetching: false,
-    indexer: null,
     items: networks.map<INetworkWithTransactionParams>((value) => ({
       ...value,
       fee: '0',

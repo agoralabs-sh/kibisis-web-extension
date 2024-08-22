@@ -20,6 +20,7 @@ import {
   useSelectAccounts,
   useSelectLogger,
   useSelectNetworkByGenesisHash,
+  useSelectSettingsNodeIDByGenesisHash,
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsByGenesisHash,
 } from '@extension/selectors';
@@ -48,6 +49,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
   const accounts = useSelectAccounts();
   const logger = useSelectLogger();
   const network = useSelectNetworkByGenesisHash(encodedGenesisHash);
+  const nodeID = useSelectSettingsNodeIDByGenesisHash(encodedGenesisHash);
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
   const standardAssets =
     useSelectStandardAssetsByGenesisHash(encodedGenesisHash);
@@ -75,7 +77,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
     }
   );
 
-  // fetch account information for the from account
+  // fetch account information for the "from" account
   useEffect(() => {
     (async () => {
       const _functionName = 'useEffect';
@@ -111,9 +113,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
         }),
         watchAccount: true,
       };
-      encodedGenesisHash = convertGenesisHashToHex(
-        network.genesisHash
-      ).toUpperCase();
+      encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
       accountInformation = await updateAccountInformation({
         address: convertPublicKeyToAVMAddress(encodedPublicKey),
         currentAccountInformation:
@@ -121,6 +121,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
           AccountService.initializeDefaultAccountInformation(),
         logger,
         network,
+        nodeID,
       });
 
       setFromAccount({

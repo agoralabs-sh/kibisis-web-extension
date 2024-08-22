@@ -13,5 +13,5 @@ export default function createAlgodClient({
   token,
   url,
 }: IOptions): Algodv2 {
-  return new Algodv2(token || '', url, port || '');
+  return new Algodv2(token || '', url, port);
 }

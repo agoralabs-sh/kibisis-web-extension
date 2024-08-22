@@ -16,18 +16,13 @@ import { NativeBalanceSkeleton } from '@extension/components/NativeBalance';
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// selectors
-import { useSelectNetworks } from '@extension/selectors';
-
 const AccountPageSkeletonContent: FC<StackProps> = (props) => {
-  // selectors
-  const networks = useSelectNetworks();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
 
   return (
     <VStack {...props}>
-      <NetworkSelectSkeleton network={networks[0]} />
+      <NetworkSelectSkeleton />
 
       <HStack alignItems="center" w="full">
         {/*name/address*/}

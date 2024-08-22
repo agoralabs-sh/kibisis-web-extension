@@ -5,11 +5,11 @@ import {
   Transaction,
 } from 'algosdk';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type { IOptions } from './types';
-
-// utils
-import createAlgodClientFromCustomNodeItemOrNetwork from '@common/utils/createAlgodClientFromCustomNodeItemOrNetwork';
 
 /**
  * Convenience function that creates the transactions to make a payment.
@@ -18,14 +18,14 @@ import createAlgodClientFromCustomNodeItemOrNetwork from '@common/utils/createAl
  */
 export default async function createUnsignedPaymentTransactions({
   amountInAtomicUnits,
-  customNodeOrNetwork,
   fromAddress,
+  logger,
+  network,
+  nodeID,
   note,
   toAddress,
 }: IOptions): Promise<Transaction[]> {
-  const algodClient =
-    createAlgodClientFromCustomNodeItemOrNetwork(customNodeOrNetwork);
-  const suggestedParams = await algodClient.getTransactionParams().do();
+  const networkClient = new NetworkClient({ logger, network });
 
   return [
     makePaymentTxnWithSuggestedParams(
@@ -34,7 +34,7 @@ export default async function createUnsignedPaymentTransactions({
       BigInt(amountInAtomicUnits),
       undefined,
       note ? new TextEncoder().encode(note) : undefined,
-      suggestedParams
+      await networkClient.suggestedParams(nodeID)
     ),
   ];
 }

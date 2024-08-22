@@ -7,7 +7,7 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { type FC, type ReactElement, useState } from 'react';
+import React, { type FC, type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAddOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -16,6 +16,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import CustomNodeItem from '@extension/components/CustomNodeItem';
+import NetworkSelect from '@extension/components/NetworkSelect';
 import PageHeader from '@extension/components/PageHeader';
 import ScrollableContainer from '@extension/components/ScrollableContainer';
 
@@ -24,12 +25,11 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // features
 import { setConfirmModal } from '@extension/features/layout';
+import { removeCustomNodeThunk } from '@extension/features/networks';
 import { create as createNotification } from '@extension/features/notifications';
-import { removeByIDFromStorageThunk as removeCustomNodeByIDFromStorageThunk } from '@extension/features/custom-nodes';
 
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
@@ -38,18 +38,22 @@ import ViewCustomNodeModal from '@extension/modals/ViewCustomNodeModal';
 
 // selectors
 import {
-  useSelectCustomNodesFetching,
-  useSelectCustomNodesItems,
   useSelectNetworks,
   useSelectSettings,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  INetwork,
+} from '@extension/types';
 
 // utils
-import isNetworkSupportedFromSettings from '@extension/utils/isNetworkSupportedFromSettings';
-import { ICustomNodeItem } from '@extension/services/CustomNodesService';
+import filterCustomNodesFromNetwork from '@extension/utils/filterCustomNodesFromNetwork';
+import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 
 const CustomNodesPage: FC = () => {
   const { t } = useTranslation();
@@ -61,21 +65,27 @@ const CustomNodesPage: FC = () => {
   } = useDisclosure();
   // hooks
   const borderColor = useBorderColor();
-  const defaultTextColor = useDefaultTextColor();
   const subTextColor = useSubTextColor();
   // selectors
-  const customNodeItems = useSelectCustomNodesItems();
-  const fetching = useSelectCustomNodesFetching();
   const networks = useSelectNetworks();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const settings = useSelectSettings();
   // states
-  const [viewCustomNodeItem, setViewCustomNodeItem] =
-    useState<ICustomNodeItem | null>(null);
+  const [network, setNetwork] = useState<INetwork>(
+    selectedNetwork || selectDefaultNetwork(networks)
+  );
+  const [nodeID, setNodeID] = useState<string | null>(null);
+  // misc
+  const _context = 'custom-nodes-page';
   // handlers
   const handleAddCustomNodeClick = () => onAddCustomModalOpen();
   const handleAddCustomNodeModalClose = () => onAddCustomModalClose();
+  const handleActivateCustomNodeClick = (id: string) => {};
+  const handleDeactivateCustomNodeClick = (id: string) => {};
   const handleRemoveCustomNodeClick = (id: string) => {
-    const item = customNodeItems.find((value) => value.id === id) || null;
+    const item =
+      filterCustomNodesFromNetwork(network).find((value) => value.id === id) ||
+      null;
 
     if (!item) {
       return;
@@ -87,7 +97,12 @@ const CustomNodesPage: FC = () => {
           name: item.name,
         }),
         onConfirm: () => {
-          dispatch(removeCustomNodeByIDFromStorageThunk(item.id));
+          dispatch(
+            removeCustomNodeThunk({
+              genesisHash: network.genesisHash,
+              id: item.id,
+            })
+          );
           dispatch(
             createNotification({
               description: t<string>('captions.removedCustomNode', {
@@ -102,68 +117,46 @@ const CustomNodesPage: FC = () => {
       })
     );
   };
+  const handleNetworkSelect = (value: INetwork) => setNetwork(value);
   const handleSelectCustomNodeClick = (id: string) => {
-    const item = customNodeItems.find((value) => value.id === id) || null;
-
-    if (!item) {
-      return;
-    }
-
-    setViewCustomNodeItem(item);
+    // const item = customNodeItems.find((value) => value.id === id) || null;
+    //
+    // if (!item) {
+    //   return;
+    // }
+    //
+    // setViewCustomNodeItem(item);
   };
-  const handleViewCustomNodeClose = () => setViewCustomNodeItem(null);
+  // const handleViewCustomNodeClose = () => setViewCustomNodeItem(null);
   // renders
   const renderContent = () => {
-    const nodes: ReactElement[] = [...customNodeItems]
+    const nodes: ReactElement[] = filterCustomNodesFromNetwork(network)
       // first sort the nodes, putting disabled ones at the back
-      .sort((first, second) => {
-        const isFirstNodeAvailable = isNetworkSupportedFromSettings({
-          genesisHash: first.genesisHash,
-          networks,
-          settings,
-        });
-        const isSecondNodeAvailable = isNetworkSupportedFromSettings({
-          genesisHash: second.genesisHash,
-          networks,
-          settings,
-        });
-
-        if (isFirstNodeAvailable && !isSecondNodeAvailable) {
+      .sort((a, b) => {
+        // bring the id to the front
+        if (a.id === nodeID) {
           return -1;
         }
 
-        if (!isFirstNodeAvailable && isSecondNodeAvailable) {
+        // keep the id in place
+        if (b.id === nodeID) {
           return 1;
         }
 
+        // keep the original order
         return 0;
       })
-      .reduce((acc, currentValue, index) => {
-        const network =
-          networks.find(
-            (value) => value.genesisHash === currentValue.genesisHash
-          ) || null;
-
-        return network
-          ? [
-              ...acc,
-              <CustomNodeItem
-                key={`custom-page-custom-node-item-${index}`}
-                item={currentValue}
-                isDisabled={
-                  !isNetworkSupportedFromSettings({
-                    genesisHash: currentValue.genesisHash,
-                    networks,
-                    settings,
-                  })
-                }
-                network={network}
-                onRemove={handleRemoveCustomNodeClick}
-                onSelect={handleSelectCustomNodeClick}
-              />,
-            ]
-          : acc;
-      }, []);
+      .map((value, index) => (
+        <CustomNodeItem
+          key={`custom-page-custom-node-item-${index}`}
+          item={value}
+          isActivated={value.id === nodeID}
+          onActivate={handleActivateCustomNodeClick}
+          onDeactivate={handleDeactivateCustomNodeClick}
+          onRemove={handleRemoveCustomNodeClick}
+          onSelect={handleSelectCustomNodeClick}
+        />
+      ));
 
     return nodes.length > 0 ? (
       <ScrollableContainer
@@ -188,16 +181,25 @@ const CustomNodesPage: FC = () => {
     );
   };
 
+  useEffect(() => {
+    setNodeID(
+      selectNodeIDByGenesisHashFromSettings({
+        genesisHash: network.genesisHash,
+        settings,
+      })
+    );
+  }, [network]);
+
   return (
     <>
       <AddCustomNodeModal
         isOpen={isAddCustomModalOpen}
         onClose={handleAddCustomNodeModalClose}
       />
-      <ViewCustomNodeModal
-        item={viewCustomNodeItem}
-        onClose={handleViewCustomNodeClose}
-      />
+      {/*<ViewCustomNodeModal*/}
+      {/*  item={viewCustomNodeItem}*/}
+      {/*  onClose={handleViewCustomNodeClose}*/}
+      {/*/>*/}
 
       {/*page title*/}
       <PageHeader
@@ -208,7 +210,7 @@ const CustomNodesPage: FC = () => {
         borderBottomColor={borderColor}
         borderBottomStyle="solid"
         borderBottomWidth="1px"
-        pb={DEFAULT_GAP / 3}
+        pb={DEFAULT_GAP - 2}
         px={DEFAULT_GAP}
         spacing={DEFAULT_GAP / 3}
         w="full"
@@ -221,26 +223,17 @@ const CustomNodesPage: FC = () => {
         {/*controls*/}
         <HStack
           alignItems="center"
-          justifyContent="flex-start"
-          px={DEFAULT_GAP / 2}
-          py={DEFAULT_GAP / 3}
+          justifyContent="space-between"
           spacing={1}
           w="full"
         >
-          {/*fetching*/}
-          {fetching && (
-            <Tooltip
-              aria-label="Fetching custom nodes from storage spinner"
-              label={t<string>('captions.fetchingCustomNodes')}
-            >
-              <Spinner
-                thickness="1px"
-                speed="0.65s"
-                color={defaultTextColor}
-                size="sm"
-              />
-            </Tooltip>
-          )}
+          {/*network selection*/}
+          <NetworkSelect
+            context={_context}
+            networks={networks}
+            onSelect={handleNetworkSelect}
+            value={network}
+          />
 
           <Spacer />
 

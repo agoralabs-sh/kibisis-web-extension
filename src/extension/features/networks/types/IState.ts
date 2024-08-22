@@ -9,9 +9,7 @@ import type { INetworkWithTransactionParams, INode } from '@extension/types';
  * @property {boolean} updating - true when updating transaction params for the selected network.
  */
 interface IState {
-  algod: INode | null;
   fetching: boolean;
-  indexer: INode | null;
   items: INetworkWithTransactionParams[];
   pollingId: number | null;
   saving: boolean;

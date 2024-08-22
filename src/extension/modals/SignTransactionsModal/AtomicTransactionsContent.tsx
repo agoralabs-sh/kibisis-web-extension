@@ -31,6 +31,7 @@ import {
   useSelectAccounts,
   useSelectLogger,
   useSelectNetworkByGenesisHash,
+  useSelectSettings,
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsByGenesisHash,
   useSelectStandardAssetsUpdating,
@@ -53,6 +54,7 @@ import computeGroupId from '@common/utils/computeGroupId';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import parseTransactionType from '@extension/utils/parseTransactionType';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
@@ -68,6 +70,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
   const logger = useSelectLogger();
   const network = useSelectNetworkByGenesisHash(genesisHash);
   const preferredExplorer = useSelectSettingsPreferredBlockExplorer();
+  const settings = useSelectSettings();
   const standardAssets = useSelectStandardAssetsByGenesisHash(genesisHash);
   const updatingStandardAssets = useSelectStandardAssetsUpdating();
   // hooks
@@ -245,7 +248,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
   // fetch the account information for all from accounts
   useEffect(() => {
     (async () => {
-      const _functionName: string = 'useEffect';
+      const _functionName = 'useEffect';
       let updatedFromAccounts: IAccountWithExtendedProps[];
 
       if (!network) {
@@ -291,6 +294,10 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
             delay: index * NODE_REQUEST_DELAY,
             logger,
             network,
+            nodeID: selectNodeIDByGenesisHashFromSettings({
+              genesisHash: network.genesisHash,
+              settings,
+            }),
           });
 
           return {

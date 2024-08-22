@@ -26,37 +26,34 @@ import { ReadABIContractError } from '@extension/errors';
 
 // types
 import type { ILogger } from '@common/types';
-import type { IAlgorandAccountInformation, INetwork } from '@extension/types';
-import {
+import type { IAlgorandAccountInformation } from '@extension/types';
+import type {
   IABIResult,
   IBaseApplicationOptions,
   ICreateWriteApplicationTransactionOptions,
   IDetermineBoxReferencesOptions,
-  INewBaseContractOptions,
+  INewOptions,
   IParseTransactionResponseOptions,
   ISimulateTransaction,
 } from './types';
 
 // utils
-import createAlgodClientFromCustomNodeItemOrNetwork from '@common/utils/createAlgodClientFromCustomNodeItemOrNetwork';
 import createLogger from '@common/utils/createLogger';
 
 export default class BaseContract {
   // protected
-  protected abi: ABIContract;
-  protected algodClient: Algodv2;
-  protected appId: string;
-  protected readonly logger: ILogger;
-  protected network: INetwork;
+  protected _algod: Algodv2;
+  protected _abi: ABIContract;
+  protected _appId: string;
+  protected _feeSinkAddress: string;
+  protected readonly _logger: ILogger;
 
-  constructor({ appId, customNode, logger, network }: INewBaseContractOptions) {
-    this.appId = appId;
-    this.logger =
+  constructor({ algod, appId, feeSinkAddress, logger }: INewOptions) {
+    this._algod = algod;
+    this._appId = appId;
+    this._feeSinkAddress = feeSinkAddress;
+    this._logger =
       logger || createLogger(__ENV__ === 'development' ? 'debug' : 'error');
-    this.algodClient = createAlgodClientFromCustomNodeItemOrNetwork(
-      customNode || network
-    );
-    this.network = network;
   }
 
   /**
@@ -112,14 +109,13 @@ export default class BaseContract {
     suggestedParams,
   }: IBaseApplicationOptions): Promise<Transaction> {
     return makeApplicationNoOpTxn(
-      this.network.feeSunkAddress, // use an address that contains some algos
+      this._feeSinkAddress,
       {
-        ...(suggestedParams ??
-          (await this.algodClient.getTransactionParams().do())),
+        ...(suggestedParams ?? (await this._algod.getTransactionParams().do())),
         fee: SIMULATE_MINIMUM_FEE,
         flatFee: true,
       },
-      new BigNumber(this.appId).toNumber(),
+      new BigNumber(this._appId).toNumber(),
       [
         abiMethod.getSelector(), // method name
         ...(appArgs ? appArgs : []), // the method parameters
@@ -137,8 +133,8 @@ export default class BaseContract {
   }: ICreateWriteApplicationTransactionOptions): Promise<Transaction> {
     return makeApplicationNoOpTxn(
       fromAddress,
-      suggestedParams ?? (await this.algodClient.getTransactionParams().do()),
-      new BigNumber(this.appId).toNumber(),
+      suggestedParams ?? (await this._algod.getTransactionParams().do()),
+      new BigNumber(this._appId).toNumber(),
       [
         abiMethod.getSelector(), // method name
         ...(appArgs ? appArgs : []), // the method parameters
@@ -187,7 +183,7 @@ export default class BaseContract {
 
       return response.txnGroups[0].unnamedResourcesAccessed?.boxes || null;
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${BaseContract.name}#${_functionName}: ${error.message}`
       );
 
@@ -205,10 +201,10 @@ export default class BaseContract {
     let type: string;
 
     if (!log) {
-      this.logger.debug(
+      this._logger.debug(
         `${
           BaseContract.name
-        }#${_functionName}: no log found for application "${this.appId.toString()}" and method "${
+        }#${_functionName}: no log found for application "${this._appId.toString()}" and method "${
           abiMethod.name
         }"`
       );
@@ -269,7 +265,7 @@ export default class BaseContract {
 
       if (response.txnGroups[0].failureMessage) {
         throw new ReadABIContractError(
-          this.appId.toString(),
+          this._appId.toString(),
           response.txnGroups[0].failureMessage
         );
       }
@@ -279,7 +275,7 @@ export default class BaseContract {
         response: response.txnGroups[0].txnResults[0].txnResult,
       });
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${BaseContract.name}#${_functionName}: ${error.message}`
       );
 
@@ -325,7 +321,7 @@ export default class BaseContract {
       ],
     });
 
-    return await this.algodClient
+    return await this._algod
       .simulateTransactions(request)
       .setIntDecoding(IntDecoding.BIGINT)
       .do();
@@ -350,7 +346,7 @@ export default class BaseContract {
    * @returns {string} the base32 encoded address for the application.
    */
   public applicationAddress(): string {
-    return getApplicationAddress(BigInt(this.appId.toString()));
+    return getApplicationAddress(BigInt(this._appId.toString()));
   }
 
   /**
@@ -358,7 +354,7 @@ export default class BaseContract {
    * @returns {Promise<IAlgorandAccountInformation>} the application's account information.
    */
   public async applicationAccountInformation(): Promise<IAlgorandAccountInformation> {
-    return (await this.algodClient
+    return (await this._algod
       .accountInformation(this.applicationAddress())
       .do()) as IAlgorandAccountInformation;
   }
@@ -369,11 +365,11 @@ export default class BaseContract {
     const _functionName: string = 'boxByName';
 
     try {
-      return await this.algodClient
-        .getApplicationBoxByName(new BigNumber(this.appId).toNumber(), name)
+      return await this._algod
+        .getApplicationBoxByName(new BigNumber(this._appId).toNumber(), name)
         .do();
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${BaseContract.name}#${_functionName}: ${error.message}`
       );
 

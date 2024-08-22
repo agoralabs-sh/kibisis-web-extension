@@ -1,3 +1,6 @@
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type {
   IARC0200AssetInformation,
@@ -6,7 +9,6 @@ import type {
 } from '@extension/types';
 
 // utils
-import fetchARC0200AssetInformationWithDelay from '../fetchARC0200AssetInformationWithDelay';
 import mapARC0200AssetFromARC0200AssetInformation from '../mapARC0200AssetFromARC0200AssetInformation';
 
 /**
@@ -15,19 +17,21 @@ import mapARC0200AssetFromARC0200AssetInformation from '../mapARC0200AssetFromAR
  * @returns {Promise<IARC0200Asset | null>} the ARC-0200 asset information, or null if there was an error.
  */
 export default async function updateARC0200AssetInformationById({
-  customNodeOrNetwork,
   delay = 0,
   id,
   logger,
+  network,
+  nodeID,
 }: IUpdateAssetInformationByIdOptions): Promise<IARC0200Asset | null> {
-  const _functionName: string = 'updateARC0200AssetInformationById';
+  const _functionName = 'updateARC0200AssetInformationById';
+  const networkClient = new NetworkClient({ logger, network });
   let assetInformation: IARC0200AssetInformation | null;
 
   try {
-    assetInformation = await fetchARC0200AssetInformationWithDelay({
+    assetInformation = await networkClient.arc0200AssetInformationWithDelay({
       delay,
       id,
-      logger,
+      nodeID,
     });
 
     if (!assetInformation) {

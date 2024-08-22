@@ -5,45 +5,75 @@ import { StoreNameEnum } from '@extension/enums';
 
 // thunks
 import {
-  fetchTransactionParamsFromStorageThunk,
+  addCustomNodeThunk,
+  fetchFromStorageThunk,
+  removeCustomNodeThunk,
   startPollingForTransactionsParamsThunk,
   stopPollingForTransactionsParamsThunk,
-  updateNodesThunk,
   updateTransactionParamsForSelectedNetworkThunk,
 } from './thunks';
 
 // types
 import type { INetworkWithTransactionParams } from '@extension/types';
-import type { IState, IUpdateNodesThunkResult } from './types';
+import type { IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** fetch transaction params from storage **/
+    /** add custom node **/
     builder.addCase(
-      fetchTransactionParamsFromStorageThunk.fulfilled,
+      addCustomNodeThunk.fulfilled,
       (
         state: IState,
         action: PayloadAction<INetworkWithTransactionParams[]>
       ) => {
         state.items = action.payload;
+        state.saving = false;
+      }
+    );
+    builder.addCase(addCustomNodeThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(addCustomNodeThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
+    /** fetch from storage **/
+    builder.addCase(
+      fetchFromStorageThunk.fulfilled,
+      (
+        state: IState,
+        action: PayloadAction<INetworkWithTransactionParams[]>
+      ) => {
+        console.log('networks:', action.payload);
+        state.items = action.payload;
         state.fetching = false;
       }
     );
+    builder.addCase(fetchFromStorageThunk.pending, (state: IState) => {
+      state.fetching = true;
+    });
+    builder.addCase(fetchFromStorageThunk.rejected, (state: IState) => {
+      state.fetching = false;
+    });
+    /** remove custom node **/
     builder.addCase(
-      fetchTransactionParamsFromStorageThunk.pending,
-      (state: IState) => {
-        state.fetching = true;
+      removeCustomNodeThunk.fulfilled,
+      (
+        state: IState,
+        action: PayloadAction<INetworkWithTransactionParams[]>
+      ) => {
+        state.items = action.payload;
+        state.saving = false;
       }
     );
-    builder.addCase(
-      fetchTransactionParamsFromStorageThunk.rejected,
-      (state: IState) => {
-        state.fetching = false;
-      }
-    );
+    builder.addCase(removeCustomNodeThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(removeCustomNodeThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
     /** start polling for transaction params **/
     builder.addCase(
       startPollingForTransactionsParamsThunk.fulfilled,
@@ -56,14 +86,6 @@ const slice = createSlice({
       stopPollingForTransactionsParamsThunk.fulfilled,
       (state: IState) => {
         state.pollingId = null;
-      }
-    );
-    /** update nodes **/
-    builder.addCase(
-      updateNodesThunk.fulfilled,
-      (state: IState, action: PayloadAction<IUpdateNodesThunkResult>) => {
-        state.algod = action.payload.algod;
-        state.indexer = action.payload.indexer;
       }
     );
     /** update transaction params **/

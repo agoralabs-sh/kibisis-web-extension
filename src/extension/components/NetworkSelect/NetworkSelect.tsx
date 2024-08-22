@@ -6,7 +6,7 @@ import {
   MenuItem,
   MenuList,
 } from '@chakra-ui/react';
-import React, { FC, ReactElement } from 'react';
+import React, { type FC } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 
 // components
@@ -16,21 +16,12 @@ import NetworkBadge from '@extension/components/NetworkBadge';
 import { DEFAULT_GAP } from '@extension/constants';
 
 // types
-import type { ICustomNodeItem } from '@extension/services/CustomNodesService';
 import type { INetwork } from '@extension/types';
 import type { IProps } from './types';
 
-const NetworkSelect: FC<IProps> = ({
-  context,
-  customNodes,
-  networks,
-  onSelect,
-  selectedCustomNode,
-  selectedNetwork,
-}) => {
+const NetworkSelect: FC<IProps> = ({ context, networks, onSelect, value }) => {
   // handlers
-  const handleOnSelect = (value: ICustomNodeItem | INetwork) => () =>
-    onSelect(value);
+  const handleOnSelect = (_value: INetwork) => () => onSelect(_value);
 
   return (
     <Menu>
@@ -38,59 +29,20 @@ const NetworkSelect: FC<IProps> = ({
         <HStack justifyContent="space-between" w="full">
           <Icon as={IoChevronDown} />
 
-          <NetworkBadge
-            network={selectedNetwork}
-            {...(selectedNetwork.genesisHash ===
-              selectedCustomNode?.genesisHash && {
-              customNode: selectedCustomNode,
-            })}
-          />
+          <NetworkBadge network={value} />
         </HStack>
       </MenuButton>
 
       <MenuList>
-        {[...customNodes, ...networks].reduce<ReactElement[]>(
-          (acc, currentValue, currentIndex) => {
-            let _customNodeNetwork: INetwork | null;
-
-            if (currentValue.discriminator === 'ICustomNodeItem') {
-              _customNodeNetwork =
-                networks.find(
-                  (_value) => _value.genesisHash === currentValue.genesisHash
-                ) || null;
-
-              if (!_customNodeNetwork) {
-                return acc;
-              }
-
-              return [
-                ...acc,
-                <MenuItem
-                  key={`${context}-network-select-item-${currentIndex}`}
-                  minH={DEFAULT_GAP * 2}
-                  onClick={handleOnSelect(currentValue)}
-                >
-                  <NetworkBadge
-                    customNode={currentValue}
-                    network={_customNodeNetwork}
-                  />
-                </MenuItem>,
-              ];
-            }
-
-            return [
-              ...acc,
-              <MenuItem
-                key={`${context}-network-select-item-${currentIndex}`}
-                minH={DEFAULT_GAP * 2}
-                onClick={handleOnSelect(currentValue)}
-              >
-                <NetworkBadge network={currentValue} />
-              </MenuItem>,
-            ];
-          },
-          []
-        )}
+        {networks.map((_value, index) => (
+          <MenuItem
+            key={`${context}-network-select-item-${index}`}
+            minH={DEFAULT_GAP * 2}
+            onClick={handleOnSelect(_value)}
+          >
+            <NetworkBadge network={_value} />
+          </MenuItem>
+        ))}
       </MenuList>
     </Menu>
   );

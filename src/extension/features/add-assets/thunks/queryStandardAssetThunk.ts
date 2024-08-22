@@ -13,6 +13,9 @@ import { AddAssetThunkEnum } from '@extension/enums';
 // errors
 import { NetworkNotSelectedError, OfflineError } from '@extension/errors';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type {
   IAlgorandAsset,
@@ -27,11 +30,10 @@ import type {
 } from '../types';
 
 // utils
-import createIndexerClientFromNetwork from '@common/utils/createIndexerClientFromNetwork';
 import fetchVerifiedStandardAssetList from '@extension/utils/fetchVerifiedStandardAssetList';
 import mapStandardAssetFromAlgorandAsset from '@extension/utils/mapStandardAssetFromAlgorandAsset';
-import searchAlgorandAssetsWithDelay from '@extension/utils/searchAlgorandAssetsWithDelay';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings/selectNodeIDByGenesisHashFromSettings';
 
 const queryStandardAssetThunk: AsyncThunk<
   IAssetsWithNextToken<IStandardAsset>, // return
@@ -58,8 +60,8 @@ const queryStandardAssetThunk: AsyncThunk<
       networks,
       settings,
     });
-    let algorandSearchAssetsResult: IAlgorandSearchAssetsResult;
-    let indexerClient: Indexer;
+    let searchStandardAssetsResult: IAlgorandSearchAssetsResult;
+    let networkClient: NetworkClient;
     let verifiedStandardAssets: ITinyManAssetResponse[];
     let updatedStandardAssets: IStandardAsset[] = [];
 
@@ -100,18 +102,22 @@ const queryStandardAssetThunk: AsyncThunk<
       return currentStandardAssets;
     }
 
-    indexerClient = createIndexerClientFromNetwork(network);
+    networkClient = new NetworkClient({ logger, network });
 
     try {
-      algorandSearchAssetsResult = await searchAlgorandAssetsWithDelay({
-        assetId,
-        client: indexerClient,
-        delay: NODE_REQUEST_DELAY,
-        limit: SEARCH_ASSET_INDEXER_LIMIT,
-        name: nameOrUnit,
-        next: currentStandardAssets.next,
-        unit: nameOrUnit,
-      });
+      searchStandardAssetsResult =
+        await networkClient.searchStandardAssetsWithDelay({
+          assetId,
+          delay: NODE_REQUEST_DELAY,
+          limit: SEARCH_ASSET_INDEXER_LIMIT,
+          name: nameOrUnit,
+          next: currentStandardAssets.next,
+          nodeID: selectNodeIDByGenesisHashFromSettings({
+            genesisHash: network.genesisHash,
+            settings,
+          }),
+          unit: nameOrUnit,
+        });
       verifiedStandardAssets = await fetchVerifiedStandardAssetList({
         logger,
         network,
@@ -119,10 +125,10 @@ const queryStandardAssetThunk: AsyncThunk<
 
       for (
         let index: number = 0;
-        index < algorandSearchAssetsResult.assets.length;
+        index < searchStandardAssetsResult.assets.length;
         index++
       ) {
-        const asset: IAlgorandAsset = algorandSearchAssetsResult.assets[index];
+        const asset: IAlgorandAsset = searchStandardAssetsResult.assets[index];
         const verifiedStandardAsset: ITinyManAssetResponse | null =
           verifiedStandardAssets.find(
             (value) => value.id === String(asset.index)
@@ -144,7 +150,7 @@ const queryStandardAssetThunk: AsyncThunk<
         items: refresh
           ? updatedStandardAssets
           : [...currentStandardAssets.items, ...updatedStandardAssets],
-        next: algorandSearchAssetsResult['next-token'] || null,
+        next: searchStandardAssetsResult['next-token'] || null,
       };
     } catch (error) {
       logger.debug(

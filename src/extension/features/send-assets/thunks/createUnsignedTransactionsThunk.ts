@@ -1,5 +1,5 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Transaction } from 'algosdk';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
 // enums
@@ -31,7 +31,7 @@ import createUnsignedARC0200TransferTransactions from '@extension/utils/createUn
 import createUnsignedPaymentTransactions from '@extension/utils/createUnsignedPaymentTransactions';
 import createUnsignedStandardAssetTransferTransactions from '@extension/utils/createUnsignedStandardAssetTransferTransactions';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import selectCustomNodeFromSettings from '@extension/utils/selectCustomNodeFromSettings';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 
 const createUnsignedTransactionsThunk: AsyncThunk<
   Transaction[], // return
@@ -49,16 +49,11 @@ const createUnsignedTransactionsThunk: AsyncThunk<
         ? getState().sendAssets.amountInStandardUnits
         : '0';
     const asset = getState().sendAssets.selectedAsset;
-    const customNodes = getState().customNodes.items;
     const fromAddress = getState().sendAssets.fromAddress;
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
     const settings = getState().settings;
-    const customNode = selectCustomNodeFromSettings({
-      customNodes,
-      settings,
-    });
     const network = selectNetworkFromSettings({
       networks,
       settings,
@@ -66,9 +61,10 @@ const createUnsignedTransactionsThunk: AsyncThunk<
     const note = getState().sendAssets.note;
     const toAddress = getState().sendAssets.toAddress;
     let _error: string;
-    let fromAccountInformation: IAccountInformation | null;
     let amountInAtomicUnits: string;
+    let fromAccountInformation: IAccountInformation | null;
     let fromAccount: IAccount | null;
+    let nodeID: string | null;
 
     if (!asset || !fromAddress || !toAddress) {
       _error = 'required fields not completed';
@@ -132,6 +128,11 @@ const createUnsignedTransactionsThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(_error));
     }
 
+    nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
+    });
+
     try {
       amountInAtomicUnits = convertToAtomicUnit(
         new BigNumber(amountInStandardUnits),
@@ -144,10 +145,10 @@ const createUnsignedTransactionsThunk: AsyncThunk<
             amountInAtomicUnits,
             asset,
             authAddress: fromAccountInformation.authAddress,
-            customNode,
             fromAddress,
             logger,
             network,
+            nodeID,
             note,
             toAddress,
           });
@@ -155,18 +156,20 @@ const createUnsignedTransactionsThunk: AsyncThunk<
           return await createUnsignedStandardAssetTransferTransactions({
             amountInAtomicUnits,
             asset,
-            customNodeOrNetwork: customNode || network,
             fromAddress,
             logger,
+            network,
+            nodeID,
             note,
             toAddress,
           });
         case AssetTypeEnum.Native:
           return await createUnsignedPaymentTransactions({
             amountInAtomicUnits,
-            customNodeOrNetwork: customNode || network,
             fromAddress,
             logger,
+            network,
+            nodeID,
             note,
             toAddress,
           });

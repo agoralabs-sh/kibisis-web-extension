@@ -3,11 +3,12 @@ import type { IBaseOptions } from '@common/types';
 import type {
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
   IARC0300OnlineKeyRegistrationTransactionSendSchema,
-  TCustomNodeItemOrNetwork,
+  INetwork,
 } from '@extension/types';
 
 interface IOptions extends IBaseOptions {
-  customNodeOrNetwork: TCustomNodeItemOrNetwork;
+  network: INetwork;
+  nodeID: string | null;
   schema:
     | IARC0300OfflineKeyRegistrationTransactionSendSchema
     | IARC0300OnlineKeyRegistrationTransactionSendSchema;

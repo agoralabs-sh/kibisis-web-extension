@@ -17,6 +17,7 @@ import {
   IoSaveOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
+import { v4 as uuid } from 'uuid';
 
 // components
 import Button from '@extension/components/Button';
@@ -33,7 +34,7 @@ import {
 } from '@extension/constants';
 
 // features
-import { saveToStorageThunk as saveCustomNodeToStorageThunk } from '@extension/features/custom-nodes';
+import { addCustomNodeThunk } from '@extension/features/networks';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
@@ -42,23 +43,20 @@ import useGenericInput from '@extension/hooks/useGenericInput';
 
 // selectors
 import {
-  useSelectCustomNodesSaving,
   useSelectLogger,
   useSelectNetworks,
+  useSelectNetworksSaving,
   useSelectSettings,
 } from '@extension/selectors';
-
-// services
-import CustomNodesService from '@extension/services/CustomNodesService';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import type { ICustomNodeItem } from '@extension/services/CustomNodesService';
 import type {
   IAppThunkDispatch,
   IAVMVersions,
+  ICustomNode,
   IMainRootState,
   INetwork,
 } from '@extension/types';
@@ -75,7 +73,7 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
   // selectors
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
-  const saving = useSelectCustomNodesSaving();
+  const saving = useSelectNetworksSaving();
   const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -129,7 +127,7 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
     value: nameValue,
   } = useGenericInput();
   // state
-  const [customNode, setCustomNode] = useState<ICustomNodeItem | null>(null);
+  const [customNode, setCustomNode] = useState<ICustomNode | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
   const [network, setNetwork] = useState<INetwork | null>(null);
   const handleCancelClick = () => handleClose();
@@ -268,26 +266,23 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
 
     // update state
     setFetching(false);
-    setCustomNode(
-      CustomNodesService.initializeDefaultItem({
-        algod: {
-          canonicalName: nameValue,
-          port: algodPortValue,
-          token: algodTokenValue,
-          url: algodURLValue,
-        },
-        genesisHash: _network.genesisHash,
-        name: nameValue,
-        ...(indexerURLValue && {
-          indexer: {
-            canonicalName: nameValue,
+    setCustomNode({
+      algod: {
+        port: algodPortValue,
+        token: algodTokenValue,
+        url: algodURLValue,
+      },
+      genesisHash: _network.genesisHash,
+      id: uuid(),
+      name: nameValue,
+      indexer: indexerURLValue
+        ? {
             port: indexerPortValue,
             token: indexerTokenValue,
             url: indexerURLValue,
-          },
-        }),
-      })
-    );
+          }
+        : null,
+    });
     setNetwork(_network);
   };
   const handleOnChange =
@@ -354,7 +349,7 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    await dispatch(saveCustomNodeToStorageThunk(customNode)).unwrap();
+    await dispatch(addCustomNodeThunk(customNode)).unwrap();
 
     dispatch(
       createNotification({

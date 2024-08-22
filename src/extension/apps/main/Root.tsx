@@ -15,15 +15,14 @@ import {
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import { fetchActiveThunk as fetchCredentialLockActiveThunk } from '@extension/features/credential-lock';
-import { fetchFromStorageThunk as fetchCustomNodesFromStorageThunk } from '@extension/features/custom-nodes';
 import {
   setConfirmModal,
   setScanQRCodeModal,
 } from '@extension/features/layout';
 import {
-  fetchTransactionParamsFromStorageThunk,
+  fetchFromStorageThunk as fetchNetworksFromStorageThunk,
   startPollingForTransactionsParamsThunk,
-  updateNodesThunk,
+  updateTransactionParamsForSelectedNetworkThunk,
 } from '@extension/features/networks';
 import { fetchFromStorageThunk as fetchNewsFromStorageThunk } from '@extension/features/news';
 import { setShowingConfetti } from '@extension/features/notifications';
@@ -65,7 +64,6 @@ import VoiageToMainnetModal from '@extension/modals/VoiageToMainnetModal';
 import {
   useSelectAccounts,
   useSelectNotificationsShowingConfetti,
-  useSelectSettingsSelectedCustomNode,
   useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
@@ -76,7 +74,6 @@ const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const accounts = useSelectAccounts();
-  const customNode = useSelectSettingsSelectedCustomNode();
   const network = useSelectSettingsSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
@@ -91,10 +88,10 @@ const Root: FC = () => {
   // 1. fetch the required data
   useEffect(() => {
     // general
-    dispatch(fetchCustomNodesFromStorageThunk());
-    dispatch(fetchCredentialLockActiveThunk());
-    dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());
+    dispatch(fetchNetworksFromStorageThunk());
+    dispatch(fetchSystemInfoFromStorageThunk());
+    dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSessionsThunk());
     dispatch(fetchNewsFromStorageThunk());
@@ -107,7 +104,7 @@ const Root: FC = () => {
     dispatch(startPollingForTransactionsParamsThunk());
     dispatch(startPollingForNetworkConnectivityThunk());
   }, []);
-  // 2a. when the selected network has been updated, fetch the account data and transaction params
+  // 2. when the selected network has been updated, fetch the account data and transaction params
   useEffect(() => {
     if (network) {
       // fetch accounts when no accounts exist
@@ -121,15 +118,9 @@ const Root: FC = () => {
       }
 
       // fetch the most recent transaction params for the selected network
-      dispatch(fetchTransactionParamsFromStorageThunk());
+      dispatch(updateTransactionParamsForSelectedNetworkThunk());
     }
   }, [network]);
-  // 2b. when the selected network or the custom node has been updated, update the nodes
-  useEffect(() => {
-    if (network) {
-      dispatch(updateNodesThunk());
-    }
-  }, [customNode, network]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications

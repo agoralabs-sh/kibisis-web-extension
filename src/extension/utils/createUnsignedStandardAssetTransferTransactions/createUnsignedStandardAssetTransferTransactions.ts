@@ -1,15 +1,13 @@
 import {
-  Algodv2,
   makeAssetTransferTxnWithSuggestedParams,
-  SuggestedParams,
-  Transaction,
+  type Transaction,
 } from 'algosdk';
 
 // types
 import type { IOptions } from './types';
 
-// utils
-import createAlgodClientFromCustomNodeItemOrNetwork from '@common/utils/createAlgodClientFromCustomNodeItemOrNetwork';
+// models
+import NetworkClient from '@extension/models/NetworkClient';
 
 /**
  * Convenience function that creates the transactions to transfer a standard asset.
@@ -19,14 +17,14 @@ import createAlgodClientFromCustomNodeItemOrNetwork from '@common/utils/createAl
 export default async function createUnsignedStandardAssetTransferTransactions({
   amountInAtomicUnits,
   asset,
-  customNodeOrNetwork,
   fromAddress,
+  logger,
+  network,
+  nodeID,
   note,
   toAddress,
 }: IOptions): Promise<Transaction[]> {
-  const algodClient =
-    createAlgodClientFromCustomNodeItemOrNetwork(customNodeOrNetwork);
-  const suggestedParams = await algodClient.getTransactionParams().do();
+  const networkClient = new NetworkClient({ logger, network });
 
   return [
     makeAssetTransferTxnWithSuggestedParams(
@@ -37,7 +35,7 @@ export default async function createUnsignedStandardAssetTransferTransactions({
       BigInt(amountInAtomicUnits),
       note ? new TextEncoder().encode(note) : undefined,
       parseInt(asset.id),
-      suggestedParams
+      await networkClient.suggestedParams(nodeID)
     ),
   ];
 }

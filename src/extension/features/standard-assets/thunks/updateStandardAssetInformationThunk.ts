@@ -24,6 +24,7 @@ import type {
 import fetchVerifiedStandardAssetList from '@extension/utils/fetchVerifiedStandardAssetList';
 import updateStandardAssetInformationById from '@extension/utils/updateStandardAssetInformationById';
 import upsertItemsById from '@extension/utils/upsertItemsById';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 
 const updateStandardAssetInformationThunk: AsyncThunk<
   IUpdateStandardAssetInformationResult, // return
@@ -37,6 +38,7 @@ const updateStandardAssetInformationThunk: AsyncThunk<
   StandardAssetsThunkEnum.UpdateStandardAssetInformation,
   async ({ ids, network }, { getState }) => {
     const logger = getState().system.logger;
+    const settings = getState().settings;
     const verifiedAssetList = await fetchVerifiedStandardAssetList({
       logger,
       network,
@@ -57,6 +59,10 @@ const updateStandardAssetInformationThunk: AsyncThunk<
           id,
           logger,
           network,
+          nodeID: selectNodeIDByGenesisHashFromSettings({
+            genesisHash: network.genesisHash,
+            settings,
+          }),
           verifiedAssetList,
         });
 

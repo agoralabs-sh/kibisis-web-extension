@@ -1,11 +1,9 @@
 enum ThunkEnum {
-  FetchCustomNodesFromStorage = 'networks/fetchCustomNodesFromStorageThunk',
-  FetchTransactionParamsFromStorageThunk = 'networks/fetchTransactionParamsFromStorageThunk',
-  RemoveCustomNodeByIDFromStorage = 'networks/removeCustomNodeByIDFromStorageThunk',
-  SaveCustomNodeToStorage = 'networks/saveCustomNodeToStorageThunk',
+  AddCustomNodeThunk = 'networks/addCustomNodeThunk',
+  FetchFromStorageThunk = 'networks/fetchFromStorageThunk',
+  RemoveCustomNodeThunk = 'networks/removeCustomNodeThunk',
   StartPollingForTransactionParams = 'networks/startPollingForTransactionParams',
   StopPollingForTransactionParams = 'networks/stopPollingForTransactionParams',
-  UpdateNodesThunk = 'networks/updateNodesThunk',
   UpdateTransactionParamsForSelectedNetworkThunk = 'networks/updateTransactionParamsForSelectedNetworkThunk',
 }
 

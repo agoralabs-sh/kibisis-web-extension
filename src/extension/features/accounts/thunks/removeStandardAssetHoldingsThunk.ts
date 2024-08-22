@@ -1,9 +1,8 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import {
-  Algodv2,
   makeAssetTransferTxnWithSuggestedParams,
-  SuggestedParams,
-  Transaction,
+  type SuggestedParams,
+  type Transaction,
 } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
@@ -24,6 +23,9 @@ import {
   OfflineError,
 } from '@extension/errors';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // services
 import AccountService from '@extension/services/AccountService';
 
@@ -42,12 +44,11 @@ import type {
 } from '../types';
 
 // utils
-import createAlgodClientFromSettings from '@common/utils/createAlgodClientFromSettings';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
-import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings/selectNodeIDByGenesisHashFromSettings';
 import signTransaction from '@extension/utils/signTransaction';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
@@ -71,18 +72,20 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
+    const settings = getState().settings;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountInformation: IAccountInformation;
     let accountBalanceInAtomicUnits: BigNumber;
     let accountService: AccountService;
     let address: string;
-    let algodClient: Algodv2;
     let assetHoldingsAboveZeroBalance: IStandardAssetHolding[];
     let encodedGenesisHash: string;
     let errorMessage: string;
     let filteredAssets: IStandardAsset[];
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
     let network: INetworkWithTransactionParams | null;
+    let networkClient: NetworkClient;
+    let nodeID: string | null;
     let transactionIds: string[];
     let signedTransactions: Uint8Array[];
     let suggestedParams: SuggestedParams;
@@ -181,10 +184,14 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       return rejectWithValue(new NotAZeroBalanceError(errorMessage));
     }
 
-    algodClient = createAlgodClientFromNetwork(network);
+    networkClient = new NetworkClient({ logger, network });
+    nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
+    });
 
     try {
-      suggestedParams = await algodClient.getTransactionParams().do();
+      suggestedParams = await networkClient.suggestedParams(nodeID);
       unsignedTransactions = filteredAssets.map((value) =>
         makeAssetTransferTxnWithSuggestedParams(
           address,
@@ -220,9 +227,8 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
       );
       transactionIds = unsignedTransactions.map((value) => value.txID());
 
-      await sendTransactionsForNetwork({
-        logger,
-        network,
+      await networkClient.sendTransactions({
+        nodeID,
         signedTransactions,
       });
     } catch (error) {
@@ -250,6 +256,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
           forceUpdate: true,
           logger,
           network,
+          nodeID,
         }),
       },
       networkTransactions: {
@@ -262,6 +269,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
           delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
           logger,
           network,
+          nodeID,
           refresh: true,
         }),
       },

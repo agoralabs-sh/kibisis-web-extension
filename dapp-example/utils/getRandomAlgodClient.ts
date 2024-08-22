@@ -16,5 +16,5 @@ export default function getAlgodClient(network: INetwork): Algodv2 {
     throw new Error(`no node found for network "${network.genesisId}"`);
   }
 
-  return new Algodv2('', node.url, node.port);
+  return new Algodv2('', node.url, node.port || '');
 }

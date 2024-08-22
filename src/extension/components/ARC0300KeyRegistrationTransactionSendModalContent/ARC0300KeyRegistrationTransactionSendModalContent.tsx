@@ -48,12 +48,12 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
+import NetworkClient from '@extension/models/NetworkClient';
 
 // selectors
 import {
   useSelectAccountByAddress,
   useSelectAccounts,
-  useSelectCustomNodesItems,
   useSelectLogger,
   useSelectNetworks,
   useSelectSettings,
@@ -63,7 +63,6 @@ import {
 import { theme } from '@extension/theme';
 
 // types
-import type { ICustomNodeItem } from '@extension/services/CustomNodesService';
 import type {
   IAppThunkDispatch,
   IARC0300ModalContentProps,
@@ -71,16 +70,14 @@ import type {
   IARC0300OnlineKeyRegistrationTransactionSendSchema,
   IMainRootState,
   INetworkWithTransactionParams,
-  TCustomNodeItemOrNetwork,
   TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
 import createUnsignedKeyRegistrationTransactionFromSchema from '@extension/utils/createUnsignedKeyRegistrationTransactionFromSchema';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
-import selectCustomNodeFromSettings from '@extension/utils/selectCustomNodeFromSettings';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 import signTransaction from '@extension/utils/signTransaction';
 
 const ARC0300KeyRegistrationTransactionSendModalContent: FC<
@@ -112,19 +109,15 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     schema.query[ARC0300QueryEnum.Sender]
   );
   const accounts = useSelectAccounts();
-  const customNodes = useSelectCustomNodesItems();
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
   const settings = useSelectSettings();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // states
-  const [customNode, setCustomNode] = useState<ICustomNodeItem | null>(null);
   const [network, setNetwork] = useState<INetworkWithTransactionParams | null>(
     null
   );
-  const [customNodeOrNetwork, setCustomNodeOrNetwork] =
-    useState<TCustomNodeItemOrNetwork | null>(null);
   const [sending, setSending] = useState<boolean>(false);
   const [unsignedTransaction, setUnsignedTransaction] =
     useState<Transaction | null>(null);
@@ -172,6 +165,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
+    let networkClient: NetworkClient;
     let signedTransaction: Uint8Array;
 
     if (!unsignedTransaction) {
@@ -227,9 +221,13 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
         ...result,
       });
 
-      await sendTransactionsForNetwork({
-        logger,
-        network,
+      networkClient = new NetworkClient({ logger, network });
+
+      await networkClient.sendTransactions({
+        nodeID: selectNodeIDByGenesisHashFromSettings({
+          genesisHash: network.genesisHash,
+          settings,
+        }),
         signedTransactions: [signedTransaction],
       });
 
@@ -293,42 +291,38 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   const handleSendClick = () => onAuthenticationModalOpen();
 
   useEffect(() => {
-    let _customNode: ICustomNodeItem | null;
     let _genesisHash: string;
     let _network: INetworkWithTransactionParams | null;
 
     if (genesisHash) {
       _genesisHash = encodeBase64(decodeBase64URLSafe(genesisHash));
-      _customNode =
-        customNodes.find((value) => value.genesisHash === _genesisHash) || null;
       _network =
         networks.find((value) => value.genesisHash === _genesisHash) || null;
 
-      setCustomNode(_customNode);
       setNetwork(_network);
 
       return;
     }
 
-    _customNode = selectCustomNodeFromSettings({ customNodes, settings });
     _network = selectNetworkFromSettings({
       networks,
       settings,
       withDefaultFallback: true,
     });
 
-    setCustomNode(_customNode);
     setNetwork(_network);
-
-    return;
   }, [genesisHash]);
   useEffect(() => {
     if (account && network) {
       (async () =>
         setUnsignedTransaction(
           await createUnsignedKeyRegistrationTransactionFromSchema({
-            customNodeOrNetwork: customNode || network,
             logger,
+            network,
+            nodeID: selectNodeIDByGenesisHashFromSettings({
+              genesisHash: network.genesisHash,
+              settings,
+            }),
             schema,
           })
         ))();

@@ -1,5 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import type { Indexer } from 'algosdk';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // constants
 import {
@@ -13,6 +12,9 @@ import { AddAssetThunkEnum } from '@extension/enums';
 // errors
 import { NetworkNotSelectedError, OfflineError } from '@extension/errors';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type {
   IAlgorandSearchApplicationsResult,
@@ -25,10 +27,9 @@ import type {
 } from '../types';
 
 // utils
-import createIndexerClientFromNetwork from '@common/utils/createIndexerClientFromNetwork';
 import selectAssetsForNetwork from '@extension/utils/selectAssetsForNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import searchAlgorandApplicationsWithDelay from '@extension/utils/searchAlgorandApplicationsWithDelay';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings/selectNodeIDByGenesisHashFromSettings';
 import updateARC0200AssetInformationById from '@extension/utils/updateARC0200AssetInformationById';
 
 const queryARC0200AssetThunk: AsyncThunk<
@@ -56,9 +57,10 @@ const queryARC0200AssetThunk: AsyncThunk<
       networks,
       settings,
     });
-    let algorandSearchApplicationResult: IAlgorandSearchApplicationsResult;
+    let searchApplicationResult: IAlgorandSearchApplicationsResult;
     let arc200Assets: IARC0200Asset[];
-    let indexerClient: Indexer;
+    let networkClient: NetworkClient;
+    let nodeID: string | null;
     let updatedARC200Assets: IARC0200Asset[] = [];
 
     if (!online) {
@@ -100,33 +102,40 @@ const queryARC0200AssetThunk: AsyncThunk<
       getState().arc0200Assets.items,
       network.genesisHash
     );
-    indexerClient = createIndexerClientFromNetwork(network);
+    networkClient = new NetworkClient({ logger, network });
+    nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
+    });
 
     try {
-      algorandSearchApplicationResult =
-        await searchAlgorandApplicationsWithDelay({
+      searchApplicationResult = await networkClient.searchApplicationsWithDelay(
+        {
           applicationId,
-          client: indexerClient,
           delay: NODE_REQUEST_DELAY,
           limit: SEARCH_ASSET_INDEXER_LIMIT,
           next: currentARC200Assets.next,
-        });
+          nodeID,
+        }
+      );
 
       for (
         let index = 0;
-        index < algorandSearchApplicationResult.applications.length;
+        index < searchApplicationResult.applications.length;
         index++
       ) {
-        const { id } = algorandSearchApplicationResult.applications[index];
+        const { id } = searchApplicationResult.applications[index];
         let arc200Asset =
           arc200Assets.find((value) => value.id === String(id)) || null;
 
         // if we don't have any info stored, get the asset information
         if (!arc200Asset) {
-          arc200Asset = await updateARC0200AssetInformationById(String(id), {
+          arc200Asset = await updateARC0200AssetInformationById({
             delay: index * NODE_REQUEST_DELAY,
+            id: String(id),
             logger,
             network,
+            nodeID,
           });
         }
 
@@ -141,7 +150,7 @@ const queryARC0200AssetThunk: AsyncThunk<
         items: refresh
           ? updatedARC200Assets
           : [...currentARC200Assets.items, ...updatedARC200Assets],
-        next: algorandSearchApplicationResult['next-token'] || null,
+        next: searchApplicationResult['next-token'] || null,
       };
     } catch (error) {
       logger.debug(`${AddAssetThunkEnum.QueryARC200Asset}: ${error.message}`);

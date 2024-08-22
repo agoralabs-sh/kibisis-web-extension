@@ -83,7 +83,6 @@ import {
   useSelectActiveAccountInformation,
   useSelectActiveAccountTransactions,
   useSelectAccountsFetching,
-  useSelectCustomNodesItems,
   useSelectSettingsFetching,
   useSelectIsOnline,
   useSelectNetworks,
@@ -97,7 +96,6 @@ import {
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
-import { ICustomNodeItem } from '@extension/services/CustomNodesService';
 import type {
   IAppThunkDispatch,
   IMainRootState,
@@ -124,14 +122,13 @@ const AccountPage: FC = () => {
   const accounts = useSelectAccounts();
   const accountTransactions = useSelectActiveAccountTransactions();
   const activeAccountDetails = useSelectActiveAccountDetails();
-  const customNodes = useSelectCustomNodesItems();
   const fetchingAccounts = useSelectAccountsFetching();
   const fetchingSettings = useSelectSettingsFetching();
   const online = useSelectIsOnline();
+  const network = useSelectSettingsSelectedNetwork();
   const networks = useSelectNetworks();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const savingAccounts = useSelectAccountsSaving();
-  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const settings = useSelectSettings();
   // hooks
   const primaryColorScheme = usePrimaryColorScheme();
@@ -183,20 +180,13 @@ const AccountPage: FC = () => {
 
     setIsEditing(false);
   };
-  const handleNetworkSelect = (value: ICustomNodeItem | INetwork) => {
+  const handleNetworkSelect = (value: INetwork) => {
     dispatch(
       saveSettingsToStorageThunk({
         ...settings,
         general: {
           ...settings.general,
           selectedNetworkGenesisHash: value.genesisHash,
-          ...(value.discriminator === 'ICustomNodeItem'
-            ? {
-                selectedCustomNetworkId: value.id,
-              }
-            : {
-                selectedCustomNetworkId: null, // if there is no custom node, remove it from the settings
-              }),
         },
       })
     );
@@ -256,7 +246,7 @@ const AccountPage: FC = () => {
       return <AccountPageSkeletonContent {...headerContainerProps} />;
     }
 
-    if (account && accountInformation && selectedNetwork) {
+    if (account && accountInformation && network) {
       address = convertPublicKeyToAVMAddress(
         PrivateKeyService.decode(account.publicKey)
       );
@@ -288,15 +278,9 @@ const AccountPage: FC = () => {
               {/*network selection*/}
               <NetworkSelect
                 context={_context}
-                customNodes={customNodes}
                 networks={networks}
                 onSelect={handleNetworkSelect}
-                selectedCustomNode={customNodes.find(
-                  (value) =>
-                    value.id === settings.general.selectedCustomNetworkId &&
-                    value.genesisHash === selectedNetwork.genesisHash
-                )}
-                selectedNetwork={selectedNetwork}
+                value={network}
               />
             </HStack>
 
@@ -324,7 +308,7 @@ const AccountPage: FC = () => {
                 minAtomicBalance={
                   new BigNumber(accountInformation.minAtomicBalance)
                 }
-                nativeCurrency={selectedNetwork.nativeCurrency}
+                nativeCurrency={network.nativeCurrency}
               />
             </HStack>
 
@@ -464,7 +448,7 @@ const AccountPage: FC = () => {
                 account={account}
                 accounts={accounts}
                 fetching={fetchingAccounts}
-                network={selectedNetwork}
+                network={network}
                 onScrollEnd={handleActivityScrollEnd}
               />
             </TabPanels>
@@ -555,7 +539,7 @@ const AccountPage: FC = () => {
         );
       }
     }
-  }, [selectedNetwork]);
+  }, [network]);
 
   return (
     <>
@@ -570,6 +554,7 @@ const AccountPage: FC = () => {
           />
         </>
       )}
+
       <VStack
         alignItems="center"
         justifyContent="flex-start"

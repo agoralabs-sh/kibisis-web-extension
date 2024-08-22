@@ -4,9 +4,6 @@ import React, { type FC } from 'react';
 // enums
 import { NetworkTypeEnum } from '@extension/enums';
 
-// selectors
-import { useSelectSettingsColorMode } from '@extension/selectors';
-
 // types
 import type { IProps } from './types';
 
@@ -14,9 +11,7 @@ import type { IProps } from './types';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import mapIconSizeToSize from './utils/mapIconSizeToSize';
 
-const NetworkBadge: FC<IProps> = ({ customNode, network, size = 'sm' }) => {
-  // selectors
-  const colorMode = useSelectSettingsColorMode();
+const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
   // misc
   const nativeCurrencyIcon = createIconFromDataUri(
     network.nativeCurrency.iconUrl,
@@ -27,7 +22,7 @@ const NetworkBadge: FC<IProps> = ({ customNode, network, size = 'sm' }) => {
     }
   );
   // renders
-  const renderNetworkTypeTag = () => {
+  const renderTypeTag = () => {
     const defaultProps: Partial<TagProps> = {
       size,
       variant: 'solid',
@@ -52,32 +47,17 @@ const NetworkBadge: FC<IProps> = ({ customNode, network, size = 'sm' }) => {
     }
   };
   const renderTags = () => {
-    if (customNode) {
+    const typeTag = renderTypeTag();
+
+    if (typeTag) {
       return (
         <>
-          {/*custom node name*/}
-          <Tag
-            borderLeftRadius="full"
-            colorScheme="green"
-            size={size}
-            variant="solid"
-          >
-            <TagLabel>{customNode.name}</TagLabel>
-          </Tag>
-
           {/*network name*/}
           <Tag
+            borderLeftRadius="full"
             colorScheme={network.chakraTheme}
             size={size}
             variant="solid"
-            {...(network.type === NetworkTypeEnum.Stable
-              ? {
-                  // mainnet will not have a network type tag
-                  borderRightRadius: 'full',
-                }
-              : {
-                  borderRadius: 'none',
-                })}
           >
             {nativeCurrencyIcon}
 
@@ -85,43 +65,22 @@ const NetworkBadge: FC<IProps> = ({ customNode, network, size = 'sm' }) => {
           </Tag>
 
           {/*network type*/}
-          {renderNetworkTypeTag()}
+          {typeTag}
         </>
       );
     }
 
-    if (network.type === NetworkTypeEnum.Stable) {
-      return (
-        <Tag
-          borderRadius="full"
-          colorScheme={network.chakraTheme}
-          size={size}
-          variant="solid"
-        >
-          {nativeCurrencyIcon}
-
-          <TagLabel>{network.canonicalName}</TagLabel>
-        </Tag>
-      );
-    }
-
     return (
-      <>
-        {/*network name*/}
-        <Tag
-          borderLeftRadius="full"
-          colorScheme={network.chakraTheme}
-          size={size}
-          variant="solid"
-        >
-          {nativeCurrencyIcon}
+      <Tag
+        borderRadius="full"
+        colorScheme={network.chakraTheme}
+        size={size}
+        variant="solid"
+      >
+        {nativeCurrencyIcon}
 
-          <TagLabel>{network.canonicalName}</TagLabel>
-        </Tag>
-
-        {/*network type*/}
-        {renderNetworkTypeTag()}
-      </>
+        <TagLabel>{network.canonicalName}</TagLabel>
+      </Tag>
     );
   };
 

@@ -34,6 +34,7 @@ import initializeARC0200AssetHoldingFromARC0200Asset from '@extension/utils/init
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import { findAccountWithoutExtendedProps } from '../utils';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 
 const addARC0200AssetHoldingsThunk: AsyncThunk<
   IUpdateAssetHoldingsResult, // return
@@ -46,15 +47,17 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
 >(
   ThunkEnum.AddARC0200AssetHoldings,
   async ({ accountId, assets, genesisHash }, { getState, rejectWithValue }) => {
+    const accounts = getState().accounts.items;
     const logger = getState().system.logger;
     const networks = getState().networks.items;
-    const accounts = getState().accounts.items;
+    const settings = getState().settings;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountService: AccountService;
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
     let network: INetwork | null;
     let newAssetHoldings: IARC0200AssetHolding[] = [];
+    let nodeID: string | null;
 
     if (!account) {
       logger.debug(
@@ -81,9 +84,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
       );
     }
 
-    encodedGenesisHash = convertGenesisHashToHex(
-      network.genesisHash
-    ).toUpperCase();
+    encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
     currentAccountInformation =
       account.networkInformation[encodedGenesisHash] ||
       AccountService.initializeDefaultAccountInformation();
@@ -95,9 +96,12 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
           )
       )
       .map(initializeARC0200AssetHoldingFromARC0200Asset);
-
     accountService = new AccountService({
       logger,
+    });
+    nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
     });
     account = {
       ...account,
@@ -118,6 +122,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
           forceUpdate: true,
           logger,
           network,
+          nodeID,
         }),
       },
     };

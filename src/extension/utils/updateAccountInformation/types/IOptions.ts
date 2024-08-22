@@ -8,6 +8,7 @@ interface IOptions extends IBaseOptions {
   delay?: number;
   forceUpdate?: boolean;
   network: INetwork;
+  nodeID: string | null;
 }
 
 export default IOptions;

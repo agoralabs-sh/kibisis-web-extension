@@ -5,8 +5,7 @@ export const ARC0072_ASSETS_KEY_PREFIX: string = 'arc0072_assets_';
 export const ARC0200_ASSETS_KEY_PREFIX: string = 'arc200_assets_';
 export const CUSTOM_NODES_KEY: string = 'custom_nodes';
 export const EVENT_QUEUE_ITEM_KEY: string = 'event_queue';
-export const NETWORK_TRANSACTION_PARAMS_ITEM_KEY_PREFIX: string =
-  'network_transaction_params_';
+export const NETWORKS_ITEM_KEY: string = 'networks';
 export const NEWS_KEY: string = 'news';
 export const PASSKEY_CREDENTIAL_KEY: string = 'passkey_credential';
 export const PASSWORD_LOCK_ITEM_KEY: string = 'password_lock';

@@ -1,11 +1,11 @@
 // types
-import type { ICustomNodeItem } from '@extension/services/CustomNodesService';
-import type { INetwork } from '@extension/types';
+import type { ICustomNode } from '@extension/types';
 
 interface IProps {
-  item: ICustomNodeItem;
-  isDisabled?: boolean;
-  network: INetwork;
+  item: ICustomNode;
+  isActivated: boolean;
+  onActivate: (id: string) => void;
+  onDeactivate: (id: string) => void;
   onRemove: (id: string) => void;
   onSelect: (id: string) => void;
 }

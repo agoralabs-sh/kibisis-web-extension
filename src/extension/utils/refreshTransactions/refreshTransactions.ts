@@ -4,6 +4,9 @@ import {
   NODE_REQUEST_DELAY,
 } from '@extension/constants';
 
+// model
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type {
   IAlgorandAccountTransaction,
@@ -12,7 +15,6 @@ import type {
 import type { IOptions } from './types';
 
 // utils
-import lookupAlgorandAccountTransactionsWithDelay from '../lookupAlgorandAccountTransactionsWithDelay';
 import mapAlgorandTransactionToTransaction from '../mapAlgorandTransactionToTransaction';
 
 /**
@@ -24,24 +26,26 @@ import mapAlgorandTransactionToTransaction from '../mapAlgorandTransactionToTran
 export default async function refreshTransactions({
   address,
   afterTime,
-  client,
   delay = 0,
   logger,
   network,
   next,
+  nodeID,
 }: IOptions): Promise<ITransactions[]> {
+  const _functionName = 'refreshTransactions';
+  const networkClient = new NetworkClient({ logger, network });
   let algorandAccountTransactions: IAlgorandAccountTransaction;
   let newestTransactions: ITransactions[];
 
   try {
     algorandAccountTransactions =
-      await lookupAlgorandAccountTransactionsWithDelay({
+      await networkClient.lookupAccountTransactionWithDelay({
         address,
         afterTime,
-        client,
         delay,
         limit: DEFAULT_TRANSACTION_INDEXER_LIMIT,
         next,
+        nodeID,
       });
     newestTransactions = algorandAccountTransactions.transactions.map(
       mapAlgorandTransactionToTransaction
@@ -54,21 +58,20 @@ export default async function refreshTransactions({
         ...(await refreshTransactions({
           address,
           afterTime,
-          client,
           delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
           logger,
           network,
           next: algorandAccountTransactions['next-token'],
+          nodeID,
         })),
       ];
     }
 
     return newestTransactions;
   } catch (error) {
-    logger &&
-      logger.error(
-        `${refreshTransactions.name}: failed to get transactions for "${address}" on ${network.genesisId}: ${error.message}`
-      );
+    logger?.error(
+      `${_functionName}: failed to get transactions for "${address}" on ${network.genesisId}: ${error.message}`
+    );
 
     return [];
   }

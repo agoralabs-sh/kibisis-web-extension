@@ -3,8 +3,8 @@ export { default as useSelectSettingsCredentialLockEnabled } from './useSelectSe
 export { default as useSelectSettingsColorMode } from './useSelectColorMode';
 export { default as useSelectSettingsDebugLogging } from './useSelectDebugLogging';
 export { default as useSelectSettingsFetching } from './useSelectSettingsFetching';
+export { default as useSelectSettingsNodeIDByGenesisHash } from './useSelectSettingsNodeIDByGenesisHash';
 export { default as useSelectSettingsPreferredBlockExplorer } from './useSelectSettingsPreferredBlockExplorer';
 export { default as useSelectSettingsPreferredNFTExplorer } from './useSelectSettingsPreferredNFTExplorer';
 export { default as useSelectSettingsSaving } from './useSelectSettingsSaving';
-export { default as useSelectSettingsSelectedCustomNode } from './useSelectSettingsSelectedCustomNode';
 export { default as useSelectSettingsSelectedNetwork } from './useSelectSettingsSelectedNetwork';

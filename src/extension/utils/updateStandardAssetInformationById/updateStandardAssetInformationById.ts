@@ -1,4 +1,5 @@
-import { Algodv2 } from 'algosdk';
+// models
+import NetworkClient from '@extension/models/NetworkClient';
 
 // types
 import type {
@@ -9,8 +10,6 @@ import type {
 import type { IOptions } from './types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
-import fetchStandardAssetInformationWithDelay from '../fetchStandardAssetInformationWithDelay';
 import mapStandardAssetFromAlgorandAsset from '../mapStandardAssetFromAlgorandAsset';
 
 /**
@@ -19,29 +18,25 @@ import mapStandardAssetFromAlgorandAsset from '../mapStandardAssetFromAlgorandAs
  * @returns {Promise<IStandardAsset | null>} the standard asset information, or null if there was an error.
  */
 export default async function updateStandardAssetInformationById({
-  algoNode,
   delay = 0,
   id,
   logger,
+  network,
+  nodeID,
   verifiedAssetList,
 }: IOptions): Promise<IStandardAsset | null> {
   const _functionName = 'updateStandardAssetInformationById';
+  const networkClient = new NetworkClient({ logger, network });
   let assetInformation: IAlgorandAsset;
-  let client: Algodv2;
   let verifiedAsset: ITinyManAssetResponse | null;
 
-  client = createAlgodClient({
-    port: algoNode.port,
-    token: algoNode.token,
-    url: algoNode.url,
-  });
-
   try {
-    assetInformation = await fetchStandardAssetInformationWithDelay({
-      client,
-      delay,
-      id,
-    });
+    assetInformation =
+      await networkClient.standardAssetInformationByIDWithDelay({
+        delay,
+        id,
+        nodeID,
+      });
     verifiedAsset = verifiedAssetList.find((value) => value.id === id) || null;
 
     return mapStandardAssetFromAlgorandAsset(
@@ -51,9 +46,7 @@ export default async function updateStandardAssetInformationById({
     );
   } catch (error) {
     logger?.error(
-      `${_functionName}: failed to get asset information for asset "${id}" at "${
-        algoNode.port ? `${algoNode.url}:${algoNode.port}` : algoNode.url
-      }":`,
+      `${_functionName}: failed to get asset information for asset "${id}" at "${network.genesisId}":`,
       error
     );
 

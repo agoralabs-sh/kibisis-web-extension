@@ -13,11 +13,12 @@ import {
   IoCheckmarkCircleOutline,
   IoCloseCircleOutline,
   IoEyeOutline,
+  IoRadioButtonOffOutline,
+  IoRadioButtonOnOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 
 // components
-import NetworkBadge from '@extension/components/NetworkBadge';
 import OverflowMenu from '@extension/components/OverflowMenu';
 
 // constants
@@ -32,8 +33,9 @@ import type { IProps } from './types';
 
 const CustomNodeItem: FC<IProps> = ({
   item,
-  isDisabled = false,
-  network,
+  isActivated,
+  onActivate,
+  onDeactivate,
   onRemove,
   onSelect,
 }) => {
@@ -42,6 +44,8 @@ const CustomNodeItem: FC<IProps> = ({
   const defaultTextColor = useDefaultTextColor();
   const itemBorderColor = useItemBorderColor();
   // handlers
+  const handleOnActivateClick = () => onActivate(item.id);
+  const handleOnDeactivateClick = () => onDeactivate(item.id);
   const handleOnRemoveClick = () => onRemove(item.id);
   const handleOnSelectClick = () => onSelect(item.id);
 
@@ -56,13 +60,19 @@ const CustomNodeItem: FC<IProps> = ({
       w="full"
     >
       {/*details*/}
-      <VStack
+      <HStack
         alignItems="flex-start"
         flexGrow={1}
         justifyContent="space-evenly"
         spacing={DEFAULT_GAP / 3}
       >
-        <HStack justifyContent="space-between" spacing={1} w="full">
+        <VStack
+          alignItems="center"
+          flexGrow={1}
+          justifyContent="space-between"
+          spacing={1}
+          w="full"
+        >
           {/*name*/}
           <Tooltip label={item.name}>
             <Text
@@ -76,44 +86,63 @@ const CustomNodeItem: FC<IProps> = ({
             </Text>
           </Tooltip>
 
-          {/*network*/}
-          <NetworkBadge network={network} size="sm" />
-        </HStack>
-
-        <HStack justifyContent="flex-end" spacing={DEFAULT_GAP / 3} w="full">
-          {/*disabled*/}
-          {isDisabled && (
-            <Tag colorScheme="red" size="sm" variant="solid">
-              <TagLabel>{t<string>('labels.disabled')}</TagLabel>
+          <HStack justifyContent="flex-end" spacing={DEFAULT_GAP / 3} w="full">
+            {/*algod*/}
+            <Tag colorScheme="green" size="sm" variant="solid">
+              <TagLabel>algod</TagLabel>
+              <TagRightIcon as={IoCheckmarkCircleOutline} />
             </Tag>
-          )}
 
-          {/*algod*/}
+            {/*indexer*/}
+            <Tag
+              colorScheme={item.indexer ? 'green' : 'orange'}
+              size="sm"
+              variant="solid"
+            >
+              <TagLabel>indexer</TagLabel>
+              <TagRightIcon
+                as={
+                  item.indexer ? IoCheckmarkCircleOutline : IoCloseCircleOutline
+                }
+              />
+            </Tag>
+          </HStack>
+        </VStack>
+
+        {/*disabled*/}
+        {isActivated && (
           <Tag colorScheme="green" size="sm" variant="solid">
-            <TagLabel>algod</TagLabel>
-            <TagRightIcon as={IoCheckmarkCircleOutline} />
+            <TagLabel>{t<string>('labels.activated')}</TagLabel>
           </Tag>
-
-          {/*indexer*/}
-          <Tag
-            colorScheme={item.indexer ? 'green' : 'orange'}
-            size="sm"
-            variant="solid"
-          >
-            <TagLabel>indexer</TagLabel>
-            <TagRightIcon
-              as={
-                item.indexer ? IoCheckmarkCircleOutline : IoCloseCircleOutline
-              }
-            />
-          </Tag>
-        </HStack>
-      </VStack>
+        )}
+      </HStack>
 
       {/*overflow menu*/}
       <OverflowMenu
         context={item.id}
         items={[
+          // view
+          {
+            icon: IoEyeOutline,
+            label: t<string>('labels.view'),
+            onSelect: handleOnSelectClick,
+          },
+          // activate/deactivate
+          ...(isActivated
+            ? [
+                {
+                  icon: IoRadioButtonOffOutline,
+                  label: t<string>('labels.deactivate'),
+                  onSelect: handleOnDeactivateClick,
+                },
+              ]
+            : [
+                {
+                  icon: IoRadioButtonOnOutline,
+                  label: t<string>('labels.activate'),
+                  onSelect: handleOnActivateClick,
+                },
+              ]),
           // view
           {
             icon: IoEyeOutline,

@@ -1,11 +1,12 @@
 // types
 import type { IBaseOptions } from '@common/types';
-import type { TCustomNodeItemOrNetwork } from './networks';
+import type { INetwork } from './networks';
 
 interface IUpdateAssetInformationByIdOptions extends IBaseOptions {
-  customNodeOrNetwork: TCustomNodeItemOrNetwork;
   delay?: number;
   id: string;
+  network: INetwork;
+  nodeID: string | null;
 }
 
 export default IUpdateAssetInformationByIdOptions;

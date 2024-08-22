@@ -1,9 +1,8 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import {
-  Algodv2,
   makePaymentTxnWithSuggestedParams,
-  SuggestedParams,
-  Transaction,
+  type SuggestedParams,
+  type Transaction,
 } from 'algosdk';
 
 // enums
@@ -17,6 +16,9 @@ import {
   NotEnoughMinimumBalanceError,
 } from '@extension/errors';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // services
 import AccountService from '@extension/services/AccountService';
 
@@ -29,11 +31,10 @@ import type {
 import type { TReKeyAccountThunkPayload } from '../types';
 
 // utils
-import createAlgodClientFromNetwork from '@common/utils/createAlgodClientFromNetwork';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
-import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings/selectNodeIDByGenesisHashFromSettings';
 
 const reKeyAccountThunk: AsyncThunk<
   string | null, // return
@@ -55,8 +56,10 @@ const reKeyAccountThunk: AsyncThunk<
       AccountService.extractAccountInformationForNetwork(reKeyAccount, network);
     const address = convertPublicKeyToAVMAddress(reKeyAccount.publicKey);
     const networks = getState().networks.items;
+    const settings = getState().settings;
     let _error: string;
-    let algodClient: Algodv2;
+    let networkClient: NetworkClient;
+    let nodeID: string | null;
     let signedTransaction: Uint8Array;
     let suggestedParams: SuggestedParams;
     let unsignedTransaction: Transaction;
@@ -69,15 +72,19 @@ const reKeyAccountThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(_error));
     }
 
-    algodClient = createAlgodClientFromNetwork(network);
-    suggestedParams = await algodClient.getTransactionParams().do();
+    networkClient = new NetworkClient({ logger, network });
+    nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
+    });
+
     unsignedTransaction = makePaymentTxnWithSuggestedParams(
       address,
       address,
       BigInt('0'),
       undefined,
       undefined,
-      suggestedParams,
+      await networkClient.suggestedParams(nodeID),
       authorizedAddress // re-key new address
     );
 
@@ -107,10 +114,9 @@ const reKeyAccountThunk: AsyncThunk<
         unsignedTransaction,
       });
 
-      await sendTransactionsForNetwork({
-        logger,
-        network,
+      await networkClient.sendTransactions({
         signedTransactions: [signedTransaction],
+        nodeID,
       });
 
       return unsignedTransaction.txID();

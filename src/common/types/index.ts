@@ -1,6 +1,5 @@
 export type { default as IAuthenticationExtensionsClientOutputs } from './IAuthenticationExtensionsClientOutputs';
 export type { default as IBaseOptions } from './IBaseOptions';
-export type { default as IBaseWithDiscriminator } from './IBaseWithDiscriminator';
 export type { default as IClientInformation } from './IClientInformation';
 export type { default as IClientRequestMessage } from './IClientRequestMessage';
 export type { default as IClientResponseMessage } from './IClientResponseMessage';

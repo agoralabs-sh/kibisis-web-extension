@@ -1,11 +1,12 @@
 // types
 import type { IBaseOptions } from '@common/types';
-import type { INode, ITinyManAssetResponse } from '@extension/types';
+import type { INetwork, ITinyManAssetResponse } from '@extension/types';
 
 interface IOptions extends IBaseOptions {
-  algoNode: INode;
   delay?: number;
   id: string;
+  network: INetwork;
+  nodeID: string | null;
   verifiedAssetList: ITinyManAssetResponse[];
 }
 

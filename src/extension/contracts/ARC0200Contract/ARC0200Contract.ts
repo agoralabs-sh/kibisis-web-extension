@@ -13,11 +13,7 @@ import BigNumber from 'bignumber.js';
 import abi from './abi.json';
 
 // contracts
-import BaseContract, {
-  IABIResult,
-  INewBaseContractOptions,
-  ISimulateTransaction,
-} from '../BaseContract';
+import BaseContract from '../BaseContract';
 
 // enums
 import { ARC0200MethodEnum } from './enums';
@@ -30,16 +26,21 @@ import {
 
 // types
 import type { IARC0200AssetInformation } from '@extension/types';
+import type {
+  IABIResult,
+  INewOptions,
+  ISimulateTransaction,
+} from '../BaseContract';
 import type { ITransferOptions } from './types';
 
 // utils
 import calculateAppMbrForBox from '@extension/utils/calculateAppMbrForBox';
 
 export default class ARC0200Contract extends BaseContract {
-  constructor(options: INewBaseContractOptions) {
+  constructor(options: INewOptions) {
     super(options);
 
-    this.abi = new ABIContract(abi);
+    this._abi = new ABIContract(abi);
   }
 
   /**
@@ -68,14 +69,14 @@ export default class ARC0200Contract extends BaseContract {
     let result: BigNumber | null;
 
     try {
-      abiMethod = this.abi.getMethodByName(ARC0200MethodEnum.BalanceOf);
+      abiMethod = this._abi.getMethodByName(ARC0200MethodEnum.BalanceOf);
       abiAddressArgType = abiMethod.args[0]?.type as ABIType;
 
       // if the first arg, owner, is not an address
       if (!abiAddressArgType || abiAddressArgType.toString() !== 'address') {
         throw new InvalidABIContractError(
-          this.appId.toString(),
-          `application "${this.appId.toString()}" not valid as method "${
+          this._appId.toString(),
+          `application "${this._appId.toString()}" not valid as method "${
             ARC0200MethodEnum.BalanceOf
           }" has an invalid "owner" type`
         );
@@ -86,7 +87,7 @@ export default class ARC0200Contract extends BaseContract {
         appArgs: [abiAddressArgType.encode(address)],
       })) as BigNumber | null;
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
       );
 
@@ -95,8 +96,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this.appId.toString(),
-        `application "${this.appId.toString()}" not valid because the result returned "null"`
+        this._appId.toString(),
+        `application "${this._appId.toString()}" not valid because the result returned "null"`
       );
     }
 
@@ -125,7 +126,7 @@ export default class ARC0200Contract extends BaseContract {
     let transactions: Transaction[];
 
     try {
-      abiMethod = this.abi.getMethodByName(ARC0200MethodEnum.Transfer);
+      abiMethod = this._abi.getMethodByName(ARC0200MethodEnum.Transfer);
 
       // check the "to" arg
       if (
@@ -133,8 +134,8 @@ export default class ARC0200Contract extends BaseContract {
         abiMethod.args[0].type.toString() !== 'address'
       ) {
         throw new InvalidABIContractError(
-          this.appId.toString(),
-          `application "${this.appId.toString()}" not valid as method "${
+          this._appId.toString(),
+          `application "${this._appId.toString()}" not valid as method "${
             ARC0200MethodEnum.Transfer
           }" has an invalid "to" type`
         );
@@ -146,8 +147,8 @@ export default class ARC0200Contract extends BaseContract {
         abiMethod.args[1].type.toString() !== 'uint256'
       ) {
         throw new InvalidABIContractError(
-          this.appId.toString(),
-          `application "${this.appId.toString()}" not valid as method "${
+          this._appId.toString(),
+          `application "${this._appId.toString()}" not valid as method "${
             ARC0200MethodEnum.Transfer
           }" has an invalid "value" type`
         );
@@ -159,7 +160,7 @@ export default class ARC0200Contract extends BaseContract {
       encodedToAddress = (abiMethod.args[0].type as ABIType).encode(toAddress);
       appArgs = [encodedToAddress, encodedAmount];
       toBalance = await this.balanceOf(toAddress);
-      suggestedParams = await this.algodClient.getTransactionParams().do();
+      suggestedParams = await this._algod.getTransactionParams().do();
       boxReferences = await this.determineBoxReferences({
         abiMethod,
         appArgs,
@@ -176,7 +177,7 @@ export default class ARC0200Contract extends BaseContract {
 
       // if the balance is zero, we will need to create a payment transaction to fund a box
       if (toBalance.lte(0)) {
-        this.logger.debug(
+        this._logger.debug(
           `${ARC0200Contract.name}#${_functionName}: no balance detected, adding payment for box`
         );
 
@@ -190,7 +191,7 @@ export default class ARC0200Contract extends BaseContract {
           BigInt(String(boxStorageAmount.toString())),
           undefined,
           new TextEncoder().encode(
-            `initial box storage funding for account "${toAddress}" in application "${this.appId.toString()}"`
+            `initial box storage funding for account "${toAddress}" in application "${this._appId.toString()}"`
           ),
           suggestedParams
         );
@@ -201,7 +202,7 @@ export default class ARC0200Contract extends BaseContract {
         abiMethod,
         appArgs,
         boxes: boxReferences.map(({ name }: algosdk.modelsv2.BoxReference) => ({
-          appIndex: new BigNumber(this.appId).toNumber(),
+          appIndex: new BigNumber(this._appId).toNumber(),
           name,
         })),
         fromAddress,
@@ -220,7 +221,7 @@ export default class ARC0200Contract extends BaseContract {
 
       return transactions;
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
       );
 
@@ -240,12 +241,12 @@ export default class ARC0200Contract extends BaseContract {
     let result: BigNumber | null;
 
     try {
-      abiMethod = this.abi.getMethodByName(ARC0200MethodEnum.Decimals);
+      abiMethod = this._abi.getMethodByName(ARC0200MethodEnum.Decimals);
       result = (await this.readByMethod({
         abiMethod,
       })) as BigNumber | null;
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
       );
 
@@ -254,8 +255,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this.appId.toString(),
-        `application "${this.appId.toString()}" not valid because the result returned "null"`
+        this._appId.toString(),
+        `application "${this._appId.toString()}" not valid because the result returned "null"`
       );
     }
 
@@ -270,14 +271,14 @@ export default class ARC0200Contract extends BaseContract {
    * @throws {ReadABIContractError} if there was a problem reading the data.
    */
   public async metadata(): Promise<IARC0200AssetInformation> {
-    const _functionName: string = 'metadata';
+    const _functionName = 'metadata';
     let simulateTransactions: ISimulateTransaction[];
     let response: algosdk.modelsv2.SimulateResponse;
     let results: (IABIResult | null)[];
     let suggestedParams: SuggestedParams;
 
     try {
-      suggestedParams = await this.algodClient.getTransactionParams().do();
+      suggestedParams = await this._algod.getTransactionParams().do();
       simulateTransactions = await Promise.all<ISimulateTransaction>(
         [
           ARC0200MethodEnum.Decimals,
@@ -285,7 +286,7 @@ export default class ARC0200Contract extends BaseContract {
           ARC0200MethodEnum.Symbol,
           ARC0200MethodEnum.TotalSupply,
         ].map(async (value) => {
-          const abiMethod: ABIMethod = this.abi.getMethodByName(value);
+          const abiMethod: ABIMethod = this._abi.getMethodByName(value);
 
           return {
             abiMethod,
@@ -301,7 +302,7 @@ export default class ARC0200Contract extends BaseContract {
 
       if (response.txnGroups[0].failureMessage) {
         throw new ReadABIContractError(
-          this.appId.toString(),
+          this._appId.toString(),
           response.txnGroups[0].failureMessage
         );
       }
@@ -313,7 +314,7 @@ export default class ARC0200Contract extends BaseContract {
         })
       );
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
       );
 
@@ -323,8 +324,8 @@ export default class ARC0200Contract extends BaseContract {
     // if any are null, the application is not a valid arc-0200 application
     if (results.some((value) => !value)) {
       throw new InvalidABIContractError(
-        this.appId.toString(),
-        `application "${this.appId.toString()}" not valid because a result returned "null"`
+        this._appId.toString(),
+        `application "${this._appId.toString()}" not valid because a result returned "null"`
       );
     }
 
@@ -351,12 +352,12 @@ export default class ARC0200Contract extends BaseContract {
     let result: string | null;
 
     try {
-      abiMethod = this.abi.getMethodByName(ARC0200MethodEnum.Name);
+      abiMethod = this._abi.getMethodByName(ARC0200MethodEnum.Name);
       result = (await this.readByMethod({
         abiMethod,
       })) as string | null;
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
       );
 
@@ -365,8 +366,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this.appId.toString(),
-        `application "${this.appId.toString()}" not valid because the result returned "null"`
+        this._appId.toString(),
+        `application "${this._appId.toString()}" not valid because the result returned "null"`
       );
     }
 
@@ -385,12 +386,12 @@ export default class ARC0200Contract extends BaseContract {
     let result: string | null;
 
     try {
-      abiMethod = this.abi.getMethodByName(ARC0200MethodEnum.Symbol);
+      abiMethod = this._abi.getMethodByName(ARC0200MethodEnum.Symbol);
       result = (await this.readByMethod({
         abiMethod,
       })) as string | null;
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
       );
 
@@ -399,8 +400,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this.appId.toString(),
-        `application "${this.appId.toString()}" not valid because the result returned "null"`
+        this._appId.toString(),
+        `application "${this._appId.toString()}" not valid because the result returned "null"`
       );
     }
 
@@ -419,12 +420,12 @@ export default class ARC0200Contract extends BaseContract {
     let result: BigNumber | null;
 
     try {
-      abiMethod = this.abi.getMethodByName(ARC0200MethodEnum.TotalSupply);
+      abiMethod = this._abi.getMethodByName(ARC0200MethodEnum.TotalSupply);
       result = (await this.readByMethod({
         abiMethod,
       })) as BigNumber | null;
     } catch (error) {
-      this.logger.debug(
+      this._logger.debug(
         `${ARC0200Contract.name}#${_functionName}: ${error.message}`
       );
 
@@ -433,8 +434,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this.appId.toString(),
-        `application "${this.appId.toString()}" not valid because the result returned "null"`
+        this._appId.toString(),
+        `application "${this._appId.toString()}" not valid because the result returned "null"`
       );
     }
 
