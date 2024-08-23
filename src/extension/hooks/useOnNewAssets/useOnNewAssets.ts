@@ -11,7 +11,7 @@ import {
   useSelectAccounts,
   useSelectARC0072AssetsBySelectedNetwork,
   useSelectARC0200AssetsBySelectedNetwork,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
@@ -37,7 +37,7 @@ export default function useOnNewAssets(): void {
   const arc0072Assets = useSelectARC0072AssetsBySelectedNetwork();
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   const standardAssets = useSelectStandardAssetsBySelectedNetwork();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
 
   // check for any new arc-0072 assets
   useEffect(() => {

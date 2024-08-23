@@ -1,6 +1,8 @@
 interface INode {
   canonicalName: string;
-  port: string;
+  id: string | null;
+  port: string | null;
+  token: string | null;
   url: string;
 }
 

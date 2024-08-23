@@ -9,9 +9,9 @@ import ARC0072Contract from './ARC0072Contract';
 
 // types
 import type { IBaseOptions } from '@common/types';
-import type { INetwork } from '@extension/types';
 
 // utils
+import createAlgodClient from '@common/utils/createAlgodClient';
 import createLogger from '@common/utils/createLogger';
 
 describe.skip(`${__dirname}#ARC0072Contract`, () => {
@@ -19,11 +19,11 @@ describe.skip(`${__dirname}#ARC0072Contract`, () => {
   const options: IBaseOptions = {
     logger: createLogger('debug'),
   };
-  const totalSupply: BigNumber = new BigNumber('14');
+  const totalSupply = new BigNumber('14');
   let contract: ARC0072Contract;
 
   beforeAll(() => {
-    const network: INetwork | null =
+    const network =
       networks.find((value) => value.genesisId === 'voitest-v1') || null;
 
     if (!network) {
@@ -31,8 +31,17 @@ describe.skip(`${__dirname}#ARC0072Contract`, () => {
     }
 
     contract = new ARC0072Contract({
+      algod: createAlgodClient({
+        url: network.algods[0].url,
+        ...(network.algods[0].port && {
+          port: network.algods[0].port,
+        }),
+        ...(network.algods[0].token && {
+          token: network.algods[0].token,
+        }),
+      }),
       appId,
-      network,
+      feeSinkAddress: network.feeSunkAddress,
       ...options,
     });
   });

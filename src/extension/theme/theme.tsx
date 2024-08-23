@@ -75,11 +75,14 @@ const theme: Dict = extendTheme({
   },
   styles: {
     global: {
-      // remove scrollbars
+      ['*']: {
+        ['-ms-overflow-style']: 'none' /*  hide scrollbar for  ie and edge */,
+        scrollbarWidth: 'none', // hide scrollbar for firefox
+      },
+      // hide scrollbar for chrome, brave, safari and opera
       ['*::-webkit-scrollbar']: {
         display: 'none',
       },
-      scrollbarWidth: 'none',
     },
   },
 });

@@ -1,22 +1,20 @@
-import {
-  HStack,
-  Skeleton,
-  SkeletonCircle,
-  Spacer,
-  Stack,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { faker } from '@faker-js/faker';
-import React, { FC, useState } from 'react';
+import { HStack, Spacer, VStack } from '@chakra-ui/react';
+import React, { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoUnlinkOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
 import PageHeader from '@extension/components/PageHeader';
-import SettingsSessionItem from '@extension/components/SettingsSessionItem';
+import ScrollableContainer from '@extension/components/ScrollableContainer';
+import SettingsSessionItem, {
+  SettingsSessionItemSkeleton,
+} from '@extension/components/SettingsSessionItem';
+
+// components
+import { DEFAULT_GAP } from '@extension/constants';
 
 // features
 import { setConfirmModal } from '@extension/features/layout';
@@ -26,14 +24,14 @@ import {
 } from '@extension/features/sessions';
 
 // hooks
-import useSubTextColor from '@extension/hooks/useSubTextColor';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useBorderColor from '@extension/hooks/useBorderColor';
 
 // modals
 import ManageSessionModal from '@extension/modals/ManageSessionModal';
 
 // selectors
 import {
+  useSelectNetworks,
   useSelectSessionsFetching,
   useSelectSessions,
 } from '@extension/selectors';
@@ -50,25 +48,25 @@ const SessionsSettingsPage: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const fetching = useSelectSessionsFetching();
+  const networks = useSelectNetworks();
   const sessions = useSelectSessions();
   // hooks
-  const defaultSubTextColor = useSubTextColor();
-  const defaultTextColor = useDefaultTextColor();
+  const borderColor = useBorderColor();
   // states
-  const [managedSession, setManagedSession] = useState<ISession | null>(null);
+  const [session, setSession] = useState<ISession | null>(null);
   // handlers
-  const handleManageSessionClose = () => setManagedSession(null);
-  const handleManageSession = (id: string) =>
-    setManagedSession(sessions.find((value) => value.id === id) || null);
-  const handleRemoveAllSessionsClick = () =>
+  const handleManageSessionModalClose = () => setSession(null);
+  const handleOnSelectSession = (id: string) =>
+    setSession(sessions.find((value) => value.id === id) || null);
+  const handleDisconnectAllSessionsClick = () =>
     dispatch(
       setConfirmModal({
-        description: t<string>('captions.removeAllSessions'),
+        description: t<string>('captions.disconnectAllSessions'),
         onConfirm: () => dispatch(clearSessionsThunk()),
-        title: t<string>('headings.removeAllSessions'),
+        title: t<string>('headings.disconnectAllSessions'),
       })
     );
-  const handleRemoveSession = (id: string) => {
+  const handleOnDisconnectSession = (id: string) => {
     if (sessions.find((value) => value.id === id)) {
       dispatch(removeSessionByIdThunk(id));
     }
@@ -77,91 +75,101 @@ const SessionsSettingsPage: FC = () => {
   const renderContent = () => {
     if (fetching) {
       return (
-        <VStack spacing={2} w="full">
+        <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
           {Array.from({ length: 3 }, (_, index) => (
-            <HStack
-              key={`sessions-settings-page-fetching-sessions-item-${index}`}
-              m={0}
-              pt={2}
-              px={4}
-              spacing={2}
-              w="full"
-            >
-              <SkeletonCircle size="10" />
-              <VStack
-                alignItems="flex-start"
-                flexGrow={1}
-                justifyContent="space-evenly"
-                spacing={0}
-              >
-                <Skeleton flexGrow={1}>
-                  <Text color={defaultTextColor} fontSize="sm" textAlign="left">
-                    {faker.random.alpha({ count: 32 })}
-                  </Text>
-                </Skeleton>
-                <Skeleton flexGrow={1}>
-                  <Text
-                    color={defaultSubTextColor}
-                    fontSize="xs"
-                    textAlign="left"
-                  >
-                    {faker.date.future().toLocaleString()}
-                  </Text>
-                </Skeleton>
-              </VStack>
-            </HStack>
-          ))}
-        </VStack>
-      );
-    }
-
-    if (sessions.length > 0) {
-      return (
-        <VStack spacing={2} w="full">
-          {sessions.map((session, index) => (
-            <SettingsSessionItem
-              key={`sessions-settings-page-sessions-item-${index}`}
-              onManageSession={handleManageSession}
-              onRemoveSession={handleRemoveSession}
-              session={session}
+            <SettingsSessionItemSkeleton
+              key={`sessions-settings-page-sessions-item-skeleton-${index}`}
             />
           ))}
         </VStack>
       );
     }
 
-    return (
-      <>
-        {/*empty state*/}
+    return sessions.length > 0 ? (
+      <ScrollableContainer
+        direction="column"
+        flexGrow={1}
+        m={0}
+        p={0}
+        spacing={0}
+        w="full"
+      >
+        {sessions.reduce((acc, currentValue, index) => {
+          const network =
+            networks.find(
+              (value) => value.genesisHash === currentValue.genesisHash
+            ) || null;
+
+          return network
+            ? [
+                ...acc,
+                <SettingsSessionItem
+                  item={currentValue}
+                  key={`sessions-settings-page-sessions-item-${index}`}
+                  network={network}
+                  onDisconnect={handleOnDisconnectSession}
+                  onSelect={handleOnSelectSession}
+                />,
+              ]
+            : acc;
+        }, [])}
+      </ScrollableContainer>
+    ) : (
+      <VStack flexGrow={1} w="full">
         <Spacer />
+
+        {/*empty state*/}
         <EmptyState
           description={t<string>('captions.noSessionsFound')}
           text={t<string>('headings.noSessionsFound')}
         />
+
         <Spacer />
-      </>
+      </VStack>
     );
   };
 
   return (
     <>
       <ManageSessionModal
-        onClose={handleManageSessionClose}
-        session={managedSession}
+        onClose={handleManageSessionModalClose}
+        session={session}
       />
+
       <PageHeader title={t<string>('titles.page', { context: 'sessions' })} />
 
-      <Stack alignItems="center" justifyContent="center" px={4} py={4} w="full">
-        <Button
-          color="white"
-          colorScheme="red"
-          isDisabled={sessions.length <= 0}
-          maxW={400}
-          onClick={handleRemoveAllSessionsClick}
+      <VStack
+        borderBottomColor={borderColor}
+        borderBottomStyle="solid"
+        borderBottomWidth="1px"
+        pb={DEFAULT_GAP / 3}
+        px={DEFAULT_GAP}
+        spacing={DEFAULT_GAP / 3}
+        w="full"
+      >
+        <HStack
+          alignItems="center"
+          justifyContent="flex-end"
+          px={DEFAULT_GAP / 2}
+          py={DEFAULT_GAP / 3}
+          spacing={1}
+          w="full"
         >
-          {t<string>('buttons.removeAllSessions')}
-        </Button>
-      </Stack>
+          {/*disconnect all button*/}
+          <Button
+            aria-label={t<string>('buttons.disconnectAllSessions')}
+            colorScheme="red"
+            onClick={handleDisconnectAllSessionsClick}
+            rightIcon={<IoUnlinkOutline />}
+            size="sm"
+            variant="solid"
+          >
+            {t<string>('buttons.disconnectAllSessions')}
+          </Button>
+        </HStack>
+      </VStack>
+
+      {/*sessions list*/}
       {renderContent()}
     </>
   );

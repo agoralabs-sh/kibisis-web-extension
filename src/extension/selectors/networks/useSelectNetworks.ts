@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // types
-import {
+import type {
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';
@@ -16,6 +16,9 @@ import supportedNetworksFromSettings from '@extension/utils/supportedNetworksFro
 export default function useSelectNetworks(): INetworkWithTransactionParams[] {
   return useSelector<IMainRootState, INetworkWithTransactionParams[]>(
     ({ networks, settings }) =>
-      supportedNetworksFromSettings(networks.items, settings)
+      supportedNetworksFromSettings({
+        networks: networks.items,
+        settings,
+      })
   );
 }

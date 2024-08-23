@@ -1,16 +1,16 @@
 import {
   makeKeyRegistrationTxnWithSuggestedParamsFromObject,
-  Transaction,
+  type Transaction,
 } from 'algosdk';
 
 // enums
 import { ARC0300QueryEnum } from '@extension/enums';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type { IOptions } from './types';
-
-// utils
-import createAlgodClient from '@common/utils/createAlgodClient';
 
 /**
  * Convenience function that creates a key registration transaction from a URI schema.
@@ -18,11 +18,13 @@ import createAlgodClient from '@common/utils/createAlgodClient';
  * @returns {Promise<Transaction>} a promise that resolves to an unsigned key registration transaction.
  */
 export default async function createUnsignedKeyRegistrationTransactionFromSchema({
+  logger,
   network,
+  nodeID,
   schema,
 }: IOptions): Promise<Transaction> {
-  const algodClient = createAlgodClient(network);
-  const suggestedParams = await algodClient.getTransactionParams().do();
+  const networkClient = new NetworkClient({ logger, network });
+  const suggestedParams = await networkClient.suggestedParams(nodeID);
 
   return makeKeyRegistrationTxnWithSuggestedParamsFromObject({
     from: schema.query[ARC0300QueryEnum.Sender],

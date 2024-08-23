@@ -1,5 +1,5 @@
 import { Box, HStack, Text, VStack } from '@chakra-ui/react';
-import React, { FC, MouseEvent } from 'react';
+import React, { type FC } from 'react';
 
 // components
 import Button from '@extension/components/Button';
@@ -9,17 +9,10 @@ import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-interface IProps {
-  buttonLabel: string;
-  description?: string;
-  isWarning?: boolean;
-  label: string;
-  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
-}
+// types
+import type { IProps } from './types';
 
 const SettingsButtonItem: FC<IProps> = ({
   buttonLabel,
@@ -27,20 +20,10 @@ const SettingsButtonItem: FC<IProps> = ({
   isWarning = false,
   label,
   onClick,
-}: IProps) => {
+}) => {
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryButtonTextColor: string = usePrimaryButtonTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
-  // misc
-  let buttonTextColor: string = primaryButtonTextColor;
-  let buttonColorScheme: string = primaryColorScheme;
-
-  if (isWarning) {
-    buttonTextColor = 'white';
-    buttonColorScheme = 'red';
-  }
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
 
   return (
     <Box
@@ -52,7 +35,7 @@ const SettingsButtonItem: FC<IProps> = ({
       <HStack
         alignItems="center"
         justifyContent="space-between"
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <VStack alignItems="flex-start" justifyContent="center" spacing={1}>
@@ -71,10 +54,11 @@ const SettingsButtonItem: FC<IProps> = ({
 
         {/*button*/}
         <Button
-          color={buttonTextColor}
-          colorScheme={buttonColorScheme}
           onClick={onClick}
           w="50%"
+          {...(isWarning && {
+            colorScheme: 'red',
+          })}
         >
           {buttonLabel}
         </Button>

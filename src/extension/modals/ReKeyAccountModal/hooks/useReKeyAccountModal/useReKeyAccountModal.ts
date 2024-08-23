@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import {
   useSelectReKeyAccount,
   useSelectReKeyAccountConfirming,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectReKeyAccountType,
 } from '@extension/selectors';
 
@@ -19,7 +19,7 @@ export default function useReKeyAccountModal(): IState {
   // selectors
   const account = useSelectReKeyAccount();
   const confirming = useSelectReKeyAccountConfirming();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   const type = useSelectReKeyAccountType();
   // states
   const [accountInformation, setAccountInformation] =

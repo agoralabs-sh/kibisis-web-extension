@@ -9,7 +9,7 @@ import * as CSS from 'csstype';
 import React, { FC, ReactNode } from 'react';
 
 // constants
-import { MODAL_ITEM_HEIGHT } from '@extension/constants';
+import { DEFAULT_GAP, MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -37,13 +37,14 @@ const SendAssetSummaryItem: FC<IProps> = ({
       alignItems="center"
       justifyContent="space-between"
       minH={MODAL_ITEM_HEIGHT}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
       {...stackProps}
     >
       <Text color={defaultTextColor} fontSize={fontSize}>
         {label}
       </Text>
+
       {isLoading ? (
         <Skeleton>
           <HStack spacing={1}>

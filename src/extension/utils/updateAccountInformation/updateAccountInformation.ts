@@ -1,7 +1,8 @@
-import { Algodv2 } from 'algosdk';
-
 // constants
 import { ACCOUNT_INFORMATION_ANTIQUATED_TIMEOUT } from '@extension/constants';
+
+// models
+import NetworkClient from '@extension/models/NetworkClient';
 
 // types
 import type {
@@ -13,10 +14,6 @@ import type {
 import type { IOptions } from './types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
-import algorandAccountInformationWithDelay from '../algorandAccountInformationWithDelay';
-import fetchARC0072AssetHoldingsWithDelay from '../fetchARC0072AssetHoldingsWithDelay';
-import fetchARC0200AssetHoldingWithDelay from '../fetchARC0200AssetHoldingWithDelay';
 import mapAlgorandAccountInformationToAccount from '../mapAlgorandAccountInformationToAccount';
 
 /**
@@ -31,12 +28,13 @@ export default async function updateAccountInformation({
   forceUpdate = false,
   logger,
   network,
+  nodeID,
 }: IOptions): Promise<IAccountInformation> {
   const _functionName = 'updateAccountInformation';
-  let algorandAccountInformation: IAlgorandAccountInformation;
+  let avmAccountInformation: IAlgorandAccountInformation;
   let arc0072AssetHoldings: IARC0072AssetHolding[];
   let arc200AssetHoldings: IARC0200AssetHolding[];
-  let client: Algodv2;
+  let networkClient: NetworkClient;
   let updatedAt: Date;
 
   // if the account information is not out-of-date just return the account
@@ -56,36 +54,37 @@ export default async function updateAccountInformation({
     return currentAccountInformation;
   }
 
-  client = createAlgodClient(network);
+  networkClient = new NetworkClient({
+    logger,
+    network,
+  });
 
   try {
-    algorandAccountInformation = await algorandAccountInformationWithDelay({
+    avmAccountInformation = await networkClient.accountInformationWIthDelay({
       address,
-      client,
       delay,
+      nodeID,
     });
-    arc0072AssetHoldings = await fetchARC0072AssetHoldingsWithDelay({
+    arc0072AssetHoldings = await networkClient.arc0072AssetHoldingsWithDelay({
       address,
       delay,
-      logger,
-      network,
+      nodeID,
     });
     arc200AssetHoldings = await Promise.all(
       currentAccountInformation.arc200AssetHoldings.map(
         async (value) =>
-          await fetchARC0200AssetHoldingWithDelay({
+          await networkClient.arc0200AssetHoldingWithDelay({
             address,
-            appId: value.id,
+            assetID: value.id,
             delay,
-            logger,
-            network,
+            nodeID,
           })
       )
     );
     updatedAt = new Date();
 
     return mapAlgorandAccountInformationToAccount(
-      algorandAccountInformation,
+      avmAccountInformation,
       {
         ...currentAccountInformation,
         arc0072AssetHoldings,

@@ -20,6 +20,7 @@ export default function getInitialState(): IState {
       preferredBlockExplorerIds: {},
       preferredNFTExplorerIds: {},
       selectedNetworkGenesisHash: null,
+      selectedNodeIDs: {},
     },
     privacy: {
       allowActionTracking: false,

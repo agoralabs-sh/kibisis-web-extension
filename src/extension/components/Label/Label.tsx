@@ -16,15 +16,34 @@ const Label: FC<IProps> = ({ error, inputID, label, required = false }) => {
   return (
     <HStack alignItems="flex-end" justifyContent="space-between" w="full">
       {/*label*/}
-      <Text
-        as={'label'}
-        color={error ? 'red.300' : defaultTextColor}
-        fontSize="xs"
-        htmlFor={inputID}
-        textAlign="left"
-      >
-        {`${label}${required ? '' : ` ${t<string>('labels.optional')}`}`}
-      </Text>
+      {required ? (
+        <HStack alignItems="center" spacing={1}>
+          <Text
+            as={'label'}
+            color={error ? 'red.300' : defaultTextColor}
+            fontSize="xs"
+            htmlFor={inputID}
+            textAlign="left"
+          >
+            {label}
+          </Text>
+
+          {/*required asterisk*/}
+          <Text as={'span'} color="red.300" fontSize="xs" textAlign="left">
+            {`*`}
+          </Text>
+        </HStack>
+      ) : (
+        <Text
+          as={'label'}
+          color={error ? 'red.300' : defaultTextColor}
+          fontSize="xs"
+          htmlFor={inputID}
+          textAlign="left"
+        >
+          {`${label} ${t<string>('labels.optional')}`}
+        </Text>
+      )}
 
       {/*error*/}
       {error && (

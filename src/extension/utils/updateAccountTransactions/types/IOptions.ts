@@ -1,3 +1,5 @@
+import type { Indexer } from 'algosdk';
+
 // types
 import type { IBaseOptions } from '@common/types';
 import type { IAccountTransactions, INetwork } from '@extension/types';
@@ -7,6 +9,7 @@ interface IOptions extends IBaseOptions {
   currentAccountTransactions: IAccountTransactions;
   delay?: number;
   network: INetwork;
+  nodeID: string | null;
   refresh?: boolean;
 }
 

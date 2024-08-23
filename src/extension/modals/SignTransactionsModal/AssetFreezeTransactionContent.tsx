@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetIcon from '@extension/components/AssetIcon';
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import ModalAssetItem from '@extension/components/ModalAssetItem';
 import ModalItem from '@extension/components/ModalItem';
@@ -29,7 +29,7 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import { useSelectLogger } from '@extension/selectors';
+import { useSelectLogger, useSelectSettings } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -49,6 +49,7 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 import parseTransactionType from '@extension/utils/parseTransactionType';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 
 const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
@@ -65,6 +66,7 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
   const { t } = useTranslation();
   // selectors
   const logger = useSelectLogger();
+  const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryButtonTextColor = usePrimaryButtonTextColor();
@@ -146,7 +148,7 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
         {!hideNetwork && (
           <ModalItem
             label={`${t<string>('labels.network')}:`}
-            value={<ChainBadge network={network} size="sm" />}
+            value={<NetworkBadge network={network} size="sm" />}
           />
         )}
 
@@ -187,9 +189,7 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
 
       setFetchingFreezeAccountInformation(true);
 
-      encodedGenesisHash = convertGenesisHashToHex(
-        network.genesisHash
-      ).toUpperCase();
+      encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
       account = {
         ...AccountService.initializeDefaultAccount({
           publicKey: PrivateKeyService.encode(
@@ -205,6 +205,10 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
           AccountService.initializeDefaultAccountInformation(),
         logger,
         network,
+        nodeID: selectNodeIDByGenesisHashFromSettings({
+          genesisHash: network.genesisHash,
+          settings,
+        }),
       });
 
       setFreezeAccount({

@@ -13,8 +13,8 @@ import {
   decodeURLSafe as decodeBase64URLSafe,
   encode as encodeBase64,
 } from '@stablelib/base64';
-import { Transaction } from 'algosdk';
-import React, { FC, useEffect, useState } from 'react';
+import type { Transaction } from 'algosdk';
+import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -29,7 +29,6 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // enums
 import {
   ARC0300QueryEnum,
-  EncryptionMethodEnum,
   ErrorCodeEnum,
   TransactionTypeEnum,
 } from '@extension/enums';
@@ -49,6 +48,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
+import NetworkClient from '@extension/models/NetworkClient';
 
 // selectors
 import {
@@ -69,15 +69,15 @@ import type {
   IARC0300OfflineKeyRegistrationTransactionSendSchema,
   IARC0300OnlineKeyRegistrationTransactionSendSchema,
   IMainRootState,
+  INetworkWithTransactionParams,
   TEncryptionCredentials,
 } from '@extension/types';
 
 // utils
 import createUnsignedKeyRegistrationTransactionFromSchema from '@extension/utils/createUnsignedKeyRegistrationTransactionFromSchema';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
-import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
-import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 import signTransaction from '@extension/utils/signTransaction';
 
 const ARC0300KeyRegistrationTransactionSendModalContent: FC<
@@ -115,6 +115,9 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
   // states
+  const [network, setNetwork] = useState<INetworkWithTransactionParams | null>(
+    null
+  );
   const [sending, setSending] = useState<boolean>(false);
   const [unsignedTransaction, setUnsignedTransaction] =
     useState<Transaction | null>(null);
@@ -131,13 +134,6 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     _schema.query[ARC0300QueryEnum.VoteKey] &&
     _schema.query[ARC0300QueryEnum.VoteKeyDilution] &&
     _schema.query[ARC0300QueryEnum.VoteLast];
-  const network = genesisHash
-    ? networks.find(
-        (value) =>
-          value.genesisHash === encodeBase64(decodeBase64URLSafe(genesisHash))
-      ) || null
-    : selectNetworkFromSettings(networks, settings) ||
-      selectDefaultNetwork(networks); // if we have the genesis hash get the network, otherwise get the selected network
   const reset = () => {
     setSending(false);
     setUnsignedTransaction(null);
@@ -169,6 +165,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
     result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
+    let networkClient: NetworkClient;
     let signedTransaction: Uint8Array;
 
     if (!unsignedTransaction) {
@@ -224,9 +221,13 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
         ...result,
       });
 
-      await sendTransactionsForNetwork({
-        logger,
-        network,
+      networkClient = new NetworkClient({ logger, network });
+
+      await networkClient.sendTransactions({
+        nodeID: selectNodeIDByGenesisHashFromSettings({
+          genesisHash: network.genesisHash,
+          settings,
+        }),
         signedTransactions: [signedTransaction],
       });
 
@@ -290,12 +291,38 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
   const handleSendClick = () => onAuthenticationModalOpen();
 
   useEffect(() => {
+    let _genesisHash: string;
+    let _network: INetworkWithTransactionParams | null;
+
+    if (genesisHash) {
+      _genesisHash = encodeBase64(decodeBase64URLSafe(genesisHash));
+      _network =
+        networks.find((value) => value.genesisHash === _genesisHash) || null;
+
+      setNetwork(_network);
+
+      return;
+    }
+
+    _network = selectNetworkFromSettings({
+      networks,
+      settings,
+      withDefaultFallback: true,
+    });
+
+    setNetwork(_network);
+  }, [genesisHash]);
+  useEffect(() => {
     if (account && network) {
       (async () =>
         setUnsignedTransaction(
           await createUnsignedKeyRegistrationTransactionFromSchema({
             logger,
             network,
+            nodeID: selectNodeIDByGenesisHashFromSettings({
+              genesisHash: network.genesisHash,
+              settings,
+            }),
             schema,
           })
         ))();

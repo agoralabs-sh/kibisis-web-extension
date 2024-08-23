@@ -62,7 +62,7 @@ import {
   useSelectRemoveAssetsAccount,
   useSelectRemoveAssetsConfirming,
   useSelectRemoveAssetsSelectedAsset,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
@@ -95,7 +95,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
   const accounts = useSelectAccounts();
   const confirming = useSelectRemoveAssetsConfirming();
   const explorer = useSelectSettingsPreferredBlockExplorer();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const selectedAsset = useSelectRemoveAssetsSelectedAsset();
   // hooks
   const defaultTextColor = useDefaultTextColor();

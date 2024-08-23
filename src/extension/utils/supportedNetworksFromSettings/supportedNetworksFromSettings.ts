@@ -2,18 +2,18 @@
 import { NetworkTypeEnum } from '@extension/enums';
 
 // types
-import type { INetwork, ISettings } from '@extension/types';
+import type { INetwork } from '@extension/types';
+import type { IOptions } from './types';
 
 /**
  * Gets the supported networks based on the settings.
- * @param {T extends INetwork} networks - a list of networks to filter.
- * @param {ISettings} settings - the settings.
+ * @param {IOptions} options - a list of networks to filter and the settings
  * @returns {T extends INetwork} a filtered list of supported networks based on the settings.
  */
-export default function supportedNetworksFromSettings<T extends INetwork>(
-  networks: T[],
-  settings: ISettings
-): T[] {
+export default function supportedNetworksFromSettings<T extends INetwork>({
+  networks,
+  settings,
+}: IOptions<T>): T[] {
   return networks.filter((value) => {
     switch (value.type) {
       case NetworkTypeEnum.Beta:

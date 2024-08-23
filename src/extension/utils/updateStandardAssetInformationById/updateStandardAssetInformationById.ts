@@ -1,59 +1,54 @@
-import { Algodv2 } from 'algosdk';
+// models
+import NetworkClient from '@extension/models/NetworkClient';
 
 // types
-import { IBaseOptions } from '@common/types';
-import {
+import type {
   IAlgorandAsset,
   IStandardAsset,
-  INetwork,
   ITinyManAssetResponse,
 } from '@extension/types';
+import type { IOptions } from './types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
-import fetchStandardAssetInformationWithDelay from '../fetchStandardAssetInformationWithDelay';
 import mapStandardAssetFromAlgorandAsset from '../mapStandardAssetFromAlgorandAsset';
-
-interface IOptions extends IBaseOptions {
-  delay?: number;
-  network: INetwork;
-  verifiedAssetList: ITinyManAssetResponse[];
-}
 
 /**
  * Gets the standard asset information.
- * @param {string} id - the ID of the standard asset to fetch.
  * @param {IOptions} options - options needed to fetch the standard asset information.
  * @returns {Promise<IStandardAsset | null>} the standard asset information, or null if there was an error.
  */
-export default async function updateStandardAssetInformationById(
-  id: string,
-  { delay = 0, logger, network, verifiedAssetList }: IOptions
-): Promise<IStandardAsset | null> {
-  let standardAssetInformation: IAlgorandAsset;
-  let client: Algodv2;
+export default async function updateStandardAssetInformationById({
+  delay = 0,
+  id,
+  logger,
+  network,
+  nodeID,
+  verifiedAssetList,
+}: IOptions): Promise<IStandardAsset | null> {
+  const _functionName = 'updateStandardAssetInformationById';
+  const networkClient = new NetworkClient({ logger, network });
+  let assetInformation: IAlgorandAsset;
   let verifiedAsset: ITinyManAssetResponse | null;
 
-  client = createAlgodClient(network);
-
   try {
-    standardAssetInformation = await fetchStandardAssetInformationWithDelay({
-      client,
-      delay,
-      id,
-    });
+    assetInformation =
+      await networkClient.standardAssetInformationByIDWithDelay({
+        delay,
+        id,
+        nodeID,
+      });
     verifiedAsset = verifiedAssetList.find((value) => value.id === id) || null;
 
     return mapStandardAssetFromAlgorandAsset(
-      standardAssetInformation,
+      assetInformation,
       verifiedAsset?.logo.svg || null,
       !!verifiedAsset
     );
   } catch (error) {
-    logger &&
-      logger.error(
-        `${updateStandardAssetInformationById.name}: failed to get asset information for asset "${id}" on ${network.genesisId}: ${error.message}`
-      );
+    logger?.error(
+      `${_functionName}: failed to get asset information for asset "${id}" at "${network.genesisId}":`,
+      error
+    );
 
     return null;
   }

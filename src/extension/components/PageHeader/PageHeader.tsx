@@ -24,23 +24,38 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // types
 import type { IProps } from './types';
 
-const PageHeader: FC<IProps> = ({ loading = false, subTitle, title }) => {
+const PageHeader: FC<IProps> = ({
+  hideBackButton = false,
+  loading = false,
+  subTitle,
+  title,
+}) => {
   const navigate: NavigateFunction = useNavigate();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const subTextColor = useSubTextColor();
+  // misc
+  const minHeight = 10; // 2.5rem - 40px
   // handlers
   const handleBackClick = () => navigate(-1);
 
   return (
-    <HStack pb={DEFAULT_GAP - 2} spacing={DEFAULT_GAP - 2} w="full">
+    <HStack
+      minH={minHeight}
+      mb={DEFAULT_GAP - 2}
+      spacing={DEFAULT_GAP - 2}
+      w="full"
+    >
       {/*back button*/}
-      <IconButton
-        aria-label="Go back"
-        icon={IoArrowBackOutline}
-        onClick={handleBackClick}
-        variant="ghost"
-      />
+      {!hideBackButton && (
+        <IconButton
+          aria-label="Go back"
+          icon={IoArrowBackOutline}
+          onClick={handleBackClick}
+          variant="ghost"
+        />
+      )}
+
       <VStack
         alignItems="center"
         justifyContent="center"
@@ -80,7 +95,9 @@ const PageHeader: FC<IProps> = ({ loading = false, subTitle, title }) => {
           </>
         )}
       </VStack>
-      <Box w="40px" /> {/* zombie element to off center the title */}
+
+      {/* zombie element to off center the title */}
+      {!hideBackButton && <Box minH={minHeight} minW={minHeight} />}
     </HStack>
   );
 };

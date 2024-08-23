@@ -4,6 +4,7 @@ enum StoreNameEnum {
   ARC0072Assets = 'arc0072-assets',
   ARC0200Assets = 'arc0200-assets',
   CredentialLock = 'credential-lock',
+  CustomNodes = 'custom-nodes',
   Events = 'events',
   Messages = 'messages',
   Layout = 'layout',

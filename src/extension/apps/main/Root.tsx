@@ -20,8 +20,9 @@ import {
   setScanQRCodeModal,
 } from '@extension/features/layout';
 import {
-  fetchTransactionParamsFromStorageThunk,
+  fetchFromStorageThunk as fetchNetworksFromStorageThunk,
   startPollingForTransactionsParamsThunk,
+  updateTransactionParamsForSelectedNetworkThunk,
 } from '@extension/features/networks';
 import { fetchFromStorageThunk as fetchNewsFromStorageThunk } from '@extension/features/news';
 import { setShowingConfetti } from '@extension/features/notifications';
@@ -30,7 +31,7 @@ import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
 import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
 import { fetchSessionsThunk } from '@extension/features/sessions';
-import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
+import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import {
   fetchFromStorageThunk as fetchSystemInfoFromStorageThunk,
@@ -63,7 +64,7 @@ import VoiageToMainnetModal from '@extension/modals/VoiageToMainnetModal';
 import {
   useSelectAccounts,
   useSelectNotificationsShowingConfetti,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // types
@@ -73,7 +74,7 @@ const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const accounts = useSelectAccounts();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
@@ -86,20 +87,24 @@ const Root: FC = () => {
 
   // 1. fetch the required data
   useEffect(() => {
-    dispatch(fetchCredentialLockActiveThunk());
-    dispatch(fetchSystemInfoFromStorageThunk());
+    // general
     dispatch(fetchSettingsFromStorageThunk());
+    dispatch(fetchNetworksFromStorageThunk());
+    dispatch(fetchSystemInfoFromStorageThunk());
+    dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSessionsThunk());
+    dispatch(fetchNewsFromStorageThunk());
+    // assets
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchARC0072AssetsFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
-    dispatch(fetchNewsFromStorageThunk());
+    // polling
     dispatch(startPollingForAccountsThunk());
     dispatch(startPollingForTransactionsParamsThunk());
     dispatch(startPollingForNetworkConnectivityThunk());
   }, []);
-  // 2. when the selected network has been fetched from storage
+  // 2. when the selected network has been updated, fetch the account data and transaction params
   useEffect(() => {
     if (network) {
       // fetch accounts when no accounts exist
@@ -113,7 +118,7 @@ const Root: FC = () => {
       }
 
       // fetch the most recent transaction params for the selected network
-      dispatch(fetchTransactionParamsFromStorageThunk());
+      dispatch(updateTransactionParamsForSelectedNetworkThunk());
     }
   }, [network]);
   useOnDebugLogging();

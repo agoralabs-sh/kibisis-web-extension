@@ -8,6 +8,7 @@ interface IOptions extends IBaseOptions {
   authAddress: string | null;
   fromAddress: string;
   network: INetwork;
+  nodeID: string | null;
   note: string | null;
   toAddress: string;
 }

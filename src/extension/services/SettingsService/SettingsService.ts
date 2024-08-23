@@ -58,6 +58,7 @@ export default class SettingsService {
         preferredBlockExplorerIds: {},
         preferredNFTExplorerIds: {},
         selectedNetworkGenesisHash: defaultNetwork.genesisHash,
+        selectedNodeIDs: {},
       },
       privacy: {
         allowActionTracking: false,

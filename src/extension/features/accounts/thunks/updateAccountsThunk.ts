@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // constants
 import { NODE_REQUEST_DELAY } from '@extension/constants';
@@ -11,9 +11,11 @@ import AccountService from '@extension/services/AccountService';
 
 // types
 import type {
+  IAccount,
   IAccountWithExtendedProps,
   IBaseAsyncThunkConfig,
   IMainRootState,
+  INetwork,
 } from '@extension/types';
 import type { IUpdateAccountsPayload } from '../types';
 
@@ -23,6 +25,7 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 import isWatchAccount from '@extension/utils/isWatchAccount';
 import mapAccountWithExtendedPropsToAccount from '@extension/utils/mapAccountWithExtendedPropsToAccount';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 
@@ -51,13 +54,17 @@ const updateAccountsThunk: AsyncThunk<
   ) => {
     const logger = getState().system.logger;
     const networks = getState().networks.items;
-    const network = selectNetworkFromSettings(networks, getState().settings);
     const online = getState().system.networkConnectivity.online;
+    const settings = getState().settings;
+    let account: IAccount;
     let accountService: AccountService;
     let accounts = getState().accounts.items.map((value) =>
       mapAccountWithExtendedPropsToAccount(value)
     );
+    let address: string;
     let encodedGenesisHash: string;
+    let network: INetwork | null;
+    let nodeID: string | null;
 
     if (!online) {
       logger.debug(
@@ -66,6 +73,11 @@ const updateAccountsThunk: AsyncThunk<
 
       return [];
     }
+
+    network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
 
     if (!network) {
       logger.debug(
@@ -86,8 +98,12 @@ const updateAccountsThunk: AsyncThunk<
       logger,
     });
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
+    nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
+    });
 
-    logger?.debug(
+    logger.debug(
       `${
         ThunkEnum.UpdateAccounts
       }: updating account information for accounts [${accounts
@@ -95,62 +111,64 @@ const updateAccountsThunk: AsyncThunk<
         .join(',')}] for network "${network.genesisId}"`
     );
 
-    accounts = await Promise.all(
-      accounts.map(async (account, index) => ({
-        ...account,
+    for (let i = 0; i < accounts.length; i++) {
+      account = {
+        ...accounts[i],
         networkInformation: {
-          ...account.networkInformation,
+          ...accounts[i].networkInformation,
           [encodedGenesisHash]: await updateAccountInformation({
-            address: convertPublicKeyToAVMAddress(account.publicKey),
+            address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
             currentAccountInformation:
-              account.networkInformation[encodedGenesisHash] ||
+              accounts[i].networkInformation[encodedGenesisHash] ||
               AccountService.initializeDefaultAccountInformation(),
-            delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+            delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
             forceUpdate: forceInformationUpdate,
             logger,
-            network: network,
+            network,
+            nodeID,
           }),
         },
-      }))
-    );
+      };
 
-    // ignore transaction updates it account information only has been specified
-    if (!informationOnly) {
-      logger?.debug(
-        `${
-          ThunkEnum.UpdateAccounts
-        }: updating account transaction for accounts [${accounts
-          .map(({ publicKey }) => convertPublicKeyToAVMAddress(publicKey))
-          .join(',')}] for network "${network.genesisId}"`
+      accounts = accounts.map((value) =>
+        value.id === account.id ? account : value
       );
+    }
 
-      accounts = await Promise.all(
-        accounts.map(async (account, index) => ({
-          ...account,
+    // ignore transaction updates if account information only has been specified
+    if (!informationOnly) {
+      for (let i = 0; i < accounts.length; i++) {
+        account = {
+          ...accounts[i],
           networkTransactions: {
-            ...account.networkTransactions,
+            ...accounts[i].networkTransactions,
             [encodedGenesisHash]: await updateAccountTransactions({
-              address: convertPublicKeyToAVMAddress(account.publicKey),
+              address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
               currentAccountTransactions:
-                account.networkTransactions[encodedGenesisHash] ||
+                accounts[i].networkTransactions[encodedGenesisHash] ||
                 AccountService.initializeDefaultAccountTransactions(),
-              delay: index * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+              delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               logger,
-              network: network,
+              network,
+              nodeID,
               refresh: refreshTransactions,
             }),
           },
-        }))
-      );
+        };
+
+        accounts = accounts.map((value) =>
+          value.id === account.id ? account : value
+        );
+      }
     }
 
     // save accounts to storage
     await accountService.saveAccounts(accounts);
 
     return await Promise.all(
-      accounts.map(async (account) => ({
+      accounts.map(async (value) => ({
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount({ account: value, logger }),
       }))
     );
   }

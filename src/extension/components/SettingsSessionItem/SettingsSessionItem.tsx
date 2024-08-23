@@ -1,146 +1,132 @@
-import {
-  HStack,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-  Tooltip,
-  VStack,
-} from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  IoEllipsisVerticalOutline,
-  IoWalletOutline,
-  IoUnlinkOutline,
-} from 'react-icons/io5';
+import { IoUnlinkOutline, IoWalletOutline } from 'react-icons/io5';
 
 // components
-import ChainBadge from '@extension/components/ChainBadge';
-import IconButton from '@extension/components/IconButton';
+import NetworkBadge from '@extension/components/NetworkBadge';
+import OverflowMenu from '@extension/components/OverflowMenu';
 import SessionAvatar from '@extension/components/SessionAvatar';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useItemBorderColor from '@extension/hooks/useItemBorderColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// selectors
-import { useSelectNetworkByGenesisHash } from '@extension/selectors';
-
 // types
-import { INetwork, ISession } from '@extension/types';
-
-interface IProps {
-  onManageSession: (id: string) => void;
-  onRemoveSession: (id: string) => void;
-  session: ISession;
-}
+import type { IProps } from './types';
 
 const SettingsSessionItem: FC<IProps> = ({
-  onManageSession,
-  onRemoveSession,
-  session,
-}: IProps) => {
+  item,
+  network,
+  onDisconnect,
+  onSelect,
+}) => {
   const { t } = useTranslation();
-  const network: INetwork | null = useSelectNetworkByGenesisHash(
-    session.genesisHash
-  );
-  const defaultTextColor: string = useDefaultTextColor();
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const itemBorderColor = useItemBorderColor();
   const subTextColor: string = useSubTextColor();
-  const handleMangeAccountsClick = () => onManageSession(session.id);
-  const handleRemoveSessionClick = () => onRemoveSession(session.id);
+  // handlers
+  const handleOnDisconnectClick = () => onDisconnect(item.id);
+  const handleOnSelectClick = () => onSelect(item.id);
 
   return (
-    <HStack m={0} pt={2} px={4} spacing={2} w="full">
-      {/*app icon*/}
+    <HStack
+      borderBottomColor={itemBorderColor}
+      borderBottomStyle="solid"
+      borderBottomWidth="1px"
+      m={0}
+      p={DEFAULT_GAP - 2}
+      spacing={DEFAULT_GAP / 3}
+      w="full"
+    >
+      {/*icon*/}
       <SessionAvatar
-        name={session.appName}
-        iconUrl={session.iconUrl || undefined}
+        name={item.appName}
+        iconUrl={item.iconUrl || undefined}
         size="sm"
       />
 
-      {/*app name/description/creation date*/}
+      {/*details*/}
       <VStack
         alignItems="flex-start"
         flexGrow={1}
         justifyContent="space-evenly"
-        spacing={0}
+        spacing={DEFAULT_GAP / 3}
       >
-        {/*app name*/}
-        <Tooltip label={session.appName}>
+        <HStack
+          justifyContent="space-between"
+          spacing={DEFAULT_GAP / 2}
+          w="full"
+        >
+          {/*name*/}
+          <Tooltip label={item.appName}>
+            <Text
+              color={defaultTextColor}
+              fontSize="md"
+              maxW={400}
+              noOfLines={1}
+              textAlign="left"
+            >
+              {item.appName}
+            </Text>
+          </Tooltip>
+
+          {/*network*/}
+          <NetworkBadge network={network} size="sm" />
+        </HStack>
+
+        <HStack
+          justifyContent="space-between"
+          spacing={DEFAULT_GAP / 2}
+          w="full"
+        >
+          {/*description*/}
+          <Tooltip label={item.description}>
+            <Text
+              color={subTextColor}
+              fontSize="sm"
+              maxW={400}
+              noOfLines={1}
+              textAlign="left"
+            >
+              {item.description}
+            </Text>
+          </Tooltip>
+
+          {/*creation date*/}
           <Text
-            color={defaultTextColor}
+            color={subTextColor}
             fontSize="sm"
             maxW={400}
             noOfLines={1}
             textAlign="left"
           >
-            {session.appName}
+            {new Date(item.createdAt).toLocaleString()}
           </Text>
-        </Tooltip>
-
-        {/*app description*/}
-        {session.description && (
-          <Tooltip label={session.description}>
-            <Text
-              color={subTextColor}
-              fontSize="xs"
-              maxW={400}
-              noOfLines={1}
-              textAlign="left"
-            >
-              {session.description}
-            </Text>
-          </Tooltip>
-        )}
-
-        {/*chain badge and creation date*/}
-        <HStack
-          alignItems="center"
-          justifyContent="space-between"
-          spacing={2}
-          w="full"
-        >
-          <Text
-            color={subTextColor}
-            fontSize="xs"
-            maxW={400}
-            noOfLines={1}
-            textAlign="left"
-          >
-            {new Date(session.createdAt).toLocaleString()}
-          </Text>
-          {network && <ChainBadge network={network} size="xs" />}
         </HStack>
       </VStack>
 
       {/*overflow menu*/}
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          aria-label="Overflow menu"
-          icon={IoEllipsisVerticalOutline}
-          variant="ghost"
-        />
-        <MenuList>
-          <MenuItem
-            color={defaultTextColor}
-            icon={<Icon as={IoWalletOutline} color={defaultTextColor} />}
-            onClick={handleMangeAccountsClick}
-          >
-            {t<string>('labels.manageAccounts')}
-          </MenuItem>
-          <MenuItem
-            color={defaultTextColor}
-            icon={<Icon as={IoUnlinkOutline} color={defaultTextColor} />}
-            onClick={handleRemoveSessionClick}
-          >
-            {t<string>('labels.removeSession')}
-          </MenuItem>
-        </MenuList>
-      </Menu>
+      <OverflowMenu
+        context={item.id}
+        items={[
+          {
+            icon: IoWalletOutline,
+            label: t<string>('labels.manage'),
+            onSelect: handleOnSelectClick,
+          },
+          {
+            icon: IoUnlinkOutline,
+            label: t<string>('labels.disconnect'),
+            onSelect: handleOnSelectClick,
+          },
+        ]}
+      />
     </HStack>
   );
 };

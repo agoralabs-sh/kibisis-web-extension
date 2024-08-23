@@ -1,4 +1,5 @@
 interface IProps {
+  hideBackButton?: boolean;
   loading?: boolean;
   subTitle?: string;
   title: string;

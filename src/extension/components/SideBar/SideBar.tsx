@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import Divider from '@extension/components/Divider';
 import IconButton from '@extension/components/IconButton';
 import KibisisIcon from '@extension/components/KibisisIcon';
+import ScrollableContainer from '@extension/components/ScrollableContainer';
 import SideBarAccountItem from './SideBarAccountItem';
 import SideBarActionItem from './SideBarActionItem';
 import SideBarSkeletonAccountItem from './SideBarSkeletonAccountItem';
@@ -57,7 +58,7 @@ import {
   useSelectActiveAccount,
   useSelectActiveAccountDetails,
   useSelectAvailableAccountsForSelectedNetwork,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // types
@@ -69,6 +70,7 @@ import type {
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const SideBar: FC = () => {
   const { t } = useTranslation();
@@ -80,7 +82,7 @@ const SideBar: FC = () => {
   const activeAccountDetails = useSelectActiveAccountDetails();
   const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const fetchingAccounts = useSelectAccountsFetching();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   // hooks
   const borderColor = useBorderColor();
   const defaultTextColor = useDefaultTextColor();
@@ -172,6 +174,20 @@ const SideBar: FC = () => {
         onClick={handleAccountClick}
       />
     ));
+    // if (accounts.length > 0) {
+    //   return Array.from({ length: 23 }, () => accounts[0]).map((value, index) => (
+    //     <SideBarAccountItem
+    //       account={value}
+    //       accounts={accounts}
+    //       active={activeAccount ? value.id === activeAccount.id : false}
+    //       key={`sidebar-item-${index}`}
+    //       network={network}
+    //       onClick={handleAccountClick}
+    //     />
+    //   ));
+    // }
+    //
+    // return null;
   };
 
   useEffect(() => {
@@ -204,12 +220,16 @@ const SideBar: FC = () => {
       <HStack justifyContent="flex-end" w="full">
         {isHeaderShowing && (
           <HStack flexGrow={1} px={2} spacing={1} w="full">
-            <KibisisIcon color={primaryColor} h={5} w={5} />
+            <KibisisIcon
+              boxSize={calculateIconSize('md')}
+              color={primaryColor}
+            />
             <Text color={defaultTextColor} fontSize="sm">
               {__APP_TITLE__}
             </Text>
           </HStack>
         )}
+
         <IconButton
           aria-label="Open drawer"
           borderRadius={0}
@@ -223,9 +243,16 @@ const SideBar: FC = () => {
       <Divider />
 
       {/*accounts*/}
-      <VStack flexGrow={1} overflowY="scroll" spacing={0} w="full">
+      <ScrollableContainer
+        direction="column"
+        flexGrow={1}
+        m={0}
+        p={0}
+        spacing={0}
+        w="full"
+      >
         {renderAccounts()}
-      </VStack>
+      </ScrollableContainer>
 
       <Divider />
 

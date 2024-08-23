@@ -13,6 +13,7 @@ import type { IARC0200AssetInformation, INetwork } from '@extension/types';
 
 // utils
 import createLogger from '@common/utils/createLogger';
+import createAlgodClient from '@common/utils/createAlgodClient';
 
 describe.skip(`${__dirname}#ARC0200Contract`, () => {
   const appId = '6779767';
@@ -34,8 +35,17 @@ describe.skip(`${__dirname}#ARC0200Contract`, () => {
     }
 
     contract = new ARC0200Contract({
+      algod: createAlgodClient({
+        url: network.algods[0].url,
+        ...(network.algods[0].port && {
+          port: network.algods[0].port,
+        }),
+        ...(network.algods[0].token && {
+          token: network.algods[0].token,
+        }),
+      }),
       appId,
-      network,
+      feeSinkAddress: network.feeSunkAddress,
       ...options,
     });
   });

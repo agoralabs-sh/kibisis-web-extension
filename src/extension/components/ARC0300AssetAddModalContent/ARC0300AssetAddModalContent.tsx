@@ -26,7 +26,7 @@ import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
 import AssetIcon from '@extension/components/AssetIcon';
 import Button from '@extension/components/Button';
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import ModalSkeletonItem from '@extension/components/ModalSkeletonItem';
 import ModalItem from '@extension/components/ModalItem';
@@ -341,7 +341,7 @@ const ARC0300AssetAddModalContent: FC<
                 {/*type*/}
                 <ModalItem
                   label={`${t<string>('labels.chain')}:`}
-                  value={<ChainBadge network={network} />}
+                  value={<NetworkBadge network={network} />}
                 />
 
                 {/*type*/}

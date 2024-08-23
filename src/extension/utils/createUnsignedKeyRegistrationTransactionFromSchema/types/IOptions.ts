@@ -8,6 +8,7 @@ import type {
 
 interface IOptions extends IBaseOptions {
   network: INetwork;
+  nodeID: string | null;
   schema:
     | IARC0300OfflineKeyRegistrationTransactionSendSchema
     | IARC0300OnlineKeyRegistrationTransactionSendSchema;

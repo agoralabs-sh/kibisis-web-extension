@@ -22,6 +22,7 @@ import type {
 } from '../types';
 
 // utils
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 import updateARC0200AssetInformationById from '@extension/utils/updateARC0200AssetInformationById';
 import upsertItemsById from '@extension/utils/upsertItemsById';
 
@@ -37,6 +38,7 @@ const updateARC0200AssetInformationThunk: AsyncThunk<
   ARC0200AssetsThunkEnum.UpdateARC0200AssetInformation,
   async ({ ids, network }, { getState }) => {
     const logger = getState().system.logger;
+    const settings = getState().settings;
     let asset: IARC0200Asset | null;
     let currentAssets: IARC0200Asset[];
     let id: string;
@@ -48,10 +50,15 @@ const updateARC0200AssetInformationThunk: AsyncThunk<
       id = ids[i];
 
       try {
-        asset = await updateARC0200AssetInformationById(id, {
+        asset = await updateARC0200AssetInformationById({
           delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+          id,
           logger,
           network,
+          nodeID: selectNodeIDByGenesisHashFromSettings({
+            genesisHash: network.genesisHash,
+            settings,
+          }),
         });
 
         if (!asset) {

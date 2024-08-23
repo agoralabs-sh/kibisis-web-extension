@@ -1,2 +1,2 @@
-export { default as fetchSettingsFromStorageThunk } from './fetchSettingsFromStorageThunk';
-export { default as saveSettingsToStorageThunk } from './saveSettingsToStorageThunk';
+export { default as fetchFromStorageThunk } from './fetchFromStorageThunk';
+export { default as saveToStorageThunk } from './saveToStorageThunk';

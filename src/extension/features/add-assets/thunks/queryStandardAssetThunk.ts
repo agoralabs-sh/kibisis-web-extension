@@ -13,6 +13,9 @@ import { AddAssetThunkEnum } from '@extension/enums';
 // errors
 import { NetworkNotSelectedError, OfflineError } from '@extension/errors';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type {
   IAlgorandAsset,
@@ -27,11 +30,10 @@ import type {
 } from '../types';
 
 // utils
-import getIndexerClient from '@common/utils/getIndexerClient';
 import fetchVerifiedStandardAssetList from '@extension/utils/fetchVerifiedStandardAssetList';
 import mapStandardAssetFromAlgorandAsset from '@extension/utils/mapStandardAssetFromAlgorandAsset';
-import searchAlgorandAssetsWithDelay from '@extension/utils/searchAlgorandAssetsWithDelay';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings/selectNodeIDByGenesisHashFromSettings';
 
 const queryStandardAssetThunk: AsyncThunk<
   IAssetsWithNextToken<IStandardAsset>, // return
@@ -51,13 +53,15 @@ const queryStandardAssetThunk: AsyncThunk<
       getState().accounts.items.find((value) => value.id === accountId) || null;
     const currentStandardAssets = getState().addAssets.standardAssets;
     const logger = getState().system.logger;
+    const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
-    const selectedNetwork = selectNetworkFromSettings(
-      getState().networks.items,
-      getState().settings
-    );
-    let algorandSearchAssetsResult: IAlgorandSearchAssetsResult;
-    let indexerClient: Indexer;
+    const settings = getState().settings;
+    const network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
+    let searchStandardAssetsResult: IAlgorandSearchAssetsResult;
+    let networkClient: NetworkClient;
     let verifiedStandardAssets: ITinyManAssetResponse[];
     let updatedStandardAssets: IStandardAsset[] = [];
 
@@ -81,7 +85,7 @@ const queryStandardAssetThunk: AsyncThunk<
       return currentStandardAssets;
     }
 
-    if (!selectedNetwork) {
+    if (!network) {
       logger.debug(
         `${AddAssetThunkEnum.QueryStandardAsset}: no network selected`
       );
@@ -98,31 +102,33 @@ const queryStandardAssetThunk: AsyncThunk<
       return currentStandardAssets;
     }
 
-    indexerClient = getIndexerClient(selectedNetwork, {
-      logger,
-    });
+    networkClient = new NetworkClient({ logger, network });
 
     try {
-      algorandSearchAssetsResult = await searchAlgorandAssetsWithDelay({
-        assetId,
-        client: indexerClient,
-        delay: NODE_REQUEST_DELAY,
-        limit: SEARCH_ASSET_INDEXER_LIMIT,
-        name: nameOrUnit,
-        next: currentStandardAssets.next,
-        unit: nameOrUnit,
-      });
+      searchStandardAssetsResult =
+        await networkClient.searchStandardAssetsWithDelay({
+          assetId,
+          delay: NODE_REQUEST_DELAY,
+          limit: SEARCH_ASSET_INDEXER_LIMIT,
+          name: nameOrUnit,
+          next: currentStandardAssets.next,
+          nodeID: selectNodeIDByGenesisHashFromSettings({
+            genesisHash: network.genesisHash,
+            settings,
+          }),
+          unit: nameOrUnit,
+        });
       verifiedStandardAssets = await fetchVerifiedStandardAssetList({
         logger,
-        network: selectedNetwork,
+        network,
       });
 
       for (
         let index: number = 0;
-        index < algorandSearchAssetsResult.assets.length;
+        index < searchStandardAssetsResult.assets.length;
         index++
       ) {
-        const asset: IAlgorandAsset = algorandSearchAssetsResult.assets[index];
+        const asset: IAlgorandAsset = searchStandardAssetsResult.assets[index];
         const verifiedStandardAsset: ITinyManAssetResponse | null =
           verifiedStandardAssets.find(
             (value) => value.id === String(asset.index)
@@ -144,7 +150,7 @@ const queryStandardAssetThunk: AsyncThunk<
         items: refresh
           ? updatedStandardAssets
           : [...currentStandardAssets.items, ...updatedStandardAssets],
-        next: algorandSearchAssetsResult['next-token'] || null,
+        next: searchStandardAssetsResult['next-token'] || null,
       };
     } catch (error) {
       logger.debug(

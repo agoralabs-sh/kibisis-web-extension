@@ -8,13 +8,14 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAdd } from 'react-icons/io5';
+import { IoAddCircleOutline, IoAddOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
 import AssetTabLoadingItem from '@extension/components/AssetTabLoadingItem';
-import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
+import IconButton from '@extension/components/IconButton';
+import ScrollableContainer from '@extension/components/ScrollableContainer';
 import AssetTabARC0200AssetItem from './AssetTabARC0200AssetItem';
 import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 
@@ -27,6 +28,7 @@ import { setAccountId as setAddAssetAccountId } from '@extension/features/add-as
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useItemBorderColor from '@extension/hooks/useItemBorderColor';
 
 // selectors
 import {
@@ -35,7 +37,7 @@ import {
   useSelectARC0200AssetsUpdating,
   useSelectStandardAssetsFetching,
   useSelectStandardAssetsBySelectedNetwork,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
 
@@ -55,13 +57,14 @@ const AssetsTab: FC<IProps> = ({ account }) => {
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
   const fetchingARC0200Assets = useSelectARC0200AssetsFetching();
   const fetchingStandardAssets = useSelectStandardAssetsFetching();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const standardAssets = useSelectStandardAssetsBySelectedNetwork();
   const updatingARC0200Assets = useSelectARC0200AssetsUpdating();
   const updatingStandardAssets = useSelectStandardAssetsUpdating();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const accountInformation = useAccountInformation(account.id);
+  const defaultTextColor = useDefaultTextColor();
+  const itemBorderColor = useItemBorderColor();
   // misc
   const allAssetHoldings = accountInformation
     ? [
@@ -137,10 +140,13 @@ const AssetsTab: FC<IProps> = ({ account }) => {
     }
 
     return assetNodes.length > 0 ? (
-      <VStack flexGrow={1} w="full">
+      <>
         {/*controls*/}
         <HStack
           alignItems="center"
+          borderBottomColor={itemBorderColor}
+          borderBottomStyle="solid"
+          borderBottomWidth="1px"
           justifyContent="flex-start"
           px={DEFAULT_GAP / 2}
           py={DEFAULT_GAP / 3}
@@ -165,30 +171,39 @@ const AssetsTab: FC<IProps> = ({ account }) => {
 
           <Spacer />
 
-          {/*add asset*/}
-          <Button
-            leftIcon={<IoAdd />}
-            onClick={handleAddAssetClick}
-            size="sm"
-            variant="solid"
-          >
-            {t<string>('buttons.addAsset')}
-          </Button>
+          {/*add asset button*/}
+          <Tooltip label={t<string>('buttons.addAsset')}>
+            <IconButton
+              aria-label="Add asset"
+              icon={IoAddCircleOutline}
+              onClick={handleAddAssetClick}
+              size="sm"
+              variant="ghost"
+            />
+          </Tooltip>
         </HStack>
 
         {/*asset list*/}
-        <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
+        <ScrollableContainer
+          direction="column"
+          m={0}
+          pb={8}
+          pt={0}
+          px={0}
+          spacing={0}
+          w="full"
+        >
           {assetNodes}
-        </VStack>
-      </VStack>
+        </ScrollableContainer>
+      </>
     ) : (
-      <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
+      <VStack flexGrow={1} w="full">
         <Spacer />
 
         {/*empty state*/}
         <EmptyState
           button={{
-            icon: IoAdd,
+            icon: IoAddOutline,
             label: t<string>('buttons.addAsset'),
             onClick: handleAddAssetClick,
           }}
@@ -203,10 +218,9 @@ const AssetsTab: FC<IProps> = ({ account }) => {
 
   return (
     <TabPanel
-      flexGrow={1}
+      height="70vh"
       m={0}
       p={0}
-      overflowY="scroll"
       sx={{ display: 'flex', flexDirection: 'column' }}
       w="full"
     >

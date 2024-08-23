@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 // components
 import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
 import Button from '@extension/components/Button';
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import ClientHeader, {
   ClientHeaderSkeleton,
 } from '@extension/components/ClientHeader';
@@ -310,7 +310,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
               />
 
               {/*network*/}
-              {network && <ChainBadge network={network} />}
+              {network && <NetworkBadge network={network} />}
 
               {/*caption*/}
               <Text color={subTextColor} fontSize="sm" textAlign="center">

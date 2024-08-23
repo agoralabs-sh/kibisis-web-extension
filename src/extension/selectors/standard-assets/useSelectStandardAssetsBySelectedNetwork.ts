@@ -11,19 +11,17 @@ import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSetting
  */
 export default function useSelectStandardAssetsBySelectedNetwork(): IStandardAsset[] {
   return useSelector<IMainRootState, IStandardAsset[]>((state) => {
-    const selectedNetwork: INetwork | null = selectNetworkFromSettings(
-      state.networks.items,
-      state.settings
-    );
+    const network: INetwork | null = selectNetworkFromSettings({
+      networks: state.networks.items,
+      settings: state.settings,
+    });
 
-    if (!selectedNetwork) {
+    if (!network) {
       return [];
     }
 
     return state.standardAssets.items
-      ? state.standardAssets.items[
-          convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
-        ]
+      ? state.standardAssets.items[convertGenesisHashToHex(network.genesisHash)]
       : [];
   });
 }

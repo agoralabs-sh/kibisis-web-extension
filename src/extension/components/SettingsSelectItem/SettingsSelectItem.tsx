@@ -1,43 +1,22 @@
-import { Box, HStack, Icon, Text, VStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
-import { IconType } from 'react-icons';
-import Select, { GroupBase, OptionProps, SingleValueProps } from 'react-select';
+import { Box, HStack, Text, VStack } from '@chakra-ui/react';
+import React, { type FC } from 'react';
 
 // components
-import SettingsSelectItemOption from './SettingsSelectItemOption';
+import Select from '@extension/components/Select';
 
 // constants
-import {
-  BODY_BACKGROUND_COLOR,
-  DEFAULT_GAP,
-  SETTINGS_ITEM_HEIGHT,
-} from '@extension/constants';
+import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
-import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// theme
-import { theme } from '@extension/theme';
-
-export interface IOption<Value = unknown> {
-  icon?: IconType;
-  label: string;
-  value: Value;
-}
-interface IProps {
-  description?: string;
-  disabled?: boolean;
-  emptyOptionLabel: string;
-  label: string;
-  onChange: (option: IOption) => void;
-  options: IOption[];
-  value: IOption | undefined;
-  width?: string | number;
-}
+// types
+import type { IOption } from '@extension/components/Select';
+import type { IProps } from './types';
 
 const SettingsSelectItem: FC<IProps> = ({
+  _context,
   description,
   disabled,
   emptyOptionLabel,
@@ -45,33 +24,12 @@ const SettingsSelectItem: FC<IProps> = ({
   onChange,
   options,
   value,
-  width,
-}: IProps) => {
+}) => {
   // hooks
-  const disabledBackgroundColor: string = useColorModeValue(
-    theme.colors.gray['300'],
-    theme.colors.whiteAlpha['300']
-  );
-  const primaryColor: string = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
-  );
-  const primaryColor25: string = useColorModeValue(
-    theme.colors.primaryLight['200'],
-    theme.colors.primaryDark['200']
-  );
-  const primaryColor50: string = useColorModeValue(
-    theme.colors.primaryLight['300'],
-    theme.colors.primaryDark['300']
-  );
-  const primaryColor75: string = useColorModeValue(
-    theme.colors.primaryLight['400'],
-    theme.colors.primaryDark['400']
-  );
   const defaultTextColor: string = useDefaultTextColor();
   const subTextColor: string = useSubTextColor();
   // handlers
-  const handleOnChange = (option: IOption) => onChange(option);
+  const handleSelect = (option: IOption | null) => option && onChange(option);
 
   return (
     <HStack
@@ -80,7 +38,7 @@ const SettingsSelectItem: FC<IProps> = ({
       minH={SETTINGS_ITEM_HEIGHT}
       pb={DEFAULT_GAP - 2}
       px={DEFAULT_GAP - 2}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {/*label/description*/}
@@ -93,6 +51,7 @@ const SettingsSelectItem: FC<IProps> = ({
         <Text color={defaultTextColor} fontSize="sm">
           {label}
         </Text>
+
         {description && (
           <Text color={subTextColor} fontSize="xs">
             {description}
@@ -103,106 +62,12 @@ const SettingsSelectItem: FC<IProps> = ({
       {/*select*/}
       <Box minW="50%">
         <Select
-          components={{
-            NoOptionsMessage: () => (
-              <HStack
-                alignItems="center"
-                justifyContent="flex-start"
-                m={0}
-                p={DEFAULT_GAP / 2}
-                position="absolute"
-                spacing={2}
-                w="full"
-              >
-                {/*label*/}
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  maxW={250}
-                  noOfLines={1}
-                >
-                  {emptyOptionLabel}
-                </Text>
-              </HStack>
-            ),
-            Option: ({
-              data,
-              innerProps,
-              isSelected,
-            }: OptionProps<IOption, false, GroupBase<IOption>>) => (
-              <SettingsSelectItemOption
-                icon={data.icon}
-                isSelected={isSelected}
-                label={data.label}
-                onClick={innerProps.onClick}
-              />
-            ),
-            SingleValue: ({
-              data,
-            }: SingleValueProps<IOption, false, GroupBase<IOption>>) => (
-              <HStack
-                alignItems="center"
-                justifyContent="flex-start"
-                m={0}
-                p={DEFAULT_GAP / 2}
-                position="absolute"
-                spacing={2}
-                w="full"
-              >
-                {/*icon*/}
-                {data.icon && (
-                  <Icon as={data.icon} color={defaultTextColor} h={4} w={4} />
-                )}
-
-                {/*label*/}
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  maxW={250}
-                  noOfLines={1}
-                >
-                  {data.label}
-                </Text>
-              </HStack>
-            ),
-          }}
-          isDisabled={disabled}
-          onChange={handleOnChange}
+          _context={_context}
+          disabled={disabled}
+          emptyOptionLabel={emptyOptionLabel}
+          onSelect={handleSelect}
           options={options}
-          styles={{
-            container: (baseStyles) => ({
-              ...baseStyles,
-              backgroundColor: BODY_BACKGROUND_COLOR,
-              width: width || '100%',
-            }),
-            control: (baseStyles) => ({
-              ...baseStyles,
-              backgroundColor: disabled
-                ? disabledBackgroundColor
-                : BODY_BACKGROUND_COLOR,
-              cursor: disabled ? 'not-allowed' : 'pointer',
-              height: '100%',
-            }),
-            indicatorSeparator: (baseStyles) => ({
-              ...baseStyles,
-              display: 'none',
-            }),
-            menu: (baseStyles) => ({
-              ...baseStyles,
-              backgroundColor: BODY_BACKGROUND_COLOR,
-            }),
-          }}
-          theme={(value) => ({
-            ...value,
-            colors: {
-              ...theme.colors,
-              primary: primaryColor,
-              primary25: primaryColor25,
-              primary50: primaryColor50,
-              primary75: primaryColor75,
-            },
-          })}
-          value={value || null}
+          value={value}
         />
       </Box>
     </HStack>

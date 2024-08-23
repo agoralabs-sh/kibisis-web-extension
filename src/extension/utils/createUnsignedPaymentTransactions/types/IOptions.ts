@@ -6,6 +6,7 @@ interface IOptions extends IBaseOptions {
   amountInAtomicUnits: string;
   fromAddress: string;
   network: INetwork;
+  nodeID: string | null;
   note: string | null;
   toAddress: string;
 }

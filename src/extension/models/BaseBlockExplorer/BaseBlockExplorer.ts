@@ -1,7 +1,10 @@
 // types
+import type { IBaseNetworkServiceProvider } from '@extension/types';
 import type { INewOptions } from './types';
 
-export default abstract class BaseBlockExplorer {
+export default abstract class BaseBlockExplorer
+  implements IBaseNetworkServiceProvider
+{
   // protected variables
   protected readonly _baseURL: string;
   // public variables

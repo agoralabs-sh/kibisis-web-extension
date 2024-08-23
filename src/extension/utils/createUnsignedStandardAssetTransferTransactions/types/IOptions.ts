@@ -7,6 +7,7 @@ interface IOptions extends IBaseOptions {
   asset: IStandardAsset;
   fromAddress: string;
   network: INetwork;
+  nodeID: string | null;
   note: string | null;
   toAddress: string;
 }

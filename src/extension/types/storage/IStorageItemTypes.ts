@@ -1,4 +1,5 @@
 // types
+import type { ISerializableNetworkWithTransactionParams } from '@extension/services/NetworksService';
 import type { INewsItem } from '@extension/services/NewsService';
 import type { IQuestItem } from '@extension/services/QuestsService';
 import type { IAccount, IActiveAccountDetails } from '../accounts';
@@ -10,7 +11,6 @@ import type {
 } from '../authentication';
 import type { TEvents } from '../events';
 import type { IAppWindow } from '../layout';
-import type { ITransactionParams } from '../networks';
 import type { ISession } from '../sessions';
 import type {
   IAdvancedSettings,
@@ -37,10 +37,10 @@ type IStorageItemTypes =
   | IPrivacySettings
   | IPrivateKey
   | IQuestItem[]
+  | ISerializableNetworkWithTransactionParams[]
   | ISecuritySettings
   | ISession
   | IStandardAsset[]
-  | ISystemInfo
-  | ITransactionParams;
+  | ISystemInfo;
 
 export default IStorageItemTypes;

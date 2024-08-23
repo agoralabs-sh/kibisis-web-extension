@@ -22,7 +22,10 @@ export default function useSelectNetworkByGenesisHashWithFallback(
     ({ networks, settings }) => {
       return (
         networks.items.find((value) => value.genesisHash === genesisHash) ||
-        selectNetworkFromSettings(networks.items, settings) ||
+        selectNetworkFromSettings({
+          networks: networks.items,
+          settings,
+        }) ||
         selectDefaultNetwork(networks.items)
       );
     }

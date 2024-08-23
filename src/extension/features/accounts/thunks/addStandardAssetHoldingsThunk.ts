@@ -23,6 +23,9 @@ import {
   OfflineError,
 } from '@extension/errors';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // services
 import AccountService from '@extension/services/AccountService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
@@ -41,16 +44,15 @@ import type {
 } from '../types';
 
 // utils
-import createAlgodClient from '@common/utils/createAlgodClient';
 import calculateMinimumBalanceRequirementForStandardAssets from '@extension/utils/calculateMinimumBalanceRequirementForStandardAssets';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isWatchAccount from '@extension/utils/isWatchAccount';
-import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
 import signTransaction from '@extension/utils/signTransaction';
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 import { findAccountWithoutExtendedProps } from '../utils';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 
 const addStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return
@@ -70,6 +72,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
+    const settings = getState().settings;
     let _error: string;
     let account = findAccountWithoutExtendedProps(accountId, accounts);
     let accountBalanceInAtomicUnits: BigNumber;
@@ -81,6 +84,8 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     let filteredAssets: IStandardAsset[];
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
     let network: INetworkWithTransactionParams | null;
+    let networkClient: NetworkClient;
+    let nodeID: string | null;
     let signedTransactions: Uint8Array[];
     let suggestedParams: SuggestedParams;
     let transactionIds: string[];
@@ -164,10 +169,14 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       return rejectWithValue(new NotEnoughMinimumBalanceError(_error));
     }
 
-    algodClient = createAlgodClient(network);
+    networkClient = new NetworkClient({ logger, network });
+    nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
+    });
 
     try {
-      suggestedParams = await algodClient.getTransactionParams().do();
+      suggestedParams = await networkClient.suggestedParams(nodeID);
       unsignedTransactions = filteredAssets.map((value) =>
         makeAssetTransferTxnWithSuggestedParams(
           address,
@@ -203,9 +212,8 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       );
       transactionIds = unsignedTransactions.map((value) => value.txID());
 
-      await sendTransactionsForNetwork({
-        logger,
-        network,
+      await networkClient.sendTransactions({
+        nodeID,
         signedTransactions,
       });
     } catch (error) {
@@ -233,6 +241,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
           forceUpdate: true,
           logger,
           network,
+          nodeID,
         }),
       },
       networkTransactions: {
@@ -245,6 +254,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
           delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
           logger,
           network,
+          nodeID,
           refresh: true,
         }),
       },

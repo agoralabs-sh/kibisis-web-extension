@@ -1,5 +1,5 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { Transaction } from 'algosdk';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
 // enums
@@ -31,6 +31,7 @@ import createUnsignedARC0200TransferTransactions from '@extension/utils/createUn
 import createUnsignedPaymentTransactions from '@extension/utils/createUnsignedPaymentTransactions';
 import createUnsignedStandardAssetTransferTransactions from '@extension/utils/createUnsignedStandardAssetTransferTransactions';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 
 const createUnsignedTransactionsThunk: AsyncThunk<
   Transaction[], // return
@@ -52,13 +53,18 @@ const createUnsignedTransactionsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
-    const network = selectNetworkFromSettings(networks, getState().settings);
+    const settings = getState().settings;
+    const network = selectNetworkFromSettings({
+      networks,
+      settings,
+    });
     const note = getState().sendAssets.note;
     const toAddress = getState().sendAssets.toAddress;
     let _error: string;
-    let fromAccountInformation: IAccountInformation | null;
     let amountInAtomicUnits: string;
+    let fromAccountInformation: IAccountInformation | null;
     let fromAccount: IAccount | null;
+    let nodeID: string | null;
 
     if (!asset || !fromAddress || !toAddress) {
       _error = 'required fields not completed';
@@ -122,6 +128,11 @@ const createUnsignedTransactionsThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(_error));
     }
 
+    nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
+    });
+
     try {
       amountInAtomicUnits = convertToAtomicUnit(
         new BigNumber(amountInStandardUnits),
@@ -137,6 +148,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
             fromAddress,
             logger,
             network,
+            nodeID,
             note,
             toAddress,
           });
@@ -147,6 +159,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
             fromAddress,
             logger,
             network,
+            nodeID,
             note,
             toAddress,
           });
@@ -156,6 +169,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
             fromAddress,
             logger,
             network,
+            nodeID,
             note,
             toAddress,
           });

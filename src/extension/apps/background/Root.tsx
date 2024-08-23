@@ -8,7 +8,7 @@ import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { fetchSessionsThunk } from '@extension/features/sessions';
-import { fetchSettingsFromStorageThunk } from '@extension/features/settings';
+import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
 
@@ -25,7 +25,7 @@ import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 import SplashPage from '@extension/pages/SplashPage';
 
 // selectors
-import { useSelectSelectedNetwork } from '@extension/selectors';
+import { useSelectSettingsSelectedNetwork } from '@extension/selectors';
 
 // types
 import type { IAppThunkDispatch, IBackgroundRootState } from '@extension/types';
@@ -36,7 +36,7 @@ import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
 const Root: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch<IBackgroundRootState>>();
   // selectors
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   // misc
   const url = new URL(window.location.href);
   const eventId = decodeURLSearchParam('eventId', url.searchParams);

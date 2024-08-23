@@ -311,15 +311,16 @@ export default class ProviderActionListener {
   public async onOmniboxInputEntered(text: string): Promise<void> {
     const _functionName = 'onOmniboxInputEntered';
     let arc0300Schema: IARC0300BaseSchema | null;
-    let settings: ISettings;
 
     this._logger?.debug(
       `${ProviderActionListener.name}#${_functionName}: received omnibox input "${text}"`
     );
 
-    settings = await this._settingsService.getAll();
     arc0300Schema = parseURIToARC0300Schema(text, {
-      supportedNetworks: supportedNetworksFromSettings(networks, settings),
+      supportedNetworks: supportedNetworksFromSettings({
+        networks,
+        settings: await this._settingsService.getAll(),
+      }),
       ...(this._logger && {
         logger: this._logger,
       }),

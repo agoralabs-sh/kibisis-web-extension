@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { IoArrowForwardOutline } from 'react-icons/io5';
 
 // components
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import ModalItem from '@extension/components/ModalItem';
 import ModalSubHeading from '@extension/components/ModalSubHeading';
 import ModalTextItem from '@extension/components/ModalTextItem';
@@ -124,7 +124,7 @@ const GroupOfTransactionsContent: FC<IGroupOfTransactionsContentProps> = ({
               {network && (
                 <ModalItem
                   label={t<string>('labels.network')}
-                  value={<ChainBadge network={network} />}
+                  value={<NetworkBadge network={network} />}
                 />
               )}
 

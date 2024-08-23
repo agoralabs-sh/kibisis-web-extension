@@ -41,7 +41,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import {
   useSelectLogger,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // theme
@@ -67,7 +67,7 @@ const AccountSelectModal: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // selectors
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
@@ -171,7 +171,7 @@ const AccountSelectModal: FC<IProps> = ({
                 isChecked={
                   !!selectedAccounts.find((value) => value.id === account.id)
                 }
-                onChange={handleOnAccountChange(account)}
+                pointerEvents="none"
               />
             ) : (
               <Icon

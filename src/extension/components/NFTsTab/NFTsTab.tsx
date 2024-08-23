@@ -1,10 +1,11 @@
 import { Spacer, TabPanel, VStack } from '@chakra-ui/react';
-import React, { FC, ReactNode, useEffect } from 'react';
+import React, { type FC, type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
 import AssetTabLoadingItem from '@extension/components/AssetTabLoadingItem';
 import EmptyState from '@extension/components/EmptyState';
+import ScrollableContainer from '@extension/components/ScrollableContainer';
 import NFTsTabARC0072AssetItem from './NFTsTabARC0072AssetItem';
 
 // hooks
@@ -15,7 +16,7 @@ import usePrevious from '@extension/hooks/usePrevious';
 import {
   useSelectARC0072AssetsFetching,
   useSelectLogger,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // services
@@ -35,13 +36,11 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
   const { t } = useTranslation();
   // selectors
-  const fetchingARC0072Assets: boolean = useSelectARC0072AssetsFetching();
+  const fetchingARC0072Assets = useSelectARC0072AssetsFetching();
   const logger = useSelectLogger();
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   // hooks
-  const accountInformation: IAccountInformation | null = useAccountInformation(
-    account.id
-  );
+  const accountInformation = useAccountInformation(account.id);
   const previousARC0027AssetHoldings = usePrevious<
     IARC0072AssetHolding[] | null
   >(accountInformation?.arc0072AssetHoldings || null);
@@ -69,11 +68,19 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
 
     return assetNodes.length > 0 ? (
       // asset list
-      <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
+      <ScrollableContainer
+        direction="column"
+        m={0}
+        pb={8}
+        pt={0}
+        px={0}
+        spacing={0}
+        w="full"
+      >
         {assetNodes}
-      </VStack>
+      </ScrollableContainer>
     ) : (
-      <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
+      <VStack flexGrow={1} w="full">
         <Spacer />
 
         {/*empty state*/}
@@ -122,10 +129,9 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
 
   return (
     <TabPanel
-      flexGrow={1}
+      height="70vh"
       m={0}
       p={0}
-      overflowY="scroll"
       sx={{ display: 'flex', flexDirection: 'column' }}
       w="full"
     >

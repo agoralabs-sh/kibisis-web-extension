@@ -1,10 +1,6 @@
 import {
   HStack,
   Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Spacer,
   StackProps,
   Tab,
@@ -23,7 +19,6 @@ import {
   IoAdd,
   IoCloudOfflineOutline,
   IoCreateOutline,
-  IoEllipsisVerticalOutline,
   IoLockClosedOutline,
   IoLockOpenOutline,
   IoQrCodeOutline,
@@ -40,6 +35,7 @@ import EditableAccountNameField from '@extension/components/EditableAccountNameF
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
+import OverflowMenu from '@extension/components/OverflowMenu';
 import NativeBalance from '@extension/components/NativeBalance';
 import NetworkSelect from '@extension/components/NetworkSelect';
 import NFTsTab from '@extension/components/NFTsTab';
@@ -69,7 +65,7 @@ import {
   setAccountAndType as setReKeyAccount,
   TReKeyType,
 } from '@extension/features/re-key-account';
-import { saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -92,7 +88,7 @@ import {
   useSelectNetworks,
   useSelectSettingsPreferredBlockExplorer,
   useSelectAccountsSaving,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
 
@@ -129,18 +125,18 @@ const AccountPage: FC = () => {
   const fetchingAccounts = useSelectAccountsFetching();
   const fetchingSettings = useSelectSettingsFetching();
   const online = useSelectIsOnline();
+  const network = useSelectSettingsSelectedNetwork();
   const networks = useSelectNetworks();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const savingAccounts = useSelectAccountsSaving();
-  const selectedNetwork = useSelectSelectedNetwork();
   const settings = useSelectSettings();
   // hooks
-  const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
   const [isEditing, setIsEditing] = useState<boolean>(false);
   // misc
+  const _context = 'account-page';
   const canReKeyAccount = () => {
     if (!account || !accountInformation) {
       return false;
@@ -170,17 +166,6 @@ const AccountPage: FC = () => {
     }
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
-  const handleNetworkSelect = (network: INetwork) => {
-    dispatch(
-      saveSettingsToStorageThunk({
-        ...settings,
-        general: {
-          ...settings.general,
-          selectedNetworkGenesisHash: network.genesisHash,
-        },
-      })
-    );
-  };
   const handleEditAccountNameCancel = () => setIsEditing(false);
   const handleEditAccountNameClick = () => setIsEditing(!isEditing);
   const handleEditAccountNameSubmit = (value: string | null) => {
@@ -195,6 +180,25 @@ const AccountPage: FC = () => {
 
     setIsEditing(false);
   };
+  const handleNetworkSelect = (value: INetwork) => {
+    dispatch(
+      saveSettingsToStorageThunk({
+        ...settings,
+        general: {
+          ...settings.general,
+          selectedNetworkGenesisHash: value.genesisHash,
+        },
+      })
+    );
+  };
+  const handleReKeyAccountClick = (type: TReKeyType) => () =>
+    account &&
+    dispatch(
+      setReKeyAccount({
+        account,
+        type,
+      })
+    );
   const handleRemoveAccountClick = () => {
     if (account) {
       dispatch(
@@ -229,14 +233,6 @@ const AccountPage: FC = () => {
       );
     }
   };
-  const handleReKeyAccountClick = (type: TReKeyType) => () =>
-    account &&
-    dispatch(
-      setReKeyAccount({
-        account,
-        type,
-      })
-    );
   // renders
   const renderContent = () => {
     const headerContainerProps: StackProps = {
@@ -247,15 +243,10 @@ const AccountPage: FC = () => {
     let address: string;
 
     if (fetchingAccounts || fetchingSettings) {
-      return (
-        <AccountPageSkeletonContent
-          network={networks[0]}
-          {...headerContainerProps}
-        />
-      );
+      return <AccountPageSkeletonContent {...headerContainerProps} />;
     }
 
-    if (account && accountInformation && selectedNetwork) {
+    if (account && accountInformation && network) {
       address = convertPublicKeyToAVMAddress(
         PrivateKeyService.decode(account.publicKey)
       );
@@ -265,7 +256,7 @@ const AccountPage: FC = () => {
           {/*header*/}
           <VStack {...headerContainerProps}>
             {/*network connectivity & network selection*/}
-            <HStack h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT} w="full">
+            <HStack minH={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT} w="full">
               {!online && (
                 <Tooltip
                   aria-label="Offline icon"
@@ -286,9 +277,10 @@ const AccountPage: FC = () => {
 
               {/*network selection*/}
               <NetworkSelect
-                network={selectedNetwork}
+                _context={_context}
                 networks={networks}
                 onSelect={handleNetworkSelect}
+                value={network}
               />
             </HStack>
 
@@ -316,7 +308,7 @@ const AccountPage: FC = () => {
                 minAtomicBalance={
                   new BigNumber(accountInformation.minAtomicBalance)
                 }
-                nativeCurrency={selectedNetwork.nativeCurrency}
+                nativeCurrency={network.nativeCurrency}
               />
             </HStack>
 
@@ -375,60 +367,41 @@ const AccountPage: FC = () => {
               </Tooltip>
 
               {/*overflow menu*/}
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  aria-label="Overflow menu"
-                  icon={IoEllipsisVerticalOutline}
-                  variant="ghost"
-                />
-                <MenuList>
-                  {/*re-key*/}
-                  {canReKeyAccount() && (
-                    <MenuItem
-                      color={defaultTextColor}
-                      icon={
-                        <Icon
-                          as={IoLockClosedOutline}
-                          color={defaultTextColor}
-                        />
-                      }
-                      onClick={handleReKeyAccountClick('rekey')}
-                    >
-                      {t<string>('labels.reKey')}
-                    </MenuItem>
-                  )}
-
-                  {/*undo re-key*/}
-                  {accountInformation.authAddress &&
-                    isReKeyedAuthAccountAvailable({
-                      accounts,
-                      authAddress: accountInformation.authAddress,
-                    }) && (
-                      <MenuItem
-                        color={defaultTextColor}
-                        icon={
-                          <Icon
-                            as={IoLockOpenOutline}
-                            color={defaultTextColor}
-                          />
-                        }
-                        onClick={handleReKeyAccountClick('undo')}
-                      >
-                        {t<string>('labels.undoReKey')}
-                      </MenuItem>
-                    )}
-
-                  {/*remove account*/}
-                  <MenuItem
-                    color={defaultTextColor}
-                    icon={<Icon as={IoTrashOutline} color={defaultTextColor} />}
-                    onClick={handleRemoveAccountClick}
-                  >
-                    {t<string>('labels.removeAccount')}
-                  </MenuItem>
-                </MenuList>
-              </Menu>
+              <OverflowMenu
+                context={_context}
+                items={[
+                  // re-key
+                  ...(canReKeyAccount()
+                    ? [
+                        {
+                          icon: IoLockClosedOutline,
+                          label: t<string>('labels.reKey'),
+                          onSelect: handleReKeyAccountClick('rekey'),
+                        },
+                      ]
+                    : []),
+                  // undo re-key
+                  ...(accountInformation.authAddress &&
+                  isReKeyedAuthAccountAvailable({
+                    accounts,
+                    authAddress: accountInformation.authAddress,
+                  })
+                    ? [
+                        {
+                          icon: IoLockOpenOutline,
+                          label: t<string>('labels.undoReKey'),
+                          onSelect: handleReKeyAccountClick('undo'),
+                        },
+                      ]
+                    : []),
+                  // remove account
+                  {
+                    icon: IoTrashOutline,
+                    label: t<string>('labels.removeAccount'),
+                    onSelect: handleRemoveAccountClick,
+                  },
+                ]}
+              />
             </HStack>
 
             {/*badges*/}
@@ -466,11 +439,7 @@ const AccountPage: FC = () => {
               <Tab>{t<string>('labels.activity')}</Tab>
             </TabList>
 
-            <TabPanels
-              flexGrow={1}
-              h="70dvh"
-              sx={{ display: 'flex', flexDirection: 'column' }}
-            >
+            <TabPanels sx={{ display: 'flex', flexDirection: 'column' }}>
               <AssetsTab account={account} />
 
               <NFTsTab account={account} />
@@ -479,7 +448,7 @@ const AccountPage: FC = () => {
                 account={account}
                 accounts={accounts}
                 fetching={fetchingAccounts}
-                network={selectedNetwork}
+                network={network}
                 onScrollEnd={handleActivityScrollEnd}
               />
             </TabPanels>
@@ -570,7 +539,7 @@ const AccountPage: FC = () => {
         );
       }
     }
-  }, [selectedNetwork]);
+  }, [network]);
 
   return (
     <>
@@ -585,10 +554,12 @@ const AccountPage: FC = () => {
           />
         </>
       )}
+
       <VStack
         alignItems="center"
         justifyContent="flex-start"
         flexGrow={1}
+        mt={DEFAULT_GAP - 2}
         w="full"
       >
         {renderContent()}

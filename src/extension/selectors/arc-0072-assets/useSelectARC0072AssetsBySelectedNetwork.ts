@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // types
-import type { IARC0072Asset, IMainRootState, INetwork } from '@extension/types';
+import type { IARC0072Asset, IMainRootState } from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
@@ -13,19 +13,17 @@ import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSetting
  */
 export default function useSelectARC0072AssetsBySelectedNetwork(): IARC0072Asset[] {
   return useSelector<IMainRootState, IARC0072Asset[]>((state) => {
-    const selectedNetwork: INetwork | null = selectNetworkFromSettings(
-      state.networks.items,
-      state.settings
-    );
+    const network = selectNetworkFromSettings({
+      networks: state.networks.items,
+      settings: state.settings,
+    });
 
-    if (!selectedNetwork) {
+    if (!network) {
       return [];
     }
 
     return state.arc0072Assets.items
-      ? state.arc0072Assets.items[
-          convertGenesisHashToHex(selectedNetwork.genesisHash).toUpperCase()
-        ]
+      ? state.arc0072Assets.items[convertGenesisHashToHex(network.genesisHash)]
       : [];
   });
 }

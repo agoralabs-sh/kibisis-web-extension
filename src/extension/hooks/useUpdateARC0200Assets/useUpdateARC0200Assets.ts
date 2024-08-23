@@ -7,7 +7,7 @@ import { updateARC0200AssetInformationThunk } from '@extension/features/arc0200-
 // selectors
 import {
   useSelectARC0200AssetsBySelectedNetwork,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // types
@@ -25,7 +25,7 @@ export default function useUpdateARC0200Assets(
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const arc0200Assets = useSelectARC0200AssetsBySelectedNetwork();
-  const network = useSelectSelectedNetwork();
+  const network = useSelectSettingsSelectedNetwork();
   // states
   const [assets, setAssets] = useState<IARC0200Asset[]>([]);
   const [loading, setLoading] = useState<boolean>(false);

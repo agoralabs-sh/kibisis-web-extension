@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 // selectors
 import {
   useSelectAccountById,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // services
@@ -16,7 +16,7 @@ export default function useAccountInformation(
   id: string
 ): IAccountInformation | null {
   const account: IAccount | null = useSelectAccountById(id);
-  const selectedNetwork: INetwork | null = useSelectSelectedNetwork();
+  const selectedNetwork: INetwork | null = useSelectSettingsSelectedNetwork();
   const [accountInformation, setAccountInformation] =
     useState<IAccountInformation | null>(null);
 

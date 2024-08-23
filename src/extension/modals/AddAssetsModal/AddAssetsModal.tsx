@@ -82,7 +82,7 @@ import {
   useSelectAddAssetsStandardAssets,
   useSelectLogger,
   useSelectSettingsPreferredBlockExplorer,
-  useSelectSelectedNetwork,
+  useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // services
@@ -131,7 +131,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const fetching = useSelectAddAssetsFetching();
   const logger = useSelectLogger();
-  const selectedNetwork = useSelectSelectedNetwork();
+  const selectedNetwork = useSelectSettingsSelectedNetwork();
   const selectedAsset = useSelectAddAssetsSelectedAsset();
   const standardAssets = useSelectAddAssetsStandardAssets();
   // hooks

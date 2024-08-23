@@ -4,6 +4,9 @@ import BigNumber from 'bignumber.js';
 // contracts
 import ARC0200Contract from '@extension/contracts/ARC0200Contract';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type { IOptions } from './types';
 
@@ -20,13 +23,18 @@ export default async function createUnsignedARC0200TransferTransactions({
   fromAddress,
   logger,
   network,
+  nodeID,
   note,
   toAddress,
 }: IOptions): Promise<Transaction[]> {
-  const contract: ARC0200Contract = new ARC0200Contract({
+  const networkClient = new NetworkClient({ logger, network });
+  let contract: ARC0200Contract;
+
+  contract = new ARC0200Contract({
+    algod: networkClient.algodByID(nodeID),
     appId: asset.id,
+    feeSinkAddress: networkClient.feeSinkAddress(),
     logger,
-    network,
   });
 
   return await contract.buildUnsignedTransferTransactions({

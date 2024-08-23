@@ -30,13 +30,15 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://testnet-api.voi.nodly.io',
       },
     ],
     arc0072Indexers: [
-      new NautilusARC0072Indexer(),
-      new NFTNavigatorARC0072Indexer(),
+      new NautilusARC0072Indexer('https://arc72-idx.nautilus.sh'),
+      new NFTNavigatorARC0072Indexer('https://arc72-idx.nftnavigator.xyz'),
     ],
     canonicalName: 'Voi',
     chakraTheme: 'voi',
@@ -51,7 +53,9 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://testnet-idx.voi.nodly.io',
       },
     ],
@@ -79,7 +83,9 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://mainnet-api.algonode.cloud',
       },
     ],
@@ -97,7 +103,9 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://mainnet-idx.algonode.cloud',
       },
     ],
@@ -122,7 +130,9 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://betanet-api.algonode.cloud',
       },
     ],
@@ -137,7 +147,9 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://betanet-idx.algonode.cloud',
       },
     ],
@@ -162,7 +174,9 @@ const networks: INetwork[] = [
     algods: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://testnet-api.algonode.cloud',
       },
     ],
@@ -179,7 +193,9 @@ const networks: INetwork[] = [
     indexers: [
       {
         canonicalName: 'AlgoNode',
-        port: '',
+        id: null,
+        port: null,
+        token: null,
         url: 'https://testnet-idx.algonode.cloud',
       },
     ],

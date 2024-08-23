@@ -13,11 +13,15 @@ import {
   OfflineError,
 } from '@extension/errors';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type {
   IAccount,
   IAsyncThunkConfigWithRejectValue,
   IMainRootState,
+  INetworkWithTransactionParams,
 } from '@extension/types';
 import type { TSubmitTransactionsThunkPayload } from '../types';
 
@@ -25,7 +29,7 @@ import type { TSubmitTransactionsThunkPayload } from '../types';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import doesAccountFallBelowMinimumBalanceRequirementForTransactions from '@extension/utils/doesAccountFallBelowMinimumBalanceRequirementForTransactions';
 import isAccountKnown from '@extension/utils/isAccountKnown';
-import sendTransactionsForNetwork from '@extension/utils/sendTransactionsForNetwork';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings/selectNodeIDByGenesisHashFromSettings';
 import signTransaction from '@extension/utils/signTransaction';
 import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisHashesFromTransactions';
 
@@ -50,10 +54,11 @@ const submitTransactionThunk: AsyncThunk<
       uniqueGenesisHashesFromTransactions(transactions).pop() || null;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
-    const network =
-      networks.find((value) => value.genesisHash === genesisHash) || null;
+    const settings = getState().settings;
     let _error: string;
     let fromAccount: IAccount | null;
+    let network: INetworkWithTransactionParams | null;
+    let networkClient: NetworkClient;
     let signedTransactions: Uint8Array[];
 
     if (!fromAddress) {
@@ -98,6 +103,9 @@ const submitTransactionThunk: AsyncThunk<
         )
       );
     }
+
+    network =
+      networks.find((value) => value.genesisHash === genesisHash) || null;
 
     if (!network) {
       _error = `no network configuration found for "${genesisHash}"`;
@@ -146,9 +154,12 @@ const submitTransactionThunk: AsyncThunk<
         )
       );
 
-      await sendTransactionsForNetwork({
-        logger,
-        network,
+      networkClient = new NetworkClient({ logger, network });
+      await networkClient.sendTransactions({
+        nodeID: selectNodeIDByGenesisHashFromSettings({
+          genesisHash: network.genesisHash,
+          settings,
+        }),
         signedTransactions,
       });
 

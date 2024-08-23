@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
-import ChainBadge from '@extension/components/ChainBadge';
+import NetworkBadge from '@extension/components/NetworkBadge';
 import ModalAssetItem from '@extension/components/ModalAssetItem';
 import ModalItem from '@extension/components/ModalItem';
 import ModalTextItem from '@extension/components/ModalTextItem';
@@ -98,7 +98,7 @@ const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
       {!hideNetwork && (
         <ModalItem
           label={`${t<string>('labels.network')}:`}
-          value={<ChainBadge network={network} size="sm" />}
+          value={<NetworkBadge network={network} size="sm" />}
         />
       )}
 

@@ -5,19 +5,26 @@ import { useTranslation } from 'react-i18next';
 // components
 import AlgorandIcon from '@extension/components/AlgorandIcon';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
+// theme
+import { theme } from '@extension/theme';
+
 const NativeBalanceSkeleton: FC = () => {
   const { t } = useTranslation();
-  const defaultTextColor: string = useDefaultTextColor();
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
 
   return (
     <Skeleton>
       <HStack
         backgroundColor="gray.200"
-        borderRadius={25}
-        px={2}
+        borderRadius={theme.radii['3xl']}
+        px={DEFAULT_GAP / 3}
         py={1}
         spacing={1}
       >
@@ -27,6 +34,7 @@ const NativeBalanceSkeleton: FC = () => {
         <Text color={defaultTextColor} fontSize="sm">
           0
         </Text>
+
         <AlgorandIcon color="black" h={3} w={3} />
       </HStack>
     </Skeleton>

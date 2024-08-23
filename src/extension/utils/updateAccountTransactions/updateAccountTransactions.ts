@@ -1,6 +1,9 @@
 // constants
 import { DEFAULT_TRANSACTION_INDEXER_LIMIT } from '@extension/constants';
 
+// models
+import NetworkClient from '@extension/models/NetworkClient';
+
 // types
 import type {
   IAccountTransactions,
@@ -9,8 +12,6 @@ import type {
 import type { IOptions } from './types';
 
 // utils
-import getIndexerClient from '@common/utils/getIndexerClient';
-import lookupAlgorandAccountTransactionsWithDelay from '../lookupAlgorandAccountTransactionsWithDelay';
 import mapAlgorandTransactionToTransaction from '../mapAlgorandTransactionToTransaction';
 import refreshTransactions from '../refreshTransactions';
 
@@ -25,13 +26,13 @@ export default async function updateAccountTransactions({
   delay = 0,
   logger,
   network,
+  nodeID,
   refresh = false,
 }: IOptions): Promise<IAccountTransactions> {
-  const client = getIndexerClient(network, {
-    logger,
-  });
-  let algorandAccountTransaction: IAlgorandAccountTransaction;
+  const _functionName = 'updateAccountTransactions';
+  let avmAccountTransaction: IAlgorandAccountTransaction;
   let mostRecentTransactionTime: number;
+  let networkClient: NetworkClient;
 
   // if it is a refresh, get all the transactions from the most recent transaction
   if (refresh && currentAccountTransactions.transactions.length > 0) {
@@ -49,39 +50,41 @@ export default async function updateAccountTransactions({
         ...(await refreshTransactions({
           address,
           afterTime: mostRecentTransactionTime,
-          client,
           logger,
           network,
           next: null,
+          nodeID,
         })),
         ...currentAccountTransactions.transactions,
       ],
     };
   }
 
+  networkClient = new NetworkClient({ logger, network });
+
   try {
-    algorandAccountTransaction =
-      await lookupAlgorandAccountTransactionsWithDelay({
+    avmAccountTransaction =
+      await networkClient.lookupAccountTransactionWithDelay({
         address,
         afterTime: null,
-        client,
         delay,
         limit: DEFAULT_TRANSACTION_INDEXER_LIMIT,
         next: currentAccountTransactions.next,
+        nodeID,
       });
 
     return {
-      next: algorandAccountTransaction['next-token'] || null,
+      next: avmAccountTransaction['next-token'] || null,
       transactions: [
         ...currentAccountTransactions.transactions,
-        ...algorandAccountTransaction.transactions.map(
+        ...avmAccountTransaction.transactions.map(
           mapAlgorandTransactionToTransaction
         ),
       ],
     };
   } catch (error) {
     logger?.error(
-      `${updateAccountTransactions.name}: failed to get account transactions for "${address}" on ${network.genesisId}:`,
+      `${_functionName}: failed to get account transactions for "${address}" on ${network.genesisId}:`,
       error
     );
 
