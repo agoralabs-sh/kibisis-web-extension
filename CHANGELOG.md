@@ -1,3 +1,10 @@
+# [1.18.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.7...v1.18.0-beta.8) (2024-08-23)
+
+
+### Bug Fixes
+
+* allow for empty metadata ([#281](https://github.com/agoralabs-sh/kibisis-web-extension/issues/281)) ([bd5bc7a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/bd5bc7a8f19199a78c4f6e78997529d00f5ac02f))
+
 # [1.18.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.6...v1.18.0-beta.7) (2024-08-23)
 
 
