@@ -1,3 +1,10 @@
+# [1.18.0-beta.7](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.6...v1.18.0-beta.7) (2024-08-23)
+
+
+### Features
+
+* add numbers to the seed phrases and update style ([#280](https://github.com/agoralabs-sh/kibisis-web-extension/issues/280)) ([670f287](https://github.com/agoralabs-sh/kibisis-web-extension/commit/670f28754fbf2feb3ec43b1eeb4c0911f97562ad))
+
 # [1.18.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.5...v1.18.0-beta.6) (2024-08-23)
 
 
