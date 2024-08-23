@@ -79,7 +79,7 @@ export default abstract class BaseARC0072Indexer
     return result.tokens.map(({ contractId, metadata, tokenId }) => ({
       amount: '0',
       id: contractId.toString(),
-      metadata: JSON.parse(metadata),
+      metadata: metadata && metadata.length > 0 ? JSON.parse(metadata) : {},
       tokenId: tokenId.toString(),
       type: AssetTypeEnum.ARC0072,
     }));
