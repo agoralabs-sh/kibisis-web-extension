@@ -21,8 +21,8 @@ const EmptyState: FC<IProps> = ({
   text,
   ...stackProps
 }: IProps) => {
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   const renderButton = () => {
     let buttonProps: ButtonProps;
 

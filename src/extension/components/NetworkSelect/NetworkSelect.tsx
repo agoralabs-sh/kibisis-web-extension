@@ -6,17 +6,13 @@ import {
 } from '@chakra-ui/react';
 import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoSingleSelect } from 'react-icons/go';
+import { IoChevronDownOutline } from 'react-icons/io5';
 
 // components
 import NetworkBadge from '@extension/components/NetworkBadge';
 
-// constants
-import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
-
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
-import useBorderColor from '@extension/hooks/useBorderColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
@@ -28,6 +24,7 @@ import type { IProps } from './types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
+import { DEFAULT_GAP } from '@extension/constants';
 
 const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
   const { t } = useTranslation();
@@ -37,11 +34,10 @@ const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
     onOpen: onSelectModalOpen,
   } = useDisclosure();
   // hooks
-  const borderColor = useBorderColor();
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const subTextColor = useSubTextColor();
   // misc
-  const iconSize = calculateIconSize('md');
+  const iconSize = calculateIconSize('sm');
   // handlers
   const handleOnClick = () => onSelectModalOpen();
   const handleOnSelect = (_value: INetwork) => onSelect(_value);
@@ -58,23 +54,27 @@ const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
         selectedGenesisHash={value.genesisHash}
       />
 
-      <Tooltip label={t<string>('labels.openSelectModal')}>
+      <Tooltip label={t<string>('labels.chooseANetwork')}>
         <ChakraButton
           _hover={{
             bg: buttonHoverBackgroundColor,
           }}
-          aria-label={'labels.openSelectModal'}
+          aria-label={t<string>('labels.chooseANetwork')}
           alignItems="center"
-          borderColor={borderColor}
-          borderStyle="solid"
-          borderWidth="1px"
-          borderRadius="md"
+          borderRightRadius="full"
+          h="auto"
           justifyContent="space-between"
-          minH={INPUT_HEIGHT}
           onClick={handleOnClick}
-          p={DEFAULT_GAP / 3}
+          paddingBottom={0}
+          paddingLeft={0}
+          paddingRight={DEFAULT_GAP / 3}
+          paddingTop={0}
           rightIcon={
-            <Icon as={GoSingleSelect} boxSize={iconSize} color={subTextColor} />
+            <Icon
+              as={IoChevronDownOutline}
+              boxSize={iconSize}
+              color={subTextColor}
+            />
           }
           variant="ghost"
         >

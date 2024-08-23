@@ -1,7 +1,7 @@
 // types
 import type { TSizes } from '@extension/types';
 
-export default function mapIconSizeToSize(size: TSizes): number {
+export default function parseIconSize(size: TSizes): number {
   switch (size) {
     case 'lg':
       return 6;

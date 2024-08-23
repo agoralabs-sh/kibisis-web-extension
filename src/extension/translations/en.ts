@@ -485,6 +485,7 @@ const translation: IResourceLanguage = {
     balance: 'Balance',
     capabilities: 'Capabilities',
     chain: 'Chain',
+    chooseANetwork: 'Choose a network',
     clawbackAccount: 'Clawback Account',
     connectWallet: 'Connect Wallet',
     copyAddress: 'Copy Address',

@@ -1,46 +1,75 @@
-import { HStack, Tag, TagLabel, type TagProps } from '@chakra-ui/react';
+import { HStack, StackProps, Text } from '@chakra-ui/react';
 import React, { type FC } from 'react';
 
 // enums
 import { NetworkTypeEnum } from '@extension/enums';
+
+// hooks
+import useColorModeValue from '@extension/hooks/useColorModeValue';
+
+// theme
+import { theme } from '@extension/theme';
 
 // types
 import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
-import mapIconSizeToSize from './utils/mapIconSizeToSize';
+import parseIconSize from './utils/parseIconSize';
+import parsePadding from './utils/parsePadding';
+import { DEFAULT_GAP } from '@extension/constants';
 
 const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
+  // hooks
+  const primaryColorCode = useColorModeValue(
+    theme.colors.primaryLight['500'],
+    theme.colors.primaryDark['500']
+  );
+  const textColorColorCode = useColorModeValue(
+    theme.colors.gray['500'],
+    theme.colors.whiteAlpha['700']
+  );
   // misc
+  const fontColor = theme.colors[network.chakraTheme]
+    ? 'white'
+    : textColorColorCode;
   const nativeCurrencyIcon = createIconFromDataUri(
     network.nativeCurrency.iconUrl,
     {
-      color: network.chakraTheme,
-      boxSize: mapIconSizeToSize(size),
-      mr: 2,
+      color: fontColor,
+      boxSize: parseIconSize(size),
     }
   );
+  const padding = parsePadding(size);
   // renders
   const renderTypeTag = () => {
-    const defaultProps: Partial<TagProps> = {
-      size,
-      variant: 'solid',
+    const defaultProps: StackProps = {
       borderRightRadius: 'full',
+      paddingLeft: 1,
+      paddingRight: padding,
+      py: padding - 1,
+      spacing: 0,
     };
 
     switch (network.type) {
       case NetworkTypeEnum.Beta:
         return (
-          <Tag {...defaultProps} colorScheme="blue">
-            <TagLabel>BetaNet</TagLabel>
-          </Tag>
+          <HStack backgroundColor={theme.colors.blue['500']} {...defaultProps}>
+            <Text color={fontColor} fontSize={size} textAlign="center">
+              {`BetaNet`}
+            </Text>
+          </HStack>
         );
       case NetworkTypeEnum.Test:
         return (
-          <Tag {...defaultProps} colorScheme="yellow">
-            <TagLabel>TestNet</TagLabel>
-          </Tag>
+          <HStack
+            backgroundColor={theme.colors.yellow['500']}
+            {...defaultProps}
+          >
+            <Text color={fontColor} fontSize={size} textAlign="center">
+              {`TestNet`}
+            </Text>
+          </HStack>
         );
       default:
         return null;
@@ -48,21 +77,31 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
   };
   const renderTags = () => {
     const typeTag = renderTypeTag();
+    const defaultProps: StackProps = {
+      backgroundColor:
+        theme.colors[network.chakraTheme]['500'] || primaryColorCode,
+      py: padding - 1,
+      spacing: DEFAULT_GAP / 3,
+    };
 
     if (typeTag) {
       return (
         <>
           {/*network name*/}
-          <Tag
+          <HStack
             borderLeftRadius="full"
-            colorScheme={network.chakraTheme}
-            size={size}
-            variant="solid"
+            paddingLeft={padding}
+            paddingRight={1}
+            {...defaultProps}
           >
+            {/*icon*/}
             {nativeCurrencyIcon}
 
-            <TagLabel>{network.canonicalName}</TagLabel>
-          </Tag>
+            {/*name*/}
+            <Text color={fontColor} fontSize={size} textAlign="center">
+              {network.canonicalName}
+            </Text>
+          </HStack>
 
           {/*network type*/}
           {typeTag}
@@ -71,16 +110,15 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
     }
 
     return (
-      <Tag
-        borderRadius="full"
-        colorScheme={network.chakraTheme}
-        size={size}
-        variant="solid"
-      >
+      <HStack borderRadius="full" px={padding} {...defaultProps}>
+        {/*icon*/}
         {nativeCurrencyIcon}
 
-        <TagLabel>{network.canonicalName}</TagLabel>
-      </Tag>
+        {/*name*/}
+        <Text color={fontColor} fontSize={size} textAlign="center">
+          {network.canonicalName}
+        </Text>
+      </HStack>
     );
   };
 
