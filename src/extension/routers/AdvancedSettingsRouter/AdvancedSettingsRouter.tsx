@@ -5,14 +5,14 @@ import { Route, Routes } from 'react-router-dom';
 import { CUSTOM_NODES_ROUTE } from '@extension/constants';
 
 // pages
+import AdvancedSettingsPage from '@extension/pages/AdvancedSettingsPage';
 import CustomNodesPage from '@extension/pages/CustomNodesPage';
-import GeneralSettingsPage from '@extension/pages/GeneralSettingsPage';
 
-const GeneralSettingsRouter: FC = () => (
+const AdvancedSettingsRouter: FC = () => (
   <Routes>
-    <Route element={<GeneralSettingsPage />} path="/" />
+    <Route element={<AdvancedSettingsPage />} path="/" />
     <Route element={<CustomNodesPage />} path={CUSTOM_NODES_ROUTE} />
   </Routes>
 );
 
-export default GeneralSettingsRouter;
+export default AdvancedSettingsRouter;

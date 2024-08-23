@@ -279,16 +279,6 @@ const CustomNodesPage: FC = () => {
           {t<string>('captions.customNodes')}
         </Text>
 
-        {/*network selection*/}
-        <Stack justifyContent="flex-end" w="full">
-          <NetworkSelect
-            _context={_context}
-            networks={networks}
-            onSelect={handleNetworkSelect}
-            value={network}
-          />
-        </Stack>
-
         {/*controls*/}
         <HStack
           alignItems="center"
@@ -296,6 +286,14 @@ const CustomNodesPage: FC = () => {
           spacing={1}
           w="full"
         >
+          {/*network selection*/}
+          <NetworkSelect
+            _context={_context}
+            networks={networks}
+            onSelect={handleNetworkSelect}
+            value={network}
+          />
+
           <Spacer />
 
           {/*add custom node button*/}

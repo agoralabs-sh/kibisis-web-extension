@@ -120,7 +120,7 @@ const translation: IResourceLanguage = {
       'This password will be used to encrypt your private keys, so make it strong!',
     customNodeAdded: '"{{name}}" added for network "{{genesisID}}".',
     customNodes:
-      'Here you can add a custom node which will appear in the network selection list.',
+      'Here you can add a custom node and, if activated, will be used to make all requests to the network.',
     debugLogging:
       'Debugging information will be output to the extension console.',
     defaultConfirm: 'Are you sure?',
@@ -375,6 +375,7 @@ const translation: IResourceLanguage = {
     indexerDetails: 'Indexer Details',
     nameYourAccount: 'Name your account',
     network: 'Network',
+    networks: 'Networks',
     networkNotAllowed: 'Network Not Allowed',
     newAccountComplete: 'Almost There...',
     noAccountsFound: 'No accounts found',

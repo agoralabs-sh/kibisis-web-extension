@@ -1,23 +1,16 @@
 import { VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoGlobeOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
 import PageHeader from '@extension/components/PageHeader';
 import SettingsButtonItem from '@extension/components/SettingsButtonItem';
-import SettingsLinkItem from '@extension/components/SettingsLinkItem';
 import SettingsSelectItem from '@extension/components/SettingsSelectItem';
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 
 // constants
-import {
-  CUSTOM_NODES_ROUTE,
-  DEFAULT_GAP,
-  GENERAL_ROUTE,
-  SETTINGS_ROUTE,
-} from '@extension/constants';
+import { DEFAULT_GAP } from '@extension/constants';
 
 // features
 import { setConfirmModal } from '@extension/features/layout';
@@ -52,7 +45,7 @@ const GeneralSettingsPage: FC = () => {
   const preferredNFTExplorer = useSelectSettingsPreferredNFTExplorer();
   const settings = useSelectSettings();
   // misc
-  const _context = 'general-settings';
+  const _context = 'general-settings-page';
   const blockExplorerOptions: IOption<string>[] =
     network?.blockExplorers.map((value) => ({
       label: value.canonicalName,
@@ -162,13 +155,6 @@ const GeneralSettingsPage: FC = () => {
                 (value) => value.value === preferredNFTExplorer?.id
               ) || nftExplorerOptions[0]
             }
-          />
-
-          {/*custom networks*/}
-          <SettingsLinkItem
-            icon={IoGlobeOutline}
-            label={t<string>('titles.page', { context: 'customNodes' })}
-            to={`${SETTINGS_ROUTE}${GENERAL_ROUTE}${CUSTOM_NODES_ROUTE}`}
           />
         </VStack>
 
