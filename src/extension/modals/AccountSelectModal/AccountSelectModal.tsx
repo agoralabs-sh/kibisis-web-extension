@@ -171,7 +171,7 @@ const AccountSelectModal: FC<IProps> = ({
                 isChecked={
                   !!selectedAccounts.find((value) => value.id === account.id)
                 }
-                onChange={handleOnAccountChange(account)}
+                pointerEvents="none"
               />
             ) : (
               <Icon

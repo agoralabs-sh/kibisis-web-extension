@@ -179,7 +179,7 @@ const AssetSelectModal: FC<IProps> = ({
                     return false;
                   })
                 }
-                onChange={handleOnChange(asset)}
+                pointerEvents="none"
               />
             ) : (
               <Icon
