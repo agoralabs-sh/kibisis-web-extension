@@ -75,6 +75,8 @@ const ViewSeedPhrasePage: FC = () => {
     null
   );
   const [value, setValue] = useState<IAccountAndSeedPhraseValue | null>(null);
+  // misc
+  const _context = 'view-seed-phrase--page';
   // handlers
   const handleAccountSelect = async (account: IAccountWithExtendedProps) => {
     setValue(
@@ -227,7 +229,10 @@ const ViewSeedPhrasePage: FC = () => {
           {!value ? (
             <SeedPhraseDisplaySkeleton />
           ) : (
-            <SeedPhraseDisplay seedPhrase={value.seedPhrase} />
+            <SeedPhraseDisplay
+              _context={_context}
+              seedPhrase={value.seedPhrase}
+            />
           )}
         </VStack>
 

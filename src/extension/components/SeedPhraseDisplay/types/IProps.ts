@@ -1,4 +1,5 @@
 interface IProps {
+  _context: string;
   seedPhrase: string;
 }
 
