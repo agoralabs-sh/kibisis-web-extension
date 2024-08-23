@@ -69,6 +69,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   const [name, setName] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
   // misc
+  const _context = 'create-new-account-page';
   const seedPhrase = convertPrivateKeyToSeedPhrase({
     logger,
     privateKey: keyPair.privateKey,
@@ -172,7 +173,10 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
                 </Text>
 
                 {/*seed phrase*/}
-                <SeedPhraseDisplay seedPhrase={seedPhrase} />
+                <SeedPhraseDisplay
+                  _context={_context}
+                  seedPhrase={seedPhrase}
+                />
               </VStack>
 
               {/*copy seed phrase button*/}
