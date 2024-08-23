@@ -282,7 +282,7 @@ const CustomNodesPage: FC = () => {
         {/*network selection*/}
         <Stack justifyContent="flex-end" w="full">
           <NetworkSelect
-            context={_context}
+            _context={_context}
             networks={networks}
             onSelect={handleNetworkSelect}
             value={network}

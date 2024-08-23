@@ -1,14 +1,15 @@
-import { ColorMode, VStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { type ColorMode, VStack } from '@chakra-ui/react';
+import React, { type FC } from 'react';
 import { IoMoonOutline, IoSunnyOutline } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
 import PageHeader from '@extension/components/PageHeader';
-import SettingsSelectItem, {
-  IOption,
-} from '@extension/components/SettingsSelectItem';
+import SettingsSelectItem from '@extension/components/SettingsSelectItem';
+
+// contants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // features
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
@@ -17,6 +18,7 @@ import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/fea
 import { useSelectSettings } from '@extension/selectors';
 
 // types
+import type { IOption } from '@extension/components/Select';
 import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 const AppearanceSettingsPage: FC = () => {
@@ -25,6 +27,7 @@ const AppearanceSettingsPage: FC = () => {
   // selectors
   const settings = useSelectSettings();
   // misc
+  const _context = 'appearance-settings-page';
   const themeOptions: IOption<ColorMode>[] = [
     {
       icon: IoMoonOutline,
@@ -54,8 +57,9 @@ const AppearanceSettingsPage: FC = () => {
     <>
       <PageHeader title={t<string>('titles.page', { context: 'appearance' })} />
 
-      <VStack spacing={4} w="full">
+      <VStack spacing={DEFAULT_GAP - 2} w="full">
         <SettingsSelectItem
+          _context={_context}
           description={t<string>('captions.changeTheme')}
           emptyOptionLabel={t<string>('captions.noThemesAvailable')}
           label={t<string>('labels.theme')}

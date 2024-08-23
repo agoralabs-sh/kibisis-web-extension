@@ -1,5 +1,5 @@
 import { useDisclosure, VStack } from '@chakra-ui/react';
-import React, { ChangeEvent, FC } from 'react';
+import React, { type ChangeEvent, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoShieldLock } from 'react-icons/go';
 import {
@@ -12,9 +12,7 @@ import { useDispatch } from 'react-redux';
 // components
 import PageHeader from '@extension/components/PageHeader';
 import SettingsLinkItem from '@extension/components/SettingsLinkItem';
-import SettingsSelectItem, {
-  IOption,
-} from '@extension/components/SettingsSelectItem';
+import SettingsSelectItem from '@extension/components/SettingsSelectItem';
 import SettingsSubHeading from '@extension/components/SettingsSubHeading';
 import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 
@@ -33,6 +31,9 @@ import {
   SETTINGS_ROUTE,
   VIEW_SEED_PHRASE_ROUTE,
 } from '@extension/constants';
+
+// enums
+import { EncryptionMethodEnum } from '@extension/enums';
 
 // errors
 import { BaseExtensionError, MalformedDataError } from '@extension/errors';
@@ -59,12 +60,12 @@ import {
 import PasskeyService from '@extension/services/PasskeyService';
 
 // types
+import type { IOption } from '@extension/components/Select';
 import type {
   IAppThunkDispatch,
   IMainRootState,
   TEncryptionCredentials,
 } from '@extension/types';
-import { EncryptionMethodEnum } from '@extension/enums';
 
 const SecuritySettingsPage: FC = () => {
   const { t } = useTranslation();
@@ -79,6 +80,7 @@ const SecuritySettingsPage: FC = () => {
   const passkeyEnabled = useSelectPasskeysEnabled();
   const settings = useSelectSettings();
   // misc
+  const _context = 'security-settings-page';
   const durationOptions: IOption<number>[] = [
     {
       label: t<string>('labels.passwordLockDuration', {
@@ -235,6 +237,7 @@ const SecuritySettingsPage: FC = () => {
 
         {/*password lock duration*/}
         <SettingsSelectItem
+          _context={_context}
           disabled={!settings.security.enableCredentialLock}
           emptyOptionLabel={t<string>('placeholders.pleaseSelect')}
           label={t<string>('labels.passwordLockTimeout')}

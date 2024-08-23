@@ -2,7 +2,7 @@
 import type { INetwork } from '@extension/types';
 
 interface IProps {
-  context: string;
+  _context: string;
   networks: INetwork[];
   onSelect: (value: INetwork) => void;
   value: INetwork;

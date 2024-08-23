@@ -256,7 +256,7 @@ const AccountPage: FC = () => {
           {/*header*/}
           <VStack {...headerContainerProps}>
             {/*network connectivity & network selection*/}
-            <HStack h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT} w="full">
+            <HStack minH={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT} w="full">
               {!online && (
                 <Tooltip
                   aria-label="Offline icon"
@@ -277,7 +277,7 @@ const AccountPage: FC = () => {
 
               {/*network selection*/}
               <NetworkSelect
-                context={_context}
+                _context={_context}
                 networks={networks}
                 onSelect={handleNetworkSelect}
                 value={network}
@@ -559,7 +559,7 @@ const AccountPage: FC = () => {
         alignItems="center"
         justifyContent="flex-start"
         flexGrow={1}
-        mt={DEFAULT_GAP / 3}
+        mt={DEFAULT_GAP - 2}
         w="full"
       >
         {renderContent()}

@@ -37,7 +37,7 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { IOption } from '@extension/components/SettingsSelectItem';
+import type { IOption } from '@extension/components/Select';
 import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 // utils
@@ -52,6 +52,7 @@ const GeneralSettingsPage: FC = () => {
   const preferredNFTExplorer = useSelectSettingsPreferredNFTExplorer();
   const settings = useSelectSettings();
   // misc
+  const _context = 'general-settings';
   const blockExplorerOptions: IOption<string>[] =
     network?.blockExplorers.map((value) => ({
       label: value.canonicalName,
@@ -135,6 +136,7 @@ const GeneralSettingsPage: FC = () => {
 
           {/* preferred block explorer */}
           <SettingsSelectItem
+            _context={_context}
             description={t<string>('captions.preferredBlockExplorer')}
             emptyOptionLabel={t<string>('captions.noBlockExplorersAvailable')}
             label={t<string>('labels.preferredBlockExplorer')}
@@ -149,6 +151,7 @@ const GeneralSettingsPage: FC = () => {
 
           {/* preferred nft explorer */}
           <SettingsSelectItem
+            _context={_context}
             description={t<string>('captions.preferredNFTExplorer')}
             emptyOptionLabel={t<string>('captions.noNFTExplorersAvailable')}
             label={t<string>('labels.preferredNFTExplorer')}
