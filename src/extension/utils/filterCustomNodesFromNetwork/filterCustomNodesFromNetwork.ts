@@ -21,6 +21,7 @@ export default function filterCustomNodesFromNetwork(
                 token: value.token,
                 url: value.url,
               },
+              genesisHash: network.genesisHash,
               id: value.id,
               indexer: null,
               name: value.canonicalName,
@@ -43,6 +44,7 @@ export default function filterCustomNodesFromNetwork(
     if (index < 0) {
       return customNodes.push({
         algod: null,
+        genesisHash: network.genesisHash,
         id: value.id,
         indexer: {
           port: value.port,

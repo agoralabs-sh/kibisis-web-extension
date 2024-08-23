@@ -4,33 +4,26 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  ResponsiveValue,
   Text,
 } from '@chakra-ui/react';
-import * as CSS from 'csstype';
-import React, { FC, ReactElement } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-interface IProps {
-  color?: ResponsiveValue<CSS.Property.Color>;
-  children: ReactElement;
-  fontSize?: ResponsiveValue<CSS.Property.FontSize | number>;
-  isOpen: boolean;
-  minButtonHeight?: ResponsiveValue<number | CSS.Property.MinHeight>;
-  onChange: (open: boolean) => void;
-}
+// types
+import type { IProps } from './types';
 
 const MoreInformationAccordion: FC<IProps> = ({
   children,
   color,
   fontSize,
   isOpen,
+  label,
   minButtonHeight,
   onChange,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   const defaultTextColor: string = useDefaultTextColor();
   const handleOnChange = (value: number) => onChange(value > -1);
@@ -50,7 +43,7 @@ const MoreInformationAccordion: FC<IProps> = ({
             textAlign="left"
             w="full"
           >
-            {t<string>('labels.moreInformation')}
+            {label || t<string>('labels.moreInformation')}
           </Text>
           <AccordionIcon />
         </AccordionButton>

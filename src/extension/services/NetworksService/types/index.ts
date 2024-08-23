@@ -1,1 +1,1 @@
-export type { default as INewsItem } from './INewsItem';
+export type { default as ISerializableNetworkWithTransactionParams } from './ISerializableNetworkWithTransactionParams';

@@ -2,6 +2,7 @@ import {
   HStack,
   Spacer,
   Spinner,
+  Stack,
   Text,
   Tooltip,
   useDisclosure,
@@ -27,6 +28,7 @@ import { DEFAULT_GAP } from '@extension/constants';
 import { setConfirmModal } from '@extension/features/layout';
 import { removeCustomNodeThunk } from '@extension/features/networks';
 import { create as createNotification } from '@extension/features/notifications';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
@@ -46,14 +48,17 @@ import {
 // types
 import type {
   IAppThunkDispatch,
+  ICustomNode,
   IMainRootState,
   INetwork,
+  INetworkWithTransactionParams,
 } from '@extension/types';
 
 // utils
 import filterCustomNodesFromNetwork from '@extension/utils/filterCustomNodesFromNetwork';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
 const CustomNodesPage: FC = () => {
   const { t } = useTranslation();
@@ -75,13 +80,50 @@ const CustomNodesPage: FC = () => {
     selectedNetwork || selectDefaultNetwork(networks)
   );
   const [nodeID, setNodeID] = useState<string | null>(null);
+  const [viewCustomNode, setViewCustomNode] = useState<ICustomNode | null>(
+    null
+  );
   // misc
   const _context = 'custom-nodes-page';
   // handlers
   const handleAddCustomNodeClick = () => onAddCustomModalOpen();
   const handleAddCustomNodeModalClose = () => onAddCustomModalClose();
-  const handleActivateCustomNodeClick = (id: string) => {};
-  const handleDeactivateCustomNodeClick = (id: string) => {};
+  const handleActivateCustomNodeClick = (id: string) => {
+    if (!network) {
+      return;
+    }
+
+    dispatch(
+      saveSettingsToStorageThunk({
+        ...settings,
+        general: {
+          ...settings.general,
+          selectedNodeIDs: {
+            ...settings.general.selectedNodeIDs,
+            [convertGenesisHashToHex(network.genesisHash)]: id,
+          },
+        },
+      })
+    );
+  };
+  const handleDeactivateCustomNodeClick = () => {
+    if (!network) {
+      return;
+    }
+
+    dispatch(
+      saveSettingsToStorageThunk({
+        ...settings,
+        general: {
+          ...settings.general,
+          selectedNodeIDs: {
+            ...settings.general.selectedNodeIDs,
+            [convertGenesisHashToHex(network.genesisHash)]: null,
+          },
+        },
+      })
+    );
+  };
   const handleRemoveCustomNodeClick = (id: string) => {
     const item =
       filterCustomNodesFromNetwork(network).find((value) => value.id === id) ||
@@ -96,13 +138,19 @@ const CustomNodesPage: FC = () => {
         description: t<string>('captions.removeCustomNodeConfirm', {
           name: item.name,
         }),
-        onConfirm: () => {
-          dispatch(
+        onConfirm: async () => {
+          const _network = await dispatch(
             removeCustomNodeThunk({
               genesisHash: network.genesisHash,
               id: item.id,
             })
-          );
+          ).unwrap();
+
+          // update the network to update the custom node list
+          if (_network?.genesisHash === network.genesisHash) {
+            setNetwork(_network);
+          }
+
           dispatch(
             createNotification({
               description: t<string>('captions.removedCustomNode', {
@@ -118,16 +166,22 @@ const CustomNodesPage: FC = () => {
     );
   };
   const handleNetworkSelect = (value: INetwork) => setNetwork(value);
-  const handleSelectCustomNodeClick = (id: string) => {
-    // const item = customNodeItems.find((value) => value.id === id) || null;
-    //
-    // if (!item) {
-    //   return;
-    // }
-    //
-    // setViewCustomNodeItem(item);
+  const handleOnAddCustomNodeComplete = (
+    value: INetworkWithTransactionParams | null
+  ) => {
+    // update the network to update the custom node list
+    if (value?.genesisHash === network.genesisHash) {
+      setNetwork(value);
+    }
   };
-  // const handleViewCustomNodeClose = () => setViewCustomNodeItem(null);
+  const handleSelectCustomNodeClick = (id: string) => {
+    const item =
+      filterCustomNodesFromNetwork(network).find((value) => value.id === id) ||
+      null;
+
+    setViewCustomNode(item);
+  };
+  const handleViewCustomNodeClose = () => setViewCustomNode(null);
   // renders
   const renderContent = () => {
     const nodes: ReactElement[] = filterCustomNodesFromNetwork(network)
@@ -148,7 +202,7 @@ const CustomNodesPage: FC = () => {
       })
       .map((value, index) => (
         <CustomNodeItem
-          key={`custom-page-custom-node-item-${index}`}
+          key={`${_context}-custom-node-item-${index}`}
           item={value}
           isActivated={value.id === nodeID}
           onActivate={handleActivateCustomNodeClick}
@@ -182,24 +236,29 @@ const CustomNodesPage: FC = () => {
   };
 
   useEffect(() => {
-    setNodeID(
-      selectNodeIDByGenesisHashFromSettings({
-        genesisHash: network.genesisHash,
-        settings,
-      })
-    );
-  }, [network]);
+    const _nodeID = selectNodeIDByGenesisHashFromSettings({
+      genesisHash: network.genesisHash,
+      settings,
+    });
+
+    if (_nodeID === nodeID) {
+      return;
+    }
+
+    setNodeID(_nodeID);
+  }, [network, settings]);
 
   return (
     <>
       <AddCustomNodeModal
         isOpen={isAddCustomModalOpen}
         onClose={handleAddCustomNodeModalClose}
+        onComplete={handleOnAddCustomNodeComplete}
       />
-      {/*<ViewCustomNodeModal*/}
-      {/*  item={viewCustomNodeItem}*/}
-      {/*  onClose={handleViewCustomNodeClose}*/}
-      {/*/>*/}
+      <ViewCustomNodeModal
+        item={viewCustomNode}
+        onClose={handleViewCustomNodeClose}
+      />
 
       {/*page title*/}
       <PageHeader
@@ -212,13 +271,23 @@ const CustomNodesPage: FC = () => {
         borderBottomWidth="1px"
         pb={DEFAULT_GAP - 2}
         px={DEFAULT_GAP}
-        spacing={DEFAULT_GAP / 3}
+        spacing={DEFAULT_GAP - 2}
         w="full"
       >
         {/*caption*/}
         <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
           {t<string>('captions.customNodes')}
         </Text>
+
+        {/*network selection*/}
+        <Stack justifyContent="flex-end" w="full">
+          <NetworkSelect
+            context={_context}
+            networks={networks}
+            onSelect={handleNetworkSelect}
+            value={network}
+          />
+        </Stack>
 
         {/*controls*/}
         <HStack
@@ -227,14 +296,6 @@ const CustomNodesPage: FC = () => {
           spacing={1}
           w="full"
         >
-          {/*network selection*/}
-          <NetworkSelect
-            context={_context}
-            networks={networks}
-            onSelect={handleNetworkSelect}
-            value={network}
-          />
-
           <Spacer />
 
           {/*add custom node button*/}

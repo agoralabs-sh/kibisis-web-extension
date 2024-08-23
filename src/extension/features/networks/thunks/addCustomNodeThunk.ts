@@ -15,11 +15,11 @@ import type {
 } from '@extension/types';
 
 const addCustomNodeThunk: AsyncThunk<
-  INetworkWithTransactionParams[], // return
+  INetworkWithTransactionParams | null, // return
   ICustomNode, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
-  INetworkWithTransactionParams[],
+  INetworkWithTransactionParams | null,
   ICustomNode,
   IBaseAsyncThunkConfig<IMainRootState>
 >(ThunkEnum.AddCustomNodeThunk, async (customNode, { getState }) => {
@@ -30,10 +30,10 @@ const addCustomNodeThunk: AsyncThunk<
     null;
 
   if (!network) {
-    return networks;
+    return null;
   }
 
-  network = await networksService.save({
+  return await networksService.save({
     ...network,
     ...(customNode.algod && {
       algods: [
@@ -56,10 +56,6 @@ const addCustomNodeThunk: AsyncThunk<
       ],
     }),
   });
-
-  return networks.map((value) =>
-    value.genesisHash === network?.genesisHash ? network : value
-  );
 });
 
 export default addCustomNodeThunk;

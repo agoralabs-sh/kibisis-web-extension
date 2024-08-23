@@ -1,6 +1,9 @@
 // types
 import type { IOptions } from './types';
 
+// types
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+
 /**
  * Convenience function that simply gets the selected node ID from the settings by a genesis hash.
  * @param {IOptions} options - the genesis hash and the settings.
@@ -11,5 +14,8 @@ export default function selectNodeIDByGenesisHashFromSettings({
   genesisHash,
   settings,
 }: IOptions): string | null {
-  return settings.general.selectedNodeIDs[genesisHash] || null;
+  return (
+    settings.general.selectedNodeIDs[convertGenesisHashToHex(genesisHash)] ||
+    null
+  );
 }

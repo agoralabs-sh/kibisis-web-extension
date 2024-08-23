@@ -15,11 +15,11 @@ import type {
 import type { IRemoveCustomNodeThunkPayload } from '../types';
 
 const removeCustomNodeThunk: AsyncThunk<
-  INetworkWithTransactionParams[], // return
+  INetworkWithTransactionParams | null, // return
   IRemoveCustomNodeThunkPayload, // args
   IBaseAsyncThunkConfig<IMainRootState>
 > = createAsyncThunk<
-  INetworkWithTransactionParams[],
+  INetworkWithTransactionParams | null,
   IRemoveCustomNodeThunkPayload,
   IBaseAsyncThunkConfig<IMainRootState>
 >(
@@ -31,18 +31,14 @@ const removeCustomNodeThunk: AsyncThunk<
       networks.find((value) => value.genesisHash === genesisHash) || null;
 
     if (!network) {
-      return networks;
+      return null;
     }
 
-    network = await networksService.save({
+    return await networksService.save({
       ...network,
       algods: network.algods.filter((value) => value.id !== id),
       indexers: network.indexers.filter((value) => value.id !== id),
     });
-
-    return networks.map((value) =>
-      value.genesisHash === network?.genesisHash ? network : value
-    );
   }
 );
 

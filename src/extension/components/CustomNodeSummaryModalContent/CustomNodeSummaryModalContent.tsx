@@ -14,59 +14,63 @@ import { DEFAULT_GAP } from '@extension/constants';
 // types
 import type { IProps } from './types';
 
-const CustomNodeSummaryModalContent: FC<IProps> = ({ customNode, network }) => {
+const CustomNodeSummaryModalContent: FC<IProps> = ({ item, network }) => {
   const { t } = useTranslation();
 
   return (
     <VStack flexGrow={1} spacing={DEFAULT_GAP / 3} w="full">
       {/*general details*/}
-      <ModalSubHeading text={t<string>('headings.generalDetails')} />
+      <ModalSubHeading text={t<string>('headings.general')} />
 
       {/*name*/}
       <ModalTextItem
         label={`${t<string>('labels.name')}:`}
-        tooltipLabel={customNode.name}
-        value={customNode.name}
+        tooltipLabel={item.name}
+        value={item.name}
       />
 
       {/*type*/}
       <ModalItem
-        label={`${t<string>('labels.chain')}:`}
+        label={`${t<string>('labels.network')}:`}
         value={<NetworkBadge network={network} />}
       />
 
-      {/*algod details*/}
-      <ModalSubHeading text={t<string>('headings.algodDetails')} />
+      {item.algod && (
+        <>
+          {/*algod details*/}
+          <ModalSubHeading text={t<string>('headings.algodDetails')} />
 
-      {/*algod url*/}
-      <ModalTextItem
-        isCode={true}
-        label={`${t<string>('labels.url')}:`}
-        tooltipLabel={customNode.algod.url}
-        value={customNode.algod.url}
-      />
+          {/*algod url*/}
+          <ModalTextItem
+            isCode={true}
+            label={`${t<string>('labels.url')}:`}
+            tooltipLabel={item.algod.url}
+            value={item.algod.url}
+          />
 
-      {/*algod port*/}
-      {customNode.algod.port && (
-        <ModalTextItem
-          isCode={true}
-          label={`${t<string>('labels.port')}:`}
-          tooltipLabel={customNode.algod.port}
-          value={customNode.algod.port}
-        />
+          {/*algod port*/}
+          {item.algod.port && (
+            <ModalTextItem
+              isCode={true}
+              label={`${t<string>('labels.port')}:`}
+              tooltipLabel={item.algod.port}
+              value={item.algod.port}
+            />
+          )}
+
+          {/*algod token*/}
+          {item.algod.token && (
+            <ModalTextItem
+              isCode={true}
+              label={`${t<string>('labels.token')}:`}
+              tooltipLabel={item.algod.token}
+              value={item.algod.token}
+            />
+          )}
+        </>
       )}
 
-      {/*algod token*/}
-      {customNode.algod.token && (
-        <ModalTextItem
-          isCode={true}
-          label={`${t<string>('labels.token')}:`}
-          tooltipLabel={customNode.algod.token}
-          value={customNode.algod.token}
-        />
-      )}
-
-      {customNode.indexer && (
+      {item.indexer && (
         <>
           {/*indexer details*/}
           <ModalSubHeading text={t<string>('headings.indexerDetails')} />
@@ -75,27 +79,27 @@ const CustomNodeSummaryModalContent: FC<IProps> = ({ customNode, network }) => {
           <ModalTextItem
             isCode={true}
             label={`${t<string>('labels.url')}:`}
-            tooltipLabel={customNode.indexer.url}
-            value={customNode.indexer.url}
+            tooltipLabel={item.indexer.url}
+            value={item.indexer.url}
           />
 
           {/*indexer port*/}
-          {customNode.indexer.port && (
+          {item.indexer.port && (
             <ModalTextItem
               isCode={true}
               label={`${t<string>('labels.port')}:`}
-              tooltipLabel={customNode.indexer.port}
-              value={customNode.indexer.port}
+              tooltipLabel={item.indexer.port}
+              value={item.indexer.port}
             />
           )}
 
           {/*indexer token*/}
-          {customNode.indexer.token && (
+          {item.indexer.token && (
             <ModalTextItem
               isCode={true}
               label={`${t<string>('labels.token')}:`}
-              tooltipLabel={customNode.indexer.token}
-              value={customNode.indexer.token}
+              tooltipLabel={item.indexer.token}
+              value={item.indexer.token}
             />
           )}
         </>

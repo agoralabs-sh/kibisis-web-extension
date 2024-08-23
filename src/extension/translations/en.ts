@@ -6,6 +6,7 @@ import { IResourceLanguage } from '@extension/types';
 
 const translation: IResourceLanguage = {
   buttons: {
+    activate: 'Activate',
     add: 'Add',
     addAccount: 'Add Account',
     addAsset: 'Add Asset',
@@ -22,6 +23,7 @@ const translation: IResourceLanguage = {
     copyURI: 'Copy URI',
     copySeedPhrase: 'Copy Seed Phrase',
     create: 'Create',
+    deactivate: 'Deactivate',
     disconnectAllSessions: 'Disconnect All Sessions',
     dismiss: 'Dismiss',
     download: 'Download',
@@ -364,7 +366,7 @@ const translation: IResourceLanguage = {
     enterYourSeedPhrase: 'Enter your seed phrase',
     factoryReset: 'Factory Reset',
     failedToGetCustomNodeDetails: 'Failed To Connect To Node',
-    generalDetails: 'General Details',
+    general: 'General',
     generateSeedPhrase: 'Generate seed phrase',
     hiddenAsset: 'Asset {{symbol}} Hidden!',
     importAccount: 'Import Account',
@@ -450,9 +452,13 @@ const translation: IResourceLanguage = {
   },
   labels: {
     account: 'Account',
+    activate: 'Activate',
+    activated: 'Activated',
+    activateOnAdd: 'Activate on add?',
     activity: 'Activity',
     address: 'Address',
     addressToSign: 'Address To Sign',
+    advanced: 'Advanced',
     accountName: 'Account Name',
     accountToFreeze: 'Account To Freeze',
     accountToUnfreeze: 'Account To Unfreeze',
@@ -495,6 +501,7 @@ const translation: IResourceLanguage = {
     currentAuthorizedAccount: 'Current Authorized Account',
     dark: 'Dark',
     date: 'Date',
+    deactivate: 'Deactivate',
     decimals: 'Decimals',
     default: 'Default',
     defaultFrozen: 'Default Frozen',

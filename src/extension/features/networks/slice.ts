@@ -27,9 +27,16 @@ const slice = createSlice({
       addCustomNodeThunk.fulfilled,
       (
         state: IState,
-        action: PayloadAction<INetworkWithTransactionParams[]>
+        action: PayloadAction<INetworkWithTransactionParams | null>
       ) => {
-        state.items = action.payload;
+        if (action.payload) {
+          state.items = state.items.map((value) =>
+            value.genesisHash === action.payload?.genesisHash
+              ? action.payload
+              : value
+          );
+        }
+
         state.saving = false;
       }
     );
@@ -46,7 +53,6 @@ const slice = createSlice({
         state: IState,
         action: PayloadAction<INetworkWithTransactionParams[]>
       ) => {
-        console.log('networks:', action.payload);
         state.items = action.payload;
         state.fetching = false;
       }
@@ -62,9 +68,16 @@ const slice = createSlice({
       removeCustomNodeThunk.fulfilled,
       (
         state: IState,
-        action: PayloadAction<INetworkWithTransactionParams[]>
+        action: PayloadAction<INetworkWithTransactionParams | null>
       ) => {
-        state.items = action.payload;
+        if (action.payload) {
+          state.items = state.items.map((value) =>
+            value.genesisHash === action.payload?.genesisHash
+              ? action.payload
+              : value
+          );
+        }
+
         state.saving = false;
       }
     );

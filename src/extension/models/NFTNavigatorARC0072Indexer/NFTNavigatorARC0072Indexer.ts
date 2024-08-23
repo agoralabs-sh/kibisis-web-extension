@@ -6,9 +6,9 @@ import type { IFetchTokensByOwnerOptions } from '@extension/models/BaseARC0072In
 import type { IARC0072AssetHolding } from '@extension/types';
 
 export default class NFTNavigatorARC0072Indexer extends BaseARC0072Indexer {
-  constructor() {
+  constructor(baseURL: string) {
     super({
-      baseURL: 'https://arc72-idx.nftnavigator.xyz',
+      baseURL,
       canonicalName: 'NFT Navigator',
       id: 'nft-navigator-arc-0072-indexer',
     });

@@ -1,5 +1,6 @@
 import {
   HStack,
+  Stack,
   Tag,
   TagLabel,
   TagRightIcon,
@@ -45,7 +46,7 @@ const CustomNodeItem: FC<IProps> = ({
   const itemBorderColor = useItemBorderColor();
   // handlers
   const handleOnActivateClick = () => onActivate(item.id);
-  const handleOnDeactivateClick = () => onDeactivate(item.id);
+  const handleOnDeactivateClick = () => onDeactivate();
   const handleOnRemoveClick = () => onRemove(item.id);
   const handleOnSelectClick = () => onSelect(item.id);
 
@@ -61,7 +62,7 @@ const CustomNodeItem: FC<IProps> = ({
     >
       {/*details*/}
       <HStack
-        alignItems="flex-start"
+        alignItems="center"
         flexGrow={1}
         justifyContent="space-evenly"
         spacing={DEFAULT_GAP / 3}
@@ -81,12 +82,13 @@ const CustomNodeItem: FC<IProps> = ({
               maxW={400}
               noOfLines={1}
               textAlign="left"
+              w="full"
             >
               {item.name}
             </Text>
           </Tooltip>
 
-          <HStack justifyContent="flex-end" spacing={DEFAULT_GAP / 3} w="full">
+          <HStack spacing={DEFAULT_GAP / 3} w="full">
             {/*algod*/}
             <Tag colorScheme="green" size="sm" variant="solid">
               <TagLabel>algod</TagLabel>
@@ -111,9 +113,11 @@ const CustomNodeItem: FC<IProps> = ({
 
         {/*disabled*/}
         {isActivated && (
-          <Tag colorScheme="green" size="sm" variant="solid">
-            <TagLabel>{t<string>('labels.activated')}</TagLabel>
-          </Tag>
+          <Stack>
+            <Tag colorScheme="green" size="sm" variant="subtle">
+              <TagLabel>{t<string>('labels.activated')}</TagLabel>
+            </Tag>
+          </Stack>
         )}
       </HStack>
 
@@ -143,12 +147,6 @@ const CustomNodeItem: FC<IProps> = ({
                   onSelect: handleOnActivateClick,
                 },
               ]),
-          // view
-          {
-            icon: IoEyeOutline,
-            label: t<string>('labels.view'),
-            onSelect: handleOnSelectClick,
-          },
           // remove
           {
             icon: IoTrashOutline,

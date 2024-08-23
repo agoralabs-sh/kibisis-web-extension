@@ -510,7 +510,7 @@ export default class NetworkClient {
       new URL(
         `${
           algodNode.port ? `${algodNode.url}:${algodNode.port}` : algodNode.url
-        }`
+        }/v2/transactions/params`
       ),
       {
         ...(algodNode.token && {

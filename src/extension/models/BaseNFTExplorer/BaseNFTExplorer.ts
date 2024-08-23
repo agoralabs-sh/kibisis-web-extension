@@ -1,7 +1,10 @@
 // types
+import type { IBaseNetworkServiceProvider } from '@extension/types';
 import type { INewOptions, ITokensURLOptions } from './types';
 
-export default abstract class BaseNFTExplorer {
+export default abstract class BaseNFTExplorer
+  implements IBaseNetworkServiceProvider
+{
   // protected variables
   protected readonly _baseURL: string;
   // public variables

@@ -40,6 +40,7 @@ const ViewCustomNodeModal: FC<IProps> = ({ item, onClose }) => {
   const [network, setNetwork] = useState<INetwork | null>(null);
   // handlers
   const handleClose = () => {
+    setNetwork(null);
     onClose && onClose();
   };
   const handleOKClick = () => handleClose();
@@ -75,10 +76,7 @@ const ViewCustomNodeModal: FC<IProps> = ({ item, onClose }) => {
 
         <ModalBody display="flex" px={DEFAULT_GAP}>
           {item && network && (
-            <CustomNodeSummaryModalContent
-              customNode={item}
-              network={network}
-            />
+            <CustomNodeSummaryModalContent item={item} network={network} />
           )}
         </ModalBody>
 

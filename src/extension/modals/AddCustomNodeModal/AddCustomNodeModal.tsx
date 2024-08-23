@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   Heading,
   HStack,
   Modal,
@@ -6,6 +7,9 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Stack,
+  Text,
+  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import type { Algodv2 } from 'algosdk';
@@ -24,6 +28,7 @@ import Button from '@extension/components/Button';
 import CustomNodeSummaryModalContent from '@extension/components/CustomNodeSummaryModalContent';
 import GenericInput from '@extension/components/GenericInput';
 import ModalSubHeading from '@extension/components/ModalSubHeading';
+import MoreInformationAccordion from '@extension/components/MoreInformationAccordion';
 import AddCustomNodeLoadingModalContent from './AddCustomNodeLoadingModalContent';
 
 // constants
@@ -31,15 +36,19 @@ import {
   BODY_BACKGROUND_COLOR,
   CUSTOM_NODE_BYTE_LIMIT,
   DEFAULT_GAP,
+  MODAL_ITEM_HEIGHT,
 } from '@extension/constants';
 
 // features
 import { addCustomNodeThunk } from '@extension/features/networks';
 import { create as createNotification } from '@extension/features/notifications';
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useGenericInput from '@extension/hooks/useGenericInput';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
@@ -59,17 +68,24 @@ import type {
   ICustomNode,
   IMainRootState,
   INetwork,
+  INetworkWithTransactionParams,
 } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
 import createAlgodClient from '@common/utils/createAlgodClient';
+import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import avmVersionsWithDelay from '@extension/utils/avmVersionsWithDelay';
 import isNetworkSupportedFromSettings from '@extension/utils/isNetworkSupportedFromSettings';
 
-const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
+const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
+  const {
+    isOpen: isAdvancedOpen,
+    onOpen: onAdvancedOpen,
+    onClose: onAdvancedClose,
+  } = useDisclosure();
   // selectors
   const logger = useSelectLogger();
   const networks = useSelectNetworks();
@@ -77,6 +93,8 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
   const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   const {
     error: algodURLError,
     reset: resetAlgodURL,
@@ -128,11 +146,18 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
   } = useGenericInput();
   // state
   const [customNode, setCustomNode] = useState<ICustomNode | null>(null);
+  const [activate, setActivate] = useState<boolean>(false);
   const [fetching, setFetching] = useState<boolean>(false);
   const [network, setNetwork] = useState<INetwork | null>(null);
+  // handlers
+  const handleActivateChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setActivate(event.target.checked);
+  const handleAdvancedToggle = (value: boolean) =>
+    value ? onAdvancedOpen() : onAdvancedClose();
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
     // reset summary states
+    setActivate(false);
     setCustomNode(null);
     setFetching(false);
     setNetwork(null);
@@ -345,11 +370,30 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
     setNetwork(null);
   };
   const handleSaveClick = async () => {
+    let _network: INetworkWithTransactionParams | null;
+
     if (!customNode || !network) {
       return;
     }
 
-    await dispatch(addCustomNodeThunk(customNode)).unwrap();
+    _network = await dispatch(addCustomNodeThunk(customNode)).unwrap();
+    _network && onComplete && onComplete(_network);
+
+    // if activate has been enabled, set it in the settings
+    if (activate) {
+      dispatch(
+        saveSettingsToStorageThunk({
+          ...settings,
+          general: {
+            ...settings.general,
+            selectedNodeIDs: {
+              ...settings.general.selectedNodeIDs,
+              [convertGenesisHashToHex(network.genesisHash)]: customNode.id,
+            },
+          },
+        })
+      );
+    }
 
     dispatch(
       createNotification({
@@ -373,17 +417,14 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
 
     if (customNode && network) {
       return (
-        <CustomNodeSummaryModalContent
-          customNode={customNode}
-          network={network}
-        />
+        <CustomNodeSummaryModalContent item={customNode} network={network} />
       );
     }
 
     return (
-      <VStack flexGrow={1} spacing={DEFAULT_GAP / 3} w="full">
+      <VStack flexGrow={1} spacing={DEFAULT_GAP - 2} w="full">
         {/*general details*/}
-        <ModalSubHeading text={t<string>('headings.generalDetails')} />
+        <ModalSubHeading text={t<string>('headings.general')} />
 
         {/*name*/}
         <GenericInput
@@ -398,6 +439,20 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
           type="text"
           value={nameValue || ''}
         />
+
+        {/*activate on add*/}
+        <Stack alignItems="flex-end" w="full">
+          <Checkbox
+            colorScheme={primaryColorScheme}
+            isChecked={activate}
+            isDisabled={saving}
+            onChange={handleActivateChange}
+          >
+            <Text color={subTextColor} fontSize="sm" textAlign="left" w="full">
+              {t<string>('labels.activateOnAdd')}
+            </Text>
+          </Checkbox>
+        </Stack>
 
         {/*algod details*/}
         <ModalSubHeading text={t<string>('headings.algodDetails')} />
@@ -439,44 +494,55 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose }) => {
           value={algodTokenValue || ''}
         />
 
-        {/*indexer details*/}
-        <ModalSubHeading text={t<string>('headings.indexerDetails')} />
+        <MoreInformationAccordion
+          color={defaultTextColor}
+          fontSize="md"
+          isOpen={isAdvancedOpen}
+          label={t<string>('labels.advanced')}
+          minButtonHeight={MODAL_ITEM_HEIGHT}
+          onChange={handleAdvancedToggle}
+        >
+          <VStack flexGrow={1} spacing={DEFAULT_GAP - 2} w="full">
+            {/*indexer details*/}
+            <ModalSubHeading text={t<string>('headings.indexerDetails')} />
 
-        {/*indexer url*/}
-        <GenericInput
-          error={indexerURLError}
-          label={t<string>('labels.url')}
-          isDisabled={fetching}
-          onChange={handleOnChange('indexerURL')}
-          onError={handleOnError('indexerURL')}
-          placeholder={t<string>('placeholders.url')}
-          type="text"
-          value={indexerURLValue || ''}
-        />
+            {/*indexer url*/}
+            <GenericInput
+              error={indexerURLError}
+              label={t<string>('labels.url')}
+              isDisabled={fetching}
+              onChange={handleOnChange('indexerURL')}
+              onError={handleOnError('indexerURL')}
+              placeholder={t<string>('placeholders.url')}
+              type="text"
+              value={indexerURLValue || ''}
+            />
 
-        {/*indexer port*/}
-        <GenericInput
-          error={indexerPortError}
-          label={t<string>('labels.port')}
-          isDisabled={fetching}
-          onChange={handleOnChange('indexerPort')}
-          onError={handleOnError('indexerPort')}
-          placeholder={t<string>('placeholders.port')}
-          type="text"
-          value={indexerPortValue || ''}
-        />
+            {/*indexer port*/}
+            <GenericInput
+              error={indexerPortError}
+              label={t<string>('labels.port')}
+              isDisabled={fetching}
+              onChange={handleOnChange('indexerPort')}
+              onError={handleOnError('indexerPort')}
+              placeholder={t<string>('placeholders.port')}
+              type="text"
+              value={indexerPortValue || ''}
+            />
 
-        {/*indexer token*/}
-        <GenericInput
-          error={indexerTokenError}
-          label={t<string>('labels.token')}
-          informationText={t<string>('captions.indexerToken')}
-          isDisabled={fetching}
-          onChange={handleOnChange('indexerToken')}
-          onError={handleOnError('indexerToken')}
-          type="text"
-          value={indexerTokenValue || ''}
-        />
+            {/*indexer token*/}
+            <GenericInput
+              error={indexerTokenError}
+              label={t<string>('labels.token')}
+              informationText={t<string>('captions.indexerToken')}
+              isDisabled={fetching}
+              onChange={handleOnChange('indexerToken')}
+              onError={handleOnError('indexerToken')}
+              type="text"
+              value={indexerTokenValue || ''}
+            />
+          </VStack>
+        </MoreInformationAccordion>
       </VStack>
     );
   };

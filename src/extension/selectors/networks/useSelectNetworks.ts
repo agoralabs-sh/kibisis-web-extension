@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // types
-import {
+import type {
   IMainRootState,
   INetworkWithTransactionParams,
 } from '@extension/types';

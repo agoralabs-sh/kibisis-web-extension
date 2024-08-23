@@ -37,8 +37,8 @@ const networks: INetwork[] = [
       },
     ],
     arc0072Indexers: [
-      new NautilusARC0072Indexer(),
-      new NFTNavigatorARC0072Indexer(),
+      new NautilusARC0072Indexer('https://arc72-idx.nautilus.sh'),
+      new NFTNavigatorARC0072Indexer('https://arc72-idx.nftnavigator.xyz'),
     ],
     canonicalName: 'Voi',
     chakraTheme: 'voi',

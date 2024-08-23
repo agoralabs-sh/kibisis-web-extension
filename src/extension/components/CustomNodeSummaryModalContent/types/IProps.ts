@@ -1,9 +1,8 @@
 // types
-import type { ICustomNodeItem } from '@extension/services/CustomNodesService';
-import type { INetwork } from '@extension/types';
+import type { ICustomNode, INetwork } from '@extension/types';
 
 interface IProps {
-  customNode: ICustomNodeItem;
+  item: ICustomNode;
   network: INetwork;
 }
 

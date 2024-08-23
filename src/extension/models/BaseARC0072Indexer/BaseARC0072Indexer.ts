@@ -9,14 +9,19 @@ import {
 } from '@extension/errors';
 
 // types
-import type { IARC0072AssetHolding } from '@extension/types';
+import type {
+  IARC0072AssetHolding,
+  IBaseNetworkServiceProvider,
+} from '@extension/types';
 import type {
   IFetchTokensByOwnerOptions,
   INewOptions,
   ITokensResponse,
 } from './types';
 
-export default abstract class BaseARC0072Indexer {
+export default abstract class BaseARC0072Indexer
+  implements IBaseNetworkServiceProvider
+{
   // protected variables
   protected readonly _baseURL: string;
   protected readonly _apiPath: string = '/nft-indexer/v1';
