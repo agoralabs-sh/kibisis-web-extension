@@ -1,3 +1,10 @@
+# [1.18.0-beta.6](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.5...v1.18.0-beta.6) (2024-08-23)
+
+
+### Features
+
+* add custom node details ([#278](https://github.com/agoralabs-sh/kibisis-web-extension/issues/278)) ([f393ae6](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f393ae63edeb759c01342aeca42bc0b292b15d3d))
+
 # [1.18.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.4...v1.18.0-beta.5) (2024-08-11)
 
 
