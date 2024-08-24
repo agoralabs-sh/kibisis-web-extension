@@ -1,3 +1,10 @@
+# [1.18.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.8...v1.18.0-beta.9) (2024-08-24)
+
+
+### Features
+
+* add a 1kb limit to notes ([#283](https://github.com/agoralabs-sh/kibisis-web-extension/issues/283)) ([73600b9](https://github.com/agoralabs-sh/kibisis-web-extension/commit/73600b9280a89e366eb2884dd4d0e6b6f6fc5b05))
+
 # [1.18.0-beta.8](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.7...v1.18.0-beta.8) (2024-08-23)
 
 
