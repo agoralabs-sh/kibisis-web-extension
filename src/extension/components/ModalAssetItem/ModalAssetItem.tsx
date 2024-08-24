@@ -6,7 +6,7 @@ import AssetDisplay from '@extension/components/AssetDisplay';
 import WarningIcon from '@extension/components/WarningIcon';
 
 // constants
-import { MODAL_ITEM_HEIGHT } from '@extension/constants';
+import { DEFAULT_GAP, MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -18,7 +18,7 @@ import type { IProps } from './types';
 const ModalAssetItem: FC<IProps> = ({
   amountInAtomicUnits,
   decimals,
-  displayUnit = false,
+  displayUnit = true,
   icon,
   isLoading = false,
   label,
@@ -35,7 +35,7 @@ const ModalAssetItem: FC<IProps> = ({
       alignItems="center"
       justifyContent="space-between"
       minH={MODAL_ITEM_HEIGHT}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
       {...stackProps}
     >
@@ -59,7 +59,7 @@ const ModalAssetItem: FC<IProps> = ({
             atomicUnitAmount={amountInAtomicUnits}
             amountColor={subTextColor}
             decimals={decimals}
-            displayUnit={true}
+            displayUnit={displayUnit}
             fontSize="xs"
             icon={icon}
             unit={unit}
