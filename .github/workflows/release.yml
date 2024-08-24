@@ -27,6 +27,10 @@ jobs:
   release:
     name: "Release"
     needs: [install]
+    permissions:
+      contents: write # to be able to publish a github release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -42,7 +46,6 @@ jobs:
           posthog_api_host: ${{ secrets.POSTHOG_API_HOST }}
           posthog_project_id: ${{ secrets.POSTHOG_PROJECT_ID }}
           provider_id: ${{ vars.PROVIDER_ID }}
-          walletconnect_project_id: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
       - name: "🔖 Release"
         env:
           # appears on the release commits

@@ -1,7 +1,13 @@
 .build/
 .dapp/
+.chrome/
+.chrome_build/
+.chrome_profile/
+.edge/
+.edge_build/
+.edge_profile/
 .firefox/
+.firefox_build/
 .firefox_profile/
 coverage/
-dist/
 node_modules/
