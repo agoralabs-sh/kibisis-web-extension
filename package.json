@@ -151,5 +151,14 @@
     "uuid": "^9.0.0",
     "webextension-polyfill": "^0.10.0",
     "zxcvbn": "^4.4.2"
+  },
+  "resolutions": {
+    "@babel/traverse": "^7.23.2",
+    "axios": "^1.7.4",
+    "braces": "^3.0.3",
+    "semver": "^6.3.1",
+    "webpack-dev-middleware": "^5.3.4",
+    "ws": "^7.5.10",
+    "yaml": "^2.2.2"
   }
 }
