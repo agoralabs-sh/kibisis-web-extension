@@ -221,13 +221,13 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
       !!indexerTokenError ||
       !!nameError ||
       [
-        validateName(),
-        validateAlgodURL(),
-        validateAlgodPort(),
-        validateAlgodToken(),
-        validateIndexerURL(),
-        validateIndexerPort(),
-        validateIndexerToken(),
+        validateName(nameValue),
+        validateAlgodURL(algodURLValue),
+        validateAlgodPort(algodPortValue),
+        validateAlgodToken(algodTokenValue),
+        validateIndexerURL(indexerURLValue),
+        validateIndexerPort(indexerPortValue),
+        validateIndexerToken(indexerTokenValue),
       ].some((value) => !!value)
     ) {
       return;

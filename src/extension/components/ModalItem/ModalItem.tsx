@@ -27,7 +27,6 @@ const ModalItem: FC<IProps> = ({
     <HStack
       alignItems="center"
       justifyContent="space-between"
-      minH={MODAL_ITEM_HEIGHT}
       spacing={DEFAULT_GAP / 3}
       w="full"
       {...stackProps}
@@ -37,7 +36,12 @@ const ModalItem: FC<IProps> = ({
         {label}
       </Text>
 
-      <HStack flexGrow={1} justifyContent="flex-end" spacing={DEFAULT_GAP / 3}>
+      <HStack
+        flexGrow={1}
+        justifyContent="flex-end"
+        minH={MODAL_ITEM_HEIGHT}
+        spacing={DEFAULT_GAP / 3}
+      >
         {/*value*/}
         {tooltipLabel ? (
           <Tooltip

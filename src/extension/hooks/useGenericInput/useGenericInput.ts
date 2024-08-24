@@ -22,17 +22,23 @@ export default function useGenericInput({
     setError(null);
     setValue('');
   };
-  const _validate = () =>
-    validateInput({
+  const _validate = (_value: string) => {
+    const _error = validateInput({
       characterLimit,
       field: label,
       t,
       required,
-      value,
+      value: _value,
       validate,
     });
 
+    setError(_error);
+
+    return _error;
+  };
+
   return {
+    characterLimit,
     error,
     label,
     reset,

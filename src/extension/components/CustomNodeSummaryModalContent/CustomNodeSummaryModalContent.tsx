@@ -32,7 +32,7 @@ const CustomNodeSummaryModalContent: FC<IProps> = ({ item, network }) => {
       {/*type*/}
       <ModalItem
         label={`${t<string>('labels.network')}:`}
-        value={<NetworkBadge network={network} />}
+        value={<NetworkBadge network={network} size="xs" />}
       />
 
       {item.algod && (

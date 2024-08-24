@@ -30,23 +30,14 @@ const ModalTextItem: FC<IProps> = ({
   const renderValue = () => {
     if (isCode) {
       return (
-        <Code
-          borderRadius="md"
-          fontSize={fontSize}
-          minH={MODAL_ITEM_HEIGHT}
-          wordBreak="break-word"
-        >
+        <Code borderRadius="md" fontSize={fontSize} wordBreak="break-word">
           {value}
         </Code>
       );
     }
 
     return (
-      <Text
-        color={defaultTextColor}
-        fontSize={fontSize}
-        minH={MODAL_ITEM_HEIGHT}
-      >
+      <Text color={defaultTextColor} fontSize={fontSize} wordBreak="break-word">
         {value}
       </Text>
     );
@@ -68,17 +59,13 @@ const ModalTextItem: FC<IProps> = ({
       <HStack
         flexGrow={1}
         justifyContent="flex-end"
+        minH={MODAL_ITEM_HEIGHT}
         spacing={DEFAULT_GAP / 3}
         w="full"
       >
         {/*value*/}
         {tooltipLabel ? (
-          <Tooltip
-            aria-label={`A tooltip displaying the label ${tooltipLabel}`}
-            label={tooltipLabel}
-          >
-            {renderValue()}
-          </Tooltip>
+          <Tooltip label={tooltipLabel}>{renderValue()}</Tooltip>
         ) : (
           renderValue()
         )}

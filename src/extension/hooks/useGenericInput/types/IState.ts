@@ -6,7 +6,7 @@ interface IState {
   reset: () => void;
   setError: (value: string | null) => void;
   setValue: (value: string) => void;
-  validate: () => string | null;
+  validate: (value: string) => string | null;
   value: string;
 }
 

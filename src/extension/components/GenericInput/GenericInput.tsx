@@ -83,7 +83,6 @@ const GenericInput: FC<IProps> = ({
       setCharactersRemaining(characterLimit - byteLength);
     }
 
-    // clear error
     onError &&
       onError(
         validateInput({

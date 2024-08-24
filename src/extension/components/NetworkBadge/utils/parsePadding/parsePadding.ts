@@ -4,13 +4,13 @@ import type { TSizes } from '@extension/types';
 export default function parsePadding(size: TSizes): number {
   switch (size) {
     case 'lg':
-      return 4;
+      return 6;
     case 'md':
-      return 3;
+      return 5;
     case 'xs':
-      return 1;
+      return 2;
     case 'sm':
     default:
-      return 2;
+      return 3;
   }
 }
