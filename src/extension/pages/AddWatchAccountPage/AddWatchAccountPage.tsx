@@ -48,7 +48,7 @@ const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
   const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
   const validateAddress = (value: string): string | null => {
     if (value.length <= 0) {
-      return t<string>('errors.inputs.required', {
+      return t<string>('errors.inputs.requiredWithLabel', {
         name: t<string>('labels.address'),
       });
     }

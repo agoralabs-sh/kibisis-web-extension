@@ -1,17 +1,17 @@
-import { Code, HStack, VStack } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
 import AddressDisplay from '@extension/components/AddressDisplay';
 import AssetAvatar from '@extension/components/AssetAvatar';
 import AssetBadge from '@extension/components/AssetBadge';
-import AssetDisplay from '@extension/components/AssetDisplay';
 import AssetIcon from '@extension/components/AssetIcon';
+import ModalAssetItem from '@extension/components/ModalAssetItem';
+import ModalItem from '@extension/components/ModalItem';
+import ModalTextItem from '@extension/components/ModalTextItem';
 import Warning from '@extension/components/Warning';
-import WarningIcon from '@extension/components/WarningIcon';
-import SendAssetSummaryItem from './SendAssetSummaryItem';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
@@ -31,6 +31,7 @@ import type { ISendAssetModalSummaryContentProps } from './types';
 import convertToAtomicUnit from '@common/utils/convertToAtomicUnit';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
+import calculateIconSize from '@extension/utils/calculateIconSize';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
 
@@ -69,16 +70,16 @@ const SendAssetModalSummaryContent: FC<ISendAssetModalSummaryContentProps> = ({
     transactions.reduce((acc, value) => acc + value.fee, 0)
   );
   // renders
-  const renderAssetDisplay = () => {
+  const renderAssetItem = () => {
+    const label = `${t<string>('labels.amount')}:`;
+
     switch (asset.type) {
       case AssetTypeEnum.ARC0200:
         return (
-          <AssetDisplay
-            atomicUnitAmount={amountInAtomicUnits}
-            amountColor={subTextColor}
+          <ModalAssetItem
+            amountInAtomicUnits={amountInAtomicUnits}
             decimals={asset.decimals}
             displayUnit={true}
-            fontSize="sm"
             icon={
               <AssetAvatar
                 asset={asset}
@@ -86,40 +87,36 @@ const SendAssetModalSummaryContent: FC<ISendAssetModalSummaryContentProps> = ({
                   <AssetIcon
                     color={primaryButtonTextColor}
                     networkTheme={network.chakraTheme}
-                    h={3}
-                    w={3}
+                    boxSize={calculateIconSize('xs')}
                   />
                 }
                 size="2xs"
               />
             }
+            label={label}
             unit={asset.symbol}
           />
         );
       case AssetTypeEnum.Native:
         return (
-          <AssetDisplay
-            atomicUnitAmount={amountInAtomicUnits}
-            amountColor={subTextColor}
+          <ModalAssetItem
+            amountInAtomicUnits={amountInAtomicUnits}
             decimals={asset.decimals}
             displayUnit={false}
-            fontSize="sm"
             icon={createIconFromDataUri(asset.iconUrl, {
               color: subTextColor,
-              h: 3,
-              w: 3,
+              boxSize: calculateIconSize('xs'),
             })}
+            label={label}
             unit={asset.symbol}
           />
         );
       case AssetTypeEnum.Standard:
         return (
-          <AssetDisplay
-            atomicUnitAmount={amountInAtomicUnits}
-            amountColor={subTextColor}
+          <ModalAssetItem
+            amountInAtomicUnits={amountInAtomicUnits}
             decimals={asset.decimals}
             displayUnit={true}
-            fontSize="sm"
             icon={
               <AssetAvatar
                 asset={asset}
@@ -127,14 +124,16 @@ const SendAssetModalSummaryContent: FC<ISendAssetModalSummaryContentProps> = ({
                   <AssetIcon
                     color={primaryButtonTextColor}
                     networkTheme={network.chakraTheme}
-                    h={3}
-                    w={3}
+                    boxSize={calculateIconSize('xs')}
                   />
                 }
                 size="2xs"
               />
             }
-            unit={asset.unitName || undefined}
+            label={label}
+            {...(asset.unitName && {
+              unit: asset.unitName,
+            })}
           />
         );
       default:
@@ -161,31 +160,19 @@ const SendAssetModalSummaryContent: FC<ISendAssetModalSummaryContentProps> = ({
     );
 
     return (
-      <SendAssetSummaryItem
-        fontSize="sm"
-        item={
-          <HStack spacing={2}>
-            <AssetDisplay
-              atomicUnitAmount={extraPaymentInAtomicUnits}
-              amountColor={subTextColor}
-              decimals={network.nativeCurrency.decimals}
-              fontSize="sm"
-              icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
-                color: subTextColor,
-                h: 3,
-                w: 3,
-              })}
-              unit={network.nativeCurrency.symbol}
-            />
-
-            <WarningIcon
-              tooltipLabel={t<string>('captions.extraPayment', {
-                symbol: asset.symbol,
-              })}
-            />
-          </HStack>
-        }
-        label={t<string>('labels.extraPayment')}
+      <ModalAssetItem
+        amountInAtomicUnits={extraPaymentInAtomicUnits}
+        decimals={network.nativeCurrency.decimals}
+        displayUnit={false}
+        icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
+          color: subTextColor,
+          boxSize: calculateIconSize('xs'),
+        })}
+        label={`${t<string>('labels.extraPayment')}:`}
+        unit={network.nativeCurrency.symbol}
+        warningLabel={t<string>('captions.extraPayment', {
+          symbol: asset.symbol,
+        })}
       />
     );
   };
@@ -194,7 +181,7 @@ const SendAssetModalSummaryContent: FC<ISendAssetModalSummaryContentProps> = ({
     <VStack
       alignItems="flex-start"
       justifyContent="flex-start"
-      spacing={DEFAULT_GAP - 2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       {isBelowMinimumBalance && (
@@ -227,81 +214,59 @@ const SendAssetModalSummaryContent: FC<ISendAssetModalSummaryContentProps> = ({
       )}
 
       {/*amount/asset*/}
-      <SendAssetSummaryItem
-        fontSize="sm"
-        item={renderAssetDisplay()}
-        label={t<string>('labels.amount')}
-      />
+      {renderAssetItem()}
 
       {/*from account*/}
-      <SendAssetSummaryItem
-        fontSize="sm"
-        item={
+      <ModalItem
+        label={`${t<string>('labels.from')}:`}
+        value={
           <AddressDisplay
             accounts={accounts}
             address={convertPublicKeyToAVMAddress(fromAccount.publicKey)}
-            ariaLabel="From address"
             size="sm"
             network={network}
           />
         }
-        label={t<string>('labels.from')}
       />
 
       {/*to address*/}
-      <SendAssetSummaryItem
-        fontSize="sm"
-        item={
+      <ModalItem
+        label={`${t<string>('labels.to')}:`}
+        value={
           <AddressDisplay
             accounts={accounts}
             address={toAddress}
-            ariaLabel="To address"
             size="sm"
             network={network}
           />
         }
-        label={t<string>('labels.to')}
       />
 
       {/*type*/}
       {asset.type !== AssetTypeEnum.Native && (
-        <SendAssetSummaryItem
-          fontSize="sm"
-          item={<AssetBadge type={asset.type} />}
-          label={t<string>('labels.type')}
+        <ModalItem
+          label={`${t<string>('labels.type')}:`}
+          value={<AssetBadge type={asset.type} />}
         />
       )}
 
       {/*fee*/}
-      <SendAssetSummaryItem
-        fontSize="sm"
-        item={
-          <HStack spacing={2}>
-            <AssetDisplay
-              atomicUnitAmount={totalFee}
-              amountColor={subTextColor}
-              decimals={network.nativeCurrency.decimals}
-              fontSize="sm"
-              icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
-                color: subTextColor,
-                h: 3,
-                w: 3,
-              })}
-              unit={network.nativeCurrency.symbol}
-            />
-
-            {/*show a warning for higher arc0200 fees for one-time box storage*/}
-            {asset.type === AssetTypeEnum.ARC0200 &&
-              transactions.length > 1 && (
-                <WarningIcon
-                  tooltipLabel={t<string>('captions.higherFee', {
-                    symbol: asset.symbol,
-                  })}
-                />
-              )}
-          </HStack>
-        }
-        label={t<string>('labels.fee')}
+      <ModalAssetItem
+        amountInAtomicUnits={totalFee}
+        decimals={network.nativeCurrency.decimals}
+        displayUnit={false}
+        icon={createIconFromDataUri(network.nativeCurrency.iconUrl, {
+          color: subTextColor,
+          boxSize: calculateIconSize('xs'),
+        })}
+        label={`${t<string>('labels.fee')}:`}
+        unit={network.nativeCurrency.symbol}
+        {...(asset.type === AssetTypeEnum.ARC0200 &&
+          transactions.length > 1 && {
+            warningLabel: t<string>('captions.higherFee', {
+              symbol: asset.symbol,
+            }),
+          })}
       />
 
       {/*extra payment*/}
@@ -309,14 +274,10 @@ const SendAssetModalSummaryContent: FC<ISendAssetModalSummaryContentProps> = ({
 
       {/*note*/}
       {note && note.length > 0 && (
-        <SendAssetSummaryItem
-          fontSize="sm"
-          item={
-            <Code borderRadius="md" fontSize="sm" wordBreak="break-word">
-              {note}
-            </Code>
-          }
-          label={t<string>('labels.note')}
+        <ModalTextItem
+          isCode={true}
+          label={`${t<string>('labels.note')}:`}
+          value={note}
         />
       )}
     </VStack>

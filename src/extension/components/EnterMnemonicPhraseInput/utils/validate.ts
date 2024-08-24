@@ -12,7 +12,9 @@ export default function validate(
   }
 
   if (phrases.every((value) => value.length <= 0)) {
-    return t<string>('errors.inputs.required', { name: 'Mnemonic phrase' });
+    return t<string>('errors.inputs.requiredWithLabel', {
+      name: 'Mnemonic phrase',
+    });
   }
 
   if (!isMnemonicValid(phrases.join(' '))) {

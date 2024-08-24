@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import React, { FC } from 'react';
 
 // constants
-import { MODAL_ITEM_HEIGHT } from '@extension/constants';
+import { DEFAULT_GAP, MODAL_ITEM_HEIGHT } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -11,15 +11,15 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 const ModalSkeletonItem: FC<StackProps> = (props: StackProps) => {
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
 
   return (
     <HStack
       alignItems="center"
       justifyContent="space-between"
       minH={MODAL_ITEM_HEIGHT}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
       {...props}
     >

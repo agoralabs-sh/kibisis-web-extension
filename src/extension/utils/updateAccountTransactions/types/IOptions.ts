@@ -1,5 +1,3 @@
-import type { Indexer } from 'algosdk';
-
 // types
 import type { IBaseOptions } from '@common/types';
 import type { IAccountTransactions, INetwork } from '@extension/types';

@@ -1,7 +1,11 @@
-import { StackProps } from '@chakra-ui/react';
+import type { StackProps } from '@chakra-ui/react';
+
+// types
+import type { TSizes } from '@extension/types';
 
 interface IProps extends StackProps {
   copyButtonLabel?: string;
+  fontSize?: TSizes;
   isCode?: boolean;
   label: string;
   tooltipLabel?: string;
