@@ -6,13 +6,12 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Textarea,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import { Transaction } from 'algosdk';
+import { type Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { type ChangeEvent, type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -23,13 +22,17 @@ import AddressInput from '@extension/components/AddressInput';
 import AmountInput from '@extension/components/AmountInput';
 import AssetSelect from '@extension/components/AssetSelect';
 import Button from '@extension/components/Button';
-import Label from '@extension/components/Label';
+import GenericTextarea from '@extension/components/GenericTextarea';
 import SendAssetModalConfirmingContent from './SendAssetModalConfirmingContent';
 import SendAssetModalContentSkeleton from './SendAssetModalContentSkeleton';
 import SendAssetModalSummaryContent from './SendAssetModalSummaryContent';
 
 // constants
-import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
+import {
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+  TRANSACTION_NOTE_BYTE_LIMIT,
+} from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
@@ -54,7 +57,6 @@ import {
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
@@ -97,6 +99,7 @@ import type {
 // utils
 import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransactionAmount';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import validateAddressInput from '@extension/utils/validateAddressInput';
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -122,11 +125,11 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const toAddress = useSelectSendAssetToAddress();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const primaryColor = usePrimaryColor();
   // state
-  const [toAddressError, setToAddressError] = useState<string | null>(null);
   const [maximumTransactionAmount, setMaximumTransactionAmount] =
     useState<string>('0');
+  const [noteError, setNoteError] = useState<string | null>(null);
+  const [toAddressError, setToAddressError] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   // misc
   const allAssets: (IAssetTypes | INativeCurrency)[] = [
@@ -141,6 +144,18 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     }) // sort each alphabetically by name
     .sort((a, b) => (a.verified === b.verified ? 0 : a.verified ? -1 : 1)); // then sort to bring the verified to the front
   const isOpen: boolean = !!selectedAsset;
+  const validateToAddress = (value: string) => {
+    let _error = validateAddressInput({
+      field: t<string>('labels.to'),
+      t,
+      required: true,
+      value,
+    });
+
+    setToAddressError(_error);
+
+    return _error;
+  };
   // handlers
   const handleAmountChange = (value: string) => dispatch(setAmount(value));
   const handleAssetChange = (value: IAssetTypes | INativeCurrency) =>
@@ -155,13 +170,11 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
     onClose && onClose();
   };
-  const handleFromAccountChange = (account: IAccountWithExtendedProps) =>
-    dispatch(setFromAddress(convertPublicKeyToAVMAddress(account.publicKey)));
   const handleNextClick = async () => {
     const _functionName = 'handleNextClick';
     let _transactions: Transaction[];
 
-    if (toAddressError) {
+    if (toAddressError || noteError || !!validateToAddress(toAddress || '')) {
       return;
     }
 
@@ -191,39 +204,27 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
   };
-  const handleOnError = (error: BaseExtensionError) => {
-    switch (error.code) {
-      case ErrorCodeEnum.OfflineError:
-        dispatch(
-          createNotification({
-            ephemeral: true,
-            title: t<string>('headings.offline'),
-            type: 'error',
-          })
-        );
+  const handleOnAccountSelect =
+    (field: string) => (value: IAccountWithExtendedProps) => {
+      const address = convertPublicKeyToAVMAddress(value.publicKey);
+
+      switch (field) {
+        case 'fromAddress':
+          dispatch(setFromAddress(address));
+          break;
+        default:
+          break;
+      }
+    };
+  const handleOnAddressInputChange = (field: string) => (value: string) => {
+    switch (field) {
+      case 'toAddress':
+        dispatch(setToAddress(value.length > 0 ? value : null));
         break;
       default:
-        dispatch(
-          createNotification({
-            description: t<string>('errors.descriptions.code', {
-              code: error.code,
-              context: error.code,
-            }),
-            ephemeral: true,
-            title: t<string>('errors.titles.code', { context: error.code }),
-            type: 'error',
-          })
-        );
         break;
     }
   };
-  const handleNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
-    dispatch(
-      setNote(event.target.value.length > 0 ? event.target.value : null)
-    );
-  const handleOnToAddressError = (error: string | null) =>
-    setToAddressError(error);
-  const handlePreviousClick = () => setTransactions(null);
   const handleOnAuthenticationModalConfirm = async (
     result: TEncryptionCredentials
   ) => {
@@ -361,9 +362,59 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
   };
+  const handleOnError = (error: BaseExtensionError) => {
+    switch (error.code) {
+      case ErrorCodeEnum.OfflineError:
+        dispatch(
+          createNotification({
+            ephemeral: true,
+            title: t<string>('headings.offline'),
+            type: 'error',
+          })
+        );
+        break;
+      default:
+        dispatch(
+          createNotification({
+            description: t<string>('errors.descriptions.code', {
+              code: error.code,
+              context: error.code,
+            }),
+            ephemeral: true,
+            title: t<string>('errors.titles.code', { context: error.code }),
+            type: 'error',
+          })
+        );
+        break;
+    }
+  };
+  const handleOnInputChange =
+    (field: string) => (event: ChangeEvent<HTMLTextAreaElement>) => {
+      switch (field) {
+        case 'note':
+          dispatch(
+            setNote(event.target.value.length > 0 ? event.target.value : null)
+          );
+          break;
+        default:
+          break;
+      }
+    };
+  const handleOnInputError = (field: string) => (error: string | null) => {
+    switch (field) {
+      case 'toAddress':
+        setToAddressError(error);
+        break;
+      case 'note':
+        setNoteError(error);
+        break;
+      default:
+        break;
+    }
+  };
+  const handlePreviousClick = () => setTransactions(null);
   const handleSendClick = () => onAuthenticationModalOpen();
-  const handleToAddressChange = (value: string) =>
-    dispatch(setToAddress(value.length > 0 ? value : null));
+
   // renders
   const renderContent = () => {
     if (!fromAccount || !network || !selectedAsset) {
@@ -426,7 +477,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           accounts={availableAccounts}
           disabled={creating}
           label={t<string>('labels.from')}
-          onSelect={handleFromAccountChange}
+          onSelect={handleOnAccountSelect('fromAddress')}
           required={true}
           value={fromAccount}
         />
@@ -437,26 +488,24 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           disabled={creating}
           error={toAddressError}
           label={t<string>('labels.to')}
-          onChange={handleToAddressChange}
-          onError={handleOnToAddressError}
+          onChange={handleOnAddressInputChange('toAddress')}
+          onError={handleOnInputError('toAddress')}
           required={true}
+          validate={validateToAddress}
           value={toAddress || ''}
         />
 
         {/*note*/}
-        <VStack alignItems="flex-start" w="full">
-          <Label label={t<string>('labels.note')} />
-
-          <Textarea
-            focusBorderColor={primaryColor}
-            isDisabled={creating}
-            onChange={handleNoteChange}
-            placeholder={t<string>('placeholders.enterNote')}
-            resize="vertical"
-            size="sm"
-            value={note || ''}
-          />
-        </VStack>
+        <GenericTextarea
+          characterLimit={TRANSACTION_NOTE_BYTE_LIMIT}
+          error={noteError}
+          isDisabled={creating}
+          label={t<string>('labels.note')}
+          onChange={handleOnInputChange('note')}
+          onError={handleOnInputError('note')}
+          placeholder={t<string>('placeholders.enterNote')}
+          value={note || ''}
+        />
       </VStack>
     );
   };

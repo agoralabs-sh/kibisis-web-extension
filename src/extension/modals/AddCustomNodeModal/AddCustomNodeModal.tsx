@@ -97,53 +97,87 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
   const subTextColor = useSubTextColor();
   const {
     error: algodURLError,
+    label: algodURLLabel,
+    required: algodURLRequired,
     reset: resetAlgodURL,
     setError: setAlgodURLError,
     setValue: setAlgodURLValue,
+    validate: validateAlgodURL,
     value: algodURLValue,
-  } = useGenericInput();
+  } = useGenericInput({
+    label: t<string>('labels.url'),
+    required: true,
+  });
   const {
     error: algodPortError,
+    label: algodPortLabel,
     reset: resetAlgodPort,
     setError: setAlgodPortError,
     setValue: setAlgodPortValue,
+    validate: validateAlgodPort,
     value: algodPortValue,
-  } = useGenericInput();
+  } = useGenericInput({
+    label: t<string>('labels.port'),
+  });
   const {
     error: algodTokenError,
+    label: algodTokenLabel,
     reset: resetAlgodToken,
     setError: setAlgodTokenError,
     setValue: setAlgodTokenValue,
+    validate: validateAlgodToken,
     value: algodTokenValue,
-  } = useGenericInput();
+  } = useGenericInput({
+    label: t<string>('labels.token'),
+  });
   const {
     error: indexerURLError,
+    label: indexerURLLabel,
     reset: resetIndexerURL,
     setError: setIndexerURLError,
     setValue: setIndexerURLValue,
+    validate: validateIndexerURL,
     value: indexerURLValue,
-  } = useGenericInput();
+  } = useGenericInput({
+    label: t<string>('labels.url'),
+  });
   const {
     error: indexerPortError,
+    label: indexerPortLabel,
     reset: resetIndexerPort,
     setError: setIndexerPortError,
     setValue: setIndexerPortValue,
+    validate: validateIndexerPort,
     value: indexerPortValue,
-  } = useGenericInput();
+  } = useGenericInput({
+    label: t<string>('labels.port'),
+  });
   const {
     error: indexerTokenError,
+    label: indexerTokenLabel,
     reset: resetIndexerToken,
     setError: setIndexerTokenError,
     setValue: setIndexerTokenValue,
+    validate: validateIndexerToken,
     value: indexerTokenValue,
-  } = useGenericInput();
+  } = useGenericInput({
+    label: t<string>('labels.token'),
+  });
   const {
+    characterLimit: nameCharacterLimit,
     error: nameError,
+    label: nameLabel,
+    required: nameRequired,
     reset: resetName,
     setError: setNameError,
     setValue: setNameValue,
+    validate: validateName,
     value: nameValue,
-  } = useGenericInput();
+  } = useGenericInput({
+    characterLimit: CUSTOM_NODE_BYTE_LIMIT,
+    label: t<string>('labels.name'),
+    required: true,
+  });
   // state
   const [customNode, setCustomNode] = useState<ICustomNode | null>(null);
   const [activate, setActivate] = useState<boolean>(false);
@@ -185,21 +219,18 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
       !!indexerURLError ||
       !!indexerPortError ||
       !!indexerTokenError ||
-      !!nameError
+      !!nameError ||
+      [
+        validateName(),
+        validateAlgodURL(),
+        validateAlgodPort(),
+        validateAlgodToken(),
+        validateIndexerURL(),
+        validateIndexerPort(),
+        validateIndexerToken(),
+      ].some((value) => !!value)
     ) {
       return;
-    }
-
-    if (nameValue.length <= 0) {
-      return setNameError(
-        t<string>('errors.inputs.required', { name: t<string>('labels.name') })
-      );
-    }
-
-    if (algodURLValue.length <= 0) {
-      return setAlgodURLError(
-        t<string>('errors.inputs.required', { name: t<string>('labels.url') })
-      );
     }
 
     logger.debug(
@@ -428,15 +459,16 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
 
         {/*name*/}
         <GenericInput
-          characterLimit={CUSTOM_NODE_BYTE_LIMIT}
+          characterLimit={nameCharacterLimit}
           error={nameError}
-          label={t<string>('labels.name')}
+          label={nameLabel}
           isDisabled={fetching}
           onChange={handleOnChange('name')}
           onError={handleOnError('name')}
           placeholder={t<string>('placeholders.customNodeName')}
-          required={true}
+          required={nameRequired}
           type="text"
+          validate={validateName}
           value={nameValue || ''}
         />
 
@@ -460,37 +492,40 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
         {/*algod url*/}
         <GenericInput
           error={algodURLError}
-          label={t<string>('labels.url')}
+          label={algodURLLabel}
           isDisabled={fetching}
           onChange={handleOnChange('algodURL')}
           onError={handleOnError('algodURL')}
           placeholder={t<string>('placeholders.url')}
-          required={true}
+          required={algodURLRequired}
           type="text"
+          validate={validateAlgodURL}
           value={algodURLValue || ''}
         />
 
         {/*algod port*/}
         <GenericInput
           error={algodPortError}
-          label={t<string>('labels.port')}
+          label={algodPortLabel}
           isDisabled={fetching}
           onChange={handleOnChange('algodPort')}
           onError={handleOnError('algodPort')}
           placeholder={t<string>('placeholders.port')}
           type="text"
+          validate={validateAlgodPort}
           value={algodPortValue || ''}
         />
 
         {/*algod token*/}
         <GenericInput
           error={algodTokenError}
-          label={t<string>('labels.token')}
+          label={algodTokenLabel}
           informationText={t<string>('captions.algodToken')}
           isDisabled={fetching}
           onChange={handleOnChange('algodToken')}
           onError={handleOnError('algodToken')}
           type="text"
+          validate={validateAlgodToken}
           value={algodTokenValue || ''}
         />
 
@@ -509,36 +544,39 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
             {/*indexer url*/}
             <GenericInput
               error={indexerURLError}
-              label={t<string>('labels.url')}
+              label={indexerURLLabel}
               isDisabled={fetching}
               onChange={handleOnChange('indexerURL')}
               onError={handleOnError('indexerURL')}
               placeholder={t<string>('placeholders.url')}
               type="text"
+              validate={validateIndexerURL}
               value={indexerURLValue || ''}
             />
 
             {/*indexer port*/}
             <GenericInput
               error={indexerPortError}
-              label={t<string>('labels.port')}
+              label={indexerPortLabel}
               isDisabled={fetching}
               onChange={handleOnChange('indexerPort')}
               onError={handleOnError('indexerPort')}
               placeholder={t<string>('placeholders.port')}
               type="text"
+              validate={validateIndexerPort}
               value={indexerPortValue || ''}
             />
 
             {/*indexer token*/}
             <GenericInput
               error={indexerTokenError}
-              label={t<string>('labels.token')}
+              label={indexerTokenLabel}
               informationText={t<string>('captions.indexerToken')}
               isDisabled={fetching}
               onChange={handleOnChange('indexerToken')}
               onError={handleOnError('indexerToken')}
               type="text"
+              validate={validateIndexerToken}
               value={indexerTokenValue || ''}
             />
           </VStack>

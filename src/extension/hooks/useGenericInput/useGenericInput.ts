@@ -2,9 +2,17 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // types
-import type { IState } from './types';
+import type { IOptions, IState } from './types';
 
-export default function useGenericInput(): IState {
+// utils
+import validateInput from '@extension/utils/validateInput';
+
+export default function useGenericInput({
+  characterLimit,
+  label,
+  required,
+  validate,
+}: IOptions): IState {
   const { t } = useTranslation();
   // state
   const [error, setError] = useState<string | null>(null);
@@ -14,12 +22,24 @@ export default function useGenericInput(): IState {
     setError(null);
     setValue('');
   };
+  const _validate = () =>
+    validateInput({
+      characterLimit,
+      field: label,
+      t,
+      required,
+      value,
+      validate,
+    });
 
   return {
     error,
+    label,
     reset,
+    required,
     setError,
     setValue,
+    validate: _validate,
     value,
   };
 }

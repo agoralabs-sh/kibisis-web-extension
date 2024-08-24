@@ -1,11 +1,4 @@
-import {
-  Input,
-  InputGroup,
-  InputRightElement,
-  Stack,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Text, Textarea, VStack } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import React, {
   type ChangeEvent,
@@ -17,11 +10,10 @@ import { useTranslation } from 'react-i18next';
 import { randomBytes } from 'tweetnacl';
 
 // components
-import InformationIcon from '@extension/components/InformationIcon';
 import Label from '@extension/components/Label';
 
 // constants
-import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
+import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
@@ -33,18 +25,17 @@ import type { IProps } from './types';
 // utils
 import validateInput from '@extension/utils/validateInput';
 
-const GenericInput: FC<IProps> = ({
+const GenericTextarea: FC<IProps> = ({
   characterLimit,
   error,
   id,
-  informationText,
   label,
   onBlur,
   onChange,
   onError,
   required = false,
   validate,
-  ...inputProps
+  ...textAreaProps
 }) => {
   const { t } = useTranslation();
   // hooks
@@ -57,7 +48,7 @@ const GenericInput: FC<IProps> = ({
   // misc
   const _id = id || encodeBase64URLSafe(randomBytes(6));
   // handlers
-  const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
+  const handleOnBlur = (event: FocusEvent<HTMLTextAreaElement>) => {
     onError &&
       onError(
         validateInput({
@@ -72,7 +63,7 @@ const GenericInput: FC<IProps> = ({
 
     return onBlur && onBlur(event);
   };
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const value = event.target.value;
     let byteLength: number;
 
@@ -83,7 +74,6 @@ const GenericInput: FC<IProps> = ({
       setCharactersRemaining(characterLimit - byteLength);
     }
 
-    // clear error
     onError &&
       onError(
         validateInput({
@@ -103,30 +93,17 @@ const GenericInput: FC<IProps> = ({
     <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
       <Label error={error} inputID={_id} label={label} required={required} />
 
-      {/*input*/}
-      <InputGroup size="md">
-        <Input
-          {...inputProps}
-          focusBorderColor={error ? 'red.300' : primaryColor}
-          id={_id}
-          isInvalid={!!error}
-          h={INPUT_HEIGHT}
-          onBlur={handleOnBlur}
-          onChange={handleOnChange}
-          w="full"
-        />
-
-        {informationText && (
-          <InputRightElement h={INPUT_HEIGHT}>
-            <Stack alignItems="center" h={INPUT_HEIGHT} justifyContent="center">
-              <InformationIcon
-                ariaLabel="Information icon"
-                tooltipLabel={informationText}
-              />
-            </Stack>
-          </InputRightElement>
-        )}
-      </InputGroup>
+      {/*textarea*/}
+      <Textarea
+        resize="vertical"
+        {...textAreaProps}
+        focusBorderColor={error ? 'red.300' : primaryColor}
+        id={_id}
+        isInvalid={!!error}
+        onBlur={handleOnBlur}
+        onChange={handleOnChange}
+        w="full"
+      />
 
       {/*character limit*/}
       {typeof charactersRemaining === 'number' && (
@@ -145,4 +122,4 @@ const GenericInput: FC<IProps> = ({
   );
 };
 
-export default GenericInput;
+export default GenericTextarea;

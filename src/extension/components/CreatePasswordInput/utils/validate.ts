@@ -18,7 +18,7 @@ export default function validate(
   t: TFunction
 ): string | null {
   if (password.length <= 0) {
-    return t<string>('errors.inputs.required', { name: 'Password' });
+    return t<string>('errors.inputs.requiredWithLabel', { name: 'Password' });
   }
 
   if (password.length < PASSWORD_MIN_LENGTH) {

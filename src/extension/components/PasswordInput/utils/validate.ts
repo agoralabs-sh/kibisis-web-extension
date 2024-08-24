@@ -10,7 +10,7 @@ import { TFunction } from 'i18next';
  */
 export default function validate(input: string, t: TFunction): string | null {
   if (input.length <= 0) {
-    return t<string>('errors.inputs.required', { name: 'Password' });
+    return t<string>('errors.inputs.requiredWithLabel', { name: 'Password' });
   }
 
   return null;

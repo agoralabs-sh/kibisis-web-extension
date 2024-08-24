@@ -6,8 +6,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
-import { isValidAddress } from 'algosdk';
-import React, { ChangeEvent, FC } from 'react';
+import React, { type ChangeEvent, type FocusEvent, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoSingleSelect } from 'react-icons/go';
 import { randomBytes } from 'tweetnacl';
@@ -31,17 +30,20 @@ import type { IProps } from './types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import validateAddressInput from '@extension/utils/validateAddressInput';
 
 const AddressInput: FC<IProps> = ({
   accounts,
   allowWatchAccounts = true,
   error,
+  id,
   disabled,
   label,
   onBlur,
   onChange,
   onError,
   required = false,
+  validate,
   value,
 }) => {
   const { t } = useTranslation();
@@ -53,39 +55,57 @@ const AddressInput: FC<IProps> = ({
   // hooks
   const primaryColor = usePrimaryColor();
   // misc
-  const id = encodeBase64URLSafe(randomBytes(6));
-  const validate = (_value: string): string | null => {
-    if (value.length <= 0 && required) {
-      return t<string>('errors.inputs.required', { name: label });
-    }
-
-    if (!isValidAddress(_value)) {
-      return t<string>('errors.inputs.invalidAddress');
-    }
-
-    return null;
-  };
+  const _id = id || encodeBase64URLSafe(randomBytes(6));
   // handlers
-  const handleAccountClick = () => onAccountSelectModalOpen();
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    let _error: string | null;
+  const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
+    onError &&
+      onError(
+        validateAddressInput({
+          field: label,
+          t,
+          required,
+          validate,
+          value: event.target.value,
+        })
+      );
 
-    // clear error
-    onError && onError(null);
-
-    // validate any new errors
-    _error = validate(event.target.value);
-
-    if (_error) {
-      onError && onError(_error);
-    }
-
-    return onChange && onChange(event.target.value);
+    return onBlur && onBlur(event);
   };
-  const handleOnAccountSelect = (_accounts: IAccountWithExtendedProps[]) =>
-    onChange(
-      _accounts[0] ? convertPublicKeyToAVMAddress(_accounts[0].publicKey) : ''
-    );
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const _value = event.target.value;
+
+    onError &&
+      onError(
+        validateAddressInput({
+          field: label,
+          t,
+          required,
+          validate,
+          value: _value,
+        })
+      );
+
+    return onChange(_value);
+  };
+  const handleOnClick = () => onAccountSelectModalOpen();
+  const handleOnSelect = (_accounts: IAccountWithExtendedProps[]) => {
+    const _value = _accounts[0]
+      ? convertPublicKeyToAVMAddress(_accounts[0].publicKey)
+      : '';
+
+    onError &&
+      onError(
+        validateAddressInput({
+          field: label,
+          t,
+          required,
+          validate,
+          value: _value,
+        })
+      );
+
+    return onChange(_value);
+  };
 
   return (
     <>
@@ -96,14 +116,14 @@ const AddressInput: FC<IProps> = ({
         isOpen={isAccountSelectModalOpen}
         multiple={false}
         onClose={onAccountSelectClose}
-        onSelect={handleOnAccountSelect}
+        onSelect={handleOnSelect}
       />
 
       <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
         {/*label*/}
         <Label
           error={error}
-          inputID={id}
+          inputID={_id}
           label={label || t<string>('labels.address')}
           required={required}
         />
@@ -112,11 +132,11 @@ const AddressInput: FC<IProps> = ({
           {/*input*/}
           <Input
             focusBorderColor={error ? 'red.300' : primaryColor}
-            id={id}
+            id={_id}
             isDisabled={disabled}
             isInvalid={!!error}
             h={INPUT_HEIGHT}
-            onBlur={onBlur}
+            onBlur={handleOnBlur}
             onChange={handleOnChange}
             placeholder={t<string>('placeholders.enterAddress')}
             type="text"
@@ -130,7 +150,7 @@ const AddressInput: FC<IProps> = ({
               aria-label="Select an account from the list of available accounts"
               disabled={disabled}
               icon={GoSingleSelect}
-              onClick={handleAccountClick}
+              onClick={handleOnClick}
               size="lg"
               variant="ghost"
             />
