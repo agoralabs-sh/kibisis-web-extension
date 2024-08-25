@@ -100,12 +100,20 @@ const GenericInput: FC<IProps> = ({
 
   return (
     <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
-      <Label error={error} inputID={_id} label={label} required={required} />
+      {/*label*/}
+      <Label
+        error={error}
+        inputID={_id}
+        label={label}
+        px={DEFAULT_GAP - 2}
+        required={required}
+      />
 
       {/*input*/}
       <InputGroup size="md">
         <Input
           {...inputProps}
+          borderRadius="full"
           focusBorderColor={error ? 'red.300' : primaryColor}
           id={_id}
           isInvalid={!!error}
@@ -132,6 +140,7 @@ const GenericInput: FC<IProps> = ({
         <Text
           color={charactersRemaining >= 0 ? subTextColor : 'red.300'}
           fontSize="xs"
+          px={DEFAULT_GAP - 2}
           textAlign="right"
           w="full"
         >

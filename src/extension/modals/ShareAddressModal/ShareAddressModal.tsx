@@ -16,7 +16,7 @@ import { sanitize } from 'dompurify';
 import { toString } from 'qrcode';
 import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoCheckmarkDoneCircleOutline, IoQrCodeOutline } from 'react-icons/io5';
+import { IoCheckmarkOutline, IoQrCodeOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
@@ -28,7 +28,6 @@ import PillSwitch from '@extension/components/PillSwitch';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
-import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useTextBackgroundColor from '@extension/hooks/useTextBackgroundColor';
 
@@ -39,7 +38,6 @@ import { useSelectLogger, useSelectSettings } from '@extension/selectors';
 import { theme } from '@extension/theme';
 
 // types
-import type { ISettings } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
@@ -49,7 +47,7 @@ const ShareAddressModal: FC<IProps> = ({ address, isOpen, onClose }) => {
   const { t } = useTranslation();
   // selectors
   const logger = useSelectLogger();
-  const settings: ISettings = useSelectSettings();
+  const settings = useSelectSettings();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const textBackgroundColor = useTextBackgroundColor();
@@ -173,7 +171,7 @@ const ShareAddressModal: FC<IProps> = ({ address, isOpen, onClose }) => {
         <ModalFooter p={DEFAULT_GAP}>
           <Button
             onClick={handleClose}
-            rightIcon={<IoCheckmarkDoneCircleOutline />}
+            rightIcon={<IoCheckmarkOutline />}
             size="lg"
             variant="solid"
             w="full"

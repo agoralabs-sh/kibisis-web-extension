@@ -1,6 +1,8 @@
 import {
   HStack,
   Input,
+  InputRightElement,
+  Stack,
   Tooltip,
   useDisclosure,
   VStack,
@@ -31,6 +33,7 @@ import type { IProps } from './types';
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import validateAddressInput from '@extension/utils/validateAddressInput';
+import InformationIcon from '@extension/components/InformationIcon';
 
 const AddressInput: FC<IProps> = ({
   _context,
@@ -145,6 +148,15 @@ const AddressInput: FC<IProps> = ({
             value={value}
             w="full"
           />
+
+          <InputRightElement h={INPUT_HEIGHT}>
+            <Stack alignItems="center" h={INPUT_HEIGHT} justifyContent="center">
+              <InformationIcon
+                ariaLabel="Information icon"
+                tooltipLabel={informationText}
+              />
+            </Stack>
+          </InputRightElement>
 
           {/*open account select modal button*/}
           <Tooltip label={t<string>('labels.selectAccount')}>
