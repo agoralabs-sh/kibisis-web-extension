@@ -83,6 +83,8 @@ export default class WebExtPlugin {
       ];
     }
 
+    console.log(runCommand.join(' '));
+
     // start web-ext
     this.webExtRunProcess = spawn('web-ext', runCommand);
   }
