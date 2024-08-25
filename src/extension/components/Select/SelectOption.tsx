@@ -15,7 +15,7 @@ import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const SelectOption: FC<ISelectOptionProps> = ({
   color,
-  fontSize = 'sm',
+  fontSize = 'md',
   value,
 }) => {
   // hooks

@@ -30,17 +30,16 @@ import type {
   IAdvancedSettings,
   IAppThunkDispatch,
   IMainRootState,
-  ISettings,
 } from '@extension/types';
 
 const AdvancedSettingsPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
-  const settings: ISettings = useSelectSettings();
+  const settings = useSelectSettings();
   // handlers
   const handleMainNetSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const allowMainNet: boolean = event.target.checked;
+    const allowMainNet = event.target.checked;
 
     // if the switch is being enabled, get the user to confirmation
     if (allowMainNet) {
@@ -117,9 +116,9 @@ const AdvancedSettingsPage: FC = () => {
           />
         </VStack>
 
-        {/* beta */}
+        {/*experimental*/}
         <VStack w="full">
-          <SettingsSubHeading text={t<string>('headings.beta')} />
+          <SettingsSubHeading text={t<string>('headings.experimental')} />
 
           <SettingsSwitchItem
             checked={settings.advanced.allowMainNet}

@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoCaretDownOutline } from 'react-icons/io5';
+import { IoChevronDownOutline } from 'react-icons/io5';
 
 // components
 import Label from '@extension/components/Label';
@@ -66,7 +66,7 @@ const Select: FC<IProps> = ({
   );
   const subTextColor = useSubTextColor();
   // misc
-  const iconSize = calculateIconSize('md');
+  const iconSize = calculateIconSize('sm');
   // handlers
   const handleOnClick = () => !disabled && onSelectModalOpen();
   const handleOnSelect = (index: number) => {
@@ -135,7 +135,7 @@ const Select: FC<IProps> = ({
             py={DEFAULT_GAP / 3}
             rightIcon={
               <Icon
-                as={IoCaretDownOutline}
+                as={IoChevronDownOutline}
                 boxSize={iconSize}
                 color={subTextColor}
               />

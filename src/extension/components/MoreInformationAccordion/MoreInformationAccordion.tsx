@@ -9,6 +9,9 @@ import {
 import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
@@ -25,7 +28,9 @@ const MoreInformationAccordion: FC<IProps> = ({
   onChange,
 }) => {
   const { t } = useTranslation();
-  const defaultTextColor: string = useDefaultTextColor();
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  // handlers
   const handleOnChange = (value: number) => onChange(value > -1);
 
   return (
@@ -45,9 +50,11 @@ const MoreInformationAccordion: FC<IProps> = ({
           >
             {label || t<string>('labels.moreInformation')}
           </Text>
+
           <AccordionIcon />
         </AccordionButton>
-        <AccordionPanel pb={0} pt={2} px={0}>
+
+        <AccordionPanel pb={0} pt={DEFAULT_GAP / 3} px={0}>
           {children}
         </AccordionPanel>
       </AccordionItem>

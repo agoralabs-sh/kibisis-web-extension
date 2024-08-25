@@ -36,7 +36,6 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
   const fontColor = theme.colors[network.chakraTheme]
     ? 'white'
     : textColorColorCode;
-  const fontSize = parseFontSize(size);
   const nativeCurrencyIcon = createIconFromDataUri(
     network.nativeCurrency.iconUrl,
     {
@@ -59,7 +58,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
       case NetworkTypeEnum.Beta:
         return (
           <HStack backgroundColor={theme.colors.blue['500']} {...defaultProps}>
-            <Text color={fontColor} fontSize={fontSize} textAlign="center">
+            <Text color={fontColor} fontSize={size} textAlign="center">
               {`BetaNet`}
             </Text>
           </HStack>
@@ -70,7 +69,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
             backgroundColor={theme.colors.yellow['500']}
             {...defaultProps}
           >
-            <Text color={fontColor} fontSize={fontSize} textAlign="center">
+            <Text color={fontColor} fontSize={size} textAlign="center">
               {`TestNet`}
             </Text>
           </HStack>
@@ -102,7 +101,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
             {nativeCurrencyIcon}
 
             {/*name*/}
-            <Text color={fontColor} fontSize={fontSize} textAlign="center">
+            <Text color={fontColor} fontSize={size} textAlign="center">
               {network.canonicalName}
             </Text>
           </HStack>
@@ -119,7 +118,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
         {nativeCurrencyIcon}
 
         {/*name*/}
-        <Text color={fontColor} fontSize={fontSize} textAlign="center">
+        <Text color={fontColor} fontSize={size} textAlign="center">
           {network.canonicalName}
         </Text>
       </HStack>
