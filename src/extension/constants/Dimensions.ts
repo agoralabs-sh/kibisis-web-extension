@@ -1,4 +1,5 @@
 export const ACCOUNT_PAGE_HEADER_ITEM_HEIGHT = 10; // 2.5rem - 40px
+export const ACCOUNT_PAGE_TAB_CONTENT_HEIGHT = '60dvh';
 export const ACCOUNT_SELECT_ITEM_MINIMUM_HEIGHT = 60; // px
 export const DEFAULT_GAP = 6;
 export const DEFAULT_POPUP_HEIGHT = 750;

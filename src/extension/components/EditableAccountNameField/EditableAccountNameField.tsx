@@ -15,7 +15,6 @@ import React, {
   ChangeEvent,
   FC,
   KeyboardEvent,
-  MutableRefObject,
   useEffect,
   useRef,
   useState,
@@ -58,10 +57,8 @@ const EditableAccountNameField: FC<IProps> = ({
   onSubmitChange,
 }) => {
   const { t } = useTranslation();
-  const containerRef: MutableRefObject<HTMLDivElement | null> =
-    useRef<HTMLDivElement | null>(null);
-  const inputRef: MutableRefObject<HTMLInputElement | null> =
-    useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();

@@ -9,11 +9,13 @@ import TransactionItem, {
   TransactionItemSkeleton,
 } from '@extension/components/TransactionItem';
 
+// constants
+import { ACCOUNT_PAGE_TAB_CONTENT_HEIGHT } from '@extension/constants';
+
 // services
 import AccountService from '@extension/services/AccountService';
 
 // types
-import type { ITransactions } from '@extension/types';
 import type { IProps } from './types';
 
 const ActivityTab: FC<IProps> = ({
@@ -25,7 +27,7 @@ const ActivityTab: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   // misc
-  const transactions: ITransactions[] | null =
+  const transactions =
     AccountService.extractAccountTransactionsForNetwork(account, network)
       ?.transactions || null;
   // handlers
@@ -85,7 +87,7 @@ const ActivityTab: FC<IProps> = ({
 
   return (
     <TabPanel
-      height="70vh"
+      height={ACCOUNT_PAGE_TAB_CONTENT_HEIGHT}
       m={0}
       p={0}
       sx={{ display: 'flex', flexDirection: 'column' }}

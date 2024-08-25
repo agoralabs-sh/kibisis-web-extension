@@ -20,15 +20,10 @@ import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
-// selectors
-import { useSelectSettingsColorMode } from '@extension/selectors';
-
 // types
 import type { IProps } from './types';
 
 const SettingsLinkItem: FC<IProps> = ({ badges, icon, label, to }) => {
-  // selectors
-  const colorMode = useSelectSettingsColorMode();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
@@ -82,7 +77,7 @@ const SettingsLinkItem: FC<IProps> = ({ badges, icon, label, to }) => {
                   colorScheme={colorScheme}
                   key={`settings-${labelHash.slice(0, 12)}-item-${index}`}
                   size="sm"
-                  variant={colorMode === 'dark' ? 'solid' : 'outline'}
+                  variant="solid"
                 >
                   <TagLabel>{label}</TagLabel>
                 </Tag>

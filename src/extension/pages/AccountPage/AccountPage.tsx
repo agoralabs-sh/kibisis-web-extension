@@ -1,4 +1,5 @@
 import {
+  Heading,
   HStack,
   Icon,
   Spacer,
@@ -13,7 +14,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, useEffect, useState } from 'react';
+import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
@@ -87,7 +88,6 @@ import {
   useSelectIsOnline,
   useSelectNetworks,
   useSelectSettingsPreferredBlockExplorer,
-  useSelectAccountsSaving,
   useSelectSettingsSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
@@ -128,9 +128,9 @@ const AccountPage: FC = () => {
   const network = useSelectSettingsSelectedNetwork();
   const networks = useSelectNetworks();
   const explorer = useSelectSettingsPreferredBlockExplorer();
-  const savingAccounts = useSelectAccountsSaving();
   const settings = useSelectSettings();
   // hooks
+  const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
@@ -238,12 +238,18 @@ const AccountPage: FC = () => {
     const headerContainerProps: StackProps = {
       alignItems: 'flex-start',
       px: DEFAULT_GAP - 2,
+      spacing: DEFAULT_GAP / 3,
       w: 'full',
     };
     let address: string;
 
     if (fetchingAccounts || fetchingSettings) {
-      return <AccountPageSkeletonContent {...headerContainerProps} />;
+      return (
+        <AccountPageSkeletonContent
+          {...headerContainerProps}
+          pt={DEFAULT_GAP - 2}
+        />
+      );
     }
 
     if (account && accountInformation && network) {
@@ -256,7 +262,11 @@ const AccountPage: FC = () => {
           {/*header*/}
           <VStack {...headerContainerProps}>
             {/*network connectivity & network selection*/}
-            <HStack minH={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT} w="full">
+            <HStack
+              minH={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT}
+              pt={DEFAULT_GAP - 2}
+              w="full"
+            >
               {!online && (
                 <Tooltip
                   aria-label="Offline icon"
@@ -284,25 +294,43 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/*name/address and native currency balance*/}
+            {/*name/address*/}
+            <VStack spacing={DEFAULT_GAP / 3} w="full">
+              <Tooltip label={account.name || address}>
+                <Heading
+                  color={defaultTextColor}
+                  maxW={400}
+                  noOfLines={1}
+                  size="md"
+                  textAlign="left"
+                  w="full"
+                >
+                  {account.name || address}
+                </Heading>
+              </Tooltip>
+
+              {/*address*/}
+              {account.name && (
+                <Tooltip label={address}>
+                  <Text
+                    color={subTextColor}
+                    fontSize="xs"
+                    textAlign="left"
+                    w="full"
+                  >
+                    {ellipseAddress(address, { end: 15, start: 15 })}
+                  </Text>
+                </Tooltip>
+              )}
+            </VStack>
+
+            {/*balance*/}
             <HStack
               alignItems="center"
-              h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT}
+              justifyContent="flex-end"
+              spacing={1}
               w="full"
             >
-              {/*name/address*/}
-              <EditableAccountNameField
-                address={address}
-                isEditing={isEditing}
-                isLoading={savingAccounts}
-                name={account.name}
-                onCancel={handleEditAccountNameCancel}
-                onSubmitChange={handleEditAccountNameSubmit}
-              />
-
-              <Spacer />
-
-              {/*balance*/}
               <NativeBalance
                 atomicBalance={new BigNumber(accountInformation.atomicBalance)}
                 minAtomicBalance={
@@ -312,21 +340,14 @@ const AccountPage: FC = () => {
               />
             </HStack>
 
-            {/*address and controls*/}
+            {/*controls*/}
             <HStack
               alignItems="center"
               h={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT}
+              justifyContent="flex-end"
               spacing={1}
               w="full"
             >
-              <Tooltip label={address}>
-                <Text color={subTextColor} fontSize="xs">
-                  {ellipseAddress(address, { end: 5, start: 5 })}
-                </Text>
-              </Tooltip>
-
-              <Spacer />
-
               {/*edit account name*/}
               <Tooltip label={t<string>('labels.editAccountName')}>
                 <IconButton
@@ -559,7 +580,6 @@ const AccountPage: FC = () => {
         alignItems="center"
         justifyContent="flex-start"
         flexGrow={1}
-        mt={DEFAULT_GAP - 2}
         w="full"
       >
         {renderContent()}

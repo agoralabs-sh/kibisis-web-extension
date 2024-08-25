@@ -20,7 +20,10 @@ import AssetTabARC0200AssetItem from './AssetTabARC0200AssetItem';
 import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import {
+  ACCOUNT_PAGE_TAB_CONTENT_HEIGHT,
+  DEFAULT_GAP,
+} from '@extension/constants';
 
 // features
 import { setAccountId as setAddAssetAccountId } from '@extension/features/add-assets';
@@ -218,7 +221,7 @@ const AssetsTab: FC<IProps> = ({ account }) => {
 
   return (
     <TabPanel
-      height="70vh"
+      height={ACCOUNT_PAGE_TAB_CONTENT_HEIGHT}
       m={0}
       p={0}
       sx={{ display: 'flex', flexDirection: 'column' }}
