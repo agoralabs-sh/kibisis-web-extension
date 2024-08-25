@@ -4,7 +4,6 @@ import {
   Icon,
   NumberInput,
   NumberInputField,
-  Spacer,
   Text,
   Tooltip,
   VStack,
@@ -12,7 +11,7 @@ import {
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import BigNumber from 'bignumber.js';
 import numbro from 'numbro';
-import React, { FC, FocusEvent, ReactElement } from 'react';
+import React, { type FC, type FocusEvent, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoInformationCircleOutline } from 'react-icons/io5';
 import { randomBytes } from 'tweetnacl';
@@ -199,12 +198,13 @@ const AmountInput: FC<IProps> = ({
   };
 
   return (
-    <VStack w="full">
+    <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
       <HStack justifyContent="space-between" spacing={1} w="full">
         {/*label*/}
         <Label
           inputID={_id}
           label={t<string>('labels.amount')}
+          px={DEFAULT_GAP - 2}
           required={required}
         />
 
@@ -212,21 +212,26 @@ const AmountInput: FC<IProps> = ({
         {renderMaximumTransactionAmountLabel()}
       </HStack>
 
-      <HStack alignItems="center" spacing={1} w="full">
+      <HStack spacing={1} w="full">
         {/*input*/}
         <NumberInput
           colorScheme={primaryColorScheme}
           clampValueOnBlur={false}
+          focusBorderColor={primaryColor}
           id={_id}
           isDisabled={disabled}
-          focusBorderColor={primaryColor}
           onBlur={handleOnBlur}
           onChange={handleOnChange}
           onFocus={handleOnFocus}
           value={value || undefined}
           w="full"
         >
-          <NumberInputField h={INPUT_HEIGHT} textAlign="right" />
+          <NumberInputField
+            borderRadius="full"
+            h={INPUT_HEIGHT}
+            p={DEFAULT_GAP - 2}
+            textAlign="right"
+          />
         </NumberInput>
 
         {/*maximum button*/}
@@ -235,7 +240,7 @@ const AmountInput: FC<IProps> = ({
             bg: buttonHoverBackgroundColor,
           }}
           aria-label="Add maximum amount"
-          borderRadius={0}
+          borderRadius="md"
           h="100%"
           onClick={handleMaximumAmountClick}
           p={0}

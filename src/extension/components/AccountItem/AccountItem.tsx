@@ -50,6 +50,7 @@ const AccountItem: FC<IProps> = ({
           >
             {name}
           </Text>
+
           <Text
             color={subTextColor || defaultSubTextColor}
             fontSize="xs"

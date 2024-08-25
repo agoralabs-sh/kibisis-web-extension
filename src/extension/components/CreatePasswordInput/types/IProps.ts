@@ -1,13 +1,13 @@
-import type { ChangeEvent, KeyboardEvent, MutableRefObject } from 'react';
+import type { KeyboardEvent, MutableRefObject } from 'react';
 
 interface IProps {
   disabled?: boolean;
-  error: string | null;
-  hint: string | null;
   id?: string;
   inputRef?: MutableRefObject<HTMLInputElement | null>;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  label?: string;
+  onChange: (value: string, score: number) => void;
   onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  score: number;
   value: string;
 }
 

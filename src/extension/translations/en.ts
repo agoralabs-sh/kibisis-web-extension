@@ -599,6 +599,7 @@ const translation: IResourceLanguage = {
     sendAsset: 'Send {{nativeCurrency}}/Asset',
     settings: 'Settings',
     shareAddress: 'Share Address',
+    showHidePassword: 'Show/hide password',
     signingMethod: 'Signing Method',
     stateProofKey: 'State Proof Public Key',
     symbol: 'Symbol',

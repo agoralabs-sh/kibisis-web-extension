@@ -1,30 +1,40 @@
 import {
-  HStack,
+  Button as ChakraButton,
+  Icon,
   Stack,
-  Tooltip,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoChevronDownOutline } from 'react-icons/io5';
 
 // components
 import AccountItem from '@extension/components/AccountItem';
-import IconButton from '@extension/components/IconButton';
 import Label from '@extension/components/Label';
 
 // constants
 import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
+// hooks
+import useBorderColor from '@extension/hooks/useBorderColor';
+import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
+import useColorModeValue from '@extension/hooks/useColorModeValue';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
+
 // modals
 import AccountSelectModal from './AccountSelectModal';
+
+// theme
+import { theme } from '@extension/theme';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const AccountSelect: FC<IProps> = ({
@@ -38,14 +48,23 @@ const AccountSelect: FC<IProps> = ({
   value,
 }) => {
   const { t } = useTranslation();
+  // hooks
+  const borderColor = useBorderColor();
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const primaryColorCode = useColorModeValue(
+    theme.colors.primaryLight['500'],
+    theme.colors.primaryDark['500']
+  );
+  const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
   const {
     isOpen: isAccountSelectModalOpen,
     onClose: onAccountSelectClose,
     onOpen: onAccountSelectModalOpen,
   } = useDisclosure();
   // handlers
-  const handleAccountClick = () => onAccountSelectModalOpen();
-  const handleOnAccountSelect = (_value: IAccountWithExtendedProps[]) =>
+  const handleOnClick = () => onAccountSelectModalOpen();
+  const handleOnSelect = (_value: IAccountWithExtendedProps[]) =>
     onSelect(_value[0]);
 
   return (
@@ -58,42 +77,51 @@ const AccountSelect: FC<IProps> = ({
         isOpen={isAccountSelectModalOpen}
         multiple={false}
         onClose={onAccountSelectClose}
-        onSelect={handleOnAccountSelect}
+        onSelect={handleOnSelect}
       />
 
       <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
         {/*label*/}
-        {label && <Label label={label} required={required} />}
+        {label && (
+          <Label label={label} px={DEFAULT_GAP - 2} required={required} />
+        )}
 
-        <HStack justifyContent="center" spacing={DEFAULT_GAP / 3} w="full">
-          {/*account view*/}
-          <Stack
-            borderRadius="md"
-            borderWidth={1}
-            flexGrow={1}
-            height={INPUT_HEIGHT}
-            justifyContent="center"
-            px={DEFAULT_GAP - 2}
-            w="full"
-          >
+        <ChakraButton
+          _focus={{
+            borderColor: primaryColor,
+            boxShadow: `0 0 0 1px ${primaryColorCode}`,
+          }}
+          _hover={{
+            bg: buttonHoverBackgroundColor,
+            borderColor: borderColor,
+          }}
+          aria-label={t<string>('labels.selectAccount')}
+          alignItems="center"
+          borderStyle="solid"
+          borderWidth="1px"
+          borderRadius="full"
+          h={INPUT_HEIGHT}
+          justifyContent="space-between"
+          onClick={handleOnClick}
+          px={DEFAULT_GAP - 2}
+          py={0}
+          rightIcon={
+            <Icon
+              as={IoChevronDownOutline}
+              boxSize={calculateIconSize()}
+              color={subTextColor}
+            />
+          }
+          variant="ghost"
+          w="full"
+        >
+          <Stack flexGrow={1} justifyContent="center" w="full">
             <AccountItem
               address={convertPublicKeyToAVMAddress(value.publicKey)}
               {...(value.name && { name: value.name })}
             />
           </Stack>
-
-          {/*open select modal button*/}
-          <Tooltip label={t<string>('labels.selectAccount')}>
-            <IconButton
-              aria-label={t<string>('labels.selectAccount')}
-              disabled={disabled}
-              icon={IoChevronDownOutline}
-              onClick={handleAccountClick}
-              size="lg"
-              variant="ghost"
-            />
-          </Tooltip>
-        </HStack>
+        </ChakraButton>
       </VStack>
     </>
   );

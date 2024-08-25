@@ -1,8 +1,7 @@
 import {
-  HStack,
   Input,
+  InputGroup,
   InputRightElement,
-  Stack,
   Tooltip,
   useDisclosure,
   VStack,
@@ -33,7 +32,6 @@ import type { IProps } from './types';
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import validateAddressInput from '@extension/utils/validateAddressInput';
-import InformationIcon from '@extension/components/InformationIcon';
 
 const AddressInput: FC<IProps> = ({
   _context,
@@ -130,12 +128,15 @@ const AddressInput: FC<IProps> = ({
           error={error}
           inputID={_id}
           label={label || t<string>('labels.address')}
+          px={DEFAULT_GAP - 2}
           required={required}
         />
 
-        <HStack justifyContent="center" spacing={DEFAULT_GAP / 3} w="full">
+        {/*input*/}
+        <InputGroup size="md">
           {/*input*/}
           <Input
+            borderRadius="full"
             focusBorderColor={error ? 'red.300' : primaryColor}
             id={_id}
             isDisabled={disabled}
@@ -144,32 +145,28 @@ const AddressInput: FC<IProps> = ({
             onBlur={handleOnBlur}
             onChange={handleOnChange}
             placeholder={t<string>('placeholders.enterAddress')}
+            pr={DEFAULT_GAP * 2}
             type="text"
             value={value}
             w="full"
           />
 
           <InputRightElement h={INPUT_HEIGHT}>
-            <Stack alignItems="center" h={INPUT_HEIGHT} justifyContent="center">
-              <InformationIcon
-                ariaLabel="Information icon"
-                tooltipLabel={informationText}
+            {/*open account select modal button*/}
+            <Tooltip label={t<string>('labels.selectAccount')}>
+              <IconButton
+                aria-label={t<string>('labels.selectAccount')}
+                borderRadius="full"
+                disabled={disabled}
+                icon={IoChevronDownOutline}
+                mr={DEFAULT_GAP / 3}
+                onClick={handleOnClick}
+                size="md"
+                variant="ghost"
               />
-            </Stack>
+            </Tooltip>
           </InputRightElement>
-
-          {/*open account select modal button*/}
-          <Tooltip label={t<string>('labels.selectAccount')}>
-            <IconButton
-              aria-label={t<string>('labels.selectAccount')}
-              disabled={disabled}
-              icon={IoChevronDownOutline}
-              onClick={handleOnClick}
-              size="lg"
-              variant="ghost"
-            />
-          </Tooltip>
-        </HStack>
+        </InputGroup>
       </VStack>
     </>
   );
