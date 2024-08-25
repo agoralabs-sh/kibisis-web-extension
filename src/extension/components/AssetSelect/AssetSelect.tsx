@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoSingleSelect } from 'react-icons/go';
+import { IoChevronDownOutline } from 'react-icons/io5';
 
 // components
 import AssetItem from '@extension/components/AssetItem';
@@ -18,13 +18,14 @@ import Label from '@extension/components/Label';
 import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
 // modals
-import AssetSelectModal from '@extension/modals/AssetSelectModal';
+import AssetSelectModal from './AssetSelectModal';
 
 // types
 import type { IAssetTypes, INativeCurrency } from '@extension/types';
 import type { IProps } from './types';
 
 const AssetSelect: FC<IProps> = ({
+  _context,
   assets,
   disabled = false,
   label,
@@ -48,6 +49,7 @@ const AssetSelect: FC<IProps> = ({
     <>
       {/*asset select modal*/}
       <AssetSelectModal
+        _context={_context}
         assets={assets}
         isOpen={isAssetSelectModalOpen}
         multiple={false}
@@ -73,12 +75,12 @@ const AssetSelect: FC<IProps> = ({
             <AssetItem asset={value} network={network} />
           </Stack>
 
-          {/*open asset select modal button*/}
+          {/*open select modal button*/}
           <Tooltip label={t<string>('labels.selectAsset')}>
             <IconButton
-              aria-label="Select an asset from the list of available assets"
+              aria-label={t<string>('labels.selectAsset')}
               disabled={disabled}
-              icon={GoSingleSelect}
+              icon={IoChevronDownOutline}
               onClick={handleAssetClick}
               size="lg"
               variant="ghost"

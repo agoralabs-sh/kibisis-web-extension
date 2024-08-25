@@ -3,9 +3,10 @@ import type {
   IAssetTypes,
   INativeCurrency,
   INetworkWithTransactionParams,
+  IPropsWithContext,
 } from '@extension/types';
 
-interface IProps {
+interface IProps extends IPropsWithContext {
   assets: (IAssetTypes | INativeCurrency)[];
   disabled?: boolean;
   label?: string;

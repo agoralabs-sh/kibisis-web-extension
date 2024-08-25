@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoSingleSelect } from 'react-icons/go';
+import { IoChevronDownOutline } from 'react-icons/io5';
 
 // components
 import AccountItem from '@extension/components/AccountItem';
@@ -18,7 +18,7 @@ import Label from '@extension/components/Label';
 import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
 // modals
-import AccountSelectModal from '@extension/modals/AccountSelectModal';
+import AccountSelectModal from './AccountSelectModal';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
@@ -28,6 +28,7 @@ import type { IProps } from './types';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const AccountSelect: FC<IProps> = ({
+  _context,
   accounts,
   allowWatchAccounts,
   disabled = false,
@@ -51,6 +52,7 @@ const AccountSelect: FC<IProps> = ({
     <>
       {/*account select modal*/}
       <AccountSelectModal
+        _context={_context}
         accounts={accounts}
         allowWatchAccounts={allowWatchAccounts}
         isOpen={isAccountSelectModalOpen}
@@ -80,12 +82,12 @@ const AccountSelect: FC<IProps> = ({
             />
           </Stack>
 
-          {/*open account select modal button*/}
+          {/*open select modal button*/}
           <Tooltip label={t<string>('labels.selectAccount')}>
             <IconButton
-              aria-label="Select an account from the list of available accounts"
+              aria-label={t<string>('labels.selectAccount')}
               disabled={disabled}
-              icon={GoSingleSelect}
+              icon={IoChevronDownOutline}
               onClick={handleAccountClick}
               size="lg"
               variant="ghost"

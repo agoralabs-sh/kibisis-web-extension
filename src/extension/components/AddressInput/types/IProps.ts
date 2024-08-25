@@ -1,9 +1,12 @@
 import type { FocusEvent } from 'react';
 
 // types
-import type { IAccountWithExtendedProps } from '@extension/types';
+import type {
+  IAccountWithExtendedProps,
+  IPropsWithContext,
+} from '@extension/types';
 
-interface IProps {
+interface IProps extends IPropsWithContext {
   accounts: IAccountWithExtendedProps[];
   allowWatchAccounts?: boolean;
   disabled?: boolean;

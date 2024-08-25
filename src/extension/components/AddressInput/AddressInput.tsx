@@ -22,7 +22,7 @@ import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // modals
-import AccountSelectModal from '@extension/modals/AccountSelectModal';
+import { AccountSelectModal } from '@extension/components/AccountSelect';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
@@ -33,6 +33,7 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 import validateAddressInput from '@extension/utils/validateAddressInput';
 
 const AddressInput: FC<IProps> = ({
+  _context,
   accounts,
   allowWatchAccounts = true,
   error,
@@ -111,6 +112,7 @@ const AddressInput: FC<IProps> = ({
     <>
       {/*account select modal*/}
       <AccountSelectModal
+        _context={_context}
         accounts={accounts}
         allowWatchAccounts={allowWatchAccounts}
         isOpen={isAccountSelectModalOpen}

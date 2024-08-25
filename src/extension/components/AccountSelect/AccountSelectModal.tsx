@@ -16,9 +16,12 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, useState } from 'react';
+import React, { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoChevronForward } from 'react-icons/io5';
+import {
+  IoCheckmarkDoneCircleOutline,
+  IoChevronForward,
+} from 'react-icons/io5';
 
 // components
 import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
@@ -49,7 +52,7 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
-import type { IProps } from './types';
+import type { TAccountSelectModalProps } from './types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
@@ -57,7 +60,8 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import upsertItemsById from '@extension/utils/upsertItemsById';
 
-const AccountSelectModal: FC<IProps> = ({
+const AccountSelectModal: FC<TAccountSelectModalProps> = ({
+  _context,
   accounts,
   allowWatchAccounts = true,
   isOpen,
@@ -143,12 +147,12 @@ const AccountSelectModal: FC<IProps> = ({
           _hover={{
             bg: BODY_BACKGROUND_COLOR,
           }}
-          borderRadius={0}
+          borderRadius="full"
           cursor="not-allowed"
           fontSize="md"
           h={TAB_ITEM_HEIGHT}
           justifyContent="start"
-          key={`account-select-modal-item-${index}`}
+          key={`${_context}-account-select-modal-item-${index}`}
           px={DEFAULT_GAP / 2}
           py={0}
           sx={{
@@ -302,8 +306,12 @@ const AccountSelectModal: FC<IProps> = ({
           </VStack>
         </ModalHeader>
 
-        {/*content*/}
-        <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+        {/*body*/}
+        <ModalBody px={DEFAULT_GAP}>
+          <VStack spacing={1} w="full">
+            {renderContent()}
+          </VStack>
+        </ModalBody>
 
         {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>
@@ -320,6 +328,7 @@ const AccountSelectModal: FC<IProps> = ({
             {multiple && (
               <Button
                 onClick={handleConfirmClick}
+                rightIcon={<IoCheckmarkDoneCircleOutline />}
                 size="lg"
                 variant="solid"
                 w="full"

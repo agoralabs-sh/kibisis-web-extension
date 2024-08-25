@@ -83,51 +83,51 @@ const SecuritySettingsPage: FC = () => {
   const _context = 'security-settings-page';
   const durationOptions: IOption<number>[] = [
     {
-      label: t<string>('labels.passwordLockDuration', {
+      label: t<string>('labels.credentialsLockDuration', {
         context: CREDENTIALS_LOCK_DURATION_LOWEST,
       }),
       value: CREDENTIALS_LOCK_DURATION_LOWEST,
     },
     {
-      label: t<string>('labels.passwordLockDuration', {
+      label: t<string>('labels.credentialsLockDuration', {
         context: CREDENTIALS_LOCK_DURATION_LOW,
       }),
       value: CREDENTIALS_LOCK_DURATION_LOW,
     },
     {
-      label: t<string>('labels.passwordLockDuration', {
+      label: t<string>('labels.credentialsLockDuration', {
         context: CREDENTIALS_LOCK_DURATION_NORMAL,
       }),
       value: CREDENTIALS_LOCK_DURATION_NORMAL,
     },
     {
-      label: t<string>('labels.passwordLockDuration', {
+      label: t<string>('labels.credentialsLockDuration', {
         context: CREDENTIALS_LOCK_DURATION_HIGH,
       }),
       value: CREDENTIALS_LOCK_DURATION_HIGH,
     },
     {
-      label: t<string>('labels.passwordLockDuration', {
+      label: t<string>('labels.credentialsLockDuration', {
         context: CREDENTIALS_LOCK_DURATION_HIGHER,
       }),
       value: CREDENTIALS_LOCK_DURATION_HIGHER,
     },
     {
-      label: t<string>('labels.passwordLockDuration', {
+      label: t<string>('labels.credentialsLockDuration', {
         context: CREDENTIALS_LOCK_DURATION_HIGHEST,
       }),
       value: CREDENTIALS_LOCK_DURATION_HIGHEST,
     },
     {
-      label: t<string>('labels.passwordLockDuration'), // never
+      label: t<string>('labels.credentialsLockDuration'), // never
       value: 0,
     },
   ];
   // handlers
-  const handleEnablePasswordLockSwitchChange = async (
+  const handleOnEnableCredentialsLockSwitchChange = async (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    const _functionName = 'handleEnablePasswordLockSwitchChange';
+    const _functionName = 'handleOnEnableCredentialsLockSwitchChange';
 
     // if we are enabling, we need to get the credentials
     if (event.target.checked) {
@@ -197,7 +197,7 @@ const SecuritySettingsPage: FC = () => {
         type: 'error',
       })
     );
-  const handlePasswordTimeoutDurationChange = ({ value }: IOption<number>) => {
+  const handleOnCredentialsLockTimeoutChange = ({ value }: IOption<number>) => {
     // update the settings
     dispatch(
       saveSettingsToStorageThunk({
@@ -232,7 +232,7 @@ const SecuritySettingsPage: FC = () => {
           checked={settings.security.enableCredentialLock}
           description={t<string>('captions.enableCredentialsLock')}
           label={t<string>('labels.enableCredentialsLock')}
-          onChange={handleEnablePasswordLockSwitchChange}
+          onChange={handleOnEnableCredentialsLockSwitchChange}
         />
 
         {/*credentials lock duration*/}
@@ -241,7 +241,7 @@ const SecuritySettingsPage: FC = () => {
           disabled={!settings.security.enableCredentialLock}
           emptyOptionLabel={t<string>('placeholders.pleaseSelect')}
           label={t<string>('labels.credentialsLockTimeout')}
-          onChange={handlePasswordTimeoutDurationChange}
+          onChange={handleOnCredentialsLockTimeoutChange}
           options={durationOptions}
           value={
             durationOptions.find(

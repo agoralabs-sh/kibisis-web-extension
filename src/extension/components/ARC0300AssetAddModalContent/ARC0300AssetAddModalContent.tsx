@@ -90,6 +90,7 @@ import isAssetInAccountHoldings from '@extension/utils/isAssetInAccountHoldings'
 const ARC0300AssetAddModalContent: FC<
   IARC0300ModalContentProps<IARC0300AssetAddSchema>
 > = ({
+  _context,
   cancelButtonIcon,
   cancelButtonLabel,
   onComplete,
@@ -261,6 +262,7 @@ const ARC0300AssetAddModalContent: FC<
                 <ModalSubHeading text={t<string>('headings.selectAccount')} />
 
                 <AccountSelect
+                  _context={_context}
                   accounts={accounts}
                   allowWatchAccounts={true}
                   disabled={loading || saving}

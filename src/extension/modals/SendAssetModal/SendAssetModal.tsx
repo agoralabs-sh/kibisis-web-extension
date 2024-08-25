@@ -132,6 +132,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const [toAddressError, setToAddressError] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   // misc
+  const _context = 'send-asset-modal';
   const allAssets: (IAssetTypes | INativeCurrency)[] = [
     ...arc200Assets,
     ...standardAssets,
@@ -460,6 +461,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
         {/*select asset*/}
         <AssetSelect
+          _context={_context}
           assets={[
             network.nativeCurrency, // add the native currency to the front
             ...allAssets,
@@ -474,6 +476,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
         {/*from account*/}
         <AccountSelect
+          _context={_context}
           accounts={availableAccounts}
           disabled={creating}
           label={t<string>('labels.from')}
@@ -484,6 +487,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
         {/*to address*/}
         <AddressInput
+          _context={_context}
           accounts={accounts}
           disabled={creating}
           error={toAddressError}

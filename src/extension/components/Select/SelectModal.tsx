@@ -60,12 +60,12 @@ const SelectModal: FC<ISelectModalProps> = ({
     theme.colors.primaryDark['200'],
     theme.colors.primaryDark['200']
   );
-  const primaryBackgroundColor: string = useColorModeValue(
-    theme.colors.primaryDark['300'],
-    theme.colors.primaryDark['300']
+  const primaryButtonTextColor: string = useColorModeValue(
+    theme.colors.primaryLight['600'],
+    theme.colors.primaryDark['600']
   );
   const defaultTextColor = useDefaultTextColor();
-  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  // const primaryButtonTextColor = usePrimaryButtonTextColor();
   const subTextColor = useSubTextColor();
   // misc
   const iconSize = calculateIconSize('md');
@@ -95,17 +95,17 @@ const SelectModal: FC<ISelectModalProps> = ({
 
     return options.map((value, index) => {
       const isSelected = selectedIndex === index;
-      const textColor = isSelected ? primaryButtonTextColor : subTextColor;
+      const fontColor = isSelected ? primaryButtonTextColor : subTextColor;
 
       return (
         <ChakraButton
           _hover={{
-            bg: isSelected
-              ? primaryHoverBackgroundColor
-              : buttonHoverBackgroundColor,
+            bg: buttonHoverBackgroundColor,
           }}
-          backgroundColor={isSelected ? primaryBackgroundColor : 'transparent'}
-          borderRadius="md"
+          backgroundColor={
+            isSelected ? buttonHoverBackgroundColor : 'transparent'
+          }
+          borderRadius="full"
           fontSize="md"
           h={TAB_ITEM_HEIGHT}
           justifyContent="space-between"
@@ -113,12 +113,12 @@ const SelectModal: FC<ISelectModalProps> = ({
           onClick={handleOnChange(index)}
           p={DEFAULT_GAP / 3}
           rightIcon={
-            <Icon as={IoChevronForward} boxSize={iconSize} color={textColor} />
+            <Icon as={IoChevronForward} boxSize={iconSize} color={fontColor} />
           }
           variant="ghost"
           w="full"
         >
-          <SelectOption color={textColor} fontSize="md" value={value} />
+          <SelectOption color={fontColor} fontSize="md" value={value} />
         </ChakraButton>
       );
     });
@@ -157,8 +157,12 @@ const SelectModal: FC<ISelectModalProps> = ({
           </VStack>
         </ModalHeader>
 
-        {/*content*/}
-        <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+        {/*body*/}
+        <ModalBody px={DEFAULT_GAP}>
+          <VStack spacing={1} w="full">
+            {renderContent()}
+          </VStack>
+        </ModalBody>
 
         {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>

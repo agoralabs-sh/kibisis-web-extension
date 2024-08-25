@@ -93,6 +93,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   const [authAddress, setAuthAddress] = useState<string>('');
   const [authAddressError, setAuthAddressError] = useState<string | null>(null);
   // misc
+  const _context = 're-key-account-modal';
   const isOpen = !!account && !!accountInformation;
   const reKeyAccount = async (result: TEncryptionCredentials) => {
     let transactionId: string | null;
@@ -337,6 +338,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
 
               {/*re-key to*/}
               <AddressInput
+                _context={_context}
                 accounts={accounts}
                 allowWatchAccounts={true}
                 label={t<string>('labels.reKeyTo')}

@@ -208,6 +208,7 @@ const ViewSeedPhrasePage: FC = () => {
             />
           ) : (
             <AccountSelect
+              _context={_context}
               accounts={accounts}
               allowWatchAccounts={false}
               onSelect={handleAccountSelect}

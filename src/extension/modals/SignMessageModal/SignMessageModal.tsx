@@ -62,6 +62,7 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAccountWithExtendedProps,
+  IBackgroundRootState,
   IAppThunkDispatch,
   IMainRootState,
   IModalProps,
@@ -71,7 +72,6 @@ import type {
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import signBytes from '@extension/utils/signBytes';
-import IBackgroundRootState from '../../types/states/IBackgroundRootState';
 
 const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -94,6 +94,8 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
     setSigner,
   } = useSignMessageModal();
   const subTextColor = useSubTextColor();
+  // misc
+  const _context = 'sign-message-modal';
   // handlers
   const handleAccountSelect = (account: IAccountWithExtendedProps) =>
     setSigner(account);
@@ -238,6 +240,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
               )}:`}</Text>
 
               <AccountSelect
+                _context={_context}
                 accounts={authorizedAccounts}
                 allowWatchAccounts={false}
                 onSelect={handleAccountSelect}

@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoSingleSelect } from 'react-icons/go';
+import { IoCaretDownOutline } from 'react-icons/io5';
 
 // components
 import Label from '@extension/components/Label';
@@ -125,7 +125,7 @@ const Select: FC<IProps> = ({
             borderColor={borderColor}
             borderStyle="solid"
             borderWidth="1px"
-            borderRadius="md"
+            borderRadius="full"
             cursor={!disabled ? 'pointer' : 'not-allowed'}
             fontSize="md"
             h={INPUT_HEIGHT}
@@ -135,7 +135,7 @@ const Select: FC<IProps> = ({
             py={DEFAULT_GAP / 3}
             rightIcon={
               <Icon
-                as={GoSingleSelect}
+                as={IoCaretDownOutline}
                 boxSize={iconSize}
                 color={subTextColor}
               />

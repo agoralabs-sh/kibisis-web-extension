@@ -15,9 +15,12 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, useState } from 'react';
+import React, { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoChevronForward } from 'react-icons/io5';
+import {
+  IoCheckmarkDoneCircleOutline,
+  IoChevronForward,
+} from 'react-icons/io5';
 
 // components
 import AssetItem from '@extension/components/AssetItem';
@@ -47,12 +50,13 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IAssetTypes, INativeCurrency } from '@extension/types';
-import type { IProps } from './types';
+import type { TAssetSelectModalProps } from './types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
 
-const AssetSelectModal: FC<IProps> = ({
+const AssetSelectModal: FC<TAssetSelectModalProps> = ({
+  _context,
   assets,
   isOpen,
   multiple,
@@ -148,11 +152,11 @@ const AssetSelectModal: FC<IProps> = ({
           _hover={{
             bg: buttonHoverBackgroundColor,
           }}
-          borderRadius={0}
+          borderRadius="full"
           fontSize="md"
           h={TAB_ITEM_HEIGHT}
           justifyContent="start"
-          key={`asset-select-modal-item-${index}`}
+          key={`${_context}-asset-select-modal-item-${index}`}
           onClick={handleOnChange(asset)}
           px={DEFAULT_GAP / 2}
           py={0}
@@ -259,8 +263,12 @@ const AssetSelectModal: FC<IProps> = ({
           </VStack>
         </ModalHeader>
 
-        {/*content*/}
-        <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+        {/*body*/}
+        <ModalBody px={DEFAULT_GAP}>
+          <VStack spacing={1} w="full">
+            {renderContent()}
+          </VStack>
+        </ModalBody>
 
         {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>
@@ -277,6 +285,7 @@ const AssetSelectModal: FC<IProps> = ({
             {multiple && (
               <Button
                 onClick={handleConfirmClick}
+                rightIcon={<IoCheckmarkDoneCircleOutline />}
                 size="lg"
                 variant="solid"
                 w="full"
