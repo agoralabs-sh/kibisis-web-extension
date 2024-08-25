@@ -8,7 +8,7 @@ import {
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import React, { type ChangeEvent, type FocusEvent, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoSingleSelect } from 'react-icons/go';
+import { IoChevronDownOutline } from 'react-icons/io5';
 import { randomBytes } from 'tweetnacl';
 
 // components
@@ -149,9 +149,9 @@ const AddressInput: FC<IProps> = ({
           {/*open account select modal button*/}
           <Tooltip label={t<string>('labels.selectAccount')}>
             <IconButton
-              aria-label="Select an account from the list of available accounts"
+              aria-label={t<string>('labels.selectAccount')}
               disabled={disabled}
-              icon={GoSingleSelect}
+              icon={IoChevronDownOutline}
               onClick={handleOnClick}
               size="lg"
               variant="ghost"

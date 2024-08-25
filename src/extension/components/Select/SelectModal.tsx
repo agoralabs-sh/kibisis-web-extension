@@ -31,7 +31,6 @@ import {
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // theme
@@ -56,16 +55,11 @@ const SelectModal: FC<ISelectModalProps> = ({
   const { t } = useTranslation();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
-  const primaryHoverBackgroundColor: string = useColorModeValue(
-    theme.colors.primaryDark['200'],
-    theme.colors.primaryDark['200']
-  );
+  const defaultTextColor = useDefaultTextColor();
   const primaryButtonTextColor: string = useColorModeValue(
     theme.colors.primaryLight['600'],
     theme.colors.primaryDark['600']
   );
-  const defaultTextColor = useDefaultTextColor();
-  // const primaryButtonTextColor = usePrimaryButtonTextColor();
   const subTextColor = useSubTextColor();
   // misc
   const iconSize = calculateIconSize('md');

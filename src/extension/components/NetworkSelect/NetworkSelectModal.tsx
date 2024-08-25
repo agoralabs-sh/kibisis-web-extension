@@ -31,7 +31,6 @@ import {
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // theme
@@ -55,16 +54,11 @@ const NetworkSelectModal: FC<INetworkSelectModalProps> = ({
   const { t } = useTranslation();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
-  const primaryHoverBackgroundColor: string = useColorModeValue(
-    theme.colors.primaryDark['200'],
-    theme.colors.primaryDark['200']
-  );
-  const primaryBackgroundColor: string = useColorModeValue(
-    theme.colors.primaryDark['300'],
-    theme.colors.primaryDark['300']
-  );
   const defaultTextColor = useDefaultTextColor();
-  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const primaryButtonTextColor: string = useColorModeValue(
+    theme.colors.primaryLight['600'],
+    theme.colors.primaryDark['600']
+  );
   const subTextColor = useSubTextColor();
   // misc
   const iconSize = calculateIconSize('md');
@@ -97,13 +91,13 @@ const NetworkSelectModal: FC<INetworkSelectModalProps> = ({
       return (
         <ChakraButton
           _hover={{
-            bg: isSelected
-              ? primaryHoverBackgroundColor
-              : buttonHoverBackgroundColor,
+            bg: buttonHoverBackgroundColor,
           }}
           alignItems="center"
-          backgroundColor={isSelected ? primaryBackgroundColor : 'transparent'}
-          borderRadius="md"
+          backgroundColor={
+            isSelected ? buttonHoverBackgroundColor : 'transparent'
+          }
+          borderRadius="full"
           fontSize="md"
           h={TAB_ITEM_HEIGHT}
           justifyContent="space-between"
@@ -116,7 +110,7 @@ const NetworkSelectModal: FC<INetworkSelectModalProps> = ({
           variant="ghost"
           w="full"
         >
-          <NetworkBadge network={value} />
+          <NetworkBadge network={value} size="xs" />
         </ChakraButton>
       );
     });
@@ -155,8 +149,12 @@ const NetworkSelectModal: FC<INetworkSelectModalProps> = ({
           </VStack>
         </ModalHeader>
 
-        {/*content*/}
-        <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>
+        {/*body*/}
+        <ModalBody px={DEFAULT_GAP}>
+          <VStack spacing={1} w="full">
+            {renderContent()}
+          </VStack>
+        </ModalBody>
 
         {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>

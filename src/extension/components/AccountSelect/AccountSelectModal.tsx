@@ -18,10 +18,7 @@ import {
 } from '@chakra-ui/react';
 import React, { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  IoCheckmarkDoneCircleOutline,
-  IoChevronForward,
-} from 'react-icons/io5';
+import { IoCheckmarkOutline, IoChevronForward } from 'react-icons/io5';
 
 // components
 import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
@@ -328,7 +325,7 @@ const AccountSelectModal: FC<TAccountSelectModalProps> = ({
             {multiple && (
               <Button
                 onClick={handleConfirmClick}
-                rightIcon={<IoCheckmarkDoneCircleOutline />}
+                rightIcon={<IoCheckmarkOutline />}
                 size="lg"
                 variant="solid"
                 w="full"

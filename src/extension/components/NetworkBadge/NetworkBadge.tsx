@@ -1,6 +1,9 @@
 import { HStack, StackProps, Text } from '@chakra-ui/react';
 import React, { type FC } from 'react';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // enums
 import { NetworkTypeEnum } from '@extension/enums';
 
@@ -15,9 +18,9 @@ import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import parseFontSize from './utils/parseFontSize';
 import parseIconSize from './utils/parseIconSize';
 import parsePadding from './utils/parsePadding';
-import { DEFAULT_GAP } from '@extension/constants';
 
 const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
   // hooks
@@ -33,6 +36,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
   const fontColor = theme.colors[network.chakraTheme]
     ? 'white'
     : textColorColorCode;
+  const fontSize = parseFontSize(size);
   const nativeCurrencyIcon = createIconFromDataUri(
     network.nativeCurrency.iconUrl,
     {
@@ -55,7 +59,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
       case NetworkTypeEnum.Beta:
         return (
           <HStack backgroundColor={theme.colors.blue['500']} {...defaultProps}>
-            <Text color={fontColor} fontSize={size} textAlign="center">
+            <Text color={fontColor} fontSize={fontSize} textAlign="center">
               {`BetaNet`}
             </Text>
           </HStack>
@@ -66,7 +70,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
             backgroundColor={theme.colors.yellow['500']}
             {...defaultProps}
           >
-            <Text color={fontColor} fontSize={size} textAlign="center">
+            <Text color={fontColor} fontSize={fontSize} textAlign="center">
               {`TestNet`}
             </Text>
           </HStack>
@@ -98,7 +102,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
             {nativeCurrencyIcon}
 
             {/*name*/}
-            <Text color={fontColor} fontSize={size} textAlign="center">
+            <Text color={fontColor} fontSize={fontSize} textAlign="center">
               {network.canonicalName}
             </Text>
           </HStack>
@@ -115,7 +119,7 @@ const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
         {nativeCurrencyIcon}
 
         {/*name*/}
-        <Text color={fontColor} fontSize={size} textAlign="center">
+        <Text color={fontColor} fontSize={fontSize} textAlign="center">
           {network.canonicalName}
         </Text>
       </HStack>

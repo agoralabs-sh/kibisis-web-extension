@@ -19,6 +19,7 @@ import React, { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoCheckmarkDoneCircleOutline,
+  IoCheckmarkOutline,
   IoChevronForward,
 } from 'react-icons/io5';
 
@@ -285,7 +286,7 @@ const AssetSelectModal: FC<TAssetSelectModalProps> = ({
             {multiple && (
               <Button
                 onClick={handleConfirmClick}
-                rightIcon={<IoCheckmarkDoneCircleOutline />}
+                rightIcon={<IoCheckmarkOutline />}
                 size="lg"
                 variant="solid"
                 w="full"

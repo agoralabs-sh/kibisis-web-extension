@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoChevronDownOutline } from 'react-icons/io5';
+import { IoCheckmarkOutline, IoChevronDownOutline } from 'react-icons/io5';
 
 // components
 import AssetItem from '@extension/components/AssetItem';

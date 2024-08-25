@@ -279,6 +279,7 @@ const AccountPage: FC = () => {
                 _context={_context}
                 networks={networks}
                 onSelect={handleNetworkSelect}
+                size="xs"
                 value={network}
               />
             </HStack>
