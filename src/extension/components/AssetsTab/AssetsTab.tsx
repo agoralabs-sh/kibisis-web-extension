@@ -1,37 +1,25 @@
-import {
-  HStack,
-  Spacer,
-  Spinner,
-  TabPanel,
-  Tooltip,
-  VStack,
-} from '@chakra-ui/react';
-import React, { FC, ReactNode } from 'react';
+import { Spacer, TabPanel, VStack } from '@chakra-ui/react';
+import React, { type FC, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoAddCircleOutline, IoAddOutline } from 'react-icons/io5';
+import { IoAddCircleOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
 import AssetTabLoadingItem from '@extension/components/AssetTabLoadingItem';
 import EmptyState from '@extension/components/EmptyState';
-import IconButton from '@extension/components/IconButton';
 import ScrollableContainer from '@extension/components/ScrollableContainer';
+import TabControlBar from '@extension/components/TabControlBar';
 import AssetTabARC0200AssetItem from './AssetTabARC0200AssetItem';
 import AssetTabStandardAssetItem from './AssetTabStandardAssetItem';
 
 // constants
-import {
-  ACCOUNT_PAGE_TAB_CONTENT_HEIGHT,
-  DEFAULT_GAP,
-} from '@extension/constants';
+import { ACCOUNT_PAGE_TAB_CONTENT_HEIGHT } from '@extension/constants';
 
 // features
 import { setAccountId as setAddAssetAccountId } from '@extension/features/add-assets';
 
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useItemBorderColor from '@extension/hooks/useItemBorderColor';
 
 // selectors
 import {
@@ -53,7 +41,7 @@ import type {
 } from '@extension/types';
 import type { IProps } from './types';
 
-const AssetsTab: FC<IProps> = ({ account }) => {
+const AssetsTab: FC<IProps> = ({ _context, account }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
@@ -66,8 +54,6 @@ const AssetsTab: FC<IProps> = ({ account }) => {
   const updatingStandardAssets = useSelectStandardAssetsUpdating();
   // hooks
   const accountInformation = useAccountInformation(account.id);
-  const defaultTextColor = useDefaultTextColor();
-  const itemBorderColor = useItemBorderColor();
   // misc
   const allAssetHoldings = accountInformation
     ? [
@@ -91,14 +77,16 @@ const AssetsTab: FC<IProps> = ({ account }) => {
 
     if (fetchingARC0200Assets || fetchingStandardAssets) {
       return Array.from({ length: 3 }, (_, index) => (
-        <AssetTabLoadingItem key={`asset-tab-loading-item-${index}`} />
+        <AssetTabLoadingItem
+          key={`${_context}-asset-tab-loading-item-${index}`}
+        />
       ));
     }
 
     if (selectedNetwork && accountInformation && allAssetHoldings.length > 0) {
       assetNodes = allAssetHoldings.reduce<ReactNode[]>(
         (acc, { amount, id, isARC0200 }, currentIndex) => {
-          const key: string = `asset-tab-item-${currentIndex}`;
+          const key = `${_context}-asset-tab-item-${currentIndex}`;
           let arc200Asset: IARC0200Asset | null;
           let standardAsset: IStandardAsset | null;
 
@@ -143,73 +131,24 @@ const AssetsTab: FC<IProps> = ({ account }) => {
     }
 
     return assetNodes.length > 0 ? (
-      <>
-        {/*controls*/}
-        <HStack
-          alignItems="center"
-          borderBottomColor={itemBorderColor}
-          borderBottomStyle="solid"
-          borderBottomWidth="1px"
-          justifyContent="flex-start"
-          px={DEFAULT_GAP / 2}
-          py={DEFAULT_GAP / 3}
-          spacing={1}
-          w="full"
-        >
-          {/*updating asset spinner*/}
-          {updatingARC0200Assets ||
-            (updatingStandardAssets && (
-              <Tooltip
-                aria-label="Updating asset information spinner"
-                label={t<string>('captions.updatingAssetInformation')}
-              >
-                <Spinner
-                  thickness="1px"
-                  speed="0.65s"
-                  color={defaultTextColor}
-                  size="sm"
-                />
-              </Tooltip>
-            ))}
-
-          <Spacer />
-
-          {/*add asset button*/}
-          <Tooltip label={t<string>('buttons.addAsset')}>
-            <IconButton
-              aria-label="Add asset"
-              icon={IoAddCircleOutline}
-              onClick={handleAddAssetClick}
-              size="sm"
-              variant="ghost"
-            />
-          </Tooltip>
-        </HStack>
-
-        {/*asset list*/}
-        <ScrollableContainer
-          direction="column"
-          m={0}
-          pb={8}
-          pt={0}
-          px={0}
-          spacing={0}
-          w="full"
-        >
-          {assetNodes}
-        </ScrollableContainer>
-      </>
+      // asset list
+      <ScrollableContainer
+        direction="column"
+        m={0}
+        pb={8}
+        pt={0}
+        px={0}
+        spacing={0}
+        w="full"
+      >
+        {assetNodes}
+      </ScrollableContainer>
     ) : (
       <VStack flexGrow={1} w="full">
         <Spacer />
 
         {/*empty state*/}
         <EmptyState
-          button={{
-            icon: IoAddOutline,
-            label: t<string>('buttons.addAsset'),
-            onClick: handleAddAssetClick,
-          }}
           description={t<string>('captions.noAssetsFound')}
           text={t<string>('headings.noAssetsFound')}
         />
@@ -227,6 +166,25 @@ const AssetsTab: FC<IProps> = ({ account }) => {
       sx={{ display: 'flex', flexDirection: 'column' }}
       w="full"
     >
+      {/*controls*/}
+      <TabControlBar
+        _context={`${_context}-asset-tab`}
+        buttons={[
+          {
+            button: {
+              ['aria-label']: t<string>('buttons.addAsset'),
+              icon: <IoAddCircleOutline />,
+              onClick: handleAddAssetClick,
+              size: 'sm',
+              variant: 'ghost',
+            },
+            tooltipLabel: t<string>('buttons.addAsset'),
+          },
+        ]}
+        isLoading={updatingARC0200Assets || updatingStandardAssets}
+        loadingTooltipLabel={t<string>('captions.updatingAssetInformation')}
+      />
+
       {renderContent()}
     </TabPanel>
   );

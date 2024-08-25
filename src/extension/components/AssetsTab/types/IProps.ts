@@ -1,7 +1,7 @@
 // types
-import type { IAccount } from '@extension/types';
+import type { IAccount, IPropsWithContext } from '@extension/types';
 
-interface IProps {
+interface IProps extends IPropsWithContext {
   account: IAccount;
 }
 

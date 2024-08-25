@@ -5,12 +5,16 @@ import { useTranslation } from 'react-i18next';
 // components
 import EmptyState from '@extension/components/EmptyState';
 import ScrollableContainer from '@extension/components/ScrollableContainer';
+import TabControlBar from '@extension/components/TabControlBar';
 import TransactionItem, {
   TransactionItemSkeleton,
 } from '@extension/components/TransactionItem';
 
 // constants
 import { ACCOUNT_PAGE_TAB_CONTENT_HEIGHT } from '@extension/constants';
+
+// selectors
+import { useSelectActiveAccountTransactionsUpdating } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
@@ -19,6 +23,7 @@ import AccountService from '@extension/services/AccountService';
 import type { IProps } from './types';
 
 const ActivityTab: FC<IProps> = ({
+  _context,
   account,
   accounts,
   fetching,
@@ -26,6 +31,9 @@ const ActivityTab: FC<IProps> = ({
   onScrollEnd,
 }) => {
   const { t } = useTranslation();
+  // selectors
+  const updatingActiveAccountTransactions =
+    useSelectActiveAccountTransactionsUpdating();
   // misc
   const transactions =
     AccountService.extractAccountTransactionsForNetwork(account, network)
@@ -41,7 +49,7 @@ const ActivityTab: FC<IProps> = ({
         <TransactionItem
           account={account}
           accounts={accounts}
-          key={`activity-tab-item-${index}`}
+          key={`${_context}-activity-tab-item-${index}`}
           network={network}
           transaction={value}
         />
@@ -53,7 +61,7 @@ const ActivityTab: FC<IProps> = ({
           ...nodes,
           ...Array.from({ length: 3 }, (_, index) => (
             <TransactionItemSkeleton
-              key={`activity-tab-fetching-item-${index}`}
+              key={`${_context}-activity-tab-fetching-item-${index}`}
             />
           )),
         ];
@@ -93,6 +101,14 @@ const ActivityTab: FC<IProps> = ({
       sx={{ display: 'flex', flexDirection: 'column' }}
       w="full"
     >
+      {/*controls*/}
+      <TabControlBar
+        _context={`${_context}-activity-tab`}
+        buttons={[]}
+        isLoading={updatingActiveAccountTransactions}
+        loadingTooltipLabel={t<string>('captions.updatingTransactions')}
+      />
+
       {renderContent()}
     </TabPanel>
   );

@@ -461,11 +461,12 @@ const AccountPage: FC = () => {
             </TabList>
 
             <TabPanels sx={{ display: 'flex', flexDirection: 'column' }}>
-              <AssetsTab account={account} />
+              <AssetsTab _context={_context} account={account} />
 
               <NFTsTab account={account} />
 
               <ActivityTab
+                _context={_context}
                 account={account}
                 accounts={accounts}
                 fetching={fetchingAccounts}

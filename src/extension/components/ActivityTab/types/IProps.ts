@@ -2,9 +2,10 @@
 import type {
   IAccountWithExtendedProps,
   INetworkWithTransactionParams,
+  IPropsWithContext,
 } from '@extension/types';
 
-interface IProps {
+interface IProps extends IPropsWithContext {
   account: IAccountWithExtendedProps;
   accounts: IAccountWithExtendedProps[];
   fetching: boolean;

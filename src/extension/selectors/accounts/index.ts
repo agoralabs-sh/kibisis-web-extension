@@ -7,5 +7,6 @@ export { default as useSelectActiveAccount } from './useSelectActiveAccount';
 export { default as useSelectActiveAccountDetails } from './useSelectActiveAccountDetails';
 export { default as useSelectActiveAccountInformation } from './useSelectActiveAccountInformation';
 export { default as useSelectActiveAccountTransactions } from './useSelectActiveAccountTransactions';
+export { default as useSelectActiveAccountTransactionsUpdating } from './useSelectActiveAccountTransactionsUpdating';
 export { default as useSelectAvailableAccountsForSelectedNetwork } from './useSelectAvailableAccountsForSelectedNetwork';
 export { default as useSelectNonWatchAccounts } from './useSelectNonWatchAccounts';

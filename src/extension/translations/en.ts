@@ -290,6 +290,7 @@ const translation: IResourceLanguage = {
     unknownAVMNetwork: 'Network "{{genesisID}}" not supported.',
     unknownQRCode: 'The QR code provided is not recognized.',
     updatingAssetInformation: 'Updating asset information',
+    updatingTransactions: 'Updating transactions',
     viewSeedPhrase1: 'Select an account to view the seed phrase.',
     viewSeedPhrase2: 'You will be prompted to enter your password.',
   },
