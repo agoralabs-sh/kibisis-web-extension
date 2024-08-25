@@ -124,7 +124,7 @@ const GroupOfTransactionsContent: FC<IGroupOfTransactionsContentProps> = ({
               {network && (
                 <ModalItem
                   label={t<string>('labels.network')}
-                  value={<NetworkBadge network={network} />}
+                  value={<NetworkBadge network={network} size="xs" />}
                 />
               )}
 

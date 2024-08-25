@@ -341,7 +341,7 @@ const ARC0300AssetAddModalContent: FC<
                 {/*type*/}
                 <ModalItem
                   label={`${t<string>('labels.chain')}:`}
-                  value={<NetworkBadge network={network} />}
+                  value={<NetworkBadge network={network} size="xs" />}
                 />
 
                 {/*type*/}

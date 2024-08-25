@@ -237,7 +237,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
         />
 
         {/*network*/}
-        {network && <NetworkBadge network={network} />}
+        {network && <NetworkBadge network={network} size="xs" />}
 
         {/*creation date*/}
         <Text color={defaultTextColor} fontSize="xs" textAlign="center">

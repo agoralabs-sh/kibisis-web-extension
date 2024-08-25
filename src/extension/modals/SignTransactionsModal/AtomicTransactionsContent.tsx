@@ -327,7 +327,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
       {network && (
         <ModalItem
           label={t<string>('labels.network')}
-          value={<NetworkBadge network={network} />}
+          value={<NetworkBadge network={network} size="xs" />}
         />
       )}
 

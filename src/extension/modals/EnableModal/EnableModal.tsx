@@ -310,7 +310,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
               />
 
               {/*network*/}
-              {network && <NetworkBadge network={network} />}
+              {network && <NetworkBadge network={network} size="xs" />}
 
               {/*caption*/}
               <Text color={subTextColor} fontSize="sm" textAlign="center">
