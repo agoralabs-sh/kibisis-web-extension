@@ -295,11 +295,11 @@ const AccountPage: FC = () => {
             </HStack>
 
             {/*name/address*/}
-            <VStack spacing={DEFAULT_GAP / 3} w="full">
+            <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
               <Tooltip label={account.name || address}>
                 <Heading
                   color={defaultTextColor}
-                  maxW={400}
+                  maxW="650px" // full address length
                   noOfLines={1}
                   size="md"
                   textAlign="left"
