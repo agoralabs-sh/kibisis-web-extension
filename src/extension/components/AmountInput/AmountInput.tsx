@@ -239,15 +239,15 @@ const AmountInput: FC<IProps> = ({
           _hover={{
             bg: buttonHoverBackgroundColor,
           }}
-          aria-label="Add maximum amount"
+          aria-label={t<string>('labels.addMaximumAmount')}
           borderRadius="md"
-          h="100%"
+          h="full"
           onClick={handleMaximumAmountClick}
           p={0}
           variant="ghost"
         >
           <Text color={defaultTextColor} fontSize="md">
-            {t<string>('labels.max').toUpperCase()}
+            {t<string>('buttons.max').toUpperCase()}
           </Text>
         </Button>
       </HStack>

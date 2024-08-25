@@ -4,6 +4,7 @@ import { TFunction } from 'i18next';
 import isMnemonicValid from '@extension/utils/isMnemonicValid';
 
 export default function validate(
+  label: string,
   phrases: string[],
   t: TFunction
 ): string | null {
@@ -13,12 +14,12 @@ export default function validate(
 
   if (phrases.every((value) => value.length <= 0)) {
     return t<string>('errors.inputs.requiredWithLabel', {
-      name: 'Mnemonic phrase',
+      name: label,
     });
   }
 
   if (!isMnemonicValid(phrases.join(' '))) {
-    return t<string>('errors.inputs.invalidMnemonic');
+    return t<string>('errors.inputs.invalidSeedPhrase');
   }
 
   return null;

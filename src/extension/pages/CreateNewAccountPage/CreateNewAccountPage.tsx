@@ -160,7 +160,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
                   textAlign="left"
                   w="full"
                 >
-                  {t<string>('captions.saveMnemonicPhrase1')}
+                  {t<string>('captions.saveSeedPhrase1')}
                 </Text>
 
                 <Text
@@ -169,7 +169,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
                   textAlign="left"
                   w="full"
                 >
-                  {t<string>('captions.saveMnemonicPhrase2')}
+                  {t<string>('captions.saveSeedPhrase2')}
                 </Text>
 
                 {/*seed phrase*/}

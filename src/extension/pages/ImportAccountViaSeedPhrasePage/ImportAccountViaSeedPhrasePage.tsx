@@ -1,17 +1,15 @@
 import { Heading, HStack, Spacer, Text, VStack } from '@chakra-ui/react';
 import { Step, useSteps } from 'chakra-ui-steps';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { type ChangeEvent, type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 // components
 import Button from '@extension/components/Button';
-import EnterMnemonicPhraseInput, {
-  validate,
-} from '@extension/components/EnterMnemonicPhraseInput';
 import GenericInput from '@extension/components/GenericInput';
 import PageHeader from '@extension/components/PageHeader';
+import SeedPhraseInput from '@extension/components/SeedPhraseInput';
 import Steps from '@extension/components/Steps';
 
 // constants
@@ -43,6 +41,7 @@ import type {
 } from '@extension/types';
 
 // utils
+import { validate } from '@extension/components/SeedPhraseInput';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import convertSeedPhraseToPrivateKey from '@extension/utils/convertSeedPhraseToPrivateKey';
 
@@ -72,6 +71,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   );
   const [seedPhraseError, setSeedPhraseError] = useState<string | null>(null);
   // misc
+  const _context = 'import-account-via-seed-phrase-page';
   const stepsLabels = [
     t<string>('headings.enterYourSeedPhrase'),
     t<string>('headings.nameYourAccount'),
@@ -121,7 +121,11 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
 
     // if this is the first step, validate the mnemonic
     if (activeStep <= StepsEnum.SeedPhrase) {
-      _seedPhraseError = validate(seedPhrases, t);
+      _seedPhraseError = validate(
+        t<string>('labels.seedPhrase'),
+        seedPhrases,
+        t
+      );
 
       setSeedPhraseError(_seedPhraseError);
 
@@ -193,7 +197,8 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
                 {t<string>('captions.enterSeedPhrase')}
               </Text>
 
-              <EnterMnemonicPhraseInput
+              <SeedPhraseInput
+                _context={_context}
                 disabled={saving}
                 error={seedPhraseError}
                 onChange={handleOnMnemonicPhraseChange}

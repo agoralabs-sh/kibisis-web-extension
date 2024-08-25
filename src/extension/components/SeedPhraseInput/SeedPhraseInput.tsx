@@ -11,41 +11,41 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, {
-  ChangeEvent,
-  ClipboardEvent,
-  FC,
-  ReactNode,
+  type ChangeEvent,
+  type ClipboardEvent,
+  type FC,
+  type ReactNode,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+// components
+import Label from '@extension/components/Label';
+
+// constants
+import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
+
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// types
+import type { IProps } from './types';
+
 // utils
 import { isPhrasesEmpty } from './utils';
-import { DEFAULT_GAP } from '@extension/constants';
 
-interface IProps {
-  disabled?: boolean;
-  error: string | null;
-  onChange: (phrases: string[]) => void;
-  phrases: string[];
-}
-
-const EnterMnemonicPhraseInput: FC<IProps> = ({
+const SeedPhraseInput: FC<IProps> = ({
+  _context,
   disabled,
   error,
   onChange,
   phrases,
-}: IProps) => {
+}) => {
   const { t } = useTranslation();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
-  const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
   // states
@@ -81,21 +81,19 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
 
   return (
     <VStack>
-      <HStack alignItems="center" minH={8} spacing={DEFAULT_GAP / 3} w="full">
+      <HStack
+        alignItems="center"
+        minH={DEFAULT_GAP + 2}
+        spacing={DEFAULT_GAP / 3}
+        w="full"
+      >
         {/*label*/}
-        <HStack alignItems="flex-end" justifyContent="space-between" w="full">
-          <Text
-            color={error ? 'red.300' : defaultTextColor}
-            fontSize="sm"
-            textAlign="left"
-          >
-            {t<string>('labels.seedPhrase')}
-          </Text>
-
-          <Text color="red.300" fontSize="xs" textAlign="right">
-            {error}
-          </Text>
-        </HStack>
+        <Label
+          error={error}
+          label={t<string>('labels.seedPhrase')}
+          pl={DEFAULT_GAP / 3}
+          required={true}
+        />
 
         <Spacer />
 
@@ -105,13 +103,15 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
             _hover={{
               bg: buttonHoverBackgroundColor,
             }}
-            aria-label="Reset the phrases"
-            borderRadius={0}
+            aria-label={t<string>('labels.resetSeedPhrase')}
+            borderRadius="md"
             onClick={handleResetClick}
             size="sm"
             variant="ghost"
           >
-            {t<string>('buttons.reset')}
+            <Text color={subTextColor} fontSize="md">
+              {t<string>('buttons.reset').toUpperCase()}
+            </Text>
           </Button>
         )}
       </HStack>
@@ -123,26 +123,28 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
             <InputGroup size="md">
               <InputLeftElement
                 color={subTextColor}
+                h="full"
                 pointerEvents="none"
-                width={5}
+                w={DEFAULT_GAP + 2}
               >
-                <Text color={subTextColor} fontSize="xs">
+                <Text as="b" color={subTextColor} fontSize="sm">
                   {index + 1}
                 </Text>
               </InputLeftElement>
 
               <Input
                 autoFocus={currentFocusIndex === index}
-                disabled={disabled}
+                borderRadius="full"
                 focusBorderColor={error ? 'red.300' : primaryColor}
+                h={INPUT_HEIGHT}
+                isDisabled={disabled}
                 isInvalid={!!error}
                 onChange={handleOnChange(index)}
                 onFocus={handleOnFocus(index)}
                 onPaste={handleOnPaste}
-                pb={4}
-                pl={5}
-                pr={3}
-                pt={4}
+                pl={DEFAULT_GAP + 1}
+                pr={DEFAULT_GAP / 2}
+                py={DEFAULT_GAP - 2}
                 type="text"
                 value={value}
               />
@@ -154,7 +156,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
               <GridItem
                 colEnd={2}
                 colStart={2}
-                key={`enter-mnemonic-phrase-input-phrase-input-item-${index}`}
+                key={`${_context}-seed-phrase-input-item-${index}`}
               >
                 {input}
               </GridItem>
@@ -162,9 +164,7 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
           }
 
           return (
-            <GridItem
-              key={`enter-mnemonic-phrase-input-phrase-input-item-${index}`}
-            >
+            <GridItem key={`${_context}-seed-phrase-input-item-${index}`}>
               {input}
             </GridItem>
           );
@@ -174,4 +174,4 @@ const EnterMnemonicPhraseInput: FC<IProps> = ({
   );
 };
 
-export default EnterMnemonicPhraseInput;
+export default SeedPhraseInput;

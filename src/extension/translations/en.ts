@@ -31,6 +31,7 @@ const translation: IResourceLanguage = {
     getStarted: 'Get Started',
     hide: 'Hide',
     import: 'Import',
+    max: 'max',
     moreDetails: 'More Details',
     next: 'Next',
     ok: 'OK',
@@ -260,9 +261,9 @@ const translation: IResourceLanguage = {
       '2. After your password has been confirmed, you will then be asked to use your passkey to decrypt the private keys.',
     requestingPasskeyPermission:
       'Requesting permission from the passkey "{{name}}".',
-    saveMnemonicPhrase1:
+    saveSeedPhrase1:
       'Here is your 25 word mnemonic seed phrase; it is the key to your account.',
-    saveMnemonicPhrase2: `Make sure you save this in a secure place.`,
+    saveSeedPhrase2: `Make sure you save this in a secure place.`,
     scannedQrCodes: 'Scanning {{count}} of {{total}} codes',
     scanningForQrCode:
       'Scanning for a QR Code. Make sure the QR code is visible in the background.',
@@ -312,8 +313,8 @@ const translation: IResourceLanguage = {
       copySeedPhraseRequired:
         'You must confirm you have copied the seed phrase',
       invalidAddress: 'Invalid address',
-      invalidMnemonic: 'Invalid seed phrase',
       invalidPassword: 'Invalid password',
+      invalidSeedPhrase: 'Invalid seed phrase',
       passwordMinLength: 'Must be at least 8 characters',
       passwordTooWeak: 'This password is too weak',
       required: 'This field required',
@@ -471,6 +472,7 @@ const translation: IResourceLanguage = {
     accountToFreeze: 'Account To Freeze',
     accountToUnfreeze: 'Account To Unfreeze',
     addAccount: 'Add Account',
+    addMaximumAmount: 'Add Maximum Amount',
     algorithm: 'Algorithm',
     allowActionTracking: 'Allow certain actions to be tracked?',
     allowBetaNet: 'Allow BetaNet networks?',
@@ -588,6 +590,7 @@ const translation: IResourceLanguage = {
     removedAccount: 'Removed Account',
     removeSession: 'Remove Session',
     reserveAccount: 'Reserve Account',
+    resetSeedPhrase: 'Reset Seed Phrase',
     scanQRCode: 'Scan QR Code',
     seedPhrase: 'Seed Phrase',
     selectAccount: 'Select Account',
@@ -599,7 +602,7 @@ const translation: IResourceLanguage = {
     sendAsset: 'Send {{nativeCurrency}}/Asset',
     settings: 'Settings',
     shareAddress: 'Share Address',
-    showHidePassword: 'Show/hide password',
+    showHidePassword: 'Show/hide Password',
     signingMethod: 'Signing Method',
     stateProofKey: 'State Proof Public Key',
     symbol: 'Symbol',
