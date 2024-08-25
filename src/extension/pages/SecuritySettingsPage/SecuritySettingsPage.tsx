@@ -21,12 +21,12 @@ import {
   CHANGE_PASSWORD_ROUTE,
   EXPORT_ACCOUNT_ROUTE,
   PASSKEY_ROUTE,
-  PASSWORD_LOCK_DURATION_HIGH,
-  PASSWORD_LOCK_DURATION_HIGHER,
-  PASSWORD_LOCK_DURATION_HIGHEST,
-  PASSWORD_LOCK_DURATION_LOW,
-  PASSWORD_LOCK_DURATION_LOWEST,
-  PASSWORD_LOCK_DURATION_NORMAL,
+  CREDENTIALS_LOCK_DURATION_HIGH,
+  CREDENTIALS_LOCK_DURATION_HIGHER,
+  CREDENTIALS_LOCK_DURATION_HIGHEST,
+  CREDENTIALS_LOCK_DURATION_LOW,
+  CREDENTIALS_LOCK_DURATION_LOWEST,
+  CREDENTIALS_LOCK_DURATION_NORMAL,
   SECURITY_ROUTE,
   SETTINGS_ROUTE,
   VIEW_SEED_PHRASE_ROUTE,
@@ -84,39 +84,39 @@ const SecuritySettingsPage: FC = () => {
   const durationOptions: IOption<number>[] = [
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_LOCK_DURATION_LOWEST,
+        context: CREDENTIALS_LOCK_DURATION_LOWEST,
       }),
-      value: PASSWORD_LOCK_DURATION_LOWEST,
+      value: CREDENTIALS_LOCK_DURATION_LOWEST,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_LOCK_DURATION_LOW,
+        context: CREDENTIALS_LOCK_DURATION_LOW,
       }),
-      value: PASSWORD_LOCK_DURATION_LOW,
+      value: CREDENTIALS_LOCK_DURATION_LOW,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_LOCK_DURATION_NORMAL,
+        context: CREDENTIALS_LOCK_DURATION_NORMAL,
       }),
-      value: PASSWORD_LOCK_DURATION_NORMAL,
+      value: CREDENTIALS_LOCK_DURATION_NORMAL,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_LOCK_DURATION_HIGH,
+        context: CREDENTIALS_LOCK_DURATION_HIGH,
       }),
-      value: PASSWORD_LOCK_DURATION_HIGH,
+      value: CREDENTIALS_LOCK_DURATION_HIGH,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_LOCK_DURATION_HIGHER,
+        context: CREDENTIALS_LOCK_DURATION_HIGHER,
       }),
-      value: PASSWORD_LOCK_DURATION_HIGHER,
+      value: CREDENTIALS_LOCK_DURATION_HIGHER,
     },
     {
       label: t<string>('labels.passwordLockDuration', {
-        context: PASSWORD_LOCK_DURATION_HIGHEST,
+        context: CREDENTIALS_LOCK_DURATION_HIGHEST,
       }),
-      value: PASSWORD_LOCK_DURATION_HIGHEST,
+      value: CREDENTIALS_LOCK_DURATION_HIGHEST,
     },
     {
       label: t<string>('labels.passwordLockDuration'), // never
@@ -227,20 +227,20 @@ const SecuritySettingsPage: FC = () => {
         {/*authentication*/}
         <SettingsSubHeading text={t<string>('headings.authentication')} />
 
-        {/*enable password lock*/}
+        {/*enable credentials lock*/}
         <SettingsSwitchItem
           checked={settings.security.enableCredentialLock}
-          description={t<string>('captions.enablePasswordLock')}
-          label={t<string>('labels.enablePasswordLock')}
+          description={t<string>('captions.enableCredentialsLock')}
+          label={t<string>('labels.enableCredentialsLock')}
           onChange={handleEnablePasswordLockSwitchChange}
         />
 
-        {/*password lock duration*/}
+        {/*credentials lock duration*/}
         <SettingsSelectItem
           _context={_context}
           disabled={!settings.security.enableCredentialLock}
           emptyOptionLabel={t<string>('placeholders.pleaseSelect')}
-          label={t<string>('labels.passwordLockTimeout')}
+          label={t<string>('labels.credentialsLockTimeout')}
           onChange={handlePasswordTimeoutDurationChange}
           options={durationOptions}
           value={
@@ -248,10 +248,10 @@ const SecuritySettingsPage: FC = () => {
               (value) =>
                 value.value === settings.security.credentialLockTimeoutDuration
             ) || {
-              label: t<string>('labels.passwordLockDuration', {
-                context: PASSWORD_LOCK_DURATION_NORMAL,
+              label: t<string>('labels.credentialsLockDuration', {
+                context: CREDENTIALS_LOCK_DURATION_NORMAL,
               }),
-              value: PASSWORD_LOCK_DURATION_NORMAL,
+              value: CREDENTIALS_LOCK_DURATION_NORMAL,
             }
           }
         />
