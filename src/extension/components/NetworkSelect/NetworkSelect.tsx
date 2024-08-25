@@ -61,7 +61,7 @@ const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
           }}
           aria-label={t<string>('labels.chooseANetwork')}
           alignItems="center"
-          borderRightRadius="full"
+          borderRadius="full"
           h="auto"
           justifyContent="space-between"
           onClick={handleOnClick}
