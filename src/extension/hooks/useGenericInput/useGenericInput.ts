@@ -9,6 +9,7 @@ import validateInput from '@extension/utils/validateInput';
 
 export default function useGenericInput({
   characterLimit,
+  defaultValue,
   label,
   required,
   validate,
@@ -16,11 +17,11 @@ export default function useGenericInput({
   const { t } = useTranslation();
   // state
   const [error, setError] = useState<string | null>(null);
-  const [value, setValue] = useState<string>('');
+  const [value, setValue] = useState<string>(defaultValue || '');
   // actions
   const reset = () => {
     setError(null);
-    setValue('');
+    setValue(defaultValue || '');
   };
   const _validate = (_value: string) => {
     const _error = validateInput({

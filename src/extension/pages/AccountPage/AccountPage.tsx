@@ -3,7 +3,7 @@ import {
   HStack,
   Icon,
   Spacer,
-  StackProps,
+  type StackProps,
   Tab,
   TabList,
   TabPanels,
@@ -14,14 +14,14 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { type FC, useEffect, useState } from 'react';
+import React, { type FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
   IoCloudOfflineOutline,
-  IoCreateOutline,
   IoLockClosedOutline,
   IoLockOpenOutline,
+  IoPencil,
   IoQrCodeOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
@@ -32,7 +32,6 @@ import { useNavigate } from 'react-router-dom';
 import ActivityTab from '@extension/components/ActivityTab';
 import AssetsTab from '@extension/components/AssetsTab';
 import CopyIconButton from '@extension/components/CopyIconButton';
-import EditableAccountNameField from '@extension/components/EditableAccountNameField';
 import EmptyState from '@extension/components/EmptyState';
 import IconButton from '@extension/components/IconButton';
 import OpenTabIconButton from '@extension/components/OpenTabIconButton';
@@ -57,7 +56,6 @@ import { AccountTabEnum } from '@extension/enums';
 // features
 import {
   removeAccountByIdThunk,
-  saveAccountNameThunk,
   saveActiveAccountDetails,
   updateAccountsThunk,
 } from '@extension/features/accounts';
@@ -74,7 +72,8 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
-import ShareAddressModal from '@extension/modals//ShareAddressModal';
+import EditAccountModal from '@extension/modals/EditAccountModal';
+import ShareAddressModal from '@extension/modals/ShareAddressModal';
 
 // selectors
 import {
@@ -111,6 +110,11 @@ const AccountPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const {
+    isOpen: isEditAccountModalOpen,
+    onClose: onEditAccountModalClose,
+    onOpen: onEditAccountModalOpen,
+  } = useDisclosure();
+  const {
     isOpen: isShareAddressModalOpen,
     onClose: onShareAddressModalClose,
     onOpen: onShareAddressModalOpen,
@@ -133,8 +137,6 @@ const AccountPage: FC = () => {
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
-  // state
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   // misc
   const _context = 'account-page';
   const canReKeyAccount = () => {
@@ -166,20 +168,7 @@ const AccountPage: FC = () => {
     }
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
-  const handleEditAccountNameCancel = () => setIsEditing(false);
-  const handleEditAccountNameClick = () => setIsEditing(!isEditing);
-  const handleEditAccountNameSubmit = (value: string | null) => {
-    if (account) {
-      dispatch(
-        saveAccountNameThunk({
-          accountId: account.id,
-          name: value,
-        })
-      );
-    }
-
-    setIsEditing(false);
-  };
+  const handleOnEditAccountClick = () => onEditAccountModalOpen();
   const handleNetworkSelect = (value: INetwork) => {
     dispatch(
       saveSettingsToStorageThunk({
@@ -348,12 +337,12 @@ const AccountPage: FC = () => {
               spacing={1}
               w="full"
             >
-              {/*edit account name*/}
-              <Tooltip label={t<string>('labels.editAccountName')}>
+              {/*edit account*/}
+              <Tooltip label={t<string>('labels.editAccount')}>
                 <IconButton
-                  aria-label="Edit account name"
-                  icon={IoCreateOutline}
-                  onClick={handleEditAccountNameClick}
+                  aria-label={t<string>('labels.editAccount')}
+                  icon={IoPencil}
+                  onClick={handleOnEditAccountClick}
                   size="sm"
                   variant="ghost"
                 />
@@ -567,6 +556,11 @@ const AccountPage: FC = () => {
     <>
       {account && (
         <>
+          <EditAccountModal
+            isOpen={isEditAccountModalOpen}
+            onClose={onEditAccountModalClose}
+          />
+
           <ShareAddressModal
             address={convertPublicKeyToAVMAddress(
               PrivateKeyService.decode(account.publicKey)

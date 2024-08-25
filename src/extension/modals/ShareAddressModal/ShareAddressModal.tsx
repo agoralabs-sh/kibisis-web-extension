@@ -14,9 +14,9 @@ import {
 } from '@chakra-ui/react';
 import { sanitize } from 'dompurify';
 import { toString } from 'qrcode';
-import React, { FC, useEffect, useState } from 'react';
+import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoQrCodeOutline } from 'react-icons/io5';
+import { IoCheckmarkDoneCircleOutline, IoQrCodeOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
@@ -100,12 +100,14 @@ const ShareAddressModal: FC<IProps> = ({ address, isOpen, onClose }) => {
         borderTopRadius={theme.radii['3xl']}
         borderBottomRadius={0}
       >
+        {/*header*/}
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {t<string>('headings.shareAddress')}
           </Heading>
         </ModalHeader>
 
+        {/*body*/}
         <ModalBody px={DEFAULT_GAP}>
           <VStack alignItems="center" spacing={DEFAULT_GAP / 3} w="full">
             {settings.advanced.allowDidTokenFormat && (
@@ -142,7 +144,7 @@ const ShareAddressModal: FC<IProps> = ({ address, isOpen, onClose }) => {
               <Box
                 backgroundColor={textBackgroundColor}
                 borderRadius={theme.radii['3xl']}
-                px={2}
+                px={DEFAULT_GAP / 3}
                 py={1}
               >
                 <Tooltip label={getFormatFromIndex(pillIndex, address)}>
@@ -166,8 +168,16 @@ const ShareAddressModal: FC<IProps> = ({ address, isOpen, onClose }) => {
             </HStack>
           </VStack>
         </ModalBody>
+
+        {/*footer*/}
         <ModalFooter p={DEFAULT_GAP}>
-          <Button onClick={onClose} size="lg" variant="solid" w="full">
+          <Button
+            onClick={handleClose}
+            rightIcon={<IoCheckmarkDoneCircleOutline />}
+            size="lg"
+            variant="solid"
+            w="full"
+          >
             {t<string>('buttons.ok')}
           </Button>
         </ModalFooter>

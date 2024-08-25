@@ -78,7 +78,7 @@ const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
           }
           variant="ghost"
         >
-          <NetworkBadge network={value} />
+          <NetworkBadge network={value} size="xs" />
         </ChakraButton>
       </Tooltip>
     </>
