@@ -1,4 +1,4 @@
-import { sign, SignKeyPair } from 'tweetnacl';
+import { sign, type SignKeyPair } from 'tweetnacl';
 
 // types
 import type { INewOptions } from './types';

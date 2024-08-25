@@ -8,17 +8,17 @@ import { PRIVATE_KEY_ITEM_KEY_PREFIX } from '@extension/constants';
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
 
+// errors
+import { MalformedDataError } from '@extension/errors';
+
 // services
-import StorageManager from '../StorageManager';
+import PasskeyService from '@extension/services/PasskeyService';
+import PasswordService from '@extension/services/PasswordService';
+import StorageManager from '@extension/services/StorageManager';
 
 // types
 import type { IPrivateKey } from '@extension/types';
 import type { ICreateOptions, INewOptions, IUpgradeOptions } from './types';
-import fetchDecryptedKeyPairFromStorageWithPasskey from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPasskey';
-import { DecryptionError, MalformedDataError } from '@extension/errors';
-import fetchDecryptedKeyPairFromStorageWithPassword from '@extension/utils/fetchDecryptedKeyPairFromStorageWithPassword';
-import PasswordService from '@extension/services/PasswordService';
-import PasskeyService from '@extension/services/PasskeyService';
 
 /**
  * Handles all interactions with the private key item in storage. This does not deal with any encryption/decryption,
@@ -163,7 +163,7 @@ export default class PrivateKeyService {
     }
 
     // un-versioned or version 0 use the "secret key" form - the private key concatenated to the public key
-    if (privateKeyItem.version <= 0) {
+    if (!privateKeyItem.version || privateKeyItem.version <= 0) {
       decryptedPrivateKey =
         PrivateKeyService.extractPrivateKeyFromSecretKey(decryptedPrivateKey);
 
@@ -179,7 +179,7 @@ export default class PrivateKeyService {
           break;
         case EncryptionMethodEnum.Password:
           encryptedPrivateKey = await PasswordService.encryptBytes({
-            data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+            data: decryptedPrivateKey,
             logger,
             password: encryptionCredentials.password,
           }); // re-encrypt the private key with the current password
