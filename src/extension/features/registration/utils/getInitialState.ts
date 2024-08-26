@@ -6,6 +6,5 @@ export default function getInitialState(): IState {
     importAccountViaQRCodeModalOpen: false,
     password: null,
     saving: false,
-    score: -1,
   };
 }

@@ -31,8 +31,10 @@ const PasswordInput: FC<IProps> = ({
   hint,
   id,
   inputRef,
+  label,
   onKeyUp,
   onChange,
+  required = false,
   value,
 }) => {
   const { t } = useTranslation();
@@ -52,9 +54,9 @@ const PasswordInput: FC<IProps> = ({
       <Label
         error={error}
         inputID={_id}
-        label={t<string>('labels.password')}
+        label={label || t<string>('labels.password')}
         px={DEFAULT_GAP - 2}
-        required={true}
+        required={required}
       />
 
       {/*input*/}

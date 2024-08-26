@@ -5,10 +5,16 @@ import {
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import React, {
+  type ChangeEvent,
+  type FC,
+  type KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
 
@@ -20,7 +26,7 @@ import PasswordInput from '@extension/components/PasswordInput';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // hooks
-import { usePassword } from '@extension/components/PasswordInput';
+import useGenericInput from '@extension/hooks/useGenericInput';
 
 // selectors
 import { useSelectLogger } from '@extension/selectors';
@@ -47,12 +53,17 @@ const ConfirmPasswordModal: FC<IProps> = ({
   // hooks
   const {
     error: passwordError,
-    onChange: onPasswordChange,
+    label: passwordLabel,
+    required: isPasswordRequired,
     reset: resetPassword,
     setError: setPasswordError,
+    setValue: setPasswordValue,
     validate: validatePassword,
-    value: password,
-  } = usePassword();
+    value: passwordValue,
+  } = useGenericInput({
+    required: true,
+    label: t<string>('labels.password'),
+  });
   // states
   const [verifying, setVerifying] = useState<boolean>(false);
   // misc
@@ -67,7 +78,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
     let passwordService: PasswordService;
 
     // check if the input is valid
-    if (validatePassword()) {
+    if (!!passwordError || !!validatePassword(passwordValue)) {
       return;
     }
 
@@ -78,7 +89,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
 
     setVerifying(true);
 
-    isValid = await passwordService.verifyPassword(password);
+    isValid = await passwordService.verifyPassword(passwordValue);
 
     setVerifying(false);
 
@@ -88,7 +99,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
       return;
     }
 
-    onConfirm(password);
+    onConfirm(passwordValue);
     handleClose();
   };
   const handleClose = () => {
@@ -102,6 +113,10 @@ const ConfirmPasswordModal: FC<IProps> = ({
     if (event.key === 'Enter') {
       await handleConfirmClick();
     }
+  };
+  const handleOnPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    validatePassword(event.target.value);
+    setPasswordValue(event.target.value);
   };
 
   // set focus when opening
@@ -137,9 +152,11 @@ const ConfirmPasswordModal: FC<IProps> = ({
               error={passwordError}
               hint={hint || t<string>('captions.mustEnterPasswordToConfirm')}
               inputRef={passwordInputRef}
-              onChange={onPasswordChange}
+              label={passwordLabel}
+              onChange={handleOnPasswordChange}
               onKeyUp={handleKeyUpPasswordInput}
-              value={password || ''}
+              required={isPasswordRequired}
+              value={passwordValue || ''}
             />
           </VStack>
         </ModalBody>

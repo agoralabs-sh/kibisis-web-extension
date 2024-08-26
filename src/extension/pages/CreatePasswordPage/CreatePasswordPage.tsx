@@ -1,14 +1,13 @@
 import { Text, VStack } from '@chakra-ui/react';
-import React, { FC, KeyboardEvent, useEffect, useRef } from 'react';
+import React, { type FC, type KeyboardEvent, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowForwardOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
-import CreatePasswordInput, {
-  validate,
-} from '@extension/components/CreatePasswordInput';
+import NewPasswordInput from '@extension/components/NewPasswordInput';
 import PageHeader from '@extension/components/PageHeader';
 
 // constants
@@ -19,13 +18,8 @@ import { setPassword } from '@extension/features/registration';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useNewPasswordInput from '@extension/hooks/useNewPasswordInput';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
-
-// selectors
-import {
-  useSelectRegistrationPassword,
-  useSelectRegistrationScore,
-} from '@extension/selectors';
 
 // types
 import type {
@@ -36,40 +30,51 @@ import type {
 const CreatePasswordPage: FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
-  const createPasswordInputRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
+  const newPasswordInputRef = useRef<HTMLInputElement | null>(null);
   // hooks
   const defaultTextColor = useDefaultTextColor();
+  const {
+    error: newPasswordError,
+    label: newPasswordLabel,
+    onBlur: handleOnNewPasswordBlur,
+    onChange: handleOnNewPasswordChange,
+    required: isNewPasswordRequired,
+    score: newPasswordScore,
+    validate: newPasswordValidate,
+    value: newPasswordValue,
+  } = useNewPasswordInput({
+    label: t<string>('labels.newPassword'),
+    required: true,
+  });
   const subTextColor = useSubTextColor();
-  // selectors
-  const password = useSelectRegistrationPassword();
-  const score = useSelectRegistrationScore();
   // handlers
-  const handleKeyUpCreatePasswordInput = (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handleOnNewPasswordKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleNextClick();
     }
   };
   const handleNextClick = () => {
-    if (!validate(password || '', score, t)) {
-      navigate(ADD_ACCOUNT_ROUTE);
-    }
-  };
-  const handlePasswordChange = (newPassword: string, newScore: number) => {
-    dispatch(
-      setPassword({
-        password: newPassword,
-        score: newScore,
+    if (
+      !!newPasswordError ||
+      !!newPasswordValidate({
+        score: newPasswordScore,
+        value: newPasswordValue,
       })
-    );
+    ) {
+      return;
+    }
+
+    // set the password
+    dispatch(setPassword(newPasswordValue));
+
+    navigate(ADD_ACCOUNT_ROUTE);
   };
 
   // focus on password input
   useEffect(() => {
-    if (createPasswordInputRef.current) {
-      createPasswordInputRef.current.focus();
+    if (newPasswordInputRef.current) {
+      newPasswordInputRef.current.focus();
     }
   }, []);
 
@@ -84,7 +89,7 @@ const CreatePasswordPage: FC = () => {
         flexGrow={1}
         pb={DEFAULT_GAP}
         px={DEFAULT_GAP}
-        spacing={2}
+        spacing={DEFAULT_GAP / 3}
         w="full"
       >
         <VStack flexGrow={1} spacing={DEFAULT_GAP + 2} w="full">
@@ -105,18 +110,23 @@ const CreatePasswordPage: FC = () => {
           </VStack>
 
           {/*create password input*/}
-          <CreatePasswordInput
-            inputRef={createPasswordInputRef}
-            onChange={handlePasswordChange}
-            onKeyUp={handleKeyUpCreatePasswordInput}
-            score={score}
-            value={password || ''}
+          <NewPasswordInput
+            error={newPasswordError}
+            label={newPasswordLabel}
+            onBlur={handleOnNewPasswordBlur}
+            onChange={handleOnNewPasswordChange}
+            onKeyUp={handleOnNewPasswordKeyUp}
+            ref={newPasswordInputRef}
+            required={isNewPasswordRequired}
+            score={newPasswordScore}
+            value={newPasswordValue}
           />
         </VStack>
 
         {/*next button*/}
         <Button
           onClick={handleNextClick}
+          rightIcon={<IoArrowForwardOutline />}
           size="lg"
           type="submit"
           variant="solid"

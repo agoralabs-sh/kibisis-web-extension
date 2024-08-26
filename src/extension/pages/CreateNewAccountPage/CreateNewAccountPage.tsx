@@ -7,8 +7,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Step, useSteps } from 'chakra-ui-steps';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { type ChangeEvent, type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  IoArrowBackOutline,
+  IoArrowForwardOutline,
+  IoSaveOutline,
+} from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
 // components
@@ -27,7 +32,6 @@ import { StepsEnum } from './enums';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -42,7 +46,6 @@ import type { IAddAccountPageProps } from '@extension/types';
 
 // utils
 import convertPrivateKeyToSeedPhrase from '@extension/utils/convertPrivateKeyToSeedPhrase';
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   onComplete,
@@ -266,6 +269,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
           <Button
             onClick={handlePreviousClick}
             isDisabled={saving}
+            rightIcon={<IoArrowBackOutline />}
             size="lg"
             variant="outline"
             w="full"
@@ -278,6 +282,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
             <Button
               onClick={handleSaveClick}
               isLoading={saving}
+              rightIcon={<IoSaveOutline />}
               size="lg"
               variant="solid"
               w="full"
@@ -288,6 +293,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
             // next button
             <Button
               onClick={handleNextClick}
+              rightIcon={<IoArrowForwardOutline />}
               size="lg"
               variant="solid"
               w="full"

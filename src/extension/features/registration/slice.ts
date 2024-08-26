@@ -7,7 +7,7 @@ import { StoreNameEnum } from '@extension/enums';
 import { saveCredentialsThunk } from './thunks';
 
 // types
-import type { ISetPasswordPayload, IState } from './types';
+import type { IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -20,7 +20,6 @@ const slice = createSlice({
 
       state.password = initialState.password;
       state.saving = initialState.saving;
-      state.score = initialState.score;
     });
     builder.addCase(saveCredentialsThunk.pending, (state: IState) => {
       state.saving = true;
@@ -39,7 +38,6 @@ const slice = createSlice({
         initialState.importAccountViaQRCodeModalOpen;
       state.password = initialState.password;
       state.saving = initialState.saving;
-      state.score = initialState.score;
     },
     setImportAccountViaQRCodeOpen: (
       state: Draft<IState>,
@@ -47,19 +45,14 @@ const slice = createSlice({
     ) => {
       state.importAccountViaQRCodeModalOpen = action.payload;
     },
-    setPassword: (
-      state: Draft<IState>,
-      action: PayloadAction<ISetPasswordPayload>
-    ) => {
-      if (action.payload.password.length <= 0) {
+    setPassword: (state: Draft<IState>, action: PayloadAction<string>) => {
+      if (action.payload.length <= 0) {
         state.password = null;
-        state.score = -1;
 
         return;
       }
 
-      state.password = action.payload.password;
-      state.score = action.payload.score;
+      state.password = action.payload;
     },
   },
 });

@@ -9,8 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import { randomBytes } from 'tweetnacl';
-import zxcvbn from 'zxcvbn';
-import React, { type ChangeEvent, type FC, useState } from 'react';
+import React, { type FC, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { IoEye, IoEyeOff, IoOpenOutline } from 'react-icons/io5';
 
@@ -34,18 +33,13 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // types
 import type { IProps } from './types';
 
-// utils
-import { validate } from './utils';
-
-const CreatePasswordInput: FC<IProps> = ({
-  disabled,
+const NewPasswordInput: FC<IProps> = ({
+  error,
   id,
-  inputRef,
   label,
-  onChange,
-  onKeyUp,
   score,
   value,
+  ...inputProps
 }) => {
   const { t } = useTranslation();
   // hooks
@@ -54,21 +48,9 @@ const CreatePasswordInput: FC<IProps> = ({
   const subTextColor = useSubTextColor();
   // state
   const [show, setShow] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(
-    value.length > 0 ? validate(value, score, t) : null
-  ); // misc
+  // misc
   const _id = id || encodeBase64URLSafe(randomBytes(6));
   // handlers
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    const newScore = value.length <= 0 ? -1 : zxcvbn(value).score;
-    const error = validate(value, newScore, t);
-
-    // update the local state
-    setError(error);
-
-    onChange(value, newScore);
-  };
   const handleShowHideClick = () => setShow(!show);
 
   return (
@@ -85,18 +67,15 @@ const CreatePasswordInput: FC<IProps> = ({
       {/*input*/}
       <InputGroup size="md">
         <Input
+          {...inputProps}
           autoComplete="new-password"
           borderRadius="full"
           focusBorderColor={error ? 'red.300' : primaryColor}
           h={INPUT_HEIGHT}
           id={_id}
-          isDisabled={disabled}
           isInvalid={!!error}
-          onChange={handleOnChange}
-          onKeyUp={onKeyUp}
           placeholder={t<string>('placeholders.enterPassword')}
           pr={DEFAULT_GAP * 2}
-          ref={inputRef}
           type={show ? 'text' : 'password'}
           value={value}
           w="full"
@@ -106,7 +85,6 @@ const CreatePasswordInput: FC<IProps> = ({
           <IconButton
             aria-label={t<string>('labels.showHidePassword')}
             borderRadius="full"
-            disabled={disabled}
             icon={show ? IoEye : IoEyeOff}
             mr={DEFAULT_GAP / 3}
             onClick={handleShowHideClick}
@@ -141,4 +119,4 @@ const CreatePasswordInput: FC<IProps> = ({
   );
 };
 
-export default CreatePasswordInput;
+export default NewPasswordInput;

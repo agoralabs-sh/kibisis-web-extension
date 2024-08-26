@@ -8,7 +8,14 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoLockClosedOutline } from 'react-icons/io5';
 import { Radio } from 'react-loader-spinner';
@@ -28,6 +35,7 @@ import { EncryptionMethodEnum } from '@extension/enums';
 // hooks
 import { usePassword } from '@extension/components/PasswordInput';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
+import useGenericInput from '@extension/hooks/useGenericInput';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
@@ -68,12 +76,17 @@ const AuthenticationModal: FC<IProps> = ({
   );
   const {
     error: passwordError,
-    onChange: onPasswordChange,
+    label: passwordLabel,
+    required: isPasswordRequired,
     reset: resetPassword,
     setError: setPasswordError,
+    setValue: setPasswordValue,
     validate: validatePassword,
-    value: password,
-  } = usePassword();
+    value: passwordValue,
+  } = useGenericInput({
+    required: true,
+    label: t<string>('labels.password'),
+  });
   const subTextColor = useSubTextColor();
   // states
   const [verifying, setVerifying] = useState<boolean>(false);
@@ -89,7 +102,7 @@ const AuthenticationModal: FC<IProps> = ({
     let passwordService: PasswordService;
 
     // check if the input is valid
-    if (validatePassword()) {
+    if (!!passwordError || !!validatePassword(passwordValue)) {
       return;
     }
 
@@ -100,7 +113,7 @@ const AuthenticationModal: FC<IProps> = ({
 
     setVerifying(true);
 
-    isValid = await passwordService.verifyPassword(password);
+    isValid = await passwordService.verifyPassword(passwordValue);
 
     setVerifying(false);
 
@@ -111,7 +124,7 @@ const AuthenticationModal: FC<IProps> = ({
     }
 
     onConfirm({
-      password,
+      password: passwordValue,
       type: EncryptionMethodEnum.Password,
     });
 
@@ -128,6 +141,10 @@ const AuthenticationModal: FC<IProps> = ({
     if (event.key === 'Enter') {
       await handleConfirmClick();
     }
+  };
+  const handleOnPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    validatePassword(event.target.value);
+    setPasswordValue(event.target.value);
   };
   // renders
   const renderContent = () => {
@@ -188,9 +205,11 @@ const AuthenticationModal: FC<IProps> = ({
             passwordHint || t<string>('captions.mustEnterPasswordToConfirm')
           }
           inputRef={passwordInputRef}
-          onChange={onPasswordChange}
+          label={passwordLabel}
+          onChange={handleOnPasswordChange}
           onKeyUp={handleKeyUpPasswordInput}
-          value={password || ''}
+          required={isPasswordRequired}
+          value={passwordValue || ''}
         />
       </VStack>
     );
