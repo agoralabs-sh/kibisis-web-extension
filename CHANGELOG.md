@@ -1,3 +1,10 @@
+# [1.18.0-beta.10](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.9...v1.18.0-beta.10) (2024-08-27)
+
+
+### Features
+
+* pre release UI updates ([#290](https://github.com/agoralabs-sh/kibisis-web-extension/issues/290)) ([65ca387](https://github.com/agoralabs-sh/kibisis-web-extension/commit/65ca387f60d0e9cbbdc7f0599e3c56ea0964c8be))
+
 # [1.18.0-beta.9](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.8...v1.18.0-beta.9) (2024-08-24)
 
 
