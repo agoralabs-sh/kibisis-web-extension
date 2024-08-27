@@ -18,7 +18,7 @@ import { decode as decodeBase64 } from '@stablelib/base64';
 import { Transaction } from 'algosdk';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoArrowBackOutline } from 'react-icons/io5';
+import { IoArrowBackOutline, IoCreateOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -337,6 +337,7 @@ const SignTransactionsModal: FC<IModalProps> = ({ onClose }) => {
               <Button
                 isLoading={signing}
                 onClick={handleSignClick}
+                rightIcon={<IoCreateOutline />}
                 size="lg"
                 variant="solid"
                 w="full"

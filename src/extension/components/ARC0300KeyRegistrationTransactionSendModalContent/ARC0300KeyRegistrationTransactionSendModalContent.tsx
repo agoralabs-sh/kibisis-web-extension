@@ -15,6 +15,7 @@ import {
 } from '@stablelib/base64';
 import type { Transaction } from 'algosdk';
 import React, { type FC, useEffect, useState } from 'react';
+import { IoArrowUpOutline } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -411,6 +412,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
             <Button
               isLoading={sending}
               onClick={handleSendClick}
+              rightIcon={<IoArrowUpOutline />}
               size="lg"
               variant="solid"
               w="full"

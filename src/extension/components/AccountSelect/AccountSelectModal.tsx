@@ -65,6 +65,7 @@ const AccountSelectModal: FC<TAccountSelectModalProps> = ({
   multiple,
   onClose,
   onSelect,
+  title,
 }) => {
   const { t } = useTranslation();
   // selectors
@@ -271,9 +272,12 @@ const AccountSelectModal: FC<TAccountSelectModalProps> = ({
               textAlign="center"
               w="full"
             >
-              {t<string>(
-                multiple ? 'headings.selectAccounts' : 'headings.selectAccount'
-              )}
+              {title ||
+                t<string>(
+                  multiple
+                    ? 'headings.selectAccounts'
+                    : 'headings.selectAccount'
+                )}
             </Heading>
 
             {/*select all accounts*/}

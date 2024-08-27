@@ -1,4 +1,4 @@
-import type { FocusEvent } from 'react';
+import type { InputProps } from '@chakra-ui/react';
 
 // types
 import type {
@@ -6,19 +6,18 @@ import type {
   IPropsWithContext,
 } from '@extension/types';
 
-interface IProps extends IPropsWithContext {
+interface IProps {
   accounts: IAccountWithExtendedProps[];
   allowWatchAccounts?: boolean;
-  disabled?: boolean;
   error?: string | null;
   id?: string;
   label?: string;
-  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
-  onChange: (value: string) => void;
-  onError?: (error: string | null) => void;
+  onSelect?: (value: string) => void;
   required?: boolean;
+  selectButtonLabel?: string;
+  selectModalTitle?: string;
   validate?: (value: string) => string | null;
-  value: string;
 }
+type TProps = IProps & IPropsWithContext & Omit<InputProps, 'onSelect'>;
 
-export default IProps;
+export default TProps;

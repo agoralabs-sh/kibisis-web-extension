@@ -17,6 +17,7 @@ import {
 import { encode as encodeBase64 } from '@stablelib/base64';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoCreateOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -326,6 +327,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
 
               <Button
                 onClick={handleSignClick}
+                rightIcon={<IoCreateOutline />}
                 size="lg"
                 variant="solid"
                 w="full"

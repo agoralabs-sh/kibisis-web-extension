@@ -1,11 +1,10 @@
 import type { TextareaProps } from '@chakra-ui/react';
 
-interface IProps extends Omit<TextareaProps, 'onError'> {
-  characterLimit?: number;
+interface IProps extends TextareaProps {
+  charactersRemaining?: number;
   error?: string | null;
   id?: string;
   label: string;
-  onError?: (value: string | null) => void;
   required?: boolean;
   validate?: (value: string) => string | null;
 }

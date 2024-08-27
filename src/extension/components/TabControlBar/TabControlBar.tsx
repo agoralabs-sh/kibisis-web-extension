@@ -62,7 +62,12 @@ const TabControlBar: FC<IProps> = ({
         return !value.tooltipLabel ? (
           button
         ) : (
-          <Tooltip label={value.tooltipLabel}>{button}</Tooltip>
+          <Tooltip
+            key={`${_context}-tab-control-bar-button-${index}`}
+            label={value.tooltipLabel}
+          >
+            {button}
+          </Tooltip>
         );
       })}
     </HStack>

@@ -9,15 +9,15 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, {
-  ChangeEvent,
-  FC,
-  KeyboardEvent,
+  type ChangeEvent,
+  type FC,
+  type KeyboardEvent,
   useEffect,
   useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoLockClosedOutline } from 'react-icons/io5';
+import { IoCheckmarkOutline, IoLockClosedOutline } from 'react-icons/io5';
 import { Radio } from 'react-loader-spinner';
 import browser from 'webextension-polyfill';
 
@@ -33,7 +33,6 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 import { EncryptionMethodEnum } from '@extension/enums';
 
 // hooks
-import { usePassword } from '@extension/components/PasswordInput';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useGenericInput from '@extension/hooks/useGenericInput';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -303,6 +302,7 @@ const AuthenticationModal: FC<IProps> = ({
               <Button
                 isLoading={verifying}
                 onClick={handleConfirmClick}
+                rightIcon={<IoCheckmarkOutline />}
                 size="lg"
                 variant="solid"
                 w="full"

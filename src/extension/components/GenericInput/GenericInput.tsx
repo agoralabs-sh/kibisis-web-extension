@@ -7,12 +7,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
-import React, {
-  type ChangeEvent,
-  type FocusEvent,
-  type FC,
-  useState,
-} from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { randomBytes } from 'tweetnacl';
 
@@ -30,18 +25,12 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // types
 import type { IProps } from './types';
 
-// utils
-import validateInput from '@extension/utils/validateInput';
-
 const GenericInput: FC<IProps> = ({
-  characterLimit,
+  charactersRemaining,
   error,
   id,
   informationText,
   label,
-  onBlur,
-  onChange,
-  onError,
   required = false,
   validate,
   ...inputProps
@@ -50,53 +39,8 @@ const GenericInput: FC<IProps> = ({
   // hooks
   const primaryColor = usePrimaryColor();
   const subTextColor = useSubTextColor();
-  // state
-  const [charactersRemaining, setCharactersRemaining] = useState<number | null>(
-    characterLimit || null
-  );
   // misc
   const _id = id || encodeBase64URLSafe(randomBytes(6));
-  // handlers
-  const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
-    onError &&
-      onError(
-        validateInput({
-          characterLimit,
-          field: label,
-          t,
-          required,
-          validate,
-          value: event.target.value,
-        })
-      );
-
-    return onBlur && onBlur(event);
-  };
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    let byteLength: number;
-
-    // update the characters remaining
-    if (characterLimit) {
-      byteLength = new TextEncoder().encode(value).byteLength;
-
-      setCharactersRemaining(characterLimit - byteLength);
-    }
-
-    onError &&
-      onError(
-        validateInput({
-          characterLimit,
-          field: label,
-          t,
-          required,
-          validate,
-          value,
-        })
-      );
-
-    return onChange && onChange(event);
-  };
 
   return (
     <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
@@ -118,8 +62,6 @@ const GenericInput: FC<IProps> = ({
           id={_id}
           isInvalid={!!error}
           h={INPUT_HEIGHT}
-          onBlur={handleOnBlur}
-          onChange={handleOnChange}
           w="full"
         />
 

@@ -11,8 +11,9 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactNode, useState } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowUndoOutline, IoLockClosedOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -44,6 +45,7 @@ import {
 } from '@extension/features/re-key-account';
 
 // hooks
+import useAddressInput from '@extension/hooks/useAddressInput';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useReKeyAccountModal from './hooks/useReKeyAccountModal';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -80,8 +82,21 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   // selectors
   const accounts = useSelectAccounts();
   // hooks
+  const {
+    error: reKeyToAddressError,
+    label: reKeyToAddressLabel,
+    onBlur: reKeyToAddressOnBlur,
+    onChange: reKeyToAddressOnChange,
+    onSelect: reKeyToAddressOnSelect,
+    required: isReKeyToAddressRequired,
+    reset: resetReKeyToAddress,
+    value: reKeyToAddressValue,
+    validate: validateReKeyToAddress,
+  } = useAddressInput({
+    label: t<string>('labels.reKeyTo'),
+    required: true,
+  });
   const defaultTextColor = useDefaultTextColor();
-  const subTextColor = useSubTextColor();
   const {
     account,
     accountInformation,
@@ -89,9 +104,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
     network,
     type: reKeyType,
   } = useReKeyAccountModal();
-  // states
-  const [authAddress, setAuthAddress] = useState<string>('');
-  const [authAddressError, setAuthAddressError] = useState<string | null>(null);
+  const subTextColor = useSubTextColor();
   // misc
   const _context = 're-key-account-modal';
   const isOpen = !!account && !!accountInformation;
@@ -101,9 +114,9 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
     if (
       !account ||
       !accountInformation ||
-      !authAddress ||
-      authAddressError ||
-      !network
+      !network ||
+      !!reKeyToAddressError ||
+      !!validateReKeyToAddress(reKeyToAddressValue)
     ) {
       return;
     }
@@ -111,7 +124,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
     try {
       transactionId = await dispatch(
         reKeyAccountThunk({
-          authorizedAddress: authAddress,
+          authorizedAddress: reKeyToAddressValue,
           reKeyAccount: account,
           network: network,
           ...result,
@@ -209,11 +222,9 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
+    resetReKeyToAddress();
     onClose && onClose();
   };
-  const handleAuthAddressChange = (address: string) => setAuthAddress(address);
-  const handleOnAuthAddressError = (error: string | null) =>
-    setAuthAddressError(error);
   const handleOnAuthenticationModalConfirm = async (
     result: TEncryptionCredentials
   ) => {
@@ -255,7 +266,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
 
       // re-key account
       if (reKeyType === 'rekey') {
-        if (confirming && authAddress) {
+        if (confirming && reKeyToAddressValue.length > 0) {
           return (
             <ReKeyAccountConfirmingModalContent
               accounts={accounts}
@@ -264,7 +275,7 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
                 convertPublicKeyToAVMAddress(account.publicKey)
               }
               network={network}
-              reKeyAddress={authAddress}
+              reKeyAddress={reKeyToAddressValue}
               reKeyType={reKeyType}
             />
           );
@@ -341,11 +352,14 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
                 _context={_context}
                 accounts={accounts}
                 allowWatchAccounts={true}
-                label={t<string>('labels.reKeyTo')}
-                onChange={handleAuthAddressChange}
-                onError={handleOnAuthAddressError}
-                required={true}
-                value={authAddress}
+                error={reKeyToAddressError}
+                label={reKeyToAddressLabel}
+                onBlur={reKeyToAddressOnBlur}
+                onChange={reKeyToAddressOnChange}
+                onSelect={reKeyToAddressOnSelect}
+                required={isReKeyToAddressRequired}
+                validate={validateReKeyToAddress}
+                value={reKeyToAddressValue}
               />
             </VStack>
           </VStack>
@@ -379,6 +393,13 @@ const ReKeyAccountModal: FC<IModalProps> = ({ onClose }) => {
 
           <Button
             onClick={handleReKeyOrUndoClick}
+            rightIcon={
+              reKeyType === 'undo' ? (
+                <IoArrowUndoOutline />
+              ) : (
+                <IoLockClosedOutline />
+              )
+            }
             size="lg"
             variant="solid"
             w="full"

@@ -1,8 +1,13 @@
 import { Heading, HStack, Spacer, Text, VStack } from '@chakra-ui/react';
 import { isValidAddress } from 'algosdk';
 import { Step, useSteps } from 'chakra-ui-steps';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  IoArrowBackOutline,
+  IoArrowForwardOutline,
+  IoSaveOutline,
+} from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
 // components
@@ -19,6 +24,7 @@ import { StepsEnum } from './enums';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useGenericInput from '@extension/hooks/useGenericInput';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -28,62 +34,65 @@ import type { IProps } from './types';
 const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { activeStep, nextStep, prevStep, setStep } = useSteps({
+  const { activeStep, nextStep, prevStep } = useSteps({
     initialStep: StepsEnum.Address,
   });
   // hooks
   const defaultTextColor = useDefaultTextColor();
+  const {
+    error: addressError,
+    label: addressLabel,
+    onBlur: addressOnBlur,
+    onChange: addressOnChange,
+    required: isAddressRequired,
+    value: addressValue,
+    validate: addressValidate,
+  } = useGenericInput({
+    label: t<string>('labels.address'),
+    required: true,
+    validate: (_value: string) => {
+      if (!isValidAddress(_value)) {
+        return t<string>('errors.inputs.invalidAddress');
+      }
+
+      return null;
+    },
+  });
+  const {
+    charactersRemaining: nameCharactersRemaining,
+    error: nameError,
+    label: nameLabel,
+    onBlur: nameOnBlur,
+    onChange: nameOnChange,
+    required: isNameRequired,
+    value: nameValue,
+    validate: nameValidate,
+  } = useGenericInput({
+    characterLimit: ACCOUNT_NAME_BYTE_LIMIT,
+    label: t<string>('labels.accountName'),
+    required: false,
+  });
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
-  // state
-  const [address, setAddress] = useState<string | null>(null);
-  const [addressError, setAddressError] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [nameError, setNameError] = useState<string | null>(null);
   // misc
-  const stepsLabels: string[] = [
+  const stepsLabels = [
     t<string>('headings.enterAnAddress'),
     t<string>('headings.nameYourAccount'),
   ];
-  const hasCompletedAllSteps: boolean = activeStep === stepsLabels.length;
-  const validateAddress = (value: string): string | null => {
-    if (value.length <= 0) {
-      return t<string>('errors.inputs.requiredWithLabel', {
-        name: t<string>('labels.address'),
-      });
-    }
-
-    if (!isValidAddress(value)) {
-      return t<string>('errors.inputs.invalidAddress');
-    }
-
-    return null;
-  };
+  const hasCompletedAllSteps = activeStep === stepsLabels.length;
   // handlers
-  const handleOnAddressChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setAddress(event.target.value);
   const handleNextClick = () => {
-    const _addressError = validateAddress(address || '');
-
-    if (_addressError) {
-      setAddressError(_addressError);
-
-      return;
-    }
-
     if (
-      (activeStep === StepsEnum.Address && addressError) ||
-      (activeStep === StepsEnum.AccountName && nameError)
+      (activeStep === StepsEnum.Address &&
+        (!!addressError || !!addressValidate(addressValue))) ||
+      (activeStep === StepsEnum.AccountName &&
+        (!!nameError || !!nameValidate(nameValue)))
     ) {
       return;
     }
 
     nextStep();
   };
-  const handleOnAddressError = (value: string | null) => setAddressError(value);
-  const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setName(event.target.value);
-  const handleOnNameError = (value: string | null) => setNameError(value);
   const handlePreviousClick = () => {
     // if the step is on the first step, navigate back
     if (activeStep <= StepsEnum.Address) {
@@ -95,15 +104,9 @@ const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
     prevStep();
   };
   const handleSaveClick = async () => {
-    if (!address) {
-      setStep(StepsEnum.Address);
-
-      return;
-    }
-
     await onComplete({
-      address,
-      name,
+      address: addressValue,
+      name: nameValue.length > 0 ? nameValue : null,
     });
   };
 
@@ -148,15 +151,15 @@ const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
 
               <GenericInput
                 error={addressError}
-                label={t<string>('labels.address')}
+                label={addressLabel}
                 isDisabled={saving}
-                onChange={handleOnAddressChange}
-                onError={handleOnAddressError}
+                onBlur={addressOnBlur}
+                onChange={addressOnChange}
                 placeholder={t<string>('placeholders.enterAddress')}
-                required={true}
+                required={isAddressRequired}
                 type="text"
-                validate={validateAddress}
-                value={address || ''}
+                validate={addressValidate}
+                value={addressValue}
               />
             </VStack>
           </Step>
@@ -179,15 +182,17 @@ const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
               </Text>
 
               <GenericInput
-                characterLimit={ACCOUNT_NAME_BYTE_LIMIT}
+                charactersRemaining={nameCharactersRemaining}
                 error={nameError}
-                label={t<string>('labels.accountName')}
+                label={nameLabel}
                 isDisabled={saving}
-                onChange={handleOnNameChange}
-                onError={handleOnNameError}
+                onBlur={nameOnBlur}
+                onChange={nameOnChange}
+                required={isNameRequired}
                 placeholder={t<string>('placeholders.nameAccount')}
                 type="text"
-                value={name || ''}
+                validate={nameValidate}
+                value={nameValue}
               />
             </VStack>
           </Step>
@@ -211,8 +216,9 @@ const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
         <HStack spacing={DEFAULT_GAP - 2} w="full">
           {/*previous button*/}
           <Button
-            onClick={handlePreviousClick}
             isDisabled={saving}
+            leftIcon={<IoArrowBackOutline />}
+            onClick={handlePreviousClick}
             size="lg"
             variant="outline"
             w="full"
@@ -223,8 +229,9 @@ const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
           {hasCompletedAllSteps ? (
             // save button
             <Button
-              onClick={handleSaveClick}
               isLoading={saving}
+              onClick={handleSaveClick}
+              rightIcon={<IoSaveOutline />}
               size="lg"
               variant="solid"
               w="full"
@@ -235,6 +242,7 @@ const AddWatchAccountPage: FC<IProps> = ({ onComplete, saving }) => {
             // next button
             <Button
               onClick={handleNextClick}
+              rightIcon={<IoArrowForwardOutline />}
               size="lg"
               variant="solid"
               w="full"

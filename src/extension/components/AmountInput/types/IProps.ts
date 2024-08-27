@@ -1,3 +1,5 @@
+import type { NumberInputProps } from '@chakra-ui/react';
+
 // types
 import type {
   IAccountWithExtendedProps,
@@ -5,17 +7,17 @@ import type {
   INativeCurrency,
   INetworkWithTransactionParams,
 } from '@extension/types';
+import type IOnEventOptions from './IOnEventOptions';
 
-interface IProps {
+interface IProps extends NumberInputProps {
   account: IAccountWithExtendedProps;
   asset: IAssetTypes | INativeCurrency;
-  disabled?: boolean;
   id?: string;
+  label?: string;
+  maximumAmountInAtomicUnits: string;
   network: INetworkWithTransactionParams;
-  maximumTransactionAmount: string;
-  onChange: (value: string) => void;
+  onMaximumAmountClick: (options: IOnEventOptions) => void;
   required?: boolean;
-  value: string | null;
 }
 
 export default IProps;

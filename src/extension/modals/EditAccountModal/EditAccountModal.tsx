@@ -10,7 +10,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import React, { type ChangeEvent, type FC } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoSaveOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -65,15 +65,15 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const {
-    characterLimit: nameCharacterLimit,
+    charactersRemaining: nameCharactersRemaining,
     error: nameError,
     label: nameLabel,
-    required: nameRequired,
+    onBlur: nameOnBlur,
+    onChange: nameOnChange,
+    required: isNameRequired,
     reset: resetName,
-    setError: setNameError,
-    setValue: setNameValue,
-    validate: validateName,
     value: nameValue,
+    validate: validateName,
   } = useGenericInput({
     characterLimit: ACCOUNT_NAME_BYTE_LIMIT,
     label: t<string>('labels.name'),
@@ -83,31 +83,12 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
   });
   const subTextColor = useSubTextColor();
   // handlers
-  const handleOnInputChange =
-    (field: string) => (event: ChangeEvent<HTMLInputElement>) => {
-      switch (field) {
-        case 'name':
-          setNameValue(event.target.value);
-          break;
-        default:
-          break;
-      }
-    };
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
     // reset inputs
     resetName();
     // close
     onClose && onClose();
-  };
-  const handleOnError = (field: string) => (value: string | null) => {
-    switch (field) {
-      case 'name':
-        setNameError(value);
-        break;
-      default:
-        break;
-    }
   };
   const handleSaveClick = async () => {
     let _account: IAccountWithExtendedProps | null;
@@ -203,17 +184,17 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
           <VStack flexGrow={1} spacing={DEFAULT_GAP - 2} w="full">
             {/*name*/}
             <GenericInput
-              characterLimit={nameCharacterLimit}
+              charactersRemaining={nameCharactersRemaining}
               error={nameError}
               label={nameLabel}
               isDisabled={saving}
-              onChange={handleOnInputChange('name')}
-              onError={handleOnError('name')}
-              placeholder={t<string>('placeholders.accountName')}
-              required={nameRequired}
+              onBlur={nameOnBlur}
+              onChange={nameOnChange}
+              required={isNameRequired}
+              placeholder={t<string>('placeholders.nameAccount')}
               type="text"
               validate={validateName}
-              value={nameValue || ''}
+              value={nameValue}
             />
           </VStack>
         </ModalBody>

@@ -39,6 +39,7 @@ import { theme } from '@extension/theme';
 
 // types
 import type { IProps } from './types';
+import { IoCheckmarkOutline } from 'react-icons/io5';
 
 const ConfirmPasswordModal: FC<IProps> = ({
   isOpen,
@@ -176,6 +177,7 @@ const ConfirmPasswordModal: FC<IProps> = ({
             <Button
               isLoading={verifying}
               onClick={handleConfirmClick}
+              rightIcon={<IoCheckmarkOutline />}
               size="lg"
               variant="solid"
               w="full"

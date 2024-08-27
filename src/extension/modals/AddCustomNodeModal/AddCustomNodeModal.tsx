@@ -98,10 +98,10 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
   const {
     error: algodURLError,
     label: algodURLLabel,
+    onBlur: algodURLOnBlur,
+    onChange: algodURLOnChange,
     required: algodURLRequired,
     reset: resetAlgodURL,
-    setError: setAlgodURLError,
-    setValue: setAlgodURLValue,
     validate: validateAlgodURL,
     value: algodURLValue,
   } = useGenericInput({
@@ -111,9 +111,9 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
   const {
     error: algodPortError,
     label: algodPortLabel,
+    onBlur: algodPortOnBlur,
+    onChange: algodPortOnChange,
     reset: resetAlgodPort,
-    setError: setAlgodPortError,
-    setValue: setAlgodPortValue,
     validate: validateAlgodPort,
     value: algodPortValue,
   } = useGenericInput({
@@ -122,9 +122,9 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
   const {
     error: algodTokenError,
     label: algodTokenLabel,
+    onBlur: algodTokenOnBlur,
+    onChange: algodTokenOnChange,
     reset: resetAlgodToken,
-    setError: setAlgodTokenError,
-    setValue: setAlgodTokenValue,
     validate: validateAlgodToken,
     value: algodTokenValue,
   } = useGenericInput({
@@ -133,9 +133,9 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
   const {
     error: indexerURLError,
     label: indexerURLLabel,
+    onBlur: indexerURLOnBlur,
+    onChange: indexerURLOnChange,
     reset: resetIndexerURL,
-    setError: setIndexerURLError,
-    setValue: setIndexerURLValue,
     validate: validateIndexerURL,
     value: indexerURLValue,
   } = useGenericInput({
@@ -144,9 +144,9 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
   const {
     error: indexerPortError,
     label: indexerPortLabel,
+    onBlur: indexerPortOnBlur,
+    onChange: indexerPortOnChange,
     reset: resetIndexerPort,
-    setError: setIndexerPortError,
-    setValue: setIndexerPortValue,
     validate: validateIndexerPort,
     value: indexerPortValue,
   } = useGenericInput({
@@ -155,22 +155,22 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
   const {
     error: indexerTokenError,
     label: indexerTokenLabel,
+    onBlur: indexerTokenOnBlur,
+    onChange: indexerTokenOnChange,
     reset: resetIndexerToken,
-    setError: setIndexerTokenError,
-    setValue: setIndexerTokenValue,
     validate: validateIndexerToken,
     value: indexerTokenValue,
   } = useGenericInput({
     label: t<string>('labels.token'),
   });
   const {
-    characterLimit: nameCharacterLimit,
+    charactersRemaining: nameCharactersRemaining,
     error: nameError,
     label: nameLabel,
+    onBlur: nameOnBlur,
+    onChange: nameOnChange,
     required: nameRequired,
     reset: resetName,
-    setError: setNameError,
-    setValue: setNameValue,
     validate: validateName,
     value: nameValue,
   } = useGenericInput({
@@ -341,61 +341,6 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
     });
     setNetwork(_network);
   };
-  const handleOnChange =
-    (field: string) => (event: ChangeEvent<HTMLInputElement>) => {
-      switch (field) {
-        case 'name':
-          setNameValue(event.target.value);
-          break;
-        case 'algodURL':
-          setAlgodURLValue(event.target.value);
-          break;
-        case 'algodPort':
-          setAlgodPortValue(event.target.value);
-          break;
-        case 'algodToken':
-          setAlgodTokenValue(event.target.value);
-          break;
-        case 'indexerURL':
-          setIndexerURLValue(event.target.value);
-          break;
-        case 'indexerPort':
-          setIndexerPortValue(event.target.value);
-          break;
-        case 'indexerToken':
-          setIndexerTokenValue(event.target.value);
-          break;
-        default:
-          break;
-      }
-    };
-  const handleOnError = (field: string) => (value: string | null) => {
-    switch (field) {
-      case 'name':
-        setNameError(value);
-        break;
-      case 'algodURL':
-        setAlgodURLError(value);
-        break;
-      case 'algodPort':
-        setAlgodPortError(value);
-        break;
-      case 'algodToken':
-        setAlgodTokenError(value);
-        break;
-      case 'indexerURL':
-        setIndexerURLError(value);
-        break;
-      case 'indexerPort':
-        setIndexerPortError(value);
-        break;
-      case 'indexerToken':
-        setIndexerTokenError(value);
-        break;
-      default:
-        break;
-    }
-  };
   const handlePreviousClick = () => {
     setCustomNode(null);
     setNetwork(null);
@@ -459,17 +404,17 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
 
         {/*name*/}
         <GenericInput
-          characterLimit={nameCharacterLimit}
+          charactersRemaining={nameCharactersRemaining}
           error={nameError}
           label={nameLabel}
           isDisabled={fetching}
-          onChange={handleOnChange('name')}
-          onError={handleOnError('name')}
+          onBlur={nameOnBlur}
+          onChange={nameOnChange}
           placeholder={t<string>('placeholders.customNodeName')}
           required={nameRequired}
           type="text"
           validate={validateName}
-          value={nameValue || ''}
+          value={nameValue}
         />
 
         {/*activate on add*/}
@@ -494,13 +439,13 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
           error={algodURLError}
           label={algodURLLabel}
           isDisabled={fetching}
-          onChange={handleOnChange('algodURL')}
-          onError={handleOnError('algodURL')}
+          onBlur={algodURLOnBlur}
+          onChange={algodURLOnChange}
           placeholder={t<string>('placeholders.url')}
           required={algodURLRequired}
           type="text"
           validate={validateAlgodURL}
-          value={algodURLValue || ''}
+          value={algodURLValue}
         />
 
         {/*algod port*/}
@@ -508,12 +453,12 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
           error={algodPortError}
           label={algodPortLabel}
           isDisabled={fetching}
-          onChange={handleOnChange('algodPort')}
-          onError={handleOnError('algodPort')}
+          onBlur={algodPortOnBlur}
+          onChange={algodPortOnChange}
           placeholder={t<string>('placeholders.port')}
           type="text"
           validate={validateAlgodPort}
-          value={algodPortValue || ''}
+          value={algodPortValue}
         />
 
         {/*algod token*/}
@@ -522,11 +467,11 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
           label={algodTokenLabel}
           informationText={t<string>('captions.algodToken')}
           isDisabled={fetching}
-          onChange={handleOnChange('algodToken')}
-          onError={handleOnError('algodToken')}
+          onBlur={algodTokenOnBlur}
+          onChange={algodTokenOnChange}
           type="text"
           validate={validateAlgodToken}
-          value={algodTokenValue || ''}
+          value={algodTokenValue}
         />
 
         <MoreInformationAccordion
@@ -546,12 +491,12 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
               error={indexerURLError}
               label={indexerURLLabel}
               isDisabled={fetching}
-              onChange={handleOnChange('indexerURL')}
-              onError={handleOnError('indexerURL')}
+              onBlur={indexerURLOnBlur}
+              onChange={indexerURLOnChange}
               placeholder={t<string>('placeholders.url')}
               type="text"
               validate={validateIndexerURL}
-              value={indexerURLValue || ''}
+              value={indexerURLValue}
             />
 
             {/*indexer port*/}
@@ -559,12 +504,12 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
               error={indexerPortError}
               label={indexerPortLabel}
               isDisabled={fetching}
-              onChange={handleOnChange('indexerPort')}
-              onError={handleOnError('indexerPort')}
+              onBlur={indexerPortOnBlur}
+              onChange={indexerPortOnChange}
               placeholder={t<string>('placeholders.port')}
               type="text"
               validate={validateIndexerPort}
-              value={indexerPortValue || ''}
+              value={indexerPortValue}
             />
 
             {/*indexer token*/}
@@ -573,11 +518,11 @@ const AddCustomNodeModal: FC<IProps> = ({ isOpen, onClose, onComplete }) => {
               label={indexerTokenLabel}
               informationText={t<string>('captions.indexerToken')}
               isDisabled={fetching}
-              onChange={handleOnChange('indexerToken')}
-              onError={handleOnError('indexerToken')}
+              onBlur={indexerTokenOnBlur}
+              onChange={indexerTokenOnChange}
               type="text"
               validate={validateIndexerToken}
-              value={indexerTokenValue || ''}
+              value={indexerTokenValue}
             />
           </VStack>
         </MoreInformationAccordion>

@@ -10,7 +10,7 @@ import { sanitize } from 'dompurify';
 import { toString } from 'qrcode';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoEyeOffOutline } from 'react-icons/io5';
+import { IoEyeOffOutline, IoListOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -358,6 +358,7 @@ const ExportAccountPage: FC = () => {
         {/*select accounts button*/}
         <Button
           onClick={handleSelectAccountsClick}
+          rightIcon={<IoListOutline />}
           size="lg"
           variant="solid"
           w="full"

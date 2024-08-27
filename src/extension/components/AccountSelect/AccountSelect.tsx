@@ -41,10 +41,10 @@ const AccountSelect: FC<IProps> = ({
   _context,
   accounts,
   allowWatchAccounts,
-  disabled = false,
   label,
   onSelect,
   required = false,
+  selectModalTitle,
   value,
 }) => {
   const { t } = useTranslation();
@@ -78,6 +78,7 @@ const AccountSelect: FC<IProps> = ({
         multiple={false}
         onClose={onAccountSelectClose}
         onSelect={handleOnSelect}
+        title={selectModalTitle}
       />
 
       <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">

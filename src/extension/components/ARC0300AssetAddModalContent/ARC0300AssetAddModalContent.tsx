@@ -17,6 +17,7 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoAddOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -411,6 +412,7 @@ const ARC0300AssetAddModalContent: FC<
             <Button
               isLoading={loading || saving}
               onClick={handleAddClick}
+              rightIcon={<IoAddOutline />}
               size="lg"
               variant="solid"
               w="full"

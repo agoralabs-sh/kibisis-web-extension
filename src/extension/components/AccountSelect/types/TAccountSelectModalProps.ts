@@ -11,6 +11,7 @@ interface IAccountSelectModalProps {
   isOpen: boolean;
   multiple?: boolean;
   onSelect: (accounts: IAccountWithExtendedProps[]) => void;
+  title?: string;
 }
 
 type TAccountSelectModalProps = IAccountSelectModalProps &

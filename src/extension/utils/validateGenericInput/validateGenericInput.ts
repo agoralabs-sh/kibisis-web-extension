@@ -6,7 +6,7 @@ import type { IOptions } from './types';
  * @param {IOptions} options - the field name, a translation function, a custom validation function and the value.
  * @returns {string | null} the human-readable error or null if the value passed validation.
  */
-export default function validateInput({
+export default function validateGenericInput({
   characterLimit,
   field,
   required = false,
@@ -15,11 +15,6 @@ export default function validateInput({
   value,
 }: IOptions): string | null {
   let byteLength: number;
-
-  // custom validation take precedence
-  if (validate) {
-    return validate(value);
-  }
 
   if (value.length <= 0 && required) {
     return field
@@ -34,6 +29,11 @@ export default function validateInput({
     if (characterLimit - byteLength < 0) {
       return t<string>('errors.inputs.tooLong');
     }
+  }
+
+  // custom validations
+  if (validate) {
+    return validate(value);
   }
 
   return null;

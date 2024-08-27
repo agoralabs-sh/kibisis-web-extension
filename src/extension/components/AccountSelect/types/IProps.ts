@@ -11,6 +11,7 @@ interface IProps extends IPropsWithContext {
   label?: string;
   onSelect: (account: IAccountWithExtendedProps) => void;
   required?: boolean;
+  selectModalTitle?: string;
   value: IAccountWithExtendedProps;
 }
 

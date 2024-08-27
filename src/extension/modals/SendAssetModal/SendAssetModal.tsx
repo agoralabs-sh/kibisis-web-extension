@@ -11,9 +11,13 @@ import {
 } from '@chakra-ui/react';
 import { type Transaction } from 'algosdk';
 import BigNumber from 'bignumber.js';
-import React, { type ChangeEvent, type FC, useEffect, useState } from 'react';
+import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoArrowBackOutline, IoArrowForwardOutline } from 'react-icons/io5';
+import {
+  IoArrowBackOutline,
+  IoArrowForwardOutline,
+  IoArrowUpOutline,
+} from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -47,16 +51,16 @@ import { create as createNotification } from '@extension/features/notifications'
 import {
   createUnsignedTransactionsThunk,
   reset as resetSendAssets,
-  setAmount,
-  setFromAddress,
-  setNote,
-  setSelectedAsset,
-  setToAddress,
+  setAsset,
+  setSender,
   submitTransactionThunk,
 } from '@extension/features/send-assets';
 
 // hooks
+import useAddressInput from '@extension/hooks/useAddressInput';
+import useAmountInput from '@extension/hooks/useAmountInput';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useGenericInput from '@extension/hooks/useGenericInput';
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
@@ -68,13 +72,10 @@ import {
   useSelectAvailableAccountsForSelectedNetwork,
   useSelectLogger,
   useSelectSettingsSelectedNetwork,
-  useSelectSendAssetAmountInStandardUnits,
+  useSelectSendAssetAsset,
   useSelectSendAssetConfirming,
   useSelectSendAssetCreating,
-  useSelectSendAssetFromAccount,
-  useSelectSendAssetNote,
-  useSelectSendAssetSelectedAsset,
-  useSelectSendAssetToAddress,
+  useSelectSendAssetSender,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
 
@@ -99,7 +100,6 @@ import type {
 // utils
 import calculateMaxTransactionAmount from '@extension/utils/calculateMaxTransactionAmount';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
-import validateAddressInput from '@extension/utils/validateAddressInput';
 
 const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -111,25 +111,63 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   } = useDisclosure();
   // selectors
   const accounts = useSelectAccounts();
-  const amountInStandardUnits = useSelectSendAssetAmountInStandardUnits();
   const arc200Assets = useSelectARC0200AssetsBySelectedNetwork();
+  const asset = useSelectSendAssetAsset();
   const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const standardAssets = useSelectStandardAssetsBySelectedNetwork();
   const confirming = useSelectSendAssetConfirming();
   const creating = useSelectSendAssetCreating();
-  const fromAccount = useSelectSendAssetFromAccount();
   const logger = useSelectLogger();
   const network = useSelectSettingsSelectedNetwork();
-  const note = useSelectSendAssetNote();
-  const selectedAsset = useSelectSendAssetSelectedAsset();
-  const toAddress = useSelectSendAssetToAddress();
+  const sender = useSelectSendAssetSender();
   // hooks
   const defaultTextColor = useDefaultTextColor();
+  const {
+    label: amountLabel,
+    onBlur: amountOnBlur,
+    onChange: amountOnChange,
+    onFocus: amountOnFocus,
+    onMaximumAmountClick: amountOnMaximumClick,
+    required: isAmountRequired,
+    reset: resetAmount,
+    setValue: setAmountValue,
+    value: amountValue,
+  } = useAmountInput({
+    label: t<string>('labels.amount'),
+    required: true,
+  });
+  const {
+    charactersRemaining: noteCharactersRemaining,
+    error: noteError,
+    label: noteLabel,
+    onBlur: noteOnBlur,
+    onChange: noteOnChange,
+    required: isNoteRequired,
+    reset: resetNote,
+    value: noteValue,
+    validate: validateNote,
+  } = useGenericInput<HTMLTextAreaElement>({
+    characterLimit: TRANSACTION_NOTE_BYTE_LIMIT,
+    label: t<string>('labels.note'),
+    required: false,
+  });
+  const {
+    error: receiverAddressError,
+    label: receiverAddressLabel,
+    onBlur: receiverAddressOnBlur,
+    onChange: receiverAddressOnChange,
+    onSelect: receiverAddressOnSelect,
+    required: isReceiverAddressRequired,
+    reset: resetReceiverAddress,
+    value: receiverAddressValue,
+    validate: validateReceiverAddress,
+  } = useAddressInput({
+    label: t<string>('labels.to'),
+    required: true,
+  });
   // state
-  const [maximumTransactionAmount, setMaximumTransactionAmount] =
+  const [maximumAmountInAtomicUnits, setMaximumAmountInAtomicUnits] =
     useState<string>('0');
-  const [noteError, setNoteError] = useState<string | null>(null);
-  const [toAddressError, setToAddressError] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   // misc
   const _context = 'send-asset-modal';
@@ -144,23 +182,12 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       return aName < bName ? -1 : aName > bName ? 1 : 0;
     }) // sort each alphabetically by name
     .sort((a, b) => (a.verified === b.verified ? 0 : a.verified ? -1 : 1)); // then sort to bring the verified to the front
-  const isOpen: boolean = !!selectedAsset;
-  const validateToAddress = (value: string) => {
-    let _error = validateAddressInput({
-      field: t<string>('labels.to'),
-      t,
-      required: true,
-      value,
-    });
-
-    setToAddressError(_error);
-
-    return _error;
-  };
+  const isOpen = !!asset && !!sender;
   // handlers
-  const handleAmountChange = (value: string) => dispatch(setAmount(value));
-  const handleAssetChange = (value: IAssetTypes | INativeCurrency) =>
-    dispatch(setSelectedAsset(value));
+  const handleOnAssetSelect = (value: IAssetTypes | INativeCurrency) =>
+    dispatch(setAsset(value));
+  const handleOnSenderAccountSelect = (value: IAccountWithExtendedProps) =>
+    dispatch(setSender(value));
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
     // reset modal store - should close modal
@@ -168,6 +195,9 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
     // reset modal input and transactions
     setTransactions(null);
+    resetAmount();
+    resetNote();
+    resetReceiverAddress();
 
     onClose && onClose();
   };
@@ -175,7 +205,14 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     const _functionName = 'handleNextClick';
     let _transactions: Transaction[];
 
-    if (toAddressError || noteError || !!validateToAddress(toAddress || '')) {
+    if (
+      !!noteError ||
+      !!receiverAddressError ||
+      [
+        validateNote(noteValue),
+        validateReceiverAddress(receiverAddressValue),
+      ].some((value) => !!value)
+    ) {
       return;
     }
 
@@ -185,7 +222,13 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
 
     try {
       _transactions = await dispatch(
-        createUnsignedTransactionsThunk()
+        createUnsignedTransactionsThunk({
+          amountInStandardUnits: amountValue,
+          receiverAddress: receiverAddressValue,
+          ...(noteValue.length > 0 && {
+            note: noteValue,
+          }),
+        })
       ).unwrap();
 
       logger.debug(
@@ -205,44 +248,24 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       return;
     }
   };
-  const handleOnAccountSelect =
-    (field: string) => (value: IAccountWithExtendedProps) => {
-      const address = convertPublicKeyToAVMAddress(value.publicKey);
-
-      switch (field) {
-        case 'fromAddress':
-          dispatch(setFromAddress(address));
-          break;
-        default:
-          break;
-      }
-    };
-  const handleOnAddressInputChange = (field: string) => (value: string) => {
-    switch (field) {
-      case 'toAddress':
-        dispatch(setToAddress(value.length > 0 ? value : null));
-        break;
-      default:
-        break;
-    }
-  };
   const handleOnAuthenticationModalConfirm = async (
     result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
-    let fromAddress: string;
     let hasQuestBeenCompletedToday: boolean = false;
     let questsService: QuestsService;
     let questsSent: boolean = false;
-    let toAccount: IAccount | null;
+    let receiverAccount: IAccount | null;
+    let senderAddress: string;
     let transactionIds: string[];
 
     if (
-      !fromAccount ||
+      !asset ||
       !network ||
+      receiverAddressValue.length <= 0 ||
+      !sender ||
       !transactions ||
-      transactions.length <= 0 ||
-      !toAddress
+      transactions.length <= 0
     ) {
       return;
     }
@@ -263,28 +286,30 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           .join(',')}] to the network`
       );
 
-      toAccount =
+      receiverAccount =
         accounts.find(
-          (value) => convertPublicKeyToAVMAddress(value.publicKey) === toAddress
+          (value) =>
+            convertPublicKeyToAVMAddress(value.publicKey) ===
+            receiverAddressValue
         ) || null;
-      fromAddress = convertPublicKeyToAVMAddress(fromAccount.publicKey);
+      senderAddress = convertPublicKeyToAVMAddress(sender.publicKey);
       questsService = new QuestsService({
         logger,
       });
 
       // track the action
-      switch (selectedAsset?.type) {
+      switch (asset?.type) {
         case AssetTypeEnum.ARC0200:
           hasQuestBeenCompletedToday =
             await questsService.hasQuestBeenCompletedTodayByName(
               QuestNameEnum.SendARC0200AssetAction
             );
           questsSent = await questsService.sendARC0200AssetQuest(
-            fromAddress,
-            toAddress,
-            amountInStandardUnits,
+            senderAddress,
+            receiverAddressValue,
+            amountValue,
             {
-              appID: selectedAsset.id,
+              appID: asset.id,
               genesisHash: network.genesisHash,
             }
           );
@@ -295,9 +320,9 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
               QuestNameEnum.SendNativeCurrencyAction
             );
           questsSent = await questsService.sendNativeCurrencyQuest(
-            fromAddress,
-            toAddress,
-            amountInStandardUnits,
+            senderAddress,
+            receiverAddressValue,
+            amountValue,
             {
               genesisHash: network.genesisHash,
             }
@@ -309,11 +334,11 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
               QuestNameEnum.SendStandardAssetAction
             );
           questsSent = await questsService.sendStandardAssetQuest(
-            fromAddress,
-            toAddress,
-            amountInStandardUnits,
+            senderAddress,
+            receiverAddressValue,
+            amountValue,
             {
-              assetID: selectedAsset.id,
+              assetID: asset.id,
               genesisHash: network.genesisHash,
             }
           );
@@ -347,9 +372,9 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       // force update the account information as we spent fees and refresh all the new transactions
       dispatch(
         updateAccountsThunk({
-          accountIds: toAccount
-            ? [fromAccount.id, toAccount.id]
-            : [fromAccount.id],
+          accountIds: receiverAccount
+            ? [sender.id, receiverAccount.id]
+            : [sender.id],
           forceInformationUpdate: true,
           refreshTransactions: true,
         })
@@ -389,36 +414,12 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
         break;
     }
   };
-  const handleOnInputChange =
-    (field: string) => (event: ChangeEvent<HTMLTextAreaElement>) => {
-      switch (field) {
-        case 'note':
-          dispatch(
-            setNote(event.target.value.length > 0 ? event.target.value : null)
-          );
-          break;
-        default:
-          break;
-      }
-    };
-  const handleOnInputError = (field: string) => (error: string | null) => {
-    switch (field) {
-      case 'toAddress':
-        setToAddressError(error);
-        break;
-      case 'note':
-        setNoteError(error);
-        break;
-      default:
-        break;
-    }
-  };
   const handlePreviousClick = () => setTransactions(null);
   const handleSendClick = () => onAuthenticationModalOpen();
 
   // renders
   const renderContent = () => {
-    if (!fromAccount || !network || !selectedAsset) {
+    if (!asset || !network || !sender) {
       return <SendAssetModalContentSkeleton />;
     }
 
@@ -430,16 +431,16 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       );
     }
 
-    if (toAddress && transactions && transactions.length > 0) {
+    if (receiverAddressValue && transactions && transactions.length > 0) {
       return (
         <SendAssetModalSummaryContent
           accounts={accounts}
-          amountInStandardUnits={amountInStandardUnits}
-          asset={selectedAsset}
-          fromAccount={fromAccount}
+          amountInStandardUnits={amountValue}
+          asset={asset}
+          fromAccount={sender}
           network={network}
-          note={note}
-          toAddress={toAddress}
+          note={noteValue}
+          toAddress={receiverAddressValue}
           transactions={transactions}
         />
       );
@@ -449,14 +450,18 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       <VStack spacing={DEFAULT_GAP - 2} w="full">
         {/*amount*/}
         <AmountInput
-          account={fromAccount}
-          asset={selectedAsset}
-          disabled={creating}
+          account={sender}
+          asset={asset}
+          isDisabled={creating}
+          label={amountLabel}
           network={network}
-          maximumTransactionAmount={maximumTransactionAmount}
-          onChange={handleAmountChange}
-          required={true}
-          value={amountInStandardUnits}
+          maximumAmountInAtomicUnits={maximumAmountInAtomicUnits}
+          onBlur={amountOnBlur({ asset, maximumAmountInAtomicUnits })}
+          onChange={amountOnChange}
+          onFocus={amountOnFocus}
+          onMaximumAmountClick={amountOnMaximumClick}
+          required={isAmountRequired}
+          value={amountValue}
         />
 
         {/*select asset*/}
@@ -469,9 +474,9 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           disabled={creating}
           label={t<string>('labels.asset')}
           network={network}
-          onSelect={handleAssetChange}
+          onSelect={handleOnAssetSelect}
           required={true}
-          value={selectedAsset}
+          value={asset}
         />
 
         {/*from account*/}
@@ -480,35 +485,42 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
           accounts={availableAccounts}
           disabled={creating}
           label={t<string>('labels.from')}
-          onSelect={handleOnAccountSelect('fromAddress')}
+          onSelect={handleOnSenderAccountSelect}
           required={true}
-          value={fromAccount}
+          selectModalTitle={t<string>('headings.selectSenderAccount')}
+          value={sender}
         />
 
         {/*to address*/}
         <AddressInput
           _context={_context}
           accounts={accounts}
-          disabled={creating}
-          error={toAddressError}
-          label={t<string>('labels.to')}
-          onChange={handleOnAddressInputChange('toAddress')}
-          onError={handleOnInputError('toAddress')}
-          required={true}
-          validate={validateToAddress}
-          value={toAddress || ''}
+          error={receiverAddressError}
+          isDisabled={creating}
+          label={receiverAddressLabel}
+          onBlur={receiverAddressOnBlur}
+          onChange={receiverAddressOnChange}
+          onSelect={receiverAddressOnSelect}
+          required={isReceiverAddressRequired}
+          selectButtonLabel={t<string>('buttons.selectReceiverAccount')}
+          selectModalTitle={t<string>('headings.selectReceiverAccount')}
+          validate={validateReceiverAddress}
+          value={receiverAddressValue}
         />
 
         {/*note*/}
         <GenericTextarea
-          characterLimit={TRANSACTION_NOTE_BYTE_LIMIT}
+          charactersRemaining={noteCharactersRemaining}
           error={noteError}
+          label={noteLabel}
           isDisabled={creating}
-          label={t<string>('labels.note')}
-          onChange={handleOnInputChange('note')}
-          onError={handleOnInputError('note')}
+          onBlur={noteOnBlur}
+          onChange={noteOnChange}
           placeholder={t<string>('placeholders.enterNote')}
-          value={note || ''}
+          required={isNoteRequired}
+          resize="vertical"
+          validate={validateNote}
+          value={noteValue}
         />
       </VStack>
     );
@@ -531,7 +543,13 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
             {t<string>('buttons.previous')}
           </Button>
 
-          <Button onClick={handleSendClick} size="lg" variant="solid" w="full">
+          <Button
+            onClick={handleSendClick}
+            rightIcon={<IoArrowUpOutline />}
+            size="lg"
+            variant="solid"
+            w="full"
+          >
             {t<string>('buttons.send')}
           </Button>
         </HStack>
@@ -563,13 +581,13 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     );
   };
   const renderHeader = () => {
-    switch (selectedAsset?.type) {
+    switch (asset?.type) {
       case AssetTypeEnum.ARC0200:
       case AssetTypeEnum.Native:
         return (
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {t<string>('headings.sendAsset', {
-              asset: selectedAsset.symbol,
+              asset: asset.symbol,
             })}
           </Heading>
         );
@@ -577,7 +595,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
         return (
           <Heading color={defaultTextColor} size="md" textAlign="center">
             {t<string>('headings.sendAsset', {
-              asset: selectedAsset?.unitName || 'Asset',
+              asset: asset?.unitName || 'Asset',
             })}
           </Heading>
         );
@@ -593,30 +611,29 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
   };
 
   useEffect(() => {
-    let newMaximumTransactionAmount: BigNumber;
+    let _maximumAmountInAtomicUnits: BigNumber;
 
-    if (fromAccount && network && selectedAsset) {
-      newMaximumTransactionAmount = calculateMaxTransactionAmount({
-        account: fromAccount,
-        asset: selectedAsset,
-        network,
-      });
-
-      setMaximumTransactionAmount(newMaximumTransactionAmount.toString());
-
-      // if the amount exceeds the new maximum transaction amount, set the amount to the maximum transaction amount
-      if (
-        amountInStandardUnits &&
-        new BigNumber(amountInStandardUnits).gt(newMaximumTransactionAmount)
-      ) {
-        dispatch(setAmount(newMaximumTransactionAmount.toString()));
-      }
+    if (!asset || !network || !sender) {
+      setMaximumAmountInAtomicUnits('0');
 
       return;
     }
 
-    setMaximumTransactionAmount('0');
-  }, [fromAccount, network, selectedAsset]);
+    _maximumAmountInAtomicUnits = calculateMaxTransactionAmount({
+      account: sender,
+      asset,
+      network,
+    });
+
+    setMaximumAmountInAtomicUnits(_maximumAmountInAtomicUnits.toString());
+
+    // if the amount exceeds the new maximum transaction amount, set the amount to the maximum transaction amount
+    if (new BigNumber(amountValue).gt(_maximumAmountInAtomicUnits)) {
+      setAmountValue(_maximumAmountInAtomicUnits.toString());
+
+      return;
+    }
+  }, [asset, network, sender]);
 
   return (
     <>
