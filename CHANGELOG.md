@@ -1,3 +1,23 @@
+# [1.18.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.2...v1.18.0) (2024-08-27)
+
+
+### Bug Fixes
+
+* allow for empty metadata ([#281](https://github.com/agoralabs-sh/kibisis-web-extension/issues/281)) ([bd5bc7a](https://github.com/agoralabs-sh/kibisis-web-extension/commit/bd5bc7a8f19199a78c4f6e78997529d00f5ac02f))
+
+
+### Features
+
+* add a 1kb limit to notes ([#283](https://github.com/agoralabs-sh/kibisis-web-extension/issues/283)) ([73600b9](https://github.com/agoralabs-sh/kibisis-web-extension/commit/73600b9280a89e366eb2884dd4d0e6b6f6fc5b05))
+* add a 32 byte limit on account names ([#268](https://github.com/agoralabs-sh/kibisis-web-extension/issues/268)) ([576cc09](https://github.com/agoralabs-sh/kibisis-web-extension/commit/576cc097a2f6c94cac4acc5f4c3b0b521005e6d3))
+* add custom node details ([#278](https://github.com/agoralabs-sh/kibisis-web-extension/issues/278)) ([f393ae6](https://github.com/agoralabs-sh/kibisis-web-extension/commit/f393ae63edeb759c01342aeca42bc0b292b15d3d))
+* add numbers to the seed phrases and update style ([#280](https://github.com/agoralabs-sh/kibisis-web-extension/issues/280)) ([670f287](https://github.com/agoralabs-sh/kibisis-web-extension/commit/670f28754fbf2feb3ec43b1eeb4c0911f97562ad))
+* allow arrays of private keys and account names when exporting/importing an account via a qr code ([#270](https://github.com/agoralabs-sh/kibisis-web-extension/issues/270)) ([656b95f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/656b95f1d5c7399008ed21debf8d2e18b9554baf))
+* credential lock persists when closing ([#275](https://github.com/agoralabs-sh/kibisis-web-extension/issues/275)) ([7b050ed](https://github.com/agoralabs-sh/kibisis-web-extension/commit/7b050edca537aef2c2a4310a84b6bffa968a018b))
+* implement webauthn to encrypt the private keys ([#266](https://github.com/agoralabs-sh/kibisis-web-extension/issues/266)) ([e3dde7f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e3dde7fb74c251d1ec448b71c8940d247ca20f35))
+* limit navigator request to one with an array of accounts ([#271](https://github.com/agoralabs-sh/kibisis-web-extension/issues/271)) ([9d51da1](https://github.com/agoralabs-sh/kibisis-web-extension/commit/9d51da16cd325534875897ae3083df1218891816))
+* pre release UI updates ([#290](https://github.com/agoralabs-sh/kibisis-web-extension/issues/290)) ([65ca387](https://github.com/agoralabs-sh/kibisis-web-extension/commit/65ca387f60d0e9cbbdc7f0599e3c56ea0964c8be))
+
 # [1.18.0-beta.10](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0-beta.9...v1.18.0-beta.10) (2024-08-27)
 
 
