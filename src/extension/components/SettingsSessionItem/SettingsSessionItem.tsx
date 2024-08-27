@@ -29,7 +29,7 @@ const SettingsSessionItem: FC<IProps> = ({
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const itemBorderColor = useItemBorderColor();
-  const subTextColor: string = useSubTextColor();
+  const subTextColor = useSubTextColor();
   // handlers
   const handleOnDisconnectClick = () => onDisconnect(item.id);
   const handleOnSelectClick = () => onSelect(item.id);
@@ -77,7 +77,7 @@ const SettingsSessionItem: FC<IProps> = ({
           </Tooltip>
 
           {/*network*/}
-          <NetworkBadge network={network} size="sm" />
+          <NetworkBadge network={network} size="xs" />
         </HStack>
 
         <HStack
@@ -123,7 +123,7 @@ const SettingsSessionItem: FC<IProps> = ({
           {
             icon: IoUnlinkOutline,
             label: t<string>('labels.disconnect'),
-            onSelect: handleOnSelectClick,
+            onSelect: handleOnDisconnectClick,
           },
         ]}
       />

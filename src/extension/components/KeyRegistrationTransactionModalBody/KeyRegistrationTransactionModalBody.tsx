@@ -140,7 +140,7 @@ const KeyRegistrationTransactionModalBody: FC<IProps> = ({
       {!hideNetwork && (
         <ModalItem
           label={`${t<string>('labels.network')}:`}
-          value={<NetworkBadge network={network} />}
+          value={<NetworkBadge network={network} size="xs" />}
         />
       )}
 

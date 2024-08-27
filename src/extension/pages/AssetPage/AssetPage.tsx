@@ -44,7 +44,7 @@ import { AssetTypeEnum } from '@extension/enums';
 
 // features
 import { initializeRemoveAssets } from '@extension/features/remove-assets';
-import { initializeSendAsset } from '@extension/features/send-assets';
+import { initialize as initializeSendAssets } from '@extension/features/send-assets';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -74,6 +74,7 @@ import PrivateKeyService from '@extension/services/PrivateKeyService';
 import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
 
 // utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
 import convertToStandardUnit from '@common/utils/convertToStandardUnit';
 import formatCurrencyUnit from '@common/utils/formatCurrencyUnit';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
@@ -124,11 +125,9 @@ const AssetPage: FC = () => {
     }
 
     dispatch(
-      initializeSendAsset({
-        fromAddress: convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(account.publicKey)
-        ),
-        selectedAsset: asset,
+      initializeSendAssets({
+        asset,
+        sender: account,
       })
     );
   };
@@ -212,8 +211,7 @@ const AssetPage: FC = () => {
               <AssetIcon
                 color={primaryButtonTextColor}
                 networkTheme={selectedNetwork?.chakraTheme}
-                h={6}
-                w={6}
+                boxSize={calculateIconSize('md')}
               />
             }
             size="md"
@@ -592,8 +590,8 @@ const AssetPage: FC = () => {
           {/*only allow sending for available accounts; accounts that are not watch accounts or accounts that are re-keyed and have the auth account present*/}
           {!!availableAccounts.find((value) => value.id === account.id) && (
             <Button
-              leftIcon={<IoArrowUpOutline />}
               onClick={handleSendClick}
+              rightIcon={<IoArrowUpOutline />}
               size="md"
               variant="solid"
               w="full"
@@ -603,8 +601,8 @@ const AssetPage: FC = () => {
           )}
 
           <Button
-            leftIcon={<IoArrowDownOutline />}
             onClick={handleReceiveClick}
+            rightIcon={<IoArrowDownOutline />}
             size="md"
             variant="solid"
             w="full"

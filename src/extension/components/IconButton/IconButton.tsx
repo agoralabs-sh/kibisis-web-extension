@@ -1,31 +1,26 @@
-import {
-  Icon,
-  IconButton as ChakraIconButton,
-  IconButtonProps,
-} from '@chakra-ui/react';
+import { Icon, IconButton as ChakraIconButton } from '@chakra-ui/react';
 import React, {
-  PropsWithoutRef,
-  ForwardRefExoticComponent,
+  type PropsWithoutRef,
+  type ForwardRefExoticComponent,
   forwardRef,
-  LegacyRef,
-  RefAttributes,
+  type LegacyRef,
+  type RefAttributes,
 } from 'react';
-import { IconType } from 'react-icons';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
-import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-interface IProps extends Omit<IconButtonProps, 'icon'> {
-  icon: IconType;
-}
+// types
+import type { IProps } from './types';
 
 const IconButton: ForwardRefExoticComponent<
   PropsWithoutRef<IProps> & RefAttributes<HTMLButtonElement>
 > = forwardRef<HTMLButtonElement, IProps>(
-  ({ icon, ...iconProps }: IProps, ref) => {
-    const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-    const defaultTextColor: string = useDefaultTextColor();
+  ({ color, icon, ...iconProps }: IProps, ref) => {
+    // hooks
+    const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+    const subTextColor = useSubTextColor();
 
     return (
       <ChakraIconButton
@@ -36,7 +31,7 @@ const IconButton: ForwardRefExoticComponent<
         _hover={{
           bg: buttonHoverBackgroundColor,
         }}
-        icon={<Icon as={icon} color={defaultTextColor} />}
+        icon={<Icon as={icon} color={color || subTextColor} />}
         ref={ref as LegacyRef<HTMLButtonElement>}
       />
     );

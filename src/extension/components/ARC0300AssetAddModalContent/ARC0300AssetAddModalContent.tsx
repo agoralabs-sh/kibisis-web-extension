@@ -17,6 +17,7 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoAddOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -90,6 +91,7 @@ import isAssetInAccountHoldings from '@extension/utils/isAssetInAccountHoldings'
 const ARC0300AssetAddModalContent: FC<
   IARC0300ModalContentProps<IARC0300AssetAddSchema>
 > = ({
+  _context,
   cancelButtonIcon,
   cancelButtonLabel,
   onComplete,
@@ -261,6 +263,7 @@ const ARC0300AssetAddModalContent: FC<
                 <ModalSubHeading text={t<string>('headings.selectAccount')} />
 
                 <AccountSelect
+                  _context={_context}
                   accounts={accounts}
                   allowWatchAccounts={true}
                   disabled={loading || saving}
@@ -341,7 +344,7 @@ const ARC0300AssetAddModalContent: FC<
                 {/*type*/}
                 <ModalItem
                   label={`${t<string>('labels.chain')}:`}
-                  value={<NetworkBadge network={network} />}
+                  value={<NetworkBadge network={network} size="xs" />}
                 />
 
                 {/*type*/}
@@ -409,6 +412,7 @@ const ARC0300AssetAddModalContent: FC<
             <Button
               isLoading={loading || saving}
               onClick={handleAddClick}
+              rightIcon={<IoAddOutline />}
               size="lg"
               variant="solid"
               w="full"

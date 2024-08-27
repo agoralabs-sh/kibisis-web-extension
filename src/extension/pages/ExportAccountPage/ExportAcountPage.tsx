@@ -10,7 +10,7 @@ import { sanitize } from 'dompurify';
 import { toString } from 'qrcode';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoEyeOffOutline } from 'react-icons/io5';
+import { IoEyeOffOutline, IoListOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -42,7 +42,7 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import qrCodePlaceholderImage from '@extension/images/placeholder_qr_code.png';
 
 // modals
-import AccountSelectModal from '@extension/modals/AccountSelectModal';
+import { AccountSelectModal } from '@extension/components/AccountSelect';
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
 // models
@@ -96,7 +96,8 @@ const ExportAccountPage: FC = () => {
     IAccountWithExtendedProps[] | null
   >(null);
   const [svgStrings, setSvgStrings] = useState<string[] | null>(null);
-  //
+  // misc
+  const _context = 'export-account-page';
   const placeholderIconSize = calculateIconSize('md');
   const qrCodeSize = 300;
   const reset = () => {
@@ -260,6 +261,7 @@ const ExportAccountPage: FC = () => {
 
       {/*account select modal*/}
       <AccountSelectModal
+        _context={_context}
         accounts={accounts}
         allowWatchAccounts={false}
         isOpen={isAccountSelectModalOpen}
@@ -356,6 +358,7 @@ const ExportAccountPage: FC = () => {
         {/*select accounts button*/}
         <Button
           onClick={handleSelectAccountsClick}
+          rightIcon={<IoListOutline />}
           size="lg"
           variant="solid"
           w="full"

@@ -32,6 +32,7 @@ import type { INFTsTabProps } from './types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import { ACCOUNT_PAGE_TAB_CONTENT_HEIGHT } from '@extension/constants';
 
 const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
   const { t } = useTranslation();
@@ -129,7 +130,7 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
 
   return (
     <TabPanel
-      height="70vh"
+      height={ACCOUNT_PAGE_TAB_CONTENT_HEIGHT}
       m={0}
       p={0}
       sx={{ display: 'flex', flexDirection: 'column' }}

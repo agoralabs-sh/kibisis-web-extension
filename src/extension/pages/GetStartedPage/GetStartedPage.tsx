@@ -1,6 +1,7 @@
 import { Heading, Text, VStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowForwardOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
 // components
@@ -53,7 +54,12 @@ const GetStartedPage: FC = () => {
         )}
       </VStack>
 
-      <Button onClick={handleGetStartedClick} size="lg" w="full">
+      <Button
+        onClick={handleGetStartedClick}
+        rightIcon={<IoArrowForwardOutline />}
+        size="lg"
+        w="full"
+      >
         {t<string>('buttons.getStarted')}
       </Button>
     </VStack>

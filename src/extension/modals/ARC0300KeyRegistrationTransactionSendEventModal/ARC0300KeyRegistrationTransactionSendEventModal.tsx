@@ -33,6 +33,8 @@ const ARC0300KeyRegistrationTransactionSendEventModal: FC<IModalProps> = ({
   // state
   const [event, setEvent] =
     useState<IARC0300KeyRegistrationTransactionSendEvent | null>(null);
+  // misc
+  const _context = 'arc-0300-key-registration-send-event-modal';
   // handlers
   const handleClose = async () => {
     if (event) {
@@ -62,6 +64,7 @@ const ARC0300KeyRegistrationTransactionSendEventModal: FC<IModalProps> = ({
     >
       {event ? (
         <ARC0300KeyRegistrationTransactionSendModalContent
+          _context={_context}
           onComplete={handleClose}
           onCancel={handleClose}
           schemaOrSchemas={event.payload}

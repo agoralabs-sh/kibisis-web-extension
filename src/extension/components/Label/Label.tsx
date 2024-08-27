@@ -8,13 +8,24 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 // types
 import type { IProps } from './types';
 
-const Label: FC<IProps> = ({ error, inputID, label, required = false }) => {
+const Label: FC<IProps> = ({
+  error,
+  inputID,
+  label,
+  required = false,
+  ...stackProps
+}) => {
   const { t } = useTranslation();
   // hooks
   const defaultTextColor = useDefaultTextColor();
 
   return (
-    <HStack alignItems="flex-end" justifyContent="space-between" w="full">
+    <HStack
+      alignItems="flex-end"
+      justifyContent="space-between"
+      w="full"
+      {...stackProps}
+    >
       {/*label*/}
       {required ? (
         <HStack alignItems="center" spacing={1}>

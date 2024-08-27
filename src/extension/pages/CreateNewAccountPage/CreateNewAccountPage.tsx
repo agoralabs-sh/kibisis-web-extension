@@ -7,8 +7,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Step, useSteps } from 'chakra-ui-steps';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { type ChangeEvent, type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  IoArrowBackOutline,
+  IoArrowForwardOutline,
+  IoSaveOutline,
+} from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
 // components
@@ -27,7 +32,6 @@ import { StepsEnum } from './enums';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -42,7 +46,7 @@ import type { IAddAccountPageProps } from '@extension/types';
 
 // utils
 import convertPrivateKeyToSeedPhrase from '@extension/utils/convertPrivateKeyToSeedPhrase';
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
+import useGenericInput from '@extension/hooks/useGenericInput';
 
 const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   onComplete,
@@ -57,6 +61,20 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
   const logger = useSelectLogger();
   // hooks
   const defaultTextColor = useDefaultTextColor();
+  const {
+    charactersRemaining: nameCharactersRemaining,
+    error: nameError,
+    label: nameLabel,
+    onBlur: nameOnBlur,
+    onChange: nameOnChange,
+    required: isNameRequired,
+    value: nameValue,
+    validate: nameValidate,
+  } = useGenericInput({
+    characterLimit: ACCOUNT_NAME_BYTE_LIMIT,
+    label: t<string>('labels.accountName'),
+    required: false,
+  });
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
@@ -66,8 +84,6 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
     null
   );
   const [keyPair] = useState<Ed21559KeyPair>(Ed21559KeyPair.generate());
-  const [name, setName] = useState<string | null>(null);
-  const [nameError, setNameError] = useState<string | null>(null);
   // misc
   const _context = 'create-new-account-page';
   const seedPhrase = convertPrivateKeyToSeedPhrase({
@@ -87,14 +103,15 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
     setCopySeedPhraseConfirm(event.target.checked);
   };
   const handleNextClick = () => {
-    if (activeStep === StepsEnum.AccountName && nameError) {
+    if (
+      activeStep === StepsEnum.AccountName &&
+      (!!nameError || !!nameValidate(nameValue))
+    ) {
       return;
     }
 
     nextStep();
   };
-  const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setName(event.target.value);
   const handlePreviousClick = () => {
     // if the step is on the first step, navigate back
     if (activeStep <= StepsEnum.SeedPhrase) {
@@ -105,7 +122,6 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
 
     prevStep();
   };
-  const handleOnNameError = (value: string | null) => setNameError(value);
   const handleSaveClick = async () => {
     if (!copySeedPhraseConfirm) {
       setCopySeedPhraseError(t<string>('errors.inputs.copySeedPhraseRequired'));
@@ -115,7 +131,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
 
     await onComplete({
       keyPair,
-      name,
+      name: nameValue.length > 0 ? nameValue : null,
     });
   };
 
@@ -160,7 +176,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
                   textAlign="left"
                   w="full"
                 >
-                  {t<string>('captions.saveMnemonicPhrase1')}
+                  {t<string>('captions.saveSeedPhrase1')}
                 </Text>
 
                 <Text
@@ -169,7 +185,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
                   textAlign="left"
                   w="full"
                 >
-                  {t<string>('captions.saveMnemonicPhrase2')}
+                  {t<string>('captions.saveSeedPhrase2')}
                 </Text>
 
                 {/*seed phrase*/}
@@ -210,15 +226,17 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
               </Text>
 
               <GenericInput
-                characterLimit={ACCOUNT_NAME_BYTE_LIMIT}
+                charactersRemaining={nameCharactersRemaining}
                 error={nameError}
-                label={t<string>('labels.accountName')}
+                label={nameLabel}
                 isDisabled={saving}
-                onChange={handleOnNameChange}
-                onError={handleOnNameError}
+                onBlur={nameOnBlur}
+                onChange={nameOnChange}
+                required={isNameRequired}
                 placeholder={t<string>('placeholders.nameAccount')}
                 type="text"
-                value={name || ''}
+                validate={nameValidate}
+                value={nameValue}
               />
             </VStack>
           </Step>
@@ -265,6 +283,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
           {/*previous button*/}
           <Button
             onClick={handlePreviousClick}
+            leftIcon={<IoArrowBackOutline />}
             isDisabled={saving}
             size="lg"
             variant="outline"
@@ -278,6 +297,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
             <Button
               onClick={handleSaveClick}
               isLoading={saving}
+              rightIcon={<IoSaveOutline />}
               size="lg"
               variant="solid"
               w="full"
@@ -288,6 +308,7 @@ const CreateNewAccountPage: FC<IAddAccountPageProps> = ({
             // next button
             <Button
               onClick={handleNextClick}
+              rightIcon={<IoArrowForwardOutline />}
               size="lg"
               variant="solid"
               w="full"

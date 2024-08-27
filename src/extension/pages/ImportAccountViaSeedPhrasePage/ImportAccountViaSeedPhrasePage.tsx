@@ -1,17 +1,16 @@
 import { Heading, HStack, Spacer, Text, VStack } from '@chakra-ui/react';
 import { Step, useSteps } from 'chakra-ui-steps';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoArrowBackOutline, IoDownloadOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 // components
 import Button from '@extension/components/Button';
-import EnterMnemonicPhraseInput, {
-  validate,
-} from '@extension/components/EnterMnemonicPhraseInput';
 import GenericInput from '@extension/components/GenericInput';
 import PageHeader from '@extension/components/PageHeader';
+import SeedPhraseInput from '@extension/components/SeedPhraseInput';
 import Steps from '@extension/components/Steps';
 
 // constants
@@ -25,6 +24,7 @@ import { create as createNotification } from '@extension/features/notifications'
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import useGenericInput from '@extension/hooks/useGenericInput';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -43,6 +43,7 @@ import type {
 } from '@extension/types';
 
 // utils
+import { validate } from '@extension/components/SeedPhraseInput';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import convertSeedPhraseToPrivateKey from '@extension/utils/convertSeedPhraseToPrivateKey';
 
@@ -58,6 +59,20 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
   const logger = useSelectLogger();
   // hooks
   const defaultTextColor = useDefaultTextColor();
+  const {
+    charactersRemaining: nameCharactersRemaining,
+    error: nameError,
+    label: nameLabel,
+    onBlur: nameOnBlur,
+    onChange: nameOnChange,
+    required: isNameRequired,
+    value: nameValue,
+    validate: nameValidate,
+  } = useGenericInput({
+    characterLimit: ACCOUNT_NAME_BYTE_LIMIT,
+    label: t<string>('labels.accountName'),
+    required: false,
+  });
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // states
@@ -65,13 +80,12 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
     initialStep: StepsEnum.SeedPhrase,
   });
   const [keyPair, setKeyPair] = useState<Ed21559KeyPair | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [nameError, setNameError] = useState<string | null>(null);
   const [seedPhrases, setSeedPhrases] = useState<string[]>(
     Array.from({ length: 25 }, () => '')
   );
   const [seedPhraseError, setSeedPhraseError] = useState<string | null>(null);
   // misc
+  const _context = 'import-account-via-seed-phrase-page';
   const stepsLabels = [
     t<string>('headings.enterYourSeedPhrase'),
     t<string>('headings.nameYourAccount'),
@@ -108,20 +122,21 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
 
     await onComplete({
       keyPair,
-      name,
+      name: nameValue.length > 0 ? nameValue : null,
     });
   };
   const handleOnMnemonicPhraseChange = (value: string[]) =>
     setSeedPhrases(value);
-  const handleOnNameChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setName(event.target.value);
-  const handleOnNameError = (value: string | null) => setNameError(value);
   const handleNextClick = () => {
     let _seedPhraseError: string | null;
 
     // if this is the first step, validate the mnemonic
     if (activeStep <= StepsEnum.SeedPhrase) {
-      _seedPhraseError = validate(seedPhrases, t);
+      _seedPhraseError = validate(
+        t<string>('labels.seedPhrase'),
+        seedPhrases,
+        t
+      );
 
       setSeedPhraseError(_seedPhraseError);
 
@@ -140,7 +155,10 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
       );
     }
 
-    if (activeStep === StepsEnum.AccountName && nameError) {
+    if (
+      activeStep === StepsEnum.AccountName &&
+      (!!nameError || !!nameValidate(nameValue))
+    ) {
       return;
     }
 
@@ -193,7 +211,8 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
                 {t<string>('captions.enterSeedPhrase')}
               </Text>
 
-              <EnterMnemonicPhraseInput
+              <SeedPhraseInput
+                _context={_context}
                 disabled={saving}
                 error={seedPhraseError}
                 onChange={handleOnMnemonicPhraseChange}
@@ -215,15 +234,17 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
               </Text>
 
               <GenericInput
-                characterLimit={ACCOUNT_NAME_BYTE_LIMIT}
+                charactersRemaining={nameCharactersRemaining}
                 error={nameError}
-                label={t<string>('labels.accountName')}
+                label={nameLabel}
                 isDisabled={saving}
-                onChange={handleOnNameChange}
-                onError={handleOnNameError}
+                onBlur={nameOnBlur}
+                onChange={nameOnChange}
+                required={isNameRequired}
                 placeholder={t<string>('placeholders.nameAccount')}
                 type="text"
-                value={name || ''}
+                validate={nameValidate}
+                value={nameValue}
               />
             </VStack>
           </Step>
@@ -248,6 +269,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
           {/*previous button*/}
           <Button
             isDisabled={saving}
+            leftIcon={<IoArrowBackOutline />}
             onClick={handlePreviousClick}
             size="lg"
             variant="outline"
@@ -261,6 +283,7 @@ const ImportAccountViaSeedPhrasePage: FC<IAddAccountPageProps> = ({
             <Button
               isLoading={saving}
               onClick={handleImportClick}
+              rightIcon={<IoDownloadOutline />}
               size="lg"
               variant="solid"
               w="full"

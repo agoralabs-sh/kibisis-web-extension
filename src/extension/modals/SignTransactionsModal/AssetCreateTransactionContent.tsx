@@ -74,7 +74,7 @@ const AssetCreateTransactionContent: FC<ITransactionBodyProps> = ({
         {!hideNetwork && (
           <ModalItem
             label={`${t<string>('labels.network')}:`}
-            value={<NetworkBadge network={network} size="sm" />}
+            value={<NetworkBadge network={network} size="xs" />}
           />
         )}
 

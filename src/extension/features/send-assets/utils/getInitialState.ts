@@ -3,12 +3,9 @@ import type { IState } from '../types';
 
 export default function getInitialState(): IState {
   return {
-    amountInStandardUnits: '0',
+    asset: null,
     confirming: false,
     creating: false,
-    fromAddress: null,
-    note: null,
-    selectedAsset: null,
-    toAddress: null,
+    sender: null,
   };
 }

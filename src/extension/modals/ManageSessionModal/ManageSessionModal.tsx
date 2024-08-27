@@ -15,6 +15,7 @@ import {
 import { generateAccount } from 'algosdk';
 import React, { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoSaveOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -237,7 +238,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
         />
 
         {/*network*/}
-        {network && <NetworkBadge network={network} />}
+        {network && <NetworkBadge network={network} size="xs" />}
 
         {/*creation date*/}
         <Text color={defaultTextColor} fontSize="xs" textAlign="center">
@@ -298,6 +299,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
             <Button
               isLoading={saving}
               onClick={handleSaveClick}
+              rightIcon={<IoSaveOutline />}
               size="lg"
               variant="solid"
               w="full"

@@ -17,6 +17,7 @@ import {
 import { encode as encodeBase64 } from '@stablelib/base64';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoCreateOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -62,6 +63,7 @@ import { theme } from '@extension/theme';
 // types
 import type {
   IAccountWithExtendedProps,
+  IBackgroundRootState,
   IAppThunkDispatch,
   IMainRootState,
   IModalProps,
@@ -71,7 +73,6 @@ import type {
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import signBytes from '@extension/utils/signBytes';
-import IBackgroundRootState from '../../types/states/IBackgroundRootState';
 
 const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -94,6 +95,8 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
     setSigner,
   } = useSignMessageModal();
   const subTextColor = useSubTextColor();
+  // misc
+  const _context = 'sign-message-modal';
   // handlers
   const handleAccountSelect = (account: IAccountWithExtendedProps) =>
     setSigner(account);
@@ -238,6 +241,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
               )}:`}</Text>
 
               <AccountSelect
+                _context={_context}
                 accounts={authorizedAccounts}
                 allowWatchAccounts={false}
                 onSelect={handleAccountSelect}
@@ -323,6 +327,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
 
               <Button
                 onClick={handleSignClick}
+                rightIcon={<IoCreateOutline />}
                 size="lg"
                 variant="solid"
                 w="full"

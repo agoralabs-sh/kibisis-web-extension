@@ -11,7 +11,11 @@ import { IoChevronDownOutline } from 'react-icons/io5';
 // components
 import NetworkBadge from '@extension/components/NetworkBadge';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // hooks
+import useBorderColor from '@extension/hooks/useBorderColor';
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
@@ -24,9 +28,14 @@ import type { IProps } from './types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
-import { DEFAULT_GAP } from '@extension/constants';
 
-const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
+const NetworkSelect: FC<IProps> = ({
+  _context,
+  networks,
+  onSelect,
+  size,
+  value,
+}) => {
   const { t } = useTranslation();
   const {
     isOpen: isSelectModalOpen,
@@ -34,6 +43,7 @@ const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
     onOpen: onSelectModalOpen,
   } = useDisclosure();
   // hooks
+  const borderColor = useBorderColor();
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const subTextColor = useSubTextColor();
   // misc
@@ -58,10 +68,14 @@ const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
         <ChakraButton
           _hover={{
             bg: buttonHoverBackgroundColor,
+            borderColor: borderColor,
           }}
           aria-label={t<string>('labels.chooseANetwork')}
           alignItems="center"
-          borderRightRadius="full"
+          borderColor="transparent"
+          borderStyle="solid"
+          borderWidth="1px"
+          borderRadius="full"
           h="auto"
           justifyContent="space-between"
           onClick={handleOnClick}
@@ -78,7 +92,7 @@ const NetworkSelect: FC<IProps> = ({ _context, networks, onSelect, value }) => {
           }
           variant="ghost"
         >
-          <NetworkBadge network={value} />
+          <NetworkBadge network={value} size={size} />
         </ChakraButton>
       </Tooltip>
     </>

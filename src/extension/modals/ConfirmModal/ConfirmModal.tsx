@@ -10,8 +10,9 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { createRef, FC, RefObject } from 'react';
+import React, { type FC, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoCheckmarkOutline } from 'react-icons/io5';
 
 // components
 import Button from '@extension/components/Button';
@@ -32,13 +33,12 @@ import { useSelectConfirmModal } from '@extension/selectors';
 // theme
 import { theme } from '@extension/theme';
 
-interface IProps {
-  onClose: () => void;
-}
+// types
+import type { IModalProps } from '@extension/types';
 
-const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
+const ConfirmModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
-  const initialRef: RefObject<HTMLButtonElement> | undefined = createRef();
+  const initialRef = useRef<HTMLButtonElement | null>(null);
   // hooks
   const confirm: IConfirmModal | null = useSelectConfirmModal();
   // selectors
@@ -49,14 +49,17 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
       confirm.onCancel();
     }
 
-    onClose();
+    handleClose();
   };
   const handleConfirmClick = () => {
     if (confirm?.onConfirm) {
       confirm.onConfirm();
     }
 
-    onClose();
+    handleClose();
+  };
+  const handleClose = () => {
+    onClose && onClose();
   };
 
   return (
@@ -64,7 +67,7 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
       initialFocusRef={initialRef}
       isOpen={!!confirm}
       motionPreset="slideInBottom"
-      onClose={onClose}
+      onClose={handleClose}
       size="full"
       scrollBehavior="inside"
     >
@@ -84,7 +87,7 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
         </ModalHeader>
 
         <ModalBody>
-          <VStack spacing={4} w="full">
+          <VStack spacing={DEFAULT_GAP - 2} w="full">
             {/*description*/}
             <Text color={defaultTextColor} fontSize="sm" textAlign="left">
               {confirm?.description || t<string>('captions.defaultConfirm')}
@@ -98,7 +101,7 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
         </ModalBody>
 
         <ModalFooter p={DEFAULT_GAP}>
-          <HStack spacing={4} w="full">
+          <HStack spacing={DEFAULT_GAP - 2} w="full">
             {/*cancel*/}
             <Button
               onClick={handleCancelClick}
@@ -113,6 +116,7 @@ const ConfirmModal: FC<IProps> = ({ onClose }: IProps) => {
             {/*confirm*/}
             <Button
               onClick={handleConfirmClick}
+              rightIcon={<IoCheckmarkOutline />}
               size="lg"
               variant="solid"
               w="full"

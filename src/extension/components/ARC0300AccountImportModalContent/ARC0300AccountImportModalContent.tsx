@@ -12,12 +12,14 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoDownloadOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 // components
 import AccountItem from '@extension/components/AccountItem';
 import Button from '@extension/components/Button';
+import EmptyState from '@extension/components/EmptyState';
 
 // constants
 import {
@@ -73,7 +75,6 @@ import type {
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 import flattenAccountImportSchemaToNewAccounts from '@extension/utils/flattenAccountImportSchemaToNewAccounts';
-import EmptyState from '@extension/components/EmptyState';
 
 const ARC0300AccountImportModalContent: FC<
   IARC0300ModalContentProps<IARC0300AccountImportSchema[]>
@@ -310,6 +311,7 @@ const ARC0300AccountImportModalContent: FC<
             <Button
               isLoading={saving}
               onClick={handleImportClick}
+              rightIcon={<IoDownloadOutline />}
               size="lg"
               variant="solid"
               w="full"

@@ -61,7 +61,6 @@ const updateAccountsThunk: AsyncThunk<
     let accounts = getState().accounts.items.map((value) =>
       mapAccountWithExtendedPropsToAccount(value)
     );
-    let address: string;
     let encodedGenesisHash: string;
     let network: INetwork | null;
     let nodeID: string | null;

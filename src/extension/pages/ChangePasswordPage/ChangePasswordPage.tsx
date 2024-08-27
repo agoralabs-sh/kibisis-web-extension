@@ -1,14 +1,12 @@
 import { Text, VStack, useDisclosure } from '@chakra-ui/react';
-import React, { FC, useEffect, useState } from 'react';
+import React, { type FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
-import CreatePasswordInput, {
-  validate,
-} from '@extension/components/CreatePasswordInput';
+import NewPasswordInput from '@extension/components/NewPasswordInput';
 import PageHeader from '@extension/components/PageHeader';
 
 // constants
@@ -23,6 +21,7 @@ import { create as createNotification } from '@extension/features/notifications'
 
 // hooks
 import useChangePassword from '@extension/hooks/useChangePassword';
+import useNewPasswordInput from '@extension/hooks/useNewPasswordInput';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // modals
@@ -51,35 +50,50 @@ const ChangePasswordPage: FC = () => {
     resetAction,
     validating,
   } = useChangePassword();
+  const {
+    error: newPasswordError,
+    label: newPasswordLabel,
+    onBlur: handleOnNewPasswordBlur,
+    onChange: handleOnNewPasswordChange,
+    required: isNewPasswordRequired,
+    reset: resetNewPassword,
+    score: newPasswordScore,
+    validate: newPasswordValidate,
+    value: newPasswordValue,
+  } = useNewPasswordInput({
+    label: t<string>('labels.newPassword'),
+    required: true,
+  });
   const subTextColor = useSubTextColor();
-  // state
-  const [newPassword, setNewPassword] = useState<string | null>(null);
-  const [score, setScore] = useState<number>(-1);
   // misc
   const isLoading = encrypting || validating;
   // handlers
-  const handlePasswordChange = (newPassword: string, newScore: number) => {
-    setNewPassword(newPassword);
-    setScore(newScore);
-  };
   const handleChangeClick = () => {
-    if (!validate(newPassword || '', score, t)) {
-      onConfirmPasswordModalOpen();
+    if (
+      !!newPasswordError ||
+      !!newPasswordValidate({
+        score: newPasswordScore,
+        value: newPasswordValue,
+      })
+    ) {
+      return;
     }
+
+    onConfirmPasswordModalOpen();
   };
   const handleOnConfirmPasswordModalConfirm = async (
     currentPassword: string
   ) => {
     let success: boolean;
 
-    if (!newPassword) {
+    if (!newPasswordValue) {
       return;
     }
 
     // save the new password
     success = await changePasswordAction({
       currentPassword,
-      newPassword,
+      newPassword: newPasswordValue,
     });
 
     if (success) {
@@ -99,8 +113,7 @@ const ChangePasswordPage: FC = () => {
     }
   };
   const reset = () => {
-    setNewPassword(null);
-    setScore(-1);
+    resetNewPassword();
     resetAction();
   };
 
@@ -162,12 +175,15 @@ const ChangePasswordPage: FC = () => {
             {t<string>('captions.changePassword2')}
           </Text>
 
-          <CreatePasswordInput
-            disabled={isLoading}
-            label={t<string>('labels.newPassword')}
-            onChange={handlePasswordChange}
-            score={score}
-            value={newPassword || ''}
+          <NewPasswordInput
+            error={newPasswordError}
+            isDisabled={isLoading}
+            label={newPasswordLabel}
+            onBlur={handleOnNewPasswordBlur}
+            onChange={handleOnNewPasswordChange}
+            required={isNewPasswordRequired}
+            score={newPasswordScore}
+            value={newPasswordValue}
           />
         </VStack>
 

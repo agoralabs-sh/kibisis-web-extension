@@ -29,6 +29,7 @@ import { useDispatch } from 'react-redux';
 // components
 import Button from '@extension/components/Button';
 import IconButton from '@extension/components/IconButton';
+import Label from '@extension/components/Label';
 import AddAssetsARC0200AssetItem from './AddAssetsARC0200AssetItem';
 import AddAssetsARC0200AssetSummaryModalContent from './AddAssetsARC0200AssetSummaryModalContent';
 import AddAssetsConfirmingModalContent from './AddAssetsConfirmingModalContent';
@@ -36,7 +37,11 @@ import AddAssetsStandardAssetSummaryModalContent from './AddAssetsStandardAssetS
 import AddAssetsStandardAssetItem from './AddAssetsStandardAssetItem';
 
 // constants
-import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
+import {
+  BODY_BACKGROUND_COLOR,
+  DEFAULT_GAP,
+  INPUT_HEIGHT,
+} from '@extension/constants';
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
@@ -537,6 +542,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
     return (
       <VStack flexGrow={1} spacing={DEFAULT_GAP / 2} w="full">
         <VStack px={DEFAULT_GAP} spacing={DEFAULT_GAP / 2} w="full">
+          {/*caption*/}
           <Text
             color={defaultTextColor}
             fontSize="sm"
@@ -547,19 +553,20 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
           </Text>
 
           {/*search*/}
-          <InputGroup w="full">
+          <InputGroup size="md">
             <Input
+              borderRadius="full"
               colorScheme={primaryColorScheme}
               focusBorderColor={primaryColor}
+              h={INPUT_HEIGHT}
               onChange={handleOnQueryChange}
               onKeyUp={handleKeyUp}
-              size="md"
               type="text"
               value={query}
               w="full"
             />
 
-            <InputRightElement>
+            <InputRightElement h={INPUT_HEIGHT}>
               {fetching && (
                 <Spinner
                   thickness="1px"
@@ -571,6 +578,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
               {!fetching && query.length > 0 && (
                 <IconButton
                   aria-label="Clear query"
+                  borderRadius="full"
                   icon={IoCloseOutline}
                   onClick={handleClearQuery}
                   size="sm"

@@ -1,14 +1,15 @@
 import {
-  HStack,
   Input,
+  InputGroup,
+  InputRightElement,
   Tooltip,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
-import React, { type ChangeEvent, type FocusEvent, type FC } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoSingleSelect } from 'react-icons/go';
+import { IoChevronDownOutline } from 'react-icons/io5';
 import { randomBytes } from 'tweetnacl';
 
 // components
@@ -22,29 +23,29 @@ import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // modals
-import AccountSelectModal from '@extension/modals/AccountSelectModal';
+import { AccountSelectModal } from '@extension/components/AccountSelect';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
-import type { IProps } from './types';
+import type { TProps } from './types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
-import validateAddressInput from '@extension/utils/validateAddressInput';
 
-const AddressInput: FC<IProps> = ({
+const AddressInput: FC<TProps> = ({
+  _context,
   accounts,
   allowWatchAccounts = true,
   error,
   id,
-  disabled,
+  isDisabled,
   label,
-  onBlur,
-  onChange,
-  onError,
+  onSelect,
   required = false,
+  selectButtonLabel,
+  selectModalTitle,
   validate,
-  value,
+  ...inputProps
 }) => {
   const { t } = useTranslation();
   const {
@@ -57,66 +58,27 @@ const AddressInput: FC<IProps> = ({
   // misc
   const _id = id || encodeBase64URLSafe(randomBytes(6));
   // handlers
-  const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
-    onError &&
-      onError(
-        validateAddressInput({
-          field: label,
-          t,
-          required,
-          validate,
-          value: event.target.value,
-        })
-      );
-
-    return onBlur && onBlur(event);
-  };
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const _value = event.target.value;
-
-    onError &&
-      onError(
-        validateAddressInput({
-          field: label,
-          t,
-          required,
-          validate,
-          value: _value,
-        })
-      );
-
-    return onChange(_value);
-  };
   const handleOnClick = () => onAccountSelectModalOpen();
   const handleOnSelect = (_accounts: IAccountWithExtendedProps[]) => {
     const _value = _accounts[0]
       ? convertPublicKeyToAVMAddress(_accounts[0].publicKey)
-      : '';
+      : null;
 
-    onError &&
-      onError(
-        validateAddressInput({
-          field: label,
-          t,
-          required,
-          validate,
-          value: _value,
-        })
-      );
-
-    return onChange(_value);
+    return _value && onSelect && onSelect(_value);
   };
 
   return (
     <>
       {/*account select modal*/}
       <AccountSelectModal
+        _context={_context}
         accounts={accounts}
         allowWatchAccounts={allowWatchAccounts}
         isOpen={isAccountSelectModalOpen}
         multiple={false}
         onClose={onAccountSelectClose}
         onSelect={handleOnSelect}
+        title={selectModalTitle}
       />
 
       <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
@@ -125,37 +87,45 @@ const AddressInput: FC<IProps> = ({
           error={error}
           inputID={_id}
           label={label || t<string>('labels.address')}
+          px={DEFAULT_GAP - 2}
           required={required}
         />
 
-        <HStack justifyContent="center" spacing={DEFAULT_GAP / 3} w="full">
+        {/*input*/}
+        <InputGroup size="md">
           {/*input*/}
           <Input
+            {...inputProps}
+            borderRadius="full"
             focusBorderColor={error ? 'red.300' : primaryColor}
             id={_id}
-            isDisabled={disabled}
+            isDisabled={isDisabled}
             isInvalid={!!error}
             h={INPUT_HEIGHT}
-            onBlur={handleOnBlur}
-            onChange={handleOnChange}
             placeholder={t<string>('placeholders.enterAddress')}
             type="text"
-            value={value}
             w="full"
           />
 
-          {/*open account select modal button*/}
-          <Tooltip label={t<string>('labels.selectAccount')}>
-            <IconButton
-              aria-label="Select an account from the list of available accounts"
-              disabled={disabled}
-              icon={GoSingleSelect}
-              onClick={handleOnClick}
-              size="lg"
-              variant="ghost"
-            />
-          </Tooltip>
-        </HStack>
+          <InputRightElement h={INPUT_HEIGHT}>
+            {/*open account select modal button*/}
+            <Tooltip
+              label={selectButtonLabel || t<string>('labels.selectAccount')}
+            >
+              <IconButton
+                aria-label={
+                  selectButtonLabel || t<string>('labels.selectAccount')
+                }
+                borderRadius="full"
+                isDisabled={isDisabled}
+                icon={IoChevronDownOutline}
+                onClick={handleOnClick}
+                size="sm"
+                variant="ghost"
+              />
+            </Tooltip>
+          </InputRightElement>
+        </InputGroup>
       </VStack>
     </>
   );

@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { SendAssetsThunkEnum } from '@extension/enums';
@@ -18,7 +18,6 @@ import NetworkClient from '@extension/models/NetworkClient';
 
 // types
 import type {
-  IAccount,
   IAsyncThunkConfigWithRejectValue,
   IMainRootState,
   INetworkWithTransactionParams,
@@ -48,34 +47,21 @@ const submitTransactionThunk: AsyncThunk<
     { getState, rejectWithValue }
   ) => {
     const accounts = getState().accounts.items;
-    const fromAddress = getState().sendAssets.fromAddress;
     const logger = getState().system.logger;
     const genesisHash =
       uniqueGenesisHashesFromTransactions(transactions).pop() || null;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
+    const sender = getState().sendAssets.sender;
     const settings = getState().settings;
     let _error: string;
-    let fromAccount: IAccount | null;
     let network: INetworkWithTransactionParams | null;
     let networkClient: NetworkClient;
+    let senderAddress: string;
     let signedTransactions: Uint8Array[];
 
-    if (!fromAddress) {
-      _error = `fromAddress field missing`;
-
-      logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
-
-      return rejectWithValue(new MalformedDataError(_error));
-    }
-
-    fromAccount =
-      accounts.find(
-        (value) => convertPublicKeyToAVMAddress(value.publicKey) === fromAddress
-      ) || null;
-
-    if (!fromAccount) {
-      _error = `from address "${fromAddress}" not a known account`;
+    if (!sender) {
+      _error = `sender not assigned`;
 
       logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
 
@@ -115,9 +101,11 @@ const submitTransactionThunk: AsyncThunk<
       return rejectWithValue(new NetworkNotSelectedError(_error));
     }
 
+    senderAddress = convertPublicKeyToAVMAddress(sender.publicKey);
+
     // check if we actually have the account
-    if (!isAccountKnown(accounts, fromAddress)) {
-      _error = `no account data found for "${fromAddress}" in wallet`;
+    if (!isAccountKnown(accounts, senderAddress)) {
+      _error = `no account data found for "${senderAddress}" in wallet`;
 
       logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
 
@@ -127,13 +115,13 @@ const submitTransactionThunk: AsyncThunk<
     // ensure the transaction does not fall below the minimum balance requirement
     if (
       doesAccountFallBelowMinimumBalanceRequirementForTransactions({
-        account: fromAccount,
+        account: sender,
         logger,
         network,
         transactions,
       })
     ) {
-      _error = `total transaction cost will bring the account "${fromAddress}" balance below the minimum balance requirement`;
+      _error = `total transaction cost will bring the account "${senderAddress}" balance below the minimum balance requirement`;
 
       logger.debug(`${SendAssetsThunkEnum.SubmitTransaction}: ${_error}`);
 

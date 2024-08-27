@@ -1,30 +1,43 @@
 import {
-  HStack,
+  Button as ChakraButton,
+  Icon,
   Stack,
-  Tooltip,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoSingleSelect } from 'react-icons/go';
+import { IoChevronDownOutline } from 'react-icons/io5';
 
 // components
 import AssetItem from '@extension/components/AssetItem';
-import IconButton from '@extension/components/IconButton';
 import Label from '@extension/components/Label';
 
 // constants
 import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
 
+// hooks
+import useBorderColor from '@extension/hooks/useBorderColor';
+import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
+import useColorModeValue from '@extension/hooks/useColorModeValue';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
+
 // modals
-import AssetSelectModal from '@extension/modals/AssetSelectModal';
+import AssetSelectModal from './AssetSelectModal';
+
+// theme
+import { theme } from '@extension/theme';
 
 // types
 import type { IAssetTypes, INativeCurrency } from '@extension/types';
 import type { IProps } from './types';
 
+// utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
+
 const AssetSelect: FC<IProps> = ({
+  _context,
   assets,
   disabled = false,
   label,
@@ -34,57 +47,76 @@ const AssetSelect: FC<IProps> = ({
   value,
 }) => {
   const { t } = useTranslation();
+  // hooks
+  const borderColor = useBorderColor();
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const primaryColorCode = useColorModeValue(
+    theme.colors.primaryLight['500'],
+    theme.colors.primaryDark['500']
+  );
+  const primaryColor = usePrimaryColor();
+  const subTextColor = useSubTextColor();
   const {
     isOpen: isAssetSelectModalOpen,
     onClose: onAssetSelectClose,
     onOpen: onAssetSelectModalOpen,
   } = useDisclosure();
   // handlers
-  const handleAssetClick = () => onAssetSelectModalOpen();
-  const handleOnAssetSelect = (_value: (IAssetTypes | INativeCurrency)[]) =>
+  const handleOnClick = () => onAssetSelectModalOpen();
+  const handleOnSelect = (_value: (IAssetTypes | INativeCurrency)[]) =>
     onSelect(_value[0]);
 
   return (
     <>
       {/*asset select modal*/}
       <AssetSelectModal
+        _context={_context}
         assets={assets}
         isOpen={isAssetSelectModalOpen}
         multiple={false}
         onClose={onAssetSelectClose}
-        onSelect={handleOnAssetSelect}
+        onSelect={handleOnSelect}
       />
 
       <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
         {/*label*/}
-        {label && <Label label={label} required={required} />}
+        {label && (
+          <Label label={label} px={DEFAULT_GAP - 2} required={required} />
+        )}
 
-        <HStack justifyContent="center" spacing={DEFAULT_GAP / 3} w="full">
-          {/*asset view*/}
-          <Stack
-            borderRadius="md"
-            borderWidth="1px"
-            flexGrow={1}
-            height={INPUT_HEIGHT}
-            justifyContent="center"
-            px={DEFAULT_GAP - 2}
-            w="full"
-          >
+        <ChakraButton
+          _focus={{
+            borderColor: primaryColor,
+            boxShadow: `0 0 0 1px ${primaryColorCode}`,
+          }}
+          _hover={{
+            bg: buttonHoverBackgroundColor,
+            borderColor: borderColor,
+          }}
+          aria-label={t<string>('labels.selectAsset')}
+          alignItems="center"
+          borderStyle="solid"
+          borderWidth="1px"
+          borderRadius="full"
+          h={INPUT_HEIGHT}
+          justifyContent="space-between"
+          onClick={handleOnClick}
+          px={DEFAULT_GAP - 2}
+          py={0}
+          rightIcon={
+            <Icon
+              as={IoChevronDownOutline}
+              boxSize={calculateIconSize()}
+              color={subTextColor}
+            />
+          }
+          variant="ghost"
+          w="full"
+        >
+          <Stack flexGrow={1} justifyContent="center" w="full">
             <AssetItem asset={value} network={network} />
           </Stack>
-
-          {/*open asset select modal button*/}
-          <Tooltip label={t<string>('labels.selectAsset')}>
-            <IconButton
-              aria-label="Select an asset from the list of available assets"
-              disabled={disabled}
-              icon={GoSingleSelect}
-              onClick={handleAssetClick}
-              size="lg"
-              variant="ghost"
-            />
-          </Tooltip>
-        </HStack>
+        </ChakraButton>
       </VStack>
     </>
   );

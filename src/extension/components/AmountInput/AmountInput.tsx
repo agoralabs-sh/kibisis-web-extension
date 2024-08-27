@@ -1,24 +1,21 @@
 import {
   Button,
   HStack,
-  Icon,
   NumberInput,
   NumberInputField,
-  Spacer,
   Text,
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import BigNumber from 'bignumber.js';
-import numbro from 'numbro';
-import React, { FC, FocusEvent, ReactElement } from 'react';
+import React, { type FC, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoInformationCircleOutline } from 'react-icons/io5';
 import { randomBytes } from 'tweetnacl';
 
 // components
 import Label from '@extension/components/Label';
+import InformationIcon from '@extension/components/InformationIcon';
 
 // constants
 import { DEFAULT_GAP, INPUT_HEIGHT } from '@extension/constants';
@@ -48,13 +45,13 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 const AmountInput: FC<IProps> = ({
   account,
   asset,
-  disabled = false,
   id,
+  label,
   network,
-  maximumTransactionAmount,
-  onChange,
+  maximumAmountInAtomicUnits,
+  onMaximumAmountClick,
   required = false,
-  value,
+  ...inputProps
 }) => {
   const { t } = useTranslation();
   // hooks
@@ -77,42 +74,21 @@ const AmountInput: FC<IProps> = ({
     ]?.minAtomicBalance || 0
   );
   const maximumTransactionAmountInStandardUnit = convertToStandardUnit(
-    new BigNumber(maximumTransactionAmount),
+    new BigNumber(maximumAmountInAtomicUnits),
     asset.decimals
   );
   // handlers
-  const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
-    const blurValue = new BigNumber(event.target.value || '0');
-
-    // if the entered value is greater than the maximum allowed, use the max
-    if (blurValue.gt(maximumTransactionAmountInStandardUnit)) {
-      onChange(maximumTransactionAmountInStandardUnit.toString());
-
-      return;
-    }
-
-    // format the number to use an absolute value (no negatives), the maximum decimals for the asset and trim any zeroes
-    onChange(
-      numbro(blurValue.absoluteValue().toString()).format({
-        mantissa: asset.decimals,
-        trimMantissa: true,
-      })
-    );
+  const handleMaximumAmountClick = () => {
+    onMaximumAmountClick({
+      asset,
+      maximumAmountInAtomicUnits,
+    });
   };
-  const handleOnChange = (valueAsString: string | undefined) =>
-    onChange(valueAsString || '');
-  const handleOnFocus = (event: FocusEvent<HTMLInputElement>) => {
-    // remove the padded zero
-    if (event.target.value === '0') {
-      onChange('');
-    }
-  };
-  const handleMaximumAmountClick = () =>
-    onChange(maximumTransactionAmountInStandardUnit.toString());
   // renders
   const renderMaximumTransactionAmountLabel = () => {
-    let symbol = '';
+    let informationLabel: string;
     let maximumTransactionAmountLabel: ReactElement;
+    let symbol = '';
 
     switch (asset.type) {
       case AssetTypeEnum.ARC0200:
@@ -149,6 +125,28 @@ const AmountInput: FC<IProps> = ({
     );
 
     if (asset.type === AssetTypeEnum.Native) {
+      informationLabel = t<string>(
+        'captions.maximumNativeCurrencyTransactionAmount',
+        {
+          balance: formatCurrencyUnit(
+            convertToStandardUnit(balance, asset.decimals),
+            { decimals: asset.decimals }
+          ),
+          minBalance: formatCurrencyUnit(
+            convertToStandardUnit(minBalance, asset.decimals),
+            { decimals: asset.decimals }
+          ),
+          minFee: formatCurrencyUnit(
+            convertToStandardUnit(
+              new BigNumber(network.minFee),
+              asset.decimals
+            ),
+            { decimals: asset.decimals }
+          ),
+          nativeCurrencyCode: asset.symbol,
+        }
+      );
+
       return (
         <HStack
           alignItems="center"
@@ -156,39 +154,10 @@ const AmountInput: FC<IProps> = ({
           spacing={1}
           w="full"
         >
-          <Tooltip
-            aria-label="Maximum transaction amount"
-            label={t<string>(
-              'captions.maximumNativeCurrencyTransactionAmount',
-              {
-                balance: formatCurrencyUnit(
-                  convertToStandardUnit(balance, asset.decimals),
-                  { decimals: asset.decimals }
-                ),
-                minBalance: formatCurrencyUnit(
-                  convertToStandardUnit(minBalance, asset.decimals),
-                  { decimals: asset.decimals }
-                ),
-                minFee: formatCurrencyUnit(
-                  convertToStandardUnit(
-                    new BigNumber(network.minFee),
-                    asset.decimals
-                  ),
-                  { decimals: asset.decimals }
-                ),
-                nativeCurrencyCode: asset.symbol,
-              }
-            )}
-          >
-            <span
-              style={{
-                height: '1em',
-                lineHeight: '1em',
-              }}
-            >
-              <Icon as={IoInformationCircleOutline} color={defaultTextColor} />
-            </span>
-          </Tooltip>
+          <InformationIcon
+            ariaLabel={informationLabel}
+            tooltipLabel={informationLabel}
+          />
 
           {maximumTransactionAmountLabel}
         </HStack>
@@ -199,12 +168,13 @@ const AmountInput: FC<IProps> = ({
   };
 
   return (
-    <VStack w="full">
+    <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
       <HStack justifyContent="space-between" spacing={1} w="full">
         {/*label*/}
         <Label
           inputID={_id}
-          label={t<string>('labels.amount')}
+          label={label || t<string>('labels.amount')}
+          px={DEFAULT_GAP - 2}
           required={required}
         />
 
@@ -212,21 +182,22 @@ const AmountInput: FC<IProps> = ({
         {renderMaximumTransactionAmountLabel()}
       </HStack>
 
-      <HStack alignItems="center" spacing={1} w="full">
+      <HStack spacing={1} w="full">
         {/*input*/}
         <NumberInput
+          {...inputProps}
           colorScheme={primaryColorScheme}
           clampValueOnBlur={false}
-          id={_id}
-          isDisabled={disabled}
           focusBorderColor={primaryColor}
-          onBlur={handleOnBlur}
-          onChange={handleOnChange}
-          onFocus={handleOnFocus}
-          value={value || undefined}
+          id={_id}
           w="full"
         >
-          <NumberInputField h={INPUT_HEIGHT} textAlign="right" />
+          <NumberInputField
+            borderRadius="full"
+            h={INPUT_HEIGHT}
+            p={DEFAULT_GAP - 2}
+            textAlign="right"
+          />
         </NumberInput>
 
         {/*maximum button*/}
@@ -234,15 +205,15 @@ const AmountInput: FC<IProps> = ({
           _hover={{
             bg: buttonHoverBackgroundColor,
           }}
-          aria-label="Add maximum amount"
-          borderRadius={0}
-          h="100%"
+          aria-label={t<string>('labels.addMaximumAmount')}
+          borderRadius="md"
+          h="full"
           onClick={handleMaximumAmountClick}
           p={0}
           variant="ghost"
         >
           <Text color={defaultTextColor} fontSize="md">
-            {t<string>('labels.max').toUpperCase()}
+            {t<string>('buttons.max').toUpperCase()}
           </Text>
         </Button>
       </HStack>

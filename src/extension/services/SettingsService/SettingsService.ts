@@ -3,7 +3,7 @@ import { networks } from '@extension/config';
 
 // constants
 import {
-  PASSWORD_LOCK_DURATION_NORMAL,
+  CREDENTIALS_LOCK_DURATION_NORMAL,
   SETTINGS_ADVANCED_KEY,
   SETTINGS_APPEARANCE_KEY,
   SETTINGS_GENERAL_KEY,
@@ -64,7 +64,7 @@ export default class SettingsService {
         allowActionTracking: false,
       },
       security: {
-        credentialLockTimeoutDuration: PASSWORD_LOCK_DURATION_NORMAL,
+        credentialLockTimeoutDuration: CREDENTIALS_LOCK_DURATION_NORMAL,
         enableCredentialLock: false,
       },
     };

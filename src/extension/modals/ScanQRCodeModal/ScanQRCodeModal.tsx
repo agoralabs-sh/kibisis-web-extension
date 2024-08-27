@@ -1,6 +1,6 @@
 import { Modal } from '@chakra-ui/react';
 import { TransactionType } from 'algosdk';
-import React, { FC, useState } from 'react';
+import React, { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline } from 'react-icons/io5';
 
@@ -51,13 +51,13 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
   const networks = useSelectNetworks();
   const scanQRCodeModal = useSelectScanQRCodeModal();
   // state
-  // const [pagination, setPagination] = useState<[number, number] | null>(null);
   const [scanViaCamera, setScanViaCamera] = useState<boolean>(false);
   const [scanViaScreenCapture, setScanViaScreenCapture] =
     useState<boolean>(false);
   const [scanViaTab, setScanViaTab] = useState<boolean>(false);
   const [uris, setURIs] = useState<string[]>([]);
   // misc
+  const _context = 'scan-qr-code-modal';
   const reset = () => {
     setURIs([]);
     setScanViaCamera(false);
@@ -133,6 +133,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
               if (isARC0300SchemaPaginationComplete(schemas)) {
                 return (
                   <ARC0300AccountImportModalContent
+                    _context={_context}
                     cancelButtonIcon={<IoArrowBackOutline />}
                     cancelButtonLabel={t<string>('buttons.previous')}
                     onComplete={handleClose}
@@ -163,6 +164,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
             ) {
               return (
                 <ARC0300AssetAddModalContent
+                  _context={_context}
                   cancelButtonIcon={<IoArrowBackOutline />}
                   cancelButtonLabel={t<string>('buttons.previous')}
                   onComplete={handleClose}
@@ -193,6 +195,7 @@ const ScanQRCodeModal: FC<IModalProps> = ({ onClose }) => {
                 case TransactionType.keyreg:
                   return (
                     <ARC0300KeyRegistrationTransactionSendModalContent
+                      _context={_context}
                       cancelButtonIcon={<IoArrowBackOutline />}
                       cancelButtonLabel={t<string>('buttons.previous')}
                       onComplete={handleClose}

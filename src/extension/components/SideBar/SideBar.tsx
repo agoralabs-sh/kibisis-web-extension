@@ -44,7 +44,7 @@ import { AccountTabEnum } from '@extension/enums';
 // features
 import { saveActiveAccountDetails } from '@extension/features/accounts';
 import { setScanQRCodeModal } from '@extension/features/layout';
-import { initializeSendAsset } from '@extension/features/send-assets';
+import { initialize as initializeSendAssets } from '@extension/features/send-assets';
 
 // hooks
 import useBorderColor from '@extension/hooks/useBorderColor';
@@ -142,9 +142,9 @@ const SideBar: FC = () => {
     }
 
     dispatch(
-      initializeSendAsset({
-        fromAddress: convertPublicKeyToAVMAddress(fromAccount.publicKey),
-        selectedAsset: network.nativeCurrency, // use native currency
+      initializeSendAssets({
+        sender: fromAccount,
+        asset: network.nativeCurrency, // use native currency
       })
     );
   };

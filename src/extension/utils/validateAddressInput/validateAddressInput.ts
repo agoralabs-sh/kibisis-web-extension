@@ -4,7 +4,7 @@ import { isValidAddress } from 'algosdk';
 import type { IOptions } from './types';
 
 // utils
-import validateInput from '@extension/utils/validateInput';
+import validateGenericInput from '@extension/utils/validateGenericInput';
 
 /**
  * Convenience function that validates whether an address input is valid.
@@ -18,7 +18,7 @@ export default function validateAddressInput({
   validate,
   value,
 }: IOptions): string | null {
-  const _error = validateInput({
+  const _error = validateGenericInput({
     field,
     t,
     required,

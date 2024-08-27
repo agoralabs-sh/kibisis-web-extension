@@ -10,8 +10,12 @@ import {
 } from './thunks';
 
 // types
-import type { IAssetTypes, INativeCurrency } from '@extension/types';
-import type { IInitializeSendAssetPayload, IState } from './types';
+import type {
+  IAccountWithExtendedProps,
+  IAssetTypes,
+  INativeCurrency,
+} from '@extension/types';
+import type { IInitializePayload, IState } from './types';
 
 // utils
 import { getInitialState } from './utils';
@@ -51,53 +55,33 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.SendAssets,
   reducers: {
-    initializeSendAsset: (
+    initialize: (
       state: Draft<IState>,
-      action: PayloadAction<IInitializeSendAssetPayload>
+      action: PayloadAction<IInitializePayload>
     ) => {
-      state.fromAddress = action.payload.fromAddress;
-      state.selectedAsset = action.payload.selectedAsset;
+      state.asset = action.payload.asset;
+      state.sender = action.payload.sender;
     },
     reset: (state: Draft<IState>) => {
-      state.amountInStandardUnits = '0';
+      state.asset = null;
       state.confirming = false;
       state.creating = false;
-      state.fromAddress = null;
-      state.note = null;
-      state.selectedAsset = null;
-      state.toAddress = null;
+      state.sender = null;
     },
-    setAmount: (state: Draft<IState>, action: PayloadAction<string>) => {
-      state.amountInStandardUnits = action.payload;
-    },
-    setFromAddress: (state: Draft<IState>, action: PayloadAction<string>) => {
-      state.fromAddress = action.payload;
-    },
-    setNote: (state: Draft<IState>, action: PayloadAction<string | null>) => {
-      state.note = action.payload;
-    },
-    setSelectedAsset: (
+    setAsset: (
       state: Draft<IState>,
-      action: PayloadAction<IAssetTypes | INativeCurrency>
+      action: PayloadAction<IAssetTypes | INativeCurrency | null>
     ) => {
-      state.selectedAsset = action.payload;
+      state.asset = action.payload;
     },
-    setToAddress: (
+    setSender: (
       state: Draft<IState>,
-      action: PayloadAction<string | null>
+      action: PayloadAction<IAccountWithExtendedProps | null>
     ) => {
-      state.toAddress = action.payload;
+      state.sender = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const {
-  initializeSendAsset,
-  reset,
-  setAmount,
-  setFromAddress,
-  setNote,
-  setSelectedAsset,
-  setToAddress,
-} = slice.actions;
+export const { initialize, reset, setAsset, setSender } = slice.actions;

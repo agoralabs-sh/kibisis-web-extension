@@ -26,8 +26,8 @@ const SettingsSelectItem: FC<IProps> = ({
   value,
 }) => {
   // hooks
-  const defaultTextColor: string = useDefaultTextColor();
-  const subTextColor: string = useSubTextColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
   // handlers
   const handleSelect = (option: IOption | null) => option && onChange(option);
 

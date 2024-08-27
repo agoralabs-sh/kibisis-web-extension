@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoArrowBackOutline } from 'react-icons/io5';
+import { IoArrowBackOutline, IoDownloadOutline } from 'react-icons/io5';
 
 // components
 import AccountItem from '@extension/components/AccountItem';
@@ -214,6 +214,7 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
                 <Button
                   isLoading={saving}
                   onClick={handleImportClick(accounts)}
+                  rightIcon={<IoDownloadOutline />}
                   size="lg"
                   variant="solid"
                   w="full"

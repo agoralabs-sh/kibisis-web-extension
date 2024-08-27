@@ -13,6 +13,7 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoEyeOffOutline, IoTrashOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -434,6 +435,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
 
             <Button
               onClick={handleRemoveARC0200AssetClick}
+              rightIcon={<IoEyeOffOutline />}
               size="lg"
               variant="solid"
               w="full"
@@ -451,6 +453,7 @@ const RemoveAssetsModal: FC<IRemoveAssetsModalProps> = ({ onClose }) => {
 
             <Button
               onClick={handleRemoveStandardAssetClick}
+              rightIcon={<IoTrashOutline />}
               size="lg"
               variant="solid"
               w="full"

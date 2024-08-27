@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoTrashOutline } from 'react-icons/io5';
 import { GoShieldSlash } from 'react-icons/go';
 import { Radio } from 'react-loader-spinner';
 import { useDispatch } from 'react-redux';
@@ -265,6 +266,7 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
               <Button
                 isLoading={isLoading}
                 onClick={handleRemoveClick}
+                rightIcon={<IoTrashOutline />}
                 size="lg"
                 variant="solid"
                 w="full"

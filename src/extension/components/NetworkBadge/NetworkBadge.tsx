@@ -1,6 +1,9 @@
 import { HStack, StackProps, Text } from '@chakra-ui/react';
 import React, { type FC } from 'react';
 
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
+
 // enums
 import { NetworkTypeEnum } from '@extension/enums';
 
@@ -15,9 +18,9 @@ import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
+import parseFontSize from './utils/parseFontSize';
 import parseIconSize from './utils/parseIconSize';
 import parsePadding from './utils/parsePadding';
-import { DEFAULT_GAP } from '@extension/constants';
 
 const NetworkBadge: FC<IProps> = ({ network, size = 'sm' }) => {
   // hooks
