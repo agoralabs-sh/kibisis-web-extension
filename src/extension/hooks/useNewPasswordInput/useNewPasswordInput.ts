@@ -1,12 +1,12 @@
 import { type ChangeEvent, type FocusEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import zxcvbn from 'zxcvbn';
 
 // types
 import type { IOptions, IState, IValidateOptions } from './types';
 
 // utils
 import validateNewPasswordInput from '@extension/utils/validateNewPasswordInput';
+import calculateScore from './utils/calculateScore';
 
 export default function useNewPasswordInput({
   label,
@@ -19,28 +19,28 @@ export default function useNewPasswordInput({
   const [value, setValue] = useState<string>('');
   // actions
   const _onBlur = (event: FocusEvent<HTMLInputElement>) => {
+    const _score = calculateScore(event.target.value);
+
     // validate
     setError(
       _validate({
-        score:
-          event.target.value.length <= 0
-            ? -1
-            : zxcvbn(event.target.value).score,
+        score: _score,
         value: event.target.value,
       })
     );
+    setScore(_score);
   };
   const _onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const _score = calculateScore(event.target.value);
+
     // validate
     setError(
       _validate({
-        score:
-          event.target.value.length <= 0
-            ? -1
-            : zxcvbn(event.target.value).score,
+        score: _score,
         value: event.target.value,
       })
     );
+    setScore(_score);
     setValue(event.target.value);
   };
   const _validate = ({ score: _score, value: _value }: IValidateOptions) => {
