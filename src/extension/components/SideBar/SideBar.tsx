@@ -69,7 +69,6 @@ import type {
 } from '@extension/types';
 
 // utils
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import calculateIconSize from '@extension/utils/calculateIconSize';
 
 const SideBar: FC = () => {
@@ -174,20 +173,6 @@ const SideBar: FC = () => {
         onClick={handleAccountClick}
       />
     ));
-    // if (accounts.length > 0) {
-    //   return Array.from({ length: 23 }, () => accounts[0]).map((value, index) => (
-    //     <SideBarAccountItem
-    //       account={value}
-    //       accounts={accounts}
-    //       active={activeAccount ? value.id === activeAccount.id : false}
-    //       key={`sidebar-item-${index}`}
-    //       network={network}
-    //       onClick={handleAccountClick}
-    //     />
-    //   ));
-    // }
-    //
-    // return null;
   };
 
   useEffect(() => {

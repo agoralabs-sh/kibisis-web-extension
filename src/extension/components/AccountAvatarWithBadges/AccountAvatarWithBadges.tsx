@@ -39,6 +39,10 @@ const AccountAvatarWithBadges: FC<IProps> = ({
       </AvatarBadge>
     );
 
+    if (account.watchAccount) {
+      return watchAccountBadge;
+    }
+
     // if this is a re-keyed account
     if (accountInformation && accountInformation.authAddress) {
       // if no auth account is present, or the auth account is a watch account, show a watch badge
@@ -50,12 +54,6 @@ const AccountAvatarWithBadges: FC<IProps> = ({
       ) {
         return watchAccountBadge;
       }
-
-      return null;
-    }
-
-    if (account.watchAccount) {
-      return watchAccountBadge;
     }
 
     return null;
