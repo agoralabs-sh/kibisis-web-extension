@@ -97,26 +97,28 @@ const NewPasswordInput: ForwardRefExoticComponent<
       </InputGroup>
 
       {/*strong password policy*/}
-      <Text color={subTextColor} fontSize="xs" textAlign="left">
-        <Trans i18nKey="captions.passwordScoreInfo">
-          To conform with our{' '}
-          <Button
-            as={Link}
-            colorScheme={primaryColorScheme}
-            fontSize="xs"
-            href={STRONG_PASSWORD_POLICY_LINK}
-            rightIcon={<IoOpenOutline />}
-            target="_blank"
-            variant="link"
-          >
-            Strong Password Policy
-          </Button>
-          , you are required to use a sufficiently strong password. Password
-          must be at least 8 characters.
-        </Trans>
-      </Text>
+      <VStack px={DEFAULT_GAP - 2} spacing={DEFAULT_GAP / 3} w="full">
+        <Text color={subTextColor} fontSize="xs" textAlign="left">
+          <Trans i18nKey="captions.passwordScoreInfo">
+            To conform with our{' '}
+            <Button
+              as={Link}
+              colorScheme={primaryColorScheme}
+              fontSize="xs"
+              href={STRONG_PASSWORD_POLICY_LINK}
+              rightIcon={<IoOpenOutline />}
+              target="_blank"
+              variant="link"
+            >
+              Strong Password Policy
+            </Button>
+            , you are required to use a sufficiently strong password. Password
+            must be at least 8 characters.
+          </Trans>
+        </Text>
 
-      <StrengthMeter score={score} />
+        <StrengthMeter score={score} />
+      </VStack>
     </VStack>
   );
 });
