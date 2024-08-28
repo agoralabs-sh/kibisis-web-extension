@@ -1,8 +1,8 @@
 import { ColorMode } from '@chakra-ui/react';
 
 export default function setDocumentColorMode(colorMode: ColorMode): void {
-  const darkClassName: string = 'chakra-ui-dark';
-  const lightClassName: string = 'chakra-ui-light';
+  const darkClassName = 'chakra-ui-dark';
+  const lightClassName = 'chakra-ui-light';
 
   // update the body tag
   switch (colorMode) {

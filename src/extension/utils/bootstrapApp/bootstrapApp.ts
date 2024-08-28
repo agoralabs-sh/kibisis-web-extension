@@ -51,6 +51,7 @@ export default function bootstrapApp(app: FC<IAppProps>): () => Promise<void> {
       createElement(app, {
         i18next,
         initialColorMode: appearanceSettings?.theme || 'light', // default to light
+        initialFontFamily: appearanceSettings?.font || 'Nunito',
       })
     );
   };

@@ -1,4 +1,4 @@
-/* latin */
+/* anonymous pro */
 @font-face {
   font-family: 'AnonymousPro';
   font-style: normal;
@@ -9,8 +9,6 @@
   url('@extension/fonts/AnonymousPro/AnonymousPro-Bold.ttf') format('truetype'),
   url('@extension/fonts/AnonymousPro/AnonymousPro-Bold.svg#AnonymousPro-Bold') format('svg');
 }
-
-  /* latin */
 @font-face {
   font-family: 'AnonymousPro';
   font-style: normal;
@@ -20,4 +18,26 @@
   url('@extension/fonts/AnonymousPro/AnonymousPro-Regular.woff') format('woff'),
   url('@extension/fonts/AnonymousPro/AnonymousPro-Regular.ttf') format('truetype'),
   url('@extension/fonts/AnonymousPro/AnonymousPro-Regular.svg#AnonymousPro-Regular') format('svg');
+}
+
+/* nunito */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600 700;
+  font-display: swap;
+  src: url('@extension/fonts/Nunito/Nunito-Bold.woff2') format('woff2'),
+  url('@extension/fonts/Nunito/Nunito-Bold.woff') format('woff'),
+  url('@extension/fonts/Nunito/Nunito-Bold.ttf') format('truetype'),
+  url('@extension/fonts/Nunito/Nunito-Bold.svg#Nunito-Bold') format('svg');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('@extension/fonts/Nunito/Nunito-Regular.woff2') format('woff2'),
+  url('@extension/fonts/Nunito/Nunito-Regular.woff') format('woff'),
+  url('@extension/fonts/Nunito/Nunito-Regular.ttf') format('truetype'),
+  url('@extension/fonts/Nunito/Nunito-Regular.svg#Nunito-Regular') format('svg');
 }
