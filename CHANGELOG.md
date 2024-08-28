@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0...v1.18.1) (2024-08-28)
+
+
+### Bug Fixes
+
+* update score state when entering password ([#292](https://github.com/agoralabs-sh/kibisis-web-extension/issues/292)) ([86092cb](https://github.com/agoralabs-sh/kibisis-web-extension/commit/86092cb85e579942f3904418c18d2e38fb0d037e))
+
 # [1.18.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.17.2...v1.18.0) (2024-08-27)
 
 
