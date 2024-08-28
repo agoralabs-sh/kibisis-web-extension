@@ -1,5 +1,3 @@
-import browser from 'webextension-polyfill';
-
 // services
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 

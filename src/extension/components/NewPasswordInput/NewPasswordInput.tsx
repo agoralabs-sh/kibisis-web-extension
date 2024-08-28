@@ -9,7 +9,13 @@ import {
 } from '@chakra-ui/react';
 import { encodeURLSafe as encodeBase64URLSafe } from '@stablelib/base64';
 import { randomBytes } from 'tweetnacl';
-import React, { type FC, useState } from 'react';
+import React, {
+  forwardRef,
+  type ForwardRefExoticComponent,
+  type PropsWithoutRef,
+  type RefAttributes,
+  useState,
+} from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { IoEye, IoEyeOff, IoOpenOutline } from 'react-icons/io5';
 
@@ -33,14 +39,9 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // types
 import type { IProps } from './types';
 
-const NewPasswordInput: FC<IProps> = ({
-  error,
-  id,
-  label,
-  score,
-  value,
-  ...inputProps
-}) => {
+const NewPasswordInput: ForwardRefExoticComponent<
+  PropsWithoutRef<IProps> & RefAttributes<HTMLInputElement>
+> = forwardRef(({ error, id, label, score, value, ...inputProps }, ref) => {
   const { t } = useTranslation();
   // hooks
   const primaryColor = usePrimaryColor();
@@ -76,6 +77,7 @@ const NewPasswordInput: FC<IProps> = ({
           isInvalid={!!error}
           placeholder={t<string>('placeholders.enterPassword')}
           pr={DEFAULT_GAP * 2}
+          ref={ref}
           type={show ? 'text' : 'password'}
           value={value}
           w="full"
@@ -117,6 +119,6 @@ const NewPasswordInput: FC<IProps> = ({
       <StrengthMeter score={score} />
     </VStack>
   );
-};
+});
 
 export default NewPasswordInput;
