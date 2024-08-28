@@ -19,5 +19,5 @@ jobs:
           CHROME_WEB_STORE_API_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_API_CLIENT_SECRET }}
           CHROME_WEB_STORE_API_REFRESH_TOKEN: ${{ secrets.CHROME_WEB_STORE_API_REFRESH_TOKEN }}
         run: |
-          ./bin/refresh_chrome_web_store_token.sh
+          ./scripts/refresh_chrome_web_store_token.sh
 

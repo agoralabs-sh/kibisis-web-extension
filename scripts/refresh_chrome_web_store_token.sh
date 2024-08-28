@@ -14,7 +14,7 @@ source "${SCRIPT_DIR}/set_vars.sh"
 #
 # Examples
 #
-#   ./bin/refresh_chrome_web_store_token.sh
+#   ./scripts/refresh_chrome_web_store_token.sh
 #
 # Returns exit code 0 if successful, or 1 if the required environment variables are missing or there was an error in
 # in the request.

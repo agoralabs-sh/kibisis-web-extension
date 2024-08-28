@@ -9,7 +9,7 @@ source "${SCRIPT_DIR}/set_vars.sh"
 #
 # Examples
 #
-#   ./bin/post_install.sh
+#   ./scripts/post_install.sh
 #
 # Returns exit code 0.
 function main() {

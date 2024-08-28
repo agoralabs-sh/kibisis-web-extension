@@ -25,7 +25,15 @@ const App: FC = () => {
 
   return (
     <UseWalletProvider value={providers}>
-      <ChakraProvider theme={theme}>
+      <ChakraProvider
+        theme={{
+          ...theme,
+          font: {
+            body: 'Nunito',
+            heading: 'Nunito',
+          },
+        }}
+      >
         <Root />
       </ChakraProvider>
     </UseWalletProvider>

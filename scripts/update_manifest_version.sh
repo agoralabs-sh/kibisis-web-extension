@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/set_vars.sh"
 #
 # Examples
 #
-#   ./bin/update_version.sh "1.0.0"
+#   ./scripts/update_version.sh "1.0.0"
 #
 # Returns exit code 0 if successful, or 1 if the semantic version is incorrectly formatted.
 function main {
@@ -19,7 +19,7 @@ function main {
   set_vars
 
   if [ -z "${1}" ]; then
-    printf "%b no version specified, use: ./bin/update_manifest_version.sh [version] \n" "${ERROR_PREFIX}"
+    printf "%b no version specified, use: ./scripts/update_manifest_version.sh [version] \n" "${ERROR_PREFIX}"
     exit 1
   fi
 
