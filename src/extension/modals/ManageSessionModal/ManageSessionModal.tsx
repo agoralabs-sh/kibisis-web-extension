@@ -9,7 +9,9 @@ import {
   Skeleton,
   SkeletonCircle,
   Spacer,
+  Stack,
   Text,
+  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
@@ -67,6 +69,7 @@ import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVM
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
 const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
+  const _context = 'manage-sessions-modal';
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
@@ -81,6 +84,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   // state
   const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
   const [network, setNetwork] = useState<INetwork | null>(null);
+  // handlers
   const handleCancelClick = () => handleClose();
   const handleClose = () => onClose && onClose();
   const handleSaveClick = () => {
@@ -120,14 +124,24 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
         authorizedAddresses.filter((value) => value !== address)
       );
     };
+  const handleOnSelectAllCheckChange = () => {
+    if (authorizedAddresses.length <= 0) {
+      return setAuthorizedAddresses(
+        accounts.map((value) => convertPublicKeyToAVMAddress(value.publicKey))
+      );
+    }
+
+    setAuthorizedAddresses([]);
+  };
+  // renders
   const renderContent = () => {
     let accountNodes: ReactNode[];
 
     if (!network || fetching) {
       return Array.from({ length: 3 }, (_, index) => (
         <HStack
-          key={`manage-session-fetching-item-${index}`}
-          py={4}
+          key={`${_context}-fetching-item-${index}`}
+          py={DEFAULT_GAP - 2}
           spacing={DEFAULT_GAP - 2}
           w="full"
         >
@@ -147,13 +161,14 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
     accountNodes = availableAccountsForNetwork({ accounts, network }).reduce<
       ReactNode[]
     >((acc, account, currentIndex, availableAccounts) => {
-      const address: string = convertPublicKeyToAVMAddress(account.publicKey);
+      const address = convertPublicKeyToAVMAddress(account.publicKey);
 
       return [
         ...acc,
         <HStack
-          key={`manage-session-modal-account-information-item-${currentIndex}`}
-          py={4}
+          alignItems="center"
+          key={`${_context}-account-information-item-${currentIndex}`}
+          py={DEFAULT_GAP - 2}
           spacing={DEFAULT_GAP - 2}
           w="full"
         >
@@ -181,6 +196,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
               >
                 {account.name}
               </Text>
+
               <Text color={subTextColor} fontSize="sm" textAlign="left">
                 {ellipseAddress(address, {
                   end: 10,
@@ -201,6 +217,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
               })}
             </Text>
           )}
+
           <Checkbox
             colorScheme={primaryColorScheme}
             isChecked={!!authorizedAddresses.find((value) => value === address)}
@@ -246,12 +263,22 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
         </Text>
 
         {/*remove warning*/}
-        {authorizedAddresses.length <= 0 && (
-          <Warning
-            message={t<string>('captions.removeAllAccountsWarning')}
-            size="xs"
-          />
-        )}
+        <Stack alignItems="flex-end" justifyContent="center" w="full">
+          <Tooltip
+            aria-label={t<string>('labels.selectAllAccounts')}
+            label={t<string>('labels.selectAllAccounts')}
+          >
+            <Checkbox
+              colorScheme={primaryColorScheme}
+              isChecked={authorizedAddresses.length === accounts.length}
+              isIndeterminate={
+                authorizedAddresses.length > 0 &&
+                authorizedAddresses.length < accounts.length
+              }
+              onChange={handleOnSelectAllCheckChange}
+            />
+          </Tooltip>
+        </Stack>
       </VStack>
     );
   };

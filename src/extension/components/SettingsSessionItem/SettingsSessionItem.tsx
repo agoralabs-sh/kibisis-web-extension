@@ -58,50 +58,32 @@ const SettingsSessionItem: FC<IProps> = ({
         justifyContent="space-evenly"
         spacing={DEFAULT_GAP / 3}
       >
+        {/*name*/}
+        <Tooltip label={item.appName}>
+          <Text
+            color={defaultTextColor}
+            fontSize="md"
+            maxW={400}
+            noOfLines={1}
+            textAlign="left"
+          >
+            {item.appName}
+          </Text>
+        </Tooltip>
+
         <HStack
+          alignItems="center"
           justifyContent="space-between"
           spacing={DEFAULT_GAP / 2}
           w="full"
         >
-          {/*name*/}
-          <Tooltip label={item.appName}>
-            <Text
-              color={defaultTextColor}
-              fontSize="md"
-              maxW={400}
-              noOfLines={1}
-              textAlign="left"
-            >
-              {item.appName}
-            </Text>
-          </Tooltip>
-
           {/*network*/}
           <NetworkBadge network={network} size="xs" />
-        </HStack>
-
-        <HStack
-          justifyContent="space-between"
-          spacing={DEFAULT_GAP / 2}
-          w="full"
-        >
-          {/*description*/}
-          <Tooltip label={item.description}>
-            <Text
-              color={subTextColor}
-              fontSize="sm"
-              maxW={400}
-              noOfLines={1}
-              textAlign="left"
-            >
-              {item.description}
-            </Text>
-          </Tooltip>
 
           {/*creation date*/}
           <Text
             color={subTextColor}
-            fontSize="sm"
+            fontSize="xs"
             maxW={400}
             noOfLines={1}
             textAlign="left"

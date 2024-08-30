@@ -54,6 +54,8 @@ const SessionsSettingsPage: FC = () => {
   const borderColor = useBorderColor();
   // states
   const [session, setSession] = useState<ISession | null>(null);
+  // misc
+  const _context = 'sessions-settings-page';
   // handlers
   const handleManageSessionModalClose = () => setSession(null);
   const handleOnSelectSession = (id: string) =>
@@ -78,7 +80,7 @@ const SessionsSettingsPage: FC = () => {
         <VStack flexGrow={1} m={0} p={0} spacing={0} w="full">
           {Array.from({ length: 3 }, (_, index) => (
             <SettingsSessionItemSkeleton
-              key={`sessions-settings-page-sessions-item-skeleton-${index}`}
+              key={`${_context}-sessions-item-skeleton-${index}`}
             />
           ))}
         </VStack>
@@ -105,7 +107,7 @@ const SessionsSettingsPage: FC = () => {
                 ...acc,
                 <SettingsSessionItem
                   item={currentValue}
-                  key={`sessions-settings-page-sessions-item-${index}`}
+                  key={`${_context}-sessions-item-${index}`}
                   network={network}
                   onDisconnect={handleOnDisconnectSession}
                   onSelect={handleOnSelectSession}
