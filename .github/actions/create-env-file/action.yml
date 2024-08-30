@@ -12,9 +12,6 @@ inputs:
   provider_id:
     description: "The provider ID used for connections to dapps"
     required: true
-  walletconnect_project_id:
-    description: "WalletConnect project ID"
-    required: true
 
 runs:
   using: "composite"

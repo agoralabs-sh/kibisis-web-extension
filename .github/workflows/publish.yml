@@ -47,21 +47,22 @@ jobs:
           product_id: ${{ vars.MICROSOFT_EDGE_ADD_ON_PRODUCT_ID }}
           zip_file_name: kibisis-edge.zip
 
-  publish_to_firefox_add_ons:
-    name: "Publish To Firefox Add-ons"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "🛎 Checkout"
-        uses: actions/checkout@v4
-      - name: "📥 Download Latest Release Asset"
-        uses: ./.github/actions/download-latest-release-asset
-        with:
-          asset_prefix: "kibisis-firefox"
-          github_token: ${{ secrets.WRITE_REPOS_TOKEN }}
-      - name: "🚀 Publish"
-        uses: ./.github/actions/publish-to-firefox-add-ons
-        with:
-          addon_id: ${{ vars.FIREFOX_ADD_ONS_ID }}
-          jwt_issuer: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_ISSUER }}
-          jwt_secret: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_SECRET }}
-          zip_file_name: kibisis-firefox.zip
+# TODO: ignore until firefox accept add-on submissions
+#  publish_to_firefox_add_ons:
+#    name: "Publish To Firefox Add-ons"
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: "🛎 Checkout"
+#        uses: actions/checkout@v4
+#      - name: "📥 Download Latest Release Asset"
+#        uses: ./.github/actions/download-latest-release-asset
+#        with:
+#          asset_prefix: "kibisis-firefox"
+#          github_token: ${{ secrets.WRITE_REPOS_TOKEN }}
+#      - name: "🚀 Publish"
+#        uses: ./.github/actions/publish-to-firefox-add-ons
+#        with:
+#          addon_id: ${{ vars.FIREFOX_ADD_ONS_ID }}
+#          jwt_issuer: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_ISSUER }}
+#          jwt_secret: ${{ secrets.FIREFOX_ADD_ONS_API_JWT_SECRET }}
+#          zip_file_name: kibisis-firefox.zip
