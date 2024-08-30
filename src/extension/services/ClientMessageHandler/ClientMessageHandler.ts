@@ -4,19 +4,19 @@ import {
   ARC0027MethodEnum,
   ARC0027NetworkNotSupportedError,
   ARC0027UnauthorizedSignerError,
-  IAccount as IAVMProviderAccount,
-  IDisableParams,
-  IDisableResult,
-  IDiscoverParams,
-  IDiscoverResult,
-  IEnableParams,
-  IEnableResult,
-  ISignMessageParams,
-  ISignMessageResult,
-  ISignTransactionsParams,
-  ISignTransactionsResult,
-  TRequestParams,
-  TResponseResults,
+  type IAccount as IAVMProviderAccount,
+  type IDisableParams,
+  type IDisableResult,
+  type IDiscoverParams,
+  type IDiscoverResult,
+  type IEnableParams,
+  type IEnableResult,
+  type ISignMessageParams,
+  type ISignMessageResult,
+  type ISignTransactionsParams,
+  type ISignTransactionsResult,
+  type TRequestParams,
+  type TResponseResults,
 } from '@agoralabs-sh/avm-web-provider';
 import {
   decode as decodeBase64,
@@ -39,7 +39,11 @@ import { EventTypeEnum } from '@extension/enums';
 import { ClientRequestEvent } from '@extension/events';
 
 // messages
-import { ClientRequestMessage, ClientResponseMessage } from '@common/messages';
+import {
+  ClientRequestMessage,
+  ClientResponseMessage,
+  ProviderSessionsUpdatedMessage,
+} from '@common/messages';
 
 // services
 import AccountService from '../AccountService';
@@ -57,7 +61,6 @@ import type {
   IClientRequestEvent,
   INetwork,
   ISession,
-  ISettings,
 } from '@extension/types';
 
 // utils
@@ -151,7 +154,7 @@ export default class ClientMessageHandler {
     message: ClientRequestMessage<IDisableParams>,
     originTabId: number
   ): Promise<void> {
-    const _functionName: string = 'handleDisableRequestMessage';
+    const _functionName = 'handleDisableRequestMessage';
     let network: INetwork | null;
     let sessionIds: string[];
     let sessions: ISession[];
@@ -233,7 +236,7 @@ export default class ClientMessageHandler {
     await this.sessionService.removeByIds(sessionIds);
 
     // send the response to the web page (via the content script)
-    return await this.sendResponse(
+    await this.sendResponse(
       new ClientResponseMessage<IDisableResult>({
         id: uuid(),
         method: message.method,
@@ -246,6 +249,11 @@ export default class ClientMessageHandler {
         },
       }),
       originTabId
+    );
+
+    // send a message to the popups to indicate the sessions have been updated
+    return await browser.runtime.sendMessage(
+      new ProviderSessionsUpdatedMessage()
     );
   }
 

@@ -8,6 +8,7 @@ import { ProviderMessageReferenceEnum } from '@common/enums';
 // features
 import { setActive as setCredentialLockActive } from '@extension/features/credential-lock';
 import { handleNewEventByIdThunk } from '@extension/features/events';
+import { fetchSessionsThunk } from '@extension/features/sessions';
 
 // messages
 import { ProviderEventAddedMessage } from '@common/messages';
@@ -25,7 +26,8 @@ export default function useOnMainAppMessage(): void {
   // selectors
   const logger = useSelectLogger();
   const handleMessage = async (message: TProviderMessages) => {
-    logger.debug(`${_functionName}: message "${message.reference}" received`);
+    message.reference &&
+      logger.debug(`${_functionName}: message "${message.reference}" received`);
 
     switch (message.reference) {
       case ProviderMessageReferenceEnum.EventAdded:
@@ -34,11 +36,12 @@ export default function useOnMainAppMessage(): void {
             (message as ProviderEventAddedMessage).payload.eventId
           )
         );
-
         break;
       case ProviderMessageReferenceEnum.CredentialLockActivated:
         dispatch(setCredentialLockActive(true));
-
+        break;
+      case ProviderMessageReferenceEnum.SessionsUpdated:
+        dispatch(fetchSessionsThunk());
         break;
       default:
         break;

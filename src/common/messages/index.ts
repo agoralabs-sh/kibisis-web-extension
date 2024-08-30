@@ -5,3 +5,4 @@ export { default as ProviderCredentialLockActivatedMessage } from './ProviderCre
 export { default as ProviderEventAddedMessage } from './ProviderEventAddedMessage';
 export { default as ProviderFactoryResetMessage } from './ProviderFactoryResetMessage';
 export { default as ProviderRegistrationCompletedMessage } from './ProviderRegistrationCompletedMessage';
+export { default as ProviderSessionsUpdatedMessage } from './ProviderSessionsUpdatedMessage';
