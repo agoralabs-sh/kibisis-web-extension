@@ -41,7 +41,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/blob/main/LICENSE">
+  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/blob/main/COPYING">
     <img alt="GitHub License" src="https://img.shields.io/github/license/agoralabs-sh/kibisis-web-extension">
   </a>
 </p>
@@ -180,7 +180,7 @@ Please read the [**Contributing Guide**][contribute] to learn about the developm
 
 ## 📄 6. License
 
-Please refer to the [LICENSE][license] file.
+Please refer to the [COPYING][license] file.
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
@@ -189,7 +189,7 @@ Please refer to the [LICENSE][license] file.
 [contribute]: ./CONTRIBUTING.md
 [download-api]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/downloads/download
 [jq]: https://github.com/jqlang/jq
-[license]: ./LICENSE
+[license]: ./COPYING
 [node]: https://nodejs.org/en/
 [storage-api]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage
 [table-of-contents]: #table-of-contents
