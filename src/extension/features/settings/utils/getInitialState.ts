@@ -13,6 +13,7 @@ export default function getInitialState(): IState {
       debugLogging: false,
     },
     appearance: {
+      font: 'Nunito',
       theme: 'light',
     },
     fetching: false,

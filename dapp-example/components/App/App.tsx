@@ -8,7 +8,15 @@ import { theme } from '@extension/theme';
 
 const App: FC = () => {
   return (
-    <ChakraProvider theme={theme}>
+    <ChakraProvider
+      theme={{
+        ...theme,
+        font: {
+          body: 'Nunito',
+          heading: 'Nunito',
+        },
+      }}
+    >
       <Root />
     </ChakraProvider>
   );

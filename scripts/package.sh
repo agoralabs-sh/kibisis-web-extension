@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/set_vars.sh"
 #
 # Examples
 #
-#   ./bin/package.sh "firefox"
+#   ./scripts/package.sh "firefox"
 #
 # Returns exit code 0 if successfully packaged, or exit code 1 the target is not specified or invalid and if no build
 # directory for the target was found.
@@ -24,7 +24,7 @@ function main() {
   set_vars
 
   if [ -z "${1}" ]; then
-    printf "%b no target specified, use: ./bin/package.sh [target] \n" "${ERROR_PREFIX}"
+    printf "%b no target specified, use: ./scripts/package.sh [target] \n" "${ERROR_PREFIX}"
     exit 1
   fi
 
