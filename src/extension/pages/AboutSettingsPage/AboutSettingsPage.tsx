@@ -1,4 +1,4 @@
-import { HStack, Text, VStack } from '@chakra-ui/react';
+import { Code, HStack, Text, VStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
@@ -19,7 +19,7 @@ const AboutSettingsPage: FC = () => {
   // selectors
   const systemInfo = useSelectSystemInfo();
   // hooks
-  const subTextColor: string = useSubTextColor();
+  const subTextColor = useSubTextColor();
 
   return (
     <>
@@ -35,9 +35,9 @@ const AboutSettingsPage: FC = () => {
             spacing={1}
             w="full"
           >
-            <Text color={subTextColor} size="sm" textAlign="right">
+            <Code fontSize="xs" textAlign="right" w="full">
               {browser.runtime.id}
-            </Text>
+            </Code>
 
             <CopyIconButton
               ariaLabel={t<string>('labels.copyExtensionID')}
@@ -56,9 +56,9 @@ const AboutSettingsPage: FC = () => {
               spacing={1}
               w="full"
             >
-              <Text color={subTextColor} size="sm" textAlign="right">
+              <Code fontSize="xs" textAlign="right" w="full">
                 {systemInfo.deviceID}
-              </Text>
+              </Code>
 
               <CopyIconButton
                 ariaLabel={t<string>('labels.copyDeviceID')}
@@ -71,7 +71,7 @@ const AboutSettingsPage: FC = () => {
 
         {/*version*/}
         <SettingsTextItem fontSize="sm" label={t<string>('labels.version')}>
-          <Text color={subTextColor} size="sm" textAlign="right">
+          <Text color={subTextColor} fontSize="xs" textAlign="right">
             {__VERSION__}
           </Text>
         </SettingsTextItem>
