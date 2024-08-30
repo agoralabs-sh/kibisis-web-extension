@@ -4,6 +4,7 @@ enum ProviderMessageReferenceEnum {
   EventAdded = 'provider:event_added',
   FactoryReset = 'provider:factory_reset',
   RegistrationCompleted = 'provider:registration_completed',
+  SessionsUpdated = 'provider:sessions_updated',
 }
 
 export default ProviderMessageReferenceEnum;
