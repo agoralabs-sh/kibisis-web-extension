@@ -253,7 +253,7 @@ export default class ClientMessageHandler {
 
     // send a message to the popups to indicate the sessions have been updated
     return await browser.runtime.sendMessage(
-      new ProviderSessionsUpdatedMessage()
+      new ProviderSessionsUpdatedMessage(sessions)
     );
   }
 

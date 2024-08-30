@@ -265,6 +265,7 @@ const translation: IResourceLanguage = {
     screenCaptureViaQRCodeScanNotAllowed2:
       'You will need to go into your settings and allow access.',
     selectScanLocation: 'Choose how you would like to scan the QR code.',
+    sessionDisconnected: '{{name}} has disconnected.',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
@@ -409,6 +410,8 @@ const translation: IResourceLanguage = {
     selectReceiverAccount: 'Select Receiver Account',
     selectSenderAccount: 'Select Sender Account',
     sendAsset: 'Send {{asset}}',
+    sessionDisconnected: 'Session Disconnected',
+    sessionsDisconnected: '{{amount}} Sessions Disconnected',
     shareAddress: 'Share Address',
     screenCaptureDenied: 'Screen Capture Denied',
     screenCaptureLoading: 'Screen Capture Loading',
