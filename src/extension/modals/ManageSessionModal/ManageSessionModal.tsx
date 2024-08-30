@@ -146,6 +146,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
           w="full"
         >
           <SkeletonCircle size="12" />
+
           <Skeleton flexGrow={1}>
             <Text color={defaultTextColor} fontSize="md" textAlign="center">
               {ellipseAddress(generateAccount().addr, {
@@ -262,7 +263,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
           {new Date(session.createdAt).toLocaleString()}
         </Text>
 
-        {/*remove warning*/}
+        {/*select all accounts*/}
         <Stack alignItems="flex-end" justifyContent="center" w="full">
           <Tooltip
             aria-label={t<string>('labels.selectAllAccounts')}

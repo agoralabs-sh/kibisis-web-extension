@@ -160,7 +160,7 @@ const SessionsSettingsPage: FC = () => {
           {/*disconnect all button*/}
           <Button
             aria-label={t<string>('buttons.disconnectAllSessions')}
-            colorScheme="red"
+            isDisabled={sessions.length <= 0}
             onClick={handleDisconnectAllSessionsClick}
             rightIcon={<IoUnlinkOutline />}
             size="sm"
