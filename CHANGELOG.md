@@ -1,3 +1,10 @@
+# [1.19.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.2-beta.1...v1.19.0-beta.1) (2024-08-30)
+
+
+### Features
+
+* allow optional font sf pro display ([#298](https://github.com/agoralabs-sh/kibisis-web-extension/issues/298)) ([78a5ab5](https://github.com/agoralabs-sh/kibisis-web-extension/commit/78a5ab5894856126a5e5a6358c08e5063aa6ac50))
+
 ## [1.18.2-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.1...v1.18.2-beta.1) (2024-08-30)
 
 
