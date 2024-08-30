@@ -1,12 +1,16 @@
 <p align="center">
   <a href="https://kibis.is">
-    <img alt="Kibisis & Browser logos" src="assets/logo.png" style="padding-top: 15px" height="64" />
+    <img alt="Kibisis & Browser logos" src=".github/assets/logo@637x128.png" style="padding-top: 15px" height="64" />
   </a>
 </p>
 
 <h1 align="center">
   Kibisis Web Extension
 </h1>
+
+<h4 align="center">
+  An AVM wallet that goes beyond just DeFi.
+</h4>
 
 <p align="center">
   <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases/latest">
@@ -47,7 +51,7 @@
 </p>
 
 <p align="center">
-  An AVM wallet in your browser that goes beyond just DeFi.
+  This is the Kibisis web extension built in React, TypeScript and Webpack.
 </p>
 
 ### Table of contents
