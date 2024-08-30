@@ -22,6 +22,7 @@ import { getAccountInformation } from '../../utils';
 export default function useAVMWebProviderConnector({
   toast,
 }: IConnectorParams): IConnectorState {
+  const _hookName = 'useAVMWebProviderConnector';
   // state
   const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
     []
@@ -29,44 +30,69 @@ export default function useAVMWebProviderConnector({
   const [avmWebClient, setAVMWebClient] = useState<AVMWebClient | null>(null);
   // actions
   const connectAction = (network: INetwork) => {
-    let _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
-    const listenerId: string = _avmWebClient.onEnable(
-      async ({ error, result }) => {
-        // remove the listener, it is not needed
-        _avmWebClient.removeListener(listenerId);
+    const _functionName = 'connectAction';
 
-        if (error) {
-          console.error(error.message);
+    return new Promise<boolean>((resolve, reject) => {
+      const _avmWebClient: AVMWebClient = getOrInitializeAVMWebClient();
+      const listenerId: string = _avmWebClient.onEnable(
+        async ({ error, result }) => {
+          // remove the listener, it is not needed
+          _avmWebClient.removeListener(listenerId);
 
-          toast({
-            description: error.message,
-            status: 'error',
-            title: 'Failed To Connect',
-          });
-        }
+          if (error) {
+            console.error(error.message);
 
-        if (result) {
-          setEnabledAccounts(
-            await Promise.all(
-              result.accounts.map<Promise<IAccountInformation>>(
-                ({ address, name }) =>
-                  getAccountInformation({ address, name }, network)
+            toast({
+              description: error.message,
+              status: 'error',
+              title: 'Failed To Connect',
+            });
+
+            return reject(false);
+          }
+
+          if (!result) {
+            console.error(
+              `${_hookName}#${_functionName}: no result returned from enable request`
+            );
+
+            return reject(false);
+          }
+
+          try {
+            setEnabledAccounts(
+              await Promise.all(
+                result.accounts.map<Promise<IAccountInformation>>(
+                  ({ address, name }) =>
+                    getAccountInformation({ address, name }, network)
+                )
               )
-            )
-          );
+            );
+          } catch (error) {
+            console.error(`${_hookName}#${_functionName}:`, error);
+
+            toast({
+              status: 'error',
+              title: 'Failed to get account information for connected wallets',
+            });
+
+            return reject(false);
+          }
 
           toast({
             description: `Successfully connected via AVM Web Provider.`,
             status: 'success',
             title: 'Connected!',
           });
-        }
-      }
-    );
 
-    _avmWebClient.enable({
-      genesisHash: network.genesisHash,
-      providerId: __PROVIDER_ID__,
+          return resolve(true);
+        }
+      );
+
+      _avmWebClient.enable({
+        genesisHash: network.genesisHash,
+        providerId: __PROVIDER_ID__,
+      });
     });
   };
   const disconnectAction = () => {

@@ -367,7 +367,7 @@ const configs: (
       entry: {
         ['main']: resolve(DAPP_EXAMPLE_SRC_PATH, 'index.ts'),
       },
-      mode: 'development',
+      mode: EnvironmentEnum.Development,
       module: {
         rules: [
           {
