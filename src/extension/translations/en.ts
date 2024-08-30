@@ -491,6 +491,7 @@ const translation: IResourceLanguage = {
     chooseANetwork: 'Choose a network',
     clawbackAccount: 'Clawback Account',
     connectWallet: 'Connect Wallet',
+    connectedAccounts: '{{amount}} Connected Account(s)',
     copyAddress: 'Copy Address',
     copyApplicationId: 'Copy Application ID',
     copyAssetId: 'Copy Asset ID',

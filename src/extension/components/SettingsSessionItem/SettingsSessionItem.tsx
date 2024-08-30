@@ -58,18 +58,28 @@ const SettingsSessionItem: FC<IProps> = ({
         justifyContent="space-evenly"
         spacing={DEFAULT_GAP / 3}
       >
-        {/*name*/}
-        <Tooltip label={item.appName}>
-          <Text
-            color={defaultTextColor}
-            fontSize="md"
-            maxW={400}
-            noOfLines={1}
-            textAlign="left"
-          >
-            {item.appName}
-          </Text>
-        </Tooltip>
+        <HStack
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={1}
+          w="full"
+        >
+          {/*name*/}
+          <Tooltip label={item.appName}>
+            <Text
+              color={defaultTextColor}
+              fontSize="md"
+              maxW={400}
+              noOfLines={1}
+              textAlign="left"
+            >
+              {item.appName}
+            </Text>
+          </Tooltip>
+
+          {/*network*/}
+          <NetworkBadge network={network} size="xs" />
+        </HStack>
 
         <HStack
           alignItems="center"
@@ -77,8 +87,18 @@ const SettingsSessionItem: FC<IProps> = ({
           spacing={DEFAULT_GAP / 2}
           w="full"
         >
-          {/*network*/}
-          <NetworkBadge network={network} size="xs" />
+          {/*connected accounts*/}
+          <Text
+            color={subTextColor}
+            fontSize="xs"
+            maxW={400}
+            noOfLines={1}
+            textAlign="left"
+          >
+            {t<string>('labels.connectedAccounts', {
+              amount: item.authorizedAddresses.length,
+            })}
+          </Text>
 
           {/*creation date*/}
           <Text
