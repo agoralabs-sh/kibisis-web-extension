@@ -11,9 +11,10 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import React, { FC, Fragment } from 'react';
+import React, { type FC, Fragment } from 'react';
 
 // constants
+import { DEFAULT_GAP } from '@extension/constants';
 import {
   ALGORAND_TEST_NET_GENESIS_HASH,
   VOI_TEST_NET_GENESIS_HASH,
@@ -26,33 +27,19 @@ import { networks } from '@extension/config';
 import { ConnectionTypeEnum } from '../../enums';
 
 // types
-import type { INetwork } from '@extension/types';
-import type { IProps, THandleConnectParams } from './types';
+import type { IProps, IHandleConnectParams } from './types';
 
 const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
   // handlers
-  const handleConnect = (params: THandleConnectParams) => () => {
-    let genesisHash: string;
-    let network: INetwork | null;
-
-    switch (params.connectionType) {
-      case ConnectionTypeEnum.AlgorandProvider:
-      case ConnectionTypeEnum.AVMWebProvider:
-        genesisHash = params.genesisHash;
-        break;
-      case ConnectionTypeEnum.UseWallet:
-      default:
-        genesisHash = ALGORAND_TEST_NET_GENESIS_HASH; // use-wallet only supports algorand testnet
-        break;
-    }
-
-    network =
-      networks.find((value) => value.genesisHash === genesisHash) || null;
+  const handleConnect = (params: IHandleConnectParams) => () => {
+    const network =
+      networks.find((value) => value.genesisHash === params.genesisHash) ||
+      null;
 
     // if there is no known network, just error early
     if (!network) {
       toast({
-        description: `Network "${genesisHash}" not found`,
+        description: `Network "${params.genesisHash}" not found`,
         status: 'error',
         title: `Unknown Network`,
       });
@@ -76,8 +63,8 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
   return (
     <Menu>
       <MenuButton
-        px={4}
-        py={2}
+        px={DEFAULT_GAP - 2}
+        py={DEFAULT_GAP / 3}
         transition="all 0.2s"
         borderRadius="md"
         borderWidth="1px"
@@ -96,63 +83,41 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
           const dividerElement =
             index < array.length - 1 ? <MenuDivider /> : null;
 
-          switch (connectionType) {
-            case ConnectionTypeEnum.AlgorandProvider:
-            case ConnectionTypeEnum.AVMWebProvider:
-              return (
-                <Fragment key={`connect-menu-item=${index}`}>
-                  {dividerElement}
+          return (
+            <Fragment key={`connect-menu-item=${index}`}>
+              {dividerElement}
 
-                  <MenuGroup title={connectionType}>
-                    <MenuItem
-                      onClick={handleConnect({
-                        connectionType,
-                        genesisHash: ALGORAND_TEST_NET_GENESIS_HASH,
-                      })}
-                    >
-                      <HStack alignItems="center" w="full">
-                        <Text size="sm">Connect to Algorand</Text>
+              <MenuGroup title={connectionType}>
+                <MenuItem
+                  onClick={handleConnect({
+                    connectionType,
+                    genesisHash: ALGORAND_TEST_NET_GENESIS_HASH,
+                  })}
+                >
+                  <HStack alignItems="center" w="full">
+                    <Text size="sm">Connect to Algorand</Text>
 
-                        {renderNetworkTag()}
-                      </HStack>
-                    </MenuItem>
+                    {renderNetworkTag()}
+                  </HStack>
+                </MenuItem>
 
-                    <MenuItem
-                      onClick={handleConnect({
-                        connectionType,
-                        genesisHash: VOI_TEST_NET_GENESIS_HASH,
-                      })}
-                    >
-                      <HStack alignItems="center" w="full">
-                        <Text size="sm">Connect to Voi</Text>
+                <MenuItem
+                  onClick={handleConnect({
+                    connectionType,
+                    genesisHash: VOI_TEST_NET_GENESIS_HASH,
+                  })}
+                >
+                  <HStack alignItems="center" w="full">
+                    <Text size="sm">Connect to Voi</Text>
 
-                        {renderNetworkTag()}
-                      </HStack>
-                    </MenuItem>
-                  </MenuGroup>
+                    {renderNetworkTag()}
+                  </HStack>
+                </MenuItem>
+              </MenuGroup>
 
-                  {dividerElement}
-                </Fragment>
-              );
-            case ConnectionTypeEnum.UseWallet:
-              return (
-                <Fragment key={`connect-menu-item=${index}`}>
-                  <MenuGroup title={connectionType}>
-                    <MenuItem onClick={handleConnect({ connectionType })}>
-                      <HStack alignItems="center" w="full">
-                        <Text size="sm">Connect to Algorand</Text>
-
-                        {renderNetworkTag()}
-                      </HStack>
-                    </MenuItem>
-                  </MenuGroup>
-
-                  {dividerElement}
-                </Fragment>
-              );
-            default:
-              return null;
-          }
+              {dividerElement}
+            </Fragment>
+          );
         })}
 
         <MenuDivider />

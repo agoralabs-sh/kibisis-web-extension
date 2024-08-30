@@ -233,8 +233,6 @@ const translation: IResourceLanguage = {
     removeAccount: 'Are you sure you want to remove account "{{address}}"?',
     removeAccountWarning:
       'To add this account back you will need the seed phrase',
-    removeAllAccountsWarning:
-      'Removing all accounts will also remove this session',
     removeAsset:
       'Are you sure you want to remove {{symbol}}? You will have to opt-in to this asset again.',
     [`removeAsset_${AssetTypeEnum.ARC0200}`]:
@@ -269,6 +267,7 @@ const translation: IResourceLanguage = {
     screenCaptureViaQRCodeScanNotAllowed2:
       'You will need to go into your settings and allow access.',
     selectScanLocation: 'Choose how you would like to scan the QR code.',
+    sessionDisconnected: '{{name}} has disconnected.',
     securityTokenExpired: 'This token has expired',
     signJwtRequest: 'An application is requesting to sign a security token.',
     signMessageRequest: 'An application is requesting to sign a message.',
@@ -413,6 +412,8 @@ const translation: IResourceLanguage = {
     selectReceiverAccount: 'Select Receiver Account',
     selectSenderAccount: 'Select Sender Account',
     sendAsset: 'Send {{asset}}',
+    sessionDisconnected: 'Session Disconnected',
+    sessionsDisconnected: '{{amount}} Sessions Disconnected',
     shareAddress: 'Share Address',
     screenCaptureDenied: 'Screen Capture Denied',
     screenCaptureLoading: 'Screen Capture Loading',
@@ -492,6 +493,7 @@ const translation: IResourceLanguage = {
     chooseANetwork: 'Choose a network',
     clawbackAccount: 'Clawback Account',
     connectWallet: 'Connect Wallet',
+    connectedAccounts: '{{amount}} Connected Account(s)',
     copyAddress: 'Copy Address',
     copyApplicationId: 'Copy Application ID',
     copyAssetId: 'Copy Asset ID',

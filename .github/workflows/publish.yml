@@ -47,7 +47,7 @@ jobs:
           product_id: ${{ vars.MICROSOFT_EDGE_ADD_ON_PRODUCT_ID }}
           zip_file_name: kibisis-edge.zip
 
-# TODO: turn off due to firefox not being officially supported
+# TODO: ignore until firefox accept add-on submissions
 #  publish_to_firefox_add_ons:
 #    name: "Publish To Firefox Add-ons"
 #    runs-on: ubuntu-latest

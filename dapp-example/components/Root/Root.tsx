@@ -92,18 +92,24 @@ const Root: FC = () => {
     connectionType,
     network,
   }: IOnConnectParams) => {
+    let result: boolean = false;
+
     switch (connectionType) {
       case ConnectionTypeEnum.AlgorandProvider:
-        await algorandProviderConnectAction(network);
+        result = await algorandProviderConnectAction(network);
         break;
       case ConnectionTypeEnum.AVMWebProvider:
-        await avmWebProviderConnectAction(network);
+        result = await avmWebProviderConnectAction(network);
         break;
       case ConnectionTypeEnum.UseWallet:
-        await useWalletConnectAction(network);
+        result = await useWalletConnectAction(network);
         break;
       default:
         break;
+    }
+
+    if (!result) {
+      return;
     }
 
     setConnectionType(connectionType);

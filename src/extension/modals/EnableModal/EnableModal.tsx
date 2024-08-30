@@ -10,7 +10,9 @@ import {
   Skeleton,
   SkeletonCircle,
   Spacer,
+  Stack,
   Text,
+  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { generateAccount } from 'algosdk';
@@ -43,6 +45,7 @@ import useEnableModal from './hooks/useEnableModal';
 
 // selectors
 import {
+  useSelectActiveAccount,
   useSelectAccountsFetching,
   useSelectSessionsSaving,
 } from '@extension/selectors';
@@ -68,10 +71,12 @@ import ellipseAddress from '@extension/utils/ellipseAddress';
 import mapSessionFromEnableRequest from '@extension/utils/mapSessionFromEnableRequest';
 
 const EnableModal: FC<IModalProps> = ({ onClose }) => {
+  const _context = 'enable-modal';
   const { t } = useTranslation();
   const dispatch =
     useDispatch<IAppThunkDispatch<IBackgroundRootState | IMainRootState>>();
   // selectors
+  const activeAccount = useSelectActiveAccount();
   const fetching = useSelectAccountsFetching();
   const saving = useSelectSessionsSaving();
   // hooks
@@ -86,7 +91,9 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
-  const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>([]);
+  const [authorizedAddresses, setAuthorizedAddresses] = useState<string[]>(
+    activeAccount ? [convertPublicKeyToAVMAddress(activeAccount.publicKey)] : []
+  );
   // handlers
   const handleCancelClick = async () => {
     if (event) {
@@ -164,14 +171,26 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
         authorizedAddresses.filter((value) => value !== address)
       );
     };
+  const handleOnSelectAllCheckChange = () => {
+    if (authorizedAddresses.length <= 0) {
+      return setAuthorizedAddresses(
+        availableAccounts?.map((value) =>
+          convertPublicKeyToAVMAddress(value.publicKey)
+        ) || []
+      );
+    }
+
+    setAuthorizedAddresses([]);
+  };
+  // renders
   const renderContent = () => {
     let accountNodes: ReactNode[];
 
     if (!availableAccounts || !event || fetching || !network) {
       return Array.from({ length: 3 }, (_, index) => (
         <HStack
-          key={`enable-modal-fetching-item-${index}`}
-          py={4}
+          key={`${_context}-fetching-item-${index}`}
+          py={DEFAULT_GAP - 2}
           spacing={DEFAULT_GAP - 2}
           w="full"
         >
@@ -198,8 +217,8 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
         return [
           ...acc,
           <HStack
-            key={`enable-modal-account-information-${currentIndex}`}
-            py={4}
+            key={`${_context}-account-information-${currentIndex}`}
+            py={DEFAULT_GAP - 2}
             spacing={DEFAULT_GAP - 2}
             w="full"
           >
@@ -242,6 +261,8 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
                 })}
               </Text>
             )}
+
+            {/*checkbox*/}
             <Checkbox
               colorScheme={primaryColorScheme}
               isChecked={
@@ -266,6 +287,54 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
 
         <Spacer />
       </>
+    );
+  };
+  const renderHeader = () => {
+    if (!event) {
+      return <ClientHeaderSkeleton />;
+    }
+
+    return (
+      <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
+        <ClientHeader
+          description={
+            event.payload.message.clientInfo.description || undefined
+          }
+          iconUrl={event.payload.message.clientInfo.iconUrl || undefined}
+          host={event.payload.message.clientInfo.host || 'unknown host'}
+          name={event.payload.message.clientInfo.appName || 'Unknown'}
+        />
+
+        {/*network*/}
+        {network && <NetworkBadge network={network} size="xs" />}
+
+        {/*caption*/}
+        <Text color={subTextColor} fontSize="sm" textAlign="center">
+          {t<string>('captions.enableRequest')}
+        </Text>
+
+        {/*select all accounts*/}
+        {availableAccounts && (
+          <Stack alignItems="flex-end" justifyContent="center" w="full">
+            <Tooltip
+              aria-label={t<string>('labels.selectAllAccounts')}
+              label={t<string>('labels.selectAllAccounts')}
+            >
+              <Checkbox
+                colorScheme={primaryColorScheme}
+                isChecked={
+                  authorizedAddresses.length === availableAccounts.length
+                }
+                isIndeterminate={
+                  authorizedAddresses.length > 0 &&
+                  authorizedAddresses.length < availableAccounts.length
+                }
+                onChange={handleOnSelectAllCheckChange}
+              />
+            </Tooltip>
+          </Stack>
+        )}
+      </VStack>
     );
   };
 
@@ -298,28 +367,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
         borderBottomRadius={0}
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
-          {event ? (
-            <VStack alignItems="center" spacing={DEFAULT_GAP - 2} w="full">
-              <ClientHeader
-                description={
-                  event.payload.message.clientInfo.description || undefined
-                }
-                iconUrl={event.payload.message.clientInfo.iconUrl || undefined}
-                host={event.payload.message.clientInfo.host || 'unknown host'}
-                name={event.payload.message.clientInfo.appName || 'Unknown'}
-              />
-
-              {/*network*/}
-              {network && <NetworkBadge network={network} size="xs" />}
-
-              {/*caption*/}
-              <Text color={subTextColor} fontSize="sm" textAlign="center">
-                {t<string>('captions.enableRequest')}
-              </Text>
-            </VStack>
-          ) : (
-            <ClientHeaderSkeleton />
-          )}
+          {renderHeader()}
         </ModalHeader>
 
         <ModalBody px={DEFAULT_GAP}>{renderContent()}</ModalBody>

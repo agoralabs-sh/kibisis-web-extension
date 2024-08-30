@@ -59,8 +59,9 @@ const SettingsSessionItem: FC<IProps> = ({
         spacing={DEFAULT_GAP / 3}
       >
         <HStack
+          alignItems="center"
           justifyContent="space-between"
-          spacing={DEFAULT_GAP / 2}
+          spacing={1}
           w="full"
         >
           {/*name*/}
@@ -81,27 +82,28 @@ const SettingsSessionItem: FC<IProps> = ({
         </HStack>
 
         <HStack
+          alignItems="center"
           justifyContent="space-between"
           spacing={DEFAULT_GAP / 2}
           w="full"
         >
-          {/*description*/}
-          <Tooltip label={item.description}>
-            <Text
-              color={subTextColor}
-              fontSize="sm"
-              maxW={400}
-              noOfLines={1}
-              textAlign="left"
-            >
-              {item.description}
-            </Text>
-          </Tooltip>
+          {/*connected accounts*/}
+          <Text
+            color={subTextColor}
+            fontSize="xs"
+            maxW={400}
+            noOfLines={1}
+            textAlign="left"
+          >
+            {t<string>('labels.connectedAccounts', {
+              amount: item.authorizedAddresses.length,
+            })}
+          </Text>
 
           {/*creation date*/}
           <Text
             color={subTextColor}
-            fontSize="sm"
+            fontSize="xs"
             maxW={400}
             noOfLines={1}
             textAlign="left"
