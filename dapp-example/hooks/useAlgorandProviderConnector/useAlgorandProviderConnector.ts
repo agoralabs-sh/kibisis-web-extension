@@ -26,12 +26,14 @@ import { getAccountInformation } from '../../utils';
 export default function useAlgorandProviderConnector({
   toast,
 }: IConnectorParams): IConnectorState {
-  // state
+  const _hookName = 'useAVMWebProviderConnector';
+  // states
   const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
     []
   );
   // actions
   const connectAction = async (network: INetwork) => {
+    const _functionName = 'connectAction';
     const algorand: AlgorandProvider | undefined = (window as IWindow).algorand;
     let result: IBaseResult & IEnableResult;
 
@@ -43,14 +45,26 @@ export default function useAlgorandProviderConnector({
         title: 'window.algorand not found!',
       });
 
-      return;
+      return false;
     }
 
     try {
       result = await algorand.enable({
         genesisHash: network.genesisHash,
       });
+    } catch (error) {
+      console.error(`${_hookName}#${_functionName}:`, error);
 
+      toast({
+        description: (error as BaseError).message,
+        status: 'error',
+        title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
+      });
+
+      return false;
+    }
+
+    try {
       setEnabledAccounts(
         await Promise.all(
           result.accounts.map<Promise<IAccountInformation>>((account) =>
@@ -58,19 +72,24 @@ export default function useAlgorandProviderConnector({
           )
         )
       );
+    } catch (error) {
+      console.error(`${_hookName}#${_functionName}:`, error);
 
       toast({
-        description: `Successfully connected via Algorand Provider.`,
-        status: 'success',
-        title: 'Connected!',
-      });
-    } catch (error) {
-      toast({
-        description: (error as BaseError).message,
         status: 'error',
-        title: `${(error as BaseError).code}: ${(error as BaseError).name}`,
+        title: 'Failed to get account information for connected wallets',
       });
+
+      return false;
     }
+
+    toast({
+      description: `Successfully connected via Algorand Provider.`,
+      status: 'success',
+      title: 'Connected!',
+    });
+
+    return true;
   };
   const disconnectAction = async () => {
     setEnabledAccounts([]);
