@@ -1,4 +1,4 @@
-import { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
+import type { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
 import { WalletConnectModal } from '@walletconnect/modal';
 import SignClient from '@walletconnect/sign-client';
 import type { SessionTypes } from '@walletconnect/types';
@@ -84,8 +84,22 @@ export default function useWalletConnectConnector({
 
     return true;
   };
-  const disconnectAction = () => {
-    return;
+  const disconnectAction = async () => {
+    setEnabledAccounts([]);
+
+    if (!signClient || !session) {
+      return;
+    }
+
+    setSession(null);
+
+    await signClient.disconnect({
+      reason: {
+        message: 'user disconnected',
+        code: 6000,
+      },
+      topic: session.topic,
+    });
   };
   const signMessageAction = (): Promise<ISignMessageActionResult> => {
     toast({
@@ -99,7 +113,45 @@ export default function useWalletConnectConnector({
   const signTransactionsAction = async (
     transactions: IARC0001Transaction[]
   ) => {
-    return [];
+    const _functionName = 'signTransactionsAction';
+    let _error: string;
+
+    if (!network || !session || !signClient) {
+      _error = 'walletconnect not initialized';
+
+      logger.error(`${_hookName}#${_functionName}: ${_error}`);
+
+      toast({
+        status: 'error',
+        title: 'WalletConnect Has Not Been Initialized',
+      });
+
+      throw new Error(_error);
+    }
+
+    try {
+      return await signClient.request<(string | null)[]>({
+        topic: session.topic,
+        chainId: `${network.namespace.key}:${network.namespace.reference}`,
+        request: {
+          method:
+            network.namespace.key === 'algorand'
+              ? 'algo_signTxns'
+              : 'avm_signTransactions',
+          params: transactions,
+        },
+      });
+    } catch (error) {
+      logger.error(`${_hookName}#${_functionName}:`, error);
+
+      toast({
+        description: 'Check browser console for more information.',
+        status: 'error',
+        title: 'Failed To Sign Transactions',
+      });
+
+      throw error;
+    }
   };
   // misc
   const getOrInitializeSignClient = async () => {
