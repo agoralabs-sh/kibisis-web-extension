@@ -15,12 +15,12 @@ import {
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GoShieldLock } from 'react-icons/go';
-import { IoKeyOutline } from 'react-icons/io5';
-import { Radio } from 'react-loader-spinner';
+import { IoKeyOutline, IoWifiOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 import CopyIconButton from '@extension/components/CopyIconButton';
 import COSEAlgorithmBadge from '@extension/components/COSEAlgorithmBadge';
 import ModalItem from '@extension/components/ModalItem';
@@ -167,15 +167,11 @@ const AddPasskeyModal: FC<IProps> = ({ addPasskey, onClose }) => {
           spacing={DEFAULT_GAP}
           w="full"
         >
-          {/*loader*/}
-          <Radio
-            colors={[primaryColorCode, primaryColorCode, primaryColorCode]}
-            height="80"
-            width="80"
-          />
+          {/*passkey loader*/}
+          <CircularProgressWithIcon icon={IoWifiOutline} />
 
           {/*caption*/}
-          <Text color={subTextColor} fontSize="sm" textAlign="justify" w="full">
+          <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">
             {t<string>('captions.requestingPasskeyPermission', {
               name: addPasskey.name,
             })}

@@ -17,8 +17,11 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoCheckmarkOutline, IoLockClosedOutline } from 'react-icons/io5';
-import { Radio } from 'react-loader-spinner';
+import {
+  IoCheckmarkOutline,
+  IoLockClosedOutline,
+  IoWifiOutline,
+} from 'react-icons/io5';
 import browser from 'webextension-polyfill';
 
 // components
@@ -179,11 +182,7 @@ const AuthenticationModal: FC<IProps> = ({
           w="full"
         >
           {/*passkey loader*/}
-          <Radio
-            colors={[primaryColorCode, primaryColorCode, primaryColorCode]}
-            height="80"
-            width="80"
-          />
+          <CircularProgressWithIcon icon={IoWifiOutline} />
 
           {/*caption*/}
           <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">

@@ -13,13 +13,13 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IoTrashOutline } from 'react-icons/io5';
+import { IoTrashOutline, IoWifiOutline } from 'react-icons/io5';
 import { GoShieldSlash } from 'react-icons/go';
-import { Radio } from 'react-loader-spinner';
 import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
+import CircularProgressWithIcon from '@extension/components/CircularProgressWithIcon';
 import ReEncryptKeysLoadingContent from '@extension/components/ReEncryptKeysLoadingContent';
 
 // constants
@@ -29,7 +29,6 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
-import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useRemovePasskey from './hooks/useRemovePasskey';
@@ -70,10 +69,6 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
     resetAction: resetRemovePasskeyAction,
   } = useRemovePasskey();
   const defaultTextColor = useDefaultTextColor();
-  const primaryColorCode = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
-  );
   const subTextColor = useSubTextColor();
   // misc
   const isLoading = encrypting || requesting || saving;
@@ -148,15 +143,11 @@ const RemovePasskeyModal: FC<IProps> = ({ onClose, removePasskey }) => {
           spacing={DEFAULT_GAP}
           w="full"
         >
-          {/*loader*/}
-          <Radio
-            colors={[primaryColorCode, primaryColorCode, primaryColorCode]}
-            height="80"
-            width="80"
-          />
+          {/*passkey loader*/}
+          <CircularProgressWithIcon icon={IoWifiOutline} />
 
           {/*caption*/}
-          <Text color={subTextColor} fontSize="sm" textAlign="justify" w="full">
+          <Text color={subTextColor} fontSize="sm" textAlign="center" w="full">
             {t<string>('captions.requestingPasskeyPermission', {
               name: removePasskey.name,
             })}
