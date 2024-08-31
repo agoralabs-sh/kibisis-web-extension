@@ -35,6 +35,7 @@ import { create as createNotification } from '@extension/features/notifications'
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
+import AddLedgerAccountModal from '@extension/modals/AddLedgerAccountModal';
 
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
@@ -75,6 +76,11 @@ const AddAccountMainRouter: FC = () => {
     isOpen: isAuthenticationModalOpen,
     onClose: onAuthenticationModalClose,
     onOpen: onAuthenticationModalOpen,
+  } = useDisclosure();
+  const {
+    isOpen: isAddLedgerAccountModalOpen,
+    onClose: onAddLedgerAccountModalClose,
+    onOpen: onAddLedgerAccountModalOpen,
   } = useDisclosure();
   // selectors
   const accounts = useSelectAccounts();
@@ -145,6 +151,8 @@ const AddAccountMainRouter: FC = () => {
 
     onAuthenticationModalOpen();
   };
+  const handleOnAddLedgerAccountModalClose = () =>
+    onAddLedgerAccountModalClose();
   const handleOnAuthenticationModalClose = () => onAuthenticationModalClose();
   const handleOnAddWatchAccountComplete = async ({
     address,
@@ -270,6 +278,8 @@ const AddAccountMainRouter: FC = () => {
         type: 'error',
       })
     );
+  const handleOnImportAccountViaLedgerClick = () =>
+    onAddLedgerAccountModalOpen();
 
   return (
     <>
@@ -280,6 +290,11 @@ const AddAccountMainRouter: FC = () => {
         onConfirm={handleOnAuthenticationModalConfirm}
         onError={handleOnError}
       />
+      <AddLedgerAccountModal
+        isOpen={isAddLedgerAccountModalOpen}
+        onClose={handleOnAddLedgerAccountModalClose}
+        onComplete={() => {}}
+      />
 
       <Routes>
         {/*add account type page*/}
@@ -287,6 +302,9 @@ const AddAccountMainRouter: FC = () => {
           element={
             <AddAccountTypePage
               allowAddWatchAccount={true}
+              onImportAccountViaLedgerClick={
+                handleOnImportAccountViaLedgerClick
+              }
               onImportAccountViaQRCodeClick={handleImportAccountViaQRCodeClick}
             />
           }

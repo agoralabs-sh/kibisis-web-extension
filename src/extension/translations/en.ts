@@ -17,6 +17,7 @@ const translation: IResourceLanguage = {
     changePassword: 'Change Password',
     clearAllData: 'Clear All Data',
     confirm: 'Confirm',
+    connect: 'Connect',
     copy: 'Copy',
     copyURI: 'Copy URI',
     copySeedPhrase: 'Copy Seed Phrase',
@@ -64,6 +65,10 @@ const translation: IResourceLanguage = {
       'You are about to add the following asset. Select which account your would like to add the asset to.',
     addedAccount: 'Account {{address}} has been added.',
     addedAccounts: 'Added {{amount}} accounts.',
+    addLedgerAccountInstruction1:
+      'Before you begin, connect your Ledger device via USB, enter your pin and then select the appropriate application.',
+    addLedgerAccountInstruction2:
+      'Once it is connected, press the "Connect" button below and choose your device from the list.',
     addPasskey1:
       'Adding a passkey allows you to sign transactions without your password.',
     addPasskey2: `The passkey will be used to to encrypt/decrypt the private keys of your accounts.`,
@@ -108,6 +113,7 @@ const translation: IResourceLanguage = {
       'Your transaction(s) are being sent to the network to be processed.',
     confirmingTransactionWithAmount:
       '{{number}} transaction(s) are being sent to the network to be processed.',
+    connectingToLedger: 'Connecting to your Ledger device.',
     connectingToWalletConnect: 'Attempting to connect to WalletConnect.',
     copied: 'Copied!',
     createNewAccount:
@@ -152,6 +158,7 @@ const translation: IResourceLanguage = {
       'The fee is higher as this is the first time the recipient has interacted with the {{symbol}} asset.',
     indexerToken: `This is the 'X-Indexer-API-Token' header that will be used to authenticate REST calls to the indexer.`,
     importAccounts: 'You are about to import the following account(s).',
+    importAccountViaLedger: `Import an account by using your Ledger.`,
     importAccountViaQRCode: `Import an account, including any assets, by scanning a QR code.`,
     importAccountViaSeedPhrase: `Import an existing account using a seed phrase.`,
     importAccountViaSeedPhraseComplete: `To finalize we will encrypt your account keys with your password and you will be able to start using this account.`,
@@ -162,6 +169,7 @@ const translation: IResourceLanguage = {
     keyRegistrationURI:
       'You are about to register a participation key {{status}}.',
     loadingCameraStream: 'Loading your camera stream.',
+    ledgerNotSupported: 'Ledger is not supported in this browser.',
     managerAddressDoesNotMatch:
       'This account does not have the authority to alter this asset. This transaction will likely fail.',
     maximumNativeCurrencyTransactionAmount:
@@ -303,7 +311,11 @@ const translation: IResourceLanguage = {
       code_8000: 'The device does not support passkey for encryption.',
       code_8001: 'Failed to create a passkey on the device.',
       code_8002:
-        'Failed to communicate with the passkey device. Please try again',
+        'Failed to communicate with the passkey device. Please try again.',
+      code_9000:
+        'Unable to connect. Please check the connection and try again.',
+      code_9001: 'Ledger not supported on your browser.',
+      code_9002: 'Failed to connect to the Ledger device. Please try again.',
     },
     inputs: {
       copySeedPhraseRequired:
@@ -329,6 +341,9 @@ const translation: IResourceLanguage = {
       code_8000: '8000 Passkey Not Supported',
       code_8001: '8001 Passkey Creation Failure',
       code_8002: '8002 Passkey Communication Failed',
+      code_9000: '9000 Ledger Not Connected',
+      code_9001: '9000 Ledger Not Supported',
+      code_9003: '9003 Ledger Connection Failed',
     },
   },
   headings: {
@@ -354,6 +369,7 @@ const translation: IResourceLanguage = {
     comingSoon: 'Coming Soon!',
     confirm: 'Confirm',
     congratulations: 'Congratulations!',
+    connectingLedger: 'Connecting To Ledger',
     createNewAccount: 'Create A New Account',
     customNode: 'Custom Node',
     customNodeAdded: 'Custom Node Added!',
@@ -370,6 +386,7 @@ const translation: IResourceLanguage = {
     generateSeedPhrase: 'Generate seed phrase',
     hiddenAsset: 'Asset {{symbol}} Hidden!',
     importAccount: 'Import Account',
+    importAccountViaLedger: 'Import An Account Via A Ledger',
     importAccountViaQRCode: 'Import An Account Via A QR Code',
     importAccountViaSeedPhrase: 'Import An Account Via Seed Phrase',
     indexerDetails: 'Indexer Details',

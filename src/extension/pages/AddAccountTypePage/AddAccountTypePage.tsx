@@ -1,6 +1,7 @@
 import { Grid, GridItem } from '@chakra-ui/react';
-import React, { type FC } from 'react';
+import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CiUsb } from 'react-icons/ci';
 import { IoEyeOutline, IoQrCodeOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,16 +23,29 @@ import {
 // enums
 import { AddAccountTypeEnum } from './enums';
 
+// selectors
+import { useSelectLogger } from '@extension/selectors';
+
+// services
+import LedgerService from '@extension/services/LedgerService';
+
 // types
 import type { IItemProps, IProps } from './types';
 
 const AddAccountTypePage: FC<IProps> = ({
   allowAddWatchAccount,
+  onImportAccountViaLedgerClick,
   onImportAccountViaQRCodeClick,
 }) => {
   const _context = 'account-type-page';
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // selectors
+  const logger = useSelectLogger();
+  // states
+  const [isLedgerSupported, setIsLedgerSupported] = useState<boolean | null>(
+    null
+  );
   // handlers
   const handleAccountTypeClick = (type: AddAccountTypeEnum) => () => {
     switch (type) {
@@ -41,6 +55,10 @@ const AddAccountTypePage: FC<IProps> = ({
         break;
       case AddAccountTypeEnum.CreateNew:
         navigate(`${ADD_ACCOUNT_ROUTE}${CREATE_NEW_ACCOUNT_ROUTE}`);
+
+        break;
+      case AddAccountTypeEnum.ImportViaLedger:
+        onImportAccountViaLedgerClick();
 
         break;
       case AddAccountTypeEnum.ImportViaQRCode:
@@ -86,6 +104,22 @@ const AddAccountTypePage: FC<IProps> = ({
         onClick: handleAccountTypeClick(AddAccountTypeEnum.ImportViaQRCode),
         title: t<string>('headings.importAccountViaQRCode'),
       },
+      ...(isLedgerSupported !== null
+        ? [
+            {
+              description: t<string>('captions.importAccountViaLedger'),
+              icon: CiUsb,
+              onClick: handleAccountTypeClick(
+                AddAccountTypeEnum.ImportViaLedger
+              ),
+              title: t<string>('headings.importAccountViaLedger'),
+              ...(!isLedgerSupported && {
+                isDisabled: true,
+                tooltipText: t<string>('captions.ledgerNotSupported'),
+              }),
+            },
+          ]
+        : []),
     ];
 
     return (
@@ -95,7 +129,7 @@ const AddAccountTypePage: FC<IProps> = ({
         templateColumns="repeat(2, 1fr)"
         w="full"
       >
-        {items.map(({ description, icon, onClick, title }, index, array) => {
+        {items.map((props, index, array) => {
           const key = `${_context}-item-${index}`;
 
           // if it is the last in the index and there is an odd amount, put in the center
@@ -108,12 +142,7 @@ const AddAccountTypePage: FC<IProps> = ({
                 key={key}
                 justifyContent="center"
               >
-                <AccountTypeItem
-                  description={description}
-                  icon={icon}
-                  onClick={onClick}
-                  title={title}
-                />
+                <AccountTypeItem {...props} />
               </GridItem>
             );
           }
@@ -125,18 +154,26 @@ const AddAccountTypePage: FC<IProps> = ({
               key={key}
               justifyContent={(index + 1) % 2 === 0 ? 'flex-start' : 'flex-end'}
             >
-              <AccountTypeItem
-                description={description}
-                icon={icon}
-                onClick={onClick}
-                title={title}
-              />
+              <AccountTypeItem {...props} />
             </GridItem>
           );
         })}
       </Grid>
     );
   };
+
+  useEffect(() => {
+    (async () => {
+      const _isLedgerSupported = await LedgerService.isSupported();
+
+      !_isLedgerSupported &&
+        logger.debug(
+          `${AddAccountTypePage.name}#useEffect: ledger is not supported`
+        );
+
+      setIsLedgerSupported(_isLedgerSupported);
+    })();
+  }, []);
 
   return (
     <>

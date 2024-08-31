@@ -2,7 +2,12 @@ import CopyPlugin from 'copy-webpack-plugin';
 import { config } from 'dotenv';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { resolve } from 'path';
-import { Configuration, DefinePlugin, RuleSetRule } from 'webpack';
+import {
+  Configuration,
+  DefinePlugin,
+  ProvidePlugin,
+  RuleSetRule,
+} from 'webpack';
 import { Configuration as DevelopmentConfiguration } from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
@@ -334,6 +339,9 @@ const configs: (
           template: resolve(SRC_PATH, 'index.hbs'),
           title: APP_TITLE,
         }),
+        new ProvidePlugin({
+          Buffer: ['buffer', 'Buffer'],
+        }),
         ...(environment === EnvironmentEnum.Development &&
         (target === TargetEnum.Chrome || target === TargetEnum.Firefox)
           ? [
@@ -347,6 +355,11 @@ const configs: (
             ]
           : []),
       ],
+      resolve: {
+        fallback: {
+          buffer: require.resolve('buffer/'),
+        },
+      },
     }),
 
     /**

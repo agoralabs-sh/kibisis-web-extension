@@ -40,6 +40,11 @@ enum ErrorCodeEnum {
   PasskeyNotSupportedError = 8000,
   PasskeyCreationError = 8001,
   UnableToFetchPasskeyError = 8002,
+
+  // ledger
+  LedgerNotConnectedError = 9000,
+  LedgerNotSupportedError = 9001,
+  LedgerFetchError = 9002,
 }
 
 export default ErrorCodeEnum;
