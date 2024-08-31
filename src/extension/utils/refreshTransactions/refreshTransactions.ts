@@ -34,11 +34,11 @@ export default async function refreshTransactions({
 }: IOptions): Promise<ITransactions[]> {
   const _functionName = 'refreshTransactions';
   const networkClient = new NetworkClient({ logger, network });
-  let algorandAccountTransactions: IAlgorandAccountTransaction;
+  let avmAccountTransactions: IAlgorandAccountTransaction;
   let newestTransactions: ITransactions[];
 
   try {
-    algorandAccountTransactions =
+    avmAccountTransactions =
       await networkClient.lookupAccountTransactionWithDelay({
         address,
         afterTime,
@@ -47,12 +47,12 @@ export default async function refreshTransactions({
         next,
         nodeID,
       });
-    newestTransactions = algorandAccountTransactions.transactions.map(
+    newestTransactions = avmAccountTransactions.transactions.map(
       mapAlgorandTransactionToTransaction
     );
 
     // if there is still more, recursively get them until there are no more pages (no more next tokens)
-    if (algorandAccountTransactions['next-token']) {
+    if (avmAccountTransactions['next-token']) {
       return [
         ...newestTransactions, // the indexer always returns the newest > oldest
         ...(await refreshTransactions({
@@ -61,7 +61,7 @@ export default async function refreshTransactions({
           delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
           logger,
           network,
-          next: algorandAccountTransactions['next-token'],
+          next: avmAccountTransactions['next-token'],
           nodeID,
         })),
       ];
