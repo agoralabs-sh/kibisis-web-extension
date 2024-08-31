@@ -17,6 +17,10 @@ import { toString } from 'qrcode';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { InfinitySpin } from 'react-loader-spinner';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+
 // theme
 import { theme } from '@extension/theme';
 
@@ -32,6 +36,9 @@ const SendKeyRegistrationViaURITab: FC<IProps> = ({ account, network }) => {
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
   // states
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [note, setNote] = useState<string>('');
@@ -98,9 +105,15 @@ const SendKeyRegistrationViaURITab: FC<IProps> = ({ account, network }) => {
       <VStack justifyContent="center" spacing={8} w="full">
         {/*offline/online*/}
         <HStack spacing={2} w="full">
-          <Text>Type:</Text>
+          <Text color={defaultTextColor} fontSize="sm">
+            Type:
+          </Text>
 
-          <Select onChange={handleTypeChange} value={type}>
+          <Select
+            color={defaultTextColor}
+            onChange={handleTypeChange}
+            value={type}
+          >
             <option value="offline">Offline</option>
             <option value="online">Online</option>
           </Select>
@@ -108,7 +121,7 @@ const SendKeyRegistrationViaURITab: FC<IProps> = ({ account, network }) => {
 
         {/*note*/}
         <HStack w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="left">
             Note:
           </Text>
           <Input onChange={handleNoteChange} value={note} />
@@ -139,7 +152,9 @@ const SendKeyRegistrationViaURITab: FC<IProps> = ({ account, network }) => {
 
         {/*value*/}
         <HStack spacing={2} w="full">
-          <Text>Value:</Text>
+          <Text color={defaultTextColor} fontSize="sm">
+            Value:
+          </Text>
 
           <Code fontSize="sm" wordBreak="break-word">
             {uri}
@@ -150,7 +165,7 @@ const SendKeyRegistrationViaURITab: FC<IProps> = ({ account, network }) => {
           {/*copy uri button*/}
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             minW={250}
             onClick={handleCopyURIClick}
             size="lg"
@@ -161,7 +176,7 @@ const SendKeyRegistrationViaURITab: FC<IProps> = ({ account, network }) => {
           {/*copy omnibox uri button*/}
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             minW={250}
             onClick={handleCopyOmniboxURIClick}
             size="lg"

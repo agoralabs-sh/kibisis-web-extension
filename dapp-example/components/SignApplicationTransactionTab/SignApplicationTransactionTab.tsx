@@ -29,6 +29,11 @@ import React, { ChangeEvent, FC, useState } from 'react';
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // theme
 import { theme } from '@extension/theme';
 
@@ -50,6 +55,10 @@ const SignApplicationTransactionTab: FC<IBaseTransactionProps> = ({
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // states
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
@@ -122,11 +131,11 @@ const SignApplicationTransactionTab: FC<IBaseTransactionProps> = ({
       <VStack justifyContent="center" spacing={8} w="full">
         {/*balance*/}
         <HStack spacing={2} w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="left">
             Balance:
           </Text>
           <Spacer />
-          <Text size="md" textAlign="left">
+          <Text color={subTextColor} fontSize="sm" textAlign="left">
             {account && network
               ? `${convertToStandardUnit(
                   account.balance,
@@ -138,7 +147,7 @@ const SignApplicationTransactionTab: FC<IBaseTransactionProps> = ({
 
         {/*note*/}
         <HStack w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="left">
             Note:
           </Text>
           <Input onChange={handleNoteChange} value={note} />
@@ -147,13 +156,17 @@ const SignApplicationTransactionTab: FC<IBaseTransactionProps> = ({
         {/*signed transaction data*/}
         <VStack spacing={3} w="full">
           <HStack spacing={2} w="full">
-            <Text>Signed transaction:</Text>
+            <Text color={defaultTextColor} fontSize="sm">
+              Signed transaction:
+            </Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.txn.toString() || '-'}
             </Code>
           </HStack>
           <HStack spacing={2} w="full">
-            <Text>Signed transaction signature (hex):</Text>
+            <Text color={defaultTextColor} fontSize="sm">
+              Signed transaction signature (hex):
+            </Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.sig
                 ? encodeHex(signedTransaction.sig).toUpperCase()
@@ -199,7 +212,7 @@ const SignApplicationTransactionTab: FC<IBaseTransactionProps> = ({
             >
               <Button
                 borderRadius={theme.radii['3xl']}
-                colorScheme="primaryLight"
+                colorScheme={primaryColorScheme}
                 onClick={handleSignTransactionClick(type)}
                 size="lg"
                 w={365}

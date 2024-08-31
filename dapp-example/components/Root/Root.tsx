@@ -1,22 +1,25 @@
 import {
   Center,
   Flex,
+  Icon,
+  IconButton,
   Heading,
   HStack,
   Select,
-  Spacer,
   Tab,
   TabList,
   TabPanels,
   Tabs,
   Text,
+  useColorMode,
   useToast,
   VStack,
 } from '@chakra-ui/react';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import { IoMoonOutline, IoSunnyOutline } from 'react-icons/io5';
 
 // components
-import ConnectMenu, { IOnConnectParams } from '../ConnectMenu';
+import ConnectMenu from '../ConnectMenu';
 import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountViaQRCodeTab from '../ImportAccountViaQRCodeTab';
 import SendKeyRegistrationViaURITab from '../SendKeyRegistrationViaURITab';
@@ -28,7 +31,7 @@ import SignPaymentTransactionTab from '../SignPaymentTransactionTab';
 import SignMessageTab from '../SignMessageTab';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { ConnectionTypeEnum } from '../../enums';
@@ -36,11 +39,16 @@ import { ConnectionTypeEnum } from '../../enums';
 // hooks
 import useAlgorandProviderConnector from '../../hooks/useAlgorandProviderConnector';
 import useAVMWebProviderConnector from '../../hooks/useAVMWebProviderConnector';
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
 import useUseWalletConnector from '../../hooks/useUseWalletConnector';
+import useWalletConnectConnector from '../../hooks/useWalletConnectConnector';
 
 // types
 import type { INetwork } from '@extension/types';
 import type { IAccountInformation, IBaseTransactionProps } from '../../types';
+import type { IOnConnectParams } from '../ConnectMenu';
 
 const Root: FC = () => {
   const toast = useToast({
@@ -48,6 +56,7 @@ const Root: FC = () => {
     isClosable: true,
     position: 'top',
   });
+  const { colorMode, toggleColorMode } = useColorMode();
   // hooks
   const {
     connectAction: algorandProviderConnectAction,
@@ -63,12 +72,21 @@ const Root: FC = () => {
     signMessageAction: avmWebProviderSignMessageAction,
     signTransactionsAction: avmWebProviderSignTransactionsAction,
   } = useAVMWebProviderConnector({ toast });
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   const {
-    connectAction: useWalletConnectAction,
-    disconnectAction: useWalletDisconnectAction,
-    enabledAccounts: useWalletEnabledAccounts,
-    signTransactionsAction: useWalletSignTransactionsAction,
+    connectAction: useUseWalletConnectAction,
+    disconnectAction: useUseWalletDisconnectAction,
+    enabledAccounts: useUseWalletEnabledAccounts,
+    signTransactionsAction: useUseWalletSignTransactionsAction,
   } = useUseWalletConnector({ toast });
+  const {
+    connectAction: useWalletConnectConnectAction,
+    disconnectAction: useUseWalletConnectDisconnectAction,
+    enabledAccounts: useUseWalletConnectEnabledAccounts,
+    signTransactionsAction: useUseWalletConnectSignTransactionsAction,
+  } = useWalletConnectConnector({ toast });
   // states
   const [connectionType, setConnectionType] =
     useState<ConnectionTypeEnum | null>(null);
@@ -102,7 +120,10 @@ const Root: FC = () => {
         result = await avmWebProviderConnectAction(network);
         break;
       case ConnectionTypeEnum.UseWallet:
-        result = await useWalletConnectAction(network);
+        result = await useUseWalletConnectAction(network);
+        break;
+      case ConnectionTypeEnum.WalletConnect:
+        result = await useWalletConnectConnectAction(network);
         break;
       default:
         break;
@@ -124,7 +145,10 @@ const Root: FC = () => {
         await avmWebProviderDisconnectAction();
         break;
       case ConnectionTypeEnum.UseWallet:
-        await useWalletDisconnectAction();
+        await useUseWalletDisconnectAction();
+        break;
+      case ConnectionTypeEnum.WalletConnect:
+        await useUseWalletConnectDisconnectAction();
         break;
       default:
         break;
@@ -133,6 +157,7 @@ const Root: FC = () => {
     setConnectionType(null);
     setSelectedNetwork(null);
   };
+  const handleOnChangeColorMode = () => toggleColorMode();
   // renders
   const renderContent = () => {
     let signTransactionProps: IBaseTransactionProps;
@@ -147,7 +172,7 @@ const Root: FC = () => {
         };
 
         return (
-          <Tabs colorScheme="primaryLight" w="full">
+          <Tabs colorScheme={primaryColorScheme} w="full">
             <TabList>
               <Tab>
                 <Text fontSize="sm">Sign Payment Transaction</Text>
@@ -167,7 +192,6 @@ const Root: FC = () => {
               <Tab>
                 <Text fontSize="sm">Sign Message</Text>
               </Tab>
-
               <Tab>
                 <Text fontSize="sm">Import Account Via QR Code</Text>
               </Tab>
@@ -210,7 +234,7 @@ const Root: FC = () => {
         };
 
         return (
-          <Tabs colorScheme="primaryLight">
+          <Tabs colorScheme={primaryColorScheme} w="full">
             <TabList>
               <Tab>
                 <Text fontSize="sm">Sign Payment Transaction</Text>
@@ -269,11 +293,67 @@ const Root: FC = () => {
           account: selectedAccount,
           connectionType,
           network: selectedNetwork,
-          signTransactionsAction: useWalletSignTransactionsAction,
+          signTransactionsAction: useUseWalletSignTransactionsAction,
         };
 
         return (
-          <Tabs colorScheme="primaryLight" w="full">
+          <Tabs colorScheme={primaryColorScheme} w="full">
+            <TabList>
+              <Tab>
+                <Text fontSize="sm">Sign Payment Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Asset Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Atomic Transactions</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Application Transaction</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Sign Key Registration Transaction</Text>
+              </Tab>
+
+              <Tab>
+                <Text fontSize="sm">Import Account Via QR Code</Text>
+              </Tab>
+              <Tab>
+                <Text fontSize="sm">Send Key Registration Via URI</Text>
+              </Tab>
+            </TabList>
+
+            <TabPanels>
+              <SignPaymentTransactionTab {...signTransactionProps} />
+
+              <SignAssetTransactionTab {...signTransactionProps} />
+
+              <SignAtomicTransactionsTab {...signTransactionProps} />
+
+              <SignApplicationTransactionTab {...signTransactionProps} />
+
+              <SignKeyRegistrationTransactionTab {...signTransactionProps} />
+
+              <ImportAccountViaQRCodeTab />
+
+              <SendKeyRegistrationViaURITab
+                account={selectedAccount}
+                network={selectedNetwork}
+              />
+            </TabPanels>
+          </Tabs>
+        );
+
+      case ConnectionTypeEnum.WalletConnect:
+        signTransactionProps = {
+          account: selectedAccount,
+          connectionType,
+          network: selectedNetwork,
+          signTransactionsAction: useUseWalletConnectSignTransactionsAction,
+        };
+
+        return (
+          <Tabs colorScheme={primaryColorScheme} w="full">
             <TabList>
               <Tab>
                 <Text fontSize="sm">Sign Payment Transaction</Text>
@@ -321,7 +401,7 @@ const Root: FC = () => {
         );
       default:
         return (
-          <Tabs colorScheme="primaryLight" w="full">
+          <Tabs colorScheme={primaryColorScheme} w="full">
             <TabList>
               <Tab>
                 <Text fontSize="sm">Import Account Via QR Code</Text>
@@ -345,7 +425,7 @@ const Root: FC = () => {
         setEnabledAccounts(avmWebProviderEnabledAccounts);
         break;
       case ConnectionTypeEnum.UseWallet:
-        setEnabledAccounts(useWalletEnabledAccounts);
+        setEnabledAccounts(useUseWalletEnabledAccounts);
         break;
       default:
         setEnabledAccounts([]);
@@ -354,7 +434,7 @@ const Root: FC = () => {
   }, [
     algorandProviderEnabledAccounts,
     avmWebProviderEnabledAccounts,
-    useWalletEnabledAccounts,
+    useUseWalletEnabledAccounts,
   ]);
   useEffect(
     () => setSelectedAccount(enabledAccounts[0] || null),
@@ -362,25 +442,50 @@ const Root: FC = () => {
   );
 
   return (
-    <Center as="main" backgroundColor="white">
+    <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
       <Flex
         alignItems="center"
         direction="column"
         minH="100vh"
-        maxW={800}
+        maxW={1024}
         px={DEFAULT_GAP}
         pb={DEFAULT_GAP}
         pt={DEFAULT_GAP - 2}
         w="full"
       >
         <VStack spacing={8} w="full">
-          <HStack justifyContent="space-between" w="full">
-            <Spacer />
+          <HStack
+            alignItems="flex-start"
+            justifyContent="space-between"
+            w="full"
+          >
+            <IconButton
+              aria-label="Change color mode"
+              icon={
+                <Icon
+                  as={colorMode === 'light' ? IoMoonOutline : IoSunnyOutline}
+                  color={subTextColor}
+                />
+              }
+              onClick={handleOnChangeColorMode}
+              variant="ghost"
+            />
 
             {/*title*/}
-            <Heading color="gray.500" flexGrow={1} textAlign="center">
-              {document.title}
-            </Heading>
+            <VStack flexGrow={1}>
+              <Heading color={defaultTextColor} textAlign="center" w="full">
+                {document.title}
+              </Heading>
+
+              <Text
+                color={subTextColor}
+                fontSize="sm"
+                textAlign="center"
+                w="full"
+              >
+                [FOR DEVELOPMENT PURPOSES ONLY]
+              </Text>
+            </VStack>
 
             {/*connect menu*/}
             <ConnectMenu
@@ -398,9 +503,11 @@ const Root: FC = () => {
           />
 
           {/*select address*/}
-          <HStack spacing={2} w="full">
-            <Text>Address:</Text>
+          <HStack spacing={DEFAULT_GAP / 3} w="full">
+            <Text color={defaultTextColor}>Address:</Text>
+
             <Select
+              color={defaultTextColor}
               onChange={handleAddressSelect}
               placeholder="Select an address"
               value={selectedAccount?.address || undefined}

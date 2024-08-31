@@ -6,7 +6,7 @@ export const CHROME_BUILD_PATH: string = resolve(
 );
 export const DAPP_EXAMPLE_BUILD_PATH: string = resolve(
   process.cwd(),
-  '.dapp-example_build'
+  '.dapp_example_build'
 );
 export const DAPP_EXAMPLE_SRC_PATH: string = resolve(
   process.cwd(),

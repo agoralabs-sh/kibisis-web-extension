@@ -1,8 +1,8 @@
 .build/
-.dapp/
 .chrome/
 .chrome_build/
 .chrome_profile/
+.dapp_example_build/
 .edge/
 .edge_build/
 .edge_profile/

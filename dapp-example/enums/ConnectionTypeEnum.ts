@@ -1,8 +1,8 @@
 enum ConnectionTypeEnum {
-  AlgorandProvider = '@agoralabs-sh/algorand-provider',
-  AVMWebProvider = '@agoralabs-sh/avm-web-provider',
-  UseWallet = '@txnlab/use-wallet',
-  WalletConnectv2 = 'WalletConnect v2',
+  AlgorandProvider = 'algorand-provider',
+  AVMWebProvider = 'avm-web-provider',
+  UseWallet = 'use-wallet',
+  WalletConnect = 'wallet-connect',
 }
 
 export default ConnectionTypeEnum;
