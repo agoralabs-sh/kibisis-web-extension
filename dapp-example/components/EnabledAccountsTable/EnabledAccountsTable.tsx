@@ -11,7 +11,10 @@ import {
   VStack,
   HStack,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { ConnectionTypeEnum } from '../../enums';
@@ -22,9 +25,11 @@ import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 import useSubTextColor from '../../hooks/useSubTextColor';
 
 // types
-import { INetwork } from '@extension/types';
-import { IAccountInformation } from '../../types';
-import { DEFAULT_GAP } from '@extension/constants';
+import type { INetwork } from '@extension/types';
+import type { IAccountInformation } from '../../types';
+
+// utils
+import { parseConnectorType } from '../../utils';
 
 interface IProps {
   enabledAccounts: IAccountInformation[];
@@ -71,7 +76,9 @@ const EnabledAccountsTable: FC<IProps> = ({
                 Connection Type:
               </Text>
 
-              <Text color={subTextColor}>{connectionType || 'N/A'}</Text>
+              <Text color={subTextColor}>
+                {connectionType ? parseConnectorType(connectionType) : 'N/A'}
+              </Text>
             </HStack>
           </VStack>
         </TableCaption>

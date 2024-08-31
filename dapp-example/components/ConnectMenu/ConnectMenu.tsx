@@ -32,6 +32,9 @@ import useDefaultTextColor from '../../hooks/useDefaultTextColor';
 // types
 import type { IProps, IHandleConnectParams } from './types';
 
+// utils
+import { parseConnectorType } from '../../utils';
+
 const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
   // hooks
   const defaultTextColor = useDefaultTextColor();
@@ -86,6 +89,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
           ConnectionTypeEnum.AlgorandProvider,
           ConnectionTypeEnum.AVMWebProvider,
           ConnectionTypeEnum.UseWallet,
+          ConnectionTypeEnum.WalletConnect,
         ].map((connectionType, index, array) => {
           const dividerElement =
             index < array.length - 1 ? <MenuDivider /> : null;
@@ -94,7 +98,10 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
             <Fragment key={`connect-menu-item=${index}`}>
               {index === 0 && dividerElement}
 
-              <MenuGroup color={defaultTextColor} title={connectionType}>
+              <MenuGroup
+                color={defaultTextColor}
+                title={parseConnectorType(connectionType)}
+              >
                 <MenuItem
                   onClick={handleConnect({
                     connectionType,

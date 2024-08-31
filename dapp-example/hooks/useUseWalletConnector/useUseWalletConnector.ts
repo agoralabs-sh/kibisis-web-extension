@@ -13,6 +13,9 @@ import {
 } from '@txnlab/use-wallet';
 import { useState } from 'react';
 
+// selectors
+import { useSelectLogger } from '../../selectors';
+
 // types
 import type { INetwork, INode } from '@extension/types';
 import type {
@@ -29,6 +32,8 @@ export default function useUseWalletConnector({
   toast,
 }: IConnectorParams): IConnectorState {
   const _hookName = 'useUseWalletConnector';
+  // selectors
+  const logger = useSelectLogger();
   // states
   const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
     []
@@ -54,13 +59,14 @@ export default function useUseWalletConnector({
     let walletAccounts: WalletAccount[];
 
     if (!wallet) {
-      console.error(
+      logger.error(
         `${_hookName}#${_functionName}: failed to get kibisis wallet in use-wallet`
       );
 
       toast({
+        description: 'Check browser console for more information.',
         status: 'error',
-        title: 'Failed to initialize UseWallet',
+        title: 'Failed to Initialize UseWallet',
       });
 
       return false;
@@ -69,7 +75,7 @@ export default function useUseWalletConnector({
     try {
       walletAccounts = await wallet.connect();
     } catch (error) {
-      console.error(`${_hookName}#${_functionName}:`, error);
+      logger.error(`${_hookName}#${_functionName}:`, error);
 
       if ((error as BaseARC0027Error).code) {
         toast({
@@ -94,11 +100,12 @@ export default function useUseWalletConnector({
         )
       );
     } catch (error) {
-      console.error(`${_hookName}#${_functionName}:`, error);
+      logger.error(`${_hookName}#${_functionName}:`, error);
 
       toast({
+        description: 'Check browser console for more information.',
         status: 'error',
-        title: 'Failed to get account information for connected wallets',
+        title: 'Failed To Get Account Information',
       });
 
       return false;
@@ -123,7 +130,7 @@ export default function useUseWalletConnector({
     setEnabledAccounts([]);
 
     if (!wallet) {
-      console.error(
+      logger.error(
         `${_hookName}#${_functionName}: failed to get wallet from use-wallet wallet manager`
       );
 
@@ -157,7 +164,7 @@ export default function useUseWalletConnector({
     let result: (Uint8Array | null)[];
 
     if (!wallet) {
-      console.error(
+      logger.error(
         `${_hookName}#${_functionName}: failed to get wallet from use-wallet wallet manager`
       );
 

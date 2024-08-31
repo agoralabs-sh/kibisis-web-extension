@@ -61,8 +61,8 @@ const networks: INetwork[] = [
     ],
     methods: SUPPORTED_METHODS,
     namespace: {
-      key: 'voi',
-      methods: ['signTransaction', 'signMessage'],
+      key: 'avm',
+      methods: ['avm_signTransactions', 'avm_signMessage'],
       reference: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXu',
     },
     nativeCurrency: {
@@ -112,7 +112,7 @@ const networks: INetwork[] = [
     methods: SUPPORTED_METHODS,
     namespace: {
       key: 'algorand',
-      methods: ['signTransaction', 'signMessage'],
+      methods: ['algo_signTxns'],
       reference: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73k',
     },
     nativeCurrency: {
@@ -156,7 +156,7 @@ const networks: INetwork[] = [
     methods: SUPPORTED_METHODS,
     namespace: {
       key: 'algorand',
-      methods: ['signTransaction', 'signMessage'],
+      methods: ['algo_signTxns'],
       reference: 'mFgazF-2uRS1tMiL9dsj01hJGySEmPN2',
     },
     nativeCurrency: {
@@ -202,7 +202,7 @@ const networks: INetwork[] = [
     methods: SUPPORTED_METHODS,
     namespace: {
       key: 'algorand',
-      methods: ['signTransaction', 'signMessage'],
+      methods: ['algo_signTxns'],
       reference: 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe',
     },
     nativeCurrency: {
