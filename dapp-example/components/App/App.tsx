@@ -11,7 +11,7 @@ const App: FC = () => {
     <ChakraProvider
       theme={{
         ...theme,
-        font: {
+        fonts: {
           body: 'Nunito',
           heading: 'Nunito',
         },
