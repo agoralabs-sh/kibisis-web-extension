@@ -24,6 +24,11 @@ import {
 } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // theme
 import { theme } from '@extension/theme';
 
@@ -45,9 +50,15 @@ const SignKeyRegistrationTransactionTab: FC<IBaseTransactionProps> = ({
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
+  // states
   const [signedTransaction, setSignedTransaction] =
     useState<SignedTransaction | null>(null);
   const [note, setNote] = useState<string>('');
+  // handlers
   const handleNoteChange = (event: ChangeEvent<HTMLInputElement>) =>
     setNote(event.target.value);
   const handleSignTransactionClick = (online: boolean) => async () => {
@@ -102,11 +113,11 @@ const SignKeyRegistrationTransactionTab: FC<IBaseTransactionProps> = ({
       <VStack justifyContent="center" spacing={8} w="full">
         {/*balance*/}
         <HStack spacing={2} w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} size="sm" textAlign="left">
             Balance:
           </Text>
           <Spacer />
-          <Text size="md" textAlign="left">
+          <Text color={subTextColor} size="sm" textAlign="left">
             {account && network
               ? `${convertToStandardUnit(
                   account.balance,
@@ -118,7 +129,7 @@ const SignKeyRegistrationTransactionTab: FC<IBaseTransactionProps> = ({
 
         {/*note*/}
         <HStack w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} size="sm" textAlign="left">
             Note:
           </Text>
           <Input onChange={handleNoteChange} value={note} />
@@ -127,13 +138,17 @@ const SignKeyRegistrationTransactionTab: FC<IBaseTransactionProps> = ({
         {/*signed transaction data*/}
         <VStack spacing={3} w="full">
           <HStack spacing={2} w="full">
-            <Text>Signed transaction:</Text>
+            <Text color={defaultTextColor} size="sm">
+              Signed transaction:
+            </Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.txn.toString() || '-'}
             </Code>
           </HStack>
           <HStack spacing={2} w="full">
-            <Text>Signed transaction signature (hex):</Text>
+            <Text color={defaultTextColor} size="sm">
+              Signed transaction signature (hex):
+            </Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.sig
                 ? encodeHex(signedTransaction.sig).toUpperCase()
@@ -146,7 +161,7 @@ const SignKeyRegistrationTransactionTab: FC<IBaseTransactionProps> = ({
         <VStack spacing={2} w="full">
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             onClick={handleSignTransactionClick(true)}
             size="lg"
           >
@@ -154,7 +169,7 @@ const SignKeyRegistrationTransactionTab: FC<IBaseTransactionProps> = ({
           </Button>
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             onClick={handleSignTransactionClick(false)}
             size="lg"
           >

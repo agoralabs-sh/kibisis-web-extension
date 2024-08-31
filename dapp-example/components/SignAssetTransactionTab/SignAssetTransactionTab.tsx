@@ -39,6 +39,11 @@ import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // theme
 import { theme } from '@extension/theme';
 
@@ -67,6 +72,10 @@ const SignAssetTransactionTab: FC<IBaseTransactionProps> = ({
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // states
   const [amount, setAmount] = useState<BigNumber>(new BigNumber('0'));
   const [signedTransaction, setSignedTransaction] =
@@ -266,7 +275,7 @@ const SignAssetTransactionTab: FC<IBaseTransactionProps> = ({
       <VStack justifyContent="center" spacing={8} w="full">
         {/*amount*/}
         <HStack w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="left">
             Amount:
           </Text>
           <NumberInput
@@ -296,14 +305,14 @@ const SignAssetTransactionTab: FC<IBaseTransactionProps> = ({
 
         {/*note*/}
         <HStack w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="left">
             Note:
           </Text>
           <Input onChange={handleNoteChange} value={note} />
         </HStack>
 
         {/*assets*/}
-        <Text size="md" textAlign="left" w="full">
+        <Text color={defaultTextColor} fontSize="sm" textAlign="left" w="full">
           Assets:
         </Text>
         {account && account.assets.length > 0 ? (
@@ -316,15 +325,21 @@ const SignAssetTransactionTab: FC<IBaseTransactionProps> = ({
               {account.assets.map((asset, index) => (
                 <HStack key={`asset-action-item-${index}`} spacing={2} w="full">
                   <Radio size="lg" value={asset.id} />
-                  <Text size="md">{asset.name || asset.id}</Text>
+                  <Text color={subTextColor} fontSize="sm">
+                    {asset.name || asset.id}
+                  </Text>
                   <Spacer />
-                  <Text size="md">
+                  <Text color={subTextColor} fontSize="sm">
                     {convertToStandardUnit(
                       asset.balance,
                       asset.decimals
                     ).toString()}
                   </Text>
-                  {asset.symbol && <Text size="md">{asset.symbol}</Text>}
+                  {asset.symbol && (
+                    <Text color={subTextColor} fontSize="sm">
+                      {asset.symbol}
+                    </Text>
+                  )}
                 </HStack>
               ))}
             </Stack>
@@ -336,7 +351,7 @@ const SignAssetTransactionTab: FC<IBaseTransactionProps> = ({
             minH={150}
             w="full"
           >
-            <Text size="sm" textAlign="center">
+            <Text color={defaultTextColor} fontSize="sm" textAlign="center">
               No assets found!
             </Text>
           </VStack>
@@ -345,13 +360,17 @@ const SignAssetTransactionTab: FC<IBaseTransactionProps> = ({
         {/*signed transaction data*/}
         <VStack spacing={3} w="full">
           <HStack spacing={2} w="full">
-            <Text>Signed transaction:</Text>
+            <Text color={defaultTextColor} fontSize="sm">
+              Signed transaction:
+            </Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.txn.toString() || '-'}
             </Code>
           </HStack>
           <HStack spacing={2} w="full">
-            <Text>Signed transaction signature (hex):</Text>
+            <Text color={defaultTextColor} fontSize="sm">
+              Signed transaction signature (hex):
+            </Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.sig
                 ? encodeHex(signedTransaction.sig).toUpperCase()
@@ -399,7 +418,7 @@ const SignAssetTransactionTab: FC<IBaseTransactionProps> = ({
             >
               <Button
                 borderRadius={theme.radii['3xl']}
-                colorScheme="primaryLight"
+                colorScheme={primaryColorScheme}
                 isDisabled={disabled}
                 onClick={handleSignTransactionClick(type)}
                 size="lg"

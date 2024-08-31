@@ -33,6 +33,7 @@
     "analyze:chrome:apps": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-apps --env environment=production --env target=chrome --analyze",
     "analyze:firefox:apps": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-apps --env environment=production --env target=firefox --analyze",
     "build:chrome": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=chrome",
+    "build:dapp-example": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name dapp-example --env environment=production",
     "build:edge": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=edge",
     "build:firefox": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=production --env target=firefox",
     "install:chrome": "./scripts/install_chrome.sh",

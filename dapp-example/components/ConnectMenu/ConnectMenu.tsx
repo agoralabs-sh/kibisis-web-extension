@@ -26,10 +26,15 @@ import { networks } from '@extension/config';
 // enums
 import { ConnectionTypeEnum } from '../../enums';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+
 // types
 import type { IProps, IHandleConnectParams } from './types';
 
 const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
   // handlers
   const handleConnect = (params: IHandleConnectParams) => () => {
     const network =
@@ -55,7 +60,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
   const handleDisconnect = () => onDisconnect();
   // renders
   const renderNetworkTag = () => (
-    <Tag colorScheme="yellow" size="sm" variant="subtle">
+    <Tag colorScheme="yellow" size="sm" variant="solid">
       <TagLabel>TestNet</TagLabel>
     </Tag>
   );
@@ -63,17 +68,19 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
   return (
     <Menu>
       <MenuButton
+        _hover={{ bg: 'gray.400' }}
+        _expanded={{ bg: 'primary.400' }}
+        _focus={{ boxShadow: 'outline' }}
+        color={defaultTextColor}
         px={DEFAULT_GAP - 2}
         py={DEFAULT_GAP / 3}
         transition="all 0.2s"
         borderRadius="md"
         borderWidth="1px"
-        _hover={{ bg: 'gray.400' }}
-        _expanded={{ bg: 'primary.400' }}
-        _focus={{ boxShadow: 'outline' }}
       >
         Connect <ChevronDownIcon />
       </MenuButton>
+
       <MenuList>
         {[
           ConnectionTypeEnum.AlgorandProvider,
@@ -85,9 +92,9 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
 
           return (
             <Fragment key={`connect-menu-item=${index}`}>
-              {dividerElement}
+              {index === 0 && dividerElement}
 
-              <MenuGroup title={connectionType}>
+              <MenuGroup color={defaultTextColor} title={connectionType}>
                 <MenuItem
                   onClick={handleConnect({
                     connectionType,
@@ -95,7 +102,9 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
                   })}
                 >
                   <HStack alignItems="center" w="full">
-                    <Text size="sm">Connect to Algorand</Text>
+                    <Text color={defaultTextColor} size="sm">
+                      Connect to Algorand
+                    </Text>
 
                     {renderNetworkTag()}
                   </HStack>
@@ -108,7 +117,9 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
                   })}
                 >
                   <HStack alignItems="center" w="full">
-                    <Text size="sm">Connect to Voi</Text>
+                    <Text color={defaultTextColor} size="sm">
+                      Connect to Voi
+                    </Text>
 
                     {renderNetworkTag()}
                   </HStack>
@@ -123,7 +134,7 @@ const ConnectMenu: FC<IProps> = ({ onConnect, onDisconnect, toast }) => {
         <MenuDivider />
 
         <MenuItem onClick={handleDisconnect}>
-          <Text size="sm" w="full">
+          <Text color={defaultTextColor} size="sm" w="full">
             Disconnect
           </Text>
         </MenuItem>

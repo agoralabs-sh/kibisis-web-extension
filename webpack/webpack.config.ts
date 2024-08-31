@@ -359,7 +359,10 @@ const configs: (
      * dapp example
      */
     merge(commonConfig, {
-      devtool: 'cheap-module-source-map',
+      devtool:
+        environment === EnvironmentEnum.Production
+          ? 'source-map'
+          : 'eval-source-map',
       devServer: {
         port: dappExamplePort,
         watchFiles: [`${DAPP_EXAMPLE_SRC_PATH}/**/*`],
@@ -367,7 +370,7 @@ const configs: (
       entry: {
         ['main']: resolve(DAPP_EXAMPLE_SRC_PATH, 'index.ts'),
       },
-      mode: EnvironmentEnum.Development,
+      mode: environment,
       module: {
         rules: [
           {
@@ -399,6 +402,7 @@ const configs: (
         filename: '[name].js',
         path: DAPP_EXAMPLE_BUILD_PATH,
         pathinfo: false,
+        publicPath: '',
       },
       plugins: [
         new DefinePlugin({
@@ -410,7 +414,7 @@ const configs: (
           filename: 'index.html',
           inject: 'body',
           template: resolve(DAPP_EXAMPLE_SRC_PATH, 'index.hbs'),
-          title: `${APP_TITLE} Dapp Example`,
+          title: `${APP_TITLE} dApp Example`,
         }),
       ],
     }),

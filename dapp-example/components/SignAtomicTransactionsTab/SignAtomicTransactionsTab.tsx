@@ -46,6 +46,12 @@ import React, { FC, useEffect, useState } from 'react';
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
 
+// hooks
+import useBorderColor from '../../hooks/useBorderColor';
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // theme
 import { theme } from '@extension/theme';
 
@@ -78,6 +84,11 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const borderColor = useBorderColor();
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // states
   const [assetValues, setAssetValues] = useState<IAssetValue[]>([]);
   const [includeApplicationCall, setIncludeApplicationCall] =
@@ -331,7 +342,7 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
       <VStack justifyContent="center" spacing={8} w="full">
         {/*signed transactions table*/}
         <TableContainer
-          borderColor="gray.200"
+          borderColor={borderColor}
           borderRadius={15}
           borderStyle="solid"
           borderWidth={1}
@@ -340,9 +351,21 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
           <Table variant="simple">
             <Thead>
               <Tr>
-                <Th>Txn ID</Th>
-                <Th>Group ID</Th>
-                <Th>Signature (hex)</Th>
+                <Th>
+                  <Text color={defaultTextColor} fontSize="sm">
+                    Txn ID
+                  </Text>
+                </Th>
+                <Th>
+                  <Text color={defaultTextColor} fontSize="sm">
+                    Group ID
+                  </Text>
+                </Th>
+                <Th>
+                  <Text color={defaultTextColor} fontSize="sm">
+                    Signature (hex)
+                  </Text>
+                </Th>
               </Tr>
             </Thead>
 
@@ -396,7 +419,12 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
                       value={value.id}
                     />
                     <Tooltip label={value.name || value.id}>
-                      <Text noOfLines={1} size="md" w={200}>
+                      <Text
+                        color={subTextColor}
+                        noOfLines={1}
+                        fontSize="sm"
+                        w={200}
+                      >
                         {value.name || value.id}
                       </Text>
                     </Tooltip>
@@ -410,12 +438,16 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
                     ).toString()}${value.symbol ? ` ${value.symbol}` : ''}`}
                   >
                     <HStack flexGrow={1}>
-                      <Text size="sm">
+                      <Text color={subTextColor} fontSize="sm">
                         {formatCurrencyUnit(
                           convertToStandardUnit(value.balance, value.decimals)
                         )}
                       </Text>
-                      {value.symbol && <Text size="sm">{value.symbol}</Text>}
+                      {value.symbol && (
+                        <Text color={subTextColor} fontSize="sm">
+                          {value.symbol}
+                        </Text>
+                      )}
                     </HStack>
                   </Tooltip>
 
@@ -454,7 +486,7 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
                 minH={150}
                 w="full"
               >
-                <Text size="sm" textAlign="center">
+                <Text color={defaultTextColor} fontSize="sm" textAlign="center">
                   No assets found!
                 </Text>
               </VStack>
@@ -470,7 +502,9 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
                 onChange={handleIncludeApplicationCallCheckChange}
                 size="lg"
               />
-              <Text size="md">Include application call?</Text>
+              <Text color={subTextColor} fontSize="sm">
+                Include application call?
+              </Text>
             </HStack>
           </Stack>
         </CheckboxGroup>
@@ -480,7 +514,7 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
           <GridItem>
             <Button
               borderRadius={theme.radii['3xl']}
-              colorScheme="primaryLight"
+              colorScheme={primaryColorScheme}
               minW={250}
               onClick={handleSignAtomicTransactionsClick}
               size="lg"
@@ -493,7 +527,7 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
           <GridItem>
             <Button
               borderRadius={theme.radii['3xl']}
-              colorScheme="primaryLight"
+              colorScheme={primaryColorScheme}
               minW={250}
               onClick={handleSignAGroupOfAtomicTransactionsClick}
               size="lg"
@@ -506,7 +540,7 @@ const SignAtomicTransactionsTab: FC<IBaseTransactionProps> = ({
           <GridItem>
             <Button
               borderRadius={theme.radii['3xl']}
-              colorScheme="primaryLight"
+              colorScheme={primaryColorScheme}
               minW={250}
               onClick={handleSignAtomicTransactionsAndASingleTransactionClick}
               size="lg"

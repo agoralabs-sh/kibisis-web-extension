@@ -1,22 +1,25 @@
 import {
   Center,
   Flex,
+  Icon,
+  IconButton,
   Heading,
   HStack,
   Select,
-  Spacer,
   Tab,
   TabList,
   TabPanels,
   Tabs,
   Text,
+  useColorMode,
   useToast,
   VStack,
 } from '@chakra-ui/react';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import { IoMoonOutline, IoSunnyOutline } from 'react-icons/io5';
 
 // components
-import ConnectMenu, { IOnConnectParams } from '../ConnectMenu';
+import ConnectMenu from '../ConnectMenu';
 import EnabledAccountsTable from '../EnabledAccountsTable';
 import ImportAccountViaQRCodeTab from '../ImportAccountViaQRCodeTab';
 import SendKeyRegistrationViaURITab from '../SendKeyRegistrationViaURITab';
@@ -28,7 +31,7 @@ import SignPaymentTransactionTab from '../SignPaymentTransactionTab';
 import SignMessageTab from '../SignMessageTab';
 
 // constants
-import { DEFAULT_GAP } from '@extension/constants';
+import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { ConnectionTypeEnum } from '../../enums';
@@ -36,11 +39,15 @@ import { ConnectionTypeEnum } from '../../enums';
 // hooks
 import useAlgorandProviderConnector from '../../hooks/useAlgorandProviderConnector';
 import useAVMWebProviderConnector from '../../hooks/useAVMWebProviderConnector';
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
 import useUseWalletConnector from '../../hooks/useUseWalletConnector';
 
 // types
 import type { INetwork } from '@extension/types';
 import type { IAccountInformation, IBaseTransactionProps } from '../../types';
+import type { IOnConnectParams } from '../ConnectMenu';
 
 const Root: FC = () => {
   const toast = useToast({
@@ -48,6 +55,7 @@ const Root: FC = () => {
     isClosable: true,
     position: 'top',
   });
+  const { colorMode, toggleColorMode } = useColorMode();
   // hooks
   const {
     connectAction: algorandProviderConnectAction,
@@ -63,6 +71,9 @@ const Root: FC = () => {
     signMessageAction: avmWebProviderSignMessageAction,
     signTransactionsAction: avmWebProviderSignTransactionsAction,
   } = useAVMWebProviderConnector({ toast });
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   const {
     connectAction: useWalletConnectAction,
     disconnectAction: useWalletDisconnectAction,
@@ -133,6 +144,7 @@ const Root: FC = () => {
     setConnectionType(null);
     setSelectedNetwork(null);
   };
+  const handleOnChangeColorMode = () => toggleColorMode();
   // renders
   const renderContent = () => {
     let signTransactionProps: IBaseTransactionProps;
@@ -147,7 +159,7 @@ const Root: FC = () => {
         };
 
         return (
-          <Tabs colorScheme="primaryLight" w="full">
+          <Tabs colorScheme={primaryColorScheme} w="full">
             <TabList>
               <Tab>
                 <Text fontSize="sm">Sign Payment Transaction</Text>
@@ -167,7 +179,6 @@ const Root: FC = () => {
               <Tab>
                 <Text fontSize="sm">Sign Message</Text>
               </Tab>
-
               <Tab>
                 <Text fontSize="sm">Import Account Via QR Code</Text>
               </Tab>
@@ -210,7 +221,7 @@ const Root: FC = () => {
         };
 
         return (
-          <Tabs colorScheme="primaryLight">
+          <Tabs colorScheme={primaryColorScheme} w="full">
             <TabList>
               <Tab>
                 <Text fontSize="sm">Sign Payment Transaction</Text>
@@ -273,7 +284,7 @@ const Root: FC = () => {
         };
 
         return (
-          <Tabs colorScheme="primaryLight" w="full">
+          <Tabs colorScheme={primaryColorScheme} w="full">
             <TabList>
               <Tab>
                 <Text fontSize="sm">Sign Payment Transaction</Text>
@@ -321,7 +332,7 @@ const Root: FC = () => {
         );
       default:
         return (
-          <Tabs colorScheme="primaryLight" w="full">
+          <Tabs colorScheme={primaryColorScheme} w="full">
             <TabList>
               <Tab>
                 <Text fontSize="sm">Import Account Via QR Code</Text>
@@ -362,7 +373,7 @@ const Root: FC = () => {
   );
 
   return (
-    <Center as="main" backgroundColor="white">
+    <Center as="main" backgroundColor={BODY_BACKGROUND_COLOR}>
       <Flex
         alignItems="center"
         direction="column"
@@ -375,10 +386,20 @@ const Root: FC = () => {
       >
         <VStack spacing={8} w="full">
           <HStack justifyContent="space-between" w="full">
-            <Spacer />
+            <IconButton
+              aria-label="Change color mode"
+              icon={
+                <Icon
+                  as={colorMode === 'light' ? IoMoonOutline : IoSunnyOutline}
+                  color={subTextColor}
+                />
+              }
+              onClick={handleOnChangeColorMode}
+              variant="ghost"
+            />
 
             {/*title*/}
-            <Heading color="gray.500" flexGrow={1} textAlign="center">
+            <Heading color={defaultTextColor} flexGrow={1} textAlign="center">
               {document.title}
             </Heading>
 
@@ -398,9 +419,11 @@ const Root: FC = () => {
           />
 
           {/*select address*/}
-          <HStack spacing={2} w="full">
-            <Text>Address:</Text>
+          <HStack spacing={DEFAULT_GAP / 3} w="full">
+            <Text color={defaultTextColor}>Address:</Text>
+
             <Select
+              color={defaultTextColor}
               onChange={handleAddressSelect}
               placeholder="Select an address"
               value={selectedAccount?.address || undefined}

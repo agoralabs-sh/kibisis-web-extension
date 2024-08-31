@@ -24,6 +24,11 @@ import {
   EXPORT_ACCOUNT_QR_CODE_DURATION,
 } from '@extension/constants';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
@@ -39,6 +44,10 @@ const ImportAccountViaQRCodeTab: FC = () => {
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // states
   const [addNames, setAddNames] = useState<boolean>(false);
   const [isPagination, setIsPagination] = useState<boolean>(false);
@@ -145,7 +154,7 @@ const ImportAccountViaQRCodeTab: FC = () => {
             size="lg"
           />
 
-          <Text size="md" w="full">
+          <Text color={subTextColor} fontSize="sm" w="full">
             Add names?
           </Text>
         </HStack>
@@ -158,7 +167,7 @@ const ImportAccountViaQRCodeTab: FC = () => {
             size="lg"
           />
 
-          <Text size="md" w="full">
+          <Text color={subTextColor} fontSize="sm" w="full">
             Multiple accounts?
           </Text>
         </HStack>
@@ -172,7 +181,7 @@ const ImportAccountViaQRCodeTab: FC = () => {
             size="lg"
           />
 
-          <Text size="md" w="full">
+          <Text color={subTextColor} fontSize="sm" w="full">
             Pagination?
           </Text>
         </HStack>
@@ -201,11 +210,16 @@ const ImportAccountViaQRCodeTab: FC = () => {
         )}
 
         {/*captions*/}
-        <Text fontSize="sm">{`Displaying ${pagination[0]} of ${pagination[1]}`}</Text>
+        <Text
+          color={subTextColor}
+          fontSize="sm"
+        >{`Displaying ${pagination[0]} of ${pagination[1]}`}</Text>
 
         {/*value*/}
         <VStack spacing={2} w="full">
-          <Text>URI(s):</Text>
+          <Text color={defaultTextColor} fontSize="sm">
+            URI(s):
+          </Text>
 
           <VStack spacing={1} w="full">
             {uris ? (
@@ -226,7 +240,7 @@ const ImportAccountViaQRCodeTab: FC = () => {
 
         {/*address*/}
         <VStack spacing={2} w="full">
-          <Text>Addresses:</Text>
+          <Text color={defaultTextColor}>Addresses:</Text>
 
           <VStack spacing={1} w="full">
             {keyPairs.map((value, index) => (
@@ -244,7 +258,7 @@ const ImportAccountViaQRCodeTab: FC = () => {
         {/*generate new accounts button*/}
         <Button
           borderRadius={theme.radii['3xl']}
-          colorScheme="primaryLight"
+          colorScheme={primaryColorScheme}
           minW={250}
           onClick={handleGenerateNewAccountsClick}
           size="lg"
