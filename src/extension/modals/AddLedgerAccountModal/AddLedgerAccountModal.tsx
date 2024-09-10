@@ -55,7 +55,7 @@ import { theme } from '@extension/theme';
 import type {
   IAppThunkDispatch,
   IBackgroundRootState,
-  ILedgerItem,
+  ILedgerAccount,
   IMainRootState,
 } from '@extension/types';
 import type { IProps } from './types';
@@ -78,7 +78,7 @@ const AddLedgerAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
   const defaultTextColor = useDefaultTextColor();
   const subTextColor = useSubTextColor();
   // states
-  const [items, setItems] = useState<ILedgerItem[]>([]);
+  const [items, setItems] = useState<ILedgerAccount[]>([]);
   const [connecting, setConnecting] = useState<boolean>(false);
   // misc
   const reset = () => {
@@ -97,7 +97,7 @@ const AddLedgerAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
   const handleOnCancelClick = () => handleClose();
   const handleOnFetchPublicKeysClick = async () => {
     const _functionName = 'handleOnFetchPublicKeysClick';
-    let _items: ILedgerItem[];
+    let _items: ILedgerAccount[];
 
     // reset the previous values
     reset();
