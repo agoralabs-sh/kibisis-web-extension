@@ -14,10 +14,10 @@
   dependencies:
     algosdk "^2.1.0"
 
-"@agoralabs-sh/avm-web-provider@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@agoralabs-sh/avm-web-provider/-/avm-web-provider-1.6.0.tgz#a4bb0b0644541a8ba02c06e7182544655dec14a6"
-  integrity sha512-IiMt8QVYLPHW/2d4kYt/2Ewri9ebCUDXEmkVdp2iekRi6vBK2hRlK5OY7Xu8lhy0Yl3O+TMOvM2qeDO03nQroA==
+"@agoralabs-sh/avm-web-provider@^1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@agoralabs-sh/avm-web-provider/-/avm-web-provider-1.7.0.tgz#735280d0f61dd441552fe586ec8abbd0d6adefaa"
+  integrity sha512-AfMdBdFS3EW1RunzHVEwNFucS6UIALs661d+zL6AHFDdxOTvUgahRC4l163VoGWA0UEpnayT1jGObci8nitZeA==
   dependencies:
     uuid "^9.0.1"
 
