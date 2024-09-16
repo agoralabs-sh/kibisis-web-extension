@@ -128,7 +128,11 @@ const createRouter = ({ dispatch }: Store<IMainRootState>) => {
   ]);
 };
 
-const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
+const App: FC<IAppProps> = ({
+  i18next,
+  initialColorMode,
+  initialFontFamily,
+}: IAppProps) => {
   const store: Store<IMainRootState> = makeStore<IMainRootState>(
     combineReducers({
       accounts: accountsReducer,
@@ -156,7 +160,10 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }: IAppProps) => {
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18next}>
-        <ThemeProvider initialColorMode={initialColorMode}>
+        <ThemeProvider
+          initialColorMode={initialColorMode}
+          initialFontFamily={initialFontFamily}
+        >
           <RouterProvider
             fallbackElement={<SplashPage />}
             router={createRouter(store)}

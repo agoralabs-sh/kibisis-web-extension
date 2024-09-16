@@ -1,34 +1,38 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import {
-  PROVIDER_ID,
-  SupportedProviders,
-  useInitializeProviders,
-  WalletProvider as UseWalletProvider,
-} from '@txnlab/use-wallet';
-import React, { FC } from 'react';
+import React, { type FC, useMemo } from 'react';
 
+// components
 import Root from '../Root';
+
+// contexts
+import SystemContext from '../../contexts/SystemContext';
 
 // theme
 import { theme } from '@extension/theme';
 
+// utils
+import createLogger from '@common/utils/createLogger';
+
 const App: FC = () => {
-  const providers: SupportedProviders | null = useInitializeProviders({
-    nodeConfig: {
-      network: 'testnet',
-      nodeServer: 'https://testnet-api.algonode.cloud',
-      nodeToken: '',
-      nodePort: '443',
-    },
-    providers: [{ id: PROVIDER_ID.KIBISIS }],
-  });
+  // states
+  const logger = useMemo(() => createLogger('debug'), []);
 
   return (
-    <UseWalletProvider value={providers}>
-      <ChakraProvider theme={theme}>
+    <SystemContext.Provider value={{ logger }}>
+      <ChakraProvider
+        theme={{
+          ...theme,
+          fonts: {
+            body: 'Nunito',
+            heading: 'Nunito',
+          },
+          initialColorMode: 'light',
+          useSystemColorMode: true,
+        }}
+      >
         <Root />
       </ChakraProvider>
-    </UseWalletProvider>
+    </SystemContext.Provider>
   );
 };
 

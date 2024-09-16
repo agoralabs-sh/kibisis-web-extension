@@ -2,10 +2,12 @@
 import {
   ProviderEventAddedMessage,
   ProviderCredentialLockActivatedMessage,
+  ProviderSessionsUpdatedMessage,
 } from '@common/messages';
 
 type TProviderMessages =
   | ProviderEventAddedMessage
-  | ProviderCredentialLockActivatedMessage;
+  | ProviderCredentialLockActivatedMessage
+  | ProviderSessionsUpdatedMessage;
 
 export default TProviderMessages;

@@ -27,6 +27,11 @@ import { v4 as uuid } from 'uuid';
 // enums
 import { ConnectionTypeEnum } from '../../enums';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // theme
 import { theme } from '@extension/theme';
 
@@ -62,6 +67,10 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // states
   const [header, setHeader] = useState<string | null>(null);
   const [payload, setPayload] = useState<string | null>(null);
@@ -215,7 +224,9 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
       <VStack justifyContent="center" spacing={8} w="full">
         {/*header*/}
         <VStack alignItems="flex-start" spacing={2} w="full">
-          <Text>Header:</Text>
+          <Text color={defaultTextColor} fontSize="sm">
+            Header:
+          </Text>
           <Textarea
             onChange={handleHeaderTextareaChange}
             placeholder={`A valid JWT header, e.g.:
@@ -229,9 +240,11 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
             value={header || ''}
           />
           <HStack spacing={2} w="full">
-            <Text>Encoded:</Text>
+            <Text color={defaultTextColor} fontSize="sm">
+              Encoded:
+            </Text>
             {header && (
-              <Code wordBreak="break-word">
+              <Code fontSize="sm" wordBreak="break-word">
                 {encodeBase64Url(
                   encoder.encode(JSON.stringify(JSON.parse(header)))
                 )}
@@ -241,7 +254,9 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
         </VStack>
         {/* Payload */}
         <VStack alignItems="flex-start" spacing={2} w="full">
-          <Text>Payload:</Text>
+          <Text color={defaultTextColor} fontSize="sm">
+            Payload:
+          </Text>
           <Textarea
             onChange={handlePayloadTextareaChange}
             placeholder={`A valid JWT payload, e.g.:
@@ -255,9 +270,11 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
             value={payload || ''}
           />
           <HStack spacing={2} w="full">
-            <Text>Encoded:</Text>
+            <Text color={defaultTextColor} fontSize="sm">
+              Encoded:
+            </Text>
             {payload && (
-              <Code wordBreak="break-word">
+              <Code fontSize="sm" wordBreak="break-word">
                 {encodeBase64Url(
                   encoder.encode(JSON.stringify(JSON.parse(payload)))
                 )}
@@ -268,7 +285,9 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
 
         {/*valid*/}
         <HStack spacing={2}>
-          <Text>Is JWT Valid:</Text>
+          <Text color={defaultTextColor} fontSize="sm">
+            Is JWT Valid:
+          </Text>
           {isValidJwt(header, payload) ? (
             <Icon as={IoCheckmarkCircleSharp} color="green.500" size="md" />
           ) : (
@@ -278,7 +297,9 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
 
         {/*signed data*/}
         <HStack spacing={2} w="full">
-          <Text>Encoded signed data (hex):</Text>
+          <Text color={defaultTextColor} fontSize="sm">
+            Encoded signed data (hex):
+          </Text>
           {signedData && (
             <Code fontSize="sm" wordBreak="break-word">
               {encodeHex(signedData).toUpperCase()}
@@ -300,7 +321,7 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
 
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             minW={250}
             onClick={handleSignJwtClick(true)}
             size="lg"
@@ -310,7 +331,7 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
 
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             minW={250}
             onClick={handleSignJwtClick(false)}
             size="lg"
@@ -320,7 +341,7 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
 
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             isDisabled={!signedData}
             minW={250}
             onClick={handleVerifySignedJWT}
@@ -331,7 +352,7 @@ const SignJwtTab: FC<IProps> = ({ account }: IProps) => {
 
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             minW={250}
             onClick={handleClearClick}
             size="lg"

@@ -8,7 +8,7 @@ source "${SCRIPT_DIR}"/set_vars.sh
 #
 # Examples
 #
-#   ./bin/install_firefox.sh
+#   ./scripts/install_firefox.sh
 #
 # Returns exit code 0 if Firefox was successfully installed, or exit code 1 if it is a mac.
 function main() {

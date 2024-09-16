@@ -1,3 +1,17 @@
+# [1.19.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.2-beta.1...v1.19.0-beta.1) (2024-08-30)
+
+
+### Features
+
+* allow optional font sf pro display ([#298](https://github.com/agoralabs-sh/kibisis-web-extension/issues/298)) ([78a5ab5](https://github.com/agoralabs-sh/kibisis-web-extension/commit/78a5ab5894856126a5e5a6358c08e5063aa6ac50))
+
+## [1.18.2-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.1...v1.18.2-beta.1) (2024-08-30)
+
+
+### Bug Fixes
+
+* session disconnection reflects on app ([#296](https://github.com/agoralabs-sh/kibisis-web-extension/issues/296)) ([0e7df68](https://github.com/agoralabs-sh/kibisis-web-extension/commit/0e7df68c2f0b949d1a22be70e3566a8c1a036cf5))
+
 ## [1.18.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.0...v1.18.1) (2024-08-28)
 
 

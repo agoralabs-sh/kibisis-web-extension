@@ -1,0 +1,37 @@
+name: "Deploy dApp Example"
+
+on:
+  push:
+    branches:
+      - beta
+
+jobs:
+  install:
+    name: "Install"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+
+  deploy:
+    name: "Deploy"
+    needs: [install]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🛎 Checkout"
+        uses: actions/checkout@v4
+      - name: "🔧 Setup"
+        uses: ./.github/actions/use-dependencies
+      - name: "🏗️ Build"
+        run: yarn build:dapp-example
+      - name: "🚀 Deploy"
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          force_orphan: true # create empty branch if missing
+          personal_token: ${{ secrets.WRITE_REPOS_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./.dapp_example_build
+          user_name: agoralabs-bot
+          user_email: tech@agoralabs.sh

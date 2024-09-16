@@ -30,6 +30,11 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { ChangeEvent, FC, useState } from 'react';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // theme
 import { theme } from '@extension/theme';
 
@@ -52,6 +57,10 @@ const SignPaymentTransactionTab: FC<IBaseTransactionProps> = ({
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // states
   const [amount, setAmount] = useState<BigNumber>(new BigNumber('0'));
   const [signedTransaction, setSignedTransaction] =
@@ -115,11 +124,13 @@ const SignPaymentTransactionTab: FC<IBaseTransactionProps> = ({
       <VStack justifyContent="center" spacing={8} w="full">
         {/*balance*/}
         <HStack spacing={2} w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="left">
             Balance:
           </Text>
+
           <Spacer />
-          <Text size="md" textAlign="left">
+
+          <Text color={subTextColor} fontSize="sm" textAlign="left">
             {account && network
               ? `${convertToStandardUnit(
                   account.balance,
@@ -131,7 +142,7 @@ const SignPaymentTransactionTab: FC<IBaseTransactionProps> = ({
 
         {/*amount*/}
         <HStack w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="left">
             Amount:
           </Text>
           <NumberInput
@@ -161,7 +172,7 @@ const SignPaymentTransactionTab: FC<IBaseTransactionProps> = ({
 
         {/*note*/}
         <HStack w="full">
-          <Text size="md" textAlign="left">
+          <Text color={defaultTextColor} fontSize="sm" textAlign="left">
             Note:
           </Text>
           <Input onChange={handleNoteChange} value={note} />
@@ -170,13 +181,17 @@ const SignPaymentTransactionTab: FC<IBaseTransactionProps> = ({
         {/*signed transaction data*/}
         <VStack spacing={3} w="full">
           <HStack spacing={2} w="full">
-            <Text>Signed transaction:</Text>
+            <Text color={defaultTextColor} fontSize="sm">
+              Signed transaction:
+            </Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.txn.toString() || '-'}
             </Code>
           </HStack>
           <HStack spacing={2} w="full">
-            <Text>Signed transaction signature (hex):</Text>
+            <Text color={defaultTextColor} fontSize="sm">
+              Signed transaction signature (hex):
+            </Text>
             <Code fontSize="sm" wordBreak="break-word">
               {signedTransaction?.sig
                 ? encodeHex(signedTransaction.sig).toUpperCase()
@@ -188,7 +203,7 @@ const SignPaymentTransactionTab: FC<IBaseTransactionProps> = ({
         {/*sign payment transaction button*/}
         <Button
           borderRadius={theme.radii['3xl']}
-          colorScheme="primaryLight"
+          colorScheme={primaryColorScheme}
           onClick={handleSignTransactionClick}
           size="lg"
           w={365}

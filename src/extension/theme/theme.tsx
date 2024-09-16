@@ -69,10 +69,6 @@ const theme: Dict = extendTheme({
     Steps,
     Tag,
   },
-  fonts: {
-    heading: 'AnonymousPro',
-    body: 'AnonymousPro',
-  },
   styles: {
     global: {
       ['*']: {

@@ -473,6 +473,7 @@ const AccountPage: FC = () => {
       <>
         {/*empty state*/}
         <Spacer />
+
         <EmptyState
           button={{
             icon: IoAdd,
@@ -482,6 +483,7 @@ const AccountPage: FC = () => {
           description={t<string>('captions.noAccountsFound')}
           text={t<string>('headings.noAccountsFound')}
         />
+
         <Spacer />
       </>
     );

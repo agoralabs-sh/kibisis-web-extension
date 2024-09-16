@@ -81,9 +81,6 @@ const configs: (
   fontLoaderRule = {
     test: /\.(svg?.+|ttf?.+|woff?.+|woff2?.+)$/,
     type: 'asset/resource',
-    generator: {
-      filename: 'assets/[hash][ext][query]',
-    },
   };
   handleBarsLoaderRule = {
     loader: 'handlebars-loader',
@@ -92,9 +89,6 @@ const configs: (
   imageLoaderRule = {
     test: /\.(png|jpg|jpeg|gif)$/i,
     type: 'asset/resource',
-    generator: {
-      filename: 'assets/[hash][ext][query]',
-    },
   };
   maxSize = 4000000; // 4 MB
   stylesLoaderRule = {
@@ -359,7 +353,10 @@ const configs: (
      * dapp example
      */
     merge(commonConfig, {
-      devtool: 'cheap-module-source-map',
+      devtool:
+        environment === EnvironmentEnum.Production
+          ? 'source-map'
+          : 'eval-source-map',
       devServer: {
         port: dappExamplePort,
         watchFiles: [`${DAPP_EXAMPLE_SRC_PATH}/**/*`],
@@ -367,7 +364,7 @@ const configs: (
       entry: {
         ['main']: resolve(DAPP_EXAMPLE_SRC_PATH, 'index.ts'),
       },
-      mode: 'development',
+      mode: environment,
       module: {
         rules: [
           {
@@ -399,6 +396,9 @@ const configs: (
         filename: '[name].js',
         path: DAPP_EXAMPLE_BUILD_PATH,
         pathinfo: false,
+        ...(environment === EnvironmentEnum.Production && {
+          publicPath: '/kibisis-web-extension/', // as this is being deployed to github pages, the public path needs to be set the path in the default github pages: https://<your-username>.github.io/<your-repository>/
+        }),
       },
       plugins: [
         new DefinePlugin({
@@ -410,7 +410,7 @@ const configs: (
           filename: 'index.html',
           inject: 'body',
           template: resolve(DAPP_EXAMPLE_SRC_PATH, 'index.hbs'),
-          title: `${APP_TITLE} Dapp Example`,
+          title: `${APP_TITLE} dApp Example`,
         }),
       ],
     }),

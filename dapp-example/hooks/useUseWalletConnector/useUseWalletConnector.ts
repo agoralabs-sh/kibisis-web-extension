@@ -1,17 +1,23 @@
-import type { IARC0001Transaction } from '@agoralabs-sh/avm-web-provider';
+import type {
+  IARC0001Transaction,
+  BaseARC0027Error,
+} from '@agoralabs-sh/avm-web-provider';
 import {
   decode as decodeBase64,
   encode as encodeBase64,
 } from '@stablelib/base64';
 import {
-  Provider,
-  PROVIDER_ID,
-  useWallet as useUseWallet,
+  WalletId,
+  type WalletAccount,
+  WalletManager,
 } from '@txnlab/use-wallet';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+
+// selectors
+import { useSelectLogger } from '../../selectors';
 
 // types
-import type { INetwork } from '@extension/types';
+import type { INetwork, INode } from '@extension/types';
 import type {
   IAccountInformation,
   IConnectorParams,
@@ -19,61 +25,125 @@ import type {
 } from '../../types';
 
 // utils
+import getRandomItem from '@common/utils/getRandomItem';
 import { getAccountInformation } from '../../utils';
 
 export default function useUseWalletConnector({
   toast,
 }: IConnectorParams): IConnectorState {
-  const { connectedAccounts, providers, signTransactions } = useUseWallet();
-  // state
+  const _hookName = 'useUseWalletConnector';
+  // selectors
+  const logger = useSelectLogger();
+  // states
   const [enabledAccounts, setEnabledAccounts] = useState<IAccountInformation[]>(
     []
   );
-  const [network, setNetwork] = useState<INetwork | null>(null);
+  const [walletManager, setWalletManager] = useState<WalletManager | null>(
+    null
+  );
   // actions
   const connectAction = async (network: INetwork) => {
-    const provider: Provider | null =
-      providers?.find((value) => value.metadata.id === PROVIDER_ID.KIBISIS) ||
+    const _functionName = 'connectAction';
+    const algod = getRandomItem<INode>(network.algods);
+    const _walletManager = new WalletManager({
+      algod: {
+        port: algod.port || '',
+        token: algod.token || '',
+        baseServer: algod.url,
+      },
+      wallets: [WalletId.KIBISIS],
+    });
+    const wallet =
+      _walletManager.wallets.find((value) => value.id === WalletId.KIBISIS) ||
+      null;
+    let walletAccounts: WalletAccount[];
+
+    if (!wallet) {
+      logger.error(
+        `${_hookName}#${_functionName}: failed to get kibisis wallet in use-wallet`
+      );
+
+      toast({
+        description: 'Check browser console for more information.',
+        status: 'error',
+        title: 'Failed to Initialize UseWallet',
+      });
+
+      return false;
+    }
+
+    try {
+      walletAccounts = await wallet.connect();
+    } catch (error) {
+      logger.error(`${_hookName}#${_functionName}:`, error);
+
+      if ((error as BaseARC0027Error).code) {
+        toast({
+          description: (error as BaseARC0027Error).message,
+          status: 'error',
+          title: `${(error as BaseARC0027Error).code}: ${
+            (error as BaseARC0027Error).name
+          }`,
+        });
+      }
+
+      return false;
+    }
+
+    try {
+      setEnabledAccounts(
+        await Promise.all(
+          walletAccounts.map<Promise<IAccountInformation>>(
+            ({ address, name }) =>
+              getAccountInformation({ address, name }, network)
+          )
+        )
+      );
+    } catch (error) {
+      logger.error(`${_hookName}#${_functionName}:`, error);
+
+      toast({
+        description: 'Check browser console for more information.',
+        status: 'error',
+        title: 'Failed To Get Account Information',
+      });
+
+      return false;
+    }
+
+    setWalletManager(_walletManager);
+
+    toast({
+      description: `Successfully connected via UseWallet.`,
+      status: 'success',
+      title: 'Connected!',
+    });
+
+    return true;
+  };
+  const disconnectAction = async () => {
+    const _functionName = 'disconnectAction';
+    const wallet =
+      walletManager?.wallets.find((value) => value.id === WalletId.KIBISIS) ||
       null;
 
-    if (!provider) {
-      toast({
-        status: 'error',
-        title: `Use Wallet Provider Not Initialized`,
-      });
+    setEnabledAccounts([]);
+
+    if (!wallet) {
+      logger.error(
+        `${_hookName}#${_functionName}: failed to get wallet from use-wallet wallet manager`
+      );
 
       return;
     }
 
-    setNetwork(network);
+    await wallet.disconnect();
 
-    if (!provider.isConnected) {
-      await provider.connect();
-
-      toast({
-        description: `Successfully connected via UseWallet.`,
-        status: 'success',
-        title: 'Connected!',
-      });
-    }
-  };
-  const disconnectAction = async () => {
-    const provider: Provider | null =
-      providers?.find((value) => value.metadata.id === PROVIDER_ID.KIBISIS) ||
-      null;
-
-    setEnabledAccounts([]);
-    setNetwork(null);
-
-    if (provider?.isConnected) {
-      await provider.disconnect();
-
-      toast({
-        description: `Successfully disconnected via UseWallet.`,
-        status: 'success',
-        title: 'Disconnected!',
-      });
-    }
+    toast({
+      description: `Successfully disconnected via UseWallet.`,
+      status: 'success',
+      title: 'Disconnected!',
+    });
   };
   const signMessageAction = () => {
     toast({
@@ -87,29 +157,28 @@ export default function useUseWalletConnector({
   const signTransactionsAction = async (
     transactions: IARC0001Transaction[]
   ) => {
-    const result = await signTransactions(
-      transactions.map(({ txn }) => decodeBase64(txn)),
-      transactions.map((_, index) => index),
-      true
+    const _functionName = 'disconnectAction';
+    const wallet =
+      walletManager?.wallets.find((value) => value.id === WalletId.KIBISIS) ||
+      null;
+    let result: (Uint8Array | null)[];
+
+    if (!wallet) {
+      logger.error(
+        `${_hookName}#${_functionName}: failed to get wallet from use-wallet wallet manager`
+      );
+
+      return [];
+    }
+
+    result = await wallet.signTransactions(
+      transactions.map(({ txn }) => decodeBase64(txn))
     );
 
-    return result.map(encodeBase64);
+    return result.map((value) =>
+      value !== null ? encodeBase64(value) : value
+    );
   };
-
-  useEffect(() => {
-    if (network) {
-      (async () => {
-        setEnabledAccounts(
-          await Promise.all(
-            connectedAccounts.map<Promise<IAccountInformation>>(
-              ({ address, name }) =>
-                getAccountInformation({ address, name }, network)
-            )
-          )
-        );
-      })();
-    }
-  }, [connectedAccounts]);
 
   return {
     connectAction,

@@ -16,6 +16,10 @@ import { decodeAddress } from 'algosdk';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { sign } from 'tweetnacl';
 
+// hooks
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import usePrimaryColorScheme from '../../hooks/usePrimaryColorScheme';
+
 // theme
 import { theme } from '@extension/theme';
 
@@ -29,6 +33,9 @@ const SignMessageTab: FC<IProps> = ({ account, signMessageAction }) => {
     isClosable: true,
     position: 'top',
   });
+  // hooks
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
   // states
   const [message, setMessage] = useState<string | null>(null);
   const [signature, setSignature] = useState<string | null>(null);
@@ -134,7 +141,9 @@ const SignMessageTab: FC<IProps> = ({ account, signMessageAction }) => {
 
         {/*encoded data*/}
         <HStack spacing={2} w="full">
-          <Text>Encoded signature (base64):</Text>
+          <Text color={defaultTextColor} fontSize="sm">
+            Encoded signature (base64):
+          </Text>
           {signature && (
             <Code fontSize="sm" wordBreak="break-word">
               {signature}
@@ -146,7 +155,7 @@ const SignMessageTab: FC<IProps> = ({ account, signMessageAction }) => {
         <Grid gap={2} templateColumns="repeat(2, 1fr)" w="full">
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             minW={250}
             onClick={handleSignMessageClick(true)}
             size="lg"
@@ -155,7 +164,7 @@ const SignMessageTab: FC<IProps> = ({ account, signMessageAction }) => {
           </Button>
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             minW={250}
             onClick={handleSignMessageClick(false)}
             size="lg"
@@ -164,7 +173,7 @@ const SignMessageTab: FC<IProps> = ({ account, signMessageAction }) => {
           </Button>
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             isDisabled={!signature}
             minW={250}
             onClick={handleVerifySignature}
@@ -174,7 +183,7 @@ const SignMessageTab: FC<IProps> = ({ account, signMessageAction }) => {
           </Button>
           <Button
             borderRadius={theme.radii['3xl']}
-            colorScheme="primaryLight"
+            colorScheme={primaryColorScheme}
             minW={250}
             onClick={handleClearClick}
             size="lg"

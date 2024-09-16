@@ -8,7 +8,7 @@ source "${SCRIPT_DIR}"/set_vars.sh
 #
 # Examples
 #
-#   ./bin/install_chrome.sh
+#   ./scripts/install_chrome.sh
 #
 # Returns exit code 0 if Chrome was successfully installed, or exit code 1 if it is a mac.
 function main() {

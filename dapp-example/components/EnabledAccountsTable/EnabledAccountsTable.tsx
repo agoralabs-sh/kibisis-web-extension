@@ -11,14 +11,25 @@ import {
   VStack,
   HStack,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // enums
 import { ConnectionTypeEnum } from '../../enums';
 
+// hooks
+import useBorderColor from '../../hooks/useBorderColor';
+import useDefaultTextColor from '../../hooks/useDefaultTextColor';
+import useSubTextColor from '../../hooks/useSubTextColor';
+
 // types
-import { INetwork } from '@extension/types';
-import { IAccountInformation } from '../../types';
+import type { INetwork } from '@extension/types';
+import type { IAccountInformation } from '../../types';
+
+// utils
+import { parseConnectorType } from '../../utils';
 
 interface IProps {
   enabledAccounts: IAccountInformation[];
@@ -30,10 +41,15 @@ const EnabledAccountsTable: FC<IProps> = ({
   enabledAccounts,
   connectionType,
   network,
-}: IProps) => {
+}) => {
+  // hooks
+  const borderColor = useBorderColor();
+  const defaultTextColor = useDefaultTextColor();
+  const subTextColor = useSubTextColor();
+
   return (
     <TableContainer
-      borderColor="gray.200"
+      borderColor={borderColor}
       borderRadius="md"
       borderStyle="solid"
       borderWidth={1}
@@ -47,24 +63,35 @@ const EnabledAccountsTable: FC<IProps> = ({
             spacing={1}
             w="full"
           >
-            <HStack spacing={2}>
-              <Text as="b">Network:</Text>
+            <HStack spacing={DEFAULT_GAP / 3}>
+              <Text as="b" color={defaultTextColor}>
+                Network:
+              </Text>
 
-              <Text>{network?.genesisId || 'N/A'}</Text>
+              <Text color={subTextColor}>{network?.genesisId || 'N/A'}</Text>
             </HStack>
 
-            <HStack spacing={2}>
-              <Text as="b">Connection Type:</Text>
+            <HStack spacing={DEFAULT_GAP / 3}>
+              <Text as="b" color={defaultTextColor}>
+                Connection Type:
+              </Text>
 
-              <Text>{connectionType || 'N/A'}</Text>
+              <Text color={subTextColor}>
+                {connectionType ? parseConnectorType(connectionType) : 'N/A'}
+              </Text>
             </HStack>
           </VStack>
         </TableCaption>
 
         <Thead>
           <Tr>
-            <Th>Address</Th>
-            <Th>Name</Th>
+            <Th>
+              <Text color={defaultTextColor}>Address</Text>
+            </Th>
+
+            <Th>
+              <Text color={defaultTextColor}>Name</Text>
+            </Th>
           </Tr>
         </Thead>
 
@@ -72,11 +99,11 @@ const EnabledAccountsTable: FC<IProps> = ({
           {enabledAccounts.map((value, index) => (
             <Tr key={`enabled-account-item-${index}`}>
               <Td>
-                <Text>{value.address}</Text>
+                <Text color={subTextColor}>{value.address}</Text>
               </Td>
 
               <Td>
-                <Text>{value.name || '-'}</Text>
+                <Text color={subTextColor}>{value.name || '-'}</Text>
               </Td>
             </Tr>
           ))}

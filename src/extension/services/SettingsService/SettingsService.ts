@@ -52,6 +52,7 @@ export default class SettingsService {
         debugLogging: false,
       },
       appearance: {
+        font: 'Nunito',
         theme: 'light',
       },
       general: {

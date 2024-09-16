@@ -27,7 +27,11 @@ import type { IAppProps, IBackgroundRootState } from '@extension/types';
 // utils
 import makeStore from '@extension/utils/makeStore';
 
-const App: FC<IAppProps> = ({ i18next, initialColorMode }) => {
+const App: FC<IAppProps> = ({
+  i18next,
+  initialColorMode,
+  initialFontFamily,
+}) => {
   const store: Store<IBackgroundRootState> = makeStore<IBackgroundRootState>(
     combineReducers({
       accounts: accountsReducer,
@@ -48,7 +52,10 @@ const App: FC<IAppProps> = ({ i18next, initialColorMode }) => {
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18next}>
-        <ThemeProvider initialColorMode={initialColorMode}>
+        <ThemeProvider
+          initialColorMode={initialColorMode}
+          initialFontFamily={initialFontFamily}
+        >
           <Root />
         </ThemeProvider>
       </I18nextProvider>

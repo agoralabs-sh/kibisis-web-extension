@@ -13,7 +13,7 @@ source "${SCRIPT_DIR}/set_vars.sh"
 #
 # Examples
 #
-#   GITHUB_TOKEN=super_secret_token ./bin/get_latest_release_asset.sh "kibisis-chrome"
+#   GITHUB_TOKEN=super_secret_token ./scripts/get_latest_release_asset.sh "kibisis-chrome"
 #
 # Returns exit code 0 if successful, or 1 if the GitHub token is not supplied, the GitHub API is unauthorized or no
 # prefix is supplied.
@@ -26,7 +26,7 @@ function main {
 
   # check if asset prefix is provided
   if [ -z "${1}" ]; then
-    printf "%b no asset prefix provided, use: ./bin/get_latest_release_asset.sh [asset_prefix] \n" "${ERROR_PREFIX}"
+    printf "%b no asset prefix provided, use: ./scripts/get_latest_release_asset.sh [asset_prefix] \n" "${ERROR_PREFIX}"
     exit 1
   fi
 
