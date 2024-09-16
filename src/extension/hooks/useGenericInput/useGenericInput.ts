@@ -57,7 +57,7 @@ export default function useGenericInput<
   const reset = () => {
     setCharactersRemaining(characterLimit || null);
     setError(null);
-    setValue(defaultValue || '');
+    setValue('');
   };
 
   return {

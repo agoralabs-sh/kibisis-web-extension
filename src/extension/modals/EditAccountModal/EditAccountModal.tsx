@@ -10,7 +10,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import React, { type FC } from 'react';
+import React, { type FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoSaveOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -72,6 +72,7 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
     onChange: nameOnChange,
     required: isNameRequired,
     reset: resetName,
+    setValue: setNameValue,
     value: nameValue,
     validate: validateName,
   } = useGenericInput({
@@ -126,6 +127,13 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
 
     handleClose();
   };
+
+  // update the input with the name of the active account
+  useEffect(() => {
+    if (isOpen) {
+      account?.name && setNameValue(account?.name);
+    }
+  }, [isOpen]);
 
   return (
     <Modal
