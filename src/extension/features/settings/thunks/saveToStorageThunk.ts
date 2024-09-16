@@ -33,6 +33,7 @@ const saveToStorageThunk: AsyncThunk<
   const settingsService = new SettingsService({
     logger,
   });
+  let _settings: ISettings = JSON.parse(JSON.stringify(settings)); // copy the readonly incoming settings
   let network = selectNetworkFromSettings({
     networks,
     settings,
@@ -49,14 +50,14 @@ const saveToStorageThunk: AsyncThunk<
     network = selectDefaultNetwork(networks);
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
 
-    settings.general.preferredBlockExplorerIds[encodedGenesisHash] =
+    _settings.general.preferredBlockExplorerIds[encodedGenesisHash] =
       network.blockExplorers[0]?.id || null;
-    settings.general.preferredNFTExplorerIds[encodedGenesisHash] =
+    _settings.general.preferredNFTExplorerIds[encodedGenesisHash] =
       network.nftExplorers[0]?.id || null;
-    settings.general.selectedNetworkGenesisHash = network.genesisHash;
+    _settings.general.selectedNetworkGenesisHash = network.genesisHash;
   }
 
-  return await settingsService.saveToStorage(settings);
+  return await settingsService.saveToStorage(_settings);
 });
 
 export default saveToStorageThunk;
