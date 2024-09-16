@@ -1,3 +1,10 @@
+# [1.19.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.1...v1.19.0-beta.2) (2024-09-16)
+
+
+### Bug Fixes
+
+* only responds to kibisis provider requests via avm-web-provider ([#303](https://github.com/agoralabs-sh/kibisis-web-extension/issues/303)) ([aac8b38](https://github.com/agoralabs-sh/kibisis-web-extension/commit/aac8b38da21f949d42d1093a185fac6dc0d064b6))
+
 # [1.19.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.2-beta.1...v1.19.0-beta.1) (2024-08-30)
 
 
