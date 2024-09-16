@@ -1,3 +1,10 @@
+# [2.0.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2024-09-16)
+
+
+### Bug Fixes
+
+* edit account name updates the input with the intended account name ([#309](https://github.com/agoralabs-sh/kibisis-web-extension/issues/309)) ([4a12f3e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4a12f3e59c09b85dedfc9e86295b994f9785fbf7))
+
 # [2.0.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.3...v2.0.0-beta.1) (2024-09-16)
 
 
