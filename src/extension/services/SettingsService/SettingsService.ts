@@ -96,9 +96,7 @@ export default class SettingsService extends BaseService {
         selectedNetworkGenesisHash: general.selectedNetworkGenesisHash,
         selectedNodeIDs: general.selectedNodeIDs,
       },
-      privacy: {
-        allowActionTracking: privacy.allowActionTracking,
-      },
+      privacy: privacy,
       security: {
         credentialLockTimeoutDuration: security.credentialLockTimeoutDuration,
         enableCredentialLock: security.enableCredentialLock,

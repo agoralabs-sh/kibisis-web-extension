@@ -24,7 +24,6 @@ import {
   startPollingForTransactionsParamsThunk,
   updateTransactionParamsForSelectedNetworkThunk,
 } from '@extension/features/networks';
-import { fetchFromStorageThunk as fetchNewsFromStorageThunk } from '@extension/features/news';
 import { setShowingConfetti } from '@extension/features/notifications';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
@@ -58,7 +57,6 @@ import ScanQRCodeModal from '@extension/modals/ScanQRCodeModal';
 import SendAssetModal from '@extension/modals/SendAssetModal';
 import SignMessageModal from '@extension/modals/SignMessageModal';
 import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
-import VoiageToMainnetModal from '@extension/modals/VoiageToMainnetModal';
 
 // selectors
 import {
@@ -94,7 +92,6 @@ const Root: FC = () => {
     dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSessionsThunk());
-    dispatch(fetchNewsFromStorageThunk());
     // assets
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchARC0072AssetsFromStorageThunk());
@@ -151,7 +148,6 @@ const Root: FC = () => {
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />
 
       {/*information modals*/}
-      <VoiageToMainnetModal />
 
       {/*main*/}
       <MainLayout>

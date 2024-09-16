@@ -1,5 +1,5 @@
 import { HStack, Switch, Text, VStack } from '@chakra-ui/react';
-import React, { ChangeEvent, FC, ReactElement } from 'react';
+import React, { type FC } from 'react';
 
 // constants
 import { DEFAULT_GAP, SETTINGS_ITEM_HEIGHT } from '@extension/constants';
@@ -9,22 +9,18 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-interface IProps {
-  checked: boolean;
-  description?: string | ReactElement;
-  label: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-}
+// types
+import { IProps } from './types';
 
 const SettingsSwitchItem: FC<IProps> = ({
   checked,
   description,
   label,
   onChange,
-}: IProps) => {
-  const defaultTextColor: string = useDefaultTextColor();
-  const primaryColorScheme: string = usePrimaryColorScheme();
-  const subTextColor: string = useSubTextColor();
+}) => {
+  const defaultTextColor = useDefaultTextColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
 
   return (
     <HStack
@@ -33,19 +29,21 @@ const SettingsSwitchItem: FC<IProps> = ({
       justifyContent="space-between"
       pb={DEFAULT_GAP - 2}
       px={DEFAULT_GAP - 2}
-      spacing={2}
+      spacing={DEFAULT_GAP / 3}
       w="full"
     >
       <VStack alignItems="flex-start" justifyContent="center" spacing={1}>
         <Text color={defaultTextColor} fontSize="sm">
           {label}
         </Text>
+
         {description && (
           <Text color={subTextColor} fontSize="xs">
             {description}
           </Text>
         )}
       </VStack>
+
       <Switch
         colorScheme={primaryColorScheme}
         isChecked={checked}

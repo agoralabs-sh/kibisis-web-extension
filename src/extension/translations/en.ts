@@ -72,8 +72,7 @@ const translation: IResourceLanguage = {
     addWatchAccount: 'Add a watch account by providing a valid address.',
     addWatchAccountComplete: `Press save to confirm adding the watch account.`,
     algodToken: `This is the 'X-Algo-API-Token' header that will be used to authenticate REST calls to the algod node.`,
-    allowActionTracking:
-      'By tracking certain actions, you can earn rewards. See <2>here</2> for more information.',
+    allowActionTracking: 'By tracking certain actions, you can earn rewards.',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
