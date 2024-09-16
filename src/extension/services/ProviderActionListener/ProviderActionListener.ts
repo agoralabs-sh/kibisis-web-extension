@@ -294,7 +294,7 @@ export default class ProviderActionListener {
 
   public async onInstalled(): Promise<void> {
     const _functionName = 'onInstalled';
-    let systemInfo = await this._systemService.get();
+    let systemInfo = await this._systemService.fetchFromStorage();
 
     // if there is no system info, initialize the default
     if (!systemInfo) {
@@ -304,7 +304,7 @@ export default class ProviderActionListener {
         `${ProviderActionListener.name}#${_functionName}: initialize a new system info with device id "${systemInfo.deviceID}"`
       );
 
-      await this._systemService.save(systemInfo);
+      await this._systemService.saveToStorage(systemInfo);
     }
   }
 
