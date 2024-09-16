@@ -18,7 +18,7 @@ import createLogger from '@common/utils/createLogger';
   let providerActionListener: ProviderActionListener;
   let providerMessageHandler: ProviderMessageHandler;
   let settingsService: SettingsService = new SettingsService({ logger });
-  let settings = await settingsService.getAll();
+  let settings = await settingsService.fetchFromStorage();
 
   // if the debug logging is enabled, re-create the logger with debug logging enabled
   if (settings.advanced.debugLogging) {

@@ -98,7 +98,7 @@ export default class QuestsService {
    * @private
    */
   private async _isTrackingAllowed(): Promise<boolean> {
-    const { privacy } = await this._settingsService.getAll();
+    const { privacy } = await this._settingsService.fetchFromStorage();
 
     return privacy.allowActionTracking;
   }

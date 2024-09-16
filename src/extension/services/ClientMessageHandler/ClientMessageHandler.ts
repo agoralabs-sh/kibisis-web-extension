@@ -263,7 +263,7 @@ export default class ClientMessageHandler {
   ): Promise<void> {
     const supportedNetworks = supportedNetworksFromSettings({
       networks,
-      settings: await this.settingsService.getAll(),
+      settings: await this.settingsService.fetchFromStorage(),
     });
 
     return await this.sendResponse(
@@ -306,7 +306,7 @@ export default class ClientMessageHandler {
         !isNetworkSupportedFromSettings({
           genesisHash: message.params.genesisHash,
           networks,
-          settings: await this.settingsService.getAll(),
+          settings: await this.settingsService.fetchFromStorage(),
         })
       ) {
         this.logger?.debug(
@@ -591,7 +591,7 @@ export default class ClientMessageHandler {
 
     supportedNetworks = supportedNetworksFromSettings({
       networks,
-      settings: await this.settingsService.getAll(),
+      settings: await this.settingsService.fetchFromStorage(),
     });
     unsupportedTransactionsByNetwork = decodedUnsignedTransactions.filter(
       (transaction) =>

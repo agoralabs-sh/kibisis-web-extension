@@ -27,7 +27,7 @@ const fetchFromStorageThunk: AsyncThunk<
     logger,
   });
 
-  return await settingsService.getAll();
+  return await settingsService.fetchFromStorage();
 });
 
 export default fetchFromStorageThunk;

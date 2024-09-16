@@ -77,10 +77,7 @@ const translation: IResourceLanguage = {
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
-    allowMainNet: 'Let MainNet networks appear in the networks list.',
-    allowMainNetConfirm: 'Are you sure you want to allow MainNet networks?',
-    allowMainNetWarning:
-      'Kibisis is still in the early development so allow MainNet networks at your own risk!',
+    allowTestNet: 'Let TestNet networks appear in the networks list.',
     applicationIdCopied: 'Application ID copied!',
     appOnComplete: 'This transaction will run the application.',
     [`appOnComplete_${TransactionTypeEnum.ApplicationClearState}`]: `This transaction will clear any application data associated with the sender's account.`,
@@ -364,6 +361,7 @@ const translation: IResourceLanguage = {
     editAccount: 'Edit Account',
     enterAnAddress: 'Enter an address',
     enterYourSeedPhrase: 'Enter your seed phrase',
+    experimental: 'Experimental',
     factoryReset: 'Factory Reset',
     failedToGetCustomNodeDetails: 'Failed To Connect To Node',
     general: 'General',
@@ -477,7 +475,7 @@ const translation: IResourceLanguage = {
     allowActionTracking: 'Allow certain actions to be tracked?',
     allowBetaNet: 'Allow BetaNet networks?',
     allowDidTokenFormat: 'Allow DID token format in address sharing?',
-    allowMainNet: 'Allow MainNet networks?',
+    allowTestNet: 'Allow TestNet networks?',
     alreadyAdded: 'Already Added',
     amount: 'Amount',
     applicationId: 'Application ID',
