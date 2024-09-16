@@ -60,13 +60,12 @@ import {
   saveActiveAccountDetails,
   updateAccountsThunk,
 } from '@extension/features/accounts';
-import { setConfirmModal } from '@extension/features/layout';
+import { setConfirmModal, setWhatsNewModal } from '@extension/features/layout';
 import {
   setAccountAndType as setReKeyAccount,
   TReKeyType,
 } from '@extension/features/re-key-account';
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
-import { saveWhatsNewVersionThunk } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -171,7 +170,7 @@ const AccountPage: FC = () => {
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleOnEditAccountClick = () => onEditAccountModalOpen();
-  const handleOnWhatsNewClick = () => dispatch(saveWhatsNewVersionThunk(null));
+  const handleOnWhatsNewClick = () => dispatch(setWhatsNewModal(true));
   const handleNetworkSelect = (value: INetwork) => {
     dispatch(
       saveSettingsToStorageThunk({

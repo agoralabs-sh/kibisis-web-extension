@@ -1,5 +1,5 @@
 import { VStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type ChangeEvent, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -31,10 +31,15 @@ import {
 
 // types
 import type { IOption } from '@extension/components/Select';
-import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IGeneralSettings,
+  IMainRootState,
+} from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
+import SettingsSwitchItem from '@extension/components/SettingsSwitchItem';
 
 const GeneralSettingsPage: FC = () => {
   const { t } = useTranslation();
@@ -66,6 +71,18 @@ const GeneralSettingsPage: FC = () => {
         warningText: t<string>('captions.factoryResetWarning'),
       })
     );
+  const handleOnSwitchChange =
+    (key: keyof IGeneralSettings) => (event: ChangeEvent<HTMLInputElement>) => {
+      dispatch(
+        saveSettingsToStorageThunk({
+          ...settings,
+          general: {
+            ...settings.general,
+            [key]: event.target.checked,
+          },
+        })
+      );
+    };
   const handlePreferredBlockExplorerChange = (option: IOption<string>) => {
     let explorer: BaseBlockExplorer | null;
 
@@ -123,6 +140,18 @@ const GeneralSettingsPage: FC = () => {
 
       {/*content*/}
       <VStack spacing={DEFAULT_GAP - 2} w="full">
+        {/*start-up*/}
+        <VStack w="full">
+          <SettingsSubHeading text={t<string>('headings.startUp')} />
+
+          <SettingsSwitchItem
+            checked={settings.general.disableWhatsNewModalOnUpdate}
+            description={t<string>('captions.disableWhatsNewModalOnUpdate')}
+            label={t<string>('labels.disableWhatsNewModalOnUpdate')}
+            onChange={handleOnSwitchChange('disableWhatsNewModalOnUpdate')}
+          />
+        </VStack>
+
         {/* network */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.network')} />

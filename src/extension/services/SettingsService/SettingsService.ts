@@ -47,6 +47,7 @@ export default class SettingsService extends BaseService {
         theme: 'light',
       },
       general: {
+        disableWhatsNewModalOnUpdate: false,
         preferredBlockExplorerIds: {},
         preferredNFTExplorerIds: {},
         selectedNetworkGenesisHash: genesisHash,
@@ -91,6 +92,7 @@ export default class SettingsService extends BaseService {
         theme: appearance.theme,
       },
       general: {
+        disableWhatsNewModalOnUpdate: general.disableWhatsNewModalOnUpdate,
         preferredBlockExplorerIds: general.preferredBlockExplorerIds,
         preferredNFTExplorerIds: general.preferredNFTExplorerIds,
         selectedNetworkGenesisHash: general.selectedNetworkGenesisHash,

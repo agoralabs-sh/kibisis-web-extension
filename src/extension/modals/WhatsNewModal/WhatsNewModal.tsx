@@ -9,10 +9,9 @@ import {
   ModalOverlay,
   Text,
   UnorderedList,
-  useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import React, { createRef, type FC, useEffect } from 'react';
+import React, { createRef, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -30,47 +29,39 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // selectors
-import { useSelectSystemInfo } from '@extension/selectors';
+import { useSelectWhatsNewModal } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
 
 // types
-import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  IModalProps,
+} from '@extension/types';
 
-const WhatsNewModal: FC = () => {
+const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const initialRef = createRef<HTMLButtonElement>();
-  const { isOpen, onClose, onOpen } = useDisclosure();
   // selectors
-  const systemInfo = useSelectSystemInfo();
+  const whatsNewModalOpen = useSelectWhatsNewModal();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
   // handlers
   const handleClose = () => {
-    onClose();
-
     // mark as read
     dispatch(saveWhatsNewVersionThunk(__VERSION__));
-  };
 
-  // if the saved what's new version is null or less than the current version, the modal can be displayed
-  useEffect(() => {
-    if (
-      systemInfo &&
-      (!systemInfo.whatsNewVersion ||
-        systemInfo.whatsNewVersion !== __VERSION__)
-    ) {
-      onOpen();
-    }
-  }, [systemInfo]);
+    onClose && onClose();
+  };
 
   return (
     <Modal
       initialFocusRef={initialRef}
-      isOpen={isOpen}
+      isOpen={whatsNewModalOpen}
       motionPreset="slideInBottom"
       onClose={handleClose}
       size="full"

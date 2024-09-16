@@ -6,6 +6,7 @@ interface IState {
   confirmModal: IConfirmModal | null;
   scanQRCodeModal: IScanQRCodeModal | null;
   sidebar: boolean;
+  whatsNewModal: boolean;
 }
 
 export default IState;

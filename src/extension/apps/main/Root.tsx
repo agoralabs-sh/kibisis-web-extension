@@ -18,6 +18,7 @@ import { fetchActiveThunk as fetchCredentialLockActiveThunk } from '@extension/f
 import {
   setConfirmModal,
   setScanQRCodeModal,
+  setWhatsNewModal,
 } from '@extension/features/layout';
 import {
   fetchFromStorageThunk as fetchNetworksFromStorageThunk,
@@ -63,7 +64,9 @@ import WhatsNewModal from '@extension/modals/WhatsNewModal';
 import {
   useSelectAccounts,
   useSelectNotificationsShowingConfetti,
+  useSelectSettings,
   useSelectSettingsSelectedNetwork,
+  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // types
@@ -75,6 +78,8 @@ const Root: FC = () => {
   const accounts = useSelectAccounts();
   const network = useSelectSettingsSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
+  const { general } = useSelectSettings();
+  const systemInfo = useSelectSystemInfo();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
@@ -83,6 +88,7 @@ const Root: FC = () => {
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
+  const handleWhatsNewModalClose = () => dispatch(setWhatsNewModal(false));
 
   // 1. fetch the required data
   useEffect(() => {
@@ -119,6 +125,17 @@ const Root: FC = () => {
       dispatch(updateTransactionParamsForSelectedNetworkThunk());
     }
   }, [network]);
+  // if the saved what's new version is null or less than the current version (and the update message is not disabled in the settings), display the modal
+  useEffect(() => {
+    if (
+      systemInfo &&
+      !general.disableWhatsNewModalOnUpdate &&
+      (!systemInfo.whatsNewVersion ||
+        systemInfo.whatsNewVersion !== __VERSION__)
+    ) {
+      dispatch(setWhatsNewModal(true));
+    }
+  }, [systemInfo]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications
@@ -141,7 +158,7 @@ const Root: FC = () => {
       <ARC0300KeyRegistrationTransactionSendEventModal />
 
       {/*information modals*/}
-      <WhatsNewModal />
+      <WhatsNewModal onClose={handleWhatsNewModalClose} />
 
       {/*action modals*/}
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
