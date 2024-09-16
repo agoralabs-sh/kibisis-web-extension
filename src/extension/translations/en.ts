@@ -627,6 +627,7 @@ const translation: IResourceLanguage = {
     voteLast: 'Voting Last Round',
     yes: 'Yes',
     watch: 'Watch',
+    whatsNew: `What's New`,
   },
   placeholders: {
     accountName: 'e.g. Treasury',

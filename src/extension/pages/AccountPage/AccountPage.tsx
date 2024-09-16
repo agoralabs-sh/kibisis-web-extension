@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
   IoCloudOfflineOutline,
+  IoGiftOutline,
   IoLockClosedOutline,
   IoLockOpenOutline,
   IoPencil,
@@ -65,6 +66,7 @@ import {
   TReKeyType,
 } from '@extension/features/re-key-account';
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
+import { saveWhatsNewVersionThunk } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -169,6 +171,7 @@ const AccountPage: FC = () => {
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleOnEditAccountClick = () => onEditAccountModalOpen();
+  const handleOnWhatsNewClick = () => dispatch(saveWhatsNewVersionThunk(null));
   const handleNetworkSelect = (value: INetwork) => {
     dispatch(
       saveSettingsToStorageThunk({
@@ -250,12 +253,13 @@ const AccountPage: FC = () => {
         <>
           {/*header*/}
           <VStack {...headerContainerProps}>
-            {/*network connectivity & network selection*/}
+            {/*top elements*/}
             <HStack
               minH={ACCOUNT_PAGE_HEADER_ITEM_HEIGHT}
               pt={DEFAULT_GAP - 2}
               w="full"
             >
+              {/*network connectivity*/}
               {!online && (
                 <Tooltip
                   aria-label="Offline icon"
@@ -272,7 +276,18 @@ const AccountPage: FC = () => {
                 </Tooltip>
               )}
 
-              <Spacer flexGrow={1} />
+              <Spacer />
+
+              {/*what's new*/}
+              <Tooltip label={t<string>('labels.whatsNew')}>
+                <IconButton
+                  aria-label={t<string>('labels.whatsNew')}
+                  icon={IoGiftOutline}
+                  onClick={handleOnWhatsNewClick}
+                  size="sm"
+                  variant="ghost"
+                />
+              </Tooltip>
 
               {/*network selection*/}
               <NetworkSelect
