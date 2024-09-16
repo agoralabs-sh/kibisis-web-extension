@@ -1,3 +1,19 @@
+# [2.0.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.3...v2.0.0-beta.1) (2024-09-16)
+
+
+### Features
+
+* use mainnet as default ([#307](https://github.com/agoralabs-sh/kibisis-web-extension/issues/307)) ([3de371f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/3de371f0bc2f6b12dc70a7ddb415518c7aea7b2a))
+
+
+### BREAKING CHANGES
+
+* default to mainnet
+
+* fix: toggling off networks while the network is selected switches to the default network
+
+* feat: add mainnet badge to network select modal
+
 # [1.19.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.2...v1.19.0-beta.3) (2024-09-16)
 
 
