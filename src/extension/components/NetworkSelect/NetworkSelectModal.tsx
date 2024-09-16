@@ -30,6 +30,9 @@ import {
   TAB_ITEM_HEIGHT,
 } from '@extension/constants';
 
+// enums
+import { NetworkTypeEnum } from '@extension/enums';
+
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
@@ -46,7 +49,7 @@ import type { INetworkSelectModalProps } from './types';
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
-import { NetworkTypeEnum } from '@extension/enums';
+import containsOnlyStableNetworks from './utils/containsOnlyStableNetworks';
 
 const NetworkSelectModal: FC<INetworkSelectModalProps> = ({
   _context,
@@ -118,6 +121,21 @@ const NetworkSelectModal: FC<INetworkSelectModalProps> = ({
               <TagLabel>{`TestNet`}</TagLabel>
             </Tag>
           );
+          break;
+        case NetworkTypeEnum.Stable:
+          // if there is a mix of types of networks, add a mainnet badge
+          if (!containsOnlyStableNetworks(networks)) {
+            node = (
+              <Tag
+                borderRadius="full"
+                colorScheme="green"
+                size="sm"
+                variant="solid"
+              >
+                <TagLabel>{`MainNet`}</TagLabel>
+              </Tag>
+            );
+          }
           break;
         default:
           break;

@@ -19,7 +19,6 @@ import {
 } from '@extension/constants';
 
 // features
-import { setConfirmModal } from '@extension/features/layout';
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
 // selectors
@@ -38,42 +37,6 @@ const AdvancedSettingsPage: FC = () => {
   // selectors
   const settings = useSelectSettings();
   // handlers
-  const handleMainNetSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const allowMainNet = event.target.checked;
-
-    // if the switch is being enabled, get the user to confirmation
-    if (allowMainNet) {
-      dispatch(
-        setConfirmModal({
-          description: t<string>('captions.allowMainNetConfirm'),
-          onConfirm: () =>
-            dispatch(
-              saveSettingsToStorageThunk({
-                ...settings,
-                advanced: {
-                  ...settings.advanced,
-                  allowMainNet,
-                },
-              })
-            ),
-          title: t<string>('headings.allowMainNetConfirm'),
-          warningText: t<string>('captions.allowMainNetWarning'),
-        })
-      );
-
-      return;
-    }
-
-    dispatch(
-      saveSettingsToStorageThunk({
-        ...settings,
-        advanced: {
-          ...settings.advanced,
-          allowMainNet: event.target.checked,
-        },
-      })
-    );
-  };
   const handleOnSwitchChange =
     (key: keyof IAdvancedSettings) =>
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -121,17 +84,17 @@ const AdvancedSettingsPage: FC = () => {
           <SettingsSubHeading text={t<string>('headings.experimental')} />
 
           <SettingsSwitchItem
-            checked={settings.advanced.allowMainNet}
-            description={t<string>('captions.allowMainNet')}
-            label={t<string>('labels.allowMainNet')}
-            onChange={handleMainNetSwitchChange}
-          />
-
-          <SettingsSwitchItem
             checked={settings.advanced.allowBetaNet}
             description={t<string>('captions.allowBetaNet')}
             label={t<string>('labels.allowBetaNet')}
             onChange={handleOnSwitchChange('allowBetaNet')}
+          />
+
+          <SettingsSwitchItem
+            checked={settings.advanced.allowTestNet}
+            description={t<string>('captions.allowTestNet')}
+            label={t<string>('labels.allowTestNet')}
+            onChange={handleOnSwitchChange('allowTestNet')}
           />
 
           <SettingsSwitchItem

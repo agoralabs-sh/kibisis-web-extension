@@ -34,7 +34,7 @@ const removeCustomNodeThunk: AsyncThunk<
       return null;
     }
 
-    return await networksService.save({
+    return await networksService.saveToStorage({
       ...network,
       algods: network.algods.filter((value) => value.id !== id),
       indexers: network.indexers.filter((value) => value.id !== id),

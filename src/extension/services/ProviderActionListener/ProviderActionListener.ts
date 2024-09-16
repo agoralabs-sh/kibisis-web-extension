@@ -155,7 +155,7 @@ export default class ProviderActionListener {
 
   private async _restartCredentialLockAlarm(): Promise<void> {
     let alarm = await this._credentialLockService.getAlarm();
-    let settings: ISettings = await this._settingsService.getAll();
+    let settings: ISettings = await this._settingsService.fetchFromStorage();
 
     // restart the alarm if the credential lock is not active, is enabled and the duration is not set to 0 ("never")
     if (
@@ -319,7 +319,7 @@ export default class ProviderActionListener {
     arc0300Schema = parseURIToARC0300Schema(text, {
       supportedNetworks: supportedNetworksFromSettings({
         networks,
-        settings: await this._settingsService.getAll(),
+        settings: await this._settingsService.fetchFromStorage(),
       }),
       ...(this._logger && {
         logger: this._logger,

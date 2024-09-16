@@ -5,20 +5,14 @@ import { networks } from '@extension/config';
 import { NETWORKS_ITEM_KEY } from '@extension/constants';
 
 // services
+import BaseService from '@extension/services/BaseService';
 import StorageManager from '../StorageManager';
 
 // types
 import type { INetwork, INetworkWithTransactionParams } from '@extension/types';
 import type { ISerializableNetworkWithTransactionParams } from './types';
 
-export default class NetworksService {
-  // private variables
-  private readonly _storageManager: StorageManager;
-
-  constructor() {
-    this._storageManager = new StorageManager();
-  }
-
+export default class NetworksService extends BaseService {
   /**
    * public static functions
    */
@@ -70,7 +64,7 @@ export default class NetworksService {
    * Gets all the networks.
    * @returns {Promise<INetworkWithTransactionParams[]>} a promise that resolves to all the networks.
    */
-  public async getAll(): Promise<INetworkWithTransactionParams[]> {
+  public async fetchAllFromStorage(): Promise<INetworkWithTransactionParams[]> {
     const items =
       (await this._storageManager.getItem<
         ISerializableNetworkWithTransactionParams[]
@@ -84,10 +78,10 @@ export default class NetworksService {
    * @param {INetworkWithTransactionParams} item - INetworkWithTransactionParams.
    * @returns {Promise<INetworkWithTransactionParams>} a promise that resolves to the saved network item.
    */
-  public async save(
+  public async saveToStorage(
     item: INetworkWithTransactionParams
   ): Promise<INetworkWithTransactionParams> {
-    const items = await this.getAll();
+    const items = await this.fetchAllFromStorage();
 
     // if the item exists, just add it
     if (!items.find((value) => value.genesisHash === item.genesisHash)) {
@@ -112,7 +106,7 @@ export default class NetworksService {
    * @param {INetworkWithTransactionParams[]} items - the networks to save.
    * @returns {Promise<INetworkWithTransactionParams[]>} a promise that resolves to the saved networks.
    */
-  public async saveAll(
+  public async saveAllToStorage(
     items: INetworkWithTransactionParams[]
   ): Promise<INetworkWithTransactionParams[]> {
     await this._storageManager.setItems({

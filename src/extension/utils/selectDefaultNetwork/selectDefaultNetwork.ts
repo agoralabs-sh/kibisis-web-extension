@@ -14,6 +14,7 @@ export default function selectDefaultNetwork<T extends INetwork>(
   networks: T[]
 ): T {
   return (
-    networks.find((value) => value.type === NetworkTypeEnum.Test) || networks[0]
+    networks.find((value) => value.type === NetworkTypeEnum.Stable) ||
+    networks[0]
   );
 }
