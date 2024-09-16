@@ -1,3 +1,10 @@
+# [1.19.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.2...v1.19.0-beta.3) (2024-09-16)
+
+
+### Features
+
+* add voi mainnet configuration ([#306](https://github.com/agoralabs-sh/kibisis-web-extension/issues/306)) ([69f4148](https://github.com/agoralabs-sh/kibisis-web-extension/commit/69f41489ed686057d8cf0ca6e12507bda7fa4d0e))
+
 # [1.19.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.1...v1.19.0-beta.2) (2024-09-16)
 
 
