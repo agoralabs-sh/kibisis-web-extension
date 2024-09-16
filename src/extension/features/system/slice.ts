@@ -32,7 +32,7 @@ const slice = createSlice({
     /** save what's new version **/
     builder.addCase(
       saveWhatsNewVersionThunk.fulfilled,
-      (state: IState, action: PayloadAction<number>) => {
+      (state: IState, action: PayloadAction<string | null>) => {
         if (state.info) {
           state.info = {
             ...state.info,

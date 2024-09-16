@@ -1,6 +1,6 @@
 interface ISystemInfo {
   deviceID: string | null;
-  whatsNewVersion: number | null;
+  whatsNewVersion: string | null;
 }
 
 export default ISystemInfo;

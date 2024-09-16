@@ -57,6 +57,7 @@ import ScanQRCodeModal from '@extension/modals/ScanQRCodeModal';
 import SendAssetModal from '@extension/modals/SendAssetModal';
 import SignMessageModal from '@extension/modals/SignMessageModal';
 import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
+import WhatsNewModal from '@extension/modals/WhatsNewModal';
 
 // selectors
 import {
@@ -139,6 +140,9 @@ const Root: FC = () => {
       <SignTransactionsModal />
       <ARC0300KeyRegistrationTransactionSendEventModal />
 
+      {/*information modals*/}
+      <WhatsNewModal />
+
       {/*action modals*/}
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <AddAssetsForWatchAccountModal onClose={handleAddAssetsModalClose} />
@@ -146,8 +150,6 @@ const Root: FC = () => {
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />
-
-      {/*information modals*/}
 
       {/*main*/}
       <MainLayout>
