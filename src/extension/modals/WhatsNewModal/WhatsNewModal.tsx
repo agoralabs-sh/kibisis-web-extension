@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   Heading,
   ListItem,
   Modal,
@@ -11,7 +12,7 @@ import {
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
-import React, { createRef, type FC } from 'react';
+import React, { type ChangeEvent, createRef, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -22,14 +23,20 @@ import Button from '@extension/components/Button';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
+import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 import { saveWhatsNewVersionThunk } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
+import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import { useSelectWhatsNewModal } from '@extension/selectors';
+import {
+  useSelectSettings,
+  useSelectWhatsNewModal,
+} from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -46,10 +53,13 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const initialRef = createRef<HTMLButtonElement>();
   // selectors
+  const settings = useSelectSettings();
   const whatsNewModalOpen = useSelectWhatsNewModal();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
+  const primaryColorScheme = usePrimaryColorScheme();
+  const subTextColor = useSubTextColor();
   // handlers
   const handleClose = () => {
     // mark as read
@@ -57,6 +67,18 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
 
     onClose && onClose();
   };
+  const handleOnDisableOnUpdateChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) =>
+    dispatch(
+      saveSettingsToStorageThunk({
+        ...settings,
+        general: {
+          ...settings.general,
+          disableWhatsNewModalOnUpdate: event.target.checked,
+        },
+      })
+    );
 
   return (
     <Modal
@@ -89,17 +111,17 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              {`Voi's MainNet Has Launched!`}
+              Introduction
             </Heading>
 
-            <Text
-              color={defaultTextColor}
+            <Heading
+              color={primaryColor}
               fontSize="sm"
               textAlign="left"
               w="full"
             >
-              Hello fellow Voiagers!
-            </Text>
+              {`Voi's MainNet Has Launched!`}
+            </Heading>
 
             <Text
               color={defaultTextColor}
@@ -234,7 +256,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
             {/*extroduction*/}
             <Heading
               color={primaryColor}
-              fontSize="sm"
+              fontSize="md"
               textAlign="left"
               w="full"
             >
@@ -262,10 +284,33 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
         </ModalBody>
 
         <ModalFooter p={DEFAULT_GAP}>
-          {/*ok*/}
-          <Button onClick={handleClose} size="lg" variant="solid" w="full">
-            {t<string>('buttons.ok')}
-          </Button>
+          <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
+            <Checkbox
+              colorScheme={primaryColorScheme}
+              isChecked={settings.general.disableWhatsNewModalOnUpdate}
+              onChange={handleOnDisableOnUpdateChange}
+            >
+              <Text
+                color={subTextColor}
+                fontSize="xs"
+                textAlign="left"
+                w="full"
+              >
+                {t<string>('captions.disableWhatsNewMessageOnUpdate')}
+              </Text>
+            </Checkbox>
+
+            {/*ok*/}
+            <Button
+              onClick={handleClose}
+              ref={initialRef}
+              size="lg"
+              variant="solid"
+              w="full"
+            >
+              {t<string>('buttons.ok')}
+            </Button>
+          </VStack>
         </ModalFooter>
       </ModalContent>
     </Modal>

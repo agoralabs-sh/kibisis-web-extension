@@ -120,6 +120,7 @@ const translation: IResourceLanguage = {
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
     disableWhatsNewModalOnUpdate: `Whether to disable the "What's New" update message.`,
+    disableWhatsNewMessageOnUpdate: `Disable message on update?`,
     disconnectAllSessions: 'Are you sure you want to disconnect all sessions?',
     displayingCountOfTotal: 'Displaying {{count}} of {{total}}',
     enableCredentialsLock:
@@ -530,7 +531,7 @@ const translation: IResourceLanguage = {
     disableWhatsNewModalOnUpdate: `Disable "What's New" Message?`,
     disconnect: 'Disconnect',
     editAccount: 'Edit Account',
-    enableCredentialsLock: 'Enable credential lock?',
+    enableCredentialsLock: 'Enable Credential Lock?',
     enabled: 'Enabled',
     experimental: 'Experimental',
     expirationDate: 'Expiration Date',
