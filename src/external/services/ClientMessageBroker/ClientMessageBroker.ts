@@ -22,17 +22,17 @@ import createClientInformation from '@external/utils/createClientInformation';
 
 export default class ClientMessageBroker {
   // private variables
-  private readonly logger: ILogger | null;
+  private readonly _logger: ILogger | null;
 
   constructor({ logger }: IBaseOptions) {
-    this.logger = logger || null;
+    this._logger = logger || null;
   }
 
   /**
    * private functions
    */
 
-  private async sendRequestToExtensionWithTimeout(
+  private async _sendRequestToExtensionWithTimeout(
     requestMessage: IAVMWebProviderCallbackOptions
   ): Promise<TResponseResults> {
     return new Promise<TResponseResults>((resolve, reject) => {
@@ -98,10 +98,10 @@ export default class ClientMessageBroker {
 
   public async onRequestMessage(
     message: IAVMWebProviderCallbackOptions
-  ): Promise<TResponseResults> {
-    const _functionName: string = 'onRequestMessage';
+  ): Promise<TResponseResults | void> {
+    const _functionName = 'onRequestMessage';
 
-    this.logger?.debug(
+    this._logger?.debug(
       `${ClientMessageBroker.name}#${_functionName} "${message.method}" request received`
     );
 
@@ -112,6 +112,6 @@ export default class ClientMessageBroker {
       });
     }
 
-    return await this.sendRequestToExtensionWithTimeout(message);
+    return await this._sendRequestToExtensionWithTimeout(message);
   }
 }

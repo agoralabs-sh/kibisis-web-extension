@@ -66,7 +66,7 @@
     "@semantic-release/github": "^10.1.7",
     "@semantic-release/npm": "^12.0.1",
     "@semantic-release/release-notes-generator": "^14.0.1",
-    "@txnlab/use-wallet": "^3.1.6",
+    "@txnlab/use-wallet": "^3.4.0",
     "@types/dompurify": "^3.0.0",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.14.2",
