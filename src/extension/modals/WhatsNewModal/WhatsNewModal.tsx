@@ -98,7 +98,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} fontSize="lg" textAlign="center">
-            {`What's New In Kibisis v2.0.0`}
+            {`What's New In Kibisis v${__VERSION__}`}
           </Heading>
         </ModalHeader>
 
@@ -137,7 +137,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               >
                 12th September 2024
               </Link>{' '}
-              which means Voi has officially launched on MainNet!
+              which means Voi has officially launched its MainNet!
             </Text>
 
             <Text
@@ -146,10 +146,10 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              This truly has been a community effort, from the builders, the
+              This truly has been a community effort; from the builders, the
               node runners to the questers. Voi's TestNet has been a monumental
               success and Voi has a solid foundation that makes it an ecosystem
-              that is run by you, the Voiagers.
+              that is run by you: the Voiagers.
             </Text>
 
             <Heading
@@ -158,7 +158,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              MainNet Rollout: Staking Program
+              Voi MainNet Rollout: Staking Program
             </Heading>
 
             <Text
