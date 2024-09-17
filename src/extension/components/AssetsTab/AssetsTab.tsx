@@ -173,7 +173,7 @@ const AssetsTab: FC<IProps> = ({ _context, account }) => {
           {
             button: {
               ['aria-label']: t<string>('buttons.addAsset'),
-              icon: <IoAddCircleOutline />,
+              icon: IoAddCircleOutline,
               onClick: handleAddAssetClick,
               size: 'sm',
               variant: 'ghost',

@@ -1,7 +1,8 @@
-import type { IconButtonProps } from '@chakra-ui/react';
+// types
+import type { IProps as IIconButtonProps } from '@extension/components/IconButton';
 
 interface ITabControlBarButtonProps {
-  button: IconButtonProps;
+  button: IIconButtonProps;
   tooltipLabel?: string;
 }
 
