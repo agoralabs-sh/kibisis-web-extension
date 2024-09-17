@@ -10,17 +10,13 @@ import SystemService from '@extension/services/SystemService';
 import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
 import { MalformedDataError } from '@extension/errors';
 
-const saveWhatsNewVersionThunk: AsyncThunk<
-  string | null, // return
-  string | null, // args
+const saveDisableWhatsNewOnUpdateThunk: AsyncThunk<
+  boolean, // return
+  boolean, // args
   IBaseAsyncThunkConfig<IMainRootState>
-> = createAsyncThunk<
-  string | null,
-  string | null,
-  IBaseAsyncThunkConfig<IMainRootState>
->(
-  ThunkEnum.SaveWhatsNewVersion,
-  async (version, { getState, rejectWithValue }) => {
+> = createAsyncThunk<boolean, boolean, IBaseAsyncThunkConfig<IMainRootState>>(
+  ThunkEnum.SaveDisableWhatsNewOnUpdate,
+  async (value, { getState, rejectWithValue }) => {
     const logger = getState().system.logger;
     const systemInfo = getState().system.info;
     let _error: string;
@@ -28,7 +24,7 @@ const saveWhatsNewVersionThunk: AsyncThunk<
     if (!systemInfo) {
       _error = 'system info not found';
 
-      logger.debug(`${ThunkEnum.SaveWhatsNewVersion}: ${_error}`);
+      logger.debug(`${ThunkEnum.SaveDisableWhatsNewOnUpdate}: ${_error}`);
 
       return rejectWithValue(new MalformedDataError(_error));
     }
@@ -39,12 +35,12 @@ const saveWhatsNewVersionThunk: AsyncThunk<
       ...systemInfo,
       whatsNewInfo: {
         ...systemInfo.whatsNewInfo,
-        version,
+        disableOnUpdate: value,
       },
     });
 
-    return whatsNewInfo.version;
+    return whatsNewInfo.disableOnUpdate;
   }
 );
 
-export default saveWhatsNewVersionThunk;
+export default saveDisableWhatsNewOnUpdateThunk;

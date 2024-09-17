@@ -64,9 +64,8 @@ import WhatsNewModal from '@extension/modals/WhatsNewModal';
 import {
   useSelectAccounts,
   useSelectNotificationsShowingConfetti,
-  useSelectSettings,
   useSelectSettingsSelectedNetwork,
-  useSelectSystemInfo,
+  useSelectSystemWhatsNewInfo,
 } from '@extension/selectors';
 
 // types
@@ -78,8 +77,7 @@ const Root: FC = () => {
   const accounts = useSelectAccounts();
   const network = useSelectSettingsSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
-  const { general } = useSelectSettings();
-  const systemInfo = useSelectSystemInfo();
+  const whatsNewInfo = useSelectSystemWhatsNewInfo();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
@@ -125,17 +123,16 @@ const Root: FC = () => {
       dispatch(updateTransactionParamsForSelectedNetworkThunk());
     }
   }, [network]);
-  // if the saved what's new version is null or less than the current version (and the update message is not disabled in the settings), display the modal
+  // if the saved what's new version is null or less than the current version (and the update message is not disabled), display the modal
   useEffect(() => {
     if (
-      systemInfo &&
-      !general.disableWhatsNewModalOnUpdate &&
-      (!systemInfo.whatsNewVersion ||
-        systemInfo.whatsNewVersion !== __VERSION__)
+      whatsNewInfo &&
+      !whatsNewInfo.disableOnUpdate &&
+      (!whatsNewInfo.version || whatsNewInfo.version !== __VERSION__)
     ) {
       dispatch(setWhatsNewModal(true));
     }
-  }, [systemInfo]);
+  }, [whatsNewInfo]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications

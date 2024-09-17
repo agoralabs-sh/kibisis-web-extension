@@ -140,18 +140,6 @@ const GeneralSettingsPage: FC = () => {
 
       {/*content*/}
       <VStack spacing={DEFAULT_GAP - 2} w="full">
-        {/*start-up*/}
-        <VStack w="full">
-          <SettingsSubHeading text={t<string>('headings.startUp')} />
-
-          <SettingsSwitchItem
-            checked={settings.general.disableWhatsNewModalOnUpdate}
-            description={t<string>('captions.disableWhatsNewModalOnUpdate')}
-            label={t<string>('labels.disableWhatsNewModalOnUpdate')}
-            onChange={handleOnSwitchChange('disableWhatsNewModalOnUpdate')}
-          />
-        </VStack>
-
         {/* network */}
         <VStack w="full">
           <SettingsSubHeading text={t<string>('headings.network')} />

@@ -24,8 +24,10 @@ import Link from '@extension/components/Link';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
-import { saveWhatsNewVersionThunk } from '@extension/features/system';
+import {
+  saveDisableWhatsNewOnUpdateThunk,
+  saveWhatsNewVersionThunk,
+} from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -35,8 +37,8 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
-  useSelectSettings,
   useSelectWhatsNewModal,
+  useSelectSystemWhatsNewInfo,
 } from '@extension/selectors';
 
 // theme
@@ -54,8 +56,8 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const initialRef = createRef<HTMLButtonElement>();
   // selectors
-  const settings = useSelectSettings();
   const whatsNewModalOpen = useSelectWhatsNewModal();
+  const whatsNewInfo = useSelectSystemWhatsNewInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
@@ -70,16 +72,13 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleOnDisableOnUpdateChange = (
     event: ChangeEvent<HTMLInputElement>
-  ) =>
-    dispatch(
-      saveSettingsToStorageThunk({
-        ...settings,
-        general: {
-          ...settings.general,
-          disableWhatsNewModalOnUpdate: event.target.checked,
-        },
-      })
-    );
+  ) => {
+    if (!whatsNewInfo) {
+      return;
+    }
+
+    dispatch(saveDisableWhatsNewOnUpdateThunk(!whatsNewInfo.disableOnUpdate));
+  };
 
   return (
     <Modal
@@ -168,7 +167,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              With the Voi's MainNet rollout, there is a new incentive for early
+              With Voi's MainNet rollout, there is a new incentive for early
               participation: the <strong>Staking Program</strong>.
             </Text>
 
@@ -373,20 +372,22 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
 
         <ModalFooter p={DEFAULT_GAP}>
           <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-            <Checkbox
-              colorScheme={primaryColorScheme}
-              isChecked={settings.general.disableWhatsNewModalOnUpdate}
-              onChange={handleOnDisableOnUpdateChange}
-            >
-              <Text
-                color={subTextColor}
-                fontSize="xs"
-                textAlign="left"
-                w="full"
+            {whatsNewInfo && (
+              <Checkbox
+                colorScheme={primaryColorScheme}
+                isChecked={whatsNewInfo.disableOnUpdate}
+                onChange={handleOnDisableOnUpdateChange}
               >
-                {t<string>('captions.disableWhatsNewMessageOnUpdate')}
-              </Text>
-            </Checkbox>
+                <Text
+                  color={subTextColor}
+                  fontSize="xs"
+                  textAlign="left"
+                  w="full"
+                >
+                  {t<string>('captions.disableWhatsNewMessageOnUpdate')}
+                </Text>
+              </Checkbox>
+            )}
 
             {/*ok*/}
             <Button

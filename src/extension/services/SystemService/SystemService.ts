@@ -18,7 +18,10 @@ export default class SystemService extends BaseService {
   public static initializeDefaultSystem(): ISystemInfo {
     return {
       deviceID: uuid(),
-      whatsNewVersion: null,
+      whatsNewInfo: {
+        disableOnUpdate: false,
+        version: null,
+      },
     };
   }
 
@@ -29,7 +32,7 @@ export default class SystemService extends BaseService {
   private _sanitize(item: ISystemInfo): ISystemInfo {
     return {
       deviceID: item.deviceID || null,
-      whatsNewVersion: item.whatsNewVersion || null,
+      whatsNewInfo: item.whatsNewInfo,
     };
   }
 
