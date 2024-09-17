@@ -39,7 +39,9 @@ const networks: INetwork[] = [
     arc0072Indexers: [],
     canonicalName: 'Voi',
     chakraTheme: 'voi',
-    blockExplorers: [],
+    blockExplorers: [
+      new VoiObserverBlockExplorer('https://explorer.voi.network/explorer'),
+    ],
     feeSunkAddress:
       'TBEIGCNK4UCN3YDP2NODK3MJHTUZMYS3TABRM2MVSI2MPUR2V36E5JYHSY',
     genesisId: 'voimain-v1.0',
