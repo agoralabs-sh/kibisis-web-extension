@@ -5,19 +5,16 @@ import browser from 'webextension-polyfill';
 import ClientMessageBroker from '@external/services/ClientMessageBroker';
 import LegacyUseWalletMessageBroker from '@external/services/LegacyUseWalletMessageBroker';
 
-// types
-import type { ILogger } from '@common/types';
-
 // utils
 import createLogger from '@common/utils/createLogger';
 import injectScript from '@external/utils/injectScript';
 
 (() => {
   const debug: boolean = __ENV__ === 'development';
-  const avmWebProvider: AVMWebProvider = AVMWebProvider.init(__PROVIDER_ID__, {
+  const avmWebProvider = AVMWebProvider.init(__PROVIDER_ID__, {
     debug,
   });
-  const logger: ILogger = createLogger(debug ? 'debug' : 'error');
+  const logger = createLogger(debug ? 'debug' : 'error');
   const clientMessageBroker: ClientMessageBroker = new ClientMessageBroker({
     logger,
   });
