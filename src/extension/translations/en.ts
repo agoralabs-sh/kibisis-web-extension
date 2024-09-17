@@ -72,8 +72,7 @@ const translation: IResourceLanguage = {
     addWatchAccount: 'Add a watch account by providing a valid address.',
     addWatchAccountComplete: `Press save to confirm adding the watch account.`,
     algodToken: `This is the 'X-Algo-API-Token' header that will be used to authenticate REST calls to the algod node.`,
-    allowActionTracking:
-      'By tracking certain actions, you can earn rewards. See <2>here</2> for more information.',
+    allowActionTracking: 'By tracking certain actions, you can earn rewards.',
     allowBetaNet: 'Let BetaNet networks appear in the networks list.',
     allowDidTokenFormat:
       'The DID token format "did:algo:<public_address>" will be an option when sharing an address.',
@@ -120,6 +119,8 @@ const translation: IResourceLanguage = {
     defaultConfirm: 'Are you sure?',
     deleteApplication: 'Be careful, deleting an application is irreversible!',
     destroyAsset: 'Be careful, destroying an asset is irreversible!',
+    disableWhatsNewModalOnUpdate: `Whether to disable the "What's New" update message.`,
+    disableWhatsNewMessageOnUpdate: `Disable message on update?`,
     disconnectAllSessions: 'Are you sure you want to disconnect all sessions?',
     displayingCountOfTotal: 'Displaying {{count}} of {{total}}',
     enableCredentialsLock:
@@ -415,6 +416,7 @@ const translation: IResourceLanguage = {
     shareAddress: 'Share Address',
     screenCaptureDenied: 'Screen Capture Denied',
     screenCaptureLoading: 'Screen Capture Loading',
+    startUp: 'Start-up',
     transaction: 'Unknown Transaction 💀',
     [`transaction_${TransactionTypeEnum.AccountReKey}`]: 'Re-Key Account 🔒',
     [`transaction_${TransactionTypeEnum.AccountUndoReKey}`]:
@@ -526,9 +528,10 @@ const translation: IResourceLanguage = {
     deviceID: 'Device ID',
     did: 'DID',
     disabled: 'Disabled',
+    disableWhatsNewModalOnUpdate: `Disable "What's New" Message?`,
     disconnect: 'Disconnect',
     editAccount: 'Edit Account',
-    enableCredentialsLock: 'Enable credential lock?',
+    enableCredentialsLock: 'Enable Credential Lock?',
     enabled: 'Enabled',
     experimental: 'Experimental',
     expirationDate: 'Expiration Date',
@@ -628,6 +631,7 @@ const translation: IResourceLanguage = {
     voteLast: 'Voting Last Round',
     yes: 'Yes',
     watch: 'Watch',
+    whatsNew: `What's New`,
   },
   placeholders: {
     accountName: 'e.g. Treasury',

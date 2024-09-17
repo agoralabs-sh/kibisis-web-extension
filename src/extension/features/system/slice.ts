@@ -6,6 +6,7 @@ import { StoreNameEnum } from '@extension/enums';
 // thunks
 import {
   fetchFromStorageThunk,
+  saveWhatsNewVersionThunk,
   startPollingForNetworkConnectivityThunk,
   stopPollingForTransactionsParamsThunk,
   updateNetworkConnectivityThunk,
@@ -26,6 +27,18 @@ const slice = createSlice({
       fetchFromStorageThunk.fulfilled,
       (state: IState, action: PayloadAction<ISystemInfo>) => {
         state.info = action.payload;
+      }
+    );
+    /** save what's new version **/
+    builder.addCase(
+      saveWhatsNewVersionThunk.fulfilled,
+      (state: IState, action: PayloadAction<string | null>) => {
+        if (state.info) {
+          state.info = {
+            ...state.info,
+            whatsNewVersion: action.payload,
+          };
+        }
       }
     );
     /** start polling for network connectivity **/

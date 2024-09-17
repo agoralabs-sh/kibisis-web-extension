@@ -7,7 +7,6 @@ export * from './events';
 export * from './layout';
 export * from './misc';
 export * from './networks';
-export * from './news';
 export * from './notifications';
 export * from './passkeys';
 export * from './re-key-account';

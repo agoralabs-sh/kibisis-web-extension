@@ -1,60 +1,70 @@
-import { Box, HStack, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
-import { IoArrowForwardOutline } from 'react-icons/io5';
+import { Box, Icon, Text, Tooltip, VStack } from '@chakra-ui/react';
+import React, { type FC } from 'react';
+
+// constants
+import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
+import useBorderColor from '@extension/hooks/useBorderColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import useSubTextColor from '@extension/hooks/useSubTextColor';
-import { DEFAULT_GAP } from '@extension/constants';
+import usePrimaryButtonHoverColor from '@extension/hooks/usePrimaryButtonHoverColor';
+import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // types
 import type { IItemProps } from './types';
 
+// utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
+
 const AccountTypeItem: FC<IItemProps> = ({
   description,
-  disabled = false,
   icon,
+  isDisabled = false,
   onClick,
   title,
   tooltipText,
 }) => {
+  const width = 32;
   // hooks
+  const borderColor = useBorderColor();
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
-  const subTextColor = useSubTextColor();
+  const primaryButtonHoverColor = usePrimaryButtonHoverColor();
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const primaryColor = usePrimaryColor();
+  // misc
+  const textColor = isDisabled ? defaultTextColor : primaryButtonTextColor;
   //renders
   const renderContent = () => {
     return (
-      <HStack alignItems="center" minH={28} spacing={DEFAULT_GAP / 2} w="full">
+      <VStack
+        alignItems="center"
+        justifyContent="center"
+        minH={width}
+        spacing={DEFAULT_GAP / 3}
+        w={width}
+      >
         {/*icon*/}
-        <Icon as={icon} color={defaultTextColor} h={10} w={10} />
+        <Icon as={icon} color={textColor} boxSize={calculateIconSize('lg')} />
 
-        <VStack alignItems="flex-start" spacing={DEFAULT_GAP / 3} w="full">
-          {/*heading*/}
-          <Text color={defaultTextColor} fontSize="md" textAlign="left">
-            {title}
-          </Text>
-
-          {/*description*/}
-          <Text color={subTextColor} fontSize="sm" textAlign="left">
-            {description}
-          </Text>
-        </VStack>
-
-        {/*icon*/}
-        <Icon as={IoArrowForwardOutline} color={defaultTextColor} h={6} w={6} />
-      </HStack>
+        {/*heading*/}
+        <Text color={textColor} fontSize="sm" textAlign="center" w="full">
+          {title}
+        </Text>
+      </VStack>
     );
   };
 
-  if (disabled) {
+  if (isDisabled) {
     return (
       <Tooltip label={tooltipText || description}>
         <Box
+          aria-label={description}
           as="button"
           bg={buttonHoverBackgroundColor}
-          borderColor={defaultTextColor}
+          borderColor={borderColor}
           borderRadius="md"
           borderStyle="solid"
           borderWidth={1}
@@ -71,16 +81,17 @@ const AccountTypeItem: FC<IItemProps> = ({
   return (
     <Tooltip label={tooltipText || description}>
       <Box
+        aria-label={description}
         as="button"
         _hover={{
-          bg: buttonHoverBackgroundColor,
+          bg: primaryButtonHoverColor,
         }}
-        borderColor={defaultTextColor}
+        backgroundColor={primaryColor}
         borderRadius="md"
-        borderStyle="solid"
-        borderWidth={1}
         onClick={onClick}
         p={DEFAULT_GAP - 2}
+        transitionDuration="var(--chakra-transition-duration-normal)"
+        transitionProperty="var(--chakra-transition-property-common)"
       >
         {renderContent()}
       </Box>
