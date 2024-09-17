@@ -1,6 +1,18 @@
 # [2.0.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2024-09-17)
 
 
+### Bug Fixes
+
+* add asset button disappears when changing appearance ([#316](https://github.com/agoralabs-sh/kibisis-web-extension/issues/316)) ([c3cb4b0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3cb4b0c9bc1378c74ba4d7a844112ac10e9434c))
+
+
+### Features
+
+* add voi mainnet block explorer ([#315](https://github.com/agoralabs-sh/kibisis-web-extension/issues/315)) ([470d14e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/470d14e2f56c60e32fe7a4fb2ce74bcf8febbe8d))
+
+# [2.0.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2024-09-17)
+
+
 ### Features
 
 * add voi mainnet block explorer ([#315](https://github.com/agoralabs-sh/kibisis-web-extension/issues/315)) ([470d14e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/470d14e2f56c60e32fe7a4fb2ce74bcf8febbe8d))
