@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 
 // components
 import Button from '@extension/components/Button';
+import Link from '@extension/components/Link';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
@@ -104,14 +105,14 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
 
         <ModalBody>
           <VStack spacing={DEFAULT_GAP - 2} w="full">
-            {/*introduction*/}
+            {/*community highlights*/}
             <Heading
               color={primaryColor}
               fontSize="md"
               textAlign="left"
               w="full"
             >
-              Introduction
+              Community Highlights
             </Heading>
 
             <Heading
@@ -120,7 +121,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              {`Voi's MainNet Has Launched!`}
+              Voi Launches MainNet!
             </Heading>
 
             <Text
@@ -129,14 +130,91 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              Voi's Genesis Day took place on 2024-09-12 which means Voi has
-              officially launched on mainnet!
+              Voi's Genesis Day took place on{' '}
+              <Link
+                fontSize="sm"
+                href="https://explorer.voi.network/explorer/block/1/transactions"
+                isExternal={true}
+              >
+                12th September 2024
+              </Link>{' '}
+              which means Voi has officially launched on MainNet!
             </Text>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              This truly has been a community effort, from the builders, the
+              node runners to the questers. Voi's TestNet has been a monumental
+              success and Voi has a solid foundation that makes it an ecosystem
+              that is run by you, the Voiagers.
+            </Text>
+
+            <Heading
+              color={primaryColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              MainNet Rollout: Staking Program
+            </Heading>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              With the Voi's MainNet rollout, there is a new incentive for early
+              participation: the <strong>Staking Program</strong>.
+            </Text>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              The Staking Program is designed to incentivize long-term
+              commitment by offering two ways to earn rewards:{' '}
+              <strong>Token lock-up</strong> and{' '}
+              <strong>staking these locked up tokens</strong>.
+            </Text>
+
+            <Text
+              color={defaultTextColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              See{' '}
+              <Link
+                fontSize="sm"
+                href="https://medium.com/@voifoundation/vois-staking-program-140mm-voi-4cbfd3a27f63"
+                isExternal={true}
+              >
+                here
+              </Link>{' '}
+              for more details.
+            </Text>
+
+            {/*new release*/}
+            <Heading
+              color={primaryColor}
+              fontSize="md"
+              textAlign="left"
+              w="full"
+            >
+              {`Version ${__VERSION__} Release`}
+            </Heading>
 
             {/*features*/}
             <Heading
               color={primaryColor}
-              fontSize="md"
+              fontSize="sm"
               textAlign="left"
               w="full"
             >
@@ -195,19 +273,6 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   prefer the old font).
                 </Text>
               </ListItem>
-            </UnorderedList>
-
-            {/*fixes*/}
-            <Heading
-              color={primaryColor}
-              fontSize="md"
-              textAlign="left"
-              w="full"
-            >
-              Fixes
-            </Heading>
-
-            <UnorderedList>
               <ListItem>
                 <Text
                   color={defaultTextColor}
@@ -215,9 +280,22 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   textAlign="left"
                   w="full"
                 >
-                  Voi Phase 2 quest tracking has been disabled.
+                  🚫 Voi TestNet Phase 2 quest tracking has been disabled.
                 </Text>
               </ListItem>
+            </UnorderedList>
+
+            {/*fixes*/}
+            <Heading
+              color={primaryColor}
+              fontSize="sm"
+              textAlign="left"
+              w="full"
+            >
+              Fixes
+            </Heading>
+
+            <UnorderedList>
               <ListItem>
                 <Text
                   color={defaultTextColor}
@@ -236,8 +314,8 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   textAlign="left"
                   w="full"
                 >
-                  Disconnected sessions are updated in the extension when on the
-                  settings' sessions page.
+                  Disconnected sessions are updated on the settings' sessions
+                  page.
                 </Text>
               </ListItem>
               <ListItem>

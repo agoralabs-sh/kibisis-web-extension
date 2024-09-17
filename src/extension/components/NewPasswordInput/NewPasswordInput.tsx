@@ -3,7 +3,6 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Link,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -17,11 +16,12 @@ import React, {
   useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { IoEye, IoEyeOff, IoOpenOutline } from 'react-icons/io5';
+import { IoEye, IoEyeOff } from 'react-icons/io5';
 
 // components
 import IconButton from '@extension/components/IconButton';
 import Label from '@extension/components/Label';
+import Link from '@extension/components/Link';
 import StrengthMeter from '@extension/components/StrengthMeter';
 
 // constants
@@ -33,7 +33,6 @@ import {
 
 // hooks
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
@@ -45,7 +44,6 @@ const NewPasswordInput: ForwardRefExoticComponent<
   const { t } = useTranslation();
   // hooks
   const primaryColor = usePrimaryColor();
-  const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // state
   const [show, setShow] = useState<boolean>(false);
@@ -101,17 +99,13 @@ const NewPasswordInput: ForwardRefExoticComponent<
         <Text color={subTextColor} fontSize="xs" textAlign="left">
           <Trans i18nKey="captions.passwordScoreInfo">
             To conform with our{' '}
-            <Button
-              as={Link}
-              colorScheme={primaryColorScheme}
+            <Link
               fontSize="xs"
               href={STRONG_PASSWORD_POLICY_LINK}
-              rightIcon={<IoOpenOutline />}
-              target="_blank"
-              variant="link"
+              isExternal={true}
             >
               Strong Password Policy
-            </Button>
+            </Link>
             , you are required to use a sufficiently strong password. Password
             must be at least 8 characters.
           </Trans>
