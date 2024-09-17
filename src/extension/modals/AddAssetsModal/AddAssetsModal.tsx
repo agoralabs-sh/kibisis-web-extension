@@ -29,7 +29,6 @@ import { useDispatch } from 'react-redux';
 // components
 import Button from '@extension/components/Button';
 import IconButton from '@extension/components/IconButton';
-import Label from '@extension/components/Label';
 import AddAssetsARC0200AssetItem from './AddAssetsARC0200AssetItem';
 import AddAssetsARC0200AssetSummaryModalContent from './AddAssetsARC0200AssetSummaryModalContent';
 import AddAssetsConfirmingModalContent from './AddAssetsConfirmingModalContent';
@@ -71,7 +70,6 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
-import useIsNewSelectedAsset from './hooks/useIsNewSelectedAsset';
 
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
@@ -85,17 +83,12 @@ import {
   useSelectAddAssetsFetching,
   useSelectAddAssetsSelectedAsset,
   useSelectAddAssetsStandardAssets,
-  useSelectLogger,
   useSelectSettingsPreferredBlockExplorer,
   useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
-import QuestsService, {
-  QuestNameEnum,
-} from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -115,7 +108,6 @@ import type {
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isNumericString from '@extension/utils/isNumericString';
 import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
@@ -135,13 +127,11 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const confirming = useSelectAddAssetsConfirming();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const fetching = useSelectAddAssetsFetching();
-  const logger = useSelectLogger();
   const selectedNetwork = useSelectSettingsSelectedNetwork();
   const selectedAsset = useSelectAddAssetsSelectedAsset();
   const standardAssets = useSelectAddAssetsStandardAssets();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const isNewSelectedAsset = useIsNewSelectedAsset(selectedAsset);
   const isOpen = useMemo<boolean>(() => {
     let accountInformation: IAccountInformation | null;
 
@@ -185,10 +175,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const allAssets = [...arc0200Assets, ...standardAssets];
   // handlers
   const handleAddARC0200AssetClick = async () => {
-    let hasQuestBeenCompletedToday: boolean = false;
-    let questsService: QuestsService;
-    let questsSent: boolean = false;
-
     if (
       !selectedNetwork ||
       !account ||
@@ -208,38 +194,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
           genesisHash: selectedNetwork.genesisHash,
         })
       ).unwrap();
-
-      questsService = new QuestsService({
-        logger,
-      });
-      hasQuestBeenCompletedToday =
-        await questsService.hasQuestBeenCompletedTodayByName(
-          QuestNameEnum.AddARC0200AssetAction
-        );
-
-      // track the action if this is a new asset
-      if (isNewSelectedAsset) {
-        questsSent = await questsService.addARC0200AssetQuest(
-          convertPublicKeyToAVMAddress(
-            PrivateKeyService.decode(account.publicKey)
-          ),
-          {
-            appID: selectedAsset.id,
-            genesisHash: selectedNetwork.genesisHash,
-          }
-        );
-      }
-
-      // if the quest has not been completed today (since 00:00 UTC), show a quest notification
-      if (questsSent && !hasQuestBeenCompletedToday) {
-        dispatch(
-          createNotification({
-            description: t<string>('captions.questComplete'),
-            title: t<string>('headings.congratulations'),
-            type: 'achievement',
-          })
-        );
-      }
 
       dispatch(
         createNotification({
@@ -284,10 +238,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
   const handleOnAuthenticationModalConfirm = async (
     result: TEncryptionCredentials
   ) => {
-    let hasQuestBeenCompletedToday: boolean = false;
-    let questsSent: boolean = false;
-    let questsService: QuestsService;
-
     if (
       !selectedNetwork ||
       !account ||
@@ -308,38 +258,6 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
           ...result,
         })
       ).unwrap();
-
-      questsService = new QuestsService({
-        logger,
-      });
-      hasQuestBeenCompletedToday =
-        await questsService.hasQuestBeenCompletedTodayByName(
-          QuestNameEnum.AddStandardAssetAction
-        );
-
-      // track the action if this is a new asset
-      if (isNewSelectedAsset) {
-        questsSent = await questsService.addStandardAssetQuest(
-          convertPublicKeyToAVMAddress(
-            PrivateKeyService.decode(account.publicKey)
-          ),
-          {
-            assetID: selectedAsset.id,
-            genesisHash: selectedNetwork.genesisHash,
-          }
-        );
-      }
-
-      // if the quest has not been completed today (since 00:00 UTC), show a quest notification
-      if (questsSent && !hasQuestBeenCompletedToday) {
-        dispatch(
-          createNotification({
-            description: t<string>('captions.questComplete'),
-            title: t<string>('headings.congratulations'),
-            type: 'achievement',
-          })
-        );
-      }
 
       dispatch(
         createNotification({

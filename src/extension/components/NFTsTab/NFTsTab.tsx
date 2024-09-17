@@ -1,5 +1,5 @@
 import { Spacer, TabPanel, VStack } from '@chakra-ui/react';
-import React, { type FC, type ReactNode, useEffect } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // components
@@ -8,43 +8,28 @@ import EmptyState from '@extension/components/EmptyState';
 import ScrollableContainer from '@extension/components/ScrollableContainer';
 import NFTsTabARC0072AssetItem from './NFTsTabARC0072AssetItem';
 
+// constants
+import { ACCOUNT_PAGE_TAB_CONTENT_HEIGHT } from '@extension/constants';
+
 // hooks
 import useAccountInformation from '@extension/hooks/useAccountInformation';
-import usePrevious from '@extension/hooks/usePrevious';
 
 // selectors
 import {
   useSelectARC0072AssetsFetching,
-  useSelectLogger,
   useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
-// services
-import QuestsService from '@extension/services/QuestsService';
-
 // types
-import type {
-  IAccountInformation,
-  IARC0072AssetHolding,
-  INetwork,
-} from '@extension/types';
 import type { INFTsTabProps } from './types';
-
-// utils
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
-import { ACCOUNT_PAGE_TAB_CONTENT_HEIGHT } from '@extension/constants';
 
 const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
   const { t } = useTranslation();
   // selectors
   const fetchingARC0072Assets = useSelectARC0072AssetsFetching();
-  const logger = useSelectLogger();
   const selectedNetwork = useSelectSettingsSelectedNetwork();
   // hooks
   const accountInformation = useAccountInformation(account.id);
-  const previousARC0027AssetHoldings = usePrevious<
-    IARC0072AssetHolding[] | null
-  >(accountInformation?.arc0072AssetHoldings || null);
   // renders
   const renderContent = () => {
     let assetNodes: ReactNode[] = [];
@@ -94,39 +79,6 @@ const NFTsTab: FC<INFTsTabProps> = ({ account }) => {
       </VStack>
     );
   };
-
-  // check if there are new arc-0072 assets
-  useEffect(() => {
-    let questsService: QuestsService;
-    let newARC0072AssetHoldings: IARC0072AssetHolding[];
-
-    if (
-      previousARC0027AssetHoldings &&
-      accountInformation?.arc0072AssetHoldings &&
-      selectedNetwork
-    ) {
-      questsService = new QuestsService({
-        logger,
-      });
-      newARC0072AssetHoldings = accountInformation.arc0072AssetHoldings.filter(
-        (arc0072AssetHolding) =>
-          !previousARC0027AssetHoldings.find(
-            (value) => value.id === arc0072AssetHolding.id
-          )
-      );
-
-      // if there are new assets acquired, track an action for each new asset
-      newARC0072AssetHoldings.forEach(({ id }) =>
-        questsService.acquireARC0072Quest(
-          convertPublicKeyToAVMAddress(account.publicKey),
-          {
-            appID: id,
-            genesisHash: selectedNetwork.genesisHash,
-          }
-        )
-      );
-    }
-  }, [accountInformation?.arc0072AssetHoldings]);
 
   return (
     <TabPanel
