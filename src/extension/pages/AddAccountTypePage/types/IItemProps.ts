@@ -2,8 +2,8 @@ import { ElementType } from 'react';
 
 interface IItemProps {
   description: string;
-  disabled?: boolean;
   icon: ElementType;
+  isDisabled?: boolean;
   onClick: () => void;
   title: string;
   tooltipText?: string;

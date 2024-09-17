@@ -180,8 +180,8 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
             >
               The Staking Program is designed to incentivize long-term
               commitment by offering two ways to earn rewards:{' '}
-              <strong>Token lock-up</strong> and{' '}
-              <strong>staking these locked up tokens</strong>.
+              <strong>token lock-up</strong> and{' '}
+              <strong>staking those locked up tokens</strong>.
             </Text>
 
             <Text
@@ -281,6 +281,16 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   w="full"
                 >
                   🚫 Voi TestNet Phase 2 quest tracking has been disabled.
+                </Text>
+              </ListItem>
+              <ListItem>
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  💅 Minor UI updates.
                 </Text>
               </ListItem>
             </UnorderedList>
