@@ -1,5 +1,5 @@
 import AlgorandApp from '@ledgerhq/hw-app-algorand';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { listen } from '@ledgerhq/logs';
 
 // constants
@@ -33,7 +33,7 @@ export default class LedgerService {
     const _functionName = 'fetchPublicKeys';
     let app: AlgorandApp;
     let result: IFetchPublicKeysResult[];
-    let transport: TransportWebHID;
+    let transport: TransportWebUSB;
 
     if (logger) {
       listen((log) =>
@@ -42,7 +42,7 @@ export default class LedgerService {
     }
 
     try {
-      transport = (await TransportWebHID.create()) as TransportWebHID;
+      transport = (await TransportWebUSB.create()) as TransportWebUSB;
     } catch (error) {
       logger?.error(`${LedgerService.name}#${_functionName}:`, error);
 
@@ -80,6 +80,6 @@ export default class LedgerService {
    * @static
    */
   public static async isSupported(): Promise<boolean> {
-    return await TransportWebHID.isSupported();
+    return await TransportWebUSB.isSupported();
   }
 }
