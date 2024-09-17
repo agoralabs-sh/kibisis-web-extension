@@ -33,7 +33,7 @@ const addCustomNodeThunk: AsyncThunk<
     return null;
   }
 
-  return await networksService.save({
+  return await networksService.saveToStorage({
     ...network,
     ...(customNode.algod && {
       algods: [

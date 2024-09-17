@@ -52,9 +52,9 @@ const EmptyState: FC<IProps> = ({
       w="full"
       {...stackProps}
     >
-      <EmptyIcon h={20} w={20} />
+      <EmptyIcon boxSize={20} />
 
-      <Heading color={defaultTextColor} size="md" textAlign="center">
+      <Heading color={defaultTextColor} fontSize="md" textAlign="center">
         {text}
       </Heading>
 

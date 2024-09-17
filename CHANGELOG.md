@@ -1,3 +1,102 @@
+# [2.0.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.1...v2.0.0) (2024-09-17)
+
+
+### Bug Fixes
+
+* add asset button disappears when changing appearance ([#316](https://github.com/agoralabs-sh/kibisis-web-extension/issues/316)) ([c3cb4b0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3cb4b0c9bc1378c74ba4d7a844112ac10e9434c))
+* edit account name updates the input with the intended account name ([#309](https://github.com/agoralabs-sh/kibisis-web-extension/issues/309)) ([4a12f3e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4a12f3e59c09b85dedfc9e86295b994f9785fbf7))
+* move disable whats new modal to object in system info with the version ([#312](https://github.com/agoralabs-sh/kibisis-web-extension/issues/312)) ([ee3afab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ee3afab8ec8090b3fab350389872a6d7b4e53473))
+* only responds to kibisis provider requests via avm-web-provider ([#303](https://github.com/agoralabs-sh/kibisis-web-extension/issues/303)) ([aac8b38](https://github.com/agoralabs-sh/kibisis-web-extension/commit/aac8b38da21f949d42d1093a185fac6dc0d064b6))
+* session disconnection reflects on app ([#296](https://github.com/agoralabs-sh/kibisis-web-extension/issues/296)) ([0e7df68](https://github.com/agoralabs-sh/kibisis-web-extension/commit/0e7df68c2f0b949d1a22be70e3566a8c1a036cf5))
+
+
+### Features
+
+* add voi mainnet block explorer ([#315](https://github.com/agoralabs-sh/kibisis-web-extension/issues/315)) ([470d14e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/470d14e2f56c60e32fe7a4fb2ce74bcf8febbe8d))
+* add voi mainnet configuration ([#306](https://github.com/agoralabs-sh/kibisis-web-extension/issues/306)) ([69f4148](https://github.com/agoralabs-sh/kibisis-web-extension/commit/69f41489ed686057d8cf0ca6e12507bda7fa4d0e))
+* add whats new modal ([#311](https://github.com/agoralabs-sh/kibisis-web-extension/issues/311)) ([708e128](https://github.com/agoralabs-sh/kibisis-web-extension/commit/708e128855891a3415080fe1ca3f70ae537a931a))
+* allow optional font sf pro display ([#298](https://github.com/agoralabs-sh/kibisis-web-extension/issues/298)) ([78a5ab5](https://github.com/agoralabs-sh/kibisis-web-extension/commit/78a5ab5894856126a5e5a6358c08e5063aa6ac50))
+* use mainnet as default ([#307](https://github.com/agoralabs-sh/kibisis-web-extension/issues/307)) ([3de371f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/3de371f0bc2f6b12dc70a7ddb415518c7aea7b2a))
+
+
+### BREAKING CHANGES
+
+* default to mainnet
+
+* fix: toggling off networks while the network is selected switches to the default network
+
+* feat: add mainnet badge to network select modal
+
+# [2.0.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2024-09-17)
+
+
+### Bug Fixes
+
+* add asset button disappears when changing appearance ([#316](https://github.com/agoralabs-sh/kibisis-web-extension/issues/316)) ([c3cb4b0](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3cb4b0c9bc1378c74ba4d7a844112ac10e9434c))
+
+
+### Features
+
+* add voi mainnet block explorer ([#315](https://github.com/agoralabs-sh/kibisis-web-extension/issues/315)) ([470d14e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/470d14e2f56c60e32fe7a4fb2ce74bcf8febbe8d))
+
+# [2.0.0-beta.5](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2024-09-17)
+
+
+### Features
+
+* add voi mainnet block explorer ([#315](https://github.com/agoralabs-sh/kibisis-web-extension/issues/315)) ([470d14e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/470d14e2f56c60e32fe7a4fb2ce74bcf8febbe8d))
+
+# [2.0.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2024-09-17)
+
+
+### Bug Fixes
+
+* move disable whats new modal to object in system info with the version ([#312](https://github.com/agoralabs-sh/kibisis-web-extension/issues/312)) ([ee3afab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ee3afab8ec8090b3fab350389872a6d7b4e53473))
+
+# [2.0.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2024-09-17)
+
+
+### Features
+
+* add whats new modal ([#311](https://github.com/agoralabs-sh/kibisis-web-extension/issues/311)) ([708e128](https://github.com/agoralabs-sh/kibisis-web-extension/commit/708e128855891a3415080fe1ca3f70ae537a931a))
+
+# [2.0.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2024-09-16)
+
+
+### Bug Fixes
+
+* edit account name updates the input with the intended account name ([#309](https://github.com/agoralabs-sh/kibisis-web-extension/issues/309)) ([4a12f3e](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4a12f3e59c09b85dedfc9e86295b994f9785fbf7))
+
+# [2.0.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.3...v2.0.0-beta.1) (2024-09-16)
+
+
+### Features
+
+* use mainnet as default ([#307](https://github.com/agoralabs-sh/kibisis-web-extension/issues/307)) ([3de371f](https://github.com/agoralabs-sh/kibisis-web-extension/commit/3de371f0bc2f6b12dc70a7ddb415518c7aea7b2a))
+
+
+### BREAKING CHANGES
+
+* default to mainnet
+
+* fix: toggling off networks while the network is selected switches to the default network
+
+* feat: add mainnet badge to network select modal
+
+# [1.19.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.2...v1.19.0-beta.3) (2024-09-16)
+
+
+### Features
+
+* add voi mainnet configuration ([#306](https://github.com/agoralabs-sh/kibisis-web-extension/issues/306)) ([69f4148](https://github.com/agoralabs-sh/kibisis-web-extension/commit/69f41489ed686057d8cf0ca6e12507bda7fa4d0e))
+
+# [1.19.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.19.0-beta.1...v1.19.0-beta.2) (2024-09-16)
+
+
+### Bug Fixes
+
+* only responds to kibisis provider requests via avm-web-provider ([#303](https://github.com/agoralabs-sh/kibisis-web-extension/issues/303)) ([aac8b38](https://github.com/agoralabs-sh/kibisis-web-extension/commit/aac8b38da21f949d42d1093a185fac6dc0d064b6))
+
 # [1.19.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.2-beta.1...v1.19.0-beta.1) (2024-08-30)
 
 

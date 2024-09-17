@@ -155,7 +155,7 @@ export default class ProviderActionListener {
 
   private async _restartCredentialLockAlarm(): Promise<void> {
     let alarm = await this._credentialLockService.getAlarm();
-    let settings: ISettings = await this._settingsService.getAll();
+    let settings: ISettings = await this._settingsService.fetchFromStorage();
 
     // restart the alarm if the credential lock is not active, is enabled and the duration is not set to 0 ("never")
     if (
@@ -294,7 +294,7 @@ export default class ProviderActionListener {
 
   public async onInstalled(): Promise<void> {
     const _functionName = 'onInstalled';
-    let systemInfo = await this._systemService.get();
+    let systemInfo = await this._systemService.fetchFromStorage();
 
     // if there is no system info, initialize the default
     if (!systemInfo) {
@@ -304,7 +304,7 @@ export default class ProviderActionListener {
         `${ProviderActionListener.name}#${_functionName}: initialize a new system info with device id "${systemInfo.deviceID}"`
       );
 
-      await this._systemService.save(systemInfo);
+      await this._systemService.saveToStorage(systemInfo);
     }
   }
 
@@ -319,7 +319,7 @@ export default class ProviderActionListener {
     arc0300Schema = parseURIToARC0300Schema(text, {
       supportedNetworks: supportedNetworksFromSettings({
         networks,
-        settings: await this._settingsService.getAll(),
+        settings: await this._settingsService.fetchFromStorage(),
       }),
       ...(this._logger && {
         logger: this._logger,

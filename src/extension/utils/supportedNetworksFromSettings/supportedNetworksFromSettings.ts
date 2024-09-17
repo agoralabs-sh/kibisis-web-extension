@@ -18,9 +18,9 @@ export default function supportedNetworksFromSettings<T extends INetwork>({
     switch (value.type) {
       case NetworkTypeEnum.Beta:
         return settings.advanced.allowBetaNet;
-      case NetworkTypeEnum.Stable:
-        return settings.advanced.allowMainNet;
       case NetworkTypeEnum.Test:
+        return settings.advanced.allowTestNet;
+      case NetworkTypeEnum.Stable:
       default:
         return true;
     }

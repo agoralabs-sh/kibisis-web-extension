@@ -41,3 +41,25 @@
   url('@extension/fonts/Nunito/Nunito-Regular.ttf') format('truetype'),
   url('@extension/fonts/Nunito/Nunito-Regular.svg#Nunito-Regular') format('svg');
 }
+
+/* source code pro */
+@font-face {
+  font-family: 'SourceCodePro';
+  font-style: normal;
+  font-weight: 600 700;
+  font-display: swap;
+  src: url('@extension/fonts/SourceCodePro/SourceCodePro-Bold.woff2') format('woff2'),
+  url('@extension/fonts/SourceCodePro/SourceCodePro-Bold.woff') format('woff'),
+  url('@extension/fonts/SourceCodePro/SourceCodePro-Bold.ttf') format('truetype'),
+  url('@extension/fonts/SourceCodePro/SourceCodePro-Bold.svg#SourceCodePro-Bold') format('svg');
+}
+@font-face {
+  font-family: 'SourceCodePro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('@extension/fonts/SourceCodePro/SourceCodePro-Regular.woff2') format('woff2'),
+  url('@extension/fonts/SourceCodePro/SourceCodePro-Regular.woff') format('woff'),
+  url('@extension/fonts/SourceCodePro/SourceCodePro-Regular.ttf') format('truetype'),
+  url('@extension/fonts/SourceCodePro/SourceCodePro-Regular.svg#SourceCodePro-Regular') format('svg');
+}

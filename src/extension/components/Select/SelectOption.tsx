@@ -30,6 +30,7 @@ const SelectOption: FC<ISelectOptionProps> = ({
       m={0}
       p={DEFAULT_GAP / 2}
       spacing={DEFAULT_GAP - 2}
+      w="full"
     >
       {/*icon*/}
       {value.icon && (

@@ -14,10 +14,10 @@
   dependencies:
     algosdk "^2.1.0"
 
-"@agoralabs-sh/avm-web-provider@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@agoralabs-sh/avm-web-provider/-/avm-web-provider-1.6.0.tgz#a4bb0b0644541a8ba02c06e7182544655dec14a6"
-  integrity sha512-IiMt8QVYLPHW/2d4kYt/2Ewri9ebCUDXEmkVdp2iekRi6vBK2hRlK5OY7Xu8lhy0Yl3O+TMOvM2qeDO03nQroA==
+"@agoralabs-sh/avm-web-provider@^1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@agoralabs-sh/avm-web-provider/-/avm-web-provider-1.7.0.tgz#735280d0f61dd441552fe586ec8abbd0d6adefaa"
+  integrity sha512-AfMdBdFS3EW1RunzHVEwNFucS6UIALs661d+zL6AHFDdxOTvUgahRC4l163VoGWA0UEpnayT1jGObci8nitZeA==
   dependencies:
     uuid "^9.0.1"
 
@@ -2930,10 +2930,10 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
-"@tanstack/store@0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/store/-/store-0.4.1.tgz#a7433040d818dd4f2c289962e86e978fa5936ab3"
-  integrity sha512-NvW3MomYSTzQK61AWdtWNIhWgszXFZDRgCNlvSDw/DBaoLqJIlZ0/gKLsditA8un/BGU1NR06+j0a/UNLgXA+Q==
+"@tanstack/store@0.5.5":
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/@tanstack/store/-/store-0.5.5.tgz#84d78568c4a71c885cb15754bf51eca42a776efe"
+  integrity sha512-EOSrgdDAJExbvRZEQ/Xhh9iZchXpMN+ga1Bnk8Nmygzs8TfiE6hbzThF+Pr2G19uHL6+DTDTHhJ8VQiOd7l4tA==
 
 "@tootallnate/once@2":
   version "2.0.0"
@@ -2973,12 +2973,12 @@
     "@tufjs/canonical-json" "2.0.0"
     minimatch "^9.0.4"
 
-"@txnlab/use-wallet@^3.1.6":
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/@txnlab/use-wallet/-/use-wallet-3.1.6.tgz#9ea5b3e2ec3dc7a45a1aa7bc4ac3e5c4564d4268"
-  integrity sha512-6LDrCx6Irl7HjwjvMSSexzzQxRWGA2O/hH1jpUySwRHbz6GC7NApCIhto2O29D0jdjggrVHrtNBN9/E4W85UyQ==
+"@txnlab/use-wallet@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@txnlab/use-wallet/-/use-wallet-3.4.0.tgz#91503ebc78f4f906423fa6d2f265da73a84e8064"
+  integrity sha512-g/iPPF40aHWxT7fIoNSLOBpJcCVV2OCg138qaDs8iX4WTdVwNucmj4UwuDsbBz9Q+1i124xF9MLagUhhOsWrdg==
   dependencies:
-    "@tanstack/store" "0.4.1"
+    "@tanstack/store" "0.5.5"
 
 "@types/babel__core@^7.1.14":
   version "7.20.0"

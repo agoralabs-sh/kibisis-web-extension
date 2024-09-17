@@ -146,23 +146,9 @@ const Select: FC<IProps> = ({
             {value ? (
               <SelectOption value={value} />
             ) : (
-              <HStack
-                alignItems="center"
-                justifyContent="flex-start"
-                m={0}
-                p={DEFAULT_GAP / 2}
-                spacing={DEFAULT_GAP / 3}
-              >
-                {/*label*/}
-                <Text
-                  color={subTextColor}
-                  fontSize="sm"
-                  maxW={250}
-                  noOfLines={1}
-                >
-                  {t<string>(emptyOptionLabel || 'placeholders.pleaseSelect')}
-                </Text>
-              </HStack>
+              <Text color={subTextColor} fontSize="sm" maxW={250} noOfLines={1}>
+                {t<string>(emptyOptionLabel || 'placeholders.pleaseSelect')}
+              </Text>
             )}
           </ChakraButton>
         </Tooltip>

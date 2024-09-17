@@ -125,7 +125,7 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
     };
 
     // save the updated params to storage
-    return await networksService.save({
+    return await networksService.saveToStorage({
       ...network,
       fee: avmTransactionParams.fee.toString(),
       minFee: avmTransactionParams['min-fee'].toString(),

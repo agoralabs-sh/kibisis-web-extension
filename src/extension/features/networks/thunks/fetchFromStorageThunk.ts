@@ -25,12 +25,11 @@ const fetchFromStorageThunk: AsyncThunk<
   INetworkWithTransactionParams[],
   undefined,
   IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
->(ThunkEnum.FetchFromStorageThunk, async (_, { getState }) => {
+>(ThunkEnum.FetchFromStorageThunk, async () => {
   const networksService = new NetworksService();
-  const networks: INetworkWithTransactionParams[] =
-    await networksService.getAll();
+  const networks = await networksService.fetchAllFromStorage();
 
-  // use the networks in the default storage as the source of truth, but add an default networks
+  // use the networks in the config as the source of truth, but add any custom networks in storage
   return defaultNetworks.map((value) => {
     const network =
       networks.find((_value) => _value.genesisHash === value.genesisHash) ||

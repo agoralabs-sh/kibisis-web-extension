@@ -29,7 +29,53 @@ const networks: INetwork[] = [
   {
     algods: [
       {
-        canonicalName: 'AlgoNode',
+        canonicalName: 'Nodely',
+        id: null,
+        port: null,
+        token: null,
+        url: 'https://mainnet-api.voi.nodely.dev',
+      },
+    ],
+    arc0072Indexers: [],
+    canonicalName: 'Voi',
+    chakraTheme: 'voi',
+    blockExplorers: [
+      new VoiObserverBlockExplorer('https://explorer.voi.network/explorer'),
+    ],
+    feeSunkAddress:
+      'TBEIGCNK4UCN3YDP2NODK3MJHTUZMYS3TABRM2MVSI2MPUR2V36E5JYHSY',
+    genesisId: 'voimain-v1.0',
+    genesisHash: 'r20fSQI8gWe/kFZziNonSPCXLwcQmH/nxROvnnueWOk=',
+    indexers: [
+      {
+        canonicalName: 'Nodely',
+        id: null,
+        port: null,
+        token: null,
+        url: 'https://mainnet-idx.voi.nodely.dev',
+      },
+    ],
+    methods: SUPPORTED_METHODS,
+    namespace: {
+      key: 'avm',
+      methods: ['avm_signTransactions', 'avm_signMessage'],
+      reference: 'r20fSQI8gWe_kFZziNonSPCXLwcQmH_n',
+    },
+    nativeCurrency: {
+      decimals: 6,
+      iconUrl: VOI_ICON_URI,
+      listingUri: VOI_LISTING_ICON_URI,
+      symbol: 'VOI',
+      type: AssetTypeEnum.Native,
+      verified: true,
+    },
+    nftExplorers: [],
+    type: NetworkTypeEnum.Stable,
+  },
+  {
+    algods: [
+      {
+        canonicalName: 'Nodely',
         id: null,
         port: null,
         token: null,
@@ -52,7 +98,7 @@ const networks: INetwork[] = [
     genesisHash: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=',
     indexers: [
       {
-        canonicalName: 'AlgoNode',
+        canonicalName: 'Nodely',
         id: null,
         port: null,
         token: null,

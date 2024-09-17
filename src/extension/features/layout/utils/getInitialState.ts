@@ -6,5 +6,6 @@ export default function getInitialState(): IState {
     confirmModal: null,
     scanQRCodeModal: null,
     sidebar: false,
+    whatsNewModal: false,
   };
 }

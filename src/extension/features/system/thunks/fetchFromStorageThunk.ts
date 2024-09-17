@@ -23,11 +23,11 @@ const fetchFromStorageThunk: AsyncThunk<
   IBaseAsyncThunkConfig<IBaseRootState>
 >(ThunkEnum.FetchFromStorage, async () => {
   const systemService = new SystemService();
-  let systemInfo = await systemService.get();
+  let systemInfo = await systemService.fetchFromStorage();
 
   // if there is no system info save a new one
   if (!systemInfo) {
-    systemInfo = await systemService.save(
+    systemInfo = await systemService.saveToStorage(
       SystemService.initializeDefaultSystem()
     );
   }

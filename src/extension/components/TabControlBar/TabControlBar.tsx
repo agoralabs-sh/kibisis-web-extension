@@ -1,5 +1,8 @@
-import { HStack, IconButton, Spacer, Spinner, Tooltip } from '@chakra-ui/react';
+import { HStack, Spacer, Spinner, Tooltip } from '@chakra-ui/react';
 import React, { type FC } from 'react';
+
+// components
+import IconButton from '@extension/components/IconButton';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';

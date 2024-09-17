@@ -28,9 +28,19 @@ const slice = createSlice({
     setSideBar: (state: Draft<IState>, action: PayloadAction<boolean>) => {
       state.sidebar = action.payload;
     },
+    setWhatsNewModal: (
+      state: Draft<IState>,
+      action: PayloadAction<boolean>
+    ) => {
+      state.whatsNewModal = action.payload;
+    },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setConfirmModal, setScanQRCodeModal, setSideBar } =
-  slice.actions;
+export const {
+  setConfirmModal,
+  setScanQRCodeModal,
+  setSideBar,
+  setWhatsNewModal,
+} = slice.actions;

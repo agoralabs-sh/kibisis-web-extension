@@ -6,6 +6,8 @@ import { StoreNameEnum } from '@extension/enums';
 // thunks
 import {
   fetchFromStorageThunk,
+  saveDisableWhatsNewOnUpdateThunk,
+  saveWhatsNewVersionThunk,
   startPollingForNetworkConnectivityThunk,
   stopPollingForTransactionsParamsThunk,
   updateNetworkConnectivityThunk,
@@ -26,6 +28,36 @@ const slice = createSlice({
       fetchFromStorageThunk.fulfilled,
       (state: IState, action: PayloadAction<ISystemInfo>) => {
         state.info = action.payload;
+      }
+    );
+    /** save disable what's on update **/
+    builder.addCase(
+      saveDisableWhatsNewOnUpdateThunk.fulfilled,
+      (state: IState, action: PayloadAction<boolean>) => {
+        if (state.info) {
+          state.info = {
+            ...state.info,
+            whatsNewInfo: {
+              ...state.info.whatsNewInfo,
+              disableOnUpdate: action.payload,
+            },
+          };
+        }
+      }
+    );
+    /** save what's new version **/
+    builder.addCase(
+      saveWhatsNewVersionThunk.fulfilled,
+      (state: IState, action: PayloadAction<string | null>) => {
+        if (state.info) {
+          state.info = {
+            ...state.info,
+            whatsNewInfo: {
+              ...state.info.whatsNewInfo,
+              version: action.payload,
+            },
+          };
+        }
       }
     );
     /** start polling for network connectivity **/

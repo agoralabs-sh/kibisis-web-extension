@@ -18,13 +18,13 @@ import { fetchActiveThunk as fetchCredentialLockActiveThunk } from '@extension/f
 import {
   setConfirmModal,
   setScanQRCodeModal,
+  setWhatsNewModal,
 } from '@extension/features/layout';
 import {
   fetchFromStorageThunk as fetchNetworksFromStorageThunk,
   startPollingForTransactionsParamsThunk,
   updateTransactionParamsForSelectedNetworkThunk,
 } from '@extension/features/networks';
-import { fetchFromStorageThunk as fetchNewsFromStorageThunk } from '@extension/features/news';
 import { setShowingConfetti } from '@extension/features/notifications';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
@@ -58,13 +58,14 @@ import ScanQRCodeModal from '@extension/modals/ScanQRCodeModal';
 import SendAssetModal from '@extension/modals/SendAssetModal';
 import SignMessageModal from '@extension/modals/SignMessageModal';
 import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
-import VoiageToMainnetModal from '@extension/modals/VoiageToMainnetModal';
+import WhatsNewModal from '@extension/modals/WhatsNewModal';
 
 // selectors
 import {
   useSelectAccounts,
   useSelectNotificationsShowingConfetti,
   useSelectSettingsSelectedNetwork,
+  useSelectSystemWhatsNewInfo,
 } from '@extension/selectors';
 
 // types
@@ -76,6 +77,7 @@ const Root: FC = () => {
   const accounts = useSelectAccounts();
   const network = useSelectSettingsSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
+  const whatsNewInfo = useSelectSystemWhatsNewInfo();
   // handlers
   const handleAddAssetsModalClose = () => dispatch(resetAddAsset());
   const handleConfirmClose = () => dispatch(setConfirmModal(null));
@@ -84,6 +86,7 @@ const Root: FC = () => {
   const handleRemoveAssetsModalClose = () => dispatch(resetRemoveAssets());
   const handleScanQRCodeModalClose = () => dispatch(setScanQRCodeModal(null));
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
+  const handleWhatsNewModalClose = () => dispatch(setWhatsNewModal(false));
 
   // 1. fetch the required data
   useEffect(() => {
@@ -94,7 +97,6 @@ const Root: FC = () => {
     dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSessionsThunk());
-    dispatch(fetchNewsFromStorageThunk());
     // assets
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchARC0072AssetsFromStorageThunk());
@@ -121,6 +123,16 @@ const Root: FC = () => {
       dispatch(updateTransactionParamsForSelectedNetworkThunk());
     }
   }, [network]);
+  // if the saved what's new version is null or less than the current version (and the update message is not disabled), display the modal
+  useEffect(() => {
+    if (
+      whatsNewInfo &&
+      !whatsNewInfo.disableOnUpdate &&
+      (!whatsNewInfo.version || whatsNewInfo.version !== __VERSION__)
+    ) {
+      dispatch(setWhatsNewModal(true));
+    }
+  }, [whatsNewInfo]);
   useOnDebugLogging();
   useOnNewAssets(); // handle new assets added
   useNotifications(); // handle notifications
@@ -142,6 +154,9 @@ const Root: FC = () => {
       <SignTransactionsModal />
       <ARC0300KeyRegistrationTransactionSendEventModal />
 
+      {/*information modals*/}
+      <WhatsNewModal onClose={handleWhatsNewModalClose} />
+
       {/*action modals*/}
       <AddAssetsModal onClose={handleAddAssetsModalClose} />
       <AddAssetsForWatchAccountModal onClose={handleAddAssetsModalClose} />
@@ -149,9 +164,6 @@ const Root: FC = () => {
       <RemoveAssetsModal onClose={handleRemoveAssetsModalClose} />
       <SendAssetModal onClose={handleSendAssetModalClose} />
       <ScanQRCodeModal onClose={handleScanQRCodeModalClose} />
-
-      {/*information modals*/}
-      <VoiageToMainnetModal />
 
       {/*main*/}
       <MainLayout>

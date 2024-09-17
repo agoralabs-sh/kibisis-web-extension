@@ -40,7 +40,6 @@ import {
 
 // enums
 import { AssetTypeEnum, ErrorCodeEnum } from '@extension/enums';
-import { QuestNameEnum } from '@extension/services/QuestsService';
 
 // errors
 import { BaseExtensionError } from '@extension/errors';
@@ -78,9 +77,6 @@ import {
   useSelectSendAssetSender,
   useSelectStandardAssetsBySelectedNetwork,
 } from '@extension/selectors';
-
-// services
-import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -252,11 +248,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
     result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
-    let hasQuestBeenCompletedToday: boolean = false;
-    let questsService: QuestsService;
-    let questsSent: boolean = false;
     let receiverAccount: IAccount | null;
-    let senderAddress: string;
     let transactionIds: string[];
 
     if (
@@ -292,71 +284,6 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
             convertPublicKeyToAVMAddress(value.publicKey) ===
             receiverAddressValue
         ) || null;
-      senderAddress = convertPublicKeyToAVMAddress(sender.publicKey);
-      questsService = new QuestsService({
-        logger,
-      });
-
-      // track the action
-      switch (asset?.type) {
-        case AssetTypeEnum.ARC0200:
-          hasQuestBeenCompletedToday =
-            await questsService.hasQuestBeenCompletedTodayByName(
-              QuestNameEnum.SendARC0200AssetAction
-            );
-          questsSent = await questsService.sendARC0200AssetQuest(
-            senderAddress,
-            receiverAddressValue,
-            amountValue,
-            {
-              appID: asset.id,
-              genesisHash: network.genesisHash,
-            }
-          );
-          break;
-        case AssetTypeEnum.Native:
-          hasQuestBeenCompletedToday =
-            await questsService.hasQuestBeenCompletedTodayByName(
-              QuestNameEnum.SendNativeCurrencyAction
-            );
-          questsSent = await questsService.sendNativeCurrencyQuest(
-            senderAddress,
-            receiverAddressValue,
-            amountValue,
-            {
-              genesisHash: network.genesisHash,
-            }
-          );
-          break;
-        case AssetTypeEnum.Standard:
-          hasQuestBeenCompletedToday =
-            await questsService.hasQuestBeenCompletedTodayByName(
-              QuestNameEnum.SendStandardAssetAction
-            );
-          questsSent = await questsService.sendStandardAssetQuest(
-            senderAddress,
-            receiverAddressValue,
-            amountValue,
-            {
-              assetID: asset.id,
-              genesisHash: network.genesisHash,
-            }
-          );
-          break;
-        default:
-          break;
-      }
-
-      // if the quest has not been completed today (since 00:00 UTC), show a quest notification
-      if (questsSent && !hasQuestBeenCompletedToday) {
-        dispatch(
-          createNotification({
-            description: t<string>('captions.questComplete'),
-            title: t<string>('headings.congratulations'),
-            type: 'achievement',
-          })
-        );
-      }
 
       // send a success transaction
       dispatch(
