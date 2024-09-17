@@ -24,8 +24,10 @@ import Link from '@extension/components/Link';
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
-import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
-import { saveWhatsNewVersionThunk } from '@extension/features/system';
+import {
+  saveDisableWhatsNewOnUpdateThunk,
+  saveWhatsNewVersionThunk,
+} from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -35,8 +37,8 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
 import {
-  useSelectSettings,
   useSelectWhatsNewModal,
+  useSelectSystemWhatsNewInfo,
 } from '@extension/selectors';
 
 // theme
@@ -54,8 +56,8 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   const initialRef = createRef<HTMLButtonElement>();
   // selectors
-  const settings = useSelectSettings();
   const whatsNewModalOpen = useSelectWhatsNewModal();
+  const whatsNewInfo = useSelectSystemWhatsNewInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColor = usePrimaryColor();
@@ -70,16 +72,13 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   };
   const handleOnDisableOnUpdateChange = (
     event: ChangeEvent<HTMLInputElement>
-  ) =>
-    dispatch(
-      saveSettingsToStorageThunk({
-        ...settings,
-        general: {
-          ...settings.general,
-          disableWhatsNewModalOnUpdate: event.target.checked,
-        },
-      })
-    );
+  ) => {
+    if (!whatsNewInfo) {
+      return;
+    }
+
+    dispatch(saveDisableWhatsNewOnUpdateThunk(!whatsNewInfo.disableOnUpdate));
+  };
 
   return (
     <Modal
@@ -99,7 +98,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
       >
         <ModalHeader justifyContent="center" px={DEFAULT_GAP}>
           <Heading color={defaultTextColor} fontSize="lg" textAlign="center">
-            {`What's New In Kibisis v2.0.0`}
+            {`What's New In Kibisis v${__VERSION__}`}
           </Heading>
         </ModalHeader>
 
@@ -138,7 +137,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               >
                 12th September 2024
               </Link>{' '}
-              which means Voi has officially launched on MainNet!
+              which means Voi has officially launched its MainNet!
             </Text>
 
             <Text
@@ -147,10 +146,10 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              This truly has been a community effort, from the builders, the
+              This truly has been a community effort; from the builders, the
               node runners to the questers. Voi's TestNet has been a monumental
               success and Voi has a solid foundation that makes it an ecosystem
-              that is run by you, the Voiagers.
+              that is run by you: the Voiagers.
             </Text>
 
             <Heading
@@ -159,7 +158,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              MainNet Rollout: Staking Program
+              Voi MainNet Rollout: Staking Program
             </Heading>
 
             <Text
@@ -168,7 +167,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
               textAlign="left"
               w="full"
             >
-              With the Voi's MainNet rollout, there is a new incentive for early
+              With Voi's MainNet rollout, there is a new incentive for early
               participation: the <strong>Staking Program</strong>.
             </Text>
 
@@ -373,20 +372,22 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
 
         <ModalFooter p={DEFAULT_GAP}>
           <VStack alignItems="flex-start" spacing={DEFAULT_GAP - 2} w="full">
-            <Checkbox
-              colorScheme={primaryColorScheme}
-              isChecked={settings.general.disableWhatsNewModalOnUpdate}
-              onChange={handleOnDisableOnUpdateChange}
-            >
-              <Text
-                color={subTextColor}
-                fontSize="xs"
-                textAlign="left"
-                w="full"
+            {whatsNewInfo && (
+              <Checkbox
+                colorScheme={primaryColorScheme}
+                isChecked={whatsNewInfo.disableOnUpdate}
+                onChange={handleOnDisableOnUpdateChange}
               >
-                {t<string>('captions.disableWhatsNewMessageOnUpdate')}
-              </Text>
-            </Checkbox>
+                <Text
+                  color={subTextColor}
+                  fontSize="xs"
+                  textAlign="left"
+                  w="full"
+                >
+                  {t<string>('captions.disableWhatsNewMessageOnUpdate')}
+                </Text>
+              </Checkbox>
+            )}
 
             {/*ok*/}
             <Button
