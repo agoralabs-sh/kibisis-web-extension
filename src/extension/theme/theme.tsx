@@ -3,7 +3,8 @@ import { Dict } from '@chakra-ui/utils';
 import { StepsTheme as Steps } from 'chakra-ui-steps';
 
 // themes
-import Tag from './tag';
+import Code from './Code';
+import Tag from './Tag';
 
 const theme: Dict = extendTheme({
   breakpoints: {
@@ -66,8 +67,9 @@ const theme: Dict = extendTheme({
     },
   },
   components: {
+    Code,
     Steps,
-    Tag,
+    Tag: Tag,
   },
   styles: {
     global: {
