@@ -55,7 +55,6 @@ import {
 
 // services
 import PrivateKeyService from '@extension/services/PrivateKeyService';
-import QuestsService from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -142,7 +141,6 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
     result: TEncryptionCredentials
   ) => {
     const _functionName = 'handleOnAuthenticationModalConfirm';
-    let questsService: QuestsService;
     let signature: Uint8Array;
     let signerAddress: string;
 
@@ -167,13 +165,6 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
       logger.debug(
         `${SignMessageModal.name}#${_functionName}: signed message for signer "${signerAddress}"`
       );
-
-      questsService = new QuestsService({
-        logger,
-      });
-
-      // track the action
-      await questsService.signMessageQuest(signerAddress);
 
       // send the response
       await dispatch(

@@ -49,7 +49,6 @@ import { create as createNotification } from '@extension/features/notifications'
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
-import useIsNewSelectedAsset from './hooks/useIsNewSelectedAsset';
 
 // selectors
 import {
@@ -59,17 +58,12 @@ import {
   useSelectAddAssetsConfirming,
   useSelectAddAssetsFetching,
   useSelectAddAssetsSelectedAsset,
-  useSelectLogger,
   useSelectSettingsSelectedNetwork,
   useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
 
 // services
 import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
-import QuestsService, {
-  QuestNameEnum,
-} from '@extension/services/QuestsService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -87,7 +81,6 @@ import type {
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import isNumericString from '@extension/utils/isNumericString';
 import isReKeyedAuthAccountAvailable from '@extension/utils/isReKeyedAuthAccountAvailable';
 
@@ -102,12 +95,10 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   const confirming = useSelectAddAssetsConfirming();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const fetching = useSelectAddAssetsFetching();
-  const logger = useSelectLogger();
   const selectedNetwork = useSelectSettingsSelectedNetwork();
   const selectedAsset = useSelectAddAssetsSelectedAsset();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const isNewSelectedAsset = useIsNewSelectedAsset(selectedAsset);
   const primaryColor = usePrimaryColor();
   const primaryColorScheme = usePrimaryColorScheme();
   // state
@@ -144,10 +135,6 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
   }, [account, accounts, selectedNetwork]);
   // handlers
   const handleAddARC0200AssetClick = async () => {
-    let hasQuestBeenCompletedToday: boolean = false;
-    let questsService: QuestsService;
-    let questsSent: boolean = false;
-
     if (
       !selectedNetwork ||
       !account ||
@@ -167,38 +154,6 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
           genesisHash: selectedNetwork.genesisHash,
         })
       ).unwrap();
-
-      questsService = new QuestsService({
-        logger,
-      });
-      hasQuestBeenCompletedToday =
-        await questsService.hasQuestBeenCompletedTodayByName(
-          QuestNameEnum.AddARC0200AssetAction
-        );
-
-      // track the action if this is a new asset
-      if (isNewSelectedAsset) {
-        questsSent = await questsService.addARC0200AssetQuest(
-          convertPublicKeyToAVMAddress(
-            PrivateKeyService.decode(account.publicKey)
-          ),
-          {
-            appID: selectedAsset.id,
-            genesisHash: selectedNetwork.genesisHash,
-          }
-        );
-      }
-
-      // if the quest has not been completed today (since 00:00 UTC), show a quest notification
-      if (questsSent && !hasQuestBeenCompletedToday) {
-        dispatch(
-          createNotification({
-            description: t<string>('captions.questComplete'),
-            title: t<string>('headings.congratulations'),
-            type: 'achievement',
-          })
-        );
-      }
 
       dispatch(
         createNotification({

@@ -54,9 +54,6 @@ import {
   useSelectLogger,
 } from '@extension/selectors';
 
-// services
-import QuestsService from '@extension/services/QuestsService';
-
 // theme
 import { theme } from '@extension/theme';
 
@@ -156,13 +153,6 @@ const ARC0300AccountImportModalContent: FC<
           title: t<string>('headings.addedAccounts'),
           type: 'success',
         })
-      );
-
-      // track the action
-      await new QuestsService({
-        logger,
-      }).importAccountViaQRCodeQuest(
-        convertPublicKeyToAVMAddress(_accounts[0].publicKey)
       );
 
       // go to the account and the assets tab
