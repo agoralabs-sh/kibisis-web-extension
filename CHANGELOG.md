@@ -1,3 +1,10 @@
+# [2.0.0-beta.4](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2024-09-17)
+
+
+### Bug Fixes
+
+* move disable whats new modal to object in system info with the version ([#312](https://github.com/agoralabs-sh/kibisis-web-extension/issues/312)) ([ee3afab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ee3afab8ec8090b3fab350389872a6d7b4e53473))
+
 # [2.0.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2024-09-17)
 
 
