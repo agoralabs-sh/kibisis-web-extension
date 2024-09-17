@@ -1,3 +1,10 @@
+# [2.0.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2024-09-17)
+
+
+### Features
+
+* add whats new modal ([#311](https://github.com/agoralabs-sh/kibisis-web-extension/issues/311)) ([708e128](https://github.com/agoralabs-sh/kibisis-web-extension/commit/708e128855891a3415080fe1ca3f70ae537a931a))
+
 # [2.0.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2024-09-16)
 
 
