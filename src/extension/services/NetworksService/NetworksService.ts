@@ -6,7 +6,6 @@ import { NETWORKS_ITEM_KEY } from '@extension/constants';
 
 // services
 import BaseService from '@extension/services/BaseService';
-import StorageManager from '../StorageManager';
 
 // types
 import type { INetwork, INetworkWithTransactionParams } from '@extension/types';
@@ -45,13 +44,13 @@ export default class NetworksService extends BaseService {
     return {
       ...value,
       arc0072Indexers:
-        networks.find((_value) => _value.genesisHash === _value.genesisHash)
+        networks.find((_value) => _value.genesisHash === value.genesisHash)
           ?.arc0072Indexers || [],
       blockExplorers:
-        networks.find((_value) => _value.genesisHash === _value.genesisHash)
+        networks.find((_value) => _value.genesisHash === value.genesisHash)
           ?.blockExplorers || [],
       nftExplorers:
-        networks.find((_value) => _value.genesisHash === _value.genesisHash)
+        networks.find((_value) => _value.genesisHash === value.genesisHash)
           ?.nftExplorers || [],
     };
   }
