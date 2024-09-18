@@ -55,6 +55,43 @@ export default class NetworksService extends BaseService {
     };
   }
 
+  private async _fetchSerializedFromStorage(): Promise<
+    ISerializableNetworkWithTransactionParams[]
+  > {
+    return (
+      (await this._storageManager.getItem<
+        ISerializableNetworkWithTransactionParams[]
+      >(NETWORKS_ITEM_KEY)) || []
+    );
+  }
+
+  /**
+   * Local storage needs serializable JSONs (for example no functions), so this function acts as a way to "serialize"
+   * the object to the safe properties.
+   * @param {INetworkWithTransactionParams} value - the item to serialize.
+   * @returns {ISerializableNetworkWithTransactionParams} the serialized object.
+   * @private
+   */
+  private _serialize(
+    value: INetworkWithTransactionParams
+  ): ISerializableNetworkWithTransactionParams {
+    return {
+      ...value,
+      arc0072Indexers: value.arc0072Indexers.map(({ canonicalName, id }) => ({
+        canonicalName,
+        id,
+      })),
+      blockExplorers: value.blockExplorers.map(({ canonicalName, id }) => ({
+        canonicalName,
+        id,
+      })),
+      nftExplorers: value.nftExplorers.map(({ canonicalName, id }) => ({
+        canonicalName,
+        id,
+      })),
+    };
+  }
+
   /**
    * public functions
    */
@@ -64,10 +101,7 @@ export default class NetworksService extends BaseService {
    * @returns {Promise<INetworkWithTransactionParams[]>} a promise that resolves to all the networks.
    */
   public async fetchAllFromStorage(): Promise<INetworkWithTransactionParams[]> {
-    const items =
-      (await this._storageManager.getItem<
-        ISerializableNetworkWithTransactionParams[]
-      >(NETWORKS_ITEM_KEY)) || [];
+    const items = await this._fetchSerializedFromStorage();
 
     return items.map(this._deserialize);
   }
@@ -80,20 +114,23 @@ export default class NetworksService extends BaseService {
   public async saveToStorage(
     item: INetworkWithTransactionParams
   ): Promise<INetworkWithTransactionParams> {
-    const items = await this.fetchAllFromStorage();
+    const serializedItems = await this._fetchSerializedFromStorage();
+    const serializedItem = this._serialize(item);
 
     // if the item exists, just add it
-    if (!items.find((value) => value.genesisHash === item.genesisHash)) {
+    if (
+      !serializedItems.find((value) => value.genesisHash === item.genesisHash)
+    ) {
       await this._storageManager.setItems({
-        [NETWORKS_ITEM_KEY]: [...items, item],
+        [NETWORKS_ITEM_KEY]: [...serializedItems, serializedItem],
       });
 
       return item;
     }
 
     await this._storageManager.setItems({
-      [NETWORKS_ITEM_KEY]: items.map((value) =>
-        value.genesisHash === item.genesisHash ? item : value
+      [NETWORKS_ITEM_KEY]: serializedItems.map((value) =>
+        value.genesisHash === item.genesisHash ? serializedItem : value
       ),
     });
 
@@ -109,7 +146,7 @@ export default class NetworksService extends BaseService {
     items: INetworkWithTransactionParams[]
   ): Promise<INetworkWithTransactionParams[]> {
     await this._storageManager.setItems({
-      [NETWORKS_ITEM_KEY]: items,
+      [NETWORKS_ITEM_KEY]: items.map(this._serialize),
     });
 
     return items;

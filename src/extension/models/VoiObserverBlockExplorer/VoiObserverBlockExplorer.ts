@@ -1,12 +1,20 @@
 // models
 import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
 
+// types
+import type { TPartialExcept } from '@common/types';
+import type { INewOptions } from '@extension/models/BaseBlockExplorer';
+
 export default class VoiObserverBlockExplorer extends BaseBlockExplorer {
-  constructor(baseURL: string) {
+  constructor({
+    baseURL,
+    canonicalName,
+    id,
+  }: TPartialExcept<INewOptions, 'baseURL'>) {
     super({
-      baseURL: baseURL,
-      canonicalName: 'Voi Observer',
-      id: 'voi-observer-block-explorer',
+      baseURL,
+      canonicalName: canonicalName || 'Voi Observer',
+      id: id || 'voi-observer-block-explorer',
     });
   }
 

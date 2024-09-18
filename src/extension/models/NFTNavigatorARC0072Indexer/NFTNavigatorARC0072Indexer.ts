@@ -2,15 +2,23 @@
 import BaseARC0072Indexer from '../BaseARC0072Indexer';
 
 // types
-import type { IFetchTokensByOwnerOptions } from '@extension/models/BaseARC0072Indexer';
+import type { TPartialExcept } from '@common/types';
+import type {
+  IFetchTokensByOwnerOptions,
+  INewOptions,
+} from '@extension/models/BaseARC0072Indexer';
 import type { IARC0072AssetHolding } from '@extension/types';
 
 export default class NFTNavigatorARC0072Indexer extends BaseARC0072Indexer {
-  constructor(baseURL: string) {
+  constructor({
+    baseURL,
+    canonicalName,
+    id,
+  }: TPartialExcept<INewOptions, 'baseURL'>) {
     super({
       baseURL,
-      canonicalName: 'NFT Navigator',
-      id: 'nft-navigator-arc-0072-indexer',
+      canonicalName: canonicalName || 'NFT Navigator',
+      id: id || 'nft-navigator-arc-0072-indexer',
     });
   }
 
