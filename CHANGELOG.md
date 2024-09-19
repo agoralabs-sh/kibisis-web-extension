@@ -1,3 +1,16 @@
+# [2.1.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0...v2.1.0) (2024-09-19)
+
+
+### Bug Fixes
+
+* watch accounts no longer lose the watch badge ([#321](https://github.com/agoralabs-sh/kibisis-web-extension/issues/321)) ([47790cd](https://github.com/agoralabs-sh/kibisis-web-extension/commit/47790cd621cedaa51edeaf3e8cb4adfa7e46bb45))
+
+
+### Features
+
+* add refresh activity button ([#320](https://github.com/agoralabs-sh/kibisis-web-extension/issues/320)) ([c3650ec](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3650ec0909fb0071ee2724f5b9284ad6071f0e9))
+* display notification on new transactions ([#323](https://github.com/agoralabs-sh/kibisis-web-extension/issues/323)) ([4f0ecbc](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4f0ecbc8ca3ebe25e2559c617f3b146f92135988))
+
 # [2.1.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0-beta.2...v2.1.0-beta.3) (2024-09-19)
 
 
