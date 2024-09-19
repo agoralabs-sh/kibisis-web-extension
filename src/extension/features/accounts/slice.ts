@@ -322,9 +322,9 @@ const slice = createSlice({
         ...state.updateRequests,
         {
           accountIDs: action.meta.arg.accountIDs,
-          information: true,
+          information: action.meta.arg.information || true,
           requestID: action.meta.requestId,
-          transactions: !action.meta.arg.information,
+          transactions: action.meta.arg.transactions || true,
         },
       ];
     });
