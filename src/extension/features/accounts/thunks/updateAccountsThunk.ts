@@ -6,6 +6,9 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { ThunkEnum } from '../enums';
 
+// features
+import { create as createNotification } from '@extension/features/notifications';
+
 // services
 import AccountService from '@extension/services/AccountService';
 
@@ -48,11 +51,14 @@ const updateAccountsThunk: AsyncThunk<
       accountIDs,
       forceInformationUpdate = false,
       information = true,
+      notifyOnNewTransactions = false,
       refreshTransactions = false,
       transactions = true,
     },
-    { getState, requestId }
+    { dispatch, getState, requestId }
   ) => {
+    const activeAccountDetails = getState().accounts.activeAccountDetails;
+    const i18n = getState().system.i18n;
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
@@ -63,8 +69,10 @@ const updateAccountsThunk: AsyncThunk<
     let accounts = getState().accounts.items.map((value) =>
       mapAccountWithExtendedPropsToAccount(value)
     );
+    let currentTransactionsLength: number;
     let encodedGenesisHash: string;
     let network: INetwork | null;
+    let numberOfNewTransactions: number;
     let nodeID: string | null;
 
     if (!online) {
@@ -146,6 +154,9 @@ const updateAccountsThunk: AsyncThunk<
             requestID: requestId,
           })
         ) {
+          currentTransactionsLength =
+            account.networkTransactions[encodedGenesisHash]?.transactions
+              .length || 0;
           account.networkTransactions[encodedGenesisHash] =
             await updateAccountTransactions({
               address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
@@ -158,6 +169,31 @@ const updateAccountsThunk: AsyncThunk<
               nodeID,
               refresh: refreshTransactions,
             });
+
+          // if it is active account and the there are new transactions, dispatch a notification
+          if (
+            activeAccountDetails?.accountId === account.id &&
+            refreshTransactions &&
+            notifyOnNewTransactions
+          ) {
+            numberOfNewTransactions =
+              (account.networkTransactions[encodedGenesisHash]?.transactions
+                .length || 0) - currentTransactionsLength;
+
+            if (numberOfNewTransactions > 0 && i18n) {
+              dispatch(
+                createNotification({
+                  description: i18n.t<string>(
+                    'captions.newTransactionsReceived',
+                    { amount: numberOfNewTransactions }
+                  ),
+                  ephemeral: true,
+                  title: i18n.t<string>('headings.newTransactionsReceived'),
+                  type: 'info',
+                })
+              );
+            }
+          }
         }
 
         accounts = accounts.map((value) =>

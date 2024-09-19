@@ -37,6 +37,7 @@ const startPollingForAccountsThunk: AsyncThunk<
     dispatch(
       updateAccountsThunk({
         accountIDs: accounts.map(({ id }) => id),
+        notifyOnNewTransactions: true,
         refreshTransactions: true, // get latest transactions
       })
     );
