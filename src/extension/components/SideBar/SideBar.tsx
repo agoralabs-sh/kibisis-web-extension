@@ -42,7 +42,10 @@ import {
 import { AccountTabEnum } from '@extension/enums';
 
 // features
-import { saveActiveAccountDetails } from '@extension/features/accounts';
+import {
+  saveActiveAccountDetails,
+  updateAccountsThunk,
+} from '@extension/features/accounts';
 import { setScanQRCodeModal } from '@extension/features/layout';
 import { initialize as initializeSendAssets } from '@extension/features/send-assets';
 
@@ -104,6 +107,13 @@ const SideBar: FC = () => {
       saveActiveAccountDetails({
         accountId: id,
         tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
+      })
+    );
+    dispatch(
+      updateAccountsThunk({
+        accountIDs: [id],
+        notifyOnNewTransactions: true,
+        refreshTransactions: true,
       })
     );
     navigate(`${ACCOUNTS_ROUTE}`, {
