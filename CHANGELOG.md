@@ -1,3 +1,10 @@
+# [2.1.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0-beta.2...v2.1.0-beta.3) (2024-09-19)
+
+
+### Features
+
+* display notification on new transactions ([#323](https://github.com/agoralabs-sh/kibisis-web-extension/issues/323)) ([4f0ecbc](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4f0ecbc8ca3ebe25e2559c617f3b146f92135988))
+
 # [2.1.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0-beta.1...v2.1.0-beta.2) (2024-09-19)
 
 
