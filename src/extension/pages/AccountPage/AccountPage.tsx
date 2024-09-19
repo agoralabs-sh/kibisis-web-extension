@@ -177,6 +177,7 @@ const AccountPage: FC = () => {
       updateAccountsThunk({
         accountIDs: accounts.map(({ id }) => id),
         information: false, // get account information
+        notifyOnNewTransactions: true,
         refreshTransactions: true, // get latest transactions
       })
     );
