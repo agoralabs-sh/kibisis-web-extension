@@ -1,3 +1,10 @@
+# [2.1.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0...v2.1.0-beta.1) (2024-09-19)
+
+
+### Features
+
+* add refresh activity button ([#320](https://github.com/agoralabs-sh/kibisis-web-extension/issues/320)) ([c3650ec](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3650ec0909fb0071ee2724f5b9284ad6071f0e9))
+
 # [2.0.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.1...v2.0.0) (2024-09-17)
 
 
