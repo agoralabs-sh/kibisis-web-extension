@@ -49,7 +49,7 @@ export default function bootstrapApp(app: FC<IAppProps>): () => Promise<void> {
 
     root.render(
       createElement(app, {
-        i18next,
+        i18n: i18next,
         initialColorMode: appearanceSettings?.theme || 'light', // default to light
         initialFontFamily: appearanceSettings?.font || 'Nunito',
       })

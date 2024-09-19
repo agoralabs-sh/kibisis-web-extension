@@ -1,4 +1,5 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import type { i18n } from 'i18next';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
@@ -15,7 +16,6 @@ import {
 
 // types
 import type { ILogger } from '@common/types';
-import type { ISystemInfo } from '@extension/types';
 import type { IState } from './types';
 
 // utils
@@ -26,14 +26,14 @@ const slice = createSlice({
     /** fetch from storage **/
     builder.addCase(
       fetchFromStorageThunk.fulfilled,
-      (state: IState, action: PayloadAction<ISystemInfo>) => {
+      (state: IState, action) => {
         state.info = action.payload;
       }
     );
     /** save disable what's on update **/
     builder.addCase(
       saveDisableWhatsNewOnUpdateThunk.fulfilled,
-      (state: IState, action: PayloadAction<boolean>) => {
+      (state: IState, action) => {
         if (state.info) {
           state.info = {
             ...state.info,
@@ -48,7 +48,7 @@ const slice = createSlice({
     /** save what's new version **/
     builder.addCase(
       saveWhatsNewVersionThunk.fulfilled,
-      (state: IState, action: PayloadAction<string | null>) => {
+      (state: IState, action) => {
         if (state.info) {
           state.info = {
             ...state.info,
@@ -63,7 +63,7 @@ const slice = createSlice({
     /** start polling for network connectivity **/
     builder.addCase(
       startPollingForNetworkConnectivityThunk.fulfilled,
-      (state: IState, action: PayloadAction<number>) => {
+      (state: IState, action) => {
         state.networkConnectivity.pollingID = action.payload;
       }
     );
@@ -77,7 +77,7 @@ const slice = createSlice({
     /** update network connectivity **/
     builder.addCase(
       updateNetworkConnectivityThunk.fulfilled,
-      (state: IState, action: PayloadAction<boolean>) => {
+      (state: IState, action) => {
         state.networkConnectivity = {
           ...state.networkConnectivity,
           checking: false,
@@ -98,11 +98,14 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.System,
   reducers: {
-    setLogger: (state: Draft<IState>, action: PayloadAction<ILogger>) => {
+    setI18nAction: (state: IState, action: PayloadAction<i18n>) => {
+      state.i18n = action.payload;
+    },
+    setLogger: (state: IState, action: PayloadAction<ILogger>) => {
       state.logger = action.payload;
     },
   },
 });
 
 export const reducer: Reducer = slice.reducer;
-export const { setLogger } = slice.actions;
+export const { setI18nAction, setLogger } = slice.actions;

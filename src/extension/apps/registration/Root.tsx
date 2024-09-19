@@ -9,19 +9,24 @@ import { BODY_BACKGROUND_COLOR } from '@extension/constants';
 // features
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
 import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
-import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
+import {
+  fetchFromStorageThunk as fetchSystemInfoFromStorageThunk,
+  setI18nAction,
+} from '@extension/features/system';
 
 // types
 import type {
   IAppThunkDispatch,
   IRegistrationRootState,
+  IRootProps,
 } from '@extension/types';
 
-const Root: FC = () => {
+const Root: FC<IRootProps> = ({ i18n }) => {
   const dispatch: IAppThunkDispatch<IRegistrationRootState> =
     useDispatch<IAppThunkDispatch<IRegistrationRootState>>();
 
   useEffect(() => {
+    dispatch(setI18nAction(i18n));
     dispatch(fetchSystemInfoFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
     dispatch(fetchSettingsFromStorageThunk());

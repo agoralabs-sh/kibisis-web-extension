@@ -66,6 +66,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   // misc
   const features = [
     '🔃 Add button to force a refresh of account transactions.',
+    'ℹ️ A notification appears when new transactions have been received.',
   ];
   const fixes = [
     'Account information and transactions should update in a timely manner.',

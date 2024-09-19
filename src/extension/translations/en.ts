@@ -194,6 +194,7 @@ const translation: IResourceLanguage = {
       'Network "{{genesisID}}" is not allowed. Check your settings to see which networks have been enabled.',
     newAccountComplete:
       'We are almost done. Before we safely secure your new account on this device, we just need you to confirm you have copied your seed phrase.',
+    newTransactionsReceived: 'You have received {{amount}} new transaction(s).',
     noAccountsToImport: 'No accounts to import.',
     noAccountsFound:
       'You can create a new account or import an existing account.',
@@ -377,6 +378,7 @@ const translation: IResourceLanguage = {
     networks: 'Networks',
     networkNotAllowed: 'Network Not Allowed',
     newAccountComplete: 'Almost There...',
+    newTransactionsReceived: 'New Transactions Received',
     noAccountsFound: 'No accounts found',
     noAssetsFound: 'No assets found',
     noCustomNodesFound: 'No custom nodes found',

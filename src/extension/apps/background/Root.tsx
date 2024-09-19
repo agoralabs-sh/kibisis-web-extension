@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 // features
 import { handleNewEventByIdThunk } from '@extension/features/events';
 import { closeCurrentWindowThunk } from '@extension/features/layout';
+import { setI18nAction } from '@extension/features/system';
 
 // hooks
 import useOnAppStartup from '@extension/hooks/useOnAppStartup';
@@ -19,12 +20,16 @@ import SignTransactionsModal from '@extension/modals/SignTransactionsModal';
 import SplashPage from '@extension/pages/SplashPage';
 
 // types
-import type { IAppThunkDispatch, IBackgroundRootState } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IBackgroundRootState,
+  IRootProps,
+} from '@extension/types';
 
 // utils
 import decodeURLSearchParam from '@extension/utils/decodeURLSearchParam';
 
-const Root: FC = () => {
+const Root: FC<IRootProps> = ({ i18n }) => {
   const dispatch = useDispatch<IAppThunkDispatch<IBackgroundRootState>>();
   // misc
   const url = new URL(window.location.href);
@@ -40,6 +45,8 @@ const Root: FC = () => {
 
       return;
     }
+
+    dispatch(setI18nAction(i18n));
   }, []);
   useEffect(() => {
     if (eventId) {

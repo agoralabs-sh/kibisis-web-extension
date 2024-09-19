@@ -32,14 +32,17 @@ const startPollingForAccountsThunk: AsyncThunk<
   );
 
   return window.setInterval(() => {
-    const accounts = getState().accounts.items;
+    const activeAccountDetails = getState().accounts.activeAccountDetails;
 
-    dispatch(
-      updateAccountsThunk({
-        accountIDs: accounts.map(({ id }) => id),
-        refreshTransactions: true, // get latest transactions
-      })
-    );
+    if (activeAccountDetails) {
+      dispatch(
+        updateAccountsThunk({
+          accountIDs: [activeAccountDetails.accountId],
+          notifyOnNewTransactions: true,
+          refreshTransactions: true, // get latest transactions
+        })
+      );
+    }
   }, ACCOUNT_INFORMATION_REFRESH_INTERVAL);
 });
 

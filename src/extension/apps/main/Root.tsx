@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { type FC, useEffect } from 'react';
 import Confetti from 'react-confetti';
 import { useDispatch } from 'react-redux';
 import { Outlet } from 'react-router-dom';
@@ -21,7 +21,10 @@ import { setShowingConfetti } from '@extension/features/notifications';
 import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
 import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
-import { startPollingForNetworkConnectivityThunk } from '@extension/features/system';
+import {
+  setI18nAction,
+  startPollingForNetworkConnectivityThunk,
+} from '@extension/features/system';
 
 // hooks
 import useOnAppStartup from '@extension/hooks/useOnAppStartup';
@@ -53,9 +56,13 @@ import {
 } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  IRootProps,
+} from '@extension/types';
 
-const Root: FC = () => {
+const Root: FC<IRootProps> = ({ i18n }) => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const showingConfetti = useSelectNotificationsShowingConfetti();
@@ -72,6 +79,7 @@ const Root: FC = () => {
 
   useOnAppStartup();
   useEffect(() => {
+    dispatch(setI18nAction(i18n));
     // assets
     dispatch(fetchARC0072AssetsFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
