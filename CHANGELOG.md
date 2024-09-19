@@ -1,3 +1,10 @@
+# [2.1.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0-beta.1...v2.1.0-beta.2) (2024-09-19)
+
+
+### Bug Fixes
+
+* watch accounts no longer lose the watch badge ([#321](https://github.com/agoralabs-sh/kibisis-web-extension/issues/321)) ([47790cd](https://github.com/agoralabs-sh/kibisis-web-extension/commit/47790cd621cedaa51edeaf3e8cb4adfa7e46bb45))
+
 # [2.1.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0...v2.1.0-beta.1) (2024-09-19)
 
 
