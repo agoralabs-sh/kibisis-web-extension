@@ -28,6 +28,7 @@ const ActivityTab: FC<IProps> = ({
   accounts,
   fetching,
   network,
+  onRefreshClick,
   onScrollEnd,
 }) => {
   const { t } = useTranslation();
@@ -39,6 +40,7 @@ const ActivityTab: FC<IProps> = ({
     AccountService.extractAccountTransactionsForNetwork(account, network)
       ?.transactions || null;
   // handlers
+  const handleOnRefreshClick = () => onRefreshClick();
   const handleScrollEnd = () => onScrollEnd();
   // renders
   const renderContent = () => {
@@ -107,6 +109,7 @@ const ActivityTab: FC<IProps> = ({
         buttons={[]}
         isLoading={updatingActiveAccountTransactions}
         loadingTooltipLabel={t<string>('captions.updatingTransactions')}
+        onRefresh={handleOnRefreshClick}
       />
 
       {renderContent()}

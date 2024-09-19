@@ -1,29 +1,29 @@
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
 
 // types
-import {
+import type {
   IAccountInformation,
   IAlgorandAccountInformation,
 } from '@extension/types';
 
-export default function mapAlgorandAccountInformationToAccountInformation(
-  algorandAccountInformation: IAlgorandAccountInformation,
+export default function mapAVMAccountInformationToAccountInformation(
+  avmAccountInformation: IAlgorandAccountInformation,
   accountInformation: IAccountInformation,
   updatedAt?: number
 ): IAccountInformation {
   return {
     ...accountInformation,
     atomicBalance: new BigNumber(
-      String(algorandAccountInformation.amount as bigint)
+      String(avmAccountInformation.amount as bigint)
     ).toString(),
-    authAddress: algorandAccountInformation['auth-addr'] || null,
+    authAddress: avmAccountInformation['auth-addr'] || null,
     minAtomicBalance: new BigNumber(
-      String(algorandAccountInformation['min-balance'] as bigint)
+      String(avmAccountInformation['min-balance'] as bigint)
     ).toString(),
-    standardAssetHoldings: algorandAccountInformation.assets.map((value) => ({
+    standardAssetHoldings: avmAccountInformation.assets.map((value) => ({
       amount: new BigNumber(String(value.amount as bigint)).toString(),
       id: new BigNumber(String(value['asset-id'] as bigint)).toString(),
       isFrozen: value['is-frozen'],

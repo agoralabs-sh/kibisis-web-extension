@@ -1,12 +1,20 @@
 // models
 import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
 
+// types
+import type { TPartialExcept } from '@common/types';
+import type { INewOptions } from '@extension/models/BaseBlockExplorer';
+
 export default class AlloBlockExplorer extends BaseBlockExplorer {
-  constructor(baseURL: string) {
+  constructor({
+    baseURL,
+    canonicalName,
+    id,
+  }: TPartialExcept<INewOptions, 'baseURL'>) {
     super({
       baseURL: baseURL,
-      canonicalName: 'Allo',
-      id: 'allo-block-explorer',
+      canonicalName: canonicalName || 'Allo',
+      id: id || 'allo-block-explorer',
     });
   }
 

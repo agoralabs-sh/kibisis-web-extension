@@ -1,6 +1,5 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import {
-  Algodv2,
   makeAssetTransferTxnWithSuggestedParams,
   SuggestedParams,
   Transaction,
@@ -53,6 +52,7 @@ import updateAccountInformation from '@extension/utils/updateAccountInformation'
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
 import { findAccountWithoutExtendedProps } from '../utils';
 import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
+import serialize from '@extension/utils/serialize';
 
 const addStandardAssetHoldingsThunk: AsyncThunk<
   IUpdateStandardAssetHoldingsResult, // return
@@ -74,12 +74,13 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     const online = getState().system.networkConnectivity.online;
     const settings = getState().settings;
     let _error: string;
-    let account = findAccountWithoutExtendedProps(accountId, accounts);
+    let account = serialize(
+      findAccountWithoutExtendedProps(accountId, accounts)
+    );
     let accountBalanceInAtomicUnits: BigNumber;
     let accountInformation: IAccountInformation;
     let accountService: AccountService;
     let address: string;
-    let algodClient: Algodv2;
     let encodedGenesisHash: string;
     let filteredAssets: IStandardAsset[];
     let minimumBalanceRequirementInAtomicUnits: BigNumber;
@@ -230,42 +231,35 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     accountService = new AccountService({
       logger,
     });
-    account = {
-      ...account,
-      networkInformation: {
-        ...account.networkInformation,
-        [encodedGenesisHash]: await updateAccountInformation({
-          address,
-          currentAccountInformation: accountInformation,
-          delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
-          forceUpdate: true,
-          logger,
-          network,
-          nodeID,
-        }),
-      },
-      networkTransactions: {
-        ...account.networkTransactions,
-        [encodedGenesisHash]: await updateAccountTransactions({
-          address,
-          currentAccountTransactions:
-            account.networkTransactions[encodedGenesisHash] ||
-            AccountService.initializeDefaultAccountTransactions(),
-          delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
-          logger,
-          network,
-          nodeID,
-          refresh: true,
-        }),
-      },
-    };
-
-    logger.debug(
-      `${ThunkEnum.AddStandardAssetHoldings}: saving account "${account.id}" to storage`
-    );
+    account.networkInformation[encodedGenesisHash] =
+      await updateAccountInformation({
+        address,
+        currentAccountInformation: accountInformation,
+        delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+        forceUpdate: true,
+        logger,
+        network,
+        nodeID,
+      });
+    account.networkTransactions[encodedGenesisHash] =
+      await updateAccountTransactions({
+        address,
+        currentAccountTransactions:
+          account.networkTransactions[encodedGenesisHash] ||
+          AccountService.initializeDefaultAccountTransactions(),
+        delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+        logger,
+        network,
+        nodeID,
+        refresh: true,
+      });
 
     // save the account to storage
     await accountService.saveAccounts([account]);
+
+    logger.debug(
+      `${ThunkEnum.AddStandardAssetHoldings}: saved account "${account.id}" to storage`
+    );
 
     return {
       account: {

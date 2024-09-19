@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
@@ -25,6 +25,7 @@ import type {
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import isWatchAccount from '@extension/utils/isWatchAccount';
+import serialize from '@extension/utils/serialize';
 import { findAccountWithoutExtendedProps } from '../utils';
 
 const removeARC0200AssetHoldingsThunk: AsyncThunk<
@@ -41,7 +42,9 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const accounts = getState().accounts.items;
-    let account = findAccountWithoutExtendedProps(accountId, accounts);
+    let account = serialize(
+      findAccountWithoutExtendedProps(accountId, accounts)
+    );
     let accountService: AccountService;
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
@@ -79,19 +82,11 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     accountService = new AccountService({
       logger,
     });
-    account = {
-      ...account,
-      networkInformation: {
-        ...account.networkInformation,
-        [encodedGenesisHash]: {
-          ...currentAccountInformation,
-          arc200AssetHoldings:
-            currentAccountInformation.arc200AssetHoldings.filter(
-              (assetHolding) =>
-                !assets.find((value) => value.id === assetHolding.id) // filter the assets holdings that are not in the assets to be removed
-            ),
-        },
-      },
+    account.networkInformation[encodedGenesisHash] = {
+      ...currentAccountInformation,
+      arc200AssetHoldings: currentAccountInformation.arc200AssetHoldings.filter(
+        (assetHolding) => !assets.find((value) => value.id === assetHolding.id) // filter the assets holdings that are not in the assets to be removed
+      ),
     };
 
     logger.debug(

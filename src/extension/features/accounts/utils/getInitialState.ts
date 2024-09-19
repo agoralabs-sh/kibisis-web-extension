@@ -8,6 +8,6 @@ export default function getInitialState(): IState {
     items: [],
     pollingId: null,
     saving: false,
-    updatingAccounts: [],
+    updateRequests: [],
   };
 }

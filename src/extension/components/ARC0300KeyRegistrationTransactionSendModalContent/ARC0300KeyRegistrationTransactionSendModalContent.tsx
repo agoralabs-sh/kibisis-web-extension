@@ -252,7 +252,7 @@ const ARC0300KeyRegistrationTransactionSendModalContent: FC<
       // force update the account information as we spent fees and refresh all the new transactions
       dispatch(
         updateAccountsThunk({
-          accountIds: [account.id],
+          accountIDs: [account.id],
           forceInformationUpdate: true,
           refreshTransactions: true,
         })

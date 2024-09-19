@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';

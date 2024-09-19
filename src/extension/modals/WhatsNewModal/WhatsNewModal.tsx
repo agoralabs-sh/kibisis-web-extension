@@ -228,68 +228,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   textAlign="left"
                   w="full"
                 >
-                  🌐 Voi mainnet has been added to the list of networks.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  🌐 MainNet is set as the default network type.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  ⚙️ TestNet can be switched on from the settings.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  💅 New font applied: Nunito.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  ⚙️ Font selection can be changed in the settings (if you
-                  prefer the old font).
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  🚫 Voi TestNet Phase 2 quest tracking has been disabled.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  💅 Minor UI updates.
+                  🔃 Add button to force a refresh of account transactions
                 </Text>
               </ListItem>
             </UnorderedList>
@@ -312,8 +251,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   textAlign="left"
                   w="full"
                 >
-                  Previous account name value no longer appears when changing
-                  multiple account names.
+                  Account information and transactions should update timely.
                 </Text>
               </ListItem>
               <ListItem>
@@ -323,19 +261,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   textAlign="left"
                   w="full"
                 >
-                  Disconnected sessions are updated on the settings' sessions
-                  page.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  Only responds to Kibisis-specific message requests from AVM
-                  Web Provider/UseWallet requests.
+                  Switching network correctly updates block explorers
                 </Text>
               </ListItem>
             </UnorderedList>

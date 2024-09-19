@@ -1,12 +1,20 @@
 // models
 import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
 
+// types
+import type { TPartialExcept } from '@common/types';
+import type { INewOptions } from '@extension/models/BaseBlockExplorer';
+
 export default class AVMExplorerBlockExplorer extends BaseBlockExplorer {
-  constructor(baseURL: string) {
+  constructor({
+    baseURL,
+    canonicalName,
+    id,
+  }: TPartialExcept<INewOptions, 'baseURL'>) {
     super({
       baseURL: baseURL,
-      canonicalName: 'AVM Explorer',
-      id: 'avm-explorer-block-explorer',
+      canonicalName: canonicalName || 'AVM Explorer',
+      id: id || 'avm-explorer-block-explorer',
     });
   }
 

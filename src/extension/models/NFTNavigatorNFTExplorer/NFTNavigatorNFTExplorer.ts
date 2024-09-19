@@ -2,14 +2,22 @@
 import BaseNFTExplorer from '../BaseNFTExplorer';
 
 // types
-import type { ITokensURLOptions } from '../BaseNFTExplorer';
+import type { TPartialExcept } from '@common/types';
+import type {
+  INewOptions,
+  ITokensURLOptions,
+} from '@extension/models/BaseNFTExplorer';
 
 export default class NFTNavigatorNFTExplorer extends BaseNFTExplorer {
-  constructor() {
+  constructor({
+    baseURL,
+    canonicalName,
+    id,
+  }: TPartialExcept<INewOptions, 'baseURL'>) {
     super({
-      baseURL: 'https://arc72-idx.nftnavigator.xyz',
-      canonicalName: 'NFT Navigator',
-      id: 'nft-navigator-arc-0072-indexer',
+      baseURL,
+      canonicalName: canonicalName || 'NFT Navigator',
+      id: id || 'nft-navigator-arc-0072-indexer',
     });
   }
 
