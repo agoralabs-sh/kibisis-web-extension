@@ -170,14 +170,14 @@ const updateAccountsThunk: AsyncThunk<
     accounts = await accountService.saveAccounts(accounts);
 
     logger.debug(
-      `${ThunkEnum.AddStandardAssetHoldings}: saved accounts "[${accounts
-        .map(({ publicKey }) => convertPublicKeyToAVMAddress(publicKey))
-        .join(',')}]" to storage`
+      `${ThunkEnum.AddStandardAssetHoldings}: saved accounts [${accounts
+        .map(({ publicKey }) => `"${convertPublicKeyToAVMAddress(publicKey)}"`)
+        .join(',')}] to storage`
     );
 
     return await Promise.all(
       accounts.map(async (value) => ({
-        ...account,
+        ...value,
         watchAccount: await isWatchAccount({ account: value, logger }),
       }))
     );

@@ -63,6 +63,15 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const primaryColor = usePrimaryColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
+  // misc
+  const features = [
+    '🔃 Add button to force a refresh of account transactions.',
+  ];
+  const fixes = [
+    'Account information and transactions should update in a timely manner.',
+    'Switching network correctly updates block explorers.',
+    'Watch accounts no longer intermittently lose their badge.',
+  ];
   // handlers
   const handleClose = () => {
     // mark as read
@@ -211,60 +220,64 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
             </Heading>
 
             {/*features*/}
-            <Heading
-              color={primaryColor}
-              fontSize="sm"
-              textAlign="left"
-              w="full"
-            >
-              Features
-            </Heading>
-
-            <UnorderedList>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
+            {features.length > 0 && (
+              <>
+                <Heading
+                  color={primaryColor}
                   fontSize="sm"
                   textAlign="left"
                   w="full"
                 >
-                  🔃 Add button to force a refresh of account transactions
-                </Text>
-              </ListItem>
-            </UnorderedList>
+                  Features
+                </Heading>
+
+                <UnorderedList>
+                  {features.map((value, index) => (
+                    <ListItem
+                      key={`${WhatsNewModal.name}-features-list-${index}`}
+                    >
+                      <Text
+                        color={defaultTextColor}
+                        fontSize="sm"
+                        textAlign="left"
+                        w="full"
+                      >
+                        {value}
+                      </Text>
+                    </ListItem>
+                  ))}
+                </UnorderedList>
+              </>
+            )}
 
             {/*fixes*/}
-            <Heading
-              color={primaryColor}
-              fontSize="sm"
-              textAlign="left"
-              w="full"
-            >
-              Fixes
-            </Heading>
+            {fixes.length > 0 && (
+              <>
+                <Heading
+                  color={primaryColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  Fixes
+                </Heading>
 
-            <UnorderedList>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  Account information and transactions should update timely.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  Switching network correctly updates block explorers
-                </Text>
-              </ListItem>
-            </UnorderedList>
+                <UnorderedList>
+                  {fixes.map((value, index) => (
+                    <ListItem key={`${WhatsNewModal.name}-fixes-list-${index}`}>
+                      <Text
+                        color={defaultTextColor}
+                        fontSize="sm"
+                        textAlign="left"
+                        w="full"
+                      >
+                        {value}
+                      </Text>
+                    </ListItem>
+                  ))}
+                </UnorderedList>
+              </>
+            )}
 
             {/*extroduction*/}
             <Heading
