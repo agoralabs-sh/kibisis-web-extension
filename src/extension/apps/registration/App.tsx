@@ -1,19 +1,8 @@
-import { combineReducers, Store } from '@reduxjs/toolkit';
-import React, { FC } from 'react';
+import { combineReducers, type Store } from '@reduxjs/toolkit';
+import React, { type FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
-import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom';
-
-// components
-import ThemeProvider from '@extension/components/ThemeProvider';
-import Root from './Root';
-
-// constants
-import {
-  ADD_ACCOUNT_ROUTE,
-  CREATE_PASSWORD_ROUTE,
-  GET_STARTED_ROUTE,
-} from '@extension/constants';
+import { RouterProvider } from 'react-router-dom';
 
 // features
 import { reducer as arc200AssetsReducer } from '@extension/features/arc0200-assets';
@@ -24,47 +13,18 @@ import { reducer as settingsReducer } from '@extension/features/settings';
 import { reducer as registrationReducer } from '@extension/features/registration';
 import { reducer as systemReducer } from '@extension/features/system';
 
-// pages
-import CreatePasswordPage from '@extension/pages/CreatePasswordPage';
-import GetStartedPage from '@extension/pages/GetStartedPage';
-
-// routers
-import AddAccountRouter from '@extension/routers/AddAccountRegistrationRouter';
+// providers
+import ThemeProvider from '@extension/components/ThemeProvider';
 
 // types
 import type { IAppProps, IRegistrationRootState } from '@extension/types';
 
 // utils
 import makeStore from '@extension/utils/makeStore';
-
-const createRouter = () =>
-  createHashRouter([
-    {
-      children: [
-        {
-          element: <Navigate replace={true} to={GET_STARTED_ROUTE} />,
-          path: '/',
-        },
-        {
-          element: <GetStartedPage />,
-          path: GET_STARTED_ROUTE,
-        },
-        {
-          element: <CreatePasswordPage />,
-          path: CREATE_PASSWORD_ROUTE,
-        },
-        {
-          element: <AddAccountRouter />,
-          path: `${ADD_ACCOUNT_ROUTE}/*`,
-        },
-      ],
-      element: <Root />,
-      path: '/',
-    },
-  ]);
+import createRouter from './utils/createRouter';
 
 const App: FC<IAppProps> = ({
-  i18next,
+  i18n,
   initialColorMode,
   initialFontFamily,
 }: IAppProps) => {
@@ -83,12 +43,12 @@ const App: FC<IAppProps> = ({
 
   return (
     <Provider store={store}>
-      <I18nextProvider i18n={i18next}>
+      <I18nextProvider i18n={i18n}>
         <ThemeProvider
           initialColorMode={initialColorMode}
           initialFontFamily={initialFontFamily}
         >
-          <RouterProvider router={createRouter()} />
+          <RouterProvider router={createRouter({ i18n })} />
         </ThemeProvider>
       </I18nextProvider>
     </Provider>

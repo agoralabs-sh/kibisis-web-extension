@@ -1,9 +1,9 @@
-import { ColorMode } from '@chakra-ui/react';
-import * as CSS from 'csstype';
-import { i18n } from 'i18next';
+import type { ColorMode } from '@chakra-ui/react';
+import type * as CSS from 'csstype';
+import type { i18n } from 'i18next';
 
 interface IAppProps {
-  i18next: i18n;
+  i18n: i18n;
   initialColorMode: ColorMode;
   initialFontFamily: CSS.Property.FontFamily;
 }
