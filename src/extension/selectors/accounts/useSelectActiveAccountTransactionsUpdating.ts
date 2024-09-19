@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import useSelectActiveAccount from './useSelectActiveAccount';
 
 // types
-import type { IMainRootState } from '@extension/types';
+import type { IBackgroundRootState, IMainRootState } from '@extension/types';
 
 /**
  * Determines if the account transactions are being updated for the active account.
@@ -17,10 +17,13 @@ export default function useSelectActiveAccountTransactionsUpdating(): boolean {
     return false;
   }
 
-  return useSelector<IMainRootState, boolean>(
-    (state) =>
-      state.accounts.updateRequests.find(
-        (value) => value.accountID === account.id
-      )?.transactions || false
+  return useSelector<IBackgroundRootState | IMainRootState, boolean>(
+    (state) => {
+      const updateRequests = state.accounts.updateRequests.filter(
+        ({ accountIDs }) => accountIDs.some((value) => value === account.id)
+      );
+
+      return updateRequests.some(({ transactions }) => transactions);
+    }
   );
 }

@@ -33,6 +33,7 @@ const translation: IResourceLanguage = {
     ok: 'OK',
     previous: 'Previous',
     receive: 'Receive',
+    refresh: 'Refresh',
     reKey: 'Re-Key',
     remove: 'Remove',
     removePasskey: 'Remove Passkey',

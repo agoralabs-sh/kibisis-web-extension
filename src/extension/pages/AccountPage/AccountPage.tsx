@@ -172,6 +172,15 @@ const AccountPage: FC = () => {
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleOnEditAccountClick = () => onEditAccountModalOpen();
   const handleOnWhatsNewClick = () => dispatch(setWhatsNewModal(true));
+  const handleOnRefreshActivityClick = () => {
+    dispatch(
+      updateAccountsThunk({
+        accountIDs: accounts.map(({ id }) => id),
+        information: false, // get account information
+        refreshTransactions: true, // get latest transactions
+      })
+    );
+  };
   const handleNetworkSelect = async (value: INetwork) => {
     await dispatch(
       saveSettingsToStorageThunk({
@@ -187,8 +196,6 @@ const AccountPage: FC = () => {
     dispatch(
       updateAccountsThunk({
         accountIDs: accounts.map(({ id }) => id),
-        informationOnly: false, // get account information
-        refreshTransactions: true, // get latest transactions
       })
     );
     dispatch(updateTransactionParamsForSelectedNetworkThunk());
@@ -486,6 +493,7 @@ const AccountPage: FC = () => {
                 accounts={accounts}
                 fetching={fetchingAccounts}
                 network={network}
+                onRefreshClick={handleOnRefreshActivityClick}
                 onScrollEnd={handleActivityScrollEnd}
               />
             </TabPanels>

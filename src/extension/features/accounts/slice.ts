@@ -324,7 +324,7 @@ const slice = createSlice({
           accountIDs: action.meta.arg.accountIDs,
           information: true,
           requestID: action.meta.requestId,
-          transactions: !action.meta.arg.informationOnly,
+          transactions: !action.meta.arg.information,
         },
       ];
     });

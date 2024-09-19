@@ -47,8 +47,9 @@ const updateAccountsThunk: AsyncThunk<
     {
       accountIDs,
       forceInformationUpdate = false,
-      informationOnly = true,
+      information = true,
       refreshTransactions = false,
+      transactions = true,
     },
     { getState, requestId }
   ) => {
@@ -99,38 +100,41 @@ const updateAccountsThunk: AsyncThunk<
       settings,
     });
 
-    for (let i = 0; i < accounts.length; i++) {
-      account = serialize(accounts[i]);
+    // ignore information update, if the information property is set to false
+    if (information) {
+      for (let i = 0; i < accounts.length; i++) {
+        account = serialize(accounts[i]);
 
-      // if the information is being updated, skip
-      if (
-        !isAccountInformationUpdating({
-          accountID: account.id,
-          updateRequests,
-          requestID: requestId,
-        })
-      ) {
-        account.networkInformation[encodedGenesisHash] =
-          await updateAccountInformation({
-            address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
-            currentAccountInformation:
-              accounts[i].networkInformation[encodedGenesisHash] ||
-              AccountService.initializeDefaultAccountInformation(),
-            delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
-            forceUpdate: forceInformationUpdate,
-            logger,
-            network,
-            nodeID,
-          });
+        // if the information is being updated, skip
+        if (
+          !isAccountInformationUpdating({
+            accountID: account.id,
+            updateRequests,
+            requestID: requestId,
+          })
+        ) {
+          account.networkInformation[encodedGenesisHash] =
+            await updateAccountInformation({
+              address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
+              currentAccountInformation:
+                accounts[i].networkInformation[encodedGenesisHash] ||
+                AccountService.initializeDefaultAccountInformation(),
+              delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
+              forceUpdate: forceInformationUpdate,
+              logger,
+              network,
+              nodeID,
+            });
+        }
+
+        accounts = accounts.map((value) =>
+          value.id === account.id ? account : value
+        );
       }
-
-      accounts = accounts.map((value) =>
-        value.id === account.id ? account : value
-      );
     }
 
-    // ignore transaction updates if account information only has been specified
-    if (!informationOnly) {
+    // ignore transactions update if the transaction property is set to false
+    if (transactions) {
       for (let i = 0; i < accounts.length; i++) {
         account = serialize(accounts[i]);
 

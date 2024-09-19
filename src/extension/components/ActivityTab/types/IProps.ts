@@ -10,6 +10,7 @@ interface IProps extends IPropsWithContext {
   accounts: IAccountWithExtendedProps[];
   fetching: boolean;
   network: INetworkWithTransactionParams;
+  onRefreshClick: () => void;
   onScrollEnd: () => void;
 }
 

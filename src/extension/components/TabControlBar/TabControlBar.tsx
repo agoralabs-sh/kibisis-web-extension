@@ -1,5 +1,7 @@
 import { HStack, Spacer, Spinner, Tooltip } from '@chakra-ui/react';
-import React, { type FC } from 'react';
+import React, { type FC, ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+import { IoReloadOutline } from 'react-icons/io5';
 
 // components
 import IconButton from '@extension/components/IconButton';
@@ -19,21 +21,43 @@ const TabControlBar: FC<IProps> = ({
   buttons,
   isLoading = false,
   loadingTooltipLabel,
+  onRefresh,
 }) => {
+  const { t } = useTranslation();
   // hooks
   const itemBorderColor = useItemBorderColor();
   const primaryColor = usePrimaryColor();
   // renders
   const renderLoader = () => {
-    const node = (
-      <Spinner thickness="1px" speed="0.65s" color={primaryColor} size="sm" />
-    );
+    let node: ReactElement;
 
-    if (!loadingTooltipLabel) {
-      return node;
+    if (isLoading) {
+      node = (
+        <Spinner thickness="1px" speed="0.65s" color={primaryColor} size="sm" />
+      );
+
+      if (!loadingTooltipLabel) {
+        return node;
+      }
+
+      return <Tooltip label={loadingTooltipLabel}>{node}</Tooltip>;
     }
 
-    return <Tooltip label={loadingTooltipLabel}>{node}</Tooltip>;
+    if (onRefresh) {
+      return (
+        <Tooltip label={t<string>('buttons.refresh')}>
+          <IconButton
+            aria-label={t<string>('buttons.refresh')}
+            icon={IoReloadOutline}
+            onClick={onRefresh}
+            size="sm"
+            variant="ghost"
+          />
+        </Tooltip>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -48,8 +72,8 @@ const TabControlBar: FC<IProps> = ({
       spacing={1}
       w="full"
     >
-      {/*spinner*/}
-      {isLoading && renderLoader()}
+      {/*refresh button*/}
+      {renderLoader()}
 
       <Spacer minH={DEFAULT_GAP + 2} />
 

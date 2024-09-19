@@ -53,8 +53,6 @@ export default function useOnAppStartup(): void {
         dispatch(
           updateAccountsThunk({
             accountIDs: accounts.map(({ id }) => id),
-            informationOnly: false, // get account information
-            refreshTransactions: true, // get latest transactions
           })
         );
         dispatch(updateTransactionParamsForSelectedNetworkThunk());

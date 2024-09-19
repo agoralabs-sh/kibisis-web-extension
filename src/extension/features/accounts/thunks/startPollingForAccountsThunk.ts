@@ -37,11 +37,10 @@ const startPollingForAccountsThunk: AsyncThunk<
     dispatch(
       updateAccountsThunk({
         accountIDs: accounts.map(({ id }) => id),
-        informationOnly: false, // get account information
-        refreshTransactions: true, // get any new transactions
+        refreshTransactions: true, // get latest transactions
       })
     );
-  }, ACCOUNT_INFORMATION_REFRESH_INTERVAL); // update every 2 minutes
+  }, ACCOUNT_INFORMATION_REFRESH_INTERVAL);
 });
 
 export default startPollingForAccountsThunk;
