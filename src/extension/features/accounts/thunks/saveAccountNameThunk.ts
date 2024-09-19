@@ -16,6 +16,7 @@ import type { ISaveAccountNamePayload } from '../types';
 
 // utils
 import isWatchAccount from '@extension/utils/isWatchAccount/isWatchAccount';
+import serialize from '@extension/utils/serialize';
 import { findAccountWithoutExtendedProps } from '../utils';
 
 const saveAccountNameThunk: AsyncThunk<
@@ -32,7 +33,7 @@ const saveAccountNameThunk: AsyncThunk<
   const accountService = new AccountService({
     logger,
   });
-  let account = findAccountWithoutExtendedProps(accountId, accounts);
+  let account = serialize(findAccountWithoutExtendedProps(accountId, accounts));
 
   if (!account) {
     logger.debug(

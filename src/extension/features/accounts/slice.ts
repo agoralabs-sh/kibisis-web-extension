@@ -25,12 +25,7 @@ import type {
   IAccountWithExtendedProps,
   IActiveAccountDetails,
 } from '@extension/types';
-import type {
-  IFetchAccountsFromStorageResult,
-  IState,
-  IUpdateAssetHoldingsResult,
-  IUpdateStandardAssetHoldingsResult,
-} from './types';
+import type { IFetchAccountsFromStorageResult, IState } from './types';
 
 // utils
 import upsertItemsById from '@extension/utils/upsertItemsById';
@@ -41,29 +36,27 @@ const slice = createSlice({
     /** add arc-0200 asset holdings **/
     builder.addCase(
       addARC0200AssetHoldingsThunk.fulfilled,
-      (state: IState, action: PayloadAction<IUpdateAssetHoldingsResult>) => {
+      (state: IState, action) => {
         state.items = state.items.map((value) =>
           value.id === action.payload?.account.id
             ? action.payload.account
             : value
         );
-        // remove updated account from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.payload?.account.id
+        // remove the update request
+        state.updateRequests = state.updateRequests.filter(
+          ({ requestID }) => requestID !== action.meta.requestId
         );
       }
     );
     builder.addCase(
       addARC0200AssetHoldingsThunk.pending,
       (state: IState, action) => {
-        state.updatingAccounts = [
-          // filter the unrelated updating account ids
-          ...(state.updatingAccounts = state.updatingAccounts.filter(
-            (value) => value.id !== action.meta.arg.accountId
-          )),
-          // re-add the account being updated
+        // add an update request
+        state.updateRequests = [
+          ...state.updateRequests,
           {
-            id: action.meta.arg.accountId,
+            accountIDs: [action.meta.arg.accountId],
+            requestID: action.meta.requestId,
             information: true,
             transactions: false,
           },
@@ -73,41 +66,36 @@ const slice = createSlice({
     builder.addCase(
       addARC0200AssetHoldingsThunk.rejected,
       (state: IState, action) => {
-        // remove updated account from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.meta.arg.accountId
+        // remove the update request
+        state.updateRequests = state.updateRequests.filter(
+          ({ requestID }) => requestID !== action.meta.requestId
         );
       }
     );
     /** add standard asset holdings **/
     builder.addCase(
       addStandardAssetHoldingsThunk.fulfilled,
-      (
-        state: IState,
-        action: PayloadAction<IUpdateStandardAssetHoldingsResult>
-      ) => {
+      (state: IState, action) => {
         state.items = state.items.map((value) =>
           value.id === action.payload?.account.id
             ? action.payload.account
             : value
         );
-        // remove updated account from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.payload?.account.id
+        // remove the update request
+        state.updateRequests = state.updateRequests.filter(
+          ({ requestID }) => requestID !== action.meta.requestId
         );
       }
     );
     builder.addCase(
       addStandardAssetHoldingsThunk.pending,
       (state: IState, action) => {
-        state.updatingAccounts = [
-          // filter the unrelated updating account ids
-          ...(state.updatingAccounts = state.updatingAccounts.filter(
-            (value) => value.id !== action.meta.arg.accountId
-          )),
-          // re-add the account being updated
+        // add an update request
+        state.updateRequests = [
+          ...state.updateRequests,
           {
-            id: action.meta.arg.accountId,
+            accountIDs: [action.meta.arg.accountId],
+            requestID: action.meta.requestId,
             information: true,
             transactions: false,
           },
@@ -117,9 +105,9 @@ const slice = createSlice({
     builder.addCase(
       addStandardAssetHoldingsThunk.rejected,
       (state: IState, action) => {
-        // remove updated account from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.meta.arg.accountId
+        // remove the update request
+        state.updateRequests = state.updateRequests.filter(
+          ({ requestID }) => requestID !== action.meta.requestId
         );
       }
     );
@@ -160,29 +148,27 @@ const slice = createSlice({
     /** remove arc-0200 asset holdings **/
     builder.addCase(
       removeARC0200AssetHoldingsThunk.fulfilled,
-      (state: IState, action: PayloadAction<IUpdateAssetHoldingsResult>) => {
+      (state: IState, action) => {
         state.items = state.items.map((value) =>
           value.id === action.payload?.account.id
             ? action.payload.account
             : value
         );
-        // remove updated account from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.payload?.account.id
+        // remove the update request
+        state.updateRequests = state.updateRequests.filter(
+          ({ requestID }) => requestID !== action.meta.requestId
         );
       }
     );
     builder.addCase(
       removeARC0200AssetHoldingsThunk.pending,
       (state: IState, action) => {
-        state.updatingAccounts = [
-          // filter the unrelated updating account ids
-          ...(state.updatingAccounts = state.updatingAccounts.filter(
-            (value) => value.id !== action.meta.arg.accountId
-          )),
-          // re-add the account being updated
+        // add an update request
+        state.updateRequests = [
+          ...state.updateRequests,
           {
-            id: action.meta.arg.accountId,
+            accountIDs: [action.meta.arg.accountId],
+            requestID: action.meta.requestId,
             information: true,
             transactions: false,
           },
@@ -192,41 +178,36 @@ const slice = createSlice({
     builder.addCase(
       removeARC0200AssetHoldingsThunk.rejected,
       (state: IState, action) => {
-        // remove updated account from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.meta.arg.accountId
+        // remove the update request
+        state.updateRequests = state.updateRequests.filter(
+          ({ requestID }) => requestID !== action.meta.requestId
         );
       }
     );
     /** remove standard asset holdings **/
     builder.addCase(
       removeStandardAssetHoldingsThunk.fulfilled,
-      (
-        state: IState,
-        action: PayloadAction<IUpdateStandardAssetHoldingsResult>
-      ) => {
+      (state: IState, action) => {
         state.items = state.items.map((value) =>
           value.id === action.payload?.account.id
             ? action.payload.account
             : value
         );
-        // remove updated account from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.payload?.account.id
+        // remove the update request
+        state.updateRequests = state.updateRequests.filter(
+          ({ requestID }) => requestID !== action.meta.requestId
         );
       }
     );
     builder.addCase(
       removeStandardAssetHoldingsThunk.pending,
       (state: IState, action) => {
-        state.updatingAccounts = [
-          // filter the unrelated updating account ids
-          ...(state.updatingAccounts = state.updatingAccounts.filter(
-            (value) => value.id !== action.meta.arg.accountId
-          )),
-          // re-add the account being updated
+        // add an update request
+        state.updateRequests = [
+          ...state.updateRequests,
           {
-            id: action.meta.arg.accountId,
+            accountIDs: [action.meta.arg.accountId],
+            requestID: action.meta.requestId,
             information: true,
             transactions: false,
           },
@@ -236,9 +217,9 @@ const slice = createSlice({
     builder.addCase(
       removeStandardAssetHoldingsThunk.rejected,
       (state: IState, action) => {
-        // remove updated account from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (value) => value.id !== action.meta.arg.accountId
+        // remove the update request
+        state.updateRequests = state.updateRequests.filter(
+          ({ requestID }) => requestID !== action.meta.requestId
         );
       }
     );
@@ -324,70 +305,34 @@ const slice = createSlice({
       state.pollingId = null;
     });
     /** update accounts **/
-    builder.addCase(
-      updateAccountsThunk.fulfilled,
-      (state: IState, action: PayloadAction<IAccountWithExtendedProps[]>) => {
-        state.items = state.items.map(
-          (account) =>
-            action.payload.find((value) => value.id === account.id) || account
-        );
-
-        // remove all the updated accounts from the account update list
-        state.updatingAccounts = state.updatingAccounts.filter(
-          (accountUpdate) =>
-            !action.payload.find((value) => value.id === accountUpdate.id)
-        );
-      }
-    );
+    builder.addCase(updateAccountsThunk.fulfilled, (state: IState, action) => {
+      // update the updated accounts
+      state.items = state.items.map(
+        (account) =>
+          action.payload.find((value) => value.id === account.id) || account
+      );
+      // remove the update request
+      state.updateRequests = state.updateRequests.filter(
+        ({ requestID }) => requestID !== action.meta.requestId
+      );
+    });
     builder.addCase(updateAccountsThunk.pending, (state: IState, action) => {
-      // if no account ids, all accounts are being updated
-      if (!action.meta.arg?.accountIds) {
-        state.updatingAccounts = state.items.map((value) => ({
-          id: value.id,
+      // add an update request
+      state.updateRequests = [
+        ...state.updateRequests,
+        {
+          accountIDs: action.meta.arg.accountIDs,
           information: true,
-          transactions: !action.meta?.arg?.informationOnly,
-        }));
-
-        return;
-      }
-
-      // filter the accounts by the supplied ids
-      state.updatingAccounts = [
-        ...(state.updatingAccounts = state.updatingAccounts.filter(
-          (accountUpdate) =>
-            !action.meta.arg?.accountIds?.find(
-              (value) => value === accountUpdate.id
-            )
-        )),
-        ...(action.meta.arg?.accountIds?.map((value) => ({
-          id: value,
-          information: true,
-          transactions: !action.meta?.arg?.informationOnly,
-        })) || []),
+          requestID: action.meta.requestId,
+          transactions: !action.meta.arg.informationOnly,
+        },
       ];
     });
     builder.addCase(updateAccountsThunk.rejected, (state: IState, action) => {
-      // if no account ids, no accounts are being updated
-      if (!action.meta.arg?.accountIds) {
-        state.updatingAccounts = [];
-
-        return;
-      }
-
-      // filter the accounts by the supplied ids
-      state.updatingAccounts = [
-        ...(state.updatingAccounts = state.updatingAccounts.filter(
-          (accountUpdate) =>
-            !action.meta.arg?.accountIds?.find(
-              (value) => value === accountUpdate.id
-            )
-        )),
-        ...(action.meta.arg?.accountIds?.map((value) => ({
-          id: value,
-          information: false,
-          transactions: false,
-        })) || []),
-      ];
+      // remove the update request
+      state.updateRequests = state.updateRequests.filter(
+        ({ requestID }) => requestID !== action.meta.requestId
+      );
     });
   },
   initialState: getInitialState(),

@@ -32,9 +32,10 @@ import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import initializeARC0200AssetHoldingFromARC0200Asset from '@extension/utils/initializeARC0200AssetHoldingFromARC0200Asset';
 import isWatchAccount from '@extension/utils/isWatchAccount';
+import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
+import serialize from '@extension/utils/serialize';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import { findAccountWithoutExtendedProps } from '../utils';
-import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
 
 const addARC0200AssetHoldingsThunk: AsyncThunk<
   IUpdateAssetHoldingsResult, // return
@@ -51,7 +52,9 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const settings = getState().settings;
-    let account = findAccountWithoutExtendedProps(accountId, accounts);
+    let account = serialize(
+      findAccountWithoutExtendedProps(accountId, accounts)
+    );
     let accountService: AccountService;
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
@@ -103,29 +106,24 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
       genesisHash: network.genesisHash,
       settings,
     });
-    account = {
-      ...account,
-      networkInformation: {
-        ...account.networkInformation,
-        [encodedGenesisHash]: await updateAccountInformation({
-          address: convertPublicKeyToAVMAddress(
-            PrivateKeyService.decode(account.publicKey)
-          ),
-          currentAccountInformation: {
-            ...currentAccountInformation,
-            arc200AssetHoldings: [
-              ...currentAccountInformation.arc200AssetHoldings,
-              ...newAssetHoldings,
-            ],
-          },
-          delay: NODE_REQUEST_DELAY,
-          forceUpdate: true,
-          logger,
-          network,
-          nodeID,
-        }),
-      },
-    };
+    account.networkInformation[encodedGenesisHash] =
+      await updateAccountInformation({
+        address: convertPublicKeyToAVMAddress(
+          PrivateKeyService.decode(account.publicKey)
+        ),
+        currentAccountInformation: {
+          ...currentAccountInformation,
+          arc200AssetHoldings: [
+            ...currentAccountInformation.arc200AssetHoldings,
+            ...newAssetHoldings,
+          ],
+        },
+        delay: NODE_REQUEST_DELAY,
+        forceUpdate: true,
+        logger,
+        network,
+        nodeID,
+      });
 
     logger.debug(
       `${ThunkEnum.AddARC0200AssetHoldings}: saving account "${account.id}" to storage`

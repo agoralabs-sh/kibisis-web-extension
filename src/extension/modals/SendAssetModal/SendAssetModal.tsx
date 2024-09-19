@@ -299,7 +299,7 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       // force update the account information as we spent fees and refresh all the new transactions
       dispatch(
         updateAccountsThunk({
-          accountIds: receiverAccount
+          accountIDs: receiverAccount
             ? [sender.id, receiverAccount.id]
             : [sender.id],
           forceInformationUpdate: true,

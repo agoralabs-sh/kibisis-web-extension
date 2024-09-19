@@ -92,7 +92,7 @@ const AddAccountMainRouter: FC = () => {
   const updateAccounts = (accountId: string) => {
     dispatch(
       updateAccountsThunk({
-        accountIds: [accountId],
+        accountIDs: [accountId],
       })
     );
     dispatch(

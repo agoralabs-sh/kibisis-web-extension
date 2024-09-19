@@ -18,6 +18,7 @@ import type {
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
+import serialize from '@extension/utils/serialize';
 
 const saveToStorageThunk: AsyncThunk<
   ISettings, // return
@@ -33,7 +34,7 @@ const saveToStorageThunk: AsyncThunk<
   const settingsService = new SettingsService({
     logger,
   });
-  let _settings: ISettings = JSON.parse(JSON.stringify(settings)); // copy the readonly incoming settings
+  let _settings = serialize(settings); // copy the readonly incoming settings
   let network = selectNetworkFromSettings({
     networks,
     settings,

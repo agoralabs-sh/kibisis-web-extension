@@ -19,7 +19,8 @@ export default function useSelectActiveAccountTransactionsUpdating(): boolean {
 
   return useSelector<IMainRootState, boolean>(
     (state) =>
-      state.accounts.updatingAccounts.find((value) => value.id === account.id)
-        ?.transactions || false
+      state.accounts.updateRequests.find(
+        (value) => value.accountID === account.id
+      )?.transactions || false
   );
 }

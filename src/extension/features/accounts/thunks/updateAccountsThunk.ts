@@ -13,6 +13,7 @@ import AccountService from '@extension/services/AccountService';
 import type {
   IAccount,
   IAccountWithExtendedProps,
+  IBackgroundRootState,
   IBaseAsyncThunkConfig,
   IMainRootState,
   INetwork,
@@ -26,36 +27,36 @@ import isWatchAccount from '@extension/utils/isWatchAccount';
 import mapAccountWithExtendedPropsToAccount from '@extension/utils/mapAccountWithExtendedPropsToAccount';
 import selectNetworkFromSettings from '@extension/utils/selectNetworkFromSettings';
 import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings';
+import serialize from '@extension/utils/serialize';
 import updateAccountInformation from '@extension/utils/updateAccountInformation';
 import updateAccountTransactions from '@extension/utils/updateAccountTransactions';
+import isAccountInformationUpdating from '../utils/isAccountInformationUpdating';
+import isAccountTransactionsUpdating from '../utils/isAccountTransactionsUpdating';
 
 const updateAccountsThunk: AsyncThunk<
   IAccountWithExtendedProps[], // return
-  IUpdateAccountsPayload | undefined, // args
-  IBaseAsyncThunkConfig<IMainRootState>
+  IUpdateAccountsPayload, // args
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 > = createAsyncThunk<
   IAccountWithExtendedProps[],
-  IUpdateAccountsPayload | undefined,
-  IBaseAsyncThunkConfig<IMainRootState>
+  IUpdateAccountsPayload,
+  IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(
   ThunkEnum.UpdateAccounts,
   async (
     {
-      accountIds,
-      forceInformationUpdate,
-      informationOnly,
-      refreshTransactions,
-    } = {
-      forceInformationUpdate: false,
-      informationOnly: true,
-      refreshTransactions: false,
+      accountIDs,
+      forceInformationUpdate = false,
+      informationOnly = true,
+      refreshTransactions = false,
     },
-    { getState }
+    { getState, requestId }
   ) => {
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
     const settings = getState().settings;
+    const updateRequests = getState().accounts.updateRequests;
     let account: IAccount;
     let accountService: AccountService;
     let accounts = getState().accounts.items.map((value) =>
@@ -86,13 +87,9 @@ const updateAccountsThunk: AsyncThunk<
       return [];
     }
 
-    // if we have account ids, get all the accounts that match
-    if (accountIds) {
-      accounts = accounts.filter(
-        (account) => !!accountIds.find((value) => value === account.id)
-      );
-    }
-
+    accounts = accounts.filter(
+      (account) => !!accountIDs.find((value) => value === account.id)
+    );
     accountService = new AccountService({
       logger,
     });
@@ -102,20 +99,19 @@ const updateAccountsThunk: AsyncThunk<
       settings,
     });
 
-    logger.debug(
-      `${
-        ThunkEnum.UpdateAccounts
-      }: updating account information for accounts [${accounts
-        .map(({ publicKey }) => convertPublicKeyToAVMAddress(publicKey))
-        .join(',')}] for network "${network.genesisId}"`
-    );
-
     for (let i = 0; i < accounts.length; i++) {
-      account = {
-        ...accounts[i],
-        networkInformation: {
-          ...accounts[i].networkInformation,
-          [encodedGenesisHash]: await updateAccountInformation({
+      account = serialize(accounts[i]);
+
+      // if the information is being updated, skip
+      if (
+        !isAccountInformationUpdating({
+          accountID: account.id,
+          updateRequests,
+          requestID: requestId,
+        })
+      ) {
+        account.networkInformation[encodedGenesisHash] =
+          await updateAccountInformation({
             address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
             currentAccountInformation:
               accounts[i].networkInformation[encodedGenesisHash] ||
@@ -125,9 +121,8 @@ const updateAccountsThunk: AsyncThunk<
             logger,
             network,
             nodeID,
-          }),
-        },
-      };
+          });
+      }
 
       accounts = accounts.map((value) =>
         value.id === account.id ? account : value
@@ -137,11 +132,18 @@ const updateAccountsThunk: AsyncThunk<
     // ignore transaction updates if account information only has been specified
     if (!informationOnly) {
       for (let i = 0; i < accounts.length; i++) {
-        account = {
-          ...accounts[i],
-          networkTransactions: {
-            ...accounts[i].networkTransactions,
-            [encodedGenesisHash]: await updateAccountTransactions({
+        account = serialize(accounts[i]);
+
+        // if the transactions are being updated, skip
+        if (
+          !isAccountTransactionsUpdating({
+            accountID: account.id,
+            updateRequests,
+            requestID: requestId,
+          })
+        ) {
+          account.networkTransactions[encodedGenesisHash] =
+            await updateAccountTransactions({
               address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
               currentAccountTransactions:
                 accounts[i].networkTransactions[encodedGenesisHash] ||
@@ -151,9 +153,8 @@ const updateAccountsThunk: AsyncThunk<
               network,
               nodeID,
               refresh: refreshTransactions,
-            }),
-          },
-        };
+            });
+        }
 
         accounts = accounts.map((value) =>
           value.id === account.id ? account : value
@@ -162,7 +163,13 @@ const updateAccountsThunk: AsyncThunk<
     }
 
     // save accounts to storage
-    await accountService.saveAccounts(accounts);
+    accounts = await accountService.saveAccounts(accounts);
+
+    logger.debug(
+      `${ThunkEnum.AddStandardAssetHoldings}: saved accounts "[${accounts
+        .map(({ publicKey }) => convertPublicKeyToAVMAddress(publicKey))
+        .join(',')}]" to storage`
+    );
 
     return await Promise.all(
       accounts.map(async (value) => ({

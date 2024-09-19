@@ -33,8 +33,6 @@ export default class SettingsService extends BaseService {
    */
 
   public static initializeDefaultSettings(): ISettings {
-    const { genesisHash } = selectDefaultNetwork(networks);
-
     return {
       advanced: {
         allowBetaNet: false,
@@ -49,7 +47,7 @@ export default class SettingsService extends BaseService {
       general: {
         preferredBlockExplorerIds: {},
         preferredNFTExplorerIds: {},
-        selectedNetworkGenesisHash: genesisHash,
+        selectedNetworkGenesisHash: null,
         selectedNodeIDs: {},
       },
       privacy: {
@@ -79,6 +77,8 @@ export default class SettingsService extends BaseService {
     privacy,
     security,
   }: ISettings): ISettings {
+    const { genesisHash } = selectDefaultNetwork(networks);
+
     return {
       advanced: {
         allowBetaNet: advanced.allowBetaNet,
@@ -93,7 +93,8 @@ export default class SettingsService extends BaseService {
       general: {
         preferredBlockExplorerIds: general.preferredBlockExplorerIds,
         preferredNFTExplorerIds: general.preferredNFTExplorerIds,
-        selectedNetworkGenesisHash: general.selectedNetworkGenesisHash,
+        selectedNetworkGenesisHash:
+          general.selectedNetworkGenesisHash || genesisHash,
         selectedNodeIDs: general.selectedNodeIDs,
       },
       privacy: privacy,

@@ -85,7 +85,7 @@ export default class NetworkClient {
    * public functions
    */
 
-  public async accountInformationWIthDelay({
+  public async accountInformationWithDelay({
     address,
     delay,
     nodeID,

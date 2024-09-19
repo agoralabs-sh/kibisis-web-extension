@@ -14,7 +14,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { type FC, useEffect } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
@@ -61,6 +61,7 @@ import {
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { setConfirmModal, setWhatsNewModal } from '@extension/features/layout';
+import { updateTransactionParamsForSelectedNetworkThunk } from '@extension/features/networks';
 import {
   setAccountAndType as setReKeyAccount,
   TReKeyType,
@@ -163,7 +164,7 @@ const AccountPage: FC = () => {
     if (account && accountTransactions && accountTransactions.next) {
       dispatch(
         updateAccountsThunk({
-          accountIds: [account.id],
+          accountIDs: [account.id],
         })
       );
     }
@@ -171,8 +172,8 @@ const AccountPage: FC = () => {
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleOnEditAccountClick = () => onEditAccountModalOpen();
   const handleOnWhatsNewClick = () => dispatch(setWhatsNewModal(true));
-  const handleNetworkSelect = (value: INetwork) => {
-    dispatch(
+  const handleNetworkSelect = async (value: INetwork) => {
+    await dispatch(
       saveSettingsToStorageThunk({
         ...settings,
         general: {
@@ -180,7 +181,17 @@ const AccountPage: FC = () => {
           selectedNetworkGenesisHash: value.genesisHash,
         },
       })
+    ).unwrap();
+
+    // when the settings have been updated, fetch update the account and transaction params
+    dispatch(
+      updateAccountsThunk({
+        accountIDs: accounts.map(({ id }) => id),
+        informationOnly: false, // get account information
+        refreshTransactions: true, // get latest transactions
+      })
     );
+    dispatch(updateTransactionParamsForSelectedNetworkThunk());
   };
   const handleReKeyAccountClick = (type: TReKeyType) => () =>
     account &&
@@ -552,22 +563,6 @@ const AccountPage: FC = () => {
 
     return null;
   };
-
-  useEffect(() => {
-    if (account) {
-      // if we have no transaction data, or the transaction data is empty, attempt a fetch
-      if (
-        !accountTransactions ||
-        accountTransactions.transactions.length <= 0
-      ) {
-        dispatch(
-          updateAccountsThunk({
-            accountIds: [account.id],
-          })
-        );
-      }
-    }
-  }, [network]);
 
   return (
     <>
