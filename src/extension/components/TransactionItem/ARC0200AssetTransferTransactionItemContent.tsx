@@ -14,14 +14,14 @@ import { DEFAULT_GAP } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import {
   useSelectARC0200AssetsBySelectedNetwork,
   useSelectARC0200AssetsUpdating,
 } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -48,7 +48,7 @@ const ARC0200AssetTransferTransactionItemContent: FC<
   // misc
   const amount = new BigNumber(String(transaction.amount));
   const senderAddress = convertPublicKeyToAVMAddress(
-    PrivateKeyService.decode(account.publicKey)
+    AccountRepository.decode(account.publicKey)
   );
 
   useEffect(() => {

@@ -39,7 +39,6 @@ import calculateIconSize from '@extension/utils/calculateIconSize';
 const AssetSelect: FC<IProps> = ({
   _context,
   assets,
-  disabled = false,
   label,
   network,
   onSelect,

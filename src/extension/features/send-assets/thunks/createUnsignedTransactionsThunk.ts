@@ -13,8 +13,8 @@ import {
   OfflineError,
 } from '@extension/errors';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -99,7 +99,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
     }
 
     senderAccountInformation =
-      AccountService.extractAccountInformationForNetwork(sender, network);
+      AccountRepository.extractAccountInformationForNetwork(sender, network);
     senderAddress = convertPublicKeyToAVMAddress(sender.publicKey);
 
     if (!senderAccountInformation) {

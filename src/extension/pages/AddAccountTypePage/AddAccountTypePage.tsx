@@ -1,7 +1,6 @@
 import { Grid, GridItem } from '@chakra-ui/react';
-import React, { type FC, useEffect, useState } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CiUsb } from 'react-icons/ci';
 import { IoEyeOutline, IoQrCodeOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 

@@ -6,8 +6,8 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { StandardAssetsThunkEnum } from '@extension/enums';
 
-// services
-import StandardAssetService from '@extension/services/StandardAssetService';
+// repositories
+import StandardAssetRepository from '@extension/repositories/StandardAssetRepository';
 
 // types
 import type {
@@ -46,7 +46,7 @@ const updateStandardAssetInformationThunk: AsyncThunk<
     let asset: IStandardAsset | null;
     let currentAssets: IStandardAsset[];
     let id: string;
-    let assetService: StandardAssetService;
+    let repository: StandardAssetRepository;
     let updatedAssets: IStandardAsset[] = [];
 
     // get the information for each asset and add it to the array
@@ -82,20 +82,18 @@ const updateStandardAssetInformationThunk: AsyncThunk<
       }
     }
 
-    assetService = new StandardAssetService({
-      logger,
-    });
-    currentAssets = await assetService.getByGenesisHash(network.genesisHash);
+    repository = new StandardAssetRepository();
+    currentAssets = await repository.fetchByGenesisHash(network.genesisHash);
 
     logger.debug(
       `${StandardAssetsThunkEnum.UpdateStandardAssetInformation}: saving new asset information for network "${network.genesisId}" to storage`
     );
 
     // update the storage with the new asset information
-    currentAssets = await assetService.saveByGenesisHash(
-      network.genesisHash,
-      upsertItemsById<IStandardAsset>(currentAssets, updatedAssets)
-    );
+    currentAssets = await repository.saveByGenesisHash({
+      genesisHash: network.genesisHash,
+      items: upsertItemsById<IStandardAsset>(currentAssets, updatedAssets),
+    });
 
     return {
       network,

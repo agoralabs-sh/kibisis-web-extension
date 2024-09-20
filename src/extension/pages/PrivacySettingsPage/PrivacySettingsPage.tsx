@@ -1,7 +1,6 @@
-import { Button, Link, VStack } from '@chakra-ui/react';
-import React, { ChangeEvent, FC } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { IoOpenOutline } from 'react-icons/io5';
+import { VStack } from '@chakra-ui/react';
+import React, { type ChangeEvent, type FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 // components
@@ -14,9 +13,6 @@ import { DEFAULT_GAP } from '@extension/constants';
 
 // features
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
-
-// hooks
-import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 
 // selectors
 import { useSelectSettings } from '@extension/selectors';
@@ -33,8 +29,6 @@ const PrivacySettingsPage: FC = () => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const settings = useSelectSettings();
-  // hooks
-  const primaryColorScheme = usePrimaryColorScheme();
   // handlers
   const handleOnSwitchChange =
     (key: keyof IPrivacySettings) => (event: ChangeEvent<HTMLInputElement>) => {

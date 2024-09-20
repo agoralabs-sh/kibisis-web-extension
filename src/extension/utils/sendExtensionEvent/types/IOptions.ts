@@ -1,17 +1,14 @@
-// services
-import AppWindowManagerService from '@extension/services/AppWindowManagerService';
-import EventQueueService from '@extension/services/EventQueueService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AppWindowRepository from '@extension/repositories/AppWindowRepository';
+import EventQueueRepository from '@extension/repositories/EventQueueRepository';
 
 // types
-import type { IBaseOptions } from '@common/types';
 import type { TEvents } from '@extension/types';
 
-interface IOptions extends IBaseOptions {
-  appWindowManagerService?: AppWindowManagerService;
+interface IOptions {
+  appWindowRepository?: AppWindowRepository;
   event: TEvents;
-  eventQueueService?: EventQueueService;
-  privateKeyService?: PrivateKeyService;
+  eventQueueRepository?: EventQueueRepository;
 }
 
 export default IOptions;

@@ -18,7 +18,6 @@ import type { IProps } from './types';
 
 // utils
 import createIconFromDataUri from '@extension/utils/createIconFromDataUri';
-import parseFontSize from './utils/parseFontSize';
 import parseIconSize from './utils/parseIconSize';
 import parsePadding from './utils/parsePadding';
 

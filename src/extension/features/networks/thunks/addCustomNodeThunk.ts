@@ -3,8 +3,8 @@ import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import NetworksService from '@extension/services/NetworksService';
+// repositories
+import NetworksRepository from '@extension/repositories/NetworksRepository';
 
 // types
 import type {
@@ -24,8 +24,7 @@ const addCustomNodeThunk: AsyncThunk<
   IBaseAsyncThunkConfig<IMainRootState>
 >(ThunkEnum.AddCustomNodeThunk, async (customNode, { getState }) => {
   const networks = getState().networks.items;
-  const networksService = new NetworksService();
-  let network =
+  const network =
     networks.find((value) => value.genesisHash === customNode.genesisHash) ||
     null;
 
@@ -33,7 +32,7 @@ const addCustomNodeThunk: AsyncThunk<
     return null;
   }
 
-  return await networksService.saveToStorage({
+  return await new NetworksRepository().save({
     ...network,
     ...(customNode.algod && {
       algods: [

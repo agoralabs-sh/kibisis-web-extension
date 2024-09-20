@@ -1,10 +1,10 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { StandardAssetsThunkEnum } from '@extension/enums';
 
-// services
-import StandardAssetService from '@extension/services/StandardAssetService';
+// repositories
+import StandardAssetRepository from '@extension/repositories/StandardAssetRepository';
 
 // types
 import type {
@@ -28,21 +28,20 @@ const fetchStandardAssetsFromStorageThunk: AsyncThunk<
 >(StandardAssetsThunkEnum.FetchAssetsFromStorage, async (_, { getState }) => {
   const logger = getState().system.logger;
   const networks = getState().networks.items;
-  const assetService = new StandardAssetService({
-    logger,
-  });
   const assetItems: Record<string, IStandardAsset[]> = {};
-
-  logger.debug(
-    `${StandardAssetsThunkEnum.FetchAssetsFromStorage}: fetching assets from storage`
-  );
 
   await Promise.all(
     networks.map(
       async (network) =>
         (assetItems[convertGenesisHashToHex(network.genesisHash)] =
-          await assetService.getByGenesisHash(network.genesisHash))
+          await new StandardAssetRepository().fetchByGenesisHash(
+            network.genesisHash
+          ))
     )
+  );
+
+  logger.debug(
+    `${StandardAssetsThunkEnum.FetchAssetsFromStorage}: fetched assets from storage`
   );
 
   return assetItems;

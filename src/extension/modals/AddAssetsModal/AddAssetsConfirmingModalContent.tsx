@@ -1,5 +1,5 @@
 import { Text, VStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoCubeOutline } from 'react-icons/io5';
 
@@ -14,7 +14,6 @@ import { AssetTypeEnum } from '@extension/enums';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // types
 import type { IAddAssetsConfirmingModalContentProps } from './types';
@@ -25,7 +24,6 @@ const AddAssetsConfirmingModalContent: FC<
   const { t } = useTranslation();
   // hooks
   const defaultTextColor = useDefaultTextColor();
-  const primaryColor = usePrimaryColor();
   // misc
   let message: string | null = null;
 

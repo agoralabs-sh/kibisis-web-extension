@@ -77,6 +77,9 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 import EditAccountModal from '@extension/modals/EditAccountModal';
 import ShareAddressModal from '@extension/modals/ShareAddressModal';
 
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
+
 // selectors
 import {
   useSelectAccounts,
@@ -92,9 +95,6 @@ import {
   useSelectSettingsSelectedNetwork,
   useSelectSettings,
 } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -216,7 +216,7 @@ const AccountPage: FC = () => {
           description: t<string>('captions.removeAccount', {
             address: ellipseAddress(
               convertPublicKeyToAVMAddress(
-                PrivateKeyService.decode(account.publicKey)
+                PrivateKeyRepository.decode(account.publicKey)
               ),
               {
                 end: 10,
@@ -264,7 +264,7 @@ const AccountPage: FC = () => {
 
     if (account && accountInformation && network) {
       address = convertPublicKeyToAVMAddress(
-        PrivateKeyService.decode(account.publicKey)
+        PrivateKeyRepository.decode(account.publicKey)
       );
 
       return (
@@ -584,7 +584,7 @@ const AccountPage: FC = () => {
 
           <ShareAddressModal
             address={convertPublicKeyToAVMAddress(
-              PrivateKeyService.decode(account.publicKey)
+              PrivateKeyRepository.decode(account.publicKey)
             )}
             isOpen={isShareAddressModalOpen}
             onClose={onShareAddressModalClose}

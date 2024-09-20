@@ -50,6 +50,9 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import {
   useSelectAccounts,
@@ -61,9 +64,6 @@ import {
   useSelectSettingsSelectedNetwork,
   useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
-
-// services
-import AccountService from '@extension/services/AccountService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -117,7 +117,7 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
       return false;
     }
 
-    accountInformation = AccountService.extractAccountInformationForNetwork(
+    accountInformation = AccountRepository.extractAccountInformationForNetwork(
       account,
       selectedNetwork
     );

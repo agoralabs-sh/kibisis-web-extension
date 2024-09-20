@@ -35,11 +35,11 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAssetTransferTransaction } from '@extension/types';
@@ -68,7 +68,7 @@ const AssetTransferTransactionPage: FC<IProps<IAssetTransferTransaction>> = ({
   const subTextColor = useSubTextColor();
   // misc
   const accountAddress = convertPublicKeyToAVMAddress(
-    PrivateKeyService.decode(account.publicKey)
+    AccountRepository.decode(account.publicKey)
   );
   const amount = new BigNumber(transaction.amount);
   const explorer =

@@ -19,8 +19,8 @@ import { DEFAULT_GAP } from '@extension/constants';
 // features
 import { setConfirmModal } from '@extension/features/layout';
 import {
-  clearSessionsThunk,
-  removeSessionByIdThunk,
+  removeAllFromStorageThunk as removeAllSessionsFromStorageThunk,
+  removeByIdFromStorageThunk as removeSessionByIdFromStorageThunk,
 } from '@extension/features/sessions';
 
 // hooks
@@ -64,13 +64,13 @@ const SessionsSettingsPage: FC = () => {
     dispatch(
       setConfirmModal({
         description: t<string>('captions.disconnectAllSessions'),
-        onConfirm: () => dispatch(clearSessionsThunk()),
+        onConfirm: () => dispatch(removeAllSessionsFromStorageThunk()),
         title: t<string>('headings.disconnectAllSessions'),
       })
     );
   const handleOnDisconnectSession = (id: string) => {
     if (sessions.find((value) => value.id === id)) {
-      dispatch(removeSessionByIdThunk(id));
+      dispatch(removeSessionByIdFromStorageThunk(id));
     }
   };
   // misc

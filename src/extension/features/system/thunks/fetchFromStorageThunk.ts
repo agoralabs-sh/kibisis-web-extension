@@ -1,10 +1,10 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import SystemService from '@extension/services/SystemService';
+// repositories
+import SystemInfoRepository from '@extension/repositories/SystemInfoRepository';
 
 // types
 import type {
@@ -22,13 +22,13 @@ const fetchFromStorageThunk: AsyncThunk<
   undefined,
   IBaseAsyncThunkConfig<IBaseRootState>
 >(ThunkEnum.FetchFromStorage, async () => {
-  const systemService = new SystemService();
-  let systemInfo = await systemService.fetchFromStorage();
+  const systemInfoService = new SystemInfoRepository();
+  let systemInfo = await systemInfoService.fetch();
 
   // if there is no system info save a new one
   if (!systemInfo) {
-    systemInfo = await systemService.saveToStorage(
-      SystemService.initializeDefaultSystem()
+    systemInfo = await systemInfoService.save(
+      SystemInfoRepository.initializeDefaultSystem()
     );
   }
 

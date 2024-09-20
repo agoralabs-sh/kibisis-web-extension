@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // constants
 import { NETWORK_TRANSACTION_PARAMS_REFRESH_INTERVAL } from '@extension/constants';
@@ -10,8 +10,7 @@ import { ThunkEnum } from '../enums';
 import updateTransactionParamsForSelectedNetworkThunk from './updateTransactionParamsForSelectedNetworkThunk';
 
 // types
-import { ILogger } from '@common/types';
-import { IMainRootState } from '@extension/types';
+import type { IMainRootState } from '@extension/types';
 
 const startPollingForTransactionsParamsThunk: AsyncThunk<
   number, // return

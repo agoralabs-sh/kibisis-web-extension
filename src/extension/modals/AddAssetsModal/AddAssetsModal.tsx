@@ -87,8 +87,8 @@ import {
   useSelectSettingsSelectedNetwork,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // theme
 import { theme } from '@extension/theme';
@@ -139,7 +139,7 @@ const AddAssetsModal: FC<IModalProps> = ({ onClose }) => {
       return false;
     }
 
-    accountInformation = AccountService.extractAccountInformationForNetwork(
+    accountInformation = AccountRepository.extractAccountInformationForNetwork(
       account,
       selectedNetwork
     );

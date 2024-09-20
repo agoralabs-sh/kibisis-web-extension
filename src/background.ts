@@ -1,24 +1,25 @@
 import browser from 'webextension-polyfill';
 
+// repositories
+import SettingsRepository from '@extension/repositories/SettingsRepository';
+
 // services
 import ClientMessageHandler from '@extension/services/ClientMessageHandler';
 import HeartbeatService from '@extension/services/HeartbeatService';
 import ProviderActionListener from '@extension/services/ProviderActionListener';
 import ProviderMessageHandler from '@extension/services/ProviderMessageHandler';
-import SettingsService from '@extension/services/SettingsService';
 
 // utils
 import createLogger from '@common/utils/createLogger';
 
 (async () => {
   const browserAction = browser.action || browser.browserAction; // TODO: use browser.action for v3
+  const settings = await new SettingsRepository().fetch();
   let clientMessageHandler: ClientMessageHandler;
   let logger = createLogger(__ENV__ === 'development' ? 'debug' : 'error');
   let heartbeatService: HeartbeatService;
   let providerActionListener: ProviderActionListener;
   let providerMessageHandler: ProviderMessageHandler;
-  let settingsService: SettingsService = new SettingsService({ logger });
-  let settings = await settingsService.fetchFromStorage();
 
   // if the debug logging is enabled, re-create the logger with debug logging enabled
   if (settings.advanced.debugLogging) {

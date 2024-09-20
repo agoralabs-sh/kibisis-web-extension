@@ -50,6 +50,7 @@
     "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=development --watch",
     "start:firefox": "concurrently --names \"DAPP,EXTENSION\" -c \"blue.bold,magenta.bold\" \"yarn start:dapp-example\" \"yarn start:extension --env target=firefox\"",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "types:check": "tsc --noEmit",
     "validate:firefox": "addons-linter .firefox_build/"
   },

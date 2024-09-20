@@ -4,8 +4,8 @@ import BigNumber from 'bignumber.js';
 // constants
 import { MINIMUM_BALANCE_REQUIREMENT } from '@extension/constants';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAccountInformation } from '@extension/types';
@@ -17,7 +17,7 @@ export default function useMinimumBalanceRequirementsForTransactions({
   transactions,
 }: IOptions): IState {
   const accountInformation: IAccountInformation | null =
-    AccountService.extractAccountInformationForNetwork(account, network);
+    AccountRepository.extractAccountInformationForNetwork(account, network);
   const payTransactionsCost: BigNumber = transactions.reduce<BigNumber>(
     (acc, currentValue) => {
       // get the amount of native currency for any "pay" transactions

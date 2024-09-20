@@ -39,10 +39,7 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import {
-  useSelectLogger,
-  useSelectSettingsSelectedNetwork,
-} from '@extension/selectors';
+import { useSelectSettingsSelectedNetwork } from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';

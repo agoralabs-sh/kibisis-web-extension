@@ -4,8 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // types
-import { ILogger } from '@common/types';
-import { IMainRootState } from '@extension/types';
+import type { IMainRootState } from '@extension/types';
 
 const stopPollingForTransactionsParamsThunk: AsyncThunk<
   void, // return

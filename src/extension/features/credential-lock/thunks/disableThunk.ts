@@ -1,11 +1,11 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
+// repositories
 import CredentialLockService from '@extension/services/CredentialLockService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type {
@@ -31,14 +31,12 @@ const disableThunk: AsyncThunk<
   const credentialLockService = new CredentialLockService({
     logger,
   });
-  const privateKeyService = new PrivateKeyService({
-    logger,
-  });
+  const privateKeyRepository = new PrivateKeyRepository();
   let alarm: Alarms.Alarm | null;
-  let privateKeyItems = await privateKeyService.fetchAllFromStorage();
+  let privateKeyItems = await privateKeyRepository.fetchAll();
 
   // remove all the decrypted private keys
-  await privateKeyService.saveManyToStorage(
+  await privateKeyRepository.saveMany(
     privateKeyItems.map((value) => ({
       ...value,
       privateKey: null,

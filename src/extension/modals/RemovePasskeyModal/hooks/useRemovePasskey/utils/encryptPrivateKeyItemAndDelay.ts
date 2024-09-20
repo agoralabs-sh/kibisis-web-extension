@@ -1,15 +1,16 @@
-import browser from 'webextension-polyfill';
-
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
 
 // errors
 import { MalformedDataError } from '@extension/errors';
 
-// services
-import PasskeyService from '@extension/services/PasskeyService';
-import PasswordService from '@extension/services/PasswordService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+import PasswordManager from '@extension/managers/PasswordManager';
+
+// repositories
+import PasswordTagRepository from '@extension/repositories/PasswordTagRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IPasswordTag, IPrivateKey } from '@extension/types';
@@ -33,10 +34,7 @@ export default async function encryptPrivateKeyItemAndDelay({
 
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
-      const passwordService = new PasswordService({
-        logger,
-        passwordTag: browser.runtime.id,
-      });
+      const passwordTagRepository = new PasswordTagRepository();
       let _error: string;
       let decryptedPrivateKey: Uint8Array;
       let passwordTagItem: IPasswordTag | null;
@@ -44,7 +42,7 @@ export default async function encryptPrivateKeyItemAndDelay({
       let _privateKeyItem: IPrivateKey;
 
       try {
-        _privateKeyItem = await PrivateKeyService.upgrade({
+        _privateKeyItem = await PrivateKeyRepository.upgrade({
           encryptionCredentials: {
             inputKeyMaterial,
             passkey,
@@ -53,20 +51,20 @@ export default async function encryptPrivateKeyItemAndDelay({
           logger,
           privateKeyItem,
         });
-        decryptedPrivateKey = await PasskeyService.decryptBytes({
-          encryptedBytes: PrivateKeyService.decode(
+        decryptedPrivateKey = await PasskeyManager.decryptBytes({
+          encryptedBytes: PrivateKeyRepository.decode(
             _privateKeyItem.encryptedPrivateKey
           ),
           inputKeyMaterial,
           passkey,
           logger,
         }); // decrypt the private key with the passkey
-        reEncryptedPrivateKey = await PasswordService.encryptBytes({
-          data: decryptedPrivateKey,
+        reEncryptedPrivateKey = await PasswordManager.encryptBytes({
+          bytes: decryptedPrivateKey,
           logger,
           password,
         }); // re-encrypt the private key with the password
-        passwordTagItem = await passwordService.fetchFromStorage();
+        passwordTagItem = await passwordTagRepository.fetch();
 
         if (!passwordTagItem) {
           _error = `failed to get password tag from storage, doesn't exist`;
@@ -81,7 +79,7 @@ export default async function encryptPrivateKeyItemAndDelay({
 
       return resolve({
         ..._privateKeyItem,
-        encryptedPrivateKey: PrivateKeyService.encode(reEncryptedPrivateKey),
+        encryptedPrivateKey: PrivateKeyRepository.encode(reEncryptedPrivateKey),
         encryptionID: passwordTagItem.id,
         encryptionMethod: EncryptionMethodEnum.Password,
       });

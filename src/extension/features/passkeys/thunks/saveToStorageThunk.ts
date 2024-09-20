@@ -1,10 +1,10 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
 
 // services
-import PasskeyService from '@extension/services/PasskeyService';
+import PasskeyCredentialRepository from '@extension/repositories/PasskeyCredentialRepository';
 
 // types
 import type {
@@ -22,9 +22,7 @@ const saveToStorageThunk: AsyncThunk<
   IPasskeyCredential,
   IBaseAsyncThunkConfig<IMainRootState>
 >(ThunkEnum.SaveToStorage, async (credential) => {
-  const passkeyService = new PasskeyService();
-
-  return await passkeyService.saveToStorage(credential);
+  return await new PasskeyCredentialRepository().save(credential);
 });
 
 export default saveToStorageThunk;

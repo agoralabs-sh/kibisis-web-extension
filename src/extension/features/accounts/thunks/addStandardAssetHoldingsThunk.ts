@@ -25,9 +25,8 @@ import {
 // models
 import NetworkClient from '@extension/models/NetworkClient';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -79,7 +78,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     );
     let accountBalanceInAtomicUnits: BigNumber;
     let accountInformation: IAccountInformation;
-    let accountService: AccountService;
+    let accountRepository: AccountRepository;
     let address: string;
     let encodedGenesisHash: string;
     let filteredAssets: IStandardAsset[];
@@ -130,11 +129,11 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     }
 
     address = convertPublicKeyToAVMAddress(
-      PrivateKeyService.decode(account.publicKey)
+      AccountRepository.decode(account.publicKey)
     );
     accountInformation =
-      AccountService.extractAccountInformationForNetwork(account, network) ||
-      AccountService.initializeDefaultAccountInformation();
+      AccountRepository.extractAccountInformationForNetwork(account, network) ||
+      AccountRepository.initializeDefaultAccountInformation();
     filteredAssets = assets.filter(
       (
         asset // get all the
@@ -228,9 +227,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     }
 
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
-    accountService = new AccountService({
-      logger,
-    });
+    accountRepository = new AccountRepository();
     account.networkInformation[encodedGenesisHash] =
       await updateAccountInformation({
         address,
@@ -246,7 +243,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
         address,
         currentAccountTransactions:
           account.networkTransactions[encodedGenesisHash] ||
-          AccountService.initializeDefaultAccountTransactions(),
+          AccountRepository.initializeDefaultAccountTransactions(),
         delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
         logger,
         network,
@@ -255,7 +252,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       });
 
     // save the account to storage
-    await accountService.saveAccounts([account]);
+    await accountRepository.saveMany([account]);
 
     logger.debug(
       `${ThunkEnum.AddStandardAssetHoldings}: saved account "${account.id}" to storage`
@@ -264,7 +261,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     return {
       account: {
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount(account),
       },
       transactionIds,
     };

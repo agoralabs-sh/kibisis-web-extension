@@ -25,8 +25,8 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAssetTransactionBodyProps } from './types';
@@ -61,7 +61,10 @@ const AssetTransferTransactionContent: FC<IAssetTransactionBodyProps> = ({
     useState<BigNumber | null>();
   // misc
   const accountInformation = fromAccount
-    ? AccountService.extractAccountInformationForNetwork(fromAccount, network)
+    ? AccountRepository.extractAccountInformationForNetwork(
+        fromAccount,
+        network
+      )
     : null;
   const amountInAtomicUnits = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'

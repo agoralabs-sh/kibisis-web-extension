@@ -6,8 +6,8 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { ARC0072AssetsThunkEnum } from '@extension/enums';
 
-// services
-import ARC0072AssetService from '@extension/services/ARC0072AssetService';
+// repositories
+import ARC0072AssetRepository from '@extension/repositories/ARC0072AssetRepository';
 
 // types
 import type {
@@ -41,7 +41,7 @@ const updateARC0072AssetInformationThunk: AsyncThunk<
     let asset: IARC0072Asset | null;
     let currentAssets: IARC0072Asset[];
     let id: string;
-    let assetService: ARC0072AssetService;
+    let repository: ARC0072AssetRepository;
     let updatedAssets: IARC0072Asset[] = [];
 
     // get the information for each asset and add it to the array
@@ -76,20 +76,18 @@ const updateARC0072AssetInformationThunk: AsyncThunk<
       }
     }
 
-    assetService = new ARC0072AssetService({
-      logger,
-    });
-    currentAssets = await assetService.getByGenesisHash(network.genesisHash);
+    repository = new ARC0072AssetRepository();
+    currentAssets = await repository.fetchByGenesisHash(network.genesisHash);
 
     logger.debug(
       `${ARC0072AssetsThunkEnum.UpdateARC0072AssetInformation}: saving new asset information for network "${network.genesisId}" to storage`
     );
 
     // update the storage with the new asset information
-    await assetService.saveByGenesisHash(
-      network.genesisHash,
-      upsertItemsById<IARC0072Asset>(currentAssets, updatedAssets)
-    );
+    await repository.saveByGenesisHash({
+      genesisHash: network.genesisHash,
+      items: upsertItemsById<IARC0072Asset>(currentAssets, updatedAssets),
+    });
 
     return {
       arc0072Assets: updatedAssets,

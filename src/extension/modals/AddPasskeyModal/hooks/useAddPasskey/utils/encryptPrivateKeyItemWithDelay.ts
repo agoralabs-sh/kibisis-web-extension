@@ -1,10 +1,12 @@
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
 
-// services
-import PasskeyService from '@extension/services/PasskeyService';
-import PasswordService from '@extension/services/PasswordService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+import PasswordManager from '@extension/managers/PasswordManager';
+
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IPrivateKey } from '@extension/types';
@@ -31,7 +33,7 @@ export default async function encryptPrivateKeyItemWithDelay({
       let _privateKeyItem: IPrivateKey;
 
       try {
-        _privateKeyItem = await PrivateKeyService.upgrade({
+        _privateKeyItem = await PrivateKeyRepository.upgrade({
           encryptionCredentials: {
             password,
             type: EncryptionMethodEnum.Password,
@@ -39,12 +41,14 @@ export default async function encryptPrivateKeyItemWithDelay({
           logger,
           privateKeyItem,
         });
-        decryptedPrivateKey = await PasswordService.decryptBytes({
-          data: PrivateKeyService.decode(_privateKeyItem.encryptedPrivateKey),
+        decryptedPrivateKey = await PasswordManager.decryptBytes({
+          bytes: PrivateKeyRepository.decode(
+            _privateKeyItem.encryptedPrivateKey
+          ),
           logger,
           password,
         }); // decrypt the private key with the current password
-        reEncryptedPrivateKey = await PasskeyService.encryptBytes({
+        reEncryptedPrivateKey = await PasskeyManager.encryptBytes({
           bytes: decryptedPrivateKey,
           inputKeyMaterial,
           passkey,
@@ -56,7 +60,7 @@ export default async function encryptPrivateKeyItemWithDelay({
 
       return resolve({
         ...privateKeyItem,
-        encryptedPrivateKey: PrivateKeyService.encode(reEncryptedPrivateKey),
+        encryptedPrivateKey: PrivateKeyRepository.encode(reEncryptedPrivateKey),
         encryptionID: passkey.id,
         encryptionMethod: EncryptionMethodEnum.Passkey,
       });

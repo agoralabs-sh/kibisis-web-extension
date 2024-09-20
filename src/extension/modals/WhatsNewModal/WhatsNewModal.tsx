@@ -12,7 +12,7 @@ import {
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
-import React, { type ChangeEvent, createRef, type FC } from 'react';
+import React, { createRef, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -80,9 +80,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
 
     onClose && onClose();
   };
-  const handleOnDisableOnUpdateChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleOnDisableOnUpdateChange = () => {
     if (!whatsNewInfo) {
       return;
     }

@@ -9,9 +9,9 @@ import { ThunkEnum } from '../enums';
 // errors
 import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type {
@@ -55,7 +55,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     let account = serialize(
       findAccountWithoutExtendedProps(accountId, accounts)
     );
-    let accountService: AccountService;
+    let accountRepository: AccountRepository;
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
     let network: INetwork | null;
@@ -90,7 +90,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
     currentAccountInformation =
       account.networkInformation[encodedGenesisHash] ||
-      AccountService.initializeDefaultAccountInformation();
+      AccountRepository.initializeDefaultAccountInformation();
     newAssetHoldings = assets
       .filter(
         (asset) =>
@@ -99,9 +99,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
           )
       )
       .map(initializeARC0200AssetHoldingFromARC0200Asset);
-    accountService = new AccountService({
-      logger,
-    });
+    accountRepository = new AccountRepository();
     nodeID = selectNodeIDByGenesisHashFromSettings({
       genesisHash: network.genesisHash,
       settings,
@@ -109,7 +107,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     account.networkInformation[encodedGenesisHash] =
       await updateAccountInformation({
         address: convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(account.publicKey)
+          PrivateKeyRepository.decode(account.publicKey)
         ),
         currentAccountInformation: {
           ...currentAccountInformation,
@@ -130,12 +128,12 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await accountService.saveAccounts([account]);
+    await accountRepository.saveMany([account]);
 
     return {
       account: {
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount(account),
       },
     };
   }

@@ -10,7 +10,7 @@ import { ProviderMessageReferenceEnum } from '@common/enums';
 import { setActive as setCredentialLockActive } from '@extension/features/credential-lock';
 import { handleNewEventByIdThunk } from '@extension/features/events';
 import { create as createNotification } from '@extension/features/notifications';
-import { fetchSessionsThunk } from '@extension/features/sessions';
+import { fetchFromStorageThunk as fetchSessionsFromStorageThunk } from '@extension/features/sessions';
 
 // messages
 import {
@@ -47,7 +47,7 @@ export default function useOnMainAppMessage(): void {
         dispatch(setCredentialLockActive(true));
         break;
       case ProviderMessageReferenceEnum.SessionsUpdated:
-        dispatch(fetchSessionsThunk());
+        dispatch(fetchSessionsFromStorageThunk());
         dispatch(
           createNotification({
             ephemeral: true,

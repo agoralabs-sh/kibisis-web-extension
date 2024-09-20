@@ -6,8 +6,8 @@ import { ThunkEnum } from '../enums';
 // errors
 import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -45,7 +45,6 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     let account = serialize(
       findAccountWithoutExtendedProps(accountId, accounts)
     );
-    let accountService: AccountService;
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
     let network: INetwork | null;
@@ -78,10 +77,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
     currentAccountInformation =
       account.networkInformation[encodedGenesisHash] ||
-      AccountService.initializeDefaultAccountInformation();
-    accountService = new AccountService({
-      logger,
-    });
+      AccountRepository.initializeDefaultAccountInformation();
     account.networkInformation[encodedGenesisHash] = {
       ...currentAccountInformation,
       arc200AssetHoldings: currentAccountInformation.arc200AssetHoldings.filter(
@@ -94,12 +90,12 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await accountService.saveAccounts([account]);
+    await new AccountRepository().saveMany([account]);
 
     return {
       account: {
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount(account),
       },
     };
   }

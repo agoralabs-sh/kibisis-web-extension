@@ -7,9 +7,8 @@ import { Transaction } from 'algosdk';
 // errors
 import { MalformedDataError } from '@extension/errors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -66,7 +65,7 @@ export default async function authorizedAccountsForEvent({
         accounts.find(
           (value) =>
             value.publicKey ===
-            PrivateKeyService.encode(currentValue.from.publicKey)
+            AccountRepository.encode(currentValue.from.publicKey)
         ) || null;
       base64EncodedGenesisHash = encodeBase64(currentValue.genesisHash);
       authorizedAddresses = getAuthorizedAddressesForHost(
@@ -81,7 +80,10 @@ export default async function authorizedAccountsForEvent({
         ) || null;
       accountInformation =
         account && network
-          ? AccountService.extractAccountInformationForNetwork(account, network)
+          ? AccountRepository.extractAccountInformationForNetwork(
+              account,
+              network
+            )
           : null;
 
       // the from account is not an authorized account if:

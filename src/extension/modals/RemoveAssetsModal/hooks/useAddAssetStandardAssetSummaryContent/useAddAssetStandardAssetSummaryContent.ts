@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAccountInformation } from '@extension/types';
@@ -15,7 +15,7 @@ export default function useAddAssetStandardAssetSummaryContent({
   network,
 }: IOptions): IState {
   const accountInformation: IAccountInformation | null =
-    AccountService.extractAccountInformationForNetwork(account, network);
+    AccountRepository.extractAccountInformationForNetwork(account, network);
   let accountBalanceInAtomicUnits = new BigNumber('0');
 
   if (accountInformation) {

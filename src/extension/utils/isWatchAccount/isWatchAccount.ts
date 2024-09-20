@@ -1,24 +1,19 @@
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
-import type { IOptions } from './types';
+import type { IAccount } from '@extension/types';
 
 /**
  * Determines if a given account ID is a watch account or not.
- * @param {IOptions} options - options that specify the account.
+ * @param {IAccount} account - The account.
  * @returns true if the account is a watch account, false otherwise.
  */
-export default async function isWatchAccount({
-  account,
-  logger,
-}: IOptions): Promise<boolean> {
-  const privateKeyService = new PrivateKeyService({
-    logger,
-  });
-
+export default async function isWatchAccount(
+  account: IAccount
+): Promise<boolean> {
   // if there is no private key stored, it is a watch account
-  return !(await privateKeyService.fetchFromStorageByPublicKey(
+  return !(await new PrivateKeyRepository().fetchByPublicKey(
     account.publicKey
   ));
 }

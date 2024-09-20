@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
@@ -21,11 +21,8 @@ import {
 } from './thunks';
 
 // types
-import type {
-  IAccountWithExtendedProps,
-  IActiveAccountDetails,
-} from '@extension/types';
-import type { IFetchAccountsFromStorageResult, IState } from './types';
+import type { IAccountWithExtendedProps } from '@extension/types';
+import type { IState } from './types';
 
 // utils
 import upsertItemsById from '@extension/utils/upsertItemsById';
@@ -114,10 +111,7 @@ const slice = createSlice({
     /** fetch accounts from storage **/
     builder.addCase(
       fetchAccountsFromStorageThunk.fulfilled,
-      (
-        state: IState,
-        action: PayloadAction<IFetchAccountsFromStorageResult>
-      ) => {
+      (state: IState, action) => {
         state.activeAccountDetails = action.payload.activeAccountDetails;
         state.items = action.payload.accounts;
         state.fetching = false;
@@ -132,7 +126,7 @@ const slice = createSlice({
     /** remove account by id **/
     builder.addCase(
       removeAccountByIdThunk.fulfilled,
-      (state: IState, action: PayloadAction<string>) => {
+      (state: IState, action) => {
         state.items = state.items.filter(
           (value) => value.id !== action.payload
         ); // filter the accounts excluding the removed account
@@ -224,22 +218,15 @@ const slice = createSlice({
       }
     );
     /** save account name **/
-    builder.addCase(
-      saveAccountNameThunk.fulfilled,
-      (
-        state: IState,
-        action: PayloadAction<IAccountWithExtendedProps | null>
-      ) => {
-        if (action.payload) {
-          state.items = upsertItemsById<IAccountWithExtendedProps>(
-            state.items,
-            [action.payload]
-          );
-        }
-
-        state.saving = false;
+    builder.addCase(saveAccountNameThunk.fulfilled, (state: IState, action) => {
+      if (action.payload) {
+        state.items = upsertItemsById<IAccountWithExtendedProps>(state.items, [
+          action.payload,
+        ]);
       }
-    );
+
+      state.saving = false;
+    });
     builder.addCase(saveAccountNameThunk.pending, (state: IState) => {
       state.saving = true;
     });
@@ -249,24 +236,21 @@ const slice = createSlice({
     /** save active account details **/
     builder.addCase(
       saveActiveAccountDetails.fulfilled,
-      (state: IState, action: PayloadAction<IActiveAccountDetails | null>) => {
+      (state: IState, action) => {
         state.activeAccountDetails = action.payload;
       }
     );
     /** save new accounts **/
-    builder.addCase(
-      saveNewAccountsThunk.fulfilled,
-      (state: IState, action: PayloadAction<IAccountWithExtendedProps[]>) => {
-        if (action.payload) {
-          state.items = upsertItemsById<IAccountWithExtendedProps>(
-            state.items,
-            action.payload
-          );
-        }
-
-        state.saving = false;
+    builder.addCase(saveNewAccountsThunk.fulfilled, (state: IState, action) => {
+      if (action.payload) {
+        state.items = upsertItemsById<IAccountWithExtendedProps>(
+          state.items,
+          action.payload
+        );
       }
-    );
+
+      state.saving = false;
+    });
     builder.addCase(saveNewAccountsThunk.pending, (state: IState) => {
       state.saving = true;
     });
@@ -276,7 +260,7 @@ const slice = createSlice({
     /** save new watch account **/
     builder.addCase(
       saveNewWatchAccountThunk.fulfilled,
-      (state: IState, action: PayloadAction<IAccountWithExtendedProps>) => {
+      (state: IState, action) => {
         if (action.payload) {
           state.items = upsertItemsById<IAccountWithExtendedProps>(
             state.items,
@@ -296,7 +280,7 @@ const slice = createSlice({
     /** start polling for account information **/
     builder.addCase(
       startPollingForAccountsThunk.fulfilled,
-      (state: IState, action: PayloadAction<number>) => {
+      (state: IState, action) => {
         state.pollingId = action.payload;
       }
     );
@@ -344,4 +328,4 @@ const slice = createSlice({
   },
 });
 
-export const reducer: Reducer = slice.reducer;
+export const reducer = slice.reducer;

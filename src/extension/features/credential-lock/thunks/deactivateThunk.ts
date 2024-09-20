@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
@@ -7,10 +7,12 @@ import { ThunkEnum } from '../enums';
 // errors
 import { DecryptionError } from '@extension/errors';
 
-// services
-import PasswordService from '@extension/services/PasswordService';
-import PasskeyService from '@extension/services/PasskeyService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+import PasswordManager from '@extension/managers/PasswordManager';
+
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type {
@@ -37,15 +39,13 @@ const deactivateThunk: AsyncThunk<
   IAsyncThunkConfigWithRejectValue<IBackgroundRootState | IMainRootState>
 >(ThunkEnum.Deactivate, async (credentials, { getState, rejectWithValue }) => {
   const logger = getState().system.logger;
-  const privateKeyService = new PrivateKeyService({
-    logger,
-  });
-  let privateKeyItems = await privateKeyService.fetchAllFromStorage();
+  const privateKeyRepository = new PrivateKeyRepository();
+  let privateKeyItems = await privateKeyRepository.fetchAll();
 
   try {
     privateKeyItems = await Promise.all(
       privateKeyItems.map(async (value) => {
-        const privateKeyItem = await PrivateKeyService.upgrade({
+        const privateKeyItem = await PrivateKeyRepository.upgrade({
           encryptionCredentials: credentials,
           logger,
           privateKeyItem: value,
@@ -53,16 +53,18 @@ const deactivateThunk: AsyncThunk<
         let decryptedPrivateKey: Uint8Array | null = null;
 
         if (credentials.type === EncryptionMethodEnum.Password) {
-          decryptedPrivateKey = await PasswordService.decryptBytes({
-            data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+          decryptedPrivateKey = await PasswordManager.decryptBytes({
+            bytes: PrivateKeyRepository.decode(
+              privateKeyItem.encryptedPrivateKey
+            ),
             logger,
             password: credentials.password,
           });
         }
 
         if (credentials.type === EncryptionMethodEnum.Passkey) {
-          decryptedPrivateKey = await PasskeyService.decryptBytes({
-            encryptedBytes: PrivateKeyService.decode(
+          decryptedPrivateKey = await PasskeyManager.decryptBytes({
+            encryptedBytes: PrivateKeyRepository.decode(
               privateKeyItem.encryptedPrivateKey
             ),
             inputKeyMaterial: credentials.inputKeyMaterial,
@@ -81,7 +83,7 @@ const deactivateThunk: AsyncThunk<
 
         return {
           ...privateKeyItem,
-          privateKey: PrivateKeyService.encode(decryptedPrivateKey),
+          privateKey: PrivateKeyRepository.encode(decryptedPrivateKey),
         };
       })
     );
@@ -95,7 +97,7 @@ const deactivateThunk: AsyncThunk<
     `${ThunkEnum.Deactivate}: decrypted ${privateKeyItems.length} private keys`
   );
 
-  await privateKeyService.saveManyToStorage(privateKeyItems);
+  await privateKeyRepository.saveMany(privateKeyItems);
 
   logger.debug(
     `${ThunkEnum.Deactivate}: saved decrypted private keys to storage`

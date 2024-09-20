@@ -1,5 +1,5 @@
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
@@ -30,7 +30,7 @@ export default function authorizedAccountsForHost({
               (value) =>
                 value ===
                 convertPublicKeyToAVMAddress(
-                  PrivateKeyService.decode(account.publicKey)
+                  AccountRepository.decode(account.publicKey)
                 )
             ) // and if the account is in the authorized addresses of the host
         ),

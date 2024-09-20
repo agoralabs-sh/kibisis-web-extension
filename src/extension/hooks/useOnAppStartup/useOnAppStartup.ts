@@ -12,7 +12,7 @@ import {
   updateTransactionParamsForSelectedNetworkThunk,
 } from '@extension/features/networks';
 import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
-import { fetchSessionsThunk } from '@extension/features/sessions';
+import { fetchFromStorageThunk as fetchSessionsFromStorageThunk } from '@extension/features/sessions';
 import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
@@ -32,7 +32,7 @@ export default function useOnAppStartup(): void {
     // fetch required data
     dispatch(fetchCredentialLockActiveThunk());
     dispatch(fetchPasskeyCredentialFromStorageThunk());
-    dispatch(fetchSessionsThunk());
+    dispatch(fetchSessionsFromStorageThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchSystemInfoFromStorageThunk());
 
