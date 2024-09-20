@@ -1,7 +1,7 @@
 // constants
 import { ACTIVE_ACCOUNT_DETAILS_KEY } from '@extension/constants';
 
-// services
+// repositories
 import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types

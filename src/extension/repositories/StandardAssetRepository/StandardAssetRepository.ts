@@ -4,26 +4,17 @@ import { STANDARD_ASSETS_KEY_PREFIX } from '@extension/constants';
 // enums
 import { AssetTypeEnum } from '@extension/enums';
 
-// services
-import StorageManager from '../StorageManager';
+// repositories
+import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
-import { IBaseOptions, ILogger } from '@common/types';
-import { IStandardAsset } from '@extension/types';
+import type { IStandardAsset } from '@extension/types';
+import type { ISaveOptions } from './types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
-export default class StandardAssetService {
-  // private variables
-  private readonly logger: ILogger | null;
-  private readonly storageManager: StorageManager;
-
-  constructor({ logger }: IBaseOptions) {
-    this.logger = logger || null;
-    this.storageManager = new StorageManager();
-  }
-
+export default class StandardAssetRepository extends BaseRepository {
   /**
    * public static functions
    */
@@ -58,11 +49,12 @@ export default class StandardAssetService {
    */
 
   /**
-   * Convenience function that simply creates an item key by hex encoding the genesis hash.
+   * Creates an item key by hex encoding the genesis hash.
    * @param {string} genesisHash - the genesis hash to use to index.
    * @returns {string} the asset item key.
+   * @private
    */
-  private createItemKey(genesisHash: string): string {
+  private _createItemKey(genesisHash: string): string {
     return `${STANDARD_ASSETS_KEY_PREFIX}${convertGenesisHashToHex(
       genesisHash
     )}`;
@@ -73,23 +65,24 @@ export default class StandardAssetService {
    */
 
   /**
-   * Gets the standard assets for a given genesis hash.
+   * Fetches the standard assets for a given genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
-   * @returns {Promise<IStandardAsset[]>} the list of standard assets.
+   * @returns {Promise<IStandardAsset[]>} A promise that resolves to a list of standard assets.
+   * @public
    */
-  public async getByGenesisHash(
+  public async fetchByGenesisHash(
     genesisHash: string
   ): Promise<IStandardAsset[]> {
-    const assets: IStandardAsset[] | null = await this.storageManager.getItem(
-      this.createItemKey(genesisHash)
+    const items = await this._fetchByKey<IStandardAsset[]>(
+      this._createItemKey(genesisHash)
     );
 
-    if (!assets) {
+    if (!items) {
       return [];
     }
 
-    return assets.map(({ total, ...currentProps }) => ({
-      ...StandardAssetService.initializeDefaultStandardAsset(), // add any new properties
+    return items.map(({ total, ...currentProps }) => ({
+      ...StandardAssetRepository.initializeDefaultStandardAsset(), // add any new properties
       ...currentProps,
       // parse the deprecated props
       ...(total && {
@@ -101,25 +94,26 @@ export default class StandardAssetService {
   /**
    * Removes all the standard assets by the network's genesis hash.
    * @param {string} genesisHash - genesis hash for a network.
+   * @public
    */
   public async removeByGenesisHash(genesisHash: string): Promise<void> {
-    await this.storageManager.remove(this.createItemKey(genesisHash));
+    await this._removeByKeys(this._createItemKey(genesisHash));
   }
 
   /**
    * Saves standard assets to storage by the network's genesis hash.
-   * @param {string} genesisHash - genesis hash for a network.
-   * @param {IStandardAsset[]} assets - the standard assets to save to storage.
-   * @returns {IStandardAsset[]} the saved standard assets.
+   * @param {ISaveOptions} options - the genesis hash and the items.
+   * @returns {Promise<IARC0200Asset[]>} A promise that resolves to the saved standard assets.
+   * @public
    */
-  public async saveByGenesisHash(
-    genesisHash: string,
-    assets: IStandardAsset[]
-  ): Promise<IStandardAsset[]> {
-    await this.storageManager.setItems({
-      [this.createItemKey(genesisHash)]: assets,
+  public async saveByGenesisHash({
+    genesisHash,
+    items,
+  }: ISaveOptions): Promise<IStandardAsset[]> {
+    await this._save<IStandardAsset[]>({
+      [this._createItemKey(genesisHash)]: items,
     });
 
-    return assets;
+    return items;
   }
 }
