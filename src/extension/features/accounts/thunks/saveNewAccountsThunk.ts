@@ -6,8 +6,8 @@ import { EncryptionMethodEnum } from '@extension/enums';
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -89,7 +89,7 @@ const saveNewAccountsThunk: AsyncThunk<
       }
 
       _accounts.push({
-        ...AccountService.initializeDefaultAccount({
+        ...AccountRepositoryService.initializeDefaultAccount({
           publicKey: encodedPublicKey,
           ...(privateKeyItem && {
             createdAt: privateKeyItem.createdAt,
@@ -103,9 +103,7 @@ const saveNewAccountsThunk: AsyncThunk<
     }
 
     // save the account to storage
-    await new AccountService({
-      logger,
-    }).saveAccounts(_accounts);
+    await new AccountRepositoryService().save(_accounts);
 
     logger.debug(
       `${ThunkEnum.SaveNewAccounts}: saved "${_accounts.length}" new accounts to storage`

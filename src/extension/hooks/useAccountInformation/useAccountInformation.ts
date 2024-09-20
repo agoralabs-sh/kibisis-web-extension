@@ -7,7 +7,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';
@@ -25,7 +25,7 @@ export default function useAccountInformation(
 
     if (account && selectedNetwork) {
       selectedAccountInformation =
-        AccountService.extractAccountInformationForNetwork(
+        AccountRepositoryService.extractAccountInformationForNetwork(
           account,
           selectedNetwork
         );

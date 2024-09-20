@@ -9,8 +9,8 @@ import { ThunkEnum } from '../enums';
 // features
 import { create as createNotification } from '@extension/features/notifications';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type {
@@ -65,7 +65,6 @@ const updateAccountsThunk: AsyncThunk<
     const settings = getState().settings;
     const updateRequests = getState().accounts.updateRequests;
     let account: IAccount;
-    let accountService: AccountService;
     let accounts = getState().accounts.items.map((value) =>
       mapAccountWithExtendedPropsToAccount(value)
     );
@@ -99,9 +98,6 @@ const updateAccountsThunk: AsyncThunk<
     accounts = accounts.filter(
       (account) => !!accountIDs.find((value) => value === account.id)
     );
-    accountService = new AccountService({
-      logger,
-    });
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
     nodeID = selectNodeIDByGenesisHashFromSettings({
       genesisHash: network.genesisHash,
@@ -126,7 +122,7 @@ const updateAccountsThunk: AsyncThunk<
               address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
               currentAccountInformation:
                 accounts[i].networkInformation[encodedGenesisHash] ||
-                AccountService.initializeDefaultAccountInformation(),
+                AccountRepositoryService.initializeDefaultAccountInformation(),
               delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               forceUpdate: forceInformationUpdate,
               logger,
@@ -162,7 +158,7 @@ const updateAccountsThunk: AsyncThunk<
               address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
               currentAccountTransactions:
                 accounts[i].networkTransactions[encodedGenesisHash] ||
-                AccountService.initializeDefaultAccountTransactions(),
+                AccountRepositoryService.initializeDefaultAccountTransactions(),
               delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               logger,
               network,
@@ -203,7 +199,7 @@ const updateAccountsThunk: AsyncThunk<
     }
 
     // save accounts to storage
-    accounts = await accountService.saveAccounts(accounts);
+    accounts = await new AccountRepositoryService().save(accounts);
 
     logger.debug(
       `${ThunkEnum.AddStandardAssetHoldings}: saved accounts [${accounts

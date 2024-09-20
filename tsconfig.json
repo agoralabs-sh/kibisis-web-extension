@@ -38,6 +38,7 @@
       "@extension/modals/*": ["src/extension/modals/*"],
       "@extension/models/*": ["src/extension/models/*"],
       "@extension/pages/*": ["src/extension/pages/*"],
+      "@extension/repositories/*": ["src/extension/repositories/*"],
       "@extension/routers/*": ["src/extension/routers/*"],
       "@extension/selectors": ["src/extension/selectors"],
       "@extension/services/*": ["src/extension/services/*"],

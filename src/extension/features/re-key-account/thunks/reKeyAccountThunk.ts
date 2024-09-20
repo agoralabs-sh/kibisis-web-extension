@@ -20,7 +20,7 @@ import {
 import NetworkClient from '@extension/models/NetworkClient';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type {
@@ -53,7 +53,10 @@ const reKeyAccountThunk: AsyncThunk<
     const accounts = getState().accounts.items;
     const logger = getState().system.logger;
     const accountInformation: IAccountInformation | null =
-      AccountService.extractAccountInformationForNetwork(reKeyAccount, network);
+      AccountRepositoryService.extractAccountInformationForNetwork(
+        reKeyAccount,
+        network
+      );
     const address = convertPublicKeyToAVMAddress(reKeyAccount.publicKey);
     const networks = getState().networks.items;
     const settings = getState().settings;

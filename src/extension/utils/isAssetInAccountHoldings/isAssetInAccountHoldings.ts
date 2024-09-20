@@ -2,7 +2,7 @@
 import { AssetTypeEnum } from '@extension/enums';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type { IAccountInformation } from '@extension/types';
@@ -20,7 +20,10 @@ export default function isAssetInAccountHoldings({
   network,
 }: IOptions): boolean {
   const accountInformation: IAccountInformation | null =
-    AccountService.extractAccountInformationForNetwork(account, network);
+    AccountRepositoryService.extractAccountInformationForNetwork(
+      account,
+      network
+    );
 
   if (!accountInformation) {
     return false;

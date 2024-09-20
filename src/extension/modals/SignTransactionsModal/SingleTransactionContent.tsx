@@ -26,7 +26,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type {
@@ -108,7 +108,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
       setFetchingAccountInformation(true);
 
       account = {
-        ...AccountService.initializeDefaultAccount({
+        ...AccountRepositoryService.initializeDefaultAccount({
           publicKey: encodedPublicKey,
         }),
         watchAccount: true,
@@ -118,7 +118,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
         address: convertPublicKeyToAVMAddress(encodedPublicKey),
         currentAccountInformation:
           account.networkInformation[encodedGenesisHash] ||
-          AccountService.initializeDefaultAccountInformation(),
+          AccountRepositoryService.initializeDefaultAccountInformation(),
         logger,
         network,
         nodeID,

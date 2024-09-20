@@ -1,5 +1,5 @@
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
@@ -22,7 +22,10 @@ export default function availableAccountsForNetwork({
 }: IOptions): IAccountWithExtendedProps[] {
   return accounts.filter((value, _, array) => {
     const accountInformation =
-      AccountService.extractAccountInformationForNetwork(value, network);
+      AccountRepositoryService.extractAccountInformationForNetwork(
+        value,
+        network
+      );
 
     // if the account has been re-keyed, and the re-keyed account is available, add the account
     if (accountInformation && accountInformation.authAddress) {

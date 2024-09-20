@@ -26,8 +26,8 @@ import {
 // models
 import NetworkClient from '@extension/models/NetworkClient';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type {
@@ -79,7 +79,6 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     );
     let accountInformation: IAccountInformation;
     let accountBalanceInAtomicUnits: BigNumber;
-    let accountService: AccountService;
     let address: string;
     let assetHoldingsAboveZeroBalance: IStandardAssetHolding[];
     let encodedGenesisHash: string;
@@ -135,8 +134,10 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
 
     address = convertPublicKeyToAVMAddress(account.publicKey);
     accountInformation =
-      AccountService.extractAccountInformationForNetwork(account, network) ||
-      AccountService.initializeDefaultAccountInformation();
+      AccountRepositoryService.extractAccountInformationForNetwork(
+        account,
+        network
+      ) || AccountRepositoryService.initializeDefaultAccountInformation();
     filteredAssets = assets.filter((asset) =>
       accountInformation.standardAssetHoldings.some(
         (value) => value.id === asset.id
@@ -245,9 +246,6 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     }
 
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
-    accountService = new AccountService({
-      logger,
-    });
     account.networkInformation[encodedGenesisHash] =
       await updateAccountInformation({
         address,
@@ -263,7 +261,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
         address,
         currentAccountTransactions:
           account.networkTransactions[encodedGenesisHash] ||
-          AccountService.initializeDefaultAccountTransactions(),
+          AccountRepositoryService.initializeDefaultAccountTransactions(),
         delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
         logger,
         network,
@@ -276,7 +274,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await accountService.saveAccounts([account]);
+    await new AccountRepositoryService().save([account]);
 
     return {
       account: {

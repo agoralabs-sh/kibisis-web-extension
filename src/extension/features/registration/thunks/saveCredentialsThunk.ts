@@ -9,8 +9,8 @@ import { ThunkEnum } from '../enums';
 // errors
 import { InvalidPasswordError } from '@extension/errors';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 import PasswordService from '@extension/services/PasswordService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
@@ -103,7 +103,7 @@ const saveCredentialsThunk: AsyncThunk<
 
       privateKeyItems.push(privateKeyItem);
       _accounts.push(
-        AccountService.initializeDefaultAccount({
+        AccountRepositoryService.initializeDefaultAccount({
           createdAt: privateKeyItem.createdAt,
           publicKey: privateKeyItem.publicKey,
           ...(name && {
@@ -121,9 +121,7 @@ const saveCredentialsThunk: AsyncThunk<
     );
 
     // save the accounts to storage
-    await new AccountService({
-      logger,
-    }).saveAccounts(_accounts);
+    await new AccountRepositoryService().save(_accounts);
 
     logger.debug(
       `${ThunkEnum.SaveCredentials}: successfully saved ${_accounts.length} accounts to storage`

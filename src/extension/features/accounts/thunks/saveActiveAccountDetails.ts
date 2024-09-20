@@ -3,8 +3,8 @@ import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import ActiveAccountRepositoryService from '@extension/repositories/ActiveAccountRepositoryService';
 
 // types
 import type {
@@ -29,7 +29,6 @@ const saveActiveAccountDetails: AsyncThunk<
       accounts.find((value) => value.id === activeAccountDetails.accountId) ||
       null;
     const logger = getState().system.logger;
-    let accountService: AccountService;
 
     if (!account) {
       logger.debug(
@@ -43,12 +42,8 @@ const saveActiveAccountDetails: AsyncThunk<
       `${ThunkEnum.SaveActiveAccountDetails}: saving active account details for account id "${activeAccountDetails.accountId}" to storage`
     );
 
-    accountService = new AccountService({
-      logger,
-    });
-
     // save the active account details to storage
-    await accountService.saveActiveAccountDetails(activeAccountDetails);
+    await new ActiveAccountRepositoryService().save(activeAccountDetails);
 
     logger.debug(
       `${ThunkEnum.SaveActiveAccountDetails}: account details for account id "${activeAccountDetails.accountId}" to storage`

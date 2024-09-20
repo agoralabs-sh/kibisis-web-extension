@@ -14,7 +14,7 @@ import {
 } from '@extension/errors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type {
@@ -99,7 +99,10 @@ const createUnsignedTransactionsThunk: AsyncThunk<
     }
 
     senderAccountInformation =
-      AccountService.extractAccountInformationForNetwork(sender, network);
+      AccountRepositoryService.extractAccountInformationForNetwork(
+        sender,
+        network
+      );
     senderAddress = convertPublicKeyToAVMAddress(sender.publicKey);
 
     if (!senderAccountInformation) {

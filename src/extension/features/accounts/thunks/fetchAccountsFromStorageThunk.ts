@@ -3,8 +3,9 @@ import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import ActiveAccountRepositoryService from '@extension/repositories/ActiveAccountRepositoryService';
 
 // types
 import type {
@@ -29,9 +30,6 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(ThunkEnum.FetchAccountsFromStorage, async (_, { getState }) => {
   const logger = getState().system.logger;
-  const accountService = new AccountService({
-    logger,
-  });
   let accounts: IAccount[];
   let activeAccountDetails: IActiveAccountDetails | null;
 
@@ -39,11 +37,9 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
     `${ThunkEnum.FetchAccountsFromStorage}: fetching accounts from storage`
   );
 
-  accounts = await new AccountService({
-    logger,
-  }).getAllAccounts();
+  accounts = await new AccountRepositoryService().fetchAll();
   accounts = accounts.sort((a, b) => a.createdAt - b.createdAt); // sort by created at date (oldest first)
-  activeAccountDetails = await accountService.getActiveAccountDetails();
+  activeAccountDetails = await new ActiveAccountRepositoryService().fetch();
 
   return {
     accounts: await Promise.all(

@@ -8,7 +8,7 @@ import { Transaction } from 'algosdk';
 import { MalformedDataError } from '@extension/errors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -81,7 +81,10 @@ export default async function authorizedAccountsForEvent({
         ) || null;
       accountInformation =
         account && network
-          ? AccountService.extractAccountInformationForNetwork(account, network)
+          ? AccountRepositoryService.extractAccountInformationForNetwork(
+              account,
+              network
+            )
           : null;
 
       // the from account is not an authorized account if:

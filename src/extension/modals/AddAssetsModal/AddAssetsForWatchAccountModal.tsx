@@ -63,7 +63,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -117,10 +117,11 @@ const AddAssetsForWatchAccountModal: FC<IModalProps> = ({ onClose }) => {
       return false;
     }
 
-    accountInformation = AccountService.extractAccountInformationForNetwork(
-      account,
-      selectedNetwork
-    );
+    accountInformation =
+      AccountRepositoryService.extractAccountInformationForNetwork(
+        account,
+        selectedNetwork
+      );
 
     // if the account has been re-keyed, check that the address is not available, i.e. is abstractly a watch account
     if (accountInformation && accountInformation.authAddress) {

@@ -20,7 +20,7 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type { ITransactionBodyProps } from './types';
@@ -46,7 +46,10 @@ const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
   const subTextColor = useSubTextColor();
   // misc
   const accountInformation = fromAccount
-    ? AccountService.extractAccountInformationForNetwork(fromAccount, network)
+    ? AccountRepositoryService.extractAccountInformationForNetwork(
+        fromAccount,
+        network
+      )
     : null;
   const amountAsAtomicUnit = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'

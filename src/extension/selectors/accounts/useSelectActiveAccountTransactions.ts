@@ -3,7 +3,7 @@ import useSelectSettingsSelectedNetwork from '../settings/useSelectSettingsSelec
 import useSelectActiveAccount from './useSelectActiveAccount';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type { IAccountTransactions } from '@extension/types';
@@ -22,5 +22,8 @@ export default function useSelectActiveAccountTransactions(): IAccountTransactio
     return null;
   }
 
-  return AccountService.extractAccountTransactionsForNetwork(account, network);
+  return AccountRepositoryService.extractAccountTransactionsForNetwork(
+    account,
+    network
+  );
 }

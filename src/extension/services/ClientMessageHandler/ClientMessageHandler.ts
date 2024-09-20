@@ -45,8 +45,10 @@ import {
   ProviderSessionsUpdatedMessage,
 } from '@common/messages';
 
+// repositories
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+
 // services
-import AccountService from '../AccountService';
 import EventQueueService from '../EventQueueService';
 import PrivateKeyService from '../PrivateKeyService';
 import SessionService from '../SessionService';
@@ -77,7 +79,7 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 
 export default class ClientMessageHandler {
   // private variables
-  private readonly accountService: AccountService;
+  private readonly _accountRepositoryService: AccountRepositoryService;
   private readonly eventQueueService: EventQueueService;
   private readonly logger: ILogger | null;
   private readonly sessionService: SessionService;
@@ -86,9 +88,7 @@ export default class ClientMessageHandler {
   constructor({ logger }: IBaseOptions) {
     const storageManager: StorageManager = new StorageManager();
 
-    this.accountService = new AccountService({
-      logger,
-    });
+    this._accountRepositoryService = new AccountRepositoryService();
     this.eventQueueService = new EventQueueService({
       logger,
     });
@@ -112,7 +112,7 @@ export default class ClientMessageHandler {
    * @private
    */
   private async fetchAccounts(): Promise<IAccountWithExtendedProps[]> {
-    const accounts = await this.accountService.getAllAccounts();
+    const accounts = await this._accountRepositoryService.fetchAll();
 
     return await Promise.all(
       accounts.map(async (value) => ({
@@ -346,7 +346,7 @@ export default class ClientMessageHandler {
 
       // if the session network is supported, return update and return the session
       if (sessionNetwork) {
-        accounts = await this.accountService.getAllAccounts();
+        accounts = await this._accountRepositoryService.fetchAll();
         session = {
           ...session,
           usedAt: new Date().getTime(),

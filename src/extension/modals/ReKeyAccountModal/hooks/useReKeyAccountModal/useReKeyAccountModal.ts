@@ -9,7 +9,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 
 // types
 import type { IAccountInformation } from '@extension/types';
@@ -29,10 +29,11 @@ export default function useReKeyAccountModal(): IState {
     let _accountInformation: IAccountInformation | null = null;
 
     if (account && network) {
-      _accountInformation = AccountService.extractAccountInformationForNetwork(
-        account,
-        network
-      );
+      _accountInformation =
+        AccountRepositoryService.extractAccountInformationForNetwork(
+          account,
+          network
+        );
     }
 
     setAccountInformation(_accountInformation);

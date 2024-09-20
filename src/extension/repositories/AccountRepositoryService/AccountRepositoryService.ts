@@ -4,42 +4,28 @@ import { v4 as uuid } from 'uuid';
 import { networks } from '@extension/config';
 
 // constants
-import {
-  ACCOUNTS_ITEM_KEY_PREFIX,
-  ACTIVE_ACCOUNT_DETAILS_KEY,
-} from '@extension/constants';
+import { ACCOUNTS_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // enums
 import { AssetTypeEnum } from '@extension/enums';
 
 // services
-import StorageManager from '../StorageManager';
+import BaseRepositoryService from '@extension/repositories/BaseRepositoryService';
 
 // types
-import type { IBaseOptions, ILogger } from '@common/types';
 import type {
   IAccount,
   IAccountInformation,
   IAccountTransactions,
   IInitializeAccountOptions,
   INetwork,
-  IActiveAccountDetails,
 } from '@extension/types';
-import type { ISaveAccountsOptions } from './types';
+import type { ISaveOptions } from './types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
-export default class AccountService {
-  // private variables
-  private readonly logger: ILogger | null;
-  private readonly storageManager: StorageManager;
-
-  constructor({ logger }: IBaseOptions) {
-    this.logger = logger || null;
-    this.storageManager = new StorageManager();
-  }
-
+export default class AccountRepositoryService extends BaseRepositoryService {
   /**
    * public static functions
    */
@@ -62,7 +48,7 @@ export default class AccountService {
     }
 
     return {
-      ...AccountService.initializeDefaultAccountInformation(), // ensure any new items are initialized
+      ...AccountRepositoryService.initializeDefaultAccountInformation(), // ensure any new items are initialized
       ...accountInformation,
     };
   }
@@ -84,6 +70,8 @@ export default class AccountService {
    * Initializes the default account. This also initializes the default account info for each network.
    * @param {IInitializeAccountOptions} options - various options needed to initialize the account.
    * @returns {IAccount} an initialized default account.
+   * @public
+   * @static
    */
   public static initializeDefaultAccount({
     createdAt,
@@ -101,7 +89,7 @@ export default class AccountService {
         (acc, { genesisHash }) => ({
           ...acc,
           [convertGenesisHashToHex(genesisHash)]:
-            AccountService.initializeDefaultAccountInformation(),
+            AccountRepositoryService.initializeDefaultAccountInformation(),
         }),
         {}
       ),
@@ -111,7 +99,7 @@ export default class AccountService {
         (acc, { genesisHash }) => ({
           ...acc,
           [convertGenesisHashToHex(genesisHash)]:
-            AccountService.initializeDefaultAccountTransactions(),
+            AccountRepositoryService.initializeDefaultAccountTransactions(),
         }),
         {}
       ),
@@ -148,7 +136,7 @@ export default class AccountService {
    * @param {string} id - the account ID.
    * @returns {string} the account item key.
    */
-  private createAccountItemKey(id: string): string {
+  private _createAccountItemKey(id: string): string {
     return `${ACCOUNTS_ITEM_KEY_PREFIX}${id}`;
   }
 
@@ -158,7 +146,7 @@ export default class AccountService {
    * @returns {IAccount} the sanitized account object.
    * @private
    */
-  private sanitizeAccount(account: IAccount): IAccount {
+  private _sanitize(account: IAccount): IAccount {
     return {
       createdAt: account.createdAt,
       id: account.id,
@@ -168,7 +156,7 @@ export default class AccountService {
       >(
         (acc, value) => ({
           ...acc,
-          [value]: this.sanitizeAccountInformation(
+          [value]: this._sanitizeAccountInformation(
             account.networkInformation[value]
           ),
         }),
@@ -179,7 +167,7 @@ export default class AccountService {
       >(
         (acc, value) => ({
           ...acc,
-          [value]: this.sanitizeAccountTransactions(
+          [value]: this._sanitizeAccountTransactions(
             account.networkTransactions[value]
           ),
         }),
@@ -196,7 +184,7 @@ export default class AccountService {
    * @returns {IAccountInformation} the sanitized account information object.
    * @private
    */
-  private sanitizeAccountInformation(
+  private _sanitizeAccountInformation(
     accountInformation: IAccountInformation
   ): IAccountInformation {
     return {
@@ -213,10 +201,10 @@ export default class AccountService {
   /**
    * Sanitizes the account transactions, only returning properties that are in the account transactions object.
    * @param {IAccountTransactions} accountTransactions - the account transactions object to sanitize.
-   * @returns {IAccountTransactions} the sanitized account transactions object.
+   * @returns {IAccountTransactions} The sanitized account transactions object.
    * @private
    */
-  private sanitizeAccountTransactions(
+  private _sanitizeAccountTransactions(
     accountTransactions: IAccountTransactions
   ): IAccountTransactions {
     return {
@@ -230,41 +218,13 @@ export default class AccountService {
    */
 
   /**
-   * Gets the account for a given ID.
-   * @param {string} id - the account ID.
-   * @returns {Promise<IAccount | null>} the account or null.
+   * Fetches all accounts.
+   * @returns {Promise<IAccount[]>} A Promise that resolves to the accounts in storage.
+   * @public
    */
-  public async getAccountById(id: string): Promise<IAccount | null> {
-    return await this.storageManager.getItem(this.createAccountItemKey(id));
-  }
-
-  /**
-   * Gets the account for a given public key.
-   * @param {string} encodedPublicKey - a hexadecimal encoded public key.
-   * @returns {Promise<IAccount | null>} the account or null.
-   */
-  public async getAccountByPublicKey(
-    encodedPublicKey: string
-  ): Promise<IAccount | null> {
-    const accounts: IAccount[] = await this.getAllAccounts();
-
-    return (
-      accounts.find(
-        (value) =>
-          value.publicKey.toUpperCase() === encodedPublicKey.toUpperCase()
-      ) || null
-    );
-  }
-
-  public async getAllAccounts(): Promise<IAccount[]> {
-    const items: Record<string, unknown> =
-      await this.storageManager.getAllItems();
-    const accounts: IAccount[] = Object.keys(items).reduce<IAccount[]>(
-      (acc, key) =>
-        key.startsWith(ACCOUNTS_ITEM_KEY_PREFIX)
-          ? [...acc, items[key] as IAccount]
-          : acc,
-      []
+  public async fetchAll(): Promise<IAccount[]> {
+    const accounts = await this._fetchByPrefixKey<IAccount>(
+      ACCOUNTS_ITEM_KEY_PREFIX
     );
 
     return accounts.map((account) => ({
@@ -275,14 +235,14 @@ export default class AccountService {
           const encodedGenesisHash: string =
             convertGenesisHashToHex(genesisHash);
           const accountInformation: IAccountInformation = {
-            ...AccountService.initializeDefaultAccountInformation(), // initialize with any new values
+            ...AccountRepositoryService.initializeDefaultAccountInformation(), // initialize with any new values
             ...account.networkInformation[encodedGenesisHash],
           };
 
           return {
             ...acc,
             [encodedGenesisHash]: {
-              ...AccountService.initializeDefaultAccountInformation(),
+              ...AccountRepositoryService.initializeDefaultAccountInformation(),
               ...(accountInformation && {
                 ...accountInformation,
                 arc200AssetHoldings: accountInformation.arc200AssetHoldings.map(
@@ -307,14 +267,14 @@ export default class AccountService {
       >((acc, { genesisHash }) => {
         const encodedGenesisHash: string = convertGenesisHashToHex(genesisHash);
         const accountTransactions: IAccountTransactions = {
-          ...AccountService.initializeDefaultAccountTransactions(), // initialize with any new values
+          ...AccountRepositoryService.initializeDefaultAccountTransactions(), // initialize with any new values
           ...account.networkTransactions[encodedGenesisHash],
         };
 
         return {
           ...acc,
           [encodedGenesisHash]: {
-            ...AccountService.initializeDefaultAccountTransactions(),
+            ...AccountRepositoryService.initializeDefaultAccountTransactions(),
             ...accountTransactions,
           },
         };
@@ -323,21 +283,38 @@ export default class AccountService {
   }
 
   /**
-   * Gets the active account details.
-   * @returns {Promise<IActiveAccountDetails | null>} the active account details or null if none exist.
+   * Gets the account for a given public key.
+   * @param {string} publicKey - a hexadecimal encoded public key.
+   * @returns {Promise<IAccount | null>} A promise that resolves to the account or null.
+   * @public
    */
-  public async getActiveAccountDetails(): Promise<IActiveAccountDetails | null> {
-    return await this.storageManager.getItem<IActiveAccountDetails>(
-      ACTIVE_ACCOUNT_DETAILS_KEY
+  public async fetchByPublicKey(publicKey: string): Promise<IAccount | null> {
+    const accounts: IAccount[] = await this.fetchAll();
+
+    return (
+      accounts.find(
+        (value) => value.publicKey.toUpperCase() === publicKey.toUpperCase()
+      ) || null
     );
+  }
+
+  /**
+   * Fetches the account for a given ID.
+   * @param {string} id - the account ID.
+   * @returns {Promise<IAccount | null>} A promise that resolves to the account or null.
+   * @public
+   */
+  public async fetchById(id: string): Promise<IAccount | null> {
+    return await this._fetchByKey(this._createAccountItemKey(id));
   }
 
   /**
    * Removes an account by its ID.
    * @param {string} id - the account ID.
+   * @public
    */
-  public async removeAccountById(id: string): Promise<void> {
-    await this.storageManager.remove(this.createAccountItemKey(id));
+  public async removeById(id: string): Promise<void> {
+    await this._removeByKeys(this._createAccountItemKey(id));
   }
 
   /**
@@ -347,28 +324,29 @@ export default class AccountService {
    *
    * This function will overwrite any previous account data indexed by the account ID.
    * @param {IAccount[]} accounts - the list of accounts to save.
-   * @param {ISaveAccountsOptions} options - [optional] various options to affect how the data is saved.
-   * @returns {IAccount[]} the accounts that were passed in the argument.
+   * @param {ISaveOptions} options - various options to affect how the data is saved.
+   * @returns {Promise<IAccount[]>} A promise that resolves to the accounts that were passed in the argument.
+   * @public
    * @todo cache the first 100 transactions
    */
-  public async saveAccounts(
+  public async save(
     accounts: IAccount[],
-    { saveTransactions }: ISaveAccountsOptions = { saveTransactions: false }
+    { saveTransactions }: ISaveOptions = { saveTransactions: false }
   ): Promise<IAccount[]> {
-    await this.storageManager.setItems(
+    await this._save<IAccount>(
       accounts.reduce<Record<string, IAccount>>(
         (acc, account) => ({
           ...acc,
-          [this.createAccountItemKey(account.id)]: {
-            ...this.sanitizeAccount(account),
+          [this._createAccountItemKey(account.id)]: {
+            ...this._sanitize(account),
             // only save transactions if explicitly allowed
             // TODO: cache the first 100
-            ...(!saveTransactions && {
+            ...(saveTransactions && {
               networkTransactions: networks.reduce(
                 (acc, { genesisHash }) => ({
                   ...acc,
                   [convertGenesisHashToHex(genesisHash)]:
-                    AccountService.initializeDefaultAccountTransactions(),
+                    AccountRepositoryService.initializeDefaultAccountTransactions(),
                 }),
                 {}
               ),
@@ -380,20 +358,5 @@ export default class AccountService {
     );
 
     return accounts;
-  }
-
-  /**
-   * Saves the active account details to storage,
-   * @param {IActiveAccountDetails} activeAccountDetails - the active account details.
-   * @returns {Promise<IActiveAccountDetails>} the saved active account details.
-   */
-  public async saveActiveAccountDetails(
-    activeAccountDetails: IActiveAccountDetails
-  ): Promise<IActiveAccountDetails> {
-    await this.storageManager.setItems({
-      [ACTIVE_ACCOUNT_DETAILS_KEY]: activeAccountDetails,
-    });
-
-    return activeAccountDetails;
   }
 }

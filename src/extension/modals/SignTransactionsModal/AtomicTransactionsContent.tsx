@@ -38,7 +38,7 @@ import {
 } from '@extension/selectors';
 
 // services
-import AccountService from '@extension/services/AccountService';
+import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -279,7 +279,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
           }
 
           account = {
-            ...AccountService.initializeDefaultAccount({
+            ...AccountRepositoryService.initializeDefaultAccount({
               publicKey: encodedPublicKey,
             }),
             watchAccount: true,
@@ -290,7 +290,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
             ),
             currentAccountInformation:
               account.networkInformation[encodedGenesisHash] ||
-              AccountService.initializeDefaultAccountInformation(),
+              AccountRepositoryService.initializeDefaultAccountInformation(),
             delay: index * NODE_REQUEST_DELAY,
             logger,
             network,
