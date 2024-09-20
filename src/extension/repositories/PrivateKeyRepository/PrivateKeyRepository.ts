@@ -1,4 +1,3 @@
-import { decode as decodeHex, encode as encodeHex } from '@stablelib/hex';
 import { sign } from 'tweetnacl';
 import { v4 as uuid } from 'uuid';
 
@@ -11,14 +10,16 @@ import { EncryptionMethodEnum } from '@extension/enums';
 // errors
 import { MalformedDataError } from '@extension/errors';
 
-// services
-import PasskeyService from '@extension/services/PasskeyService';
-import PasswordService from '@extension/services/PasswordService';
-import StorageManager from '@extension/services/StorageManager';
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+import PasswordManager from '@extension/managers/PasswordManager';
+
+// repositories
+import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
 import type { IPrivateKey } from '@extension/types';
-import type { ICreateOptions, INewOptions, IUpgradeOptions } from './types';
+import type { ICreateOptions, IUpgradeOptions } from './types';
 
 /**
  * Handles all interactions with the private key item in storage. This does not deal with any encryption/decryption,
@@ -34,16 +35,9 @@ import type { ICreateOptions, INewOptions, IUpgradeOptions } from './types';
  * * The new `privateKey` property is the unencrypted private key that is non-nullified when the password lock feature is
  * enabled and not timed out.
  */
-export default class PrivateKeyService {
+export default class PrivateKeyRepository extends BaseRepository {
   // public static variables
   public static readonly latestVersion: number = 2;
-
-  // private variables
-  private readonly storageManager: StorageManager;
-
-  constructor(options?: INewOptions) {
-    this.storageManager = options?.storageManager || new StorageManager();
-  }
 
   /**
    * public static functions
@@ -68,37 +62,15 @@ export default class PrivateKeyService {
 
     return {
       createdAt: now.getTime(),
-      encryptedPrivateKey: PrivateKeyService.encode(encryptedPrivateKey),
+      encryptedPrivateKey: PrivateKeyRepository.encode(encryptedPrivateKey),
       encryptionID,
       encryptionMethod,
       id: uuid(),
-      privateKey: privateKey ? PrivateKeyService.encode(privateKey) : null,
-      publicKey: PrivateKeyService.encode(publicKey),
+      privateKey: privateKey ? PrivateKeyRepository.encode(privateKey) : null,
+      publicKey: PrivateKeyRepository.encode(publicKey),
       updatedAt: now.getTime(),
-      version: PrivateKeyService.latestVersion,
+      version: PrivateKeyRepository.latestVersion,
     };
-  }
-
-  /**
-   * Convenience that decodes a public/private key from hexadecimal.
-   * @param {string} encodedKey - the hexadecimal encoded key to decode.
-   * @returns {Uint8Array} the decoded key.
-   * @public
-   * @static
-   */
-  public static decode(encodedKey: string): Uint8Array {
-    return decodeHex(encodedKey);
-  }
-
-  /**
-   * Convenience that encodes a public/private key to uppercase hexadecimal.
-   * @param {Uint8Array} key - the key to encode.
-   * @returns {string} the key encoded to uppercase hexadecimal.
-   * @public
-   * @static
-   */
-  public static encode(key: Uint8Array): string {
-    return encodeHex(key);
   }
 
   /**
@@ -130,18 +102,18 @@ export default class PrivateKeyService {
     let decryptedPrivateKey: Uint8Array;
     let encryptedPrivateKey: Uint8Array;
 
-    if (privateKeyItem.version >= PrivateKeyService.latestVersion) {
+    if (privateKeyItem.version >= PrivateKeyRepository.latestVersion) {
       return privateKeyItem;
     }
 
     logger?.debug(
-      `${PrivateKeyService.name}#${_functionName}: key "${privateKeyItem.id}" on legacy version "${privateKeyItem.version}"`
+      `${PrivateKeyRepository.name}#${_functionName}: key "${privateKeyItem.id}" on legacy version "${privateKeyItem.version}"`
     );
 
     switch (encryptionCredentials.type) {
       case EncryptionMethodEnum.Passkey:
-        decryptedPrivateKey = await PasskeyService.decryptBytes({
-          encryptedBytes: PrivateKeyService.decode(
+        decryptedPrivateKey = await PasskeyManager.decryptBytes({
+          encryptedBytes: PrivateKeyRepository.decode(
             privateKeyItem.encryptedPrivateKey
           ),
           inputKeyMaterial: encryptionCredentials.inputKeyMaterial,
@@ -151,8 +123,10 @@ export default class PrivateKeyService {
 
         break;
       case EncryptionMethodEnum.Password:
-        decryptedPrivateKey = await PasswordService.decryptBytes({
-          data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+        decryptedPrivateKey = await PasswordManager.decryptBytes({
+          bytes: PrivateKeyRepository.decode(
+            privateKeyItem.encryptedPrivateKey
+          ),
           logger,
           password: encryptionCredentials.password,
         }); // decrypt the private key with the current password
@@ -165,11 +139,13 @@ export default class PrivateKeyService {
     // un-versioned or version 0 use the "secret key" form - the private key concatenated to the public key
     if (!privateKeyItem.version || privateKeyItem.version <= 0) {
       decryptedPrivateKey =
-        PrivateKeyService.extractPrivateKeyFromSecretKey(decryptedPrivateKey);
+        PrivateKeyRepository.extractPrivateKeyFromSecretKey(
+          decryptedPrivateKey
+        );
 
       switch (encryptionCredentials.type) {
         case EncryptionMethodEnum.Passkey:
-          encryptedPrivateKey = await PasskeyService.encryptBytes({
+          encryptedPrivateKey = await PasskeyManager.encryptBytes({
             bytes: decryptedPrivateKey,
             inputKeyMaterial: encryptionCredentials.inputKeyMaterial,
             passkey: encryptionCredentials.passkey,
@@ -178,8 +154,8 @@ export default class PrivateKeyService {
 
           break;
         case EncryptionMethodEnum.Password:
-          encryptedPrivateKey = await PasswordService.encryptBytes({
-            data: decryptedPrivateKey,
+          encryptedPrivateKey = await PasswordManager.encryptBytes({
+            bytes: decryptedPrivateKey,
             logger,
             password: encryptionCredentials.password,
           }); // re-encrypt the private key with the current password
@@ -191,16 +167,16 @@ export default class PrivateKeyService {
 
       _privateKeyItem = {
         ..._privateKeyItem,
-        encryptedPrivateKey: PrivateKeyService.encode(encryptedPrivateKey),
+        encryptedPrivateKey: PrivateKeyRepository.encode(encryptedPrivateKey),
         privateKey: _privateKeyItem.privateKey
-          ? PrivateKeyService.encode(decryptedPrivateKey)
+          ? PrivateKeyRepository.encode(decryptedPrivateKey)
           : null,
       };
     }
 
     return {
       ..._privateKeyItem,
-      version: PrivateKeyService.latestVersion, // update to the latest version
+      version: PrivateKeyRepository.latestVersion, // update to the latest version
     };
   }
 
@@ -214,7 +190,7 @@ export default class PrivateKeyService {
    * @returns {string} the private key item key.
    * @public
    */
-  private _createPrivateKeyItemKey(publicKey: string): string {
+  private _createItemKey(publicKey: string): string {
     return `${PRIVATE_KEY_ITEM_KEY_PREFIX}${publicKey}`;
   }
 
@@ -269,19 +245,13 @@ export default class PrivateKeyService {
    */
 
   /**
-   * Gets all the private keys from storage.
-   * @returns {Promise<IPrivateKey[]>} a promise that resolves to all the private keys in storage.
+   * Fetches all the private keys from storage.
+   * @returns {Promise<IPrivateKey[]>} A promise that resolves to all the private keys in storage.
    * @public
    */
-  public async fetchAllFromStorage(): Promise<IPrivateKey[]> {
-    const items = await this.storageManager.getAllItems();
-
-    return Object.keys(items).reduce<IPrivateKey[]>(
-      (acc, key) =>
-        key.startsWith(PRIVATE_KEY_ITEM_KEY_PREFIX)
-          ? [...acc, this._sanitize(items[key] as IPrivateKey)]
-          : acc,
-      []
+  public async fetchAll(): Promise<IPrivateKey[]> {
+    return await this._fetchByPrefixKey<IPrivateKey>(
+      PRIVATE_KEY_ITEM_KEY_PREFIX
     );
   }
 
@@ -291,15 +261,15 @@ export default class PrivateKeyService {
    * @returns {Promise<IPrivateKey | null>} a promise that resolves to the private key or null.
    * @public
    */
-  public async fetchFromStorageByPublicKey(
+  public async fetchByPublicKey(
     publicKey: Uint8Array | string
   ): Promise<IPrivateKey | null> {
     const _publicKey =
       typeof publicKey !== 'string'
-        ? PrivateKeyService.encode(publicKey)
+        ? PrivateKeyRepository.encode(publicKey)
         : publicKey;
-    const item = await this.storageManager.getItem<IPrivateKey>(
-      this._createPrivateKeyItemKey(_publicKey.toUpperCase())
+    const item = await this._fetchByKey<IPrivateKey>(
+      this._createItemKey(_publicKey)
     );
 
     return item ? this._sanitize(item) : null;
@@ -311,7 +281,7 @@ export default class PrivateKeyService {
    * @public
    */
   public async listPublicKeys(): Promise<string[]> {
-    const items = await this.fetchAllFromStorage();
+    const items = await this.fetchAll();
 
     return items.map((value) => value.publicKey);
   }
@@ -321,27 +291,23 @@ export default class PrivateKeyService {
    * @param {Uint8Array | string} publicKey - a raw or hexadecimal encoded public key.
    * @public
    */
-  public async removeFromStorageByPublicKey(
+  public async removeByPublicKey(
     publicKey: Uint8Array | string
   ): Promise<void> {
     const _publicKey =
       typeof publicKey !== 'string'
-        ? PrivateKeyService.encode(publicKey)
+        ? PrivateKeyRepository.encode(publicKey)
         : publicKey;
 
-    await this.storageManager.remove(
-      this._createPrivateKeyItemKey(_publicKey.toUpperCase())
-    );
+    await this._removeByKeys(this._createItemKey(_publicKey));
   }
 
   /**
    * Removes all private keys from storage.
    * @public
    */
-  public async removeAllFromStorage(): Promise<void> {
-    const keys = await this.listPublicKeys();
-
-    return await this.storageManager.remove(keys);
+  public async removeAll(): Promise<void> {
+    return await this._removeByKeyPrefix(PRIVATE_KEY_ITEM_KEY_PREFIX);
   }
 
   /**
@@ -351,14 +317,14 @@ export default class PrivateKeyService {
    * @returns {Promise<IPrivateKey[]>} a promise that resolves to the saved private keys.
    * @public
    */
-  public async saveManyToStorage(items: IPrivateKey[]): Promise<IPrivateKey[]> {
+  public async saveMany(items: IPrivateKey[]): Promise<IPrivateKey[]> {
     const _items = items.map((value) => this._sanitize(value));
 
-    await this.storageManager.setItems(
+    await this._save<IPrivateKey>(
       _items.reduce<Record<string, IPrivateKey>>(
         (acc, currentValue) => ({
           ...acc,
-          [this._createPrivateKeyItemKey(currentValue.publicKey)]: {
+          [this._createItemKey(currentValue.publicKey)]: {
             ...currentValue,
             updatedAt: new Date().getTime(),
           },
@@ -372,15 +338,15 @@ export default class PrivateKeyService {
 
   /**
    * Saves a single private key item to storage. This will overwrite a matching private key item by its public key.
-   * @param {IPrivateKey} item - the private key item to save.
-   * @returns {Promise<IPrivateKey>} a promise that resolves to the saved private key.
+   * @param {IPrivateKey} item - The private key item to save.
+   * @returns {Promise<IPrivateKey>} A promise that resolves to the saved private key.
    * @public
    */
-  public async saveToStorage(item: IPrivateKey): Promise<IPrivateKey> {
+  public async save(item: IPrivateKey): Promise<IPrivateKey> {
     const _item = this._sanitize(item);
 
-    await this.storageManager.setItems({
-      [this._createPrivateKeyItemKey(_item.publicKey)]: {
+    await this._save<IPrivateKey>({
+      [this._createItemKey(_item.publicKey)]: {
         ..._item,
         updatedAt: new Date().getTime(),
       },

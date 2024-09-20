@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccountInformation } from '@extension/types';
@@ -38,7 +37,7 @@ export default function doesAccountFallBelowMinimumBalanceRequirementForTransact
   if (!accountInformation) {
     logger?.debug(
       `${_functionName}: unable to get account information for account "${convertPublicKeyToAVMAddress(
-        PrivateKeyService.decode(account.publicKey)
+        AccountRepository.decode(account.publicKey)
       )}" on network "${network.genesisId}"`
     );
 

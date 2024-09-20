@@ -29,8 +29,8 @@ import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColo
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useAddAssetStandardAssetSummaryContent from './hooks/useAddAssetStandardAssetSummaryContent';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAddAssetsModalStandardAssetSummaryContentProps } from './types';
@@ -61,7 +61,7 @@ const AddAssetsStandardAssetSummaryModalContent: FC<
   const subTextColor: string = useSubTextColor();
   // misc
   const accountAddress: string = convertPublicKeyToAVMAddress(
-    PrivateKeyService.decode(account.publicKey)
+    AccountRepository.decode(account.publicKey)
   );
   const totalSupplyInStandardUnits: BigNumber = convertToStandardUnit(
     new BigNumber(asset.totalSupply),

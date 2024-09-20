@@ -8,7 +8,7 @@ import { ThunkEnum } from '../enums';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type {
@@ -44,7 +44,7 @@ const saveNewAccountsThunk: AsyncThunk<
     let privateKeyItem: IPrivateKey | null = null;
     let saveUnencryptedPrivateKey: boolean;
 
-    credentialLockActive = await isCredentialLockActive({ logger });
+    credentialLockActive = await isCredentialLockActive();
     // save the unencrypted key if:
     // * the credential lock is enabled and the timeout is set to 0 ("never")
     // * the credential lock is enabled, the timeout has a duration and the credential lock is not currently active
@@ -55,7 +55,7 @@ const saveNewAccountsThunk: AsyncThunk<
         !credentialLockActive);
 
     for (const { keyPair, name } of accounts) {
-      encodedPublicKey = PrivateKeyService.encode(keyPair.publicKey);
+      encodedPublicKey = PrivateKeyRepository.encode(keyPair.publicKey);
 
       try {
         if (encryptionOptions.type === EncryptionMethodEnum.Passkey) {

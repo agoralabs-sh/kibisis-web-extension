@@ -46,6 +46,9 @@ import {
 import { create as createNotification } from '@extension/features/notifications';
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
@@ -55,9 +58,6 @@ import {
   useSelectPasskeysEnabled,
   useSelectSettings,
 } from '@extension/selectors';
-
-// services
-import PasskeyService from '@extension/services/PasskeyService';
 
 // types
 import type { IOption } from '@extension/components/Select';
@@ -266,7 +266,7 @@ const SecuritySettingsPage: FC = () => {
         {/*passkey*/}
         <SettingsLinkItem
           badges={[
-            ...(PasskeyService.isSupported()
+            ...(PasskeyManager.isSupported()
               ? [
                   {
                     ...(passkeyEnabled

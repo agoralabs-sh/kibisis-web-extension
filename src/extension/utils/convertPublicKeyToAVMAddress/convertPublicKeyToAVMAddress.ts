@@ -1,7 +1,7 @@
 import { encodeAddress } from 'algosdk';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 /**
  * Convenience function that simply converts a public key to a base32 encoded AVM address.
@@ -12,7 +12,7 @@ export default function convertPublicKeyToAVMAddress(
   publicKey: Uint8Array | string
 ): string {
   if (typeof publicKey === 'string') {
-    return encodeAddress(PrivateKeyService.decode(publicKey));
+    return encodeAddress(AccountRepository.decode(publicKey));
   }
 
   return encodeAddress(publicKey);

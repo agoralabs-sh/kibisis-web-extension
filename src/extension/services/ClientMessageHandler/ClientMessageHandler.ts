@@ -51,7 +51,6 @@ import SessionRepository from '@extension/repositories/SessionRepository';
 
 // services
 import EventQueueService from '../EventQueueService';
-import PrivateKeyService from '../PrivateKeyService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
 
@@ -115,10 +114,7 @@ export default class ClientMessageHandler {
     return await Promise.all(
       accounts.map(async (value) => ({
         ...value,
-        watchAccount: await isWatchAccount({
-          account: value,
-          logger: this._logger || undefined,
-        }),
+        watchAccount: await isWatchAccount(value),
       }))
     );
   }
@@ -369,7 +365,7 @@ export default class ClientMessageHandler {
                     accounts.find(
                       (value) =>
                         convertPublicKeyToAVMAddress(
-                          PrivateKeyService.decode(value.publicKey)
+                          AccountRepository.decode(value.publicKey)
                         ) === address
                     ) || null;
 
@@ -467,7 +463,7 @@ export default class ClientMessageHandler {
         authorizedAccounts.find(
           (value) =>
             convertPublicKeyToAVMAddress(
-              PrivateKeyService.decode(value.publicKey)
+              AccountRepository.decode(value.publicKey)
             ) === message.params?.signer
         ) || null;
 

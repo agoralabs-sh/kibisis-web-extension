@@ -1,5 +1,5 @@
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAccount } from '@extension/types';
@@ -15,7 +15,7 @@ export default function isAccountKnown(
     accounts.findIndex(
       (value) =>
         convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(value.publicKey)
+          AccountRepository.decode(value.publicKey)
         ) === address
     ) > -1
   );

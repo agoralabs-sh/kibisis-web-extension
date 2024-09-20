@@ -9,7 +9,6 @@ import { MINIMUM_BALANCE_REQUIREMENT } from '@extension/constants';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccount, INetworkWithTransactionParams } from '@extension/types';
@@ -34,7 +33,7 @@ describe(`${__dirname}/calculateMinimumBalanceRequirementForStandardAssets`, () 
     const _account: Account = generateAccount();
 
     account = AccountRepository.initializeDefaultAccount({
-      publicKey: PrivateKeyService.encode(
+      publicKey: AccountRepository.encode(
         convertAVMAddressToPublicKey(_account.addr)
       ),
     });

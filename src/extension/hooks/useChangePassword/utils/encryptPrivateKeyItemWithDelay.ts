@@ -1,9 +1,11 @@
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
 
-// services
-import PasswordService from '@extension/services/PasswordService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasswordManager from '@extension/managers/PasswordManager';
+
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IPrivateKey } from '@extension/types';
@@ -23,7 +25,7 @@ export default async function encryptPrivateKeyItemWithDelay({
       let _privateKeyItem: IPrivateKey;
 
       try {
-        _privateKeyItem = await PrivateKeyService.upgrade({
+        _privateKeyItem = await PrivateKeyRepository.upgrade({
           encryptionCredentials: {
             password: currentPassword,
             type: EncryptionMethodEnum.Password,
@@ -31,13 +33,15 @@ export default async function encryptPrivateKeyItemWithDelay({
           logger,
           privateKeyItem,
         });
-        decryptedPrivateKey = await PasswordService.decryptBytes({
-          data: PrivateKeyService.decode(_privateKeyItem.encryptedPrivateKey),
+        decryptedPrivateKey = await PasswordManager.decryptBytes({
+          bytes: PrivateKeyRepository.decode(
+            _privateKeyItem.encryptedPrivateKey
+          ),
           logger,
           password: currentPassword,
         }); // decrypt the private key with the current password
-        reEncryptedPrivateKey = await PasswordService.encryptBytes({
-          data: decryptedPrivateKey,
+        reEncryptedPrivateKey = await PasswordManager.encryptBytes({
+          bytes: decryptedPrivateKey,
           logger,
           password: newPassword,
         }); // re-encrypt the private key with the new password
@@ -47,7 +51,7 @@ export default async function encryptPrivateKeyItemWithDelay({
 
       return resolve({
         ..._privateKeyItem,
-        encryptedPrivateKey: PrivateKeyService.encode(reEncryptedPrivateKey),
+        encryptedPrivateKey: PrivateKeyRepository.encode(reEncryptedPrivateKey),
       });
     }, delay);
   });

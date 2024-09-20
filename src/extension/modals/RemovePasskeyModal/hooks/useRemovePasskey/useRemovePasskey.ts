@@ -11,10 +11,12 @@ import { removeFromStorageThunk as removePasskeyToStorageThunk } from '@extensio
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// services
-import PasskeyService from '@extension/services/PasskeyService';
-import PasswordService from '@extension/services/PasswordService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+import PasswordManager from '@extension/managers/PasswordManager';
+
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadingContent';
@@ -46,19 +48,19 @@ export default function useRemovePasskey(): IState {
     password,
   }: IRemovePasskeyActionOptions): Promise<boolean> => {
     const _functionName = 'removePasskeyAction';
-    const passwordService = new PasswordService({
+    const passwordManager = new PasswordManager({
       logger,
       passwordTag: browser.runtime.id,
     });
     let inputKeyMaterial: Uint8Array;
     let isPasswordValid: boolean;
     let privateKeyItems: IPrivateKey[];
-    let privateKeyService: PrivateKeyService;
+    let privateKeyRepository: PrivateKeyRepository;
 
     // reset the previous values
     resetAction();
 
-    isPasswordValid = await passwordService.verifyPassword(password);
+    isPasswordValid = await passwordManager.verifyPassword(password);
 
     if (!isPasswordValid) {
       logger?.debug(`${_hookName}#${_functionName}: invalid password`);
@@ -76,7 +78,7 @@ export default function useRemovePasskey(): IState {
 
     try {
       // fetch the encryption key material
-      inputKeyMaterial = await PasskeyService.fetchInputKeyMaterialFromPasskey({
+      inputKeyMaterial = await PasskeyManager.fetchInputKeyMaterialFromPasskey({
         credential: passkey,
         logger,
       });
@@ -92,10 +94,8 @@ export default function useRemovePasskey(): IState {
     setRequesting(false);
     setEncrypting(true);
 
-    privateKeyService = new PrivateKeyService({
-      logger,
-    });
-    privateKeyItems = await privateKeyService.fetchAllFromStorage();
+    privateKeyRepository = new PrivateKeyRepository();
+    privateKeyItems = await privateKeyRepository.fetchAll();
 
     // set the encryption state for each item to false
     setEncryptionProgressState(
@@ -143,7 +143,7 @@ export default function useRemovePasskey(): IState {
     }
 
     // save the new encrypted items to storage
-    await privateKeyService.saveManyToStorage(privateKeyItems);
+    await privateKeyRepository.saveMany(privateKeyItems);
 
     // remove the passkey to storage
     await dispatch(removePasskeyToStorageThunk()).unwrap();

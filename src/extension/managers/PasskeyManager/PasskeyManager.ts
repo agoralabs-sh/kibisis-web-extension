@@ -1,8 +1,7 @@
-import { encode as encodeHex, decode as decodeHex } from '@stablelib/hex';
+import { decode as decodeHex } from '@stablelib/hex';
 import { randomBytes } from 'tweetnacl';
 
 // constants
-import { PASSKEY_CREDENTIAL_KEY } from '@extension/constants';
 import {
   CHALLENGE_BYTE_SIZE,
   DERIVATION_KEY_ALGORITHM,
@@ -20,8 +19,8 @@ import {
   UnableToFetchPasskeyError,
 } from '@extension/errors';
 
-// services
-import StorageManager from '@extension/services/StorageManager';
+// repositories
+import PasskeyCredentialRepository from '@extension/repositories/PasskeyCredentialRepository';
 
 // types
 import type { IAuthenticationExtensionsClientOutputs } from '@common/types';
@@ -32,17 +31,9 @@ import type {
   IEncryptBytesOptions,
   IFetchPasskeyKeyMaterialOptions,
   IGenerateEncryptionKeyOptions,
-  INewOptions,
 } from './types';
 
-export default class PasskeyService {
-  // private variables
-  private readonly storageManager: StorageManager;
-
-  constructor(options?: INewOptions) {
-    this.storageManager = options?.storageManager || new StorageManager();
-  }
-
+export default class PasskeyManager {
   /**
    * private static functions
    */
@@ -147,7 +138,7 @@ export default class PasskeyService {
         },
       })) as PublicKeyCredential | null;
     } catch (error) {
-      logger?.error(`${PasskeyService.name}#${_functionName}:`, error);
+      logger?.error(`${PasskeyManager.name}#${_functionName}:`, error);
 
       throw new PasskeyCreationError(error.message);
     }
@@ -155,7 +146,7 @@ export default class PasskeyService {
     if (!credential) {
       _error = 'failed to create a passkey';
 
-      logger?.error(`${PasskeyService.name}#${_functionName}: ${_error}`);
+      logger?.error(`${PasskeyManager.name}#${_functionName}: ${_error}`);
 
       throw new PasskeyCreationError(_error);
     }
@@ -166,7 +157,7 @@ export default class PasskeyService {
     if (!extensionResults.prf?.enabled) {
       _error = 'authenticator does not support the prf extension for webauthn';
 
-      logger?.error(`${PasskeyService.name}#${_functionName}: ${_error}`);
+      logger?.error(`${PasskeyManager.name}#${_functionName}: ${_error}`);
 
       throw new PasskeyNotSupportedError(_error);
     }
@@ -179,29 +170,20 @@ export default class PasskeyService {
       algorithm: (
         credential.response as AuthenticatorAttestationResponse
       ).getPublicKeyAlgorithm(),
-      id: encodeHex(new Uint8Array(credential.rawId)),
-      initializationVector: encodeHex(
+      id: PasskeyCredentialRepository.encode(new Uint8Array(credential.rawId)),
+      initializationVector: PasskeyCredentialRepository.encode(
         randomBytes(INITIALIZATION_VECTOR_BYTE_SIZE)
       ),
       name: _name,
-      publicKey: publicKey ? encodeHex(new Uint8Array(publicKey)) : null,
-      salt: encodeHex(salt),
+      publicKey: publicKey
+        ? PasskeyCredentialRepository.encode(new Uint8Array(publicKey))
+        : null,
+      salt: PasskeyCredentialRepository.encode(salt),
       transports: (
         credential.response as AuthenticatorAttestationResponse
       ).getTransports() as AuthenticatorTransport[],
       userID: deviceID,
     };
-  }
-
-  /**
-   * Convenience that decodes a property of the passkey credential from hexadecimal.
-   * @param {string} encodedKey - the hexadecimal property of the passkey credential to decode.
-   * @returns {Uint8Array} the decoded property of the passkey credential.
-   * @public
-   * @static
-   */
-  public static decode(encodedKey: string): Uint8Array {
-    return decodeHex(encodedKey);
   }
 
   /**
@@ -218,31 +200,20 @@ export default class PasskeyService {
     passkey,
   }: IDecryptBytesOptions): Promise<Uint8Array> {
     const encryptionKey =
-      await PasskeyService._generateEncryptionKeyFromInputKeyMaterial({
+      await PasskeyManager._generateEncryptionKeyFromInputKeyMaterial({
         inputKeyMaterial,
         userID: passkey.userID,
       });
     const decryptedBytes = await crypto.subtle.decrypt(
       {
         name: ENCRYPTION_KEY_ALGORITHM,
-        iv: PasskeyService.decode(passkey.initializationVector),
+        iv: PasskeyCredentialRepository.decode(passkey.initializationVector),
       },
       encryptionKey,
       encryptedBytes
     );
 
     return new Uint8Array(decryptedBytes);
-  }
-
-  /**
-   * Convenience that encodes a property of the passkey credential to uppercase hexadecimal.
-   * @param {Uint8Array} key - the property of the passkey credential to encode.
-   * @returns {string} the property of the passkey credential encoded to uppercase hexadecimal.
-   * @public
-   * @static
-   */
-  public static encode(key: Uint8Array): string {
-    return encodeHex(key);
   }
 
   /**
@@ -260,14 +231,14 @@ export default class PasskeyService {
     passkey,
   }: IEncryptBytesOptions): Promise<Uint8Array> {
     const encryptionKey =
-      await PasskeyService._generateEncryptionKeyFromInputKeyMaterial({
+      await PasskeyManager._generateEncryptionKeyFromInputKeyMaterial({
         inputKeyMaterial,
         userID: passkey.userID,
       });
     const encryptedBytes = await crypto.subtle.encrypt(
       {
         name: ENCRYPTION_KEY_ALGORITHM,
-        iv: PasskeyService.decode(passkey.initializationVector),
+        iv: PasskeyCredentialRepository.decode(passkey.initializationVector),
       },
       encryptionKey,
       bytes
@@ -319,7 +290,7 @@ export default class PasskeyService {
         },
       })) as PublicKeyCredential | null;
     } catch (error) {
-      logger?.error(`${PasskeyService.name}#${_functionName}:`, error);
+      logger?.error(`${PasskeyManager.name}#${_functionName}:`, error);
 
       throw new UnableToFetchPasskeyError(credential.id, error.message);
     }
@@ -327,7 +298,7 @@ export default class PasskeyService {
     if (!_credential) {
       _error = `failed to fetch passkey "${credential.id}"`;
 
-      logger?.error(`${PasskeyService.name}#${_functionName}: ${_error}`);
+      logger?.error(`${PasskeyManager.name}#${_functionName}: ${_error}`);
 
       throw new UnableToFetchPasskeyError(credential.id, _error);
     }
@@ -338,7 +309,7 @@ export default class PasskeyService {
     if (!extensionResults.prf?.results) {
       _error = 'authenticator does not support the prf extension for webauthn';
 
-      logger?.error(`${PasskeyService.name}#${_functionName}: ${_error}`);
+      logger?.error(`${PasskeyManager.name}#${_functionName}: ${_error}`);
 
       throw new PasskeyNotSupportedError(_error);
     }
@@ -354,45 +325,5 @@ export default class PasskeyService {
    */
   public static isSupported(): boolean {
     return !!window?.PublicKeyCredential;
-  }
-
-  /**
-   * public functions
-   */
-
-  /**
-   * Fetches the passkey credential from storage.
-   * @returns {Promise<IPasskeyCredential | null>} a promise that resolves to the passkey credential or null if no
-   * passkey credential exists in storage.
-   * @public
-   */
-  public async fetchFromStorage(): Promise<IPasskeyCredential | null> {
-    return await this.storageManager.getItem<IPasskeyCredential>(
-      PASSKEY_CREDENTIAL_KEY
-    );
-  }
-
-  /**
-   * Removes the stored passkey credential.
-   * @public
-   */
-  public async removeFromStorage(): Promise<void> {
-    return await this.storageManager.remove(PASSKEY_CREDENTIAL_KEY);
-  }
-
-  /**
-   * Saves the credential to storage. This will overwrite the current stored credential.
-   * @param {IPasskeyCredential} credential - the credential to save.
-   * @returns {Promise<IPasskeyCredential>} a promise that resolves to the saved credential.
-   * @public
-   */
-  public async saveToStorage(
-    credential: IPasskeyCredential
-  ): Promise<IPasskeyCredential> {
-    await this.storageManager.setItems({
-      [PASSKEY_CREDENTIAL_KEY]: credential,
-    });
-
-    return credential;
   }
 }

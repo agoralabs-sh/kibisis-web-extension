@@ -50,8 +50,8 @@ import {
   useSelectSessionsSaving,
 } from '@extension/selectors';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // theme
 import { theme } from '@extension/theme';
@@ -211,7 +211,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
     accountNodes = availableAccounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
         const address = convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(account.publicKey)
+          AccountRepository.decode(account.publicKey)
         );
 
         return [
@@ -347,7 +347,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
     ) {
       setAuthorizedAddresses([
         convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(availableAccounts[0].publicKey)
+          AccountRepository.decode(availableAccounts[0].publicKey)
         ),
       ]);
     }

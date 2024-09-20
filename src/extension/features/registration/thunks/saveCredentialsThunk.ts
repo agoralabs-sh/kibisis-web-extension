@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { encode as encodeUtf8 } from '@stablelib/utf8';
 import browser from 'webextension-polyfill';
 
@@ -9,10 +9,13 @@ import { ThunkEnum } from '../enums';
 // errors
 import { InvalidPasswordError } from '@extension/errors';
 
+// managers
+import PasswordManager from '@extension/managers/PasswordManager';
+
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PasswordService from '@extension/services/PasswordService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+import PasswordTagRepository from '@extension/repositories/PasswordTagRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type {
@@ -38,11 +41,11 @@ const saveCredentialsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const password = getState().registration.password;
     let _accounts: IAccount[] = [];
-    let passwordService: PasswordService;
+    let passwordTagRepository: PasswordTagRepository;
     let passwordTagItem: IPasswordTag;
     let privateKeyItem: IPrivateKey;
     let privateKeyItems: IPrivateKey[] = [];
-    let privateKeyService: PrivateKeyService;
+    let privateKeyRepository: PrivateKeyRepository;
 
     if (!password) {
       logger.error(`${ThunkEnum.SaveCredentials}: no password found`);
@@ -50,28 +53,23 @@ const saveCredentialsThunk: AsyncThunk<
       return rejectWithValue(new InvalidPasswordError());
     }
 
-    passwordService = new PasswordService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
-    privateKeyService = new PrivateKeyService({
-      logger,
-    });
+    passwordTagRepository = new PasswordTagRepository();
+    privateKeyRepository = new PrivateKeyRepository();
 
     try {
       // reset any previous keys/credentials
-      await passwordService.removeFromStorage();
-      await privateKeyService.removeAllFromStorage();
+      await passwordTagRepository.remove();
+      await privateKeyRepository.removeAll();
 
       logger.debug(
         `${ThunkEnum.SaveCredentials}: removed previous credentials from storage`
       );
 
       // save the password and the keys
-      passwordTagItem = await passwordService.saveToStorage(
-        PasswordService.createPasswordTag({
-          encryptedTag: await PasswordService.encryptBytes({
-            data: encodeUtf8(passwordService.getPasswordTag()),
+      passwordTagItem = await passwordTagRepository.save(
+        PasswordTagRepository.create({
+          encryptedTag: await PasswordManager.encryptBytes({
+            bytes: encodeUtf8(browser.runtime.id),
             logger,
             password,
           }),
@@ -81,8 +79,8 @@ const saveCredentialsThunk: AsyncThunk<
       logger.error(`${ThunkEnum.SaveCredentials}:`, error);
 
       // clean up, we errored
-      await passwordService.removeFromStorage();
-      await privateKeyService.removeAllFromStorage();
+      await passwordTagRepository.remove();
+      await privateKeyRepository.removeAll();
 
       return rejectWithValue(error);
     }
@@ -90,9 +88,9 @@ const saveCredentialsThunk: AsyncThunk<
     logger.debug(`${ThunkEnum.SaveCredentials}: saved password tag to storage`);
 
     for (const { keyPair, name } of accounts) {
-      privateKeyItem = PrivateKeyService.create({
-        encryptedPrivateKey: await PasswordService.encryptBytes({
-          data: keyPair.privateKey,
+      privateKeyItem = PrivateKeyRepository.create({
+        encryptedPrivateKey: await PasswordManager.encryptBytes({
+          bytes: keyPair.privateKey,
           logger,
           password,
         }),
@@ -114,7 +112,7 @@ const saveCredentialsThunk: AsyncThunk<
     }
 
     // save the private keys to storage
-    await privateKeyService.saveManyToStorage(privateKeyItems);
+    await privateKeyRepository.saveMany(privateKeyItems);
 
     logger.debug(
       `${ThunkEnum.SaveCredentials}: successfully saved ${privateKeyItems.length} keys to storage`

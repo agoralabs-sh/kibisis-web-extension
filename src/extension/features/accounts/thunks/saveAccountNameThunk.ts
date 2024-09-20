@@ -57,7 +57,7 @@ const saveAccountNameThunk: AsyncThunk<
 
   return {
     ...account,
-    watchAccount: await isWatchAccount({ account, logger }),
+    watchAccount: await isWatchAccount(account),
   };
 });
 

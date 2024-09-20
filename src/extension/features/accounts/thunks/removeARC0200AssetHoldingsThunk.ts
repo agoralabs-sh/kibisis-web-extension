@@ -95,7 +95,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     return {
       account: {
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount(account),
       },
     };
   }

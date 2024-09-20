@@ -36,6 +36,9 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+
 // modals
 import AddPasskeyModal from '@extension/modals/AddPasskeyModal';
 import RemovePasskeyModal from '@extension/modals/RemovePasskeyModal';
@@ -48,9 +51,6 @@ import {
   useSelectSystemInfo,
   useSelectPasskeysSaving,
 } from '@extension/selectors';
-
-// services
-import PasskeyService from '@extension/services/PasskeyService';
 
 // types
 import type {
@@ -103,7 +103,7 @@ const PasskeyPage: FC = () => {
         `${PasskeyPage.name}#${_functionName}: creating a new passkey`
       );
 
-      _passkey = await PasskeyService.createPasskeyCredential({
+      _passkey = await PasskeyManager.createPasskeyCredential({
         deviceID: systemInfo.deviceID,
         logger,
         name: passkeyName,
@@ -144,7 +144,7 @@ const PasskeyPage: FC = () => {
     const iconSize = calculateIconSize('xl');
 
     // if passkeys are not supported for the browser
-    if (!PasskeyService.isSupported()) {
+    if (!PasskeyManager.isSupported()) {
       return (
         <VStack
           alignItems="center"

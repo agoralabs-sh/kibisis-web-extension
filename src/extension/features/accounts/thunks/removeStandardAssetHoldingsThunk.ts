@@ -277,7 +277,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     return {
       account: {
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount(account),
       },
       transactionIds,
     };

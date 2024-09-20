@@ -11,7 +11,7 @@ import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type {
@@ -107,7 +107,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     account.networkInformation[encodedGenesisHash] =
       await updateAccountInformation({
         address: convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(account.publicKey)
+          PrivateKeyRepository.decode(account.publicKey)
         ),
         currentAccountInformation: {
           ...currentAccountInformation,
@@ -133,7 +133,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     return {
       account: {
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount(account),
       },
     };
   }

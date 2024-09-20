@@ -1,5 +1,5 @@
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IOptions } from './types';
@@ -20,7 +20,7 @@ export default function isReKeyedAuthAccountAvailable({
   const reKeyedAccount = accounts.find(
     (value) =>
       convertPublicKeyToAVMAddress(
-        PrivateKeyService.decode(value.publicKey)
+        AccountRepository.decode(value.publicKey)
       ) === authAddress
   );
 

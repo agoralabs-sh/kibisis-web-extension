@@ -33,7 +33,6 @@ import { useSelectLogger, useSelectSettings } from '@extension/selectors';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -192,7 +191,7 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
       encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
       account = {
         ...AccountRepository.initializeDefaultAccount({
-          publicKey: PrivateKeyService.encode(
+          publicKey: AccountRepository.encode(
             convertAVMAddressToPublicKey(freezeAddress)
           ),
         }),

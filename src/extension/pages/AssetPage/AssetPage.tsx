@@ -58,6 +58,9 @@ import ShareAddressModal from '@extension/modals//ShareAddressModal';
 // pages
 import SkeletonAssetPage from '@extension/pages/SkeletonAssetPage';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import {
   useSelectAccounts,
@@ -66,9 +69,6 @@ import {
   useSelectSettingsPreferredBlockExplorer,
   useSelectStandardAssetsFetching,
 } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
@@ -167,7 +167,7 @@ const AssetPage: FC = () => {
   }
 
   accountAddress = convertPublicKeyToAVMAddress(
-    PrivateKeyService.decode(account.publicKey)
+    AccountRepository.decode(account.publicKey)
   );
 
   return (

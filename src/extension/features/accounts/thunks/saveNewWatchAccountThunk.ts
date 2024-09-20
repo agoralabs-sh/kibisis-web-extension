@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { isValidAddress } from 'algosdk';
 
 // errors
@@ -9,7 +9,7 @@ import { ThunkEnum } from '../enums';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type {
@@ -40,9 +40,8 @@ const saveNewWatchAccountThunk: AsyncThunk<
     const accounts = await accountRepository.fetchAll();
     let _error: string;
     let account: IAccount | null;
-    let encodedPublicKey: string;
     let privateKeyItem: IPrivateKey | null;
-    let privateKeyService: PrivateKeyService;
+    let publicKey: Uint8Array;
 
     logger.debug(
       `${ThunkEnum.SaveNewWatchAccount}: validating address "${address}"`
@@ -56,11 +55,11 @@ const saveNewWatchAccountThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(_error));
     }
 
-    encodedPublicKey = PrivateKeyService.encode(
-      convertAVMAddressToPublicKey(address)
-    );
+    publicKey = convertAVMAddressToPublicKey(address);
     account =
-      accounts.find((value) => value.publicKey === encodedPublicKey) || null;
+      accounts.find(
+        (value) => value.publicKey === AccountRepository.encode(publicKey)
+      ) || null;
 
     logger.debug(
       `${ThunkEnum.SaveNewWatchAccount}: checking if "${address}" already exists`
@@ -68,11 +67,8 @@ const saveNewWatchAccountThunk: AsyncThunk<
 
     // if the account exists, just return it
     if (account) {
-      privateKeyService = new PrivateKeyService({
-        logger,
-      });
-      privateKeyItem = await privateKeyService.fetchFromStorageByPublicKey(
-        encodedPublicKey
+      privateKeyItem = await new PrivateKeyRepository().fetchByPublicKey(
+        PrivateKeyRepository.encode(publicKey)
       );
 
       // if the private key exists, it is not a watch account
@@ -87,7 +83,7 @@ const saveNewWatchAccountThunk: AsyncThunk<
     );
 
     account = AccountRepository.initializeDefaultAccount({
-      publicKey: encodedPublicKey,
+      publicKey: AccountRepository.encode(publicKey),
       ...(name && {
         name,
       }),

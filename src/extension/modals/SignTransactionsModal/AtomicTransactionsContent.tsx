@@ -39,7 +39,6 @@ import {
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -286,7 +285,7 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
           };
           accountInformation = await updateAccountInformation({
             address: convertPublicKeyToAVMAddress(
-              PrivateKeyService.decode(encodedPublicKey)
+              AccountRepository.decode(encodedPublicKey)
             ),
             currentAccountInformation:
               account.networkInformation[encodedGenesisHash] ||

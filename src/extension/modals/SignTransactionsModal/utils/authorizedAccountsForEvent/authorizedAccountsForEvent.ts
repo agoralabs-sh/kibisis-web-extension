@@ -9,7 +9,6 @@ import { MalformedDataError } from '@extension/errors';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -66,7 +65,7 @@ export default async function authorizedAccountsForEvent({
         accounts.find(
           (value) =>
             value.publicKey ===
-            PrivateKeyService.encode(currentValue.from.publicKey)
+            AccountRepository.encode(currentValue.from.publicKey)
         ) || null;
       base64EncodedGenesisHash = encodeBase64(currentValue.genesisHash);
       authorizedAddresses = getAuthorizedAddressesForHost(

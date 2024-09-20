@@ -27,7 +27,6 @@ import NetworkClient from '@extension/models/NetworkClient';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -130,7 +129,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     }
 
     address = convertPublicKeyToAVMAddress(
-      PrivateKeyService.decode(account.publicKey)
+      AccountRepository.decode(account.publicKey)
     );
     accountInformation =
       AccountRepository.extractAccountInformationForNetwork(account, network) ||
@@ -262,7 +261,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
     return {
       account: {
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount(account),
       },
       transactionIds,
     };

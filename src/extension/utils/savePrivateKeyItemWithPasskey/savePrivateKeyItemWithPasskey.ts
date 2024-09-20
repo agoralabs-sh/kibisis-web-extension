@@ -4,9 +4,12 @@ import { EncryptionMethodEnum } from '@extension/enums';
 // errors
 import { MalformedDataError } from '@extension/errors';
 
-// services
-import PasskeyService from '@extension/services/PasskeyService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+
+// repositories
+import PasskeyCredentialRepository from '@extension/repositories/PasskeyCredentialRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IPrivateKey } from '@extension/types';
@@ -24,22 +27,16 @@ export default async function savePrivateKeyItemWithPasskey({
   inputKeyMaterial,
   keyPair,
   logger,
-  passkeyService,
-  privateKeyService,
+  passkeyCredentialRepository,
+  privateKeyRepository,
   saveUnencryptedPrivateKey = false,
 }: IOptions): Promise<IPrivateKey | null> {
   const _functionName = 'savePrivateKeyItemWithPasskey';
-  const _passkeyService =
-    passkeyService ||
-    new PasskeyService({
-      logger,
-    });
-  const _privateKeyService =
-    privateKeyService ||
-    new PrivateKeyService({
-      logger,
-    });
-  const passkey = await _passkeyService.fetchFromStorage();
+  const _passkeyCredentialRepository =
+    passkeyCredentialRepository || new PasskeyCredentialRepository();
+  const _privateKeyRepository =
+    privateKeyRepository || new PrivateKeyRepository();
+  const passkey = await _passkeyCredentialRepository.fetch();
   let _error: string;
   let encryptedPrivateKey: Uint8Array;
   let privateKeyItem: IPrivateKey | null;
@@ -52,26 +49,26 @@ export default async function savePrivateKeyItemWithPasskey({
     throw new MalformedDataError(_error);
   }
 
-  privateKeyItem = await _privateKeyService.fetchFromStorageByPublicKey(
+  privateKeyItem = await _privateKeyRepository.fetchByPublicKey(
     keyPair.publicKey
   );
 
   if (!privateKeyItem) {
     logger?.debug(
-      `${_functionName}: key for "${PrivateKeyService.encode(
+      `${_functionName}: key for "${PrivateKeyRepository.encode(
         keyPair.publicKey
       )}" (public key) doesn't exist, creating a new one`
     );
 
     // encrypt the private key and add it to storage
-    encryptedPrivateKey = await PasskeyService.encryptBytes({
+    encryptedPrivateKey = await PasskeyManager.encryptBytes({
       bytes: keyPair.privateKey,
       inputKeyMaterial,
       logger,
       passkey,
     });
-    privateKeyItem = await _privateKeyService.saveToStorage(
-      PrivateKeyService.create({
+    privateKeyItem = await _privateKeyRepository.save(
+      PrivateKeyRepository.create({
         encryptedPrivateKey,
         encryptionID: passkey.id,
         encryptionMethod: EncryptionMethodEnum.Passkey,

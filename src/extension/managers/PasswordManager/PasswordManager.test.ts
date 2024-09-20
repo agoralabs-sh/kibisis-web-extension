@@ -3,7 +3,7 @@ import { encode as encodeHex } from '@stablelib/hex';
 import { generateAccount } from 'algosdk';
 
 // services
-import PasswordService from './PasswordService';
+import PasswordManager from './PasswordManager';
 
 // types
 import type { ILogger } from '@common/types';
@@ -11,7 +11,7 @@ import type { ILogger } from '@common/types';
 // utils
 import createLogger from '@common/utils/createLogger';
 
-describe(PasswordService.name, () => {
+describe(PasswordManager.name, () => {
   let logger: ILogger;
 
   beforeAll(() => {
@@ -22,14 +22,14 @@ describe(PasswordService.name, () => {
     // arrange
     const password = faker.internet.password(10);
     const privateKey = generateAccount().sk;
-    const encryptedPrivateKey = await PasswordService.encryptBytes({
-      data: privateKey,
+    const encryptedPrivateKey = await PasswordManager.encryptBytes({
+      bytes: privateKey,
       logger,
       password,
     });
     // act
-    const decryptedPrivateKey = await PasswordService.decryptBytes({
-      data: encryptedPrivateKey,
+    const decryptedPrivateKey = await PasswordManager.decryptBytes({
+      bytes: encryptedPrivateKey,
       logger,
       password,
     });

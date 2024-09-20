@@ -5,7 +5,7 @@ import { ThunkEnum } from '../enums';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
@@ -20,7 +20,6 @@ const removeAccountByIdThunk: AsyncThunk<
     const logger = getState().system.logger;
     const accountRepository = new AccountRepository();
     const account = await accountRepository.fetchById(id);
-    let privateKeyService: PrivateKeyService;
 
     if (!account) {
       logger.debug(
@@ -30,23 +29,19 @@ const removeAccountByIdThunk: AsyncThunk<
       return id;
     }
 
-    logger.debug(
-      `${ThunkEnum.RemoveAccountById}: removing account "${id}" from storage`
-    );
-
     // remove the account
     await accountRepository.removeById(account.id);
 
-    privateKeyService = new PrivateKeyService({
-      logger,
-    });
-
     logger.debug(
-      `${ThunkEnum.RemoveAccountById}: removing private key "${account.publicKey}" from storage`
+      `${ThunkEnum.RemoveAccountById}: removed account "${id}" from storage`
     );
 
     // remove the private key
-    await privateKeyService.removeFromStorageByPublicKey(account.publicKey);
+    await new PrivateKeyRepository().removeByPublicKey(account.publicKey);
+
+    logger.debug(
+      `${ThunkEnum.RemoveAccountById}: removed private key "${account.publicKey}" from storage`
+    );
 
     return account.id;
   }

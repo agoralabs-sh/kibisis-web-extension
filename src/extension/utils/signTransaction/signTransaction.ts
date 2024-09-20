@@ -11,7 +11,6 @@ import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -78,7 +77,7 @@ export default async function signTransaction({
     accounts.find(
       (value) =>
         value.publicKey ===
-        PrivateKeyService.encode(unsignedTransaction.from.publicKey)
+        AccountRepository.encode(unsignedTransaction.from.publicKey)
     ) || null;
 
   if (!account) {
@@ -109,7 +108,7 @@ export default async function signTransaction({
         (value) =>
           accountInformation?.authAddress &&
           value.publicKey ===
-            PrivateKeyService.encode(
+            AccountRepository.encode(
               convertAVMAddressToPublicKey(accountInformation.authAddress)
             )
       ) || null;

@@ -26,11 +26,11 @@ import { ProviderCredentialLockActivatedMessage } from '@common/messages';
 
 // repositories
 import AppWindowRepository from '@extension/repositories/AppWindowRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 import SystemInfoRepository from '@extension/repositories/SystemInfoRepository';
 
 // services
 import CredentialLockService from '../CredentialLockService';
-import PrivateKeyService from '../PrivateKeyService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
 
@@ -59,7 +59,7 @@ export default class ProviderActionListener {
   private _isClearingCredentialLockAlarm: boolean;
   private _isRestartingCredentialLockAlarm: boolean;
   private readonly _logger: ILogger | null;
-  private readonly _privateKeyService: PrivateKeyService;
+  private readonly _privateKeyRepository: PrivateKeyRepository;
   private readonly _settingsService: SettingsService;
   private readonly _storageManager: StorageManager;
   private readonly _systemInfoRepository: SystemInfoRepository;
@@ -79,10 +79,7 @@ export default class ProviderActionListener {
     this._credentialLockService = new CredentialLockService({
       logger,
     });
-    this._privateKeyService = new PrivateKeyService({
-      logger,
-      storageManager,
-    });
+    this._privateKeyRepository = new PrivateKeyRepository();
     this._settingsService = new SettingsService({
       logger,
       storageManager,
@@ -138,10 +135,10 @@ export default class ProviderActionListener {
 
   private async _handleCredentialLockActivated(): Promise<void> {
     const _functionName = '_handleCredentialLockActivated';
-    const privateKeyItems = await this._privateKeyService.fetchAllFromStorage();
+    const privateKeyItems = await this._privateKeyRepository.fetchAll();
 
     // remove all the decrypted private keys
-    await this._privateKeyService.saveManyToStorage(
+    await this._privateKeyRepository.saveMany(
       privateKeyItems.map((value) => ({
         ...value,
         privateKey: null,

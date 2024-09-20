@@ -1,10 +1,10 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
 
 // services
-import PasskeyService from '@extension/services/PasskeyService';
+import PasskeyCredentialRepository from '@extension/repositories/PasskeyCredentialRepository';
 
 // types
 import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
@@ -16,9 +16,7 @@ const removeFromStorageThunk: AsyncThunk<
 > = createAsyncThunk<void, void, IBaseAsyncThunkConfig<IMainRootState>>(
   ThunkEnum.RemoveFromStorage,
   async () => {
-    const passkeyService = new PasskeyService();
-
-    return await passkeyService.removeFromStorage();
+    return await new PasskeyCredentialRepository().remove();
   }
 );
 

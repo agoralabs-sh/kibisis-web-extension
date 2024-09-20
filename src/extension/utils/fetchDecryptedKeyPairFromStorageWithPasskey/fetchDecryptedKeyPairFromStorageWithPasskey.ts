@@ -7,9 +7,12 @@ import { MalformedDataError } from '@extension/errors';
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
-// services
-import PasskeyService from '@extension/services/PasskeyService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+
+// repositories
+import PasskeyCredentialRepository from '@extension/repositories/PasskeyCredentialRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IPasskeyCredential, IPrivateKey } from '@extension/types';
@@ -26,21 +29,15 @@ import type { IOptions } from './types';
 export default async function fetchDecryptedKeyPairFromStorageWithPasskey({
   inputKeyMaterial,
   logger,
-  passkeyService,
-  privateKeyService,
+  passkeyCredentialRepository,
+  privateKeyRepository,
   publicKey,
 }: IOptions): Promise<Ed21559KeyPair | null> {
   const _functionName = 'fetchDecryptedKeyPairFromStorageWithPasskey';
-  const _passkeyService =
-    passkeyService ||
-    new PasskeyService({
-      logger,
-    });
-  const _privateKeyService =
-    privateKeyService ||
-    new PrivateKeyService({
-      logger,
-    });
+  const _passkeyCredentialRepository =
+    passkeyCredentialRepository || new PasskeyCredentialRepository();
+  const _privateKeyRepository =
+    privateKeyRepository || new PrivateKeyRepository();
   let _error: string;
   let _publicKey: string;
   let decryptedPrivateKey: Uint8Array;
@@ -49,11 +46,9 @@ export default async function fetchDecryptedKeyPairFromStorageWithPasskey({
 
   _publicKey =
     typeof publicKey !== 'string'
-      ? PrivateKeyService.encode(publicKey)
+      ? PrivateKeyRepository.encode(publicKey)
       : publicKey; // encode the public key if it isn't already
-  privateKeyItem = await _privateKeyService.fetchFromStorageByPublicKey(
-    _publicKey
-  );
+  privateKeyItem = await _privateKeyRepository.fetchByPublicKey(_publicKey);
 
   if (!privateKeyItem) {
     logger?.debug(
@@ -63,7 +58,7 @@ export default async function fetchDecryptedKeyPairFromStorageWithPasskey({
     return null;
   }
 
-  passkey = await _passkeyService.fetchFromStorage();
+  passkey = await _passkeyCredentialRepository.fetch();
 
   if (!passkey) {
     _error = `no passkey found in storage`;
@@ -73,7 +68,7 @@ export default async function fetchDecryptedKeyPairFromStorageWithPasskey({
     throw new MalformedDataError(_error);
   }
 
-  privateKeyItem = await PrivateKeyService.upgrade({
+  privateKeyItem = await PrivateKeyRepository.upgrade({
     encryptionCredentials: {
       inputKeyMaterial,
       passkey,
@@ -87,8 +82,8 @@ export default async function fetchDecryptedKeyPairFromStorageWithPasskey({
     `${_functionName}: decrypting private key for public key "${_publicKey}"`
   );
 
-  decryptedPrivateKey = await PasskeyService.decryptBytes({
-    encryptedBytes: PrivateKeyService.decode(
+  decryptedPrivateKey = await PasskeyManager.decryptBytes({
+    encryptedBytes: PrivateKeyRepository.decode(
       privateKeyItem.encryptedPrivateKey
     ),
     inputKeyMaterial,

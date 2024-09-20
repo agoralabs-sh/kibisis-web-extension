@@ -8,8 +8,8 @@ import type { Transaction } from 'algosdk';
 // errors
 import { MalformedDataError } from '@extension/errors';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { TOptions } from './types';
@@ -70,7 +70,7 @@ export default async function signTransactions({
         !accounts.some(
           (value) =>
             value.publicKey ===
-            PrivateKeyService.encode(unsignedTransaction.from.publicKey)
+            AccountRepository.encode(unsignedTransaction.from.publicKey)
         )
       ) {
         // if there is no signed transaction, we have been instructed to sign, so error

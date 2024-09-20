@@ -31,8 +31,8 @@ import useGenericInput from '@extension/hooks/useGenericInput';
 // selectors
 import { useSelectLogger } from '@extension/selectors';
 
-// services
-import PasswordService from '@extension/services/PasswordService';
+// managers
+import PasswordManager from '@extension/managers/PasswordManager';
 
 // theme
 import { theme } from '@extension/theme';
@@ -76,21 +76,21 @@ const ConfirmPasswordModal: FC<IProps> = ({
   const handleCancelClick = () => handleClose();
   const handleConfirmClick = async () => {
     let isValid: boolean;
-    let passwordService: PasswordService;
+    let passwordManager: PasswordManager;
 
     // check if the input is valid
     if (!!passwordError || !!validatePassword(passwordValue)) {
       return;
     }
 
-    passwordService = new PasswordService({
+    passwordManager = new PasswordManager({
       logger,
       passwordTag: browser.runtime.id,
     });
 
     setVerifying(true);
 
-    isValid = await passwordService.verifyPassword(passwordValue);
+    isValid = await passwordManager.verifyPassword(passwordValue);
 
     setVerifying(false);
 
