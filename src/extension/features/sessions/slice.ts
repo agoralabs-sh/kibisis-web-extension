@@ -1,75 +1,56 @@
-import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  type PayloadAction,
+  type Reducer,
+} from '@reduxjs/toolkit';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
 // thunks
 import {
-  clearSessionsThunk,
-  fetchSessionsThunk,
-  removeAuthorizedAddressThunk,
-  removeSessionByIdThunk,
-  setSessionThunk,
+  removeAllFromStorageThunk,
+  fetchFromStorageThunk,
+  removeByIdFromStorageThunk,
+  saveToStorage,
 } from './thunks';
 
 // types
-import { ISession } from '@extension/types';
-import { IRemoveAuthorizedAddressResult, IState } from './types';
+import type { IState } from './types';
 
 // utils
 import { getInitialState, upsertSessions } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /**clear sessions**/
-    builder.addCase(clearSessionsThunk.fulfilled, (state: IState) => {
-      state.items = [];
-      state.saving = false;
-    });
-    builder.addCase(clearSessionsThunk.pending, (state: IState) => {
-      state.saving = true;
-    });
-    builder.addCase(clearSessionsThunk.rejected, (state: IState) => {
-      state.saving = false;
-    });
-    /**fetch sessions**/
+    /**fetch from storage**/
     builder.addCase(
-      fetchSessionsThunk.fulfilled,
-      (state: IState, action: PayloadAction<ISession[]>) => {
+      fetchFromStorageThunk.fulfilled,
+      (state: IState, action) => {
         state.items = action.payload;
         state.fetching = false;
       }
     );
-    builder.addCase(fetchSessionsThunk.pending, (state: IState) => {
+    builder.addCase(fetchFromStorageThunk.pending, (state: IState) => {
       state.fetching = true;
     });
-    builder.addCase(fetchSessionsThunk.rejected, (state: IState) => {
+    builder.addCase(fetchFromStorageThunk.rejected, (state: IState) => {
       state.fetching = false;
     });
-    /**remove authorized address**/
-    builder.addCase(
-      removeAuthorizedAddressThunk.fulfilled,
-      (
-        state: IState,
-        action: PayloadAction<IRemoveAuthorizedAddressResult>
-      ) => {
-        state.items = upsertSessions(state.items, action.payload.update) // update the sessions
-          .filter(
-            (session) =>
-              !action.payload.remove.some((value) => value === session.id)
-          ); // filter out the removed sessions
-        state.saving = false;
-      }
-    );
-    builder.addCase(removeAuthorizedAddressThunk.pending, (state: IState) => {
-      state.saving = true;
-    });
-    builder.addCase(removeAuthorizedAddressThunk.rejected, (state: IState) => {
+    /**remove all from storage**/
+    builder.addCase(removeAllFromStorageThunk.fulfilled, (state: IState) => {
+      state.items = [];
       state.saving = false;
     });
-    /**remove session by id**/
+    builder.addCase(removeAllFromStorageThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(removeAllFromStorageThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
+    /**remove by id from storage**/
     builder.addCase(
-      removeSessionByIdThunk.fulfilled,
+      removeByIdFromStorageThunk.fulfilled,
       (state: IState, action: PayloadAction<string>) => {
         state.items = state.items.filter(
           (value) => value.id !== action.payload
@@ -77,24 +58,21 @@ const slice = createSlice({
         state.saving = false;
       }
     );
-    builder.addCase(removeSessionByIdThunk.pending, (state: IState) => {
+    builder.addCase(removeByIdFromStorageThunk.pending, (state: IState) => {
       state.saving = true;
     });
-    builder.addCase(removeSessionByIdThunk.rejected, (state: IState) => {
+    builder.addCase(removeByIdFromStorageThunk.rejected, (state: IState) => {
       state.saving = false;
     });
-    /**set session**/
-    builder.addCase(
-      setSessionThunk.fulfilled,
-      (state: IState, action: PayloadAction<ISession>) => {
-        state.items = upsertSessions(state.items, [action.payload]);
-        state.saving = false;
-      }
-    );
-    builder.addCase(setSessionThunk.pending, (state: IState) => {
+    /**save to storage**/
+    builder.addCase(saveToStorage.fulfilled, (state: IState, action) => {
+      state.items = upsertSessions(state.items, [action.payload]);
+      state.saving = false;
+    });
+    builder.addCase(saveToStorage.pending, (state: IState) => {
       state.saving = true;
     });
-    builder.addCase(setSessionThunk.rejected, (state: IState) => {
+    builder.addCase(saveToStorage.rejected, (state: IState) => {
       state.saving = false;
     });
   },

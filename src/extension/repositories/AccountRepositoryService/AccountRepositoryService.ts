@@ -9,7 +9,7 @@ import { ACCOUNTS_ITEM_KEY_PREFIX } from '@extension/constants';
 // enums
 import { AssetTypeEnum } from '@extension/enums';
 
-// services
+// repositories
 import BaseRepositoryService from '@extension/repositories/BaseRepositoryService';
 
 // types

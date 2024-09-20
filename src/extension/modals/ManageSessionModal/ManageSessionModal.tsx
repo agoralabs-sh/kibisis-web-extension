@@ -35,8 +35,8 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
 import {
-  removeSessionByIdThunk,
-  setSessionThunk,
+  removeByIdFromStorageThunk as removeSessionsByIdFromStorageThunk,
+  saveToStorage as saveSessionToStorage,
 } from '@extension/features/sessions';
 
 // hooks
@@ -94,13 +94,13 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
 
     // if all authorized accounts are removed, remove the session
     if (authorizedAddresses.length <= 0) {
-      dispatch(removeSessionByIdThunk(session.id));
+      dispatch(removeSessionsByIdFromStorageThunk(session.id));
 
       return handleClose();
     }
 
     dispatch(
-      setSessionThunk({
+      saveSessionToStorage({
         ...session,
         authorizedAddresses,
       })

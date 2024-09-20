@@ -47,11 +47,11 @@ import {
 
 // repositories
 import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import SessionRepositoryService from '@extension/repositories/SessionRepositoryService';
 
 // services
 import EventQueueService from '../EventQueueService';
 import PrivateKeyService from '../PrivateKeyService';
-import SessionService from '../SessionService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
 
@@ -80,23 +80,21 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 export default class ClientMessageHandler {
   // private variables
   private readonly _accountRepositoryService: AccountRepositoryService;
-  private readonly eventQueueService: EventQueueService;
-  private readonly logger: ILogger | null;
-  private readonly sessionService: SessionService;
-  private readonly settingsService: SettingsService;
+  private readonly _eventQueueService: EventQueueService;
+  private readonly _logger: ILogger | null;
+  private readonly _sessionRepositoryService: SessionRepositoryService;
+  private readonly _settingsService: SettingsService;
 
   constructor({ logger }: IBaseOptions) {
     const storageManager: StorageManager = new StorageManager();
 
     this._accountRepositoryService = new AccountRepositoryService();
-    this.eventQueueService = new EventQueueService({
+    this._eventQueueService = new EventQueueService({
       logger,
     });
-    this.logger = logger || null;
-    this.sessionService = new SessionService({
-      logger,
-    });
-    this.settingsService = new SettingsService({
+    this._logger = logger || null;
+    this._sessionRepositoryService = new SessionRepositoryService();
+    this._settingsService = new SettingsService({
       logger,
       storageManager,
     });
@@ -119,7 +117,7 @@ export default class ClientMessageHandler {
         ...value,
         watchAccount: await isWatchAccount({
           account: value,
-          logger: this.logger || undefined,
+          logger: this._logger || undefined,
         }),
       }))
     );
@@ -140,7 +138,8 @@ export default class ClientMessageHandler {
       array: ISession[]
     ) => boolean
   ): Promise<ISession[]> {
-    const sessions: ISession[] = await this.sessionService.getAll();
+    const sessions: ISession[] =
+      await this._sessionRepositoryService.fetchAll();
 
     // if there is no filter predicate, return all sessions
     if (!filterPredicate) {
@@ -185,7 +184,7 @@ export default class ClientMessageHandler {
 
     // get the network if a genesis hash is present
     if (!network) {
-      this.logger?.debug(
+      this._logger?.debug(
         `${ClientMessageHandler.name}#${_functionName}: network not found`
       );
 
@@ -222,7 +221,7 @@ export default class ClientMessageHandler {
 
     sessionIds = sessions.map((value) => value.id);
 
-    this.logger?.debug(
+    this._logger?.debug(
       `${
         ClientMessageHandler.name
       }#${_functionName}: removing sessions [${sessionIds
@@ -233,7 +232,7 @@ export default class ClientMessageHandler {
     );
 
     // remove the sessions
-    await this.sessionService.removeByIds(sessionIds);
+    await this._sessionRepositoryService.removeByIds(sessionIds);
 
     // send the response to the web page (via the content script)
     await this.sendResponse(
@@ -263,7 +262,7 @@ export default class ClientMessageHandler {
   ): Promise<void> {
     const supportedNetworks = supportedNetworksFromSettings({
       networks,
-      settings: await this.settingsService.fetchFromStorage(),
+      settings: await this._settingsService.fetchFromStorage(),
     });
 
     return await this.sendResponse(
@@ -306,10 +305,10 @@ export default class ClientMessageHandler {
         !isNetworkSupportedFromSettings({
           genesisHash: message.params.genesisHash,
           networks,
-          settings: await this.settingsService.fetchFromStorage(),
+          settings: await this._settingsService.fetchFromStorage(),
         })
       ) {
-        this.logger?.debug(
+        this._logger?.debug(
           `${ClientMessageHandler.name}#${_functionName}: genesis hash "${message.params.genesisHash}" is not supported`
         );
 
@@ -352,11 +351,11 @@ export default class ClientMessageHandler {
           usedAt: new Date().getTime(),
         };
 
-        this.logger?.debug(
+        this._logger?.debug(
           `${ClientMessageHandler.name}#${_functionName}: found session "${session.id}" updating`
         );
 
-        session = await this.sessionService.save(session);
+        session = await this._sessionRepositoryService.save(session);
 
         // send the response to the web page (via the content script)
         return await this.sendResponse(
@@ -394,7 +393,7 @@ export default class ClientMessageHandler {
       }
 
       // if the network is unrecognized, remove the session, it is no longer valid
-      await this.sessionService.removeByIds([session.id]);
+      await this._sessionRepositoryService.removeByIds([session.id]);
     }
 
     return await this.sendClientMessageEvent(
@@ -437,7 +436,7 @@ export default class ClientMessageHandler {
 
     // if the app has not been enabled
     if (filteredSessions.length <= 0) {
-      this.logger?.debug(
+      this._logger?.debug(
         `${ClientMessageHandler.name}#${_functionName}: no sessions found for the "${message.method}" request`
       );
 
@@ -480,7 +479,7 @@ export default class ClientMessageHandler {
             : `has not been authorized`
         }`;
 
-        this.logger?.debug(
+        this._logger?.debug(
           `${ClientMessageHandler.name}#${_functionName}: ${_error}`
         );
 
@@ -547,7 +546,7 @@ export default class ClientMessageHandler {
     } catch (error) {
       errorMessage = `failed to decode transactions: ${error.message}`;
 
-      this.logger?.debug(
+      this._logger?.debug(
         `${ClientMessageHandler.name}#${_functionName}: ${errorMessage}`
       );
 
@@ -570,7 +569,7 @@ export default class ClientMessageHandler {
     if (!verifyTransactionGroups(decodedUnsignedTransactions)) {
       errorMessage = `the supplied transactions are invalid and do not conform to the arc-0001 group validation, please https://arc.algorand.foundation/ARCs/arc-0001#group-validation on how to correctly build transactions`;
 
-      this.logger?.debug(
+      this._logger?.debug(
         `${ClientMessageHandler.name}#${_functionName}: ${errorMessage}`
       );
 
@@ -591,7 +590,7 @@ export default class ClientMessageHandler {
 
     supportedNetworks = supportedNetworksFromSettings({
       networks,
-      settings: await this.settingsService.fetchFromStorage(),
+      settings: await this._settingsService.fetchFromStorage(),
     });
     unsupportedTransactionsByNetwork = decodedUnsignedTransactions.filter(
       (transaction) =>
@@ -602,7 +601,7 @@ export default class ClientMessageHandler {
 
     // check if any transactions contain unsupported networks
     if (unsupportedTransactionsByNetwork.length > 0) {
-      this.logger?.debug(
+      this._logger?.debug(
         `${
           ClientMessageHandler.name
         }#${_functionName}: transactions [${unsupportedTransactionsByNetwork
@@ -638,7 +637,7 @@ export default class ClientMessageHandler {
 
     // if the app has not been enabled
     if (filteredSessions.length <= 0) {
-      this.logger?.debug(
+      this._logger?.debug(
         `${ClientMessageHandler.name}#${_functionName}: no sessions found for sign txns request`
       );
 
@@ -672,7 +671,7 @@ export default class ClientMessageHandler {
     event: IClientRequestEvent<Params>
   ): Promise<void> {
     const _functionName = 'sendClientMessageEvent';
-    const events = await this.eventQueueService.getByType<
+    const events = await this._eventQueueService.getByType<
       IClientRequestEvent<TRequestParams>
     >(EventTypeEnum.ClientRequest);
 
@@ -682,7 +681,7 @@ export default class ClientMessageHandler {
         (value) => value.payload.message.id === event.payload.message.id
       )
     ) {
-      this.logger?.debug(
+      this._logger?.debug(
         `${ClientMessageHandler.name}#${_functionName}: client request "${event.payload.message.id}" already exists, ignoring`
       );
 
@@ -691,9 +690,9 @@ export default class ClientMessageHandler {
 
     return await sendExtensionEvent({
       event,
-      eventQueueService: this.eventQueueService,
-      ...(this.logger && {
-        logger: this.logger,
+      eventQueueService: this._eventQueueService,
+      ...(this._logger && {
+        logger: this._logger,
       }),
     });
   }
@@ -704,7 +703,7 @@ export default class ClientMessageHandler {
   ): Promise<void> {
     const _functionName: string = 'sendResponse';
 
-    this.logger?.debug(
+    this._logger?.debug(
       `${ClientMessageHandler.name}#${_functionName}: sending "${message.method}" response to tab "${originTabId}"`
     );
 
@@ -722,12 +721,12 @@ export default class ClientMessageHandler {
   ): Promise<void> {
     const _functionName: string = 'onMessage';
 
-    this.logger?.debug(
+    this._logger?.debug(
       `${ClientMessageHandler.name}#${_functionName}: "${message.method}" message received`
     );
 
     if (!sender.tab?.id) {
-      this.logger?.debug(
+      this._logger?.debug(
         `${ClientMessageHandler.name}#${_functionName}: unknown sender for "${message.method}" message, ignoring`
       );
 

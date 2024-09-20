@@ -87,6 +87,21 @@ export default class BaseRepositoryService {
   }
 
   /**
+   * Removes an items from storage with the key prefix.
+   * @param {string} keyPrefix - The key prefix.
+   * @protected
+   */
+  protected async _removeByKeyPrefix(keyPrefix: string): Promise<void> {
+    const allItems = await browser.storage.local.get();
+    const keys = Object.keys(allItems).reduce<string[]>(
+      (acc, key) => (key.startsWith(keyPrefix) ? [...acc, key] : acc),
+      []
+    );
+
+    return await browser.storage.local.remove(keys);
+  }
+
+  /**
    * Saves items to storage.
    * @param {Record<string, TStorageItemTypes>} items The items to save.
    * @returns {TStorageItemTypes} the saved item.

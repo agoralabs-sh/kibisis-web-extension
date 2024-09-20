@@ -35,7 +35,7 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // features
 import { removeEventByIdThunk } from '@extension/features/events';
 import { sendEnableResponseThunk } from '@extension/features/messages';
-import { setSessionThunk } from '@extension/features/sessions';
+import { saveToStorage as saveSessionToStorage } from '@extension/features/sessions';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -137,7 +137,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
     });
 
     // save the session
-    dispatch(setSessionThunk(session));
+    dispatch(saveSessionToStorage(session));
 
     // send the response
     await dispatch(
