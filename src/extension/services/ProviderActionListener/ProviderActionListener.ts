@@ -21,13 +21,15 @@ import { ARC0300KeyRegistrationTransactionSendEvent } from '@extension/events';
 // messages
 import { ProviderCredentialLockActivatedMessage } from '@common/messages';
 
+// repositories
+import SystemInfoRepositoryService from '@extension/repositories/SystemInfoRepositoryService';
+
 // services
 import AppWindowManagerService from '../AppWindowManagerService';
 import CredentialLockService from '../CredentialLockService';
 import PrivateKeyService from '../PrivateKeyService';
 import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
-import SystemService from '../SystemService';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
@@ -56,7 +58,7 @@ export default class ProviderActionListener {
   private readonly _privateKeyService: PrivateKeyService;
   private readonly _settingsService: SettingsService;
   private readonly _storageManager: StorageManager;
-  private readonly _systemService: SystemService;
+  private readonly _systemInfoRepositoryService: SystemInfoRepositoryService;
 
   constructor({ logger }: IBaseOptions) {
     const storageManager: StorageManager = new StorageManager();
@@ -80,10 +82,7 @@ export default class ProviderActionListener {
       storageManager,
     });
     this._storageManager = storageManager;
-    this._systemService = new SystemService({
-      logger,
-      storageManager,
-    });
+    this._systemInfoRepositoryService = new SystemInfoRepositoryService();
   }
 
   /**
@@ -294,17 +293,17 @@ export default class ProviderActionListener {
 
   public async onInstalled(): Promise<void> {
     const _functionName = 'onInstalled';
-    let systemInfo = await this._systemService.fetchFromStorage();
+    let systemInfo = await this._systemInfoRepositoryService.fetch();
 
     // if there is no system info, initialize the default
     if (!systemInfo) {
-      systemInfo = SystemService.initializeDefaultSystem();
+      systemInfo = SystemInfoRepositoryService.initializeDefaultSystem();
 
       this._logger?.debug(
         `${ProviderActionListener.name}#${_functionName}: initialize a new system info with device id "${systemInfo.deviceID}"`
       );
 
-      await this._systemService.saveToStorage(systemInfo);
+      await this._systemInfoRepositoryService.save(systemInfo);
     }
   }
 

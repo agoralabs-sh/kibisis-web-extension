@@ -3,12 +3,14 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import SystemService from '@extension/services/SystemService';
+// errors
+import { MalformedDataError } from '@extension/errors';
+
+// repositories
+import SystemInfoRepositoryService from '@extension/repositories/SystemInfoRepositoryService';
 
 // types
 import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
-import { MalformedDataError } from '@extension/errors';
 
 const saveWhatsNewVersionThunk: AsyncThunk<
   string | null, // return
@@ -33,9 +35,7 @@ const saveWhatsNewVersionThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(_error));
     }
 
-    const { whatsNewInfo } = await new SystemService({
-      logger,
-    }).saveToStorage({
+    const { whatsNewInfo } = await new SystemInfoRepositoryService().save({
       ...systemInfo,
       whatsNewInfo: {
         ...systemInfo.whatsNewInfo,
