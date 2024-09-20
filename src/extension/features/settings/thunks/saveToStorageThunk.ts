@@ -1,11 +1,11 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { NetworkTypeEnum } from '@extension/enums';
 import { ThunkEnum } from '../enums';
 
-// services
-import SettingsService from '@extension/services/SettingsService';
+// repositories
+import SettingsRepository from '@extension/repositories/SettingsRepository';
 
 // types
 import type {
@@ -29,11 +29,7 @@ const saveToStorageThunk: AsyncThunk<
   ISettings,
   IBaseAsyncThunkConfig<IMainRootState>
 >(ThunkEnum.SaveToStorage, async (settings, { getState }) => {
-  const logger = getState().system.logger;
   const networks = getState().networks.items;
-  const settingsService = new SettingsService({
-    logger,
-  });
   let _settings = serialize(settings); // copy the readonly incoming settings
   let network = selectNetworkFromSettings({
     networks,
@@ -58,7 +54,7 @@ const saveToStorageThunk: AsyncThunk<
     _settings.general.selectedNetworkGenesisHash = network.genesisHash;
   }
 
-  return await settingsService.saveToStorage(_settings);
+  return await new SettingsRepository().save(_settings);
 });
 
 export default saveToStorageThunk;

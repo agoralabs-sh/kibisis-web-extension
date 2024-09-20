@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 // config
 import { networks } from '@extension/config';
 
@@ -11,8 +13,8 @@ import {
   SETTINGS_SECURITY_KEY,
 } from '@extension/constants';
 
-// services
-import BaseService from '@extension/services/BaseService';
+// repositories
+import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
 import type {
@@ -27,7 +29,7 @@ import type {
 // utils
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
 
-export default class SettingsService extends BaseService {
+export default class SettingsRepository extends BaseRepository {
   /**
    * public static functions
    */
@@ -111,11 +113,11 @@ export default class SettingsService extends BaseService {
 
   /**
    * Fetches all the settings from storage.
-   * @returns {Promise<ISettings>} the settings.
+   * @returns {Promise<ISettings>} A promise that resolves to the settings.
    */
-  public async fetchFromStorage(): Promise<ISettings> {
-    const storageItems = await this._storageManager.getAllItems();
-    const mergedSettings = Object.keys(storageItems).reduce<ISettings>(
+  public async fetch(): Promise<ISettings> {
+    const allItems = await browser.storage.local.get();
+    const mergedSettings = Object.keys(allItems).reduce<ISettings>(
       (acc, value) => {
         switch (value) {
           case SETTINGS_ADVANCED_KEY:
@@ -123,7 +125,7 @@ export default class SettingsService extends BaseService {
               ...acc,
               advanced: {
                 ...acc.advanced,
-                ...(storageItems[SETTINGS_ADVANCED_KEY] as IAdvancedSettings),
+                ...(allItems[SETTINGS_ADVANCED_KEY] as IAdvancedSettings),
               },
             };
           case SETTINGS_APPEARANCE_KEY:
@@ -131,9 +133,7 @@ export default class SettingsService extends BaseService {
               ...acc,
               appearance: {
                 ...acc.appearance,
-                ...(storageItems[
-                  SETTINGS_APPEARANCE_KEY
-                ] as IAppearanceSettings),
+                ...(allItems[SETTINGS_APPEARANCE_KEY] as IAppearanceSettings),
               },
             };
           case SETTINGS_GENERAL_KEY:
@@ -141,7 +141,7 @@ export default class SettingsService extends BaseService {
               ...acc,
               general: {
                 ...acc.general,
-                ...(storageItems[SETTINGS_GENERAL_KEY] as IGeneralSettings),
+                ...(allItems[SETTINGS_GENERAL_KEY] as IGeneralSettings),
               },
             };
           case SETTINGS_PRIVACY_KEY:
@@ -149,7 +149,7 @@ export default class SettingsService extends BaseService {
               ...acc,
               privacy: {
                 ...acc.privacy,
-                ...(storageItems[SETTINGS_PRIVACY_KEY] as IPrivacySettings),
+                ...(allItems[SETTINGS_PRIVACY_KEY] as IPrivacySettings),
               },
             };
           case SETTINGS_SECURITY_KEY:
@@ -157,28 +157,29 @@ export default class SettingsService extends BaseService {
               ...acc,
               security: {
                 ...acc.security,
-                ...(storageItems[SETTINGS_SECURITY_KEY] as ISecuritySettings),
+                ...(allItems[SETTINGS_SECURITY_KEY] as ISecuritySettings),
               },
             };
           default:
             return acc;
         }
       },
-      SettingsService.initializeDefaultSettings()
+      SettingsRepository.initializeDefaultSettings()
     );
 
     return this._sanitize(mergedSettings);
   }
 
   /**
-   * Saves all settings to storage.
+   * Saves settings to storage.
    * @param {ISettings} settings - the settings to save.
-   * @returns {ISettings} the saved settings.
+   * @returns {Promise<ISettings>} A promise that resolves to the saved settings.
+   * @public
    */
-  public async saveToStorage(settings: ISettings): Promise<ISettings> {
+  public async save(settings: ISettings): Promise<ISettings> {
     const _settings = this._sanitize(settings);
 
-    await this._storageManager.setItems({
+    await this._save({
       [SETTINGS_ADVANCED_KEY]: _settings.advanced,
       [SETTINGS_APPEARANCE_KEY]: _settings.appearance,
       [SETTINGS_GENERAL_KEY]: _settings.general,

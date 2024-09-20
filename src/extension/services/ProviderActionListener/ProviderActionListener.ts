@@ -27,11 +27,11 @@ import { ProviderCredentialLockActivatedMessage } from '@common/messages';
 // repositories
 import AppWindowRepository from '@extension/repositories/AppWindowRepository';
 import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
+import SettingsRepository from '@extension/repositories/SettingsRepository';
 import SystemInfoRepository from '@extension/repositories/SystemInfoRepository';
 
 // services
 import CredentialLockService from '../CredentialLockService';
-import SettingsService from '../SettingsService';
 import StorageManager from '../StorageManager';
 
 // types
@@ -60,7 +60,7 @@ export default class ProviderActionListener {
   private _isRestartingCredentialLockAlarm: boolean;
   private readonly _logger: ILogger | null;
   private readonly _privateKeyRepository: PrivateKeyRepository;
-  private readonly _settingsService: SettingsService;
+  private readonly _settingsRepository: SettingsRepository;
   private readonly _storageManager: StorageManager;
   private readonly _systemInfoRepository: SystemInfoRepository;
 
@@ -80,10 +80,7 @@ export default class ProviderActionListener {
       logger,
     });
     this._privateKeyRepository = new PrivateKeyRepository();
-    this._settingsService = new SettingsService({
-      logger,
-      storageManager,
-    });
+    this._settingsRepository = new SettingsRepository();
     this._storageManager = storageManager;
     this._systemInfoRepository = new SystemInfoRepository();
   }
@@ -157,7 +154,7 @@ export default class ProviderActionListener {
 
   private async _restartCredentialLockAlarm(): Promise<void> {
     let alarm = await this._credentialLockService.getAlarm();
-    let settings: ISettings = await this._settingsService.fetchFromStorage();
+    let settings: ISettings = await this._settingsRepository.fetch();
 
     // restart the alarm if the credential lock is not active, is enabled and the duration is not set to 0 ("never")
     if (
@@ -321,7 +318,7 @@ export default class ProviderActionListener {
     arc0300Schema = parseURIToARC0300Schema(text, {
       supportedNetworks: supportedNetworksFromSettings({
         networks,
-        settings: await this._settingsService.fetchFromStorage(),
+        settings: await this._settingsRepository.fetch(),
       }),
       ...(this._logger && {
         logger: this._logger,

@@ -7,8 +7,8 @@ import { QUESTS_COMPLETED_KEY } from '@extension/constants';
 // enums
 import { QuestNameEnum } from './enums';
 
-// services
-import SettingsService from '@extension/services/SettingsService';
+// repositories
+import SettingsRepository from '@extension/repositories/SettingsRepository';
 import StorageManager from '@extension/services/StorageManager';
 
 // types
@@ -29,7 +29,7 @@ export default class QuestsService {
   // private variables
   private readonly _logger: ILogger | null;
   private readonly _posthog: PostHog | null;
-  private readonly _settingsService: SettingsService;
+  private readonly _settingsRepository: SettingsRepository;
   private readonly _storageManager: StorageManager;
 
   constructor({ logger, storageManager }: INewQuestServiceOptions) {
@@ -42,10 +42,7 @@ export default class QuestsService {
             host: __POSTHOG_API_HOST__,
           })
         : null;
-    this._settingsService = new SettingsService({
-      logger,
-      storageManager: _storageManager,
-    });
+    this._settingsRepository = new SettingsRepository();
     this._storageManager = _storageManager;
   }
 
@@ -98,7 +95,7 @@ export default class QuestsService {
    * @private
    */
   private async _isTrackingAllowed(): Promise<boolean> {
-    const { privacy } = await this._settingsService.fetchFromStorage();
+    const { privacy } = await this._settingsRepository.fetch();
 
     return privacy.allowActionTracking;
   }

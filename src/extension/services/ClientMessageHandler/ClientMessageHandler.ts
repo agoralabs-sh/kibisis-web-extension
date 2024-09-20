@@ -48,11 +48,10 @@ import {
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
 import SessionRepository from '@extension/repositories/SessionRepository';
+import SettingsRepository from '@extension/repositories/SettingsRepository';
 
 // services
 import EventQueueService from '../EventQueueService';
-import SettingsService from '../SettingsService';
-import StorageManager from '../StorageManager';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
@@ -82,21 +81,16 @@ export default class ClientMessageHandler {
   private readonly _eventQueueService: EventQueueService;
   private readonly _logger: ILogger | null;
   private readonly _sessionRepository: SessionRepository;
-  private readonly _settingsService: SettingsService;
+  private readonly _settingsRepository: SettingsRepository;
 
   constructor({ logger }: IBaseOptions) {
-    const storageManager: StorageManager = new StorageManager();
-
     this._accountRepository = new AccountRepository();
     this._eventQueueService = new EventQueueService({
       logger,
     });
     this._logger = logger || null;
     this._sessionRepository = new SessionRepository();
-    this._settingsService = new SettingsService({
-      logger,
-      storageManager,
-    });
+    this._settingsRepository = new SettingsRepository();
   }
 
   /**
@@ -257,7 +251,7 @@ export default class ClientMessageHandler {
   ): Promise<void> {
     const supportedNetworks = supportedNetworksFromSettings({
       networks,
-      settings: await this._settingsService.fetchFromStorage(),
+      settings: await this._settingsRepository.fetch(),
     });
 
     return await this.sendResponse(
@@ -300,7 +294,7 @@ export default class ClientMessageHandler {
         !isNetworkSupportedFromSettings({
           genesisHash: message.params.genesisHash,
           networks,
-          settings: await this._settingsService.fetchFromStorage(),
+          settings: await this._settingsRepository.fetch(),
         })
       ) {
         this._logger?.debug(
@@ -585,7 +579,7 @@ export default class ClientMessageHandler {
 
     supportedNetworks = supportedNetworksFromSettings({
       networks,
-      settings: await this._settingsService.fetchFromStorage(),
+      settings: await this._settingsRepository.fetch(),
     });
     unsupportedTransactionsByNetwork = decodedUnsignedTransactions.filter(
       (transaction) =>

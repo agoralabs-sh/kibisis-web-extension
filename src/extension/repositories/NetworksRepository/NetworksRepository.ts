@@ -4,14 +4,14 @@ import { networks } from '@extension/config';
 // constants
 import { NETWORKS_ITEM_KEY } from '@extension/constants';
 
-// services
-import BaseService from '@extension/services/BaseService';
+// repositories
+import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
 import type { INetwork, INetworkWithTransactionParams } from '@extension/types';
 import type { ISerializableNetworkWithTransactionParams } from './types';
 
-export default class NetworksService extends BaseService {
+export default class NetworksRepository extends BaseRepository {
   /**
    * public static functions
    */
@@ -59,9 +59,9 @@ export default class NetworksService extends BaseService {
     ISerializableNetworkWithTransactionParams[]
   > {
     return (
-      (await this._storageManager.getItem<
-        ISerializableNetworkWithTransactionParams[]
-      >(NETWORKS_ITEM_KEY)) || []
+      (await this._fetchByKey<ISerializableNetworkWithTransactionParams[]>(
+        NETWORKS_ITEM_KEY
+      )) || []
     );
   }
 
@@ -98,20 +98,22 @@ export default class NetworksService extends BaseService {
 
   /**
    * Gets all the networks.
-   * @returns {Promise<INetworkWithTransactionParams[]>} a promise that resolves to all the networks.
+   * @returns {Promise<INetworkWithTransactionParams[]>} A promise that resolves to all the networks.
+   * @public
    */
-  public async fetchAllFromStorage(): Promise<INetworkWithTransactionParams[]> {
+  public async fetchAll(): Promise<INetworkWithTransactionParams[]> {
     const items = await this._fetchSerializedFromStorage();
 
     return items.map(this._deserialize);
   }
 
   /**
-   * Saves the network. This will update any existing network items.
-   * @param {INetworkWithTransactionParams} item - INetworkWithTransactionParams.
-   * @returns {Promise<INetworkWithTransactionParams>} a promise that resolves to the saved network item.
+   * Saves the network. This will update an existing network item.
+   * @param {INetworkWithTransactionParams} item - The network to save.
+   * @returns {Promise<INetworkWithTransactionParams>} A promise that resolves to the saved network item.
+   * @public
    */
-  public async saveToStorage(
+  public async save(
     item: INetworkWithTransactionParams
   ): Promise<INetworkWithTransactionParams> {
     const serializedItems = await this._fetchSerializedFromStorage();
@@ -121,14 +123,14 @@ export default class NetworksService extends BaseService {
     if (
       !serializedItems.find((value) => value.genesisHash === item.genesisHash)
     ) {
-      await this._storageManager.setItems({
+      await this._save<ISerializableNetworkWithTransactionParams[]>({
         [NETWORKS_ITEM_KEY]: [...serializedItems, serializedItem],
       });
 
       return item;
     }
 
-    await this._storageManager.setItems({
+    await this._save<ISerializableNetworkWithTransactionParams[]>({
       [NETWORKS_ITEM_KEY]: serializedItems.map((value) =>
         value.genesisHash === item.genesisHash ? serializedItem : value
       ),
@@ -139,13 +141,14 @@ export default class NetworksService extends BaseService {
 
   /**
    * Saves all the networks.
-   * @param {INetworkWithTransactionParams[]} items - the networks to save.
-   * @returns {Promise<INetworkWithTransactionParams[]>} a promise that resolves to the saved networks.
+   * @param {INetworkWithTransactionParams[]} items - The networks to save.
+   * @returns {Promise<INetworkWithTransactionParams[]>} A promise that resolves to the saved networks.
+   * @public
    */
-  public async saveAllToStorage(
+  public async saveAll(
     items: INetworkWithTransactionParams[]
   ): Promise<INetworkWithTransactionParams[]> {
-    await this._storageManager.setItems({
+    await this._save<ISerializableNetworkWithTransactionParams[]>({
       [NETWORKS_ITEM_KEY]: items.map(this._serialize),
     });
 
