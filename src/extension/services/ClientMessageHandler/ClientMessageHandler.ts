@@ -47,11 +47,9 @@ import {
 
 // repositories
 import AccountRepository from '@extension/repositories/AccountRepository';
+import EventQueueRepository from '@extension/repositories/EventQueueRepository';
 import SessionRepository from '@extension/repositories/SessionRepository';
 import SettingsRepository from '@extension/repositories/SettingsRepository';
-
-// services
-import EventQueueService from '../EventQueueService';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
@@ -78,16 +76,14 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 export default class ClientMessageHandler {
   // private variables
   private readonly _accountRepository: AccountRepository;
-  private readonly _eventQueueService: EventQueueService;
+  private readonly _eventQueueRepository: EventQueueRepository;
   private readonly _logger: ILogger | null;
   private readonly _sessionRepository: SessionRepository;
   private readonly _settingsRepository: SettingsRepository;
 
   constructor({ logger }: IBaseOptions) {
     this._accountRepository = new AccountRepository();
-    this._eventQueueService = new EventQueueService({
-      logger,
-    });
+    this._eventQueueRepository = new EventQueueRepository();
     this._logger = logger || null;
     this._sessionRepository = new SessionRepository();
     this._settingsRepository = new SettingsRepository();
@@ -660,7 +656,7 @@ export default class ClientMessageHandler {
     event: IClientRequestEvent<Params>
   ): Promise<void> {
     const _functionName = 'sendClientMessageEvent';
-    const events = await this._eventQueueService.getByType<
+    const events = await this._eventQueueRepository.fetchByType<
       IClientRequestEvent<TRequestParams>
     >(EventTypeEnum.ClientRequest);
 
@@ -679,7 +675,7 @@ export default class ClientMessageHandler {
 
     return await sendExtensionEvent({
       event,
-      eventQueueService: this._eventQueueService,
+      eventQueueRepository: this._eventQueueRepository,
       ...(this._logger && {
         logger: this._logger,
       }),

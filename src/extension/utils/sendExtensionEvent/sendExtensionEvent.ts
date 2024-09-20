@@ -11,9 +11,7 @@ import { ProviderEventAddedMessage } from '@common/messages';
 
 // repositories
 import AppWindowRepository from '@extension/repositories/AppWindowRepository';
-
-// services
-import EventQueueService from '@extension/services/EventQueueService';
+import EventQueueRepository from '@extension/repositories/EventQueueRepository';
 
 // types
 import type { IBaseOptions } from '@common/types';
@@ -30,12 +28,12 @@ import isExtensionInitialized from '@extension/utils/isExtensionInitialized';
 export default async function sendExtensionEvent({
   appWindowRepository,
   event,
-  eventQueueService,
+  eventQueueRepository,
   logger,
 }: IOptions & IBaseOptions): Promise<void> {
   const _appWindowRepository = appWindowRepository || new AppWindowRepository();
-  const _eventQueueService =
-    eventQueueService || new EventQueueService({ logger });
+  const _eventQueueRepository =
+    eventQueueRepository || new EventQueueRepository();
   const _functionName = 'sendExtensionEvent';
   const isInitialized = await isExtensionInitialized();
   const mainAppWindows = await _appWindowRepository.fetchByType(
@@ -58,7 +56,7 @@ export default async function sendExtensionEvent({
   );
 
   // save event to the queue
-  await _eventQueueService.save(event);
+  await _eventQueueRepository.save(event);
 
   // if a main app is open, post that a new event has been added to the queue
   if (mainAppWindows.length > 0) {
