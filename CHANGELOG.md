@@ -1,3 +1,10 @@
+## [2.1.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0...v2.1.1-beta.1) (2024-09-20)
+
+
+### Bug Fixes
+
+* quota bytes error no longer hit when large amounts of account ([#325](https://github.com/agoralabs-sh/kibisis-web-extension/issues/325)) ([ba63dda](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ba63dda948dd5c1c4572e7844faa9b3356840f0c))
+
 # [2.1.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0...v2.1.0) (2024-09-19)
 
 
