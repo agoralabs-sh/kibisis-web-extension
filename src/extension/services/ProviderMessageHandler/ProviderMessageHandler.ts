@@ -4,32 +4,26 @@ import browser from 'webextension-polyfill';
 import { ProviderMessageReferenceEnum } from '@common/enums';
 import { AppTypeEnum } from '@extension/enums';
 
+// managers
+import AppWindowManager from '@extension/managers/AppWindowManager';
+
 // messages
 import { BaseProviderMessage } from '@common/messages';
 
-// services
-import AppWindowManagerService from '../AppWindowManagerService';
-import StorageManager from '../StorageManager';
+// repositories
+import AppWindowRepository from '@extension/repositories/AppWindowRepository';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
-import type { IAppWindow } from '@extension/types';
 
 export default class ProviderMessageHandler {
   // private variables
-  private readonly _appWindowManagerService: AppWindowManagerService;
+  private readonly _appWindowRepository: AppWindowRepository;
   private readonly _logger: ILogger | null;
-  private readonly _storageManager: StorageManager;
 
   constructor({ logger }: IBaseOptions) {
-    const storageManager: StorageManager = new StorageManager();
-
-    this._appWindowManagerService = new AppWindowManagerService({
-      logger,
-      storageManager,
-    });
+    this._appWindowRepository = new AppWindowRepository();
     this._logger = logger || null;
-    this._storageManager = storageManager;
   }
 
   /**
@@ -37,10 +31,12 @@ export default class ProviderMessageHandler {
    */
 
   private async _handleFactoryResetMessage(): Promise<void> {
-    const backgroundAppWindows: IAppWindow[] =
-      await this._appWindowManagerService.getByType(AppTypeEnum.BackgroundApp);
-    const mainAppWindows: IAppWindow[] =
-      await this._appWindowManagerService.getByType(AppTypeEnum.MainApp);
+    const backgroundAppWindows = await this._appWindowRepository.fetchByType(
+      AppTypeEnum.BackgroundApp
+    );
+    const mainAppWindows = await this._appWindowRepository.fetchByType(
+      AppTypeEnum.MainApp
+    );
 
     // remove the main app if it exists
     if (mainAppWindows.length > 0) {
@@ -61,20 +57,25 @@ export default class ProviderMessageHandler {
     }
 
     // remove everything from storage
-    await this._storageManager.removeAll();
+    await browser.storage.local.clear();
   }
 
   private async _handleRegistrationCompletedMessage(): Promise<void> {
-    const mainAppWindows: IAppWindow[] =
-      await this._appWindowManagerService.getByType(AppTypeEnum.MainApp);
-    const registrationAppWindows: IAppWindow[] =
-      await this._appWindowManagerService.getByType(
-        AppTypeEnum.RegistrationApp
-      );
+    const mainAppWindows = await this._appWindowRepository.fetchByType(
+      AppTypeEnum.MainApp
+    );
+    const registrationAppWindows = await this._appWindowRepository.fetchByType(
+      AppTypeEnum.RegistrationApp
+    );
 
     // if there is no main app windows, create a new one
     if (mainAppWindows.length <= 0) {
-      await this._appWindowManagerService.createWindow({
+      await new AppWindowManager({
+        appWindowRepository: this._appWindowRepository,
+        ...(this._logger && {
+          logger: this._logger,
+        }),
+      }).createWindow({
         type: AppTypeEnum.MainApp,
         ...(registrationAppWindows[0] && {
           left: registrationAppWindows[0].left,

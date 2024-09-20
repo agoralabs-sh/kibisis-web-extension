@@ -4,7 +4,7 @@ import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // repositories
-import SessionRepositoryService from '@extension/repositories/SessionRepositoryService';
+import SessionRepository from '@extension/repositories/SessionRepository';
 
 // types
 import type {
@@ -25,7 +25,7 @@ const saveToStorageThunk: AsyncThunk<
 >(ThunkEnum.SaveToStorage, async (session, { getState }) => {
   const logger = getState().system.logger;
 
-  await new SessionRepositoryService().save(session);
+  await new SessionRepository().save(session);
 
   logger.debug(
     `${ThunkEnum.SaveToStorage}: saved session "${session.id}" to storage`

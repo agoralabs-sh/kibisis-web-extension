@@ -14,7 +14,7 @@ import TransactionItem, {
 import { ACCOUNT_PAGE_TAB_CONTENT_HEIGHT } from '@extension/constants';
 
 // repositories
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // selectors
 import { useSelectActiveAccountTransactionsUpdating } from '@extension/selectors';
@@ -37,10 +37,8 @@ const ActivityTab: FC<IProps> = ({
     useSelectActiveAccountTransactionsUpdating();
   // misc
   const transactions =
-    AccountRepositoryService.extractAccountTransactionsForNetwork(
-      account,
-      network
-    )?.transactions || null;
+    AccountRepository.extractAccountTransactionsForNetwork(account, network)
+      ?.transactions || null;
   // handlers
   const handleOnRefreshClick = () => onRefreshClick();
   const handleScrollEnd = () => onScrollEnd();

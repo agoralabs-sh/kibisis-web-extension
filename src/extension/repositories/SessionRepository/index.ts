@@ -1,1 +1,1 @@
-export { default } from './SessionRepositoryService';
+export { default } from './SessionRepository';

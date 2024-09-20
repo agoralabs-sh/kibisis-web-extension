@@ -1,1 +1,1 @@
-export { default } from './SystemInfoRepositoryService';
+export { default } from './SystemInfoRepository';

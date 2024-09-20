@@ -18,14 +18,17 @@ import {
 // events
 import { ARC0300KeyRegistrationTransactionSendEvent } from '@extension/events';
 
+// managers
+import AppWindowManager from '@extension/managers/AppWindowManager';
+
 // messages
 import { ProviderCredentialLockActivatedMessage } from '@common/messages';
 
 // repositories
-import SystemInfoRepositoryService from '@extension/repositories/SystemInfoRepositoryService';
+import AppWindowRepository from '@extension/repositories/AppWindowRepository';
+import SystemInfoRepository from '@extension/repositories/SystemInfoRepository';
 
 // services
-import AppWindowManagerService from '../AppWindowManagerService';
 import CredentialLockService from '../CredentialLockService';
 import PrivateKeyService from '../PrivateKeyService';
 import SettingsService from '../SettingsService';
@@ -50,7 +53,8 @@ import supportedNetworksFromSettings from '@extension/utils/supportedNetworksFro
 
 export default class ProviderActionListener {
   // private variables
-  private readonly _appWindowManagerService: AppWindowManagerService;
+  private readonly _appWindowManager: AppWindowManager;
+  private readonly _appWindowRepository: AppWindowRepository;
   private readonly _credentialLockService: CredentialLockService;
   private _isClearingCredentialLockAlarm: boolean;
   private _isRestartingCredentialLockAlarm: boolean;
@@ -58,15 +62,17 @@ export default class ProviderActionListener {
   private readonly _privateKeyService: PrivateKeyService;
   private readonly _settingsService: SettingsService;
   private readonly _storageManager: StorageManager;
-  private readonly _systemInfoRepositoryService: SystemInfoRepositoryService;
+  private readonly _systemInfoRepository: SystemInfoRepository;
 
   constructor({ logger }: IBaseOptions) {
+    const appWindowRepository = new AppWindowRepository();
     const storageManager: StorageManager = new StorageManager();
 
-    this._appWindowManagerService = new AppWindowManagerService({
+    this._appWindowManager = new AppWindowManager({
+      appWindowRepository,
       logger,
-      storageManager,
     });
+    this._appWindowRepository = appWindowRepository;
     this._isClearingCredentialLockAlarm = false;
     this._isRestartingCredentialLockAlarm = false;
     this._logger = logger || null;
@@ -82,7 +88,7 @@ export default class ProviderActionListener {
       storageManager,
     });
     this._storageManager = storageManager;
-    this._systemInfoRepositoryService = new SystemInfoRepositoryService();
+    this._systemInfoRepository = new SystemInfoRepository();
   }
 
   /**
@@ -105,7 +111,7 @@ export default class ProviderActionListener {
   private async _getMainWindow(
     includeTabs: boolean = false
   ): Promise<Windows.Window | null> {
-    const mainAppWindows = await this._appWindowManagerService.getByType(
+    const mainAppWindows = await this._appWindowRepository.fetchByType(
       AppTypeEnum.MainApp
     );
 
@@ -205,10 +211,10 @@ export default class ProviderActionListener {
     );
 
     // remove any closed windows
-    await this._appWindowManagerService.hydrateAppWindows();
+    await this._appWindowManager.hydrate();
 
     if (!isInitialized) {
-      registrationAppWindows = await this._appWindowManagerService.getByType(
+      registrationAppWindows = await this._appWindowRepository.fetchByType(
         AppTypeEnum.RegistrationApp
       );
 
@@ -233,14 +239,14 @@ export default class ProviderActionListener {
       await this._storageManager.removeAll();
 
       // if there is no registration app window up, we can open a new one
-      await this._appWindowManagerService.createWindow({
+      await this._appWindowManager.createWindow({
         type: AppTypeEnum.RegistrationApp,
       });
 
       return;
     }
 
-    mainAppWindows = await this._appWindowManagerService.getByType(
+    mainAppWindows = await this._appWindowRepository.fetchByType(
       AppTypeEnum.MainApp
     );
 
@@ -262,7 +268,7 @@ export default class ProviderActionListener {
     );
 
     // if there is no main app window up, we can open the app and clear the credentials lock alarm
-    await this._appWindowManagerService.createWindow({
+    await this._appWindowManager.createWindow({
       type: AppTypeEnum.MainApp,
     });
     await this._clearCredentialLockAlarm();
@@ -293,17 +299,17 @@ export default class ProviderActionListener {
 
   public async onInstalled(): Promise<void> {
     const _functionName = 'onInstalled';
-    let systemInfo = await this._systemInfoRepositoryService.fetch();
+    let systemInfo = await this._systemInfoRepository.fetch();
 
     // if there is no system info, initialize the default
     if (!systemInfo) {
-      systemInfo = SystemInfoRepositoryService.initializeDefaultSystem();
+      systemInfo = SystemInfoRepository.initializeDefaultSystem();
 
       this._logger?.debug(
         `${ProviderActionListener.name}#${_functionName}: initialize a new system info with device id "${systemInfo.deviceID}"`
       );
 
-      await this._systemInfoRepositoryService.save(systemInfo);
+      await this._systemInfoRepository.save(systemInfo);
     }
   }
 
@@ -335,7 +341,7 @@ export default class ProviderActionListener {
             ) {
               case TransactionType.keyreg:
                 return await sendExtensionEvent({
-                  appWindowManagerService: this._appWindowManagerService,
+                  appWindowRepository: this._appWindowRepository,
                   event: new ARC0300KeyRegistrationTransactionSendEvent({
                     id: uuid(),
                     payload: arc0300Schema as
@@ -360,7 +366,7 @@ export default class ProviderActionListener {
 
   public async onWindowRemove(windowId: number): Promise<void> {
     const _functionName = 'onWindowRemove';
-    const appWindow = await this._appWindowManagerService.getById(windowId);
+    const appWindow = await this._appWindowRepository.fetchById(windowId);
 
     // remove the app window from storage
     if (appWindow) {
@@ -372,7 +378,7 @@ export default class ProviderActionListener {
         await this._restartCredentialLockAlarm();
       }
 
-      await this._appWindowManagerService.removeById(windowId);
+      await this._appWindowRepository.removeByIds([windowId]);
     }
   }
 }

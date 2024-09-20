@@ -4,7 +4,7 @@ import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // repositories
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import AccountRepository from '@extension/repositories/AccountRepository';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -18,8 +18,8 @@ const removeAccountByIdThunk: AsyncThunk<
   ThunkEnum.RemoveAccountById,
   async (id, { getState }) => {
     const logger = getState().system.logger;
-    const accountRepositoryService = new AccountRepositoryService();
-    const account = await accountRepositoryService.fetchById(id);
+    const accountRepository = new AccountRepository();
+    const account = await accountRepository.fetchById(id);
     let privateKeyService: PrivateKeyService;
 
     if (!account) {
@@ -35,7 +35,7 @@ const removeAccountByIdThunk: AsyncThunk<
     );
 
     // remove the account
-    await accountRepositoryService.removeById(account.id);
+    await accountRepository.removeById(account.id);
 
     privateKeyService = new PrivateKeyService({
       logger,

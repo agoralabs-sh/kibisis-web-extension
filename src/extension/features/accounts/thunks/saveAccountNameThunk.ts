@@ -4,7 +4,7 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // repositories
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -53,7 +53,7 @@ const saveAccountNameThunk: AsyncThunk<
     name,
   };
 
-  await new AccountRepositoryService().save([account]);
+  await new AccountRepository().save([account]);
 
   return {
     ...account,

@@ -35,6 +35,7 @@
       "@extension/fonts/*": ["src/extension/fonts/*"],
       "@extension/hooks/*": ["src/extension/hooks/*"],
       "@extension/images/*": ["src/extension/images/*"],
+      "@extension/managers/*": ["src/extension/managers/*"],
       "@extension/modals/*": ["src/extension/modals/*"],
       "@extension/models/*": ["src/extension/models/*"],
       "@extension/pages/*": ["src/extension/pages/*"],

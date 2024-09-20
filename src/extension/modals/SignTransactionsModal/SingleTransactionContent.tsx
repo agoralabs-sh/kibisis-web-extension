@@ -25,8 +25,8 @@ import {
   useSelectStandardAssetsByGenesisHash,
 } from '@extension/selectors';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -108,7 +108,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
       setFetchingAccountInformation(true);
 
       account = {
-        ...AccountRepositoryService.initializeDefaultAccount({
+        ...AccountRepository.initializeDefaultAccount({
           publicKey: encodedPublicKey,
         }),
         watchAccount: true,
@@ -118,7 +118,7 @@ const SingleTransactionContent: FC<ISingleTransactionContentProps> = ({
         address: convertPublicKeyToAVMAddress(encodedPublicKey),
         currentAccountInformation:
           account.networkInformation[encodedGenesisHash] ||
-          AccountRepositoryService.initializeDefaultAccountInformation(),
+          AccountRepository.initializeDefaultAccountInformation(),
         logger,
         network,
         nodeID,

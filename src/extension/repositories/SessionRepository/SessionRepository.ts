@@ -2,12 +2,12 @@
 import { SESSION_ITEM_KEY_PREFIX } from '@extension/constants';
 
 // repositories
-import BaseRepositoryService from '@extension/repositories/BaseRepositoryService';
+import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
 import type { ISession } from '@extension/types';
 
-export default class SessionRepositoryService extends BaseRepositoryService {
+export default class SessionRepository extends BaseRepository {
   /**
    * private functions
    */

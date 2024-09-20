@@ -4,8 +4,8 @@ import { EncodedTransaction, OnApplicationComplete } from 'algosdk';
 // enums
 import { TransactionTypeEnum } from '@extension/enums';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import { IAccount, IAccountInformation, INetwork } from '@extension/types';
@@ -102,10 +102,7 @@ export default function parseTransactionType(
     // https://developer.algorand.org/docs/get-details/transactions/#opt-in-to-an-asset
     if (network && sender) {
       accountInformation =
-        AccountRepositoryService.extractAccountInformationForNetwork(
-          sender,
-          network
-        );
+        AccountRepository.extractAccountInformationForNetwork(sender, network);
       senderAddress = convertPublicKeyToAVMAddress(sender.publicKey);
 
       // to test if this an opt-in:

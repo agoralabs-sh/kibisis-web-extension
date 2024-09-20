@@ -10,7 +10,7 @@ import { ThunkEnum } from '../enums';
 import { create as createNotification } from '@extension/features/notifications';
 
 // repositories
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -122,7 +122,7 @@ const updateAccountsThunk: AsyncThunk<
               address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
               currentAccountInformation:
                 accounts[i].networkInformation[encodedGenesisHash] ||
-                AccountRepositoryService.initializeDefaultAccountInformation(),
+                AccountRepository.initializeDefaultAccountInformation(),
               delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               forceUpdate: forceInformationUpdate,
               logger,
@@ -158,7 +158,7 @@ const updateAccountsThunk: AsyncThunk<
               address: convertPublicKeyToAVMAddress(accounts[i].publicKey),
               currentAccountTransactions:
                 accounts[i].networkTransactions[encodedGenesisHash] ||
-                AccountRepositoryService.initializeDefaultAccountTransactions(),
+                AccountRepository.initializeDefaultAccountTransactions(),
               delay: i * NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
               logger,
               network,
@@ -199,7 +199,7 @@ const updateAccountsThunk: AsyncThunk<
     }
 
     // save accounts to storage
-    accounts = await new AccountRepositoryService().save(accounts);
+    accounts = await new AccountRepository().save(accounts);
 
     logger.debug(
       `${ThunkEnum.AddStandardAssetHoldings}: saved accounts [${accounts

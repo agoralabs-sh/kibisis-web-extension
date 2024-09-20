@@ -8,7 +8,7 @@ import { MalformedDataError } from '@extension/errors';
 import { ThunkEnum } from '../enums';
 
 // repositories
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import AccountRepository from '@extension/repositories/AccountRepository';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -36,8 +36,8 @@ const saveNewWatchAccountThunk: AsyncThunk<
   ThunkEnum.SaveNewWatchAccount,
   async ({ address, name }, { getState, rejectWithValue }) => {
     const logger = getState().system.logger;
-    const accountRepositoryService = new AccountRepositoryService();
-    const accounts = await accountRepositoryService.fetchAll();
+    const accountRepository = new AccountRepository();
+    const accounts = await accountRepository.fetchAll();
     let _error: string;
     let account: IAccount | null;
     let encodedPublicKey: string;
@@ -86,7 +86,7 @@ const saveNewWatchAccountThunk: AsyncThunk<
       `${ThunkEnum.SaveNewWatchAccount}: saving watch account "${address}" to storage`
     );
 
-    account = AccountRepositoryService.initializeDefaultAccount({
+    account = AccountRepository.initializeDefaultAccount({
       publicKey: encodedPublicKey,
       ...(name && {
         name,
@@ -94,7 +94,7 @@ const saveNewWatchAccountThunk: AsyncThunk<
     });
 
     // save the account to storage
-    await accountRepositoryService.save([account]);
+    await accountRepository.save([account]);
 
     logger.debug(
       `${ThunkEnum.SaveNewWatchAccount}: saved watch account "${address}" to storage`

@@ -27,7 +27,7 @@ import {
 import NetworkClient from '@extension/models/NetworkClient';
 
 // repositories
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -134,10 +134,8 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
 
     address = convertPublicKeyToAVMAddress(account.publicKey);
     accountInformation =
-      AccountRepositoryService.extractAccountInformationForNetwork(
-        account,
-        network
-      ) || AccountRepositoryService.initializeDefaultAccountInformation();
+      AccountRepository.extractAccountInformationForNetwork(account, network) ||
+      AccountRepository.initializeDefaultAccountInformation();
     filteredAssets = assets.filter((asset) =>
       accountInformation.standardAssetHoldings.some(
         (value) => value.id === asset.id
@@ -261,7 +259,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
         address,
         currentAccountTransactions:
           account.networkTransactions[encodedGenesisHash] ||
-          AccountRepositoryService.initializeDefaultAccountTransactions(),
+          AccountRepository.initializeDefaultAccountTransactions(),
         delay: NODE_REQUEST_DELAY, // delay each request by 100ms from the last one, see https://algonode.io/api/#limits
         logger,
         network,
@@ -274,7 +272,7 @@ const removeStandardAssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await new AccountRepositoryService().save([account]);
+    await new AccountRepository().save([account]);
 
     return {
       account: {

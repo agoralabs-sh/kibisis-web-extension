@@ -4,7 +4,7 @@ import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // repositories
-import SessionRepositoryService from '@extension/repositories/SessionRepositoryService';
+import SessionRepository from '@extension/repositories/SessionRepository';
 
 // types
 import type {
@@ -24,7 +24,7 @@ const removeAllFromStorageThunk: AsyncThunk<
 >(ThunkEnum.RemoveAllFromStorage, async (_, { getState }) => {
   const logger = getState().system.logger;
 
-  await new SessionRepositoryService().removeAll();
+  await new SessionRepository().removeAll();
 
   logger.debug(
     `${ThunkEnum.RemoveAllFromStorage}: cleared all sessions from storage`

@@ -1,1 +1,1 @@
-export { default } from './ActiveAccountRepositoryService';
+export { default } from './ActiveAccountRepository';

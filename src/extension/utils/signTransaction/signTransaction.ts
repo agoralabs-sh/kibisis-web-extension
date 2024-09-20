@@ -9,8 +9,8 @@ import { MalformedDataError } from '@extension/errors';
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -89,11 +89,10 @@ export default async function signTransaction({
     throw new MalformedDataError(_error);
   }
 
-  accountInformation =
-    AccountRepositoryService.extractAccountInformationForNetwork(
-      account,
-      network
-    );
+  accountInformation = AccountRepository.extractAccountInformationForNetwork(
+    account,
+    network
+  );
 
   if (!accountInformation) {
     _error = `unable to get account information for "${signerAddress}" on network "${network.genesisId}"`;

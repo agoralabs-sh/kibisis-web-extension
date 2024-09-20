@@ -4,7 +4,7 @@ import browser from 'webextension-polyfill';
 // types
 import type { TStorageItemTypes } from '@extension/types';
 
-export default class BaseRepositoryService {
+export default class BaseRepository {
   /**
    * public static functions
    */
@@ -66,16 +66,6 @@ export default class BaseRepositoryService {
       []
     );
   }
-
-  // /**
-  //  * Removes all items from storage.
-  //  */
-  // protected async _removeAll(): Promise<void> {
-  //   const storageItems: Record<string, IStorageItemTypes | unknown> =
-  //     await this._fetchAll();
-  //
-  //   return await browser.storage.local.remove(Object.keys(storageItems));
-  // }
 
   /**
    * Removes an item or a set of items from storage by their key(s).

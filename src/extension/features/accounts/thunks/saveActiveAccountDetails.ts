@@ -4,7 +4,7 @@ import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // repositories
-import ActiveAccountRepositoryService from '@extension/repositories/ActiveAccountRepositoryService';
+import ActiveAccountRepository from '@extension/repositories/ActiveAccountRepository';
 
 // types
 import type {
@@ -43,7 +43,7 @@ const saveActiveAccountDetails: AsyncThunk<
     );
 
     // save the active account details to storage
-    await new ActiveAccountRepositoryService().save(activeAccountDetails);
+    await new ActiveAccountRepository().save(activeAccountDetails);
 
     logger.debug(
       `${ThunkEnum.SaveActiveAccountDetails}: account details for account id "${activeAccountDetails.accountId}" to storage`

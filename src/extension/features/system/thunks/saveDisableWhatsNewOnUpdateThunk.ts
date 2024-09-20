@@ -7,7 +7,7 @@ import { ThunkEnum } from '../enums';
 import { MalformedDataError } from '@extension/errors';
 
 // repositories
-import SystemInfoRepositoryService from '@extension/repositories/SystemInfoRepositoryService';
+import SystemInfoRepository from '@extension/repositories/SystemInfoRepository';
 
 // types
 import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
@@ -31,7 +31,7 @@ const saveDisableWhatsNewOnUpdateThunk: AsyncThunk<
       return rejectWithValue(new MalformedDataError(_error));
     }
 
-    const { whatsNewInfo } = await new SystemInfoRepositoryService().save({
+    const { whatsNewInfo } = await new SystemInfoRepository().save({
       ...systemInfo,
       whatsNewInfo: {
         ...systemInfo.whatsNewInfo,

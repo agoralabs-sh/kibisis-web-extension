@@ -1,1 +1,1 @@
-export { default } from './BaseRepositoryService';
+export { default } from './BaseRepository';

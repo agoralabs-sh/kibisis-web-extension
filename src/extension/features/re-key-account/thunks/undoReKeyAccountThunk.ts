@@ -15,8 +15,8 @@ import {
 // models
 import NetworkClient from '@extension/models/NetworkClient';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -49,7 +49,7 @@ const undoReKeyAccountThunk: AsyncThunk<
     const accounts = getState().accounts.items;
     const logger = getState().system.logger;
     const accountInformation: IAccountInformation | null =
-      AccountRepositoryService.extractAccountInformationForNetwork(
+      AccountRepository.extractAccountInformationForNetwork(
         reKeyAccount,
         network
       );

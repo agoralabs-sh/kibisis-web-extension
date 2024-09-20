@@ -7,7 +7,7 @@ import { ThunkEnum } from '../enums';
 import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
 
 // repositories
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -77,7 +77,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
     currentAccountInformation =
       account.networkInformation[encodedGenesisHash] ||
-      AccountRepositoryService.initializeDefaultAccountInformation();
+      AccountRepository.initializeDefaultAccountInformation();
     account.networkInformation[encodedGenesisHash] = {
       ...currentAccountInformation,
       arc200AssetHoldings: currentAccountInformation.arc200AssetHoldings.filter(
@@ -90,7 +90,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await new AccountRepositoryService().save([account]);
+    await new AccountRepository().save([account]);
 
     return {
       account: {

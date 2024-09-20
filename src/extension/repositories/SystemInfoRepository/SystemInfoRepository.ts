@@ -4,12 +4,12 @@ import { v4 as uuid } from 'uuid';
 import { SYSTEM_KEY } from '@extension/constants';
 
 // repositories
-import BaseRepositoryService from '@extension/repositories/BaseRepositoryService';
+import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
 import type { ISystemInfo } from '@extension/types';
 
-export default class SystemInfoRepositoryService extends BaseRepositoryService {
+export default class SystemInfoRepository extends BaseRepository {
   /**
    * public static functions
    */
