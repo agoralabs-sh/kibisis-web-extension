@@ -1,14 +1,14 @@
 import browser from 'webextension-polyfill';
 
 // types
-import type { IStorageItemTypes } from '@extension/types';
+import type { TStorageItemTypes } from '@extension/types';
 
 export default class StorageManager {
   /**
    * Public functions
    */
 
-  public async getAllItems(): Promise<Record<string, IStorageItemTypes>> {
+  public async getAllItems(): Promise<Record<string, TStorageItemTypes>> {
     return await browser.storage.local.get();
   }
 
@@ -17,7 +17,7 @@ export default class StorageManager {
    * @param {string} key - the key of the value to get.
    * @returns {T | null} the value of the item stored with the key, or null if no key/value exists.
    */
-  public async getItem<T = IStorageItemTypes>(key: string): Promise<T | null> {
+  public async getItem<T = TStorageItemTypes>(key: string): Promise<T | null> {
     const item: Record<string, T> = await browser.storage.local.get(key);
 
     return (item[key] as T) || null;
@@ -27,7 +27,7 @@ export default class StorageManager {
    * Removes all storage items.
    */
   public async removeAll(): Promise<void> {
-    const storageItems: Record<string, IStorageItemTypes | unknown> =
+    const storageItems: Record<string, TStorageItemTypes | unknown> =
       await this.getAllItems();
 
     return await browser.storage.local.remove(Object.keys(storageItems));
@@ -42,7 +42,7 @@ export default class StorageManager {
   }
 
   public async setItems(
-    items: Record<string, IStorageItemTypes>
+    items: Record<string, TStorageItemTypes>
   ): Promise<void> {
     return await browser.storage.local.set(items);
   }

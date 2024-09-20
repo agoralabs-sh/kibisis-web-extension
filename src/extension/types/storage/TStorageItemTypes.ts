@@ -20,7 +20,7 @@ import type {
 } from '../settings';
 import type { ISystemInfo } from '../system';
 
-type IStorageItemTypes =
+type TStorageItemTypes =
   | IAccount
   | IActiveAccountDetails
   | IAdvancedSettings
@@ -41,4 +41,4 @@ type IStorageItemTypes =
   | IStandardAsset[]
   | ISystemInfo;
 
-export default IStorageItemTypes;
+export default TStorageItemTypes;

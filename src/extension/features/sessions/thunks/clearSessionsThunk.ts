@@ -11,7 +11,7 @@ import StorageManager from '@extension/services/StorageManager';
 
 // types
 import { ILogger } from '@common/types';
-import { IMainRootState, IStorageItemTypes } from '@extension/types';
+import { IMainRootState, TStorageItemTypes } from '@extension/types';
 
 const clearSessionsThunk: AsyncThunk<
   void, // return
@@ -22,7 +22,7 @@ const clearSessionsThunk: AsyncThunk<
   async (_, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const storageManager: StorageManager = new StorageManager();
-    const storageItems: Record<string, IStorageItemTypes | unknown> =
+    const storageItems: Record<string, TStorageItemTypes | unknown> =
       await storageManager.getAllItems();
     const sessionKeys: string[] = Object.keys(storageItems).filter((value) =>
       value.includes(SESSION_ITEM_KEY_PREFIX)
