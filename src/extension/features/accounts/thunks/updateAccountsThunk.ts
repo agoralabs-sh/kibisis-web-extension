@@ -210,7 +210,7 @@ const updateAccountsThunk: AsyncThunk<
     return await Promise.all(
       accounts.map(async (value) => ({
         ...value,
-        watchAccount: await isWatchAccount(account),
+        watchAccount: await isWatchAccount(value),
       }))
     );
   }

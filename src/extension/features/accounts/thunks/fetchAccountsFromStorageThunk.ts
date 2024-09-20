@@ -43,9 +43,9 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
 
   return {
     accounts: await Promise.all(
-      accounts.map(async (account) => ({
-        ...account,
-        watchAccount: await isWatchAccount(account),
+      accounts.map(async (value) => ({
+        ...value,
+        watchAccount: await isWatchAccount(value),
       }))
     ),
     activeAccountDetails,
