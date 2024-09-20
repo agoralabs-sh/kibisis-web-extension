@@ -46,8 +46,8 @@ import {
 } from '@common/messages';
 
 // repositories
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
-import SessionRepositoryService from '@extension/repositories/SessionRepositoryService';
+import AccountRepository from '@extension/repositories/AccountRepository';
+import SessionRepository from '@extension/repositories/SessionRepository';
 
 // services
 import EventQueueService from '../EventQueueService';
@@ -79,21 +79,21 @@ import uniqueGenesisHashesFromTransactions from '@extension/utils/uniqueGenesisH
 
 export default class ClientMessageHandler {
   // private variables
-  private readonly _accountRepositoryService: AccountRepositoryService;
+  private readonly _accountRepository: AccountRepository;
   private readonly _eventQueueService: EventQueueService;
   private readonly _logger: ILogger | null;
-  private readonly _sessionRepositoryService: SessionRepositoryService;
+  private readonly _sessionRepository: SessionRepository;
   private readonly _settingsService: SettingsService;
 
   constructor({ logger }: IBaseOptions) {
     const storageManager: StorageManager = new StorageManager();
 
-    this._accountRepositoryService = new AccountRepositoryService();
+    this._accountRepository = new AccountRepository();
     this._eventQueueService = new EventQueueService({
       logger,
     });
     this._logger = logger || null;
-    this._sessionRepositoryService = new SessionRepositoryService();
+    this._sessionRepository = new SessionRepository();
     this._settingsService = new SettingsService({
       logger,
       storageManager,
@@ -110,7 +110,7 @@ export default class ClientMessageHandler {
    * @private
    */
   private async fetchAccounts(): Promise<IAccountWithExtendedProps[]> {
-    const accounts = await this._accountRepositoryService.fetchAll();
+    const accounts = await this._accountRepository.fetchAll();
 
     return await Promise.all(
       accounts.map(async (value) => ({
@@ -138,8 +138,7 @@ export default class ClientMessageHandler {
       array: ISession[]
     ) => boolean
   ): Promise<ISession[]> {
-    const sessions: ISession[] =
-      await this._sessionRepositoryService.fetchAll();
+    const sessions: ISession[] = await this._sessionRepository.fetchAll();
 
     // if there is no filter predicate, return all sessions
     if (!filterPredicate) {
@@ -232,7 +231,7 @@ export default class ClientMessageHandler {
     );
 
     // remove the sessions
-    await this._sessionRepositoryService.removeByIds(sessionIds);
+    await this._sessionRepository.removeByIds(sessionIds);
 
     // send the response to the web page (via the content script)
     await this.sendResponse(
@@ -345,7 +344,7 @@ export default class ClientMessageHandler {
 
       // if the session network is supported, return update and return the session
       if (sessionNetwork) {
-        accounts = await this._accountRepositoryService.fetchAll();
+        accounts = await this._accountRepository.fetchAll();
         session = {
           ...session,
           usedAt: new Date().getTime(),
@@ -355,7 +354,7 @@ export default class ClientMessageHandler {
           `${ClientMessageHandler.name}#${_functionName}: found session "${session.id}" updating`
         );
 
-        session = await this._sessionRepositoryService.save(session);
+        session = await this._sessionRepository.save(session);
 
         // send the response to the web page (via the content script)
         return await this.sendResponse(
@@ -393,7 +392,7 @@ export default class ClientMessageHandler {
       }
 
       // if the network is unrecognized, remove the session, it is no longer valid
-      await this._sessionRepositoryService.removeByIds([session.id]);
+      await this._sessionRepository.removeByIds([session.id]);
     }
 
     return await this.sendClientMessageEvent(

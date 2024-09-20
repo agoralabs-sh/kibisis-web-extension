@@ -25,8 +25,8 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAssetTransactionBodyProps } from './types';
@@ -61,7 +61,7 @@ const AssetTransferTransactionContent: FC<IAssetTransactionBodyProps> = ({
     useState<BigNumber | null>();
   // misc
   const accountInformation = fromAccount
-    ? AccountRepositoryService.extractAccountInformationForNetwork(
+    ? AccountRepository.extractAccountInformationForNetwork(
         fromAccount,
         network
       )

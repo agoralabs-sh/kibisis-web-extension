@@ -10,7 +10,7 @@ import { ACCOUNTS_ITEM_KEY_PREFIX } from '@extension/constants';
 import { AssetTypeEnum } from '@extension/enums';
 
 // repositories
-import BaseRepositoryService from '@extension/repositories/BaseRepositoryService';
+import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
 import type {
@@ -25,7 +25,7 @@ import type { ISaveOptions } from './types';
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 
-export default class AccountRepositoryService extends BaseRepositoryService {
+export default class AccountRepository extends BaseRepository {
   /**
    * public static functions
    */
@@ -48,7 +48,7 @@ export default class AccountRepositoryService extends BaseRepositoryService {
     }
 
     return {
-      ...AccountRepositoryService.initializeDefaultAccountInformation(), // ensure any new items are initialized
+      ...AccountRepository.initializeDefaultAccountInformation(), // ensure any new items are initialized
       ...accountInformation,
     };
   }
@@ -89,7 +89,7 @@ export default class AccountRepositoryService extends BaseRepositoryService {
         (acc, { genesisHash }) => ({
           ...acc,
           [convertGenesisHashToHex(genesisHash)]:
-            AccountRepositoryService.initializeDefaultAccountInformation(),
+            AccountRepository.initializeDefaultAccountInformation(),
         }),
         {}
       ),
@@ -99,7 +99,7 @@ export default class AccountRepositoryService extends BaseRepositoryService {
         (acc, { genesisHash }) => ({
           ...acc,
           [convertGenesisHashToHex(genesisHash)]:
-            AccountRepositoryService.initializeDefaultAccountTransactions(),
+            AccountRepository.initializeDefaultAccountTransactions(),
         }),
         {}
       ),
@@ -235,14 +235,14 @@ export default class AccountRepositoryService extends BaseRepositoryService {
           const encodedGenesisHash: string =
             convertGenesisHashToHex(genesisHash);
           const accountInformation: IAccountInformation = {
-            ...AccountRepositoryService.initializeDefaultAccountInformation(), // initialize with any new values
+            ...AccountRepository.initializeDefaultAccountInformation(), // initialize with any new values
             ...account.networkInformation[encodedGenesisHash],
           };
 
           return {
             ...acc,
             [encodedGenesisHash]: {
-              ...AccountRepositoryService.initializeDefaultAccountInformation(),
+              ...AccountRepository.initializeDefaultAccountInformation(),
               ...(accountInformation && {
                 ...accountInformation,
                 arc200AssetHoldings: accountInformation.arc200AssetHoldings.map(
@@ -267,14 +267,14 @@ export default class AccountRepositoryService extends BaseRepositoryService {
       >((acc, { genesisHash }) => {
         const encodedGenesisHash: string = convertGenesisHashToHex(genesisHash);
         const accountTransactions: IAccountTransactions = {
-          ...AccountRepositoryService.initializeDefaultAccountTransactions(), // initialize with any new values
+          ...AccountRepository.initializeDefaultAccountTransactions(), // initialize with any new values
           ...account.networkTransactions[encodedGenesisHash],
         };
 
         return {
           ...acc,
           [encodedGenesisHash]: {
-            ...AccountRepositoryService.initializeDefaultAccountTransactions(),
+            ...AccountRepository.initializeDefaultAccountTransactions(),
             ...accountTransactions,
           },
         };
@@ -346,7 +346,7 @@ export default class AccountRepositoryService extends BaseRepositoryService {
                 (acc, { genesisHash }) => ({
                   ...acc,
                   [convertGenesisHashToHex(genesisHash)]:
-                    AccountRepositoryService.initializeDefaultAccountTransactions(),
+                    AccountRepository.initializeDefaultAccountTransactions(),
                 }),
                 {}
               ),

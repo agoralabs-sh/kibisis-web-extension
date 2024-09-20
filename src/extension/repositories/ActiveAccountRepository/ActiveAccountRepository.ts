@@ -2,12 +2,12 @@
 import { ACTIVE_ACCOUNT_DETAILS_KEY } from '@extension/constants';
 
 // services
-import BaseRepositoryService from '@extension/repositories/BaseRepositoryService';
+import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
 import type { IActiveAccountDetails } from '@extension/types';
 
-export default class ActiveAccountRepositoryService extends BaseRepositoryService {
+export default class ActiveAccountRepository extends BaseRepository {
   /**
    * public functions
    */

@@ -7,8 +7,8 @@ import { Transaction } from 'algosdk';
 // errors
 import { MalformedDataError } from '@extension/errors';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -81,7 +81,7 @@ export default async function authorizedAccountsForEvent({
         ) || null;
       accountInformation =
         account && network
-          ? AccountRepositoryService.extractAccountInformationForNetwork(
+          ? AccountRepository.extractAccountInformationForNetwork(
               account,
               network
             )

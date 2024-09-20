@@ -5,8 +5,8 @@ import { IoEyeOutline, IoLockClosedOutline } from 'react-icons/io5';
 // components
 import AccountAvatar from '../AccountAvatar';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IProps } from './types';
@@ -22,10 +22,7 @@ const AccountAvatarWithBadges: FC<IProps> = ({
 }) => {
   // misc
   const accountInformation = network
-    ? AccountRepositoryService.extractAccountInformationForNetwork(
-        account,
-        network
-      )
+    ? AccountRepository.extractAccountInformationForNetwork(account, network)
     : null;
   const iconSize = calculateIconSize('xs');
   // renders

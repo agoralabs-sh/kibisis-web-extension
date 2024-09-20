@@ -4,7 +4,7 @@ import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkEnum } from '../enums';
 
 // repositories
-import SessionRepositoryService from '@extension/repositories/SessionRepositoryService';
+import SessionRepository from '@extension/repositories/SessionRepository';
 
 // types
 import type {
@@ -23,7 +23,7 @@ const fetchFromStorageThunk: AsyncThunk<
   undefined,
   IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(ThunkEnum.FetchFromStorage, async (_, { getState }) => {
-  return await new SessionRepositoryService().fetchAll();
+  return await new SessionRepository().fetchAll();
 });
 
 export default fetchFromStorageThunk;

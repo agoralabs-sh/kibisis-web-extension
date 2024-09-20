@@ -7,8 +7,8 @@ import { networks } from '@extension/config';
 // constants
 import { MINIMUM_BALANCE_REQUIREMENT } from '@extension/constants';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -33,7 +33,7 @@ describe(`${__dirname}/calculateMinimumBalanceRequirementForStandardAssets`, () 
   beforeAll(() => {
     const _account: Account = generateAccount();
 
-    account = AccountRepositoryService.initializeDefaultAccount({
+    account = AccountRepository.initializeDefaultAccount({
       publicKey: PrivateKeyService.encode(
         convertAVMAddressToPublicKey(_account.addr)
       ),

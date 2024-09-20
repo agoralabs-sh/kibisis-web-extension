@@ -9,8 +9,8 @@ import { ThunkEnum } from '../enums';
 // errors
 import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -55,7 +55,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     let account = serialize(
       findAccountWithoutExtendedProps(accountId, accounts)
     );
-    let accountRepositoryService: AccountRepositoryService;
+    let accountRepository: AccountRepository;
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
     let network: INetwork | null;
@@ -90,7 +90,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
     currentAccountInformation =
       account.networkInformation[encodedGenesisHash] ||
-      AccountRepositoryService.initializeDefaultAccountInformation();
+      AccountRepository.initializeDefaultAccountInformation();
     newAssetHoldings = assets
       .filter(
         (asset) =>
@@ -99,7 +99,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
           )
       )
       .map(initializeARC0200AssetHoldingFromARC0200Asset);
-    accountRepositoryService = new AccountRepositoryService();
+    accountRepository = new AccountRepository();
     nodeID = selectNodeIDByGenesisHashFromSettings({
       genesisHash: network.genesisHash,
       settings,
@@ -128,7 +128,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await accountRepositoryService.save([account]);
+    await accountRepository.save([account]);
 
     return {
       account: {

@@ -1,8 +1,8 @@
 import { TransactionType } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -29,10 +29,7 @@ export default function doesAccountFallBelowMinimumBalanceRequirementForTransact
   const _functionName: string =
     'doesAccountFallBelowMinimumBalanceRequirementForTransactions';
   const accountInformation: IAccountInformation | null =
-    AccountRepositoryService.extractAccountInformationForNetwork(
-      account,
-      network
-    );
+    AccountRepository.extractAccountInformationForNetwork(account, network);
   let minimumBalanceRequirementForAccount: BigNumber;
   let payTransactionsCost: BigNumber;
   let remainderBalanceAfterCost: BigNumber;

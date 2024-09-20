@@ -31,8 +31,8 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // selectors
 import { useSelectLogger, useSelectSettings } from '@extension/selectors';
 
-// services
-import AccountRepositoryService from '@extension/repositories/AccountRepositoryService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
@@ -191,7 +191,7 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
 
       encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
       account = {
-        ...AccountRepositoryService.initializeDefaultAccount({
+        ...AccountRepository.initializeDefaultAccount({
           publicKey: PrivateKeyService.encode(
             convertAVMAddressToPublicKey(freezeAddress)
           ),
@@ -202,7 +202,7 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
         address: freezeAddress,
         currentAccountInformation:
           account.networkInformation[encodedGenesisHash] ||
-          AccountRepositoryService.initializeDefaultAccountInformation(),
+          AccountRepository.initializeDefaultAccountInformation(),
         logger,
         network,
         nodeID: selectNodeIDByGenesisHashFromSettings({
@@ -228,7 +228,7 @@ const AssetFreezeTransactionContent: FC<IAssetTransactionBodyProps> = ({
 
     if (asset && freezeAccount) {
       freezeAccountInformation =
-        AccountRepositoryService.extractAccountInformationForNetwork(
+        AccountRepository.extractAccountInformationForNetwork(
           freezeAccount,
           network
         );
