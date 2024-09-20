@@ -128,7 +128,7 @@ const addARC0200AssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await accountRepository.save([account]);
+    await accountRepository.saveMany([account]);
 
     return {
       account: {

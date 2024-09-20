@@ -1,8 +1,9 @@
 import { decode as decodeHex, encode as encodeHex } from '@stablelib/hex';
-import browser from 'webextension-polyfill';
+import browser, { Menus } from 'webextension-polyfill';
 
 // types
 import type { TStorageItemTypes } from '@extension/types';
+import ItemType = Menus.ItemType;
 
 export default class BaseRepository {
   /**
@@ -65,6 +66,23 @@ export default class BaseRepository {
         key.startsWith(keyPrefix) ? [...acc, allItems[key] as ItemType] : acc,
       []
     );
+  }
+
+  /**
+   * Convenience function that puts a list of items into batches.
+   * @param {Type} items - The items to put into batches.
+   * @param {number} batchSize - [optional] The batch size. Defaults to 5.
+   * @returns {Type[][]} The items in batches.
+   * @protected
+   */
+  protected _itemize<Type>(items: Type[], batchSize: number = 5): Type[][] {
+    const batches: Type[][] = [];
+
+    for (let i = 0; i < items.length; i += batchSize) {
+      batches.push(items.slice(i, i + batchSize));
+    }
+
+    return batches;
   }
 
   /**

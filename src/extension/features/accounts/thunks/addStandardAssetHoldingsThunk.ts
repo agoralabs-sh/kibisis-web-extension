@@ -252,7 +252,7 @@ const addStandardAssetHoldingsThunk: AsyncThunk<
       });
 
     // save the account to storage
-    await accountRepository.save([account]);
+    await accountRepository.saveMany([account]);
 
     logger.debug(
       `${ThunkEnum.AddStandardAssetHoldings}: saved account "${account.id}" to storage`

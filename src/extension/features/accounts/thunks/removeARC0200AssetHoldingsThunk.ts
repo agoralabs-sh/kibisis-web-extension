@@ -90,7 +90,7 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await new AccountRepository().save([account]);
+    await new AccountRepository().saveMany([account]);
 
     return {
       account: {

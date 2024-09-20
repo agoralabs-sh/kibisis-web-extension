@@ -119,7 +119,7 @@ const saveCredentialsThunk: AsyncThunk<
     );
 
     // save the accounts to storage
-    await new AccountRepository().save(_accounts);
+    await new AccountRepository().saveMany(_accounts);
 
     logger.debug(
       `${ThunkEnum.SaveCredentials}: successfully saved ${_accounts.length} accounts to storage`

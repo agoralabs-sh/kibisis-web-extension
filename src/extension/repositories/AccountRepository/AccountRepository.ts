@@ -318,7 +318,7 @@ export default class AccountRepository extends BaseRepository {
   }
 
   /**
-   * Convenience function that saves accounts to local storage. Each network's account information is stored, but each
+   * Saves accounts to local storage. Each network's account information is stored, but each
    * network's account transactions are only stored, if the `options.saveTransactions` is set to true, but by default
    * no transaction data is saved.
    *
@@ -329,33 +329,38 @@ export default class AccountRepository extends BaseRepository {
    * @public
    * @todo cache the first 100 transactions
    */
-  public async save(
+  public async saveMany(
     accounts: IAccount[],
     { saveTransactions }: ISaveOptions = { saveTransactions: false }
   ): Promise<IAccount[]> {
-    await this._save<IAccount>(
-      accounts.reduce<Record<string, IAccount>>(
-        (acc, account) => ({
-          ...acc,
-          [this._createAccountItemKey(account.id)]: {
-            ...this._sanitize(account),
-            // only save transactions if explicitly allowed
-            // TODO: cache the first 100
-            ...(saveTransactions && {
-              networkTransactions: networks.reduce(
-                (acc, { genesisHash }) => ({
-                  ...acc,
-                  [convertGenesisHashToHex(genesisHash)]:
-                    AccountRepository.initializeDefaultAccountTransactions(),
-                }),
-                {}
-              ),
-            }),
-          },
-        }),
-        {}
-      )
-    );
+    const batches = this._itemize<IAccount>(accounts);
+
+    // save accounts in batches
+    for (const batch of batches) {
+      await this._save<IAccount>(
+        batch.reduce<Record<string, IAccount>>(
+          (acc, account) => ({
+            ...acc,
+            [this._createAccountItemKey(account.id)]: {
+              ...this._sanitize(account),
+              // only save transactions if explicitly allowed
+              // TODO: cache the first 100
+              ...(saveTransactions && {
+                networkTransactions: networks.reduce(
+                  (acc, { genesisHash }) => ({
+                    ...acc,
+                    [convertGenesisHashToHex(genesisHash)]:
+                      AccountRepository.initializeDefaultAccountTransactions(),
+                  }),
+                  {}
+                ),
+              }),
+            },
+          }),
+          {}
+        )
+      );
+    }
 
     return accounts;
   }

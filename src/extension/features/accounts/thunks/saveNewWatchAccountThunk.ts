@@ -90,7 +90,7 @@ const saveNewWatchAccountThunk: AsyncThunk<
     });
 
     // save the account to storage
-    await accountRepository.save([account]);
+    await accountRepository.saveMany([account]);
 
     logger.debug(
       `${ThunkEnum.SaveNewWatchAccount}: saved watch account "${address}" to storage`

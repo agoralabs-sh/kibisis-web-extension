@@ -199,7 +199,7 @@ const updateAccountsThunk: AsyncThunk<
     }
 
     // save accounts to storage
-    accounts = await new AccountRepository().save(accounts);
+    accounts = await new AccountRepository().saveMany(accounts);
 
     logger.debug(
       `${ThunkEnum.AddStandardAssetHoldings}: saved accounts [${accounts

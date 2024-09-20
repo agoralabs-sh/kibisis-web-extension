@@ -53,7 +53,7 @@ const saveAccountNameThunk: AsyncThunk<
     name,
   };
 
-  await new AccountRepository().save([account]);
+  await new AccountRepository().saveMany([account]);
 
   return {
     ...account,

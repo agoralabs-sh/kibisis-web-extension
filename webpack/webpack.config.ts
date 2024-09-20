@@ -1,7 +1,7 @@
 import CopyPlugin from 'copy-webpack-plugin';
 import { config } from 'dotenv';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { Configuration, DefinePlugin, RuleSetRule } from 'webpack';
 import { Configuration as DevelopmentConfiguration } from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
