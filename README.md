@@ -167,12 +167,13 @@ $ yarn start:<chrome|firefox>
 
 ### 4.2. Manifest Permissions
 
-| Value        | Version  | Justification                                                                                                                                         |
-|--------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `<all_urls>` | 2        | When the extension attempts to scan the QR code of a WalletConnect dapp, the [`tabs.captureVisibleTab()`][capture-visible-tab-api] function is used.  |
-| `activeTab`  | 3        | As above, the extension requires access to the [`tabs.captureVisibleTab()`][capture-visible-tab-api].                                                 |
-| `alarms`     | 3        | A user can switch on a password lock. This feature utilizes the Alarms API as a timeout to lock the extension behind a password.                      |
-| `storage`    | 2 and 3  | The [storage][storage-api] API is used to maintain the state of the extension. It saves encrypted private keys, settings and the lists of AVM assets. |
+| Value              | Version | Justification                                                                                                                                         |
+|--------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `<all_urls>`       | 2       | When the extension attempts to scan the QR code of a WalletConnect dapp, the [`tabs.captureVisibleTab()`][capture-visible-tab-api] function is used.  |
+| `activeTab`        | 3       | As above, the extension requires access to the [`tabs.captureVisibleTab()`][capture-visible-tab-api].                                                 |
+| `alarms`           | 3       | A user can switch on a password lock. This feature utilizes the Alarms API as a timeout to lock the extension behind a password.                      |
+| `storage`          | 2 and 3 | The [storage][storage-api] API is used to maintain the state of the extension. It saves encrypted private keys, settings and the lists of AVM assets. |
+| `unlimitedStorage` | 2 and 3 | As an n number of accounts/private keys are saved to storage, users that have a lot of accounts will most likely exceed the storage limit.            |
 
 <sup>[Back to top ^][table-of-contents]</sup>
 
