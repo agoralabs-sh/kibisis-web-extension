@@ -1,6 +1,5 @@
 // types
 import type { ISerializableNetworkWithTransactionParams } from '@extension/repositories/NetworksRepository';
-import type { IQuestItem } from '@extension/services/QuestsService';
 import type { IAccount, IActiveAccountDetails } from '../accounts';
 import type { IARC0072Asset, IARC0200Asset, IStandardAsset } from '../assets';
 import type {
@@ -34,7 +33,6 @@ type TStorageItemTypes =
   | IPasswordTag
   | IPrivacySettings
   | IPrivateKey
-  | IQuestItem[]
   | ISerializableNetworkWithTransactionParams[]
   | ISecuritySettings
   | ISession

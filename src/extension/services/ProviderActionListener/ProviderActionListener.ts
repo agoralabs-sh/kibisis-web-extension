@@ -32,7 +32,6 @@ import SystemInfoRepository from '@extension/repositories/SystemInfoRepository';
 
 // services
 import CredentialLockService from '../CredentialLockService';
-import StorageManager from '../StorageManager';
 
 // types
 import type { IBaseOptions, ILogger } from '@common/types';
@@ -61,12 +60,10 @@ export default class ProviderActionListener {
   private readonly _logger: ILogger | null;
   private readonly _privateKeyRepository: PrivateKeyRepository;
   private readonly _settingsRepository: SettingsRepository;
-  private readonly _storageManager: StorageManager;
   private readonly _systemInfoRepository: SystemInfoRepository;
 
   constructor({ logger }: IBaseOptions) {
     const appWindowRepository = new AppWindowRepository();
-    const storageManager: StorageManager = new StorageManager();
 
     this._appWindowManager = new AppWindowManager({
       appWindowRepository,
@@ -81,7 +78,6 @@ export default class ProviderActionListener {
     });
     this._privateKeyRepository = new PrivateKeyRepository();
     this._settingsRepository = new SettingsRepository();
-    this._storageManager = storageManager;
     this._systemInfoRepository = new SystemInfoRepository();
   }
 
@@ -230,7 +226,7 @@ export default class ProviderActionListener {
       );
 
       // remove everything from storage
-      await this._storageManager.removeAll();
+      await browser.storage.local.clear();
 
       // if there is no registration app window up, we can open a new one
       await this._appWindowManager.createWindow({
