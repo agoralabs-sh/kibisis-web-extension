@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // types
-import type { IARC0200Asset, IMainRootState, INetwork } from '@extension/types';
+import type { IARC0200Asset, IMainRootState } from '@extension/types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';

@@ -1,4 +1,4 @@
-import { Account, decodeAddress, generateAccount } from 'algosdk';
+import { type Account, generateAccount } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
 // config

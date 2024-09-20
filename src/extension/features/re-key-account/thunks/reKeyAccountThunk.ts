@@ -1,9 +1,5 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  makePaymentTxnWithSuggestedParams,
-  type SuggestedParams,
-  type Transaction,
-} from 'algosdk';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { makePaymentTxnWithSuggestedParams, type Transaction } from 'algosdk';
 
 // enums
 import { ThunkEnum } from '../enums';
@@ -64,7 +60,6 @@ const reKeyAccountThunk: AsyncThunk<
     let networkClient: NetworkClient;
     let nodeID: string | null;
     let signedTransaction: Uint8Array;
-    let suggestedParams: SuggestedParams;
     let unsignedTransaction: Transaction;
 
     if (!accountInformation) {

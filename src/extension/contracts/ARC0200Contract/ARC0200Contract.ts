@@ -112,7 +112,6 @@ export default class ARC0200Contract extends BaseContract {
     toAddress,
   }: ITransferOptions): Promise<Transaction[]> {
     const _functionName: string = 'buildUnsignedTransferTransactions';
-    let _error: string;
     let abiMethod: ABIMethod;
     let appArgs: Uint8Array[];
     let appWriteTransaction: Transaction;

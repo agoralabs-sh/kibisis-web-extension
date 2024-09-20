@@ -22,7 +22,7 @@ const fetchFromStorageThunk: AsyncThunk<
   ISession[],
   undefined,
   IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
->(ThunkEnum.FetchFromStorage, async (_, { getState }) => {
+>(ThunkEnum.FetchFromStorage, async () => {
   return await new SessionRepository().fetchAll();
 });
 

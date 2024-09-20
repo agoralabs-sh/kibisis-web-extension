@@ -15,11 +15,7 @@ import ScanQRCodeViaTabModalContent from '@extension/components/ScanQRCodeViaTab
 import UnknownURIModalContent from '@extension/components/UnknownURIModalContent';
 
 // enums
-import {
-  ARC0300AuthorityEnum,
-  ARC0300PathEnum,
-  ARC0300QueryEnum,
-} from '@extension/enums';
+import { ARC0300AuthorityEnum, ARC0300PathEnum } from '@extension/enums';
 
 // selectors
 import {

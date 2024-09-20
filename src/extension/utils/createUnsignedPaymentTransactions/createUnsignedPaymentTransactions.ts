@@ -1,9 +1,4 @@
-import {
-  Algodv2,
-  makePaymentTxnWithSuggestedParams,
-  SuggestedParams,
-  Transaction,
-} from 'algosdk';
+import { makePaymentTxnWithSuggestedParams, Transaction } from 'algosdk';
 
 // models
 import NetworkClient from '@extension/models/NetworkClient';

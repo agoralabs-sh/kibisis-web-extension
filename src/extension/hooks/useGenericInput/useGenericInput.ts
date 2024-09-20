@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FocusEvent, useEffect, useState } from 'react';
+import { type ChangeEvent, type FocusEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // types

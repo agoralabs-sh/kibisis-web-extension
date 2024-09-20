@@ -28,7 +28,6 @@ import ClientHeader, {
   ClientHeaderSkeleton,
 } from '@extension/components/ClientHeader';
 import EmptyState from '@extension/components/EmptyState';
-import Warning from '@extension/components/Warning';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';

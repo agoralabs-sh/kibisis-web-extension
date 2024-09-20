@@ -1,5 +1,4 @@
 import {
-  Button,
   Input,
   InputGroup,
   InputRightElement,

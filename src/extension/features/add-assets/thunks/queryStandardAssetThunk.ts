@@ -1,5 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import type { Indexer } from 'algosdk';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // constants
 import {

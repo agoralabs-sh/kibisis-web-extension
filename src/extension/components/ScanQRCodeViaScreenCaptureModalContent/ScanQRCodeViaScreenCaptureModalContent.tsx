@@ -35,7 +35,6 @@ import { ErrorCodeEnum, ScanModeEnum } from '@extension/enums';
 // hooks
 import useScreenCaptureStream from '@extension/hooks/useScreenCaptureStream';
 import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
-import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
