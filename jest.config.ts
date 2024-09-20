@@ -1,5 +1,6 @@
-module.exports = {
-  collectCoverage: true,
+import type { Config } from 'jest';
+
+const config: Config = {
   collectCoverageFrom: [
     '<rootDir>/src/**/*.{ts,tsx}',
     '!<rootDir>/src/**/*.d.ts',
@@ -25,3 +26,5 @@ module.exports = {
   },
   verbose: true,
 };
+
+export default config;

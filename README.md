@@ -163,6 +163,9 @@ $ yarn start:<chrome|firefox>
 | `yarn start:chrome`       | Bundles the source code & the add-on assets, starts the local Chrome For Testing Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension. |
 | `yarn start:firefox`      | Bundles the source code & the add-on assets, starts the local Firefox Developer edition with the add-on installed. This will watch for changes in the source code and reload the extension.            |
 | `yarn start:dapp-example` | Starts the example dApp at [http://localhost:8080](http://localhost:8080)                                                                                                                              |
+| `yarn test`               | Runs unit tests.                                                                                                                                                                                       |
+| `yarn test:coverage`      | Runs unit tests with coverage.                                                                                                                                                                         |
+
 <sup>[Back to top ^][table-of-contents]</sup>
 
 ### 4.2. Manifest Permissions
