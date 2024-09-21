@@ -216,7 +216,7 @@ export default class AccountRepository extends BaseRepository {
         }),
         {}
       ),
-      index: account.index || null,
+      index: typeof account.index === 'number' ? account.index : null,
       publicKey: account.publicKey,
       updatedAt: account.updatedAt,
     };
@@ -324,7 +324,7 @@ export default class AccountRepository extends BaseRepository {
       }, {}),
     }));
 
-    return AccountRepository.sort(accounts, { mutateIndex: true });
+    return AccountRepository.sort(accounts);
   }
 
   /**
@@ -378,8 +378,7 @@ export default class AccountRepository extends BaseRepository {
     items: IAccount[],
     { saveTransactions }: ISaveOptions = { saveTransactions: false }
   ): Promise<IAccount[]> {
-    const _items = AccountRepository.sort(items, { mutateIndex: true });
-    const batches = this._itemize<IAccount>(_items);
+    const batches = this._itemize<IAccount>(items);
 
     // save accounts in batches
     for (const batch of batches) {
@@ -408,6 +407,6 @@ export default class AccountRepository extends BaseRepository {
       );
     }
 
-    return _items;
+    return items;
   }
 }

@@ -7,7 +7,9 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import type { Identifier, XYCoord } from 'dnd-core';
+import React, { type FC, useRef } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 
 // components
 import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
@@ -26,19 +28,100 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { ISideBarAccountItemProps } from './types';
+import type { IDragCollect, IDragItem } from '@extension/types';
+import type { IItemProps } from './types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
-const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
+const Item: FC<IItemProps> = ({
   account,
   accounts,
   active,
+  index,
   network,
   onClick,
+  onSort,
+  onSortComplete,
 }) => {
+  const ref = useRef<HTMLButtonElement>(null);
+  const [{ isDragging }, dragRef] = useDrag<IDragItem, unknown, IDragCollect>(
+    () => ({
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+      item: () => ({ id: account.id, index }),
+      type: Item.name,
+    })
+  );
+  const [{ handlerId }, dropRef] = useDrop<
+    IDragItem,
+    void,
+    { handlerId: Identifier | null }
+  >({
+    accept: Item.name,
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    drop: onSortComplete,
+    hover(item, monitor) {
+      let clientOffset: XYCoord | null;
+      let dragIndex: number;
+      let hoverBoundingRect: DOMRect;
+      let hoverClientY: number;
+      let hoverIndex: number;
+      let hoverMiddleY: number;
+
+      if (!ref.current) {
+        return;
+      }
+
+      dragIndex = item.index;
+      hoverIndex = index;
+
+      // don't replace items with themselves
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      // determine rectangle on screen
+      hoverBoundingRect = ref.current?.getBoundingClientRect();
+      // get middle
+      hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      // determine mouse position
+      clientOffset = monitor.getClientOffset();
+
+      if (!clientOffset) {
+        return;
+      }
+
+      // get pixels to the top
+      hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+      // Only perform the move when the mouse has crossed half of the items height
+      // When dragging downwards, only move when the cursor is below 50%
+      // When dragging upwards, only move when the cursor is above 50%
+
+      // dragging downwards
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+
+      // dragging upwards
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+
+      // sort the indexes
+      onSort(dragIndex, hoverIndex);
+
+      // update index
+      item.index = hoverIndex;
+    },
+  });
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
@@ -58,6 +141,7 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
           bg: buttonHoverBackgroundColor,
         },
       };
+  dragRef(dropRef(ref));
   // handlers
   const handleOnClick = () => onClick(account.id);
 
@@ -69,11 +153,15 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
       <Button
         {...activeProps}
         borderRadius={0}
+        cursor="move"
+        data-handler-id={handlerId}
         fontSize="md"
         justifyContent="start"
         minH={SIDEBAR_ITEM_HEIGHT}
         onClick={handleOnClick}
+        opacity={isDragging ? 0 : 1}
         p={0}
+        ref={ref}
         variant="ghost"
         w="full"
       >
@@ -132,4 +220,4 @@ const SideBarAccountItem: FC<ISideBarAccountItemProps> = ({
   );
 };
 
-export default SideBarAccountItem;
+export default Item;

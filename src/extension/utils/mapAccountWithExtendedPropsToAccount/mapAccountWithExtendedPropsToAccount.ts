@@ -23,7 +23,7 @@ export default function mapAccountWithExtendedPropsToAccount({
     name,
     networkInformation,
     networkTransactions,
-    index: index,
+    index,
     publicKey,
     updatedAt,
   };

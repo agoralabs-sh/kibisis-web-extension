@@ -1,8 +1,7 @@
 import { HStack, Text, VStack } from '@chakra-ui/react';
 import React, {
-  FC,
-  ReactNode,
-  TransitionEvent,
+  type FC,
+  type TransitionEvent,
   useEffect,
   useState,
 } from 'react';
@@ -23,9 +22,8 @@ import Divider from '@extension/components/Divider';
 import IconButton from '@extension/components/IconButton';
 import KibisisIcon from '@extension/components/KibisisIcon';
 import ScrollableContainer from '@extension/components/ScrollableContainer';
-import SideBarAccountItem from './SideBarAccountItem';
+import SideBarAccountList from '@extension/components/SideBarAccountList';
 import SideBarActionItem from './SideBarActionItem';
-import SideBarSkeletonAccountItem from './SideBarSkeletonAccountItem';
 
 // constants
 import {
@@ -43,6 +41,7 @@ import { AccountTabEnum } from '@extension/enums';
 
 // features
 import {
+  saveAccountsThunk,
   saveActiveAccountDetails,
   updateAccountsThunk,
 } from '@extension/features/accounts';
@@ -102,7 +101,11 @@ const SideBar: FC = () => {
     setIsHeaderShowing(false);
     setIsOpen(!isOpen);
   };
-  const handleAccountClick = async (id: string) => {
+  const handleAddAccountClick = () => {
+    onCloseSideBar();
+    navigate(ADD_ACCOUNT_ROUTE);
+  };
+  const handleOnAccountClick = async (id: string) => {
     await dispatch(
       saveActiveAccountDetails({
         accountId: id,
@@ -122,10 +125,15 @@ const SideBar: FC = () => {
 
     onCloseSideBar();
   };
-  const handleAddAccountClick = () => {
-    onCloseSideBar();
-    navigate(ADD_ACCOUNT_ROUTE);
-  };
+  const handleOnAccountSort = (_accounts: IAccountWithExtendedProps[]) =>
+    dispatch(
+      saveAccountsThunk(
+        _accounts.map((value, index) => ({
+          ...value,
+          index,
+        }))
+      )
+    );
   const handleScanQRCodeClick = () =>
     dispatch(
       setScanQRCodeModal({
@@ -165,24 +173,6 @@ const SideBar: FC = () => {
     if (event.propertyName === 'width' && width >= SIDEBAR_MAX_WIDTH) {
       setIsHeaderShowing(true);
     }
-  };
-  const renderAccounts: () => ReactNode = () => {
-    if (fetchingAccounts || !network) {
-      return Array.from({ length: 3 }, (_, index) => (
-        <SideBarSkeletonAccountItem key={`sidebar-fetching-item-${index}`} />
-      ));
-    }
-
-    return accounts.map((value, index) => (
-      <SideBarAccountItem
-        account={value}
-        accounts={accounts}
-        active={activeAccount ? value.id === activeAccount.id : false}
-        key={`sidebar-item-${index}`}
-        network={network}
-        onClick={handleAccountClick}
-      />
-    ));
   };
 
   useEffect(() => {
@@ -246,7 +236,14 @@ const SideBar: FC = () => {
         spacing={0}
         w="full"
       >
-        {renderAccounts()}
+        <SideBarAccountList
+          accounts={accounts}
+          activeAccount={activeAccount}
+          isLoading={fetchingAccounts}
+          network={network}
+          onClick={handleOnAccountClick}
+          onSort={handleOnAccountSort}
+        />
       </ScrollableContainer>
 
       <Divider />

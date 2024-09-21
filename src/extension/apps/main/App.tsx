@@ -1,5 +1,7 @@
 import { combineReducers, type Store } from '@reduxjs/toolkit';
 import React, { type FC } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
@@ -72,13 +74,15 @@ const App: FC<IAppProps> = ({
           initialColorMode={initialColorMode}
           initialFontFamily={initialFontFamily}
         >
-          <RouterProvider
-            fallbackElement={<SplashPage />}
-            router={createRouter({
-              i18n,
-              store,
-            })}
-          />
+          <DndProvider backend={HTML5Backend}>
+            <RouterProvider
+              fallbackElement={<SplashPage />}
+              router={createRouter({
+                i18n,
+                store,
+              })}
+            />
+          </DndProvider>
         </ThemeProvider>
       </I18nextProvider>
     </Provider>

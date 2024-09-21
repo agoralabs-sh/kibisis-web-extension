@@ -38,7 +38,6 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   );
 
   accounts = await new AccountRepository().fetchAll();
-  console.log('accounts:', accounts);
   activeAccountDetails = await new ActiveAccountRepositoryService().fetch();
 
   return {

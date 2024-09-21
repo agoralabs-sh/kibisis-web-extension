@@ -12,6 +12,7 @@ import {
   removeARC0200AssetHoldingsThunk,
   removeStandardAssetHoldingsThunk,
   saveAccountNameThunk,
+  saveAccountsThunk,
   saveActiveAccountDetails,
   saveNewAccountsThunk,
   saveNewWatchAccountThunk,
@@ -231,6 +232,20 @@ const slice = createSlice({
       state.saving = true;
     });
     builder.addCase(saveAccountNameThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
+    /** save accounts **/
+    builder.addCase(saveAccountsThunk.fulfilled, (state: IState, action) => {
+      state.items = upsertItemsById<IAccountWithExtendedProps>(
+        state.items,
+        action.payload
+      );
+      state.saving = false;
+    });
+    builder.addCase(saveAccountsThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(saveAccountsThunk.rejected, (state: IState) => {
       state.saving = false;
     });
     /** save active account details **/
