@@ -220,6 +220,7 @@ const SideBar: FC = () => {
           borderRadius={0}
           colorScheme="gray"
           icon={isOpen ? IoChevronBack : IoChevronForward}
+          minW={`${SIDEBAR_MIN_WIDTH}px`}
           onClick={handleOpenToggleClick}
           variant="ghost"
         />

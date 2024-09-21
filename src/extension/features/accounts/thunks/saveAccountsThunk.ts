@@ -27,7 +27,6 @@ const saveAccountsThunk: AsyncThunk<
   IBaseAsyncThunkConfig<IMainRootState>
 >(ThunkEnum.SaveAccounts, async (accounts, { getState }) => {
   const logger = getState().system.logger;
-  console.log('accounts:', accounts);
 
   await new AccountRepository().saveMany(
     accounts.map(mapAccountWithExtendedPropsToAccount)

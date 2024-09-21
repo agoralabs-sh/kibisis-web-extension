@@ -1,8 +1,9 @@
 import {
   Button,
-  ButtonProps,
   Center,
   HStack,
+  Icon,
+  type StackProps,
   Text,
   Tooltip,
   VStack,
@@ -10,6 +11,7 @@ import {
 import type { Identifier, XYCoord } from 'dnd-core';
 import React, { type FC, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import { IoReorderTwoOutline } from 'react-icons/io5';
 
 // components
 import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadges';
@@ -32,6 +34,7 @@ import type { IDragCollect, IDragItem } from '@extension/types';
 import type { IItemProps } from './types';
 
 // utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
 
@@ -46,15 +49,17 @@ const Item: FC<IItemProps> = ({
   onSortComplete,
 }) => {
   const ref = useRef<HTMLButtonElement>(null);
-  const [{ isDragging }, dragRef] = useDrag<IDragItem, unknown, IDragCollect>(
-    () => ({
-      collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-      }),
-      item: () => ({ id: account.id, index }),
-      type: Item.name,
-    })
-  );
+  const [{ isDragging }, dragRef, previewRef] = useDrag<
+    IDragItem,
+    unknown,
+    IDragCollect
+  >(() => ({
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: () => ({ id: account.id, index }),
+    type: Item.name,
+  }));
   const [{ handlerId }, dropRef] = useDrop<
     IDragItem,
     void,
@@ -129,7 +134,7 @@ const Item: FC<IItemProps> = ({
   const activeBackground = useColorModeValue('gray.200', 'whiteAlpha.200');
   // misc
   const address = convertPublicKeyToAVMAddress(account.publicKey);
-  const activeProps: Partial<ButtonProps> = active
+  const activeProps: Partial<StackProps> = active
     ? {
         _hover: {
           bg: activeBackground,
@@ -141,7 +146,7 @@ const Item: FC<IItemProps> = ({
           bg: buttonHoverBackgroundColor,
         },
       };
-  dragRef(dropRef(ref));
+  previewRef(dropRef(ref));
   // handlers
   const handleOnClick = () => onClick(account.id);
 
@@ -150,72 +155,86 @@ const Item: FC<IItemProps> = ({
       aria-label="Name or address of the account"
       label={account.name || address}
     >
-      <Button
+      <HStack
         {...activeProps}
-        borderRadius={0}
-        cursor="move"
         data-handler-id={handlerId}
-        fontSize="md"
-        justifyContent="start"
-        minH={SIDEBAR_ITEM_HEIGHT}
-        onClick={handleOnClick}
         opacity={isDragging ? 0 : 1}
-        p={0}
         ref={ref}
-        variant="ghost"
+        spacing={0}
         w="full"
       >
-        {/*icon*/}
-        <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
-          <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
-            <AccountAvatarWithBadges
-              account={account}
-              accounts={accounts}
-              network={network}
-            />
-          </Center>
+        <Button
+          _hover={{
+            bg: 'none',
+          }}
+          bgColor="none"
+          borderRadius={0}
+          cursor="pointer"
+          flexGrow={1}
+          fontSize="md"
+          justifyContent="start"
+          minH={SIDEBAR_ITEM_HEIGHT}
+          onClick={handleOnClick}
+          p={0}
+          variant="ghost"
+        >
+          {/*icon*/}
+          <HStack m={0} p={0} spacing={DEFAULT_GAP / 3}>
+            <Center minW={`${SIDEBAR_MIN_WIDTH}px`}>
+              <AccountAvatarWithBadges
+                account={account}
+                accounts={accounts}
+                network={network}
+              />
+            </Center>
 
-          {/*name/address*/}
-          {account.name ? (
-            <VStack
-              alignItems="flex-start"
-              flexGrow={1}
-              justifyContent="space-evenly"
-              spacing={0}
-              w="full"
-            >
-              <Text
-                color={defaultTextColor}
-                fontSize="sm"
-                maxW={195}
-                noOfLines={1}
-                textAlign="left"
+            {/*name/address*/}
+            {account.name ? (
+              <VStack
+                alignItems="flex-start"
+                justifyContent="space-evenly"
+                spacing={0}
               >
-                {account.name}
-              </Text>
+                <Text
+                  color={defaultTextColor}
+                  fontSize="sm"
+                  maxW={195}
+                  noOfLines={1}
+                  textAlign="left"
+                >
+                  {account.name}
+                </Text>
 
-              <Text color={subTextColor} fontSize="xs" textAlign="left">
-                {ellipseAddress(address, {
-                  end: 10,
-                  start: 10,
-                })}
+                <Text color={subTextColor} fontSize="xs" textAlign="left">
+                  {ellipseAddress(address)}
+                </Text>
+              </VStack>
+            ) : (
+              <Text color={defaultTextColor} fontSize="sm" textAlign="left">
+                {ellipseAddress(address)}
               </Text>
-            </VStack>
-          ) : (
-            <Text
-              color={defaultTextColor}
-              flexGrow={1}
-              fontSize="sm"
-              textAlign="left"
-            >
-              {ellipseAddress(address, {
-                end: 10,
-                start: 10,
-              })}
-            </Text>
-          )}
-        </HStack>
-      </Button>
+            )}
+          </HStack>
+        </Button>
+        <Button
+          _hover={{
+            bg: 'none',
+          }}
+          bgColor="none"
+          borderRadius={0}
+          cursor="move"
+          minH={SIDEBAR_ITEM_HEIGHT}
+          p={0}
+          ref={dragRef}
+          variant="ghost"
+        >
+          <Icon
+            as={IoReorderTwoOutline}
+            boxSize={calculateIconSize()}
+            color={subTextColor}
+          />
+        </Button>
+      </HStack>
     </Tooltip>
   );
 };

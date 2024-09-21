@@ -11,6 +11,6 @@ export const PAGE_ITEM_HEIGHT = 10; // 10 = 2.5rem = 40px
 export const SIDEBAR_BORDER_WIDTH = 1;
 export const SIDEBAR_ITEM_HEIGHT = 12;
 export const SETTINGS_ITEM_HEIGHT = 16;
-export const SIDEBAR_MIN_WIDTH = 40;
+export const SIDEBAR_MIN_WIDTH = 45;
 export const SIDEBAR_MAX_WIDTH = 250;
 export const TAB_ITEM_HEIGHT = 16;
