@@ -38,7 +38,7 @@ export default function useOnAppStartup(): void {
 
     // fetch the settings, networks and accounts and update accordingly
     (async () => {
-      const { accounts } = await dispatch(
+      const { activeAccountDetails } = await dispatch(
         fetchAccountsFromStorageThunk()
       ).unwrap();
       const networks = await dispatch(fetchNetworksFromStorageThunk()).unwrap();
@@ -49,10 +49,10 @@ export default function useOnAppStartup(): void {
             value.genesisHash === settings.general.selectedNetworkGenesisHash
         ) || null;
 
-      if (network) {
+      if (activeAccountDetails && network) {
         dispatch(
           updateAccountsThunk({
-            accountIDs: accounts.map(({ id }) => id),
+            accountIDs: [activeAccountDetails.accountId],
           })
         );
         dispatch(updateTransactionParamsForSelectedNetworkThunk());

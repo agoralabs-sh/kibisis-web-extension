@@ -1,11 +1,25 @@
-import React, { type FC, useEffect, useState } from 'react';
+import {
+  DndContext,
+  type DragEndEvent,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import React, { type FC } from 'react';
 
 // components
 import Item from './Item';
 import SkeletonItem from './SkeletonItem';
 
 // types
-import type { IAccountWithExtendedProps } from '@extension/types';
 import type { IProps } from './types';
 
 const SideBarAccountList: FC<IProps> = ({
@@ -16,58 +30,56 @@ const SideBarAccountList: FC<IProps> = ({
   onClick,
   onSort,
 }) => {
-  // state
-  const [_accounts, setAccounts] =
-    useState<IAccountWithExtendedProps[]>(accounts);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   // handlers
   const handleOnClick = async (id: string) => onClick(id);
-  const handleOnSort = (dragIndex: number, hoverIndex: number) => {
-    setAccounts((prevState) => {
-      const nextState = [...prevState];
-      const [item] = nextState.splice(dragIndex, 1); // remove the index
+  const handleOnDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    let previousIndex: number;
+    let nextIndex: number;
 
-      // replace at the index
-      nextState.splice(hoverIndex, 0, item);
+    if (active.id !== over?.id) {
+      previousIndex = accounts.findIndex(({ id }) => id === active.id);
+      nextIndex = accounts.findIndex(({ id }) => id === over?.id);
 
-      return nextState;
-    });
-  };
-  const handleOnSortComplete = () => onSort(_accounts);
-
-  useEffect(() => {
-    // if the accounts are being updated, ensure the index is maintained if the users is sorting
-    if (accounts.length > 0 && accounts.length === _accounts.length) {
-      setAccounts((prevState) =>
-        prevState.map(
-          (value) => accounts.find(({ id }) => id === value.id) || value
-        )
-      );
-
-      return;
+      onSort(arrayMove(accounts, previousIndex, nextIndex));
     }
-
-    setAccounts(accounts);
-  }, [accounts]);
+  };
 
   return (
     <>
-      {isLoading || !network
-        ? Array.from({ length: 3 }, (_, index) => (
-            <SkeletonItem key={`sidebar-fetching-item-${index}`} />
-          ))
-        : _accounts.map((value, index) => (
-            <Item
-              account={value}
-              accounts={_accounts}
-              active={activeAccount ? value.id === activeAccount.id : false}
-              index={index}
-              key={value.id}
-              network={network}
-              onClick={handleOnClick}
-              onSort={handleOnSort}
-              onSortComplete={handleOnSortComplete}
-            />
-          ))}
+      {isLoading || !network ? (
+        Array.from({ length: 3 }, (_, index) => (
+          <SkeletonItem key={`sidebar-fetching-item-${index}`} />
+        ))
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleOnDragEnd}
+        >
+          <SortableContext
+            items={accounts}
+            strategy={verticalListSortingStrategy}
+          >
+            {accounts.map((value) => (
+              <Item
+                account={value}
+                accounts={accounts}
+                active={activeAccount ? value.id === activeAccount.id : false}
+                key={value.id}
+                network={network}
+                onClick={handleOnClick}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
+      )}
     </>
   );
 };

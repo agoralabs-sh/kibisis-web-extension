@@ -1,3 +1,5 @@
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import {
   Button,
   Center,
@@ -8,9 +10,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-import type { Identifier, XYCoord } from 'dnd-core';
-import React, { type FC, useRef } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
+import React, { type FC } from 'react';
 import { IoReorderTwoOutline } from 'react-icons/io5';
 
 // components
@@ -18,6 +18,7 @@ import AccountAvatarWithBadges from '@extension/components/AccountAvatarWithBadg
 
 // constants
 import {
+  BODY_BACKGROUND_COLOR,
   DEFAULT_GAP,
   SIDEBAR_ITEM_HEIGHT,
   SIDEBAR_MIN_WIDTH,
@@ -30,7 +31,6 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
-import type { IDragCollect, IDragItem } from '@extension/types';
 import type { IItemProps } from './types';
 
 // utils
@@ -42,91 +42,17 @@ const Item: FC<IItemProps> = ({
   account,
   accounts,
   active,
-  index,
   network,
   onClick,
-  onSort,
-  onSortComplete,
 }) => {
-  const ref = useRef<HTMLButtonElement>(null);
-  const [{ isDragging }, dragRef, previewRef] = useDrag<
-    IDragItem,
-    unknown,
-    IDragCollect
-  >(() => ({
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    item: () => ({ id: account.id, index }),
-    type: Item.name,
-  }));
-  const [{ handlerId }, dropRef] = useDrop<
-    IDragItem,
-    void,
-    { handlerId: Identifier | null }
-  >({
-    accept: Item.name,
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId(),
-      };
-    },
-    drop: onSortComplete,
-    hover(item, monitor) {
-      let clientOffset: XYCoord | null;
-      let dragIndex: number;
-      let hoverBoundingRect: DOMRect;
-      let hoverClientY: number;
-      let hoverIndex: number;
-      let hoverMiddleY: number;
-
-      if (!ref.current) {
-        return;
-      }
-
-      dragIndex = item.index;
-      hoverIndex = index;
-
-      // don't replace items with themselves
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-
-      // determine rectangle on screen
-      hoverBoundingRect = ref.current?.getBoundingClientRect();
-      // get middle
-      hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      // determine mouse position
-      clientOffset = monitor.getClientOffset();
-
-      if (!clientOffset) {
-        return;
-      }
-
-      // get pixels to the top
-      hoverClientY = clientOffset.y - hoverBoundingRect.top;
-
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-
-      // dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-
-      // dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-
-      // sort the indexes
-      onSort(dragIndex, hoverIndex);
-
-      // update index
-      item.index = hoverIndex;
-    },
-  });
+  const {
+    attributes,
+    isDragging,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: account.id });
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
@@ -145,8 +71,8 @@ const Item: FC<IItemProps> = ({
         _hover: {
           bg: buttonHoverBackgroundColor,
         },
+        bg: BODY_BACKGROUND_COLOR,
       };
-  previewRef(dropRef(ref));
   // handlers
   const handleOnClick = () => onClick(account.id);
 
@@ -157,11 +83,17 @@ const Item: FC<IItemProps> = ({
     >
       <HStack
         {...activeProps}
-        data-handler-id={handlerId}
-        opacity={isDragging ? 0 : 1}
-        ref={ref}
+        ref={setNodeRef}
         spacing={0}
+        transform={CSS.Translate.toString({
+          x: 0,
+          y: transform?.y ?? 0,
+          scaleX: transform?.scaleX ?? 1,
+          scaleY: transform?.scaleY ?? 1,
+        })}
+        transition={transition}
         w="full"
+        zIndex={isDragging ? 1 : 'auto'}
       >
         <Button
           _hover={{
@@ -216,6 +148,8 @@ const Item: FC<IItemProps> = ({
             )}
           </HStack>
         </Button>
+
+        {/*re-order button*/}
         <Button
           _hover={{
             bg: 'none',
@@ -225,8 +159,9 @@ const Item: FC<IItemProps> = ({
           cursor="move"
           minH={SIDEBAR_ITEM_HEIGHT}
           p={0}
-          ref={dragRef}
           variant="ghost"
+          {...attributes}
+          {...listeners}
         >
           <Icon
             as={IoReorderTwoOutline}
