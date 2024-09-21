@@ -20,7 +20,7 @@ import type {
   IInitializeAccountOptions,
   INetwork,
 } from '@extension/types';
-import type { ISaveOptions } from './types';
+import { ISaveOptions, ISortOptions } from './types';
 
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
@@ -103,6 +103,7 @@ export default class AccountRepository extends BaseRepository {
         }),
         {}
       ),
+      index: null,
       publicKey,
       updatedAt: createdAtOrNow,
     };
@@ -128,6 +129,48 @@ export default class AccountRepository extends BaseRepository {
   }
 
   /**
+   * Sorts the accounts by the `position` property, where lower positions take precedence. If no position has been
+   * assigned they are put to the back and sorted by the `createdAt` property, where the oldest are first.
+   * @param {IAccount[]} items - The accounts to sort.
+   * @param {ISortOptions} options - [optional] applies positions on accounts that do not have positions.
+   * @returns {IAccount[]} the sorted accounts by `position` and `createdAt`.
+   */
+  public static sort(
+    items: IAccount[],
+    { mutateIndex }: ISortOptions = { mutateIndex: false }
+  ): IAccount[] {
+    const _items = items.sort((a, b) => {
+      // if both positions are non-null, sort by position
+      if (a.index !== null && b.index !== null) {
+        return a.index - b.index;
+      }
+
+      // if `a` position is null, place it after a `b` non-null position
+      if (a.index === null && b.index !== null) {
+        return 1; // `a` comes after `b`
+      }
+
+      // if `b` position is null, place it after a `a` non-null position
+      if (a.index !== null && b.index === null) {
+        return -1; // `a` comes before `b`
+      }
+
+      // if both positions are null, sort by `createdat` (ascending)
+      return a.createdAt - b.createdAt;
+    });
+
+    if (!mutateIndex) {
+      return _items;
+    }
+
+    // apply the positions to the
+    return _items.map((value, index) => ({
+      ...value,
+      index: index,
+    }));
+  }
+
+  /**
    * private functions
    */
 
@@ -136,7 +179,7 @@ export default class AccountRepository extends BaseRepository {
    * @param {string} id - the account ID.
    * @returns {string} the account item key.
    */
-  private _createAccountItemKey(id: string): string {
+  private _createItemKey(id: string): string {
     return `${ACCOUNTS_ITEM_KEY_PREFIX}${id}`;
   }
 
@@ -173,6 +216,7 @@ export default class AccountRepository extends BaseRepository {
         }),
         {}
       ),
+      index: account.index || null,
       publicKey: account.publicKey,
       updatedAt: account.updatedAt,
     };
@@ -223,18 +267,17 @@ export default class AccountRepository extends BaseRepository {
    * @public
    */
   public async fetchAll(): Promise<IAccount[]> {
-    const accounts = await this._fetchByPrefixKey<IAccount>(
+    let accounts = await this._fetchByPrefixKey<IAccount>(
       ACCOUNTS_ITEM_KEY_PREFIX
     );
 
-    return accounts.map((account) => ({
+    accounts = accounts.map((account) => ({
       ...account,
       // if there are new networks in the config, create default account information and transactions for these new networks
       networkInformation: networks.reduce<Record<string, IAccountInformation>>(
         (acc, { genesisHash }) => {
-          const encodedGenesisHash: string =
-            convertGenesisHashToHex(genesisHash);
-          const accountInformation: IAccountInformation = {
+          const encodedGenesisHash = convertGenesisHashToHex(genesisHash);
+          const accountInformation = {
             ...AccountRepository.initializeDefaultAccountInformation(), // initialize with any new values
             ...account.networkInformation[encodedGenesisHash],
           };
@@ -265,8 +308,8 @@ export default class AccountRepository extends BaseRepository {
       networkTransactions: networks.reduce<
         Record<string, IAccountTransactions>
       >((acc, { genesisHash }) => {
-        const encodedGenesisHash: string = convertGenesisHashToHex(genesisHash);
-        const accountTransactions: IAccountTransactions = {
+        const encodedGenesisHash = convertGenesisHashToHex(genesisHash);
+        const accountTransactions = {
           ...AccountRepository.initializeDefaultAccountTransactions(), // initialize with any new values
           ...account.networkTransactions[encodedGenesisHash],
         };
@@ -280,6 +323,8 @@ export default class AccountRepository extends BaseRepository {
         };
       }, {}),
     }));
+
+    return AccountRepository.sort(accounts, { mutateIndex: true });
   }
 
   /**
@@ -305,7 +350,7 @@ export default class AccountRepository extends BaseRepository {
    * @public
    */
   public async fetchById(id: string): Promise<IAccount | null> {
-    return await this._fetchByKey(this._createAccountItemKey(id));
+    return await this._fetchByKey(this._createItemKey(id));
   }
 
   /**
@@ -314,7 +359,7 @@ export default class AccountRepository extends BaseRepository {
    * @public
    */
   public async removeById(id: string): Promise<void> {
-    await this._removeByKeys(this._createAccountItemKey(id));
+    await this._removeByKeys(this._createItemKey(id));
   }
 
   /**
@@ -323,17 +368,18 @@ export default class AccountRepository extends BaseRepository {
    * no transaction data is saved.
    *
    * This function will overwrite any previous account data indexed by the account ID.
-   * @param {IAccount[]} accounts - the list of accounts to save.
+   * @param {IAccount[]} items - the list of accounts to save.
    * @param {ISaveOptions} options - various options to affect how the data is saved.
    * @returns {Promise<IAccount[]>} A promise that resolves to the accounts that were passed in the argument.
    * @public
    * @todo cache the first 100 transactions
    */
   public async saveMany(
-    accounts: IAccount[],
+    items: IAccount[],
     { saveTransactions }: ISaveOptions = { saveTransactions: false }
   ): Promise<IAccount[]> {
-    const batches = this._itemize<IAccount>(accounts);
+    const _items = AccountRepository.sort(items, { mutateIndex: true });
+    const batches = this._itemize<IAccount>(_items);
 
     // save accounts in batches
     for (const batch of batches) {
@@ -341,7 +387,7 @@ export default class AccountRepository extends BaseRepository {
         batch.reduce<Record<string, IAccount>>(
           (acc, account) => ({
             ...acc,
-            [this._createAccountItemKey(account.id)]: {
+            [this._createItemKey(account.id)]: {
               ...this._sanitize(account),
               // only save transactions if explicitly allowed
               // TODO: cache the first 100
@@ -362,6 +408,6 @@ export default class AccountRepository extends BaseRepository {
       );
     }
 
-    return accounts;
+    return _items;
   }
 }
