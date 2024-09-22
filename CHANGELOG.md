@@ -1,3 +1,10 @@
+# [2.2.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.1-beta.1...v2.2.0-beta.1) (2024-09-22)
+
+
+### Features
+
+* reorder accounts in the sidebar ([#327](https://github.com/agoralabs-sh/kibisis-web-extension/issues/327)) ([1c50003](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1c500031d85b6b6bdece059f0f6a28d4981cb5b1))
+
 ## [2.1.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0...v2.1.1-beta.1) (2024-09-20)
 
 
