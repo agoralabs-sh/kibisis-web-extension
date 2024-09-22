@@ -43,8 +43,6 @@ jobs:
       - name: "📝 Create .env file"
         uses: ./.github/actions/create-env-file
         with:
-          posthog_api_host: ${{ secrets.POSTHOG_API_HOST }}
-          posthog_project_id: ${{ secrets.POSTHOG_PROJECT_ID }}
           provider_id: ${{ vars.PROVIDER_ID }}
       - name: "🔖 Release"
         env:

@@ -9,9 +9,9 @@ import { SRC_PATH } from '../constants';
  * @returns {Configuration} a common configuration.
  */
 export default function createCommonConfig(): Configuration {
-  const commonPath: string = resolve(SRC_PATH, 'common');
-  const extensionPath: string = resolve(SRC_PATH, 'extension');
-  const externalPath: string = resolve(SRC_PATH, 'external');
+  const commonPath = resolve(SRC_PATH, 'common');
+  const extensionPath = resolve(SRC_PATH, 'extension');
+  const externalPath = resolve(SRC_PATH, 'external');
 
   return {
     node: false,
