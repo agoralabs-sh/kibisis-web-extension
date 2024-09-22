@@ -45,6 +45,7 @@ const Item: FC<IItemProps> = ({
   isShortForm,
   network,
   onClick,
+  systemInfo,
 }) => {
   const {
     attributes,
@@ -120,6 +121,7 @@ const Item: FC<IItemProps> = ({
                 account={account}
                 accounts={accounts}
                 network={network}
+                systemInfo={systemInfo}
               />
             </Center>
 

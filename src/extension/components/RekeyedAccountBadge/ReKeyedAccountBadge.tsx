@@ -12,6 +12,9 @@ import { IoAlertCircleOutline, IoLockClosedOutline } from 'react-icons/io5';
 // types
 import type { IProps } from './types';
 
+// utils
+import ellipseAddress from '@extension/utils/ellipseAddress';
+
 const ReKeyedAccountBadge: FC<IProps> = ({
   authAddress,
   isAuthAccountAvailable = false,
@@ -21,13 +24,15 @@ const ReKeyedAccountBadge: FC<IProps> = ({
   const { t } = useTranslation();
   // misc
   const tag = (
-    <Tag borderRadius="full" colorScheme="orange" size={size} variant="solid">
+    <Tag borderRadius="full" colorScheme="green" size={size} variant="solid">
       <TagLeftIcon as={IoLockClosedOutline} />
 
-      <TagLabel>{t('labels.reKeyed')}</TagLabel>
+      <TagLabel>{`${t('labels.reKeyed')}: ${ellipseAddress(
+        authAddress
+      )}`}</TagLabel>
 
       {!isAuthAccountAvailable && (
-        <TagRightIcon as={IoAlertCircleOutline} color="red.300" />
+        <TagRightIcon as={IoAlertCircleOutline} color="red.600" />
       )}
     </Tag>
   );

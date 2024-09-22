@@ -40,6 +40,7 @@ import OverflowMenu from '@extension/components/OverflowMenu';
 import NativeBalance from '@extension/components/NativeBalance';
 import NetworkSelect from '@extension/components/NetworkSelect';
 import NFTsTab from '@extension/components/NFTsTab';
+import PolisAccountBadge from '@extension/components/PolisAccountBadge';
 import ReKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
 import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 import AccountPageSkeletonContent from './AccountPageSkeletonContent';
@@ -94,6 +95,7 @@ import {
   useSelectSettingsPreferredBlockExplorer,
   useSelectSettingsSelectedNetwork,
   useSelectSettings,
+  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // types
@@ -135,6 +137,7 @@ const AccountPage: FC = () => {
   const networks = useSelectNetworks();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const settings = useSelectSettings();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
@@ -449,18 +452,27 @@ const AccountPage: FC = () => {
             </HStack>
 
             {/*badges*/}
-            <HStack
-              alignItems="center"
-              spacing={DEFAULT_GAP / 3}
-              justifyContent="flex-end"
-              w="full"
-            >
-              {/*watch account*/}
-              {renderWatchAccountBadge()}
+            <VStack alignItems="flex-end" spacing={DEFAULT_GAP / 3} w="full">
+              <HStack
+                alignItems="center"
+                spacing={DEFAULT_GAP / 3}
+                justifyContent="flex-end"
+                w="full"
+              >
+                {/*polis account badge*/}
+                {account &&
+                  systemInfo &&
+                  systemInfo.polisAccountID === account.id && (
+                    <PolisAccountBadge />
+                  )}
+
+                {/*watch account badge*/}
+                {renderWatchAccountBadge()}
+              </HStack>
 
               {/*re-keyed badge*/}
               {renderReKeyedAccountBadge()}
-            </HStack>
+            </VStack>
           </VStack>
 
           <Spacer />

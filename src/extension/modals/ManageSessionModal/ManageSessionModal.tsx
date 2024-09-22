@@ -49,6 +49,7 @@ import {
   useSelectAccountsFetching,
   useSelectNetworks,
   useSelectSessionsSaving,
+  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // theme
@@ -76,6 +77,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const fetching = useSelectAccountsFetching();
   const networks = useSelectNetworks();
   const saving = useSelectSessionsSaving();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
@@ -177,6 +179,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
             account={account}
             accounts={availableAccounts}
             network={network}
+            systemInfo={systemInfo}
           />
 
           {/*name/address*/}

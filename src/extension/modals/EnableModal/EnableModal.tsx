@@ -43,15 +43,16 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useEnableModal from './hooks/useEnableModal';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import {
   useSelectActiveAccount,
   useSelectAccountsFetching,
   useSelectSessionsSaving,
+  useSelectSystemInfo,
 } from '@extension/selectors';
-
-// repositories
-import AccountRepository from '@extension/repositories/AccountRepository';
 
 // theme
 import { theme } from '@extension/theme';
@@ -79,6 +80,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const activeAccount = useSelectActiveAccount();
   const fetching = useSelectAccountsFetching();
   const saving = useSelectSessionsSaving();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const {
@@ -227,6 +229,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
               account={account}
               accounts={availableAccounts}
               network={network}
+              systemInfo={systemInfo}
             />
 
             {/*name/address*/}

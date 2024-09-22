@@ -2,6 +2,7 @@
 import type {
   IAccountWithExtendedProps,
   INetworkWithTransactionParams,
+  ISystemInfo,
 } from '@extension/types';
 
 /**
@@ -15,6 +16,7 @@ interface IProps {
   network: INetworkWithTransactionParams | null;
   onClick: (id: string) => void;
   onSort: (accounts: IAccountWithExtendedProps[]) => void;
+  systemInfo: ISystemInfo | null;
 }
 
 export default IProps;

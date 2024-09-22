@@ -31,6 +31,7 @@ const SideBarAccountList: FC<IProps> = ({
   network,
   onClick,
   onSort,
+  systemInfo,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -92,6 +93,7 @@ const SideBarAccountList: FC<IProps> = ({
                 key={value.id}
                 network={network}
                 onClick={handleOnClick}
+                systemInfo={systemInfo}
               />
             ))}
           </SortableContext>

@@ -578,6 +578,7 @@ const translation: IResourceLanguage = {
     port: 'Port',
     preferredBlockExplorer: 'Preferred Block Explorer',
     preferredNFTExplorer: 'Preferred NFT Explorer',
+    primary: 'Primary',
     publicKey: 'Public Key',
     reKey: 'Re-key',
     reKeyed: 'Re-keyed',
