@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.0...v2.2.1) (2024-09-22)
+
+
+### Bug Fixes
+
+* whats new features/fixes item lists span the full width ([#330](https://github.com/agoralabs-sh/kibisis-web-extension/issues/330)) ([32adc25](https://github.com/agoralabs-sh/kibisis-web-extension/commit/32adc25e55b0cc3feba97b4727232a8aa037570d))
+
 # [2.2.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0...v2.2.0) (2024-09-22)
 
 
