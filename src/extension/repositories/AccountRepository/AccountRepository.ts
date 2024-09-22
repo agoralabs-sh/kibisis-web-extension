@@ -129,16 +129,18 @@ export default class AccountRepository extends BaseRepository {
   }
 
   /**
-   * Sorts the accounts by the `position` property, where lower positions take precedence. If no position has been
-   * assigned they are put to the back and sorted by the `createdAt` property, where the oldest are first.
-   * @param {IAccount[]} items - The accounts to sort.
-   * @param {ISortOptions} options - [optional] applies positions on accounts that do not have positions.
-   * @returns {IAccount[]} the sorted accounts by `position` and `createdAt`.
+   * Sorts the accounts by the `index` property, where lower indexes take precedence. If `index` is null they are put
+   * to the back and sorted by the `createdAt` property, ascending order (oldest first).
+   * @param {Type extends IAccount[]} items - The accounts to sort.
+   * @param {ISortOptions} options - [optional] applies indexes on accounts that do not have indexes.
+   * @returns {Type extends IAccount[]} the sorted accounts.
+   * @public
+   * @static
    */
-  public static sort(
-    items: IAccount[],
+  public static sort<Type extends IAccount>(
+    items: Type[],
     { mutateIndex }: ISortOptions = { mutateIndex: false }
-  ): IAccount[] {
+  ): Type[] {
     const _items = items.sort((a, b) => {
       // if both positions are non-null, sort by position
       if (a.index !== null && b.index !== null) {
@@ -166,7 +168,7 @@ export default class AccountRepository extends BaseRepository {
     // apply the positions to the
     return _items.map((value, index) => ({
       ...value,
-      index: index,
+      index,
     }));
   }
 

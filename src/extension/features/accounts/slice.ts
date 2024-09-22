@@ -3,6 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // thunks
 import {
   addARC0200AssetHoldingsThunk,
@@ -236,9 +239,8 @@ const slice = createSlice({
     });
     /** save accounts **/
     builder.addCase(saveAccountsThunk.fulfilled, (state: IState, action) => {
-      state.items = upsertItemsById<IAccountWithExtendedProps>(
-        state.items,
-        action.payload
+      state.items = AccountRepository.sort<IAccountWithExtendedProps>(
+        upsertItemsById<IAccountWithExtendedProps>(state.items, action.payload)
       );
       state.saving = false;
     });
