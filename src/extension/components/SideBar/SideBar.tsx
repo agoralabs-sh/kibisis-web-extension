@@ -61,6 +61,7 @@ import {
   useSelectActiveAccountDetails,
   useSelectAvailableAccountsForSelectedNetwork,
   useSelectSettingsSelectedNetwork,
+  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // types
@@ -84,6 +85,7 @@ const SideBar: FC = () => {
   const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const fetchingAccounts = useSelectAccountsFetching();
   const network = useSelectSettingsSelectedNetwork();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const borderColor = useBorderColor();
   const defaultTextColor = useDefaultTextColor();
@@ -245,6 +247,7 @@ const SideBar: FC = () => {
           network={network}
           onClick={handleOnAccountClick}
           onSort={handleOnAccountSort}
+          systemInfo={systemInfo}
         />
       </ScrollableContainer>
 

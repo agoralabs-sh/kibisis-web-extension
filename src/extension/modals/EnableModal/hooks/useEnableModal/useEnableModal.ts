@@ -12,6 +12,7 @@ import {
   useSelectAccounts,
   useSelectEvents,
   useSelectNetworks,
+  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // types
@@ -25,12 +26,14 @@ import type { IUseEnableModalState } from './types';
 // utils
 import availableAccountsForNetwork from '@extension/utils/availableAccountsForNetwork';
 import selectDefaultNetwork from '@extension/utils/selectDefaultNetwork';
+import sortAccountsByPolisAccount from '@extension/utils/sortAccountsByPolisAccount';
 
 export default function useEnableModal(): IUseEnableModalState {
   // selectors
   const accounts = useSelectAccounts();
   const events = useSelectEvents();
   const networks = useSelectNetworks();
+  const systemInfo = useSelectSystemInfo();
   // state
   const [availableAccounts, setAvailableAccounts] = useState<
     IAccountWithExtendedProps[] | null
@@ -56,7 +59,12 @@ export default function useEnableModal(): IUseEnableModalState {
     if (event && network) {
       setAvailableAccounts(
         availableAccountsForNetwork({
-          accounts,
+          accounts: systemInfo?.polisAccountID
+            ? sortAccountsByPolisAccount({
+                accounts,
+                polisAccountID: systemInfo?.polisAccountID,
+              })
+            : accounts,
           network,
         })
       );

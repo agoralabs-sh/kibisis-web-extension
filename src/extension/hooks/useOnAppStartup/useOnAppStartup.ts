@@ -15,7 +15,13 @@ import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from 
 import { fetchFromStorageThunk as fetchSessionsFromStorageThunk } from '@extension/features/sessions';
 import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
 import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
-import { fetchFromStorageThunk as fetchSystemInfoFromStorageThunk } from '@extension/features/system';
+import {
+  fetchFromStorageThunk as fetchSystemInfoFromStorageThunk,
+  savePolisAccountIDThunk,
+} from '@extension/features/system';
+
+// selectors
+import { useSelectLogger } from '@extension/selectors';
 
 // types
 import type {
@@ -25,8 +31,11 @@ import type {
 } from '@extension/types';
 
 export default function useOnAppStartup(): void {
+  const _hookName = 'useOnAppStartup';
   const dispatch =
     useDispatch<IAppThunkDispatch<IBackgroundRootState | IMainRootState>>();
+  // selectors
+  const logger = useSelectLogger();
 
   useEffect(() => {
     // fetch required data
@@ -34,15 +43,17 @@ export default function useOnAppStartup(): void {
     dispatch(fetchPasskeyCredentialFromStorageThunk());
     dispatch(fetchSessionsFromStorageThunk());
     dispatch(fetchStandardAssetsFromStorageThunk());
-    dispatch(fetchSystemInfoFromStorageThunk());
 
     // fetch the settings, networks and accounts and update accordingly
     (async () => {
-      const { activeAccountDetails } = await dispatch(
+      const { accounts, activeAccountDetails } = await dispatch(
         fetchAccountsFromStorageThunk()
       ).unwrap();
       const networks = await dispatch(fetchNetworksFromStorageThunk()).unwrap();
       const settings = await dispatch(fetchSettingsFromStorageThunk()).unwrap();
+      const systemInfo = await dispatch(
+        fetchSystemInfoFromStorageThunk()
+      ).unwrap();
       const network =
         networks.find(
           (value) =>
@@ -56,6 +67,15 @@ export default function useOnAppStartup(): void {
           })
         );
         dispatch(updateTransactionParamsForSelectedNetworkThunk());
+      }
+
+      // if there is no polis account specified, use the first in the accounts
+      if (!systemInfo.polisAccountID && accounts.length > 0) {
+        logger.debug(
+          `${_hookName}: no polis account set, setting default account "${accounts[0].id}"`
+        );
+
+        dispatch(savePolisAccountIDThunk(accounts[0].id));
       }
     })();
   }, []);

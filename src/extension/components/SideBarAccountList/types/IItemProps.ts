@@ -2,6 +2,7 @@
 import type {
   IAccountWithExtendedProps,
   INetworkWithTransactionParams,
+  ISystemInfo,
 } from '@extension/types';
 
 /**
@@ -14,6 +15,7 @@ interface IItemProps {
   isShortForm: boolean;
   network: INetworkWithTransactionParams;
   onClick: (id: string) => void;
+  systemInfo: ISystemInfo | null;
 }
 
 export default IItemProps;

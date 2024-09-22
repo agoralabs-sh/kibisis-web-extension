@@ -24,6 +24,7 @@ import {
   IoLockOpenOutline,
   IoPencil,
   IoQrCodeOutline,
+  IoStarOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -40,6 +41,7 @@ import OverflowMenu from '@extension/components/OverflowMenu';
 import NativeBalance from '@extension/components/NativeBalance';
 import NetworkSelect from '@extension/components/NetworkSelect';
 import NFTsTab from '@extension/components/NFTsTab';
+import PolisAccountBadge from '@extension/components/PolisAccountBadge';
 import ReKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
 import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 import AccountPageSkeletonContent from './AccountPageSkeletonContent';
@@ -67,6 +69,7 @@ import {
   TReKeyType,
 } from '@extension/features/re-key-account';
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
+import { savePolisAccountIDThunk } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -94,6 +97,7 @@ import {
   useSelectSettingsPreferredBlockExplorer,
   useSelectSettingsSelectedNetwork,
   useSelectSettings,
+  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // types
@@ -135,6 +139,7 @@ const AccountPage: FC = () => {
   const networks = useSelectNetworks();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const settings = useSelectSettings();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
@@ -171,6 +176,8 @@ const AccountPage: FC = () => {
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleOnEditAccountClick = () => onEditAccountModalOpen();
+  const handleOnMakePrimaryClick = () =>
+    account && dispatch(savePolisAccountIDThunk(account.id));
   const handleOnWhatsNewClick = () => dispatch(setWhatsNewModal(true));
   const handleOnRefreshActivityClick = () => {
     dispatch(
@@ -414,6 +421,18 @@ const AccountPage: FC = () => {
               <OverflowMenu
                 context={_context}
                 items={[
+                  // make primary
+                  ...(!account ||
+                  !systemInfo ||
+                  systemInfo.polisAccountID !== account.id
+                    ? [
+                        {
+                          icon: IoStarOutline,
+                          label: t<string>('labels.makePrimary'),
+                          onSelect: handleOnMakePrimaryClick,
+                        },
+                      ]
+                    : []),
                   // re-key
                   ...(canReKeyAccount()
                     ? [
@@ -449,18 +468,27 @@ const AccountPage: FC = () => {
             </HStack>
 
             {/*badges*/}
-            <HStack
-              alignItems="center"
-              spacing={DEFAULT_GAP / 3}
-              justifyContent="flex-end"
-              w="full"
-            >
-              {/*watch account*/}
-              {renderWatchAccountBadge()}
+            <VStack alignItems="flex-end" spacing={DEFAULT_GAP / 3} w="full">
+              <HStack
+                alignItems="center"
+                spacing={DEFAULT_GAP / 3}
+                justifyContent="flex-end"
+                w="full"
+              >
+                {/*polis account badge*/}
+                {account &&
+                  systemInfo &&
+                  systemInfo.polisAccountID === account.id && (
+                    <PolisAccountBadge />
+                  )}
+
+                {/*watch account badge*/}
+                {renderWatchAccountBadge()}
+              </HStack>
 
               {/*re-keyed badge*/}
               {renderReKeyedAccountBadge()}
-            </HStack>
+            </VStack>
           </VStack>
 
           <Spacer />

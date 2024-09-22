@@ -39,7 +39,10 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // selectors
-import { useSelectSettingsSelectedNetwork } from '@extension/selectors';
+import {
+  useSelectSettingsSelectedNetwork,
+  useSelectSystemInfo,
+} from '@extension/selectors';
 
 // theme
 import { theme } from '@extension/theme';
@@ -52,6 +55,7 @@ import type { TAccountSelectModalProps } from './types';
 import calculateIconSize from '@extension/utils/calculateIconSize';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import sortAccountsByPolisAccount from '@extension/utils/sortAccountsByPolisAccount';
 import upsertItemsById from '@extension/utils/upsertItemsById';
 
 const AccountSelectModal: FC<TAccountSelectModalProps> = ({
@@ -67,6 +71,7 @@ const AccountSelectModal: FC<TAccountSelectModalProps> = ({
   const { t } = useTranslation();
   // selectors
   const network = useSelectSettingsSelectedNetwork();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
@@ -134,7 +139,14 @@ const AccountSelectModal: FC<TAccountSelectModalProps> = ({
       );
     }
 
-    return accounts.map((account, index) => {
+    return (
+      systemInfo?.polisAccountID
+        ? sortAccountsByPolisAccount({
+            accounts,
+            polisAccountID: systemInfo.polisAccountID,
+          })
+        : accounts
+    ).map((account, index) => {
       const address = convertPublicKeyToAVMAddress(account.publicKey);
 
       return (
@@ -188,6 +200,7 @@ const AccountSelectModal: FC<TAccountSelectModalProps> = ({
               account={account}
               accounts={accounts}
               network={network}
+              systemInfo={systemInfo}
             />
 
             {/*name/address*/}

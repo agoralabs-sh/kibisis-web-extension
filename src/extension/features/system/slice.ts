@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { i18n } from 'i18next';
 
 // enums
@@ -8,6 +8,7 @@ import { StoreNameEnum } from '@extension/enums';
 import {
   fetchFromStorageThunk,
   saveDisableWhatsNewOnUpdateThunk,
+  savePolisAccountIDThunk,
   saveWhatsNewVersionThunk,
   startPollingForNetworkConnectivityThunk,
   stopPollingForTransactionsParamsThunk,
@@ -23,14 +24,14 @@ import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** fetch from storage **/
+    /**fetch from storage**/
     builder.addCase(
       fetchFromStorageThunk.fulfilled,
       (state: IState, action) => {
         state.info = action.payload;
       }
     );
-    /** save disable what's on update **/
+    /**save disable what's on update**/
     builder.addCase(
       saveDisableWhatsNewOnUpdateThunk.fulfilled,
       (state: IState, action) => {
@@ -45,7 +46,19 @@ const slice = createSlice({
         }
       }
     );
-    /** save what's new version **/
+    /**save polis account id**/
+    builder.addCase(
+      savePolisAccountIDThunk.fulfilled,
+      (state: IState, action) => {
+        if (state.info) {
+          state.info = {
+            ...state.info,
+            polisAccountID: action.payload,
+          };
+        }
+      }
+    );
+    /**save what's new version**/
     builder.addCase(
       saveWhatsNewVersionThunk.fulfilled,
       (state: IState, action) => {
@@ -60,21 +73,21 @@ const slice = createSlice({
         }
       }
     );
-    /** start polling for network connectivity **/
+    /**start polling for network connectivity**/
     builder.addCase(
       startPollingForNetworkConnectivityThunk.fulfilled,
       (state: IState, action) => {
         state.networkConnectivity.pollingID = action.payload;
       }
     );
-    /** stop polling for network connectivity **/
+    /**stop polling for network connectivity**/
     builder.addCase(
       stopPollingForTransactionsParamsThunk.fulfilled,
       (state: IState) => {
         state.networkConnectivity.pollingID = null;
       }
     );
-    /** update network connectivity **/
+    /**update network connectivity**/
     builder.addCase(
       updateNetworkConnectivityThunk.fulfilled,
       (state: IState, action) => {
@@ -107,5 +120,5 @@ const slice = createSlice({
   },
 });
 
-export const reducer: Reducer = slice.reducer;
+export const reducer = slice.reducer;
 export const { setI18nAction, setLogger } = slice.actions;
