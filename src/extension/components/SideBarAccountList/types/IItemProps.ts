@@ -4,12 +4,16 @@ import type {
   INetworkWithTransactionParams,
 } from '@extension/types';
 
-interface ISideBarAccountItemProps {
+/**
+ * @property {boolean} isShortForm - Whether the full item is being shown or just the avatar.
+ */
+interface IItemProps {
   account: IAccountWithExtendedProps;
   accounts: IAccountWithExtendedProps[];
   active: boolean;
+  isShortForm: boolean;
   network: INetworkWithTransactionParams;
   onClick: (id: string) => void;
 }
 
-export default ISideBarAccountItemProps;
+export default IItemProps;

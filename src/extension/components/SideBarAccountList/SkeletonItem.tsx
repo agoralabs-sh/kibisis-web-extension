@@ -6,7 +6,8 @@ import {
   SkeletonCircle,
   Text,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { generateAccount } from 'algosdk';
+import React, { type FC } from 'react';
 
 // constants
 import { SIDEBAR_ITEM_HEIGHT, SIDEBAR_MIN_WIDTH } from '@extension/constants';
@@ -17,12 +18,11 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import { generateAccount } from 'algosdk';
 
-const SideBarSkeletonAccountItem: FC = () => {
+const SkeletonItem: FC = () => {
   // hooks
-  const buttonHoverBackgroundColor: string = useButtonHoverBackgroundColor();
-  const defaultTextColor: string = useDefaultTextColor();
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
+  const defaultTextColor = useDefaultTextColor();
 
   return (
     <Button
@@ -55,4 +55,4 @@ const SideBarSkeletonAccountItem: FC = () => {
   );
 };
 
-export default SideBarSkeletonAccountItem;
+export default SkeletonItem;

@@ -64,14 +64,9 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // misc
-  const features = [
-    '🔃 Add button to force a refresh of account transactions.',
-    'ℹ️ A notification appears when new transactions have been received.',
-  ];
+  const features = ['↕️ Re-order accounts in the sidebar.'];
   const fixes = [
-    'Account information and transactions should update in a timely manner.',
-    'Switching network correctly updates block explorers.',
-    'Watch accounts no longer intermittently lose their badge.',
+    'Add `unlimitedStorage` permission to avoid the storage quota being exceeded.',
   ];
   // handlers
   const handleClose = () => {

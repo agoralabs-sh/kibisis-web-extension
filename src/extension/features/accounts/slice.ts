@@ -3,6 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 // enums
 import { StoreNameEnum } from '@extension/enums';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // thunks
 import {
   addARC0200AssetHoldingsThunk,
@@ -12,6 +15,7 @@ import {
   removeARC0200AssetHoldingsThunk,
   removeStandardAssetHoldingsThunk,
   saveAccountNameThunk,
+  saveAccountsThunk,
   saveActiveAccountDetails,
   saveNewAccountsThunk,
   saveNewWatchAccountThunk,
@@ -231,6 +235,19 @@ const slice = createSlice({
       state.saving = true;
     });
     builder.addCase(saveAccountNameThunk.rejected, (state: IState) => {
+      state.saving = false;
+    });
+    /** save accounts **/
+    builder.addCase(saveAccountsThunk.fulfilled, (state: IState, action) => {
+      state.items = AccountRepository.sort<IAccountWithExtendedProps>(
+        upsertItemsById<IAccountWithExtendedProps>(state.items, action.payload)
+      );
+      state.saving = false;
+    });
+    builder.addCase(saveAccountsThunk.pending, (state: IState) => {
+      state.saving = true;
+    });
+    builder.addCase(saveAccountsThunk.rejected, (state: IState) => {
       state.saving = false;
     });
     /** save active account details **/

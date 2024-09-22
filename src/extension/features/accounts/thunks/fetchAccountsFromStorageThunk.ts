@@ -38,7 +38,6 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
   );
 
   accounts = await new AccountRepository().fetchAll();
-  accounts = accounts.sort((a, b) => a.createdAt - b.createdAt); // sort by created at date (oldest first)
   activeAccountDetails = await new ActiveAccountRepositoryService().fetch();
 
   return {
