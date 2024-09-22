@@ -557,6 +557,7 @@ const translation: IResourceLanguage = {
     lastRound: 'Last Round',
     light: 'Light',
     debugLogging: 'Debug Logging',
+    makePrimary: 'Make Primary',
     manage: 'Manage',
     managerAccount: 'Manager Account',
     max: 'Max',

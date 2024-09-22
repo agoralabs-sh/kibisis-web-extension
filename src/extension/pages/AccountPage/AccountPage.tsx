@@ -24,6 +24,7 @@ import {
   IoLockOpenOutline,
   IoPencil,
   IoQrCodeOutline,
+  IoStarOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -68,6 +69,7 @@ import {
   TReKeyType,
 } from '@extension/features/re-key-account';
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
+import { savePolisAccountIDThunk } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -174,6 +176,8 @@ const AccountPage: FC = () => {
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleOnEditAccountClick = () => onEditAccountModalOpen();
+  const handleOnMakePrimaryClick = () =>
+    account && dispatch(savePolisAccountIDThunk(account.id));
   const handleOnWhatsNewClick = () => dispatch(setWhatsNewModal(true));
   const handleOnRefreshActivityClick = () => {
     dispatch(
@@ -417,6 +421,18 @@ const AccountPage: FC = () => {
               <OverflowMenu
                 context={_context}
                 items={[
+                  // make primary
+                  ...(!account ||
+                  !systemInfo ||
+                  systemInfo.polisAccountID !== account.id
+                    ? [
+                        {
+                          icon: IoStarOutline,
+                          label: t<string>('labels.makePrimary'),
+                          onSelect: handleOnMakePrimaryClick,
+                        },
+                      ]
+                    : []),
                   // re-key
                   ...(canReKeyAccount()
                     ? [
