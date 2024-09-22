@@ -17,6 +17,7 @@ export default class SystemInfoRepository extends BaseRepository {
   public static initializeDefaultSystem(): ISystemInfo {
     return {
       deviceID: uuid(),
+      polisAccountID: null,
       whatsNewInfo: {
         disableOnUpdate: false,
         version: null,
@@ -31,6 +32,7 @@ export default class SystemInfoRepository extends BaseRepository {
   private _sanitize(item: ISystemInfo): ISystemInfo {
     return {
       deviceID: item.deviceID || null,
+      polisAccountID: item.polisAccountID || null,
       whatsNewInfo: item.whatsNewInfo,
     };
   }
