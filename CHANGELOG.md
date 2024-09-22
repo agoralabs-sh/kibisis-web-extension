@@ -1,3 +1,10 @@
+# [2.2.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.0-beta.1...v2.2.0-beta.2) (2024-09-22)
+
+
+### Features
+
+* add primary account ([#329](https://github.com/agoralabs-sh/kibisis-web-extension/issues/329)) ([65cc8de](https://github.com/agoralabs-sh/kibisis-web-extension/commit/65cc8de37f44587a3019b7a34d6c3f112b1226aa))
+
 # [2.2.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.1-beta.1...v2.2.0-beta.1) (2024-09-22)
 
 
