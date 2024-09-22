@@ -27,6 +27,7 @@ const SideBarAccountList: FC<IProps> = ({
   accounts,
   activeAccount,
   isLoading,
+  isShortForm,
   network,
   onClick,
   onSort,
@@ -87,6 +88,7 @@ const SideBarAccountList: FC<IProps> = ({
                 account={value}
                 accounts={_accounts}
                 active={activeAccount ? value.id === activeAccount.id : false}
+                isShortForm={isShortForm}
                 key={value.id}
                 network={network}
                 onClick={handleOnClick}

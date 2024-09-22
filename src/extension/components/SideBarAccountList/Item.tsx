@@ -42,6 +42,7 @@ const Item: FC<IItemProps> = ({
   account,
   accounts,
   active,
+  isShortForm,
   network,
   onClick,
 }) => {
@@ -54,10 +55,6 @@ const Item: FC<IItemProps> = ({
     transition,
   } = useSortable({
     id: account.id,
-    // transition: {
-    //   duration: 300,
-    //   easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
-    // },
   });
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
@@ -132,6 +129,9 @@ const Item: FC<IItemProps> = ({
                 alignItems="flex-start"
                 justifyContent="space-evenly"
                 spacing={0}
+                {...(isShortForm && {
+                  display: 'none',
+                })}
               >
                 <Text
                   color={defaultTextColor}
@@ -148,7 +148,14 @@ const Item: FC<IItemProps> = ({
                 </Text>
               </VStack>
             ) : (
-              <Text color={defaultTextColor} fontSize="sm" textAlign="left">
+              <Text
+                color={defaultTextColor}
+                fontSize="sm"
+                textAlign="left"
+                {...(isShortForm && {
+                  display: 'none',
+                })}
+              >
                 {ellipseAddress(address)}
               </Text>
             )}
@@ -166,6 +173,9 @@ const Item: FC<IItemProps> = ({
           minH={SIDEBAR_ITEM_HEIGHT}
           p={0}
           variant="ghost"
+          {...(isShortForm && {
+            display: 'none',
+          })}
           {...attributes}
           {...listeners}
         >

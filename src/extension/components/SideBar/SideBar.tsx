@@ -23,7 +23,7 @@ import IconButton from '@extension/components/IconButton';
 import KibisisIcon from '@extension/components/KibisisIcon';
 import ScrollableContainer from '@extension/components/ScrollableContainer';
 import SideBarAccountList from '@extension/components/SideBarAccountList';
-import SideBarActionItem from './SideBarActionItem';
+import SideBarActionItem from '@extension/components/SideBarActionItem';
 
 // constants
 import {
@@ -241,6 +241,7 @@ const SideBar: FC = () => {
           accounts={accounts}
           activeAccount={activeAccount}
           isLoading={fetchingAccounts}
+          isShortForm={!isOpen}
           network={network}
           onClick={handleOnAccountClick}
           onSort={handleOnAccountSort}
@@ -253,6 +254,7 @@ const SideBar: FC = () => {
       {accounts.some((value) => !value.watchAccount) && (
         <SideBarActionItem
           icon={IoSendOutline}
+          isShortForm={!isOpen}
           label={t<string>('labels.sendAsset', {
             nativeCurrency: network?.nativeCurrency.symbol,
           })}
@@ -263,6 +265,7 @@ const SideBar: FC = () => {
       {/*scan qr code*/}
       <SideBarActionItem
         icon={IoScanOutline}
+        isShortForm={!isOpen}
         label={t<string>('labels.scanQRCode')}
         onClick={handleScanQRCodeClick}
       />
@@ -270,6 +273,7 @@ const SideBar: FC = () => {
       {/*add account*/}
       <SideBarActionItem
         icon={IoAddCircleOutline}
+        isShortForm={!isOpen}
         label={t<string>('labels.addAccount')}
         onClick={handleAddAccountClick}
       />
@@ -277,6 +281,7 @@ const SideBar: FC = () => {
       {/*settings*/}
       <SideBarActionItem
         icon={IoSettingsOutline}
+        isShortForm={!isOpen}
         label={t<string>('labels.settings')}
         onClick={handleSettingsClick}
       />
