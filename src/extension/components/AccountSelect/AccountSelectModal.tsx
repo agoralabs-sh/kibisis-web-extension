@@ -55,6 +55,7 @@ import type { TAccountSelectModalProps } from './types';
 import calculateIconSize from '@extension/utils/calculateIconSize';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import sortAccountsByPolisAccount from '@extension/utils/sortAccountsByPolisAccount';
 import upsertItemsById from '@extension/utils/upsertItemsById';
 
 const AccountSelectModal: FC<TAccountSelectModalProps> = ({
@@ -138,7 +139,14 @@ const AccountSelectModal: FC<TAccountSelectModalProps> = ({
       );
     }
 
-    return accounts.map((account, index) => {
+    return (
+      systemInfo?.polisAccountID
+        ? sortAccountsByPolisAccount({
+            accounts,
+            polisAccountID: systemInfo.polisAccountID,
+          })
+        : accounts
+    ).map((account, index) => {
       const address = convertPublicKeyToAVMAddress(account.publicKey);
 
       return (
