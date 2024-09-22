@@ -1,3 +1,16 @@
+# [2.2.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0...v2.2.0) (2024-09-22)
+
+
+### Bug Fixes
+
+* quota bytes error no longer hit when large amounts of account ([#325](https://github.com/agoralabs-sh/kibisis-web-extension/issues/325)) ([ba63dda](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ba63dda948dd5c1c4572e7844faa9b3356840f0c))
+
+
+### Features
+
+* add primary account ([#329](https://github.com/agoralabs-sh/kibisis-web-extension/issues/329)) ([65cc8de](https://github.com/agoralabs-sh/kibisis-web-extension/commit/65cc8de37f44587a3019b7a34d6c3f112b1226aa))
+* reorder accounts in the sidebar ([#327](https://github.com/agoralabs-sh/kibisis-web-extension/issues/327)) ([1c50003](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1c500031d85b6b6bdece059f0f6a28d4981cb5b1))
+
 # [2.2.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.0-beta.1...v2.2.0-beta.2) (2024-09-22)
 
 
