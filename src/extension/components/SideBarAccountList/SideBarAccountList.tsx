@@ -13,13 +13,14 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import React, { type FC } from 'react';
+import React, { type FC, useEffect, useState } from 'react';
 
 // components
 import Item from './Item';
 import SkeletonItem from './SkeletonItem';
 
 // types
+import type { IAccountWithExtendedProps } from '@extension/types';
 import type { IProps } from './types';
 
 const SideBarAccountList: FC<IProps> = ({
@@ -36,20 +37,34 @@ const SideBarAccountList: FC<IProps> = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+  // states
+  const [_accounts, setAccounts] =
+    useState<IAccountWithExtendedProps[]>(accounts);
   // handlers
   const handleOnClick = async (id: string) => onClick(id);
   const handleOnDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     let previousIndex: number;
     let nextIndex: number;
+    let updatedAccounts: IAccountWithExtendedProps[];
 
     if (active.id !== over?.id) {
-      previousIndex = accounts.findIndex(({ id }) => id === active.id);
-      nextIndex = accounts.findIndex(({ id }) => id === over?.id);
+      previousIndex = _accounts.findIndex(({ id }) => id === active.id);
+      nextIndex = _accounts.findIndex(({ id }) => id === over?.id);
 
-      onSort(arrayMove(accounts, previousIndex, nextIndex));
+      setAccounts((prevState) => {
+        updatedAccounts = arrayMove(prevState, previousIndex, nextIndex);
+
+        // update the external account state
+        onSort(updatedAccounts);
+
+        return updatedAccounts;
+      });
     }
   };
+
+  // update the internal accounts state with the incoming state
+  useEffect(() => setAccounts(accounts), [accounts]);
 
   return (
     <>
@@ -64,13 +79,13 @@ const SideBarAccountList: FC<IProps> = ({
           onDragEnd={handleOnDragEnd}
         >
           <SortableContext
-            items={accounts}
+            items={_accounts}
             strategy={verticalListSortingStrategy}
           >
-            {accounts.map((value) => (
+            {_accounts.map((value) => (
               <Item
                 account={value}
-                accounts={accounts}
+                accounts={_accounts}
                 active={activeAccount ? value.id === activeAccount.id : false}
                 key={value.id}
                 network={network}

@@ -52,7 +52,13 @@ const Item: FC<IItemProps> = ({
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: account.id });
+  } = useSortable({
+    id: account.id,
+    // transition: {
+    //   duration: 300,
+    //   easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+    // },
+  });
   // hooks
   const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
