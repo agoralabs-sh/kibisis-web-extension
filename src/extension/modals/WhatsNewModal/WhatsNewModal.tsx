@@ -64,9 +64,12 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // misc
-  const features = ['↕️ Re-order accounts in the sidebar.'];
+  const features = [
+    '↕️ Re-order accounts in the sidebar.',
+    '⭐ Set a primary account.',
+  ];
   const fixes = [
-    'Add `unlimitedStorage` permission to avoid the storage quota being exceeded.',
+    'Add "unlimitedStorage" permission to avoid the storage quota being exceeded.',
   ];
   // handlers
   const handleClose = () => {
@@ -225,7 +228,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   Features
                 </Heading>
 
-                <UnorderedList>
+                <UnorderedList w="full">
                   {features.map((value, index) => (
                     <ListItem
                       key={`${WhatsNewModal.name}-features-list-${index}`}
@@ -256,7 +259,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
                   Fixes
                 </Heading>
 
-                <UnorderedList>
+                <UnorderedList w="full">
                   {fixes.map((value, index) => (
                     <ListItem key={`${WhatsNewModal.name}-fixes-list-${index}`}>
                       <Text
