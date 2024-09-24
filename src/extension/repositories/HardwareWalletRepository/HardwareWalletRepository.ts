@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 // constants
 import { HARDWARE_WALLET_ITEM_KEY_PREFIX } from '@extension/constants';
 
@@ -6,8 +8,41 @@ import BaseRepository from '@extension/repositories/BaseRepository';
 
 // types
 import type { IHardwareWallet } from '@extension/types';
+import type { ICreateOptions } from './types';
 
 export default class HardwareWalletRepository extends BaseRepository {
+  /**
+   * public static functions
+   */
+
+  /**
+   * Convenience function that creates a new hardware wallet item.
+   * @param {ICreateOptions} options - The decoded public key, the network and the account index.
+   * @returns {IHardwareWallet} An initialized hardware wallet item.
+   * @public
+   * @static
+   */
+  public static create({
+    accountIndex,
+    network,
+    publicKey,
+  }: ICreateOptions): IHardwareWallet {
+    const now = new Date();
+
+    return {
+      accountIndex,
+      coinType: network.hdWalletCoinType,
+      createdAt: now.getTime(),
+      id: uuid(),
+      index: 0,
+      publicKey: HardwareWalletRepository.encode(publicKey),
+    };
+  }
+
+  /**
+   * private functions
+   */
+
   /**
    * Convenience function that simply creates the hardware wallet item key from a public key.
    * @param {Uint8Array} publicKey - a hexadecimal encoded public key string.
@@ -17,10 +52,6 @@ export default class HardwareWalletRepository extends BaseRepository {
   private _createItemKey(publicKey: string): string {
     return `${HARDWARE_WALLET_ITEM_KEY_PREFIX}${publicKey}`;
   }
-
-  /**
-   * public functions
-   */
 
   /**
    * public functions

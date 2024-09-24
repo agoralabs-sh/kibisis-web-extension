@@ -4,6 +4,7 @@ export const APP_WINDOW_KEY_PREFIX: string = 'app_window_';
 export const ARC0072_ASSETS_KEY_PREFIX: string = 'arc0072_assets_';
 export const ARC0200_ASSETS_KEY_PREFIX: string = 'arc200_assets_';
 export const EVENT_QUEUE_ITEM_KEY: string = 'event_queue';
+export const HARDWARE_WALLET_ITEM_KEY_PREFIX: string = 'hardware_wallet_';
 export const NETWORKS_ITEM_KEY: string = 'networks';
 export const PASSKEY_CREDENTIAL_KEY: string = 'passkey_credential';
 export const PASSWORD_TAG_ITEM_KEY: string = 'password_tag';

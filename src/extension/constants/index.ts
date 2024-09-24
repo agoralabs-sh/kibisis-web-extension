@@ -1,6 +1,7 @@
 export * from './Alarms';
 export * from './ARC0026';
 export * from './ARC0300';
+export * from './BIP0044';
 export * from './Dimensions';
 export * from './Durations';
 export * from './Encryption';

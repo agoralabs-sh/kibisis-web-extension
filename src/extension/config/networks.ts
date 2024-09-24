@@ -50,6 +50,7 @@ const networks: INetwork[] = [
       'TBEIGCNK4UCN3YDP2NODK3MJHTUZMYS3TABRM2MVSI2MPUR2V36E5JYHSY',
     genesisId: 'voimain-v1.0',
     genesisHash: 'r20fSQI8gWe/kFZziNonSPCXLwcQmH/nxROvnnueWOk=',
+    hdWalletCoinType: 723,
     indexers: [
       {
         canonicalName: 'Nodely',
@@ -108,6 +109,7 @@ const networks: INetwork[] = [
       'FEES3ZW52HQ7U7LB3OGLUFQX2DCCWPJ2LIMXAH75KYROBZBQRN3Q5OR3GI',
     genesisId: 'voitest-v1',
     genesisHash: 'IXnoWtviVVJW5LGivNFc0Dq14V3kqaXuK2u5OQrdVZo=',
+    hdWalletCoinType: 723,
     indexers: [
       {
         canonicalName: 'Nodely',
@@ -166,6 +168,7 @@ const networks: INetwork[] = [
       'Y76M3MSY6DKBRHBL7C3NNDXGS5IIMQVQVUAB6MP4XEMMGVF2QWNPL226CA',
     genesisId: 'mainnet-v1.0',
     genesisHash: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=',
+    hdWalletCoinType: 283,
     indexers: [
       {
         canonicalName: 'AlgoNode',
@@ -210,6 +213,7 @@ const networks: INetwork[] = [
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
     genesisId: 'betanet-v1.0',
     genesisHash: 'mFgazF+2uRS1tMiL9dsj01hJGySEmPN28B/TjjvpVW0=',
+    hdWalletCoinType: 283,
     indexers: [
       {
         canonicalName: 'AlgoNode',
@@ -258,6 +262,7 @@ const networks: INetwork[] = [
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
     genesisId: 'testnet-v1.0',
     genesisHash: 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=',
+    hdWalletCoinType: 283,
     indexers: [
       {
         canonicalName: 'AlgoNode',

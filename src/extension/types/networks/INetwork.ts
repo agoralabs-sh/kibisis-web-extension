@@ -22,6 +22,7 @@ interface INetwork {
   feeSunkAddress: string;
   genesisHash: string;
   genesisId: string;
+  hdWalletCoinType: number;
   indexers: INode[];
   methods: ARC0027MethodEnum[];
   namespace: IChainNamespace;
