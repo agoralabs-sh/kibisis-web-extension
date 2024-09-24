@@ -1,3 +1,4 @@
+export type { default as IHardwareWallet } from './IHardwareWallet';
 export type { default as IPasskeyCredential } from './IPasskeyCredential';
 export type { default as IPasskeyEncryptionCredentials } from './IPasskeyEncryptionCredentials';
 export type { default as IPasswordEncryptionCredentials } from './IPasswordEncryptionCredentials';

@@ -319,7 +319,7 @@ export default class PrivateKeyRepository extends BaseRepository {
    */
   public async saveMany(items: IPrivateKey[]): Promise<IPrivateKey[]> {
     const _items = items.map((value) => this._sanitize(value));
-    const batches = this._itemize<IPrivateKey>(items);
+    const batches = this._itemize<IPrivateKey>(_items);
 
     // save in batches to avoid exceeding quota
     for (const batch of batches) {
