@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // constants
 import { NODE_REQUEST_DELAY } from '@extension/constants';
@@ -6,8 +6,8 @@ import { NODE_REQUEST_DELAY } from '@extension/constants';
 // enums
 import { ARC0200AssetsThunkEnum } from '@extension/enums';
 
-// services
-import ARC0200AssetService from '@extension/services/ARC0200AssetService';
+// repositories
+import ARC0200AssetRepository from '@extension/repositories/ARC0200AssetRepository';
 
 // types
 import type {
@@ -42,7 +42,7 @@ const updateARC0200AssetInformationThunk: AsyncThunk<
     let asset: IARC0200Asset | null;
     let currentAssets: IARC0200Asset[];
     let id: string;
-    let assetService: ARC0200AssetService;
+    let repository: ARC0200AssetRepository;
     let updatedAssets: IARC0200Asset[] = [];
 
     // get the information for each asset and add it to the array
@@ -77,20 +77,18 @@ const updateARC0200AssetInformationThunk: AsyncThunk<
       }
     }
 
-    assetService = new ARC0200AssetService({
-      logger,
-    });
-    currentAssets = await assetService.getByGenesisHash(network.genesisHash);
+    repository = new ARC0200AssetRepository();
+    currentAssets = await repository.fetchByGenesisHash(network.genesisHash);
 
     logger.debug(
       `${ARC0200AssetsThunkEnum.UpdateARC0200AssetInformation}: saving new asset information for network "${network.genesisId}" to storage`
     );
 
     // update the storage with the new asset information
-    await assetService.saveByGenesisHash(
-      network.genesisHash,
-      upsertItemsById<IARC0200Asset>(currentAssets, updatedAssets)
-    );
+    await repository.saveByGenesisHash({
+      genesisHash: network.genesisHash,
+      items: upsertItemsById<IARC0200Asset>(currentAssets, updatedAssets),
+    });
 
     return {
       network,

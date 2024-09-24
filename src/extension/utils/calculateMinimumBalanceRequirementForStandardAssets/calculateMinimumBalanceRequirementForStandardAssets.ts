@@ -3,8 +3,8 @@ import BigNumber from 'bignumber.js';
 // constants
 import { MINIMUM_BALANCE_REQUIREMENT } from '@extension/constants';
 
-// service
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAccountInformation } from '@extension/types';
@@ -21,7 +21,7 @@ export default function calculateMinimumBalanceRequirementForStandardAssets({
   numOfStandardAssets = 0,
 }: IOptions): BigNumber {
   const accountInformation: IAccountInformation | null =
-    AccountService.extractAccountInformationForNetwork(account, network);
+    AccountRepository.extractAccountInformationForNetwork(account, network);
   const roundedNumberOfAssets: number = Math.round(numOfStandardAssets);
   let accountMinimumBalance: BigNumber = new BigNumber(
     MINIMUM_BALANCE_REQUIREMENT

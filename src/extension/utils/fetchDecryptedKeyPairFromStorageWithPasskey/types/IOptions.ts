@@ -1,21 +1,23 @@
-// services
-import PasskeyService from '@extension/services/PasskeyService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import PasskeyCredentialRepository from '@extension/repositories/PasskeyCredentialRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IBaseOptions } from '@common/types';
 
 /**
  * @property {Uint8Array} inputKeyMaterial - the input key material to derive the encryption key.
- * @property {PasskeyService} passkeyService - [optional] a passkey service to use, if omitted a new one is created.
- * @property {PrivateKeyService} privateKeyService - [optional] a private key service to use, if omitted a new one is
+ * @property {PasskeyCredentialRepository} passkeyCredentialRepository - [optional] a passkey credential repository to
+ * use, if omitted a new one is created.
+ * @property {PrivateKeyRepository} privateKeyRepository - [optional] a private key repository to use, if omitted a new
+ * one is
  * created.
  * @property {Uint8Array | string} publicKey - the raw or hexadecimal encoded public key.
  */
 interface IOptions extends IBaseOptions {
   inputKeyMaterial: Uint8Array;
-  passkeyService?: PasskeyService;
-  privateKeyService?: PrivateKeyService;
+  passkeyCredentialRepository?: PasskeyCredentialRepository;
+  privateKeyRepository?: PrivateKeyRepository;
   publicKey: Uint8Array | string;
 }
 

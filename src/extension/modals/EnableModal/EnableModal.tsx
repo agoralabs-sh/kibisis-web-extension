@@ -35,7 +35,7 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // features
 import { removeEventByIdThunk } from '@extension/features/events';
 import { sendEnableResponseThunk } from '@extension/features/messages';
-import { setSessionThunk } from '@extension/features/sessions';
+import { saveToStorage as saveSessionToStorage } from '@extension/features/sessions';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -43,15 +43,16 @@ import usePrimaryColorScheme from '@extension/hooks/usePrimaryColorScheme';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 import useEnableModal from './hooks/useEnableModal';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import {
   useSelectActiveAccount,
   useSelectAccountsFetching,
   useSelectSessionsSaving,
+  useSelectSystemInfo,
 } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -79,6 +80,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
   const activeAccount = useSelectActiveAccount();
   const fetching = useSelectAccountsFetching();
   const saving = useSelectSessionsSaving();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const {
@@ -137,7 +139,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
     });
 
     // save the session
-    dispatch(setSessionThunk(session));
+    dispatch(saveSessionToStorage(session));
 
     // send the response
     await dispatch(
@@ -211,7 +213,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
     accountNodes = availableAccounts.reduce<ReactNode[]>(
       (acc, account, currentIndex) => {
         const address = convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(account.publicKey)
+          AccountRepository.decode(account.publicKey)
         );
 
         return [
@@ -227,6 +229,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
               account={account}
               accounts={availableAccounts}
               network={network}
+              systemInfo={systemInfo}
             />
 
             {/*name/address*/}
@@ -347,7 +350,7 @@ const EnableModal: FC<IModalProps> = ({ onClose }) => {
     ) {
       setAuthorizedAddresses([
         convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(availableAccounts[0].publicKey)
+          AccountRepository.decode(availableAccounts[0].publicKey)
         ),
       ]);
     }

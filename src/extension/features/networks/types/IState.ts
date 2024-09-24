@@ -1,5 +1,5 @@
 // types
-import type { INetworkWithTransactionParams, INode } from '@extension/types';
+import type { INetworkWithTransactionParams } from '@extension/types';
 
 /**
  * @property {boolean} fetching - true when fetching transaction params from storage.

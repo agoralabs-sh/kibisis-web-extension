@@ -17,13 +17,7 @@ import { theme } from '@extension/theme';
 // types
 import type { IProps } from './types';
 
-const ClientHeader: FC<IProps> = ({
-  description,
-  host,
-  iconUrl,
-  isWalletConnect = false,
-  name,
-}) => {
+const ClientHeader: FC<IProps> = ({ description, host, iconUrl, name }) => {
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const textBackgroundColor = useTextBackgroundColor();

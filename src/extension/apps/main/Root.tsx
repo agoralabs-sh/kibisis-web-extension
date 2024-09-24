@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { type FC, useEffect } from 'react';
 import Confetti from 'react-confetti';
 import { useDispatch } from 'react-redux';
 import { Outlet } from 'react-router-dom';
@@ -8,37 +8,26 @@ import MainLayout from '@extension/components/MainLayout';
 
 // features
 import { reset as resetAddAsset } from '@extension/features/add-assets';
-import {
-  fetchAccountsFromStorageThunk,
-  startPollingForAccountsThunk,
-} from '@extension/features/accounts';
+import { startPollingForAccountsThunk } from '@extension/features/accounts';
 import { fetchARC0072AssetsFromStorageThunk } from '@extension/features/arc0072-assets';
 import { fetchARC0200AssetsFromStorageThunk } from '@extension/features/arc0200-assets';
-import { fetchActiveThunk as fetchCredentialLockActiveThunk } from '@extension/features/credential-lock';
 import {
   setConfirmModal,
   setScanQRCodeModal,
   setWhatsNewModal,
 } from '@extension/features/layout';
-import {
-  fetchFromStorageThunk as fetchNetworksFromStorageThunk,
-  startPollingForTransactionsParamsThunk,
-  updateTransactionParamsForSelectedNetworkThunk,
-} from '@extension/features/networks';
+import { startPollingForTransactionsParamsThunk } from '@extension/features/networks';
 import { setShowingConfetti } from '@extension/features/notifications';
-import { fetchFromStorageThunk as fetchPasskeyCredentialFromStorageThunk } from '@extension/features/passkeys';
 import { reset as resetReKeyAccount } from '@extension/features/re-key-account';
 import { reset as resetRemoveAssets } from '@extension/features/remove-assets';
 import { reset as resetSendAsset } from '@extension/features/send-assets';
-import { fetchSessionsThunk } from '@extension/features/sessions';
-import { fetchFromStorageThunk as fetchSettingsFromStorageThunk } from '@extension/features/settings';
-import { fetchStandardAssetsFromStorageThunk } from '@extension/features/standard-assets';
 import {
-  fetchFromStorageThunk as fetchSystemInfoFromStorageThunk,
+  setI18nAction,
   startPollingForNetworkConnectivityThunk,
 } from '@extension/features/system';
 
 // hooks
+import useOnAppStartup from '@extension/hooks/useOnAppStartup';
 import useOnDebugLogging from '@extension/hooks/useOnDebugLogging';
 import useOnMainAppMessage from '@extension/hooks/useOnMainAppMessage';
 import useOnNewAssets from '@extension/hooks/useOnNewAssets';
@@ -62,20 +51,20 @@ import WhatsNewModal from '@extension/modals/WhatsNewModal';
 
 // selectors
 import {
-  useSelectAccounts,
   useSelectNotificationsShowingConfetti,
-  useSelectSettingsSelectedNetwork,
   useSelectSystemWhatsNewInfo,
 } from '@extension/selectors';
 
 // types
-import type { IAppThunkDispatch, IMainRootState } from '@extension/types';
+import type {
+  IAppThunkDispatch,
+  IMainRootState,
+  IRootProps,
+} from '@extension/types';
 
-const Root: FC = () => {
+const Root: FC<IRootProps> = ({ i18n }) => {
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
-  const accounts = useSelectAccounts();
-  const network = useSelectSettingsSelectedNetwork();
   const showingConfetti = useSelectNotificationsShowingConfetti();
   const whatsNewInfo = useSelectSystemWhatsNewInfo();
   // handlers
@@ -88,17 +77,10 @@ const Root: FC = () => {
   const handleSendAssetModalClose = () => dispatch(resetSendAsset());
   const handleWhatsNewModalClose = () => dispatch(setWhatsNewModal(false));
 
-  // 1. fetch the required data
+  useOnAppStartup();
   useEffect(() => {
-    // general
-    dispatch(fetchSettingsFromStorageThunk());
-    dispatch(fetchNetworksFromStorageThunk());
-    dispatch(fetchSystemInfoFromStorageThunk());
-    dispatch(fetchCredentialLockActiveThunk());
-    dispatch(fetchPasskeyCredentialFromStorageThunk());
-    dispatch(fetchSessionsThunk());
+    dispatch(setI18nAction(i18n));
     // assets
-    dispatch(fetchStandardAssetsFromStorageThunk());
     dispatch(fetchARC0072AssetsFromStorageThunk());
     dispatch(fetchARC0200AssetsFromStorageThunk());
     // polling
@@ -106,23 +88,7 @@ const Root: FC = () => {
     dispatch(startPollingForTransactionsParamsThunk());
     dispatch(startPollingForNetworkConnectivityThunk());
   }, []);
-  // 2. when the selected network has been updated, fetch the account data and transaction params
-  useEffect(() => {
-    if (network) {
-      // fetch accounts when no accounts exist
-      if (accounts.length < 1) {
-        dispatch(
-          fetchAccountsFromStorageThunk({
-            updateInformation: true,
-            updateTransactions: true,
-          })
-        );
-      }
 
-      // fetch the most recent transaction params for the selected network
-      dispatch(updateTransactionParamsForSelectedNetworkThunk());
-    }
-  }, [network]);
   // if the saved what's new version is null or less than the current version (and the update message is not disabled), display the modal
   useEffect(() => {
     if (

@@ -14,7 +14,7 @@ import type {
 import type { IOptions } from './types';
 
 // utils
-import mapAlgorandAccountInformationToAccount from '../mapAlgorandAccountInformationToAccount';
+import mapAVMAccountInformationToAccount from '../mapAVMAccountInformationToAccount';
 
 /**
  * Fetches the account information for a given address.
@@ -35,7 +35,6 @@ export default async function updateAccountInformation({
   let arc0072AssetHoldings: IARC0072AssetHolding[];
   let arc200AssetHoldings: IARC0200AssetHolding[];
   let networkClient: NetworkClient;
-  let updatedAt: Date;
 
   // if the account information is not out-of-date just return the account
   if (
@@ -46,7 +45,7 @@ export default async function updateAccountInformation({
       new Date().getTime()
   ) {
     logger?.debug(
-      `${_functionName}: last updated "${new Date(
+      `${_functionName}: last updated account information for "${address}" on "${new Date(
         currentAccountInformation.updatedAt
       ).toString()}", skipping`
     );
@@ -60,7 +59,7 @@ export default async function updateAccountInformation({
   });
 
   try {
-    avmAccountInformation = await networkClient.accountInformationWIthDelay({
+    avmAccountInformation = await networkClient.accountInformationWithDelay({
       address,
       delay,
       nodeID,
@@ -81,17 +80,16 @@ export default async function updateAccountInformation({
           })
       )
     );
-    updatedAt = new Date();
 
-    return mapAlgorandAccountInformationToAccount(
-      avmAccountInformation,
-      {
-        ...currentAccountInformation,
-        arc0072AssetHoldings,
-        arc200AssetHoldings,
-      },
-      updatedAt.getTime()
+    logger?.debug(
+      `${_functionName}: updated account information for account "${address}" for network "${network.genesisId}"`
     );
+
+    return mapAVMAccountInformationToAccount(avmAccountInformation, {
+      ...currentAccountInformation,
+      arc0072AssetHoldings,
+      arc200AssetHoldings,
+    });
   } catch (error) {
     logger?.error(
       `${_functionName}: failed to get account information for "${address}" on ${network.genesisId}:`,

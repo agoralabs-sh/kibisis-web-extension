@@ -11,7 +11,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { FC, ReactNode } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoEyeOffOutline, IoTrashOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';

@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // constants
 import { NETWORK_TRANSACTION_PARAMS_ANTIQUATED_TIMEOUT } from '@extension/constants';
@@ -9,8 +9,8 @@ import { ThunkEnum } from '../enums';
 // models
 import NetworkClient from '@extension/models/NetworkClient';
 
-// services
-import NetworksService from '@extension/services/NetworksService';
+// repositories
+import NetworksRepository from '@extension/repositories/NetworksRepository';
 
 // types
 import type {
@@ -39,7 +39,6 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
     const networks = getState().networks.items;
     const online = getState().system.networkConnectivity.online;
     const settings = getState().settings;
-    const networksService = new NetworksService();
     let avmTransactionParams: IAlgorandTransactionParams;
     let networkClient: NetworkClient;
     let network: INetworkWithTransactionParams | null;
@@ -125,7 +124,7 @@ const updateTransactionParamsForSelectedNetworkThunk: AsyncThunk<
     };
 
     // save the updated params to storage
-    return await networksService.saveToStorage({
+    return await new NetworksRepository().save({
       ...network,
       fee: avmTransactionParams.fee.toString(),
       minFee: avmTransactionParams['min-fee'].toString(),

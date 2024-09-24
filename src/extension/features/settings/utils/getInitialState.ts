@@ -1,12 +1,12 @@
-// services
-import SettingsService from '@extension/services/SettingsService';
+// repositories
+import SettingsRepository from '@extension/repositories/SettingsRepository';
 
 // types
 import type { IState } from '../types';
 
 export default function getInitialState(): IState {
   return {
-    ...SettingsService.initializeDefaultSettings(),
+    ...SettingsRepository.initializeDefaultSettings(),
     fetching: false,
     saving: false,
   };

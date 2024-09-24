@@ -3,7 +3,7 @@ import type {
   IAccountWithExtendedProps,
   IActiveAccountDetails,
 } from '@extension/types';
-import type IAccountUpdate from './IAccountUpdate';
+import type IAccountUpdateRequest from './IAccountUpdateRequest';
 
 /**
  * @property {IActiveAccountDetails | null} activeAccountDetails - details of the active account.
@@ -11,7 +11,7 @@ import type IAccountUpdate from './IAccountUpdate';
  * @property {IAccount[]} items - all accounts
  * @property {number | null} pollingId - id of the polling interval.
  * @property {boolean} saving - true when the account is being saved to storage.
- * @property {IAccountUpdate[]} updatingAccounts - a list of accounts being updated.
+ * @property {IAccountUpdateRequest[]} updateRequests - a list of account update events being updated.
  */
 interface IState {
   activeAccountDetails: IActiveAccountDetails | null;
@@ -19,7 +19,7 @@ interface IState {
   items: IAccountWithExtendedProps[];
   pollingId: number | null;
   saving: boolean;
-  updatingAccounts: IAccountUpdate[];
+  updateRequests: IAccountUpdateRequest[];
 }
 
 export default IState;

@@ -8,8 +8,8 @@ import {
   useSelectReKeyAccountType,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAccountInformation } from '@extension/types';
@@ -29,10 +29,8 @@ export default function useReKeyAccountModal(): IState {
     let _accountInformation: IAccountInformation | null = null;
 
     if (account && network) {
-      _accountInformation = AccountService.extractAccountInformationForNetwork(
-        account,
-        network
-      );
+      _accountInformation =
+        AccountRepository.extractAccountInformationForNetwork(account, network);
     }
 
     setAccountInformation(_accountInformation);

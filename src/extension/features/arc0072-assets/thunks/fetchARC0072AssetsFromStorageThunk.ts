@@ -3,8 +3,8 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // enums
 import { ARC0072AssetsThunkEnum } from '@extension/enums';
 
-// services
-import ARC0072AssetService from '@extension/services/ARC0072AssetService';
+// repositories
+import ARC0072AssetRepository from '@extension/repositories/ARC0072AssetRepository';
 
 // types
 import type { ILogger } from '@common/types';
@@ -32,9 +32,6 @@ const fetchARC0072AssetsFromStorageThunk: AsyncThunk<
   async (_, { getState }) => {
     const logger: ILogger = getState().system.logger;
     const networks: INetwork[] = getState().networks.items;
-    const assetService: ARC0072AssetService = new ARC0072AssetService({
-      logger,
-    });
     const assetItems: Record<string, IARC0072Asset[]> = {};
 
     logger.debug(
@@ -44,9 +41,10 @@ const fetchARC0072AssetsFromStorageThunk: AsyncThunk<
     await Promise.all(
       networks.map(
         async (network) =>
-          (assetItems[
-            convertGenesisHashToHex(network.genesisHash).toUpperCase()
-          ] = await assetService.getByGenesisHash(network.genesisHash))
+          (assetItems[convertGenesisHashToHex(network.genesisHash)] =
+            await new ARC0072AssetRepository().fetchByGenesisHash(
+              network.genesisHash
+            ))
       )
     );
 

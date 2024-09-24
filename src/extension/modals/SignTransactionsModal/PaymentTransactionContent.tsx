@@ -19,8 +19,8 @@ import { DEFAULT_GAP } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { ITransactionBodyProps } from './types';
@@ -46,7 +46,10 @@ const PaymentTransactionContent: FC<ITransactionBodyProps> = ({
   const subTextColor = useSubTextColor();
   // misc
   const accountInformation = fromAccount
-    ? AccountService.extractAccountInformationForNetwork(fromAccount, network)
+    ? AccountRepository.extractAccountInformationForNetwork(
+        fromAccount,
+        network
+      )
     : null;
   const amountAsAtomicUnit = new BigNumber(
     transaction.amount ? String(transaction.amount) : '0'

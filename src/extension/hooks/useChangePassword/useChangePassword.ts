@@ -9,15 +9,18 @@ import {
   MalformedDataError,
 } from '@extension/errors';
 
+// managers
+import PasswordManager from '@extension/managers/PasswordManager';
+
 // selectors
 import {
   useSelectLogger,
   useSelectPasskeysEnabled,
 } from '@extension/selectors';
 
-// services
-import PasswordService from '@extension/services/PasswordService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import PasswordTagRepository from '@extension/repositories/PasswordTagRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IEncryptionState } from '@extension/components/ReEncryptKeysLoadingContent';
@@ -46,15 +49,17 @@ export default function useChangePassword(): IState {
     newPassword,
   }: IChangePasswordActionOptions): Promise<boolean> => {
     const _functionName = 'changePasswordAction';
-    const passwordService = new PasswordService({
+    const passwordTagRepository = new PasswordTagRepository();
+    const passwordManager = new PasswordManager({
       logger,
       passwordTag: browser.runtime.id,
+      passwordTagRepository,
     });
     let _error: string;
     let isPasswordValid: boolean;
-    let passwordTag = await passwordService.fetchFromStorage();
+    let passwordTag = await passwordTagRepository.fetch();
     let privateKeyItems: IPrivateKey[];
-    let privateKeyService: PrivateKeyService;
+    let privateKeyRepository: PrivateKeyRepository;
 
     // reset the previous values
     resetAction();
@@ -83,7 +88,7 @@ export default function useChangePassword(): IState {
       return true;
     }
 
-    isPasswordValid = await passwordService.verifyPassword(currentPassword);
+    isPasswordValid = await passwordManager.verifyPassword(currentPassword);
 
     if (!isPasswordValid) {
       logger?.debug(`${_hookName}#${_functionName}: invalid password`);
@@ -101,9 +106,9 @@ export default function useChangePassword(): IState {
     try {
       passwordTag = {
         ...passwordTag,
-        encryptedTag: PasswordService.encode(
-          await PasswordService.encryptBytes({
-            data: encodeUTF8(passwordService.getPasswordTag()),
+        encryptedTag: PasswordTagRepository.encode(
+          await PasswordManager.encryptBytes({
+            bytes: encodeUTF8(passwordManager.getPasswordTag()),
             logger,
             password: newPassword,
           })
@@ -126,10 +131,8 @@ export default function useChangePassword(): IState {
         `${_hookName}#${_functionName}: re-encrypting private keys`
       );
 
-      privateKeyService = new PrivateKeyService({
-        logger,
-      });
-      privateKeyItems = await privateKeyService.fetchAllFromStorage();
+      privateKeyRepository = new PrivateKeyRepository();
+      privateKeyItems = await privateKeyRepository.fetchAll();
 
       // set the encryption state for each item to false
       setEncryptionProgressState(
@@ -173,13 +176,13 @@ export default function useChangePassword(): IState {
       }
 
       // save the new encrypted items to storage
-      await privateKeyService.saveManyToStorage(privateKeyItems);
+      await privateKeyRepository.saveMany(privateKeyItems);
 
       logger?.debug(`${_hookName}#${_functionName}: re-encrypted private keys`);
     }
 
     // save the new password tag to storage
-    passwordTag = await passwordService.saveToStorage(passwordTag);
+    passwordTag = await passwordTagRepository.save(passwordTag);
 
     logger?.debug(
       `${_hookName}#${_functionName}: successfully changed password`

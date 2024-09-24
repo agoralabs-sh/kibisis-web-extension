@@ -25,11 +25,11 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useStandardAssetById from '@extension/hooks/useStandardAssetById';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import { useSelectSettingsPreferredBlockExplorer } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAssetTransferTransaction } from '@extension/types';
@@ -59,7 +59,7 @@ const AssetTransferInnerTransactionAccordionItem: FC<
   const subTextColor: string = useSubTextColor();
   // misc
   const accountAddress: string = convertPublicKeyToAVMAddress(
-    PrivateKeyService.decode(account.publicKey)
+    AccountRepository.decode(account.publicKey)
   );
   const amount: BigNumber = new BigNumber(String(transaction.amount));
   const explorer =

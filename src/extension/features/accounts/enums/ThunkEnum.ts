@@ -6,6 +6,7 @@ enum ThunkEnum {
   RemoveARC0200AssetHoldings = 'accounts/removeARC0200AssetHoldings',
   RemoveStandardAssetHoldings = 'accounts/removeStandardAssetHoldings',
   SaveAccountName = 'accounts/saveAccountName',
+  SaveAccounts = 'accounts/saveAccounts',
   SaveActiveAccountDetails = 'accounts/saveActiveAccountDetails',
   SaveNewAccounts = 'accounts/saveNewAccounts',
   SaveNewWatchAccount = 'accounts/saveNewWatchAccount',

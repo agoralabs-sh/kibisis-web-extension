@@ -34,6 +34,9 @@ import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import {
   useSelectAccounts,
@@ -41,9 +44,6 @@ import {
   useSelectARC0200AssetsUpdating,
   useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -83,7 +83,7 @@ const ARC0200AssetTransferTransactionPage: FC<
     network.blockExplorers[0] ||
     null; // get the preferred explorer, if it exists in the networks, otherwise get the default one
   const senderAddress = convertPublicKeyToAVMAddress(
-    PrivateKeyService.decode(account.publicKey)
+    AccountRepository.decode(account.publicKey)
   );
   // handlers
   const handleMoreInformationToggle = (value: boolean) =>

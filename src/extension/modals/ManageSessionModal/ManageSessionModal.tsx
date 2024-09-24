@@ -28,15 +28,14 @@ import ClientHeader, {
   ClientHeaderSkeleton,
 } from '@extension/components/ClientHeader';
 import EmptyState from '@extension/components/EmptyState';
-import Warning from '@extension/components/Warning';
 
 // constants
 import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 
 // features
 import {
-  removeSessionByIdThunk,
-  setSessionThunk,
+  removeByIdFromStorageThunk as removeSessionsByIdFromStorageThunk,
+  saveToStorage as saveSessionToStorage,
 } from '@extension/features/sessions';
 
 // hooks
@@ -50,6 +49,7 @@ import {
   useSelectAccountsFetching,
   useSelectNetworks,
   useSelectSessionsSaving,
+  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // theme
@@ -67,6 +67,7 @@ import type { IProps } from './types';
 import availableAccountsForNetwork from '@extension/utils/availableAccountsForNetwork';
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import sortAccountsByPolisAccount from '@extension/utils/sortAccountsByPolisAccount';
 
 const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const _context = 'manage-sessions-modal';
@@ -77,6 +78,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
   const fetching = useSelectAccountsFetching();
   const networks = useSelectNetworks();
   const saving = useSelectSessionsSaving();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
@@ -94,13 +96,13 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
 
     // if all authorized accounts are removed, remove the session
     if (authorizedAddresses.length <= 0) {
-      dispatch(removeSessionByIdThunk(session.id));
+      dispatch(removeSessionsByIdFromStorageThunk(session.id));
 
       return handleClose();
     }
 
     dispatch(
-      setSessionThunk({
+      saveSessionToStorage({
         ...session,
         authorizedAddresses,
       })
@@ -159,9 +161,15 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
       ));
     }
 
-    accountNodes = availableAccountsForNetwork({ accounts, network }).reduce<
-      ReactNode[]
-    >((acc, account, currentIndex, availableAccounts) => {
+    accountNodes = availableAccountsForNetwork({
+      accounts: systemInfo?.polisAccountID
+        ? sortAccountsByPolisAccount({
+            accounts,
+            polisAccountID: systemInfo.polisAccountID,
+          })
+        : accounts,
+      network,
+    }).reduce<ReactNode[]>((acc, account, currentIndex, availableAccounts) => {
       const address = convertPublicKeyToAVMAddress(account.publicKey);
 
       return [
@@ -178,6 +186,7 @@ const ManageSessionModal: FC<IProps> = ({ onClose, session }) => {
             account={account}
             accounts={availableAccounts}
             network={network}
+            systemInfo={systemInfo}
           />
 
           {/*name/address*/}

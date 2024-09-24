@@ -1,3 +1,78 @@
+## [2.2.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.0...v2.2.1) (2024-09-22)
+
+
+### Bug Fixes
+
+* whats new features/fixes item lists span the full width ([#330](https://github.com/agoralabs-sh/kibisis-web-extension/issues/330)) ([32adc25](https://github.com/agoralabs-sh/kibisis-web-extension/commit/32adc25e55b0cc3feba97b4727232a8aa037570d))
+
+# [2.2.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0...v2.2.0) (2024-09-22)
+
+
+### Bug Fixes
+
+* quota bytes error no longer hit when large amounts of account ([#325](https://github.com/agoralabs-sh/kibisis-web-extension/issues/325)) ([ba63dda](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ba63dda948dd5c1c4572e7844faa9b3356840f0c))
+
+
+### Features
+
+* add primary account ([#329](https://github.com/agoralabs-sh/kibisis-web-extension/issues/329)) ([65cc8de](https://github.com/agoralabs-sh/kibisis-web-extension/commit/65cc8de37f44587a3019b7a34d6c3f112b1226aa))
+* reorder accounts in the sidebar ([#327](https://github.com/agoralabs-sh/kibisis-web-extension/issues/327)) ([1c50003](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1c500031d85b6b6bdece059f0f6a28d4981cb5b1))
+
+# [2.2.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.0-beta.1...v2.2.0-beta.2) (2024-09-22)
+
+
+### Features
+
+* add primary account ([#329](https://github.com/agoralabs-sh/kibisis-web-extension/issues/329)) ([65cc8de](https://github.com/agoralabs-sh/kibisis-web-extension/commit/65cc8de37f44587a3019b7a34d6c3f112b1226aa))
+
+# [2.2.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.1-beta.1...v2.2.0-beta.1) (2024-09-22)
+
+
+### Features
+
+* reorder accounts in the sidebar ([#327](https://github.com/agoralabs-sh/kibisis-web-extension/issues/327)) ([1c50003](https://github.com/agoralabs-sh/kibisis-web-extension/commit/1c500031d85b6b6bdece059f0f6a28d4981cb5b1))
+
+## [2.1.1-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0...v2.1.1-beta.1) (2024-09-20)
+
+
+### Bug Fixes
+
+* quota bytes error no longer hit when large amounts of account ([#325](https://github.com/agoralabs-sh/kibisis-web-extension/issues/325)) ([ba63dda](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ba63dda948dd5c1c4572e7844faa9b3356840f0c))
+
+# [2.1.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0...v2.1.0) (2024-09-19)
+
+
+### Bug Fixes
+
+* watch accounts no longer lose the watch badge ([#321](https://github.com/agoralabs-sh/kibisis-web-extension/issues/321)) ([47790cd](https://github.com/agoralabs-sh/kibisis-web-extension/commit/47790cd621cedaa51edeaf3e8cb4adfa7e46bb45))
+
+
+### Features
+
+* add refresh activity button ([#320](https://github.com/agoralabs-sh/kibisis-web-extension/issues/320)) ([c3650ec](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3650ec0909fb0071ee2724f5b9284ad6071f0e9))
+* display notification on new transactions ([#323](https://github.com/agoralabs-sh/kibisis-web-extension/issues/323)) ([4f0ecbc](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4f0ecbc8ca3ebe25e2559c617f3b146f92135988))
+
+# [2.1.0-beta.3](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0-beta.2...v2.1.0-beta.3) (2024-09-19)
+
+
+### Features
+
+* display notification on new transactions ([#323](https://github.com/agoralabs-sh/kibisis-web-extension/issues/323)) ([4f0ecbc](https://github.com/agoralabs-sh/kibisis-web-extension/commit/4f0ecbc8ca3ebe25e2559c617f3b146f92135988))
+
+# [2.1.0-beta.2](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.1.0-beta.1...v2.1.0-beta.2) (2024-09-19)
+
+
+### Bug Fixes
+
+* watch accounts no longer lose the watch badge ([#321](https://github.com/agoralabs-sh/kibisis-web-extension/issues/321)) ([47790cd](https://github.com/agoralabs-sh/kibisis-web-extension/commit/47790cd621cedaa51edeaf3e8cb4adfa7e46bb45))
+
+# [2.1.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.0.0...v2.1.0-beta.1) (2024-09-19)
+
+
+### Features
+
+* add refresh activity button ([#320](https://github.com/agoralabs-sh/kibisis-web-extension/issues/320)) ([c3650ec](https://github.com/agoralabs-sh/kibisis-web-extension/commit/c3650ec0909fb0071ee2724f5b9284ad6071f0e9))
+
 # [2.0.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v1.18.1...v2.0.0) (2024-09-17)
 
 

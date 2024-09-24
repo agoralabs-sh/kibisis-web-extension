@@ -1,12 +1,16 @@
 import { AvatarBadge, Icon } from '@chakra-ui/react';
-import React, { FC } from 'react';
-import { IoEyeOutline, IoLockClosedOutline } from 'react-icons/io5';
+import React, { type FC } from 'react';
+import {
+  IoEyeOutline,
+  IoLockClosedOutline,
+  IoStarOutline,
+} from 'react-icons/io5';
 
 // components
 import AccountAvatar from '../AccountAvatar';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IProps } from './types';
@@ -19,10 +23,11 @@ const AccountAvatarWithBadges: FC<IProps> = ({
   account,
   accounts,
   network,
+  systemInfo,
 }) => {
   // misc
   const accountInformation = network
-    ? AccountService.extractAccountInformationForNetwork(account, network)
+    ? AccountRepository.extractAccountInformationForNetwork(account, network)
     : null;
   const iconSize = calculateIconSize('xs');
   // renders
@@ -35,7 +40,7 @@ const AccountAvatarWithBadges: FC<IProps> = ({
         p={1}
         placement="top-end"
       >
-        <Icon as={IoEyeOutline} color="white" h={iconSize} w={iconSize} />
+        <Icon as={IoEyeOutline} boxSize={iconSize} color="white" />
       </AvatarBadge>
     );
 
@@ -61,24 +66,32 @@ const AccountAvatarWithBadges: FC<IProps> = ({
 
   return (
     <AccountAvatar>
+      {/*polis account badge*/}
+      {systemInfo && systemInfo.polisAccountID === account.id && (
+        <AvatarBadge
+          bg="orange.500"
+          borderWidth={0}
+          boxSize="1.25em"
+          p={1}
+          placement="top-start"
+        >
+          <Icon as={IoStarOutline} boxSize={iconSize} color="white" />
+        </AvatarBadge>
+      )}
+
       {/*watch badge*/}
       {renderWatchAccountBadge()}
 
       {/*re-key badge*/}
       {accountInformation && accountInformation.authAddress && (
         <AvatarBadge
-          bg="orange.500"
+          bg="green.500"
           borderWidth={0}
           boxSize="1.25em"
           p={1}
           placement="bottom-end"
         >
-          <Icon
-            as={IoLockClosedOutline}
-            color="white"
-            h={iconSize}
-            w={iconSize}
-          />
+          <Icon as={IoLockClosedOutline} boxSize={2.5} color="white" />
         </AvatarBadge>
       )}
     </AccountAvatar>

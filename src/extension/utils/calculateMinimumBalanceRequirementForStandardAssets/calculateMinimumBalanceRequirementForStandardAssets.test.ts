@@ -1,4 +1,4 @@
-import { Account, decodeAddress, generateAccount } from 'algosdk';
+import { type Account, generateAccount } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
 // config
@@ -7,9 +7,8 @@ import { networks } from '@extension/config';
 // constants
 import { MINIMUM_BALANCE_REQUIREMENT } from '@extension/constants';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAccount, INetworkWithTransactionParams } from '@extension/types';
@@ -33,8 +32,8 @@ describe(`${__dirname}/calculateMinimumBalanceRequirementForStandardAssets`, () 
   beforeAll(() => {
     const _account: Account = generateAccount();
 
-    account = AccountService.initializeDefaultAccount({
-      publicKey: PrivateKeyService.encode(
+    account = AccountRepository.initializeDefaultAccount({
+      publicKey: AccountRepository.encode(
         convertAVMAddressToPublicKey(_account.addr)
       ),
     });

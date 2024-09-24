@@ -40,7 +40,11 @@ const networks: INetwork[] = [
     canonicalName: 'Voi',
     chakraTheme: 'voi',
     blockExplorers: [
-      new VoiObserverBlockExplorer('https://explorer.voi.network/explorer'),
+      new VoiObserverBlockExplorer({
+        baseURL: 'https://explorer.voi.network/explorer',
+        canonicalName: 'Voi Network',
+        id: 'voi-network',
+      }),
     ],
     feeSunkAddress:
       'TBEIGCNK4UCN3YDP2NODK3MJHTUZMYS3TABRM2MVSI2MPUR2V36E5JYHSY',
@@ -83,14 +87,22 @@ const networks: INetwork[] = [
       },
     ],
     arc0072Indexers: [
-      new NautilusARC0072Indexer('https://arc72-idx.nautilus.sh'),
-      new NFTNavigatorARC0072Indexer('https://arc72-idx.nftnavigator.xyz'),
+      new NautilusARC0072Indexer({
+        baseURL: 'https://arc72-idx.nautilus.sh',
+      }),
+      new NFTNavigatorARC0072Indexer({
+        baseURL: 'https://arc72-idx.nftnavigator.xyz',
+      }),
     ],
     canonicalName: 'Voi',
     chakraTheme: 'voi',
     blockExplorers: [
-      new VoiObserverBlockExplorer('https://voi.observer/explorer'),
-      new AVMExplorerBlockExplorer('https://avmexplorer.com'),
+      new VoiObserverBlockExplorer({
+        baseURL: 'https://voi.observer/explorer',
+      }),
+      new AVMExplorerBlockExplorer({
+        baseURL: 'https://avmexplorer.com',
+      }),
     ],
     feeSunkAddress:
       'FEES3ZW52HQ7U7LB3OGLUFQX2DCCWPJ2LIMXAH75KYROBZBQRN3Q5OR3GI',
@@ -119,7 +131,11 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    nftExplorers: [new NFTNavigatorNFTExplorer()],
+    nftExplorers: [
+      new NFTNavigatorNFTExplorer({
+        baseURL: 'https://arc72-idx.nftnavigator.xyz',
+      }),
+    ],
     type: NetworkTypeEnum.Test,
   },
   /**
@@ -139,8 +155,12 @@ const networks: INetwork[] = [
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
     blockExplorers: [
-      new PeraBlockExplorer('https://explorer.perawallet.app'),
-      new AlloBlockExplorer('https://allo.info'),
+      new PeraBlockExplorer({
+        baseURL: 'https://explorer.perawallet.app',
+      }),
+      new AlloBlockExplorer({
+        baseURL: 'https://allo.info',
+      }),
     ],
     feeSunkAddress:
       'Y76M3MSY6DKBRHBL7C3NNDXGS5IIMQVQVUAB6MP4XEMMGVF2QWNPL226CA',
@@ -230,7 +250,9 @@ const networks: INetwork[] = [
     canonicalName: 'Algorand',
     chakraTheme: 'algorand',
     blockExplorers: [
-      new PeraBlockExplorer('https://testnet.explorer.perawallet.app'),
+      new PeraBlockExplorer({
+        baseURL: 'https://testnet.explorer.perawallet.app',
+      }),
     ],
     feeSunkAddress:
       'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',

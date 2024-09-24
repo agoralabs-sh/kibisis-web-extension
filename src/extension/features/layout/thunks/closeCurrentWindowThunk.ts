@@ -1,5 +1,5 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import browser, { Windows } from 'webextension-polyfill';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import browser from 'webextension-polyfill';
 
 // enums
 import { ThunkEnum } from '../enums';

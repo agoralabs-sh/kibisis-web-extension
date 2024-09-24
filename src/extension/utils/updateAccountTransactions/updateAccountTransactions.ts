@@ -73,6 +73,10 @@ export default async function updateAccountTransactions({
         nodeID,
       });
 
+    logger?.debug(
+      `${_functionName}: updated account transactions for account "${address}" for network "${network.genesisId}"`
+    );
+
     return {
       next: avmAccountTransaction['next-token'] || null,
       transactions: [

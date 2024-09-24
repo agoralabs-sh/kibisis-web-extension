@@ -47,14 +47,14 @@ import useSignMessageModal from './hooks/useSignMessageModal';
 // modals
 import AuthenticationModal from '@extension/modals/AuthenticationModal';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import {
   useSelectAccountsFetching,
   useSelectLogger,
 } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -158,7 +158,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
       signature = await signBytes({
         bytes: new TextEncoder().encode(event.payload.message.params.message),
         logger,
-        publicKey: PrivateKeyService.decode(signer.publicKey),
+        publicKey: AccountRepository.decode(signer.publicKey),
         ...result,
       });
 

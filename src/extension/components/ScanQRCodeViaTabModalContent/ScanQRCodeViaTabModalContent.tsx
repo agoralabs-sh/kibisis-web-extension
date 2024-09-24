@@ -7,7 +7,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { FC, useEffect } from 'react';
+import React, { type FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline, IoQrCodeOutline } from 'react-icons/io5';
 
@@ -23,7 +23,6 @@ import { ScanModeEnum } from '@extension/enums';
 
 // hooks
 import useCaptureQRCode from '@extension/hooks/useCaptureQRCode';
-import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 
 // theme
@@ -44,10 +43,6 @@ const ScanQRCodeViaTabModalContent: FC<IScanQRCodeModalContentProps> = ({
     uri,
   } = useCaptureQRCode();
   const defaultTextColor = useDefaultTextColor();
-  const primaryColor = useColorModeValue(
-    theme.colors.primaryLight['500'],
-    theme.colors.primaryDark['500']
-  );
   // handlers
   const handlePreviousClick = () => {
     onPreviousClick();

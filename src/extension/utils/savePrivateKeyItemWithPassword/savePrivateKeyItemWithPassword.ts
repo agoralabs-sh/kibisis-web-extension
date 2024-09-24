@@ -6,9 +6,12 @@ import { EncryptionMethodEnum } from '@extension/enums';
 // errors
 import { InvalidPasswordError, MalformedDataError } from '@extension/errors';
 
-// services
-import PasswordService from '@extension/services/PasswordService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasswordManager from '@extension/managers/PasswordManager';
+
+// repositories
+import PasswordTagRepository from '@extension/repositories/PasswordTagRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IPasswordTag, IPrivateKey } from '@extension/types';
@@ -27,23 +30,21 @@ export default async function savePrivateKeyItemWithPassword({
   keyPair,
   logger,
   password,
-  passwordService,
-  privateKeyService,
+  passwordTagRepository,
+  privateKeyRepository,
   saveUnencryptedPrivateKey = false,
 }: IOptions): Promise<IPrivateKey | null> {
   const _functionName = 'savePrivateKeyItemWithPassword';
-  const _passwordService =
-    passwordService ||
-    new PasswordService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
-  const _privateKeyService =
-    privateKeyService ||
-    new PrivateKeyService({
-      logger,
-    });
-  const isPasswordValid = await _passwordService.verifyPassword(password);
+  const _passwordTagRepository =
+    passwordTagRepository || new PasswordTagRepository();
+  const _privateKeyRepository =
+    privateKeyRepository || new PrivateKeyRepository();
+  const passwordManager = new PasswordManager({
+    logger,
+    passwordTag: browser.runtime.id,
+    passwordTagRepository: _passwordTagRepository,
+  });
+  const isPasswordValid = await passwordManager.verifyPassword(password);
   let _error: string;
   let encryptedPrivateKey: Uint8Array;
   let passwordTagItem: IPasswordTag | null;
@@ -55,18 +56,18 @@ export default async function savePrivateKeyItemWithPassword({
     throw new InvalidPasswordError();
   }
 
-  privateKeyItem = await _privateKeyService.fetchFromStorageByPublicKey(
+  privateKeyItem = await _privateKeyRepository.fetchByPublicKey(
     keyPair.publicKey
   );
 
   if (!privateKeyItem) {
     logger?.debug(
-      `${_functionName}: key for "${PrivateKeyService.encode(
+      `${_functionName}: key for "${PrivateKeyRepository.encode(
         keyPair.publicKey
       )}" (public key) doesn't exist, creating a new one`
     );
 
-    passwordTagItem = await _passwordService.fetchFromStorage();
+    passwordTagItem = await _passwordTagRepository.fetch();
 
     if (!passwordTagItem) {
       _error = `failed to get password tag from storage`;
@@ -77,13 +78,13 @@ export default async function savePrivateKeyItemWithPassword({
     }
 
     // encrypt the private key and add it to storage.
-    encryptedPrivateKey = await PasswordService.encryptBytes({
-      data: keyPair.privateKey,
+    encryptedPrivateKey = await PasswordManager.encryptBytes({
+      bytes: keyPair.privateKey,
       logger,
       password,
     });
-    privateKeyItem = await _privateKeyService.saveToStorage(
-      PrivateKeyService.create({
+    privateKeyItem = await _privateKeyRepository.save(
+      PrivateKeyRepository.create({
         encryptedPrivateKey,
         encryptionID: passwordTagItem.id,
         encryptionMethod: EncryptionMethodEnum.Password,

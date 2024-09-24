@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "permissions": ["activeTab", "alarms", "storage"],
+  "permissions": ["activeTab", "alarms", "storage", "unlimitedStorage"],
   "action": {
     "default_title": "Kibisis"
   },

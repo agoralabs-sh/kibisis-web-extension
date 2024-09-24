@@ -1,9 +1,5 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  makePaymentTxnWithSuggestedParams,
-  type SuggestedParams,
-  type Transaction,
-} from 'algosdk';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { makePaymentTxnWithSuggestedParams, type Transaction } from 'algosdk';
 
 // enums
 import { ThunkEnum } from '../enums';
@@ -19,8 +15,8 @@ import {
 // models
 import NetworkClient from '@extension/models/NetworkClient';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -53,7 +49,10 @@ const reKeyAccountThunk: AsyncThunk<
     const accounts = getState().accounts.items;
     const logger = getState().system.logger;
     const accountInformation: IAccountInformation | null =
-      AccountService.extractAccountInformationForNetwork(reKeyAccount, network);
+      AccountRepository.extractAccountInformationForNetwork(
+        reKeyAccount,
+        network
+      );
     const address = convertPublicKeyToAVMAddress(reKeyAccount.publicKey);
     const networks = getState().networks.items;
     const settings = getState().settings;
@@ -61,7 +60,6 @@ const reKeyAccountThunk: AsyncThunk<
     let networkClient: NetworkClient;
     let nodeID: string | null;
     let signedTransaction: Uint8Array;
-    let suggestedParams: SuggestedParams;
     let unsignedTransaction: Transaction;
 
     if (!accountInformation) {

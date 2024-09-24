@@ -1,12 +1,20 @@
 // models
 import BaseBlockExplorer from '@extension/models/BaseBlockExplorer';
 
+// types
+import type { TPartialExcept } from '@common/types';
+import type { INewOptions } from '@extension/models/BaseBlockExplorer';
+
 export default class PeraBlockExplorer extends BaseBlockExplorer {
-  constructor(baseURL: string) {
+  constructor({
+    baseURL,
+    canonicalName,
+    id,
+  }: TPartialExcept<INewOptions, 'baseURL'>) {
     super({
-      baseURL: baseURL,
-      canonicalName: 'Pera',
-      id: 'pera-block-explorer',
+      baseURL,
+      canonicalName: canonicalName || 'Pera',
+      id: id || 'pera-block-explorer',
     });
   }
 

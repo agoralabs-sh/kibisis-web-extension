@@ -37,9 +37,8 @@ import {
   useSelectStandardAssetsUpdating,
 } from '@extension/selectors';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -279,18 +278,18 @@ const AtomicTransactionsContent: FC<IAtomicTransactionsContentProps> = ({
           }
 
           account = {
-            ...AccountService.initializeDefaultAccount({
+            ...AccountRepository.initializeDefaultAccount({
               publicKey: encodedPublicKey,
             }),
             watchAccount: true,
           };
           accountInformation = await updateAccountInformation({
             address: convertPublicKeyToAVMAddress(
-              PrivateKeyService.decode(encodedPublicKey)
+              AccountRepository.decode(encodedPublicKey)
             ),
             currentAccountInformation:
               account.networkInformation[encodedGenesisHash] ||
-              AccountService.initializeDefaultAccountInformation(),
+              AccountRepository.initializeDefaultAccountInformation(),
             delay: index * NODE_REQUEST_DELAY,
             logger,
             network,

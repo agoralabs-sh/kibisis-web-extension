@@ -1,13 +1,4 @@
-import {
-  HStack,
-  Spacer,
-  Spinner,
-  Stack,
-  Text,
-  Tooltip,
-  useDisclosure,
-  VStack,
-} from '@chakra-ui/react';
+import { HStack, Spacer, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import React, { type FC, type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoAddOutline } from 'react-icons/io5';

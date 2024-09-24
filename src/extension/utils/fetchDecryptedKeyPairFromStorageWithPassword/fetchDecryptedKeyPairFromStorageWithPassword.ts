@@ -9,9 +9,12 @@ import { InvalidPasswordError } from '@extension/errors';
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
-// services
-import PasswordService from '@extension/services/PasswordService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// managers
+import PasswordManager from '@extension/managers/PasswordManager';
+
+// repositories
+import PasswordTagRepository from '@extension/repositories/PasswordTagRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IPrivateKey } from '@extension/types';
@@ -28,23 +31,21 @@ import type { IOptions } from './types';
 export default async function fetchDecryptedKeyPairFromStorageWithPassword({
   logger,
   password,
-  passwordService,
-  privateKeyService,
+  passwordTagRepository,
+  privateKeyRepository,
   publicKey,
 }: IOptions): Promise<Ed21559KeyPair | null> {
   const _functionName = 'fetchDecryptedPrivateKeyWithPassword';
-  const _passwordService =
-    passwordService ||
-    new PasswordService({
-      logger,
-      passwordTag: browser.runtime.id,
-    });
-  const _privateKeyService =
-    privateKeyService ||
-    new PrivateKeyService({
-      logger,
-    });
-  const isPasswordValid = await _passwordService.verifyPassword(password);
+  const _passwordTagRepository =
+    passwordTagRepository || new PasswordTagRepository();
+  const _privateKeyRepository =
+    privateKeyRepository || new PrivateKeyRepository();
+  const passwordManager = new PasswordManager({
+    logger,
+    passwordTag: browser.runtime.id,
+    passwordTagRepository: _passwordTagRepository,
+  });
+  const isPasswordValid = await passwordManager.verifyPassword(password);
   let _publicKey: string;
   let decryptedPrivateKey: Uint8Array;
   let privateKeyItem: IPrivateKey | null;
@@ -57,11 +58,9 @@ export default async function fetchDecryptedKeyPairFromStorageWithPassword({
 
   _publicKey =
     typeof publicKey !== 'string'
-      ? PrivateKeyService.encode(publicKey)
+      ? PrivateKeyRepository.encode(publicKey)
       : publicKey; // encode the public key if it isn't already
-  privateKeyItem = await _privateKeyService.fetchFromStorageByPublicKey(
-    _publicKey
-  );
+  privateKeyItem = await _privateKeyRepository.fetchByPublicKey(_publicKey);
 
   if (!privateKeyItem) {
     logger?.debug(
@@ -71,7 +70,7 @@ export default async function fetchDecryptedKeyPairFromStorageWithPassword({
     return null;
   }
 
-  privateKeyItem = await PrivateKeyService.upgrade({
+  privateKeyItem = await PrivateKeyRepository.upgrade({
     encryptionCredentials: {
       password,
       type: EncryptionMethodEnum.Password,
@@ -84,8 +83,8 @@ export default async function fetchDecryptedKeyPairFromStorageWithPassword({
     `${_functionName}: decrypting private key for public key "${_publicKey}"`
   );
 
-  decryptedPrivateKey = await PasswordService.decryptBytes({
-    data: PrivateKeyService.decode(privateKeyItem.encryptedPrivateKey),
+  decryptedPrivateKey = await PasswordManager.decryptBytes({
+    bytes: PrivateKeyRepository.decode(privateKeyItem.encryptedPrivateKey),
     logger,
     password,
   });

@@ -14,7 +14,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
-import React, { type FC, useEffect } from 'react';
+import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IoAdd,
@@ -24,6 +24,7 @@ import {
   IoLockOpenOutline,
   IoPencil,
   IoQrCodeOutline,
+  IoStarOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -40,6 +41,7 @@ import OverflowMenu from '@extension/components/OverflowMenu';
 import NativeBalance from '@extension/components/NativeBalance';
 import NetworkSelect from '@extension/components/NetworkSelect';
 import NFTsTab from '@extension/components/NFTsTab';
+import PolisAccountBadge from '@extension/components/PolisAccountBadge';
 import ReKeyedAccountBadge from '@extension/components/RekeyedAccountBadge';
 import WatchAccountBadge from '@extension/components/WatchAccountBadge';
 import AccountPageSkeletonContent from './AccountPageSkeletonContent';
@@ -61,11 +63,13 @@ import {
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { setConfirmModal, setWhatsNewModal } from '@extension/features/layout';
+import { updateTransactionParamsForSelectedNetworkThunk } from '@extension/features/networks';
 import {
   setAccountAndType as setReKeyAccount,
   TReKeyType,
 } from '@extension/features/re-key-account';
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
+import { savePolisAccountIDThunk } from '@extension/features/system';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
@@ -75,6 +79,9 @@ import useSubTextColor from '@extension/hooks/useSubTextColor';
 // modals
 import EditAccountModal from '@extension/modals/EditAccountModal';
 import ShareAddressModal from '@extension/modals/ShareAddressModal';
+
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // selectors
 import {
@@ -90,10 +97,8 @@ import {
   useSelectSettingsPreferredBlockExplorer,
   useSelectSettingsSelectedNetwork,
   useSelectSettings,
+  useSelectSystemInfo,
 } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type {
@@ -134,6 +139,7 @@ const AccountPage: FC = () => {
   const networks = useSelectNetworks();
   const explorer = useSelectSettingsPreferredBlockExplorer();
   const settings = useSelectSettings();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const defaultTextColor = useDefaultTextColor();
   const primaryColorScheme = usePrimaryColorScheme();
@@ -163,16 +169,28 @@ const AccountPage: FC = () => {
     if (account && accountTransactions && accountTransactions.next) {
       dispatch(
         updateAccountsThunk({
-          accountIds: [account.id],
+          accountIDs: [account.id],
         })
       );
     }
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
   const handleOnEditAccountClick = () => onEditAccountModalOpen();
+  const handleOnMakePrimaryClick = () =>
+    account && dispatch(savePolisAccountIDThunk(account.id));
   const handleOnWhatsNewClick = () => dispatch(setWhatsNewModal(true));
-  const handleNetworkSelect = (value: INetwork) => {
+  const handleOnRefreshActivityClick = () => {
     dispatch(
+      updateAccountsThunk({
+        accountIDs: accounts.map(({ id }) => id),
+        information: false, // get account information
+        notifyOnNewTransactions: true,
+        refreshTransactions: true, // get latest transactions
+      })
+    );
+  };
+  const handleNetworkSelect = async (value: INetwork) => {
+    await dispatch(
       saveSettingsToStorageThunk({
         ...settings,
         general: {
@@ -180,7 +198,15 @@ const AccountPage: FC = () => {
           selectedNetworkGenesisHash: value.genesisHash,
         },
       })
+    ).unwrap();
+
+    // when the settings have been updated, fetch update the account and transaction params
+    dispatch(
+      updateAccountsThunk({
+        accountIDs: accounts.map(({ id }) => id),
+      })
     );
+    dispatch(updateTransactionParamsForSelectedNetworkThunk());
   };
   const handleReKeyAccountClick = (type: TReKeyType) => () =>
     account &&
@@ -197,7 +223,7 @@ const AccountPage: FC = () => {
           description: t<string>('captions.removeAccount', {
             address: ellipseAddress(
               convertPublicKeyToAVMAddress(
-                PrivateKeyService.decode(account.publicKey)
+                PrivateKeyRepository.decode(account.publicKey)
               ),
               {
                 end: 10,
@@ -245,7 +271,7 @@ const AccountPage: FC = () => {
 
     if (account && accountInformation && network) {
       address = convertPublicKeyToAVMAddress(
-        PrivateKeyService.decode(account.publicKey)
+        PrivateKeyRepository.decode(account.publicKey)
       );
 
       return (
@@ -395,6 +421,18 @@ const AccountPage: FC = () => {
               <OverflowMenu
                 context={_context}
                 items={[
+                  // make primary
+                  ...(!account ||
+                  !systemInfo ||
+                  systemInfo.polisAccountID !== account.id
+                    ? [
+                        {
+                          icon: IoStarOutline,
+                          label: t<string>('labels.makePrimary'),
+                          onSelect: handleOnMakePrimaryClick,
+                        },
+                      ]
+                    : []),
                   // re-key
                   ...(canReKeyAccount()
                     ? [
@@ -430,18 +468,27 @@ const AccountPage: FC = () => {
             </HStack>
 
             {/*badges*/}
-            <HStack
-              alignItems="center"
-              spacing={DEFAULT_GAP / 3}
-              justifyContent="flex-end"
-              w="full"
-            >
-              {/*watch account*/}
-              {renderWatchAccountBadge()}
+            <VStack alignItems="flex-end" spacing={DEFAULT_GAP / 3} w="full">
+              <HStack
+                alignItems="center"
+                spacing={DEFAULT_GAP / 3}
+                justifyContent="flex-end"
+                w="full"
+              >
+                {/*polis account badge*/}
+                {account &&
+                  systemInfo &&
+                  systemInfo.polisAccountID === account.id && (
+                    <PolisAccountBadge />
+                  )}
+
+                {/*watch account badge*/}
+                {renderWatchAccountBadge()}
+              </HStack>
 
               {/*re-keyed badge*/}
               {renderReKeyedAccountBadge()}
-            </HStack>
+            </VStack>
           </VStack>
 
           <Spacer />
@@ -475,6 +522,7 @@ const AccountPage: FC = () => {
                 accounts={accounts}
                 fetching={fetchingAccounts}
                 network={network}
+                onRefreshClick={handleOnRefreshActivityClick}
                 onScrollEnd={handleActivityScrollEnd}
               />
             </TabPanels>
@@ -553,22 +601,6 @@ const AccountPage: FC = () => {
     return null;
   };
 
-  useEffect(() => {
-    if (account) {
-      // if we have no transaction data, or the transaction data is empty, attempt a fetch
-      if (
-        !accountTransactions ||
-        accountTransactions.transactions.length <= 0
-      ) {
-        dispatch(
-          updateAccountsThunk({
-            accountIds: [account.id],
-          })
-        );
-      }
-    }
-  }, [network]);
-
   return (
     <>
       {account && (
@@ -580,7 +612,7 @@ const AccountPage: FC = () => {
 
           <ShareAddressModal
             address={convertPublicKeyToAVMAddress(
-              PrivateKeyService.decode(account.publicKey)
+              PrivateKeyRepository.decode(account.publicKey)
             )}
             isOpen={isShareAddressModalOpen}
             onClose={onShareAddressModalClose}

@@ -1,10 +1,10 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { EventsThunkEnum } from '@extension/enums';
 
-// services
-import EventQueueService from '@extension/services/EventQueueService';
+// repositories
+import EventQueueRepository from '@extension/repositories/EventQueueRepository';
 
 // types
 import type {
@@ -23,15 +23,12 @@ const removeEventByIdThunk: AsyncThunk<
   IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
 >(EventsThunkEnum.RemoveEventById, async (eventId, { getState }) => {
   const logger = getState().system.logger;
-  const eventQueueService = new EventQueueService({
-    logger,
-  });
+
+  await new EventQueueRepository().removeById(eventId);
 
   logger.debug(
-    `${EventsThunkEnum.RemoveEventById}: removing event "${eventId}"`
+    `${EventsThunkEnum.RemoveEventById}: removed event "${eventId}"`
   );
-
-  await eventQueueService.removeById(eventId);
 
   return eventId;
 });

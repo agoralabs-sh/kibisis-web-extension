@@ -12,7 +12,7 @@ import {
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
-import React, { type ChangeEvent, createRef, type FC } from 'react';
+import React, { createRef, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -63,6 +63,14 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const primaryColor = usePrimaryColor();
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
+  // misc
+  const features = [
+    '↕️ Re-order accounts in the sidebar.',
+    '⭐ Set a primary account.',
+  ];
+  const fixes = [
+    'Add "unlimitedStorage" permission to avoid the storage quota being exceeded.',
+  ];
   // handlers
   const handleClose = () => {
     // mark as read
@@ -70,9 +78,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
 
     onClose && onClose();
   };
-  const handleOnDisableOnUpdateChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleOnDisableOnUpdateChange = () => {
     if (!whatsNewInfo) {
       return;
     }
@@ -211,134 +217,64 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
             </Heading>
 
             {/*features*/}
-            <Heading
-              color={primaryColor}
-              fontSize="sm"
-              textAlign="left"
-              w="full"
-            >
-              Features
-            </Heading>
+            {features.length > 0 && (
+              <>
+                <Heading
+                  color={primaryColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  Features
+                </Heading>
 
-            <UnorderedList>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  🌐 Voi mainnet has been added to the list of networks.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  🌐 MainNet is set as the default network type.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  ⚙️ TestNet can be switched on from the settings.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  💅 New font applied: Nunito.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  ⚙️ Font selection can be changed in the settings (if you
-                  prefer the old font).
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  🚫 Voi TestNet Phase 2 quest tracking has been disabled.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  💅 Minor UI updates.
-                </Text>
-              </ListItem>
-            </UnorderedList>
+                <UnorderedList w="full">
+                  {features.map((value, index) => (
+                    <ListItem
+                      key={`${WhatsNewModal.name}-features-list-${index}`}
+                    >
+                      <Text
+                        color={defaultTextColor}
+                        fontSize="sm"
+                        textAlign="left"
+                        w="full"
+                      >
+                        {value}
+                      </Text>
+                    </ListItem>
+                  ))}
+                </UnorderedList>
+              </>
+            )}
 
             {/*fixes*/}
-            <Heading
-              color={primaryColor}
-              fontSize="sm"
-              textAlign="left"
-              w="full"
-            >
-              Fixes
-            </Heading>
+            {fixes.length > 0 && (
+              <>
+                <Heading
+                  color={primaryColor}
+                  fontSize="sm"
+                  textAlign="left"
+                  w="full"
+                >
+                  Fixes
+                </Heading>
 
-            <UnorderedList>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  Previous account name value no longer appears when changing
-                  multiple account names.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  Disconnected sessions are updated on the settings' sessions
-                  page.
-                </Text>
-              </ListItem>
-              <ListItem>
-                <Text
-                  color={defaultTextColor}
-                  fontSize="sm"
-                  textAlign="left"
-                  w="full"
-                >
-                  Only responds to Kibisis-specific message requests from AVM
-                  Web Provider/UseWallet requests.
-                </Text>
-              </ListItem>
-            </UnorderedList>
+                <UnorderedList w="full">
+                  {fixes.map((value, index) => (
+                    <ListItem key={`${WhatsNewModal.name}-fixes-list-${index}`}>
+                      <Text
+                        color={defaultTextColor}
+                        fontSize="sm"
+                        textAlign="left"
+                        w="full"
+                      >
+                        {value}
+                      </Text>
+                    </ListItem>
+                  ))}
+                </UnorderedList>
+              </>
+            )}
 
             {/*extroduction*/}
             <Heading

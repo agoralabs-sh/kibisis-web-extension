@@ -6,11 +6,11 @@ import { IoWalletOutline } from 'react-icons/io5';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+
 // selectors
 import { useSelectSettingsColorMode } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccount } from '@extension/types';
@@ -37,7 +37,7 @@ const AddressDisplay: FC<IProps> = ({
     accounts.find(
       (value) =>
         convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(value.publicKey)
+          AccountRepository.decode(value.publicKey)
         ) === address
     ) || null;
 
@@ -57,7 +57,7 @@ const AddressDisplay: FC<IProps> = ({
           <TagLabel>
             {ellipseAddress(
               convertPublicKeyToAVMAddress(
-                PrivateKeyService.decode(account.publicKey)
+                AccountRepository.decode(account.publicKey)
               )
             )}
           </TagLabel>

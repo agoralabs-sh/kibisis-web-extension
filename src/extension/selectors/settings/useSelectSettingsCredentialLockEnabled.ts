@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux';
-import { ColorMode } from '@chakra-ui/react';
 
 // types
 import type { IMainRootState } from '@extension/types';

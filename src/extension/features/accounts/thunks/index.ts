@@ -5,6 +5,7 @@ export { default as removeAccountByIdThunk } from './removeAccountByIdThunk';
 export { default as removeARC0200AssetHoldingsThunk } from './removeARC0200AssetHoldingsThunk';
 export { default as removeStandardAssetHoldingsThunk } from './removeStandardAssetHoldingsThunk';
 export { default as saveAccountNameThunk } from './saveAccountNameThunk';
+export { default as saveAccountsThunk } from './saveAccountsThunk';
 export { default as saveActiveAccountDetails } from './saveActiveAccountDetails';
 export { default as saveNewAccountsThunk } from './saveNewAccountsThunk';
 export { default as saveNewWatchAccountThunk } from './saveNewWatchAccountThunk';

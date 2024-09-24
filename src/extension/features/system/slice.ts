@@ -1,4 +1,5 @@
-import { createSlice, Draft, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { i18n } from 'i18next';
 
 // enums
 import { StoreNameEnum } from '@extension/enums';
@@ -7,6 +8,7 @@ import { StoreNameEnum } from '@extension/enums';
 import {
   fetchFromStorageThunk,
   saveDisableWhatsNewOnUpdateThunk,
+  savePolisAccountIDThunk,
   saveWhatsNewVersionThunk,
   startPollingForNetworkConnectivityThunk,
   stopPollingForTransactionsParamsThunk,
@@ -15,7 +17,6 @@ import {
 
 // types
 import type { ILogger } from '@common/types';
-import type { ISystemInfo } from '@extension/types';
 import type { IState } from './types';
 
 // utils
@@ -23,17 +24,17 @@ import { getInitialState } from './utils';
 
 const slice = createSlice({
   extraReducers: (builder) => {
-    /** fetch from storage **/
+    /**fetch from storage**/
     builder.addCase(
       fetchFromStorageThunk.fulfilled,
-      (state: IState, action: PayloadAction<ISystemInfo>) => {
+      (state: IState, action) => {
         state.info = action.payload;
       }
     );
-    /** save disable what's on update **/
+    /**save disable what's on update**/
     builder.addCase(
       saveDisableWhatsNewOnUpdateThunk.fulfilled,
-      (state: IState, action: PayloadAction<boolean>) => {
+      (state: IState, action) => {
         if (state.info) {
           state.info = {
             ...state.info,
@@ -45,10 +46,22 @@ const slice = createSlice({
         }
       }
     );
-    /** save what's new version **/
+    /**save polis account id**/
+    builder.addCase(
+      savePolisAccountIDThunk.fulfilled,
+      (state: IState, action) => {
+        if (state.info) {
+          state.info = {
+            ...state.info,
+            polisAccountID: action.payload,
+          };
+        }
+      }
+    );
+    /**save what's new version**/
     builder.addCase(
       saveWhatsNewVersionThunk.fulfilled,
-      (state: IState, action: PayloadAction<string | null>) => {
+      (state: IState, action) => {
         if (state.info) {
           state.info = {
             ...state.info,
@@ -60,24 +73,24 @@ const slice = createSlice({
         }
       }
     );
-    /** start polling for network connectivity **/
+    /**start polling for network connectivity**/
     builder.addCase(
       startPollingForNetworkConnectivityThunk.fulfilled,
-      (state: IState, action: PayloadAction<number>) => {
+      (state: IState, action) => {
         state.networkConnectivity.pollingID = action.payload;
       }
     );
-    /** stop polling for network connectivity **/
+    /**stop polling for network connectivity**/
     builder.addCase(
       stopPollingForTransactionsParamsThunk.fulfilled,
       (state: IState) => {
         state.networkConnectivity.pollingID = null;
       }
     );
-    /** update network connectivity **/
+    /**update network connectivity**/
     builder.addCase(
       updateNetworkConnectivityThunk.fulfilled,
-      (state: IState, action: PayloadAction<boolean>) => {
+      (state: IState, action) => {
         state.networkConnectivity = {
           ...state.networkConnectivity,
           checking: false,
@@ -98,11 +111,14 @@ const slice = createSlice({
   initialState: getInitialState(),
   name: StoreNameEnum.System,
   reducers: {
-    setLogger: (state: Draft<IState>, action: PayloadAction<ILogger>) => {
+    setI18nAction: (state: IState, action: PayloadAction<i18n>) => {
+      state.i18n = action.payload;
+    },
+    setLogger: (state: IState, action: PayloadAction<ILogger>) => {
       state.logger = action.payload;
     },
   },
 });
 
-export const reducer: Reducer = slice.reducer;
-export const { setLogger } = slice.actions;
+export const reducer = slice.reducer;
+export const { setI18nAction, setLogger } = slice.actions;

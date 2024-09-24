@@ -51,6 +51,10 @@ export default async function refreshTransactions({
       mapAlgorandTransactionToTransaction
     );
 
+    logger?.debug(
+      `${_functionName}: updated account transactions for account "${address}" for network "${network.genesisId}"`
+    );
+
     // if there is still more, recursively get them until there are no more pages (no more next tokens)
     if (avmAccountTransactions['next-token']) {
       return [

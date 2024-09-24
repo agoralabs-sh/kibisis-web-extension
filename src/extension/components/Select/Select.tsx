@@ -1,6 +1,5 @@
 import {
   Button as ChakraButton,
-  HStack,
   Icon,
   Text,
   Tooltip,

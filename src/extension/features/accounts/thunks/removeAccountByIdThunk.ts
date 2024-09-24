@@ -1,12 +1,11 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import browser from 'webextension-polyfill';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IBaseAsyncThunkConfig, IMainRootState } from '@extension/types';
@@ -19,11 +18,8 @@ const removeAccountByIdThunk: AsyncThunk<
   ThunkEnum.RemoveAccountById,
   async (id, { getState }) => {
     const logger = getState().system.logger;
-    const accountService = new AccountService({
-      logger,
-    });
-    const account = await accountService.getAccountById(id);
-    let privateKeyService: PrivateKeyService;
+    const accountRepository = new AccountRepository();
+    const account = await accountRepository.fetchById(id);
 
     if (!account) {
       logger.debug(
@@ -33,23 +29,19 @@ const removeAccountByIdThunk: AsyncThunk<
       return id;
     }
 
-    logger.debug(
-      `${ThunkEnum.RemoveAccountById}: removing account "${id}" from storage`
-    );
-
     // remove the account
-    await accountService.removeAccountById(account.id);
-
-    privateKeyService = new PrivateKeyService({
-      logger,
-    });
+    await accountRepository.removeById(account.id);
 
     logger.debug(
-      `${ThunkEnum.RemoveAccountById}: removing private key "${account.publicKey}" from storage`
+      `${ThunkEnum.RemoveAccountById}: removed account "${id}" from storage`
     );
 
     // remove the private key
-    await privateKeyService.removeFromStorageByPublicKey(account.publicKey);
+    await new PrivateKeyRepository().removeByPublicKey(account.publicKey);
+
+    logger.debug(
+      `${ThunkEnum.RemoveAccountById}: removed private key "${account.publicKey}" from storage`
+    );
 
     return account.id;
   }

@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
@@ -24,10 +24,8 @@ const fetchActiveThunk: AsyncThunk<
   boolean,
   undefined,
   IBaseAsyncThunkConfig<IBackgroundRootState | IMainRootState>
->(ThunkEnum.FetchActive, async (_, { getState }) => {
-  const logger = getState().system.logger;
-
-  return await isCredentialLockActive({ logger });
+>(ThunkEnum.FetchActive, async () => {
+  return await isCredentialLockActive();
 });
 
 export default fetchActiveThunk;

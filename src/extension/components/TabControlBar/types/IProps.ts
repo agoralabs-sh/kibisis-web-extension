@@ -6,6 +6,7 @@ interface IProps extends IPropsWithContext {
   buttons: ITabControlBarButtonProps[];
   isLoading?: boolean;
   loadingTooltipLabel?: string;
+  onRefresh?: () => void;
 }
 
 export default IProps;

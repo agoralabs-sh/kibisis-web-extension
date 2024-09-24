@@ -1,9 +1,8 @@
 import { TransactionType } from 'algosdk';
 import BigNumber from 'bignumber.js';
 
-// services
-import AccountService from '@extension/services/AccountService';
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type { IAccountInformation } from '@extension/types';
@@ -29,7 +28,7 @@ export default function doesAccountFallBelowMinimumBalanceRequirementForTransact
   const _functionName: string =
     'doesAccountFallBelowMinimumBalanceRequirementForTransactions';
   const accountInformation: IAccountInformation | null =
-    AccountService.extractAccountInformationForNetwork(account, network);
+    AccountRepository.extractAccountInformationForNetwork(account, network);
   let minimumBalanceRequirementForAccount: BigNumber;
   let payTransactionsCost: BigNumber;
   let remainderBalanceAfterCost: BigNumber;
@@ -38,7 +37,7 @@ export default function doesAccountFallBelowMinimumBalanceRequirementForTransact
   if (!accountInformation) {
     logger?.debug(
       `${_functionName}: unable to get account information for account "${convertPublicKeyToAVMAddress(
-        PrivateKeyService.decode(account.publicKey)
+        AccountRepository.decode(account.publicKey)
       )}" on network "${network.genesisId}"`
     );
 

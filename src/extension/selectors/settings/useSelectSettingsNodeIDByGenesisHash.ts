@@ -1,10 +1,7 @@
 import { useSelector } from 'react-redux';
 
 // types
-import type {
-  IMainRootState,
-  INetworkWithTransactionParams,
-} from '@extension/types';
+import type { IMainRootState } from '@extension/types';
 
 // utils
 import selectNodeIDByGenesisHashFromSettings from '@extension/utils/selectNodeIDByGenesisHashFromSettings/selectNodeIDByGenesisHashFromSettings';

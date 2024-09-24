@@ -35,6 +35,10 @@ import { BODY_BACKGROUND_COLOR, DEFAULT_GAP } from '@extension/constants';
 // enums
 import { EncryptionMethodEnum } from '@extension/enums';
 
+// managers
+import PasskeyManager from '@extension/managers/PasskeyManager';
+import PasswordManager from '@extension/managers/PasswordManager';
+
 // hooks
 import useColorModeValue from '@extension/hooks/useColorModeValue';
 import useGenericInput from '@extension/hooks/useGenericInput';
@@ -46,10 +50,6 @@ import {
   useSelectLogger,
   useSelectPasskeysPasskey,
 } from '@extension/selectors';
-
-// services
-import PasskeyService from '@extension/services/PasskeyService';
-import PasswordService from '@extension/services/PasswordService';
 
 // theme
 import { theme } from '@extension/theme';
@@ -101,21 +101,21 @@ const AuthenticationModal: FC<IProps> = ({
   const handleCancelClick = () => handleClose();
   const handleConfirmClick = async () => {
     let isValid: boolean;
-    let passwordService: PasswordService;
+    let passwordManager: PasswordManager;
 
     // check if the input is valid
     if (!!passwordError || !!validatePassword(passwordValue)) {
       return;
     }
 
-    passwordService = new PasswordService({
+    passwordManager = new PasswordManager({
       logger,
       passwordTag: browser.runtime.id,
     });
 
     setVerifying(true);
 
-    isValid = await passwordService.verifyPassword(passwordValue);
+    isValid = await passwordManager.verifyPassword(passwordValue);
 
     setVerifying(false);
 
@@ -241,7 +241,7 @@ const AuthenticationModal: FC<IProps> = ({
         try {
           // fetch the encryption key material
           inputKeyMaterial =
-            await PasskeyService.fetchInputKeyMaterialFromPasskey({
+            await PasskeyManager.fetchInputKeyMaterialFromPasskey({
               credential: passkey,
               logger,
             });

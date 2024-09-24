@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
@@ -6,8 +6,8 @@ import { ThunkEnum } from '../enums';
 // errors
 import { MalformedDataError, NetworkNotSelectedError } from '@extension/errors';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -25,6 +25,7 @@ import type {
 // utils
 import convertGenesisHashToHex from '@extension/utils/convertGenesisHashToHex';
 import isWatchAccount from '@extension/utils/isWatchAccount';
+import serialize from '@extension/utils/serialize';
 import { findAccountWithoutExtendedProps } from '../utils';
 
 const removeARC0200AssetHoldingsThunk: AsyncThunk<
@@ -41,8 +42,9 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     const logger = getState().system.logger;
     const networks = getState().networks.items;
     const accounts = getState().accounts.items;
-    let account = findAccountWithoutExtendedProps(accountId, accounts);
-    let accountService: AccountService;
+    let account = serialize(
+      findAccountWithoutExtendedProps(accountId, accounts)
+    );
     let currentAccountInformation: IAccountInformation;
     let encodedGenesisHash: string;
     let network: INetwork | null;
@@ -75,23 +77,12 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     encodedGenesisHash = convertGenesisHashToHex(network.genesisHash);
     currentAccountInformation =
       account.networkInformation[encodedGenesisHash] ||
-      AccountService.initializeDefaultAccountInformation();
-    accountService = new AccountService({
-      logger,
-    });
-    account = {
-      ...account,
-      networkInformation: {
-        ...account.networkInformation,
-        [encodedGenesisHash]: {
-          ...currentAccountInformation,
-          arc200AssetHoldings:
-            currentAccountInformation.arc200AssetHoldings.filter(
-              (assetHolding) =>
-                !assets.find((value) => value.id === assetHolding.id) // filter the assets holdings that are not in the assets to be removed
-            ),
-        },
-      },
+      AccountRepository.initializeDefaultAccountInformation();
+    account.networkInformation[encodedGenesisHash] = {
+      ...currentAccountInformation,
+      arc200AssetHoldings: currentAccountInformation.arc200AssetHoldings.filter(
+        (assetHolding) => !assets.find((value) => value.id === assetHolding.id) // filter the assets holdings that are not in the assets to be removed
+      ),
     };
 
     logger.debug(
@@ -99,12 +90,12 @@ const removeARC0200AssetHoldingsThunk: AsyncThunk<
     );
 
     // save the account to storage
-    await accountService.saveAccounts([account]);
+    await new AccountRepository().saveMany([account]);
 
     return {
       account: {
         ...account,
-        watchAccount: await isWatchAccount({ account, logger }),
+        watchAccount: await isWatchAccount(account),
       },
     };
   }

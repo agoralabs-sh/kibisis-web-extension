@@ -1,6 +1,6 @@
 {
   "name": "@agoralabs-sh/kibisis-web-extension",
-  "version": "2.0.0",
+  "version": "2.2.1",
   "description": "An AVM wallet that goes beyond just DeFi.",
   "main": "build/main.js",
   "repository": {
@@ -50,6 +50,7 @@
     "start:extension": "cross-env TS_NODE_PROJECT=\"webpack/tsconfig.webpack.json\" webpack --config webpack/webpack.config.ts --config-name extension-scripts --config-name extension-apps --env environment=development --watch",
     "start:firefox": "concurrently --names \"DAPP,EXTENSION\" -c \"blue.bold,magenta.bold\" \"yarn start:dapp-example\" \"yarn start:extension --env target=firefox\"",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "types:check": "tsc --noEmit",
     "validate:firefox": "addons-linter .firefox_build/"
   },
@@ -125,6 +126,9 @@
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@chakra-ui/system": "^2.6.2",
+    "@dnd-kit/core": "^6.1.0",
+    "@dnd-kit/sortable": "^8.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@faker-js/faker": "^7.6.0",
@@ -145,8 +149,6 @@
     "i18next": "^22.4.10",
     "jsqr": "^1.4.0",
     "numbro": "^2.4.0",
-    "posthog-js": "^1.130.1",
-    "posthog-node": "^4.0.1",
     "qrcode": "^1.5.1",
     "react": "^18.2.0",
     "react-confetti": "^6.1.0",

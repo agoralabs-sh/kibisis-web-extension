@@ -15,7 +15,6 @@ import type {
   IAppThunkDispatch,
   IARC0200Asset,
   IMainRootState,
-  INetwork,
 } from '@extension/types';
 import type { IUseUpdateARC0200AssetsState } from './types';
 

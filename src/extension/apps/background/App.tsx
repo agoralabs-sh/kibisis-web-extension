@@ -1,5 +1,5 @@
-import { combineReducers, Store } from '@reduxjs/toolkit';
-import React, { FC } from 'react';
+import { combineReducers, type Store } from '@reduxjs/toolkit';
+import React, { type FC } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 
@@ -27,11 +27,7 @@ import type { IAppProps, IBackgroundRootState } from '@extension/types';
 // utils
 import makeStore from '@extension/utils/makeStore';
 
-const App: FC<IAppProps> = ({
-  i18next,
-  initialColorMode,
-  initialFontFamily,
-}) => {
+const App: FC<IAppProps> = ({ i18n, initialColorMode, initialFontFamily }) => {
   const store: Store<IBackgroundRootState> = makeStore<IBackgroundRootState>(
     combineReducers({
       accounts: accountsReducer,
@@ -51,12 +47,12 @@ const App: FC<IAppProps> = ({
 
   return (
     <Provider store={store}>
-      <I18nextProvider i18n={i18next}>
+      <I18nextProvider i18n={i18n}>
         <ThemeProvider
           initialColorMode={initialColorMode}
           initialFontFamily={initialFontFamily}
         >
-          <Root />
+          <Root i18n={i18n} />
         </ThemeProvider>
       </I18nextProvider>
     </Provider>

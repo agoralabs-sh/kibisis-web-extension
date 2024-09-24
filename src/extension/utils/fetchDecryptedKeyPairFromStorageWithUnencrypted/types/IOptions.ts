@@ -1,16 +1,16 @@
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IBaseOptions } from '@common/types';
 
 /**
- * @property {PrivateKeyService} privateKeyService - [optional] a private key service to use, if omitted a new one is
- * created.
+ * @property {PrivateKeyRepository} privateKeyRepository - [optional] a private key repository to use, if omitted a new
+ * one is created.
  * @property {Uint8Array | string} publicKey - the raw or hexadecimal encoded public key.
  */
 interface IOptions extends IBaseOptions {
-  privateKeyService?: PrivateKeyService;
+  privateKeyRepository?: PrivateKeyRepository;
   publicKey: Uint8Array | string;
 }
 

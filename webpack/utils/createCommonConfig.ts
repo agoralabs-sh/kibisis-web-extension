@@ -1,5 +1,5 @@
-import { resolve } from 'path';
-import { Configuration } from 'webpack';
+import { resolve } from 'node:path';
+import type { Configuration } from 'webpack';
 
 // constants
 import { SRC_PATH } from '../constants';
@@ -9,9 +9,9 @@ import { SRC_PATH } from '../constants';
  * @returns {Configuration} a common configuration.
  */
 export default function createCommonConfig(): Configuration {
-  const commonPath: string = resolve(SRC_PATH, 'common');
-  const extensionPath: string = resolve(SRC_PATH, 'extension');
-  const externalPath: string = resolve(SRC_PATH, 'external');
+  const commonPath = resolve(SRC_PATH, 'common');
+  const extensionPath = resolve(SRC_PATH, 'extension');
+  const externalPath = resolve(SRC_PATH, 'external');
 
   return {
     node: false,
@@ -36,9 +36,11 @@ export default function createCommonConfig(): Configuration {
         ['@extension/fonts']: resolve(extensionPath, 'fonts'),
         ['@extension/hooks']: resolve(extensionPath, 'hooks'),
         ['@extension/images']: resolve(extensionPath, 'images'),
+        ['@extension/managers']: resolve(extensionPath, 'managers'),
         ['@extension/modals']: resolve(extensionPath, 'modals'),
         ['@extension/models']: resolve(extensionPath, 'models'),
         ['@extension/pages']: resolve(extensionPath, 'pages'),
+        ['@extension/repositories']: resolve(extensionPath, 'repositories'),
         ['@extension/routers']: resolve(extensionPath, 'routers'),
         ['@extension/selectors']: resolve(extensionPath, 'selectors'),
         ['@extension/services']: resolve(extensionPath, 'services'),
@@ -53,7 +55,6 @@ export default function createCommonConfig(): Configuration {
         ['@external/types']: resolve(externalPath, 'types'),
         ['@external/utils']: resolve(externalPath, 'utils'),
       },
-
       extensions: ['.css', '.js', '.ts', '.tsx'],
     },
 

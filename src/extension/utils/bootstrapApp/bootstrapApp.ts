@@ -1,25 +1,21 @@
-import I18next, { i18n } from 'i18next';
+import I18next, { type i18n } from 'i18next';
 import { createElement, type FC } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { initReactI18next } from 'react-i18next';
 
-// constants
-import { SETTINGS_APPEARANCE_KEY } from '@extension/constants';
-
-// services
-import StorageManager from '@extension/services/StorageManager';
+// repositories
+import SettingsRepository from '@extension/repositories/SettingsRepository';
 
 // translations
 import { en } from '@extension/translations';
 
 // types
-import type { IAppearanceSettings, IAppProps } from '@extension/types';
+import type { IAppProps, ISettings } from '@extension/types';
 
 export default function bootstrapApp(app: FC<IAppProps>): () => Promise<void> {
   return async (): Promise<void> => {
     const rootElement = document.getElementById('root');
-    const storageManager = new StorageManager();
-    let appearanceSettings: IAppearanceSettings | null;
+    let settings: ISettings | null;
     let i18next: i18n;
     let root: Root;
 
@@ -27,9 +23,7 @@ export default function bootstrapApp(app: FC<IAppProps>): () => Promise<void> {
       return;
     }
 
-    appearanceSettings = await storageManager.getItem<IAppearanceSettings>(
-      SETTINGS_APPEARANCE_KEY
-    );
+    settings = await new SettingsRepository().fetch();
     i18next = I18next.use(initReactI18next);
     root = createRoot(rootElement);
 
@@ -49,9 +43,9 @@ export default function bootstrapApp(app: FC<IAppProps>): () => Promise<void> {
 
     root.render(
       createElement(app, {
-        i18next,
-        initialColorMode: appearanceSettings?.theme || 'light', // default to light
-        initialFontFamily: appearanceSettings?.font || 'Nunito',
+        i18n: i18next,
+        initialColorMode: settings?.appearance.theme || 'light', // default to light
+        initialFontFamily: settings?.appearance.font || 'Nunito',
       })
     );
   };

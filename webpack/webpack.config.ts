@@ -1,7 +1,7 @@
 import CopyPlugin from 'copy-webpack-plugin';
 import { config } from 'dotenv';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import {
   Configuration,
   DefinePlugin,
@@ -77,8 +77,6 @@ const configs: (
   definePlugin = new DefinePlugin({
     __APP_TITLE__: JSON.stringify(APP_TITLE),
     __ENV__: JSON.stringify(environment),
-    __POSTHOG_API_HOST__: JSON.stringify(process.env.POSTHOG_API_HOST),
-    __POSTHOG_PROJECT_ID__: JSON.stringify(process.env.POSTHOG_PROJECT_ID),
     __PROVIDER_ID__: JSON.stringify(process.env.PROVIDER_ID),
     __TARGET__: JSON.stringify(target),
     __VERSION__: JSON.stringify(version),

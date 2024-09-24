@@ -14,7 +14,6 @@ import { AssetTypeEnum } from '@extension/enums';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
-import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
 // types
 import type { IRemoveAssetsConfirmingModalContentProps } from './types';
@@ -25,7 +24,6 @@ const RemoveAssetsConfirmingModalContent: FC<
   const { t } = useTranslation();
   // hooks
   const defaultTextColor: string = useDefaultTextColor();
-  const primaryColor: string = usePrimaryColor();
   // misc
   let message: string | null = null;
 

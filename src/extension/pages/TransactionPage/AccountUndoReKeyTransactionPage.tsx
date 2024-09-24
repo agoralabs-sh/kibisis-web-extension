@@ -26,14 +26,14 @@ import { DEFAULT_GAP, PAGE_ITEM_HEIGHT } from '@extension/constants';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
+
 // selectors
 import {
   useSelectAccounts,
   useSelectSettingsPreferredBlockExplorer,
 } from '@extension/selectors';
-
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
 
 // types
 import type { IAccountUndoReKeyTransaction } from '@extension/types';
@@ -66,14 +66,14 @@ const AccountUndoReKeyTransactionPage: FC<
     accounts.findIndex(
       (value) =>
         convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(value.publicKey)
+          PrivateKeyRepository.decode(value.publicKey)
         ) === transaction.authAddr
     ) > -1;
   const isSenderKnown =
     accounts.findIndex(
       (value) =>
         convertPublicKeyToAVMAddress(
-          PrivateKeyService.decode(value.publicKey)
+          PrivateKeyRepository.decode(value.publicKey)
         ) === transaction.sender
     ) > -1;
   // handlers

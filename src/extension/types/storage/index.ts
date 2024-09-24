@@ -1,1 +1,1 @@
-export type { default as IStorageItemTypes } from './IStorageItemTypes';
+export type { default as TStorageItemTypes } from './TStorageItemTypes';

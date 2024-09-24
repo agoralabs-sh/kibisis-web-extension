@@ -1,8 +1,7 @@
 import { HStack, Text, VStack } from '@chakra-ui/react';
 import React, {
-  FC,
-  ReactNode,
-  TransitionEvent,
+  type FC,
+  type TransitionEvent,
   useEffect,
   useState,
 } from 'react';
@@ -23,9 +22,8 @@ import Divider from '@extension/components/Divider';
 import IconButton from '@extension/components/IconButton';
 import KibisisIcon from '@extension/components/KibisisIcon';
 import ScrollableContainer from '@extension/components/ScrollableContainer';
-import SideBarAccountItem from './SideBarAccountItem';
-import SideBarActionItem from './SideBarActionItem';
-import SideBarSkeletonAccountItem from './SideBarSkeletonAccountItem';
+import SideBarAccountList from '@extension/components/SideBarAccountList';
+import SideBarActionItem from '@extension/components/SideBarActionItem';
 
 // constants
 import {
@@ -42,7 +40,11 @@ import {
 import { AccountTabEnum } from '@extension/enums';
 
 // features
-import { saveActiveAccountDetails } from '@extension/features/accounts';
+import {
+  saveAccountsThunk,
+  saveActiveAccountDetails,
+  updateAccountsThunk,
+} from '@extension/features/accounts';
 import { setScanQRCodeModal } from '@extension/features/layout';
 import { initialize as initializeSendAssets } from '@extension/features/send-assets';
 
@@ -59,6 +61,7 @@ import {
   useSelectActiveAccountDetails,
   useSelectAvailableAccountsForSelectedNetwork,
   useSelectSettingsSelectedNetwork,
+  useSelectSystemInfo,
 } from '@extension/selectors';
 
 // types
@@ -82,6 +85,7 @@ const SideBar: FC = () => {
   const availableAccounts = useSelectAvailableAccountsForSelectedNetwork();
   const fetchingAccounts = useSelectAccountsFetching();
   const network = useSelectSettingsSelectedNetwork();
+  const systemInfo = useSelectSystemInfo();
   // hooks
   const borderColor = useBorderColor();
   const defaultTextColor = useDefaultTextColor();
@@ -99,11 +103,22 @@ const SideBar: FC = () => {
     setIsHeaderShowing(false);
     setIsOpen(!isOpen);
   };
-  const handleAccountClick = async (id: string) => {
+  const handleAddAccountClick = () => {
+    onCloseSideBar();
+    navigate(ADD_ACCOUNT_ROUTE);
+  };
+  const handleOnAccountClick = async (id: string) => {
     await dispatch(
       saveActiveAccountDetails({
         accountId: id,
         tabIndex: activeAccountDetails?.tabIndex || AccountTabEnum.Assets,
+      })
+    );
+    dispatch(
+      updateAccountsThunk({
+        accountIDs: [id],
+        notifyOnNewTransactions: true,
+        refreshTransactions: true,
       })
     );
     navigate(`${ACCOUNTS_ROUTE}`, {
@@ -112,10 +127,15 @@ const SideBar: FC = () => {
 
     onCloseSideBar();
   };
-  const handleAddAccountClick = () => {
-    onCloseSideBar();
-    navigate(ADD_ACCOUNT_ROUTE);
-  };
+  const handleOnAccountSort = (_accounts: IAccountWithExtendedProps[]) =>
+    dispatch(
+      saveAccountsThunk(
+        _accounts.map((value, index) => ({
+          ...value,
+          index,
+        }))
+      )
+    );
   const handleScanQRCodeClick = () =>
     dispatch(
       setScanQRCodeModal({
@@ -155,24 +175,6 @@ const SideBar: FC = () => {
     if (event.propertyName === 'width' && width >= SIDEBAR_MAX_WIDTH) {
       setIsHeaderShowing(true);
     }
-  };
-  const renderAccounts: () => ReactNode = () => {
-    if (fetchingAccounts || !network) {
-      return Array.from({ length: 3 }, (_, index) => (
-        <SideBarSkeletonAccountItem key={`sidebar-fetching-item-${index}`} />
-      ));
-    }
-
-    return accounts.map((value, index) => (
-      <SideBarAccountItem
-        account={value}
-        accounts={accounts}
-        active={activeAccount ? value.id === activeAccount.id : false}
-        key={`sidebar-item-${index}`}
-        network={network}
-        onClick={handleAccountClick}
-      />
-    ));
   };
 
   useEffect(() => {
@@ -220,6 +222,7 @@ const SideBar: FC = () => {
           borderRadius={0}
           colorScheme="gray"
           icon={isOpen ? IoChevronBack : IoChevronForward}
+          minW={`${SIDEBAR_MIN_WIDTH}px`}
           onClick={handleOpenToggleClick}
           variant="ghost"
         />
@@ -236,7 +239,16 @@ const SideBar: FC = () => {
         spacing={0}
         w="full"
       >
-        {renderAccounts()}
+        <SideBarAccountList
+          accounts={accounts}
+          activeAccount={activeAccount}
+          isLoading={fetchingAccounts}
+          isShortForm={!isOpen}
+          network={network}
+          onClick={handleOnAccountClick}
+          onSort={handleOnAccountSort}
+          systemInfo={systemInfo}
+        />
       </ScrollableContainer>
 
       <Divider />
@@ -245,6 +257,7 @@ const SideBar: FC = () => {
       {accounts.some((value) => !value.watchAccount) && (
         <SideBarActionItem
           icon={IoSendOutline}
+          isShortForm={!isOpen}
           label={t<string>('labels.sendAsset', {
             nativeCurrency: network?.nativeCurrency.symbol,
           })}
@@ -255,6 +268,7 @@ const SideBar: FC = () => {
       {/*scan qr code*/}
       <SideBarActionItem
         icon={IoScanOutline}
+        isShortForm={!isOpen}
         label={t<string>('labels.scanQRCode')}
         onClick={handleScanQRCodeClick}
       />
@@ -262,6 +276,7 @@ const SideBar: FC = () => {
       {/*add account*/}
       <SideBarActionItem
         icon={IoAddCircleOutline}
+        isShortForm={!isOpen}
         label={t<string>('labels.addAccount')}
         onClick={handleAddAccountClick}
       />
@@ -269,6 +284,7 @@ const SideBar: FC = () => {
       {/*settings*/}
       <SideBarActionItem
         icon={IoSettingsOutline}
+        isShortForm={!isOpen}
         label={t<string>('labels.settings')}
         onClick={handleSettingsClick}
       />

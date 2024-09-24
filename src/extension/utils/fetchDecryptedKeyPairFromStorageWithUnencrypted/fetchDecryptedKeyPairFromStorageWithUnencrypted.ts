@@ -4,8 +4,8 @@ import { MalformedDataError } from '@extension/errors';
 // models
 import Ed21559KeyPair from '@extension/models/Ed21559KeyPair';
 
-// services
-import PrivateKeyService from '@extension/services/PrivateKeyService';
+// repositories
+import PrivateKeyRepository from '@extension/repositories/PrivateKeyRepository';
 
 // types
 import type { IPrivateKey } from '@extension/types';
@@ -20,26 +20,21 @@ import type { IOptions } from './types';
  */
 export default async function fetchDecryptedKeyPairFromStorageWithUnencrypted({
   logger,
-  privateKeyService,
+  privateKeyRepository,
   publicKey,
 }: IOptions): Promise<Ed21559KeyPair | null> {
   const _functionName = 'fetchDecryptedKeyPairFromStorageWithUnencrypted';
-  const _privateKeyService =
-    privateKeyService ||
-    new PrivateKeyService({
-      logger,
-    });
+  const _privateKeyRepository =
+    privateKeyRepository || new PrivateKeyRepository();
   let _error: string;
   let _publicKey: string;
   let privateKeyItem: IPrivateKey | null;
 
   _publicKey =
     typeof publicKey !== 'string'
-      ? PrivateKeyService.encode(publicKey)
+      ? PrivateKeyRepository.encode(publicKey)
       : publicKey; // encode the public key if it isn't already
-  privateKeyItem = await _privateKeyService.fetchFromStorageByPublicKey(
-    _publicKey
-  );
+  privateKeyItem = await _privateKeyRepository.fetchByPublicKey(_publicKey);
 
   if (!privateKeyItem) {
     logger?.debug(
@@ -58,6 +53,6 @@ export default async function fetchDecryptedKeyPairFromStorageWithUnencrypted({
   }
 
   return Ed21559KeyPair.generateFromPrivateKey(
-    PrivateKeyService.decode(privateKeyItem.privateKey)
+    PrivateKeyRepository.decode(privateKeyItem.privateKey)
   );
 }

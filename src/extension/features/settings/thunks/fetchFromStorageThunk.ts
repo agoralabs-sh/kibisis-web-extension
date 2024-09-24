@@ -1,10 +1,10 @@
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { type AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import SettingsService from '@extension/services/SettingsService';
+// repositories
+import SettingsRepository from '@extension/repositories/SettingsRepository';
 
 // types
 import type {
@@ -21,13 +21,8 @@ const fetchFromStorageThunk: AsyncThunk<
   ISettings,
   undefined,
   IBaseAsyncThunkConfig<IBaseRootState>
->(ThunkEnum.FetchFromStorage, async (_, { getState }) => {
-  const logger = getState().system.logger;
-  const settingsService = new SettingsService({
-    logger,
-  });
-
-  return await settingsService.fetchFromStorage();
+>(ThunkEnum.FetchFromStorage, async () => {
+  return await new SettingsRepository().fetch();
 });
 
 export default fetchFromStorageThunk;

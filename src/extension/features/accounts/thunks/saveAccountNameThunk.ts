@@ -3,8 +3,8 @@ import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 // enums
 import { ThunkEnum } from '../enums';
 
-// services
-import AccountService from '@extension/services/AccountService';
+// repositories
+import AccountRepository from '@extension/repositories/AccountRepository';
 
 // types
 import type {
@@ -16,6 +16,7 @@ import type { ISaveAccountNamePayload } from '../types';
 
 // utils
 import isWatchAccount from '@extension/utils/isWatchAccount/isWatchAccount';
+import serialize from '@extension/utils/serialize';
 import { findAccountWithoutExtendedProps } from '../utils';
 
 const saveAccountNameThunk: AsyncThunk<
@@ -29,10 +30,7 @@ const saveAccountNameThunk: AsyncThunk<
 >(ThunkEnum.SaveAccountName, async ({ accountId, name }, { getState }) => {
   const logger = getState().system.logger;
   const accounts = getState().accounts.items;
-  const accountService = new AccountService({
-    logger,
-  });
-  let account = findAccountWithoutExtendedProps(accountId, accounts);
+  let account = serialize(findAccountWithoutExtendedProps(accountId, accounts));
 
   if (!account) {
     logger.debug(
@@ -55,11 +53,11 @@ const saveAccountNameThunk: AsyncThunk<
     name,
   };
 
-  await accountService.saveAccounts([account]);
+  await new AccountRepository().saveMany([account]);
 
   return {
     ...account,
-    watchAccount: await isWatchAccount({ account, logger }),
+    watchAccount: await isWatchAccount(account),
   };
 });
 
