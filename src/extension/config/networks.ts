@@ -36,7 +36,14 @@ const networks: INetwork[] = [
         url: 'https://mainnet-api.voi.nodely.dev',
       },
     ],
-    arc0072Indexers: [],
+    arc0072Indexers: [
+      new NautilusARC0072Indexer({
+        baseURL: 'https://mainnet-idx.nautilus.sh',
+      }),
+      new NFTNavigatorARC0072Indexer({
+        baseURL: 'https://arc72-voi-mainnet.nftnavigator.xyz',
+      }),
+    ],
     canonicalName: 'Voi',
     chakraTheme: 'voi',
     blockExplorers: [
@@ -73,7 +80,11 @@ const networks: INetwork[] = [
       type: AssetTypeEnum.Native,
       verified: true,
     },
-    nftExplorers: [],
+    nftExplorers: [
+      new NFTNavigatorNFTExplorer({
+        baseURL: 'https://nftnavigator.xyz',
+      }),
+    ],
     type: NetworkTypeEnum.Stable,
   },
   {
