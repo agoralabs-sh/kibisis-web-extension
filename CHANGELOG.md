@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.1...v2.3.0) (2024-09-30)
+
+
+### Features
+
+* update the nft indexer for voi mainnet ([#332](https://github.com/agoralabs-sh/kibisis-web-extension/issues/332)) ([e42b7ca](https://github.com/agoralabs-sh/kibisis-web-extension/commit/e42b7ca1141b05b348efe4510622b09b24c0277f))
+
 # [2.3.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.1...v2.3.0-beta.1) (2024-09-30)
 
 
