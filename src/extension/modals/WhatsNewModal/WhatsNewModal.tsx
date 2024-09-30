@@ -64,13 +64,8 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // misc
-  const features = [
-    '↕️ Re-order accounts in the sidebar.',
-    '⭐ Set a primary account.',
-  ];
-  const fixes = [
-    'Add "unlimitedStorage" permission to avoid the storage quota being exceeded.',
-  ];
+  const features = ['🖼️ Add Voi mainnet indexers and explorer.'];
+  const fixes: string[] = [];
   // handlers
   const handleClose = () => {
     // mark as read
