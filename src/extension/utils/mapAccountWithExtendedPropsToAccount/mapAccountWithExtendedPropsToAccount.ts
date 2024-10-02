@@ -9,6 +9,7 @@ import type { IAccount, IAccountWithExtendedProps } from '@extension/types';
  */
 export default function mapAccountWithExtendedPropsToAccount({
   createdAt,
+  icon,
   id,
   name,
   networkInformation,
@@ -19,6 +20,7 @@ export default function mapAccountWithExtendedPropsToAccount({
 }: IAccountWithExtendedProps): IAccount {
   return {
     createdAt,
+    icon,
     id,
     name,
     networkInformation,

@@ -83,6 +83,7 @@ export default class AccountRepository extends BaseRepository {
 
     return {
       createdAt: createdAtOrNow,
+      icon: null,
       id: id || uuid(),
       name: name || null,
       networkInformation: networks.reduce<Record<string, IAccountInformation>>(
@@ -194,6 +195,7 @@ export default class AccountRepository extends BaseRepository {
   private _sanitize(account: IAccount): IAccount {
     return {
       createdAt: account.createdAt,
+      icon: null,
       id: account.id,
       name: account.name,
       networkInformation: Object.keys(account.networkInformation).reduce<
