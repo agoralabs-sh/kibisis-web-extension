@@ -408,7 +408,7 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
             <ModalSubHeading text={t<string>('headings.selectIcon')} />
 
             {/*icons*/}
-            <ScrollableContainer w="full">
+            <ScrollableContainer showScrollBars={true} w="full">
               <Wrap justify="center" spacing={1} w="full">
                 {accountIcons.map((value, index) => (
                   <WrapItem key={`${_context}-select-icon-item-${index}`}>

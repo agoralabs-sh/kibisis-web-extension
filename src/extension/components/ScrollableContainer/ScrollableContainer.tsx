@@ -7,6 +7,7 @@ import type { IProps } from './types';
 const ScrollableContainer: FC<IProps> = ({
   children,
   onScrollEnd,
+  showScrollBars = false,
   ...stackProps
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -32,6 +33,15 @@ const ScrollableContainer: FC<IProps> = ({
       ref={scrollContainerRef}
       spacing={0}
       w="full"
+      {...(showScrollBars && {
+        sx: {
+          scrollbarWidth: 'auto',
+          msOverflowStyle: 'auto',
+          ['::-webkit-scrollbar']: {
+            display: 'block',
+          },
+        },
+      })}
     >
       <Stack {...stackProps}>{children}</Stack>
     </Stack>
