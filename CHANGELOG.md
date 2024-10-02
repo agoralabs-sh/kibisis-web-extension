@@ -1,3 +1,10 @@
+# [2.4.0-beta.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.3.0...v2.4.0-beta.1) (2024-10-02)
+
+
+### Features
+
+* change icon of account ([#335](https://github.com/agoralabs-sh/kibisis-web-extension/issues/335)) ([0174529](https://github.com/agoralabs-sh/kibisis-web-extension/commit/01745293a5f54ca0274b971251b4eaf12a4de9a4))
+
 # [2.3.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.1...v2.3.0) (2024-09-30)
 
 
