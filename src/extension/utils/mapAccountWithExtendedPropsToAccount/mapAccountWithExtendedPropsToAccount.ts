@@ -8,7 +8,9 @@ import type { IAccount, IAccountWithExtendedProps } from '@extension/types';
  * @returns {IAccount} the account object without the extended props.
  */
 export default function mapAccountWithExtendedPropsToAccount({
+  color,
   createdAt,
+  icon,
   id,
   name,
   networkInformation,
@@ -18,7 +20,9 @@ export default function mapAccountWithExtendedPropsToAccount({
   updatedAt,
 }: IAccountWithExtendedProps): IAccount {
   return {
+    color,
     createdAt,
+    icon,
     id,
     name,
     networkInformation,

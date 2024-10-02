@@ -17,7 +17,7 @@ export default class NFTNavigatorNFTExplorer extends BaseNFTExplorer {
     super({
       baseURL,
       canonicalName: canonicalName || 'NFT Navigator',
-      id: id || 'nft-navigator-arc-0072-indexer',
+      id: id || 'nft-navigator-nft-explorer',
     });
   }
 

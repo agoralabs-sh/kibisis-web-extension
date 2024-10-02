@@ -65,12 +65,10 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const subTextColor = useSubTextColor();
   // misc
   const features = [
-    '↕️ Re-order accounts in the sidebar.',
-    '⭐ Set a primary account.',
+    '💅 Change account icon.',
+    '💅 Change account background color.',
   ];
-  const fixes = [
-    'Add "unlimitedStorage" permission to avoid the storage quota being exceeded.',
-  ];
+  const fixes: string[] = [];
   // handlers
   const handleClose = () => {
     // mark as read
