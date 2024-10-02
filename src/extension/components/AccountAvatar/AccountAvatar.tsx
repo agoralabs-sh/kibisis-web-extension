@@ -1,12 +1,17 @@
 import { Avatar, Icon } from '@chakra-ui/react';
-import React, { FC, PropsWithChildren } from 'react';
-import { IoWalletOutline } from 'react-icons/io5';
+import React, { type FC } from 'react';
 
 // hooks
 import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import usePrimaryColor from '@extension/hooks/usePrimaryColor';
 
-const AccountAvatar: FC<PropsWithChildren> = ({ children }) => {
+// types
+import type { IProps } from './types';
+
+// utils
+import parseAccountIcon from '@extension/utils/parseAccountIcon';
+
+const AccountAvatar: FC<IProps> = ({ icon, children }) => {
   // hooks
   const primaryButtonTextColor = usePrimaryButtonTextColor();
   const primaryColor = usePrimaryColor();
@@ -14,7 +19,7 @@ const AccountAvatar: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Avatar
       bg={primaryColor}
-      icon={<Icon as={IoWalletOutline} color={primaryButtonTextColor} />}
+      icon={<Icon as={parseAccountIcon(icon)} color={primaryButtonTextColor} />}
       size="sm"
     >
       {children}
