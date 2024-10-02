@@ -1,4 +1,4 @@
-import { Icon } from '@chakra-ui/react';
+import { Icon, type IconProps } from '@chakra-ui/react';
 import React, { type ReactElement } from 'react';
 import {
   IoAirplaneOutline,
@@ -120,22 +120,26 @@ import calculateIconSize from '@extension/utils/calculateIconSize';
 
 /**
  * Parses the account icon to an JSX Icon. If the account icon is null, it defaults to the wallet icon.
- * @param {IOptions} options - The account icon and the size.
+ * @param {IOptions} options - The account icon, the color and size.
  * @returns {ReactElement} The react-icons IconType for the account icon.
  */
 export default function parseAccountIcon({
   accountIcon,
+  color,
   size,
 }: IOptions): ReactElement {
-  const _size = calculateIconSize(size);
+  const defaultProps: Partial<IconProps> = {
+    boxSize: calculateIconSize(size),
+    color,
+  };
   let icon: IconType = IoWalletOutline;
 
   if (accountIcon === 'algorand') {
-    return <AlgorandIcon boxSize={_size} />;
+    return <AlgorandIcon {...defaultProps} />;
   }
 
   if (accountIcon === 'voi') {
-    return <VoiIcon boxSize={_size} />;
+    return <VoiIcon {...defaultProps} />;
   }
 
   switch (accountIcon) {
@@ -447,5 +451,5 @@ export default function parseAccountIcon({
       break;
   }
 
-  return <Icon as={icon} boxSize={_size} />;
+  return <Icon as={icon} {...defaultProps} />;
 }

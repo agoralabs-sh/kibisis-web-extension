@@ -427,6 +427,7 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
                     >
                       {parseAccountIcon({
                         accountIcon: value,
+                        color: defaultTextColor,
                         size: 'sm',
                       })}
                     </ChakraButton>
