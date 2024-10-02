@@ -117,6 +117,7 @@ const slice = createSlice({
       fetchAccountsFromStorageThunk.fulfilled,
       (state: IState, action) => {
         state.activeAccountDetails = action.payload.activeAccountDetails;
+        state.groups = action.payload.groups;
         state.items = action.payload.accounts;
         state.fetching = false;
       }

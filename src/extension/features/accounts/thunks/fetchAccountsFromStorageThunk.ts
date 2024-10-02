@@ -10,7 +10,6 @@ import ActiveAccountRepositoryService from '@extension/repositories/ActiveAccoun
 // types
 import type {
   IAccount,
-  IActiveAccountDetails,
   IBackgroundRootState,
   IBaseAsyncThunkConfig,
   IMainRootState,
@@ -19,6 +18,7 @@ import type { IFetchAccountsFromStorageResult } from '../types';
 
 // utils
 import isWatchAccount from '@extension/utils/isWatchAccount';
+import AccountGroupRepository from '@extension/repositories/AccountGroupRepository';
 
 const fetchAccountsFromStorageThunk: AsyncThunk<
   IFetchAccountsFromStorageResult, // return
@@ -31,14 +31,12 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
 >(ThunkEnum.FetchAccountsFromStorage, async (_, { getState }) => {
   const logger = getState().system.logger;
   let accounts: IAccount[];
-  let activeAccountDetails: IActiveAccountDetails | null;
 
   logger.debug(
     `${ThunkEnum.FetchAccountsFromStorage}: fetching accounts from storage`
   );
 
   accounts = await new AccountRepository().fetchAll();
-  activeAccountDetails = await new ActiveAccountRepositoryService().fetch();
 
   return {
     accounts: await Promise.all(
@@ -47,7 +45,8 @@ const fetchAccountsFromStorageThunk: AsyncThunk<
         watchAccount: await isWatchAccount(value),
       }))
     ),
-    activeAccountDetails,
+    activeAccountDetails: await new ActiveAccountRepositoryService().fetch(),
+    groups: await new AccountGroupRepository().fetchAll(),
   };
 });
 

@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 // constants
 import { ACCOUNT_GROUPS_ITEM_KEY } from '@extension/constants';
 
@@ -11,6 +13,18 @@ import type { IAccountGroup } from '@extension/types';
 import upsertItemsById from '@extension/utils/upsertItemsById';
 
 export default class AccountGroupRepository extends BaseRepository {
+  /**
+   * public static functions
+   */
+
+  public static initializeDefaultAccountGroup(name: string): IAccountGroup {
+    return {
+      createdAt: new Date().getTime(),
+      id: uuid(),
+      name,
+    };
+  }
+
   /**
    * public functions
    */
