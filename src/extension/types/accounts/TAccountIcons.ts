@@ -7,6 +7,7 @@ type TAccountIcons =
   | 'basketball'
   | 'beer'
   | 'bicycle'
+  | 'bitcoin'
   | 'boat'
   | 'briefcase'
   | 'brush'
@@ -31,6 +32,8 @@ type TAccountIcons =
   | 'dice'
   | 'earth'
   | 'egg'
+  | 'ethereum'
+  | 'euro'
   | 'female'
   | 'file-tray'
   | 'film'
@@ -93,10 +96,12 @@ type TAccountIcons =
   | 'trash'
   | 'trophy'
   | 'umbrella'
+  | 'usd'
   | 'voi'
   | 'wallet'
   | 'water'
   | 'wine'
-  | 'wrench';
+  | 'wrench'
+  | 'yen';
 
 export default TAccountIcons;

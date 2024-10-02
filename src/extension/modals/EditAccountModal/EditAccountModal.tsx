@@ -2,7 +2,6 @@ import {
   Button as ChakraButton,
   Heading,
   HStack,
-  Icon,
   Modal,
   ModalBody,
   ModalContent,
@@ -129,6 +128,7 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
     'basketball',
     'beer',
     'bicycle',
+    'bitcoin',
     'boat',
     'briefcase',
     'brush',
@@ -153,6 +153,8 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
     'dice',
     'earth',
     'egg',
+    'ethereum',
+    'euro',
     'female',
     'file-tray',
     'film',
@@ -215,10 +217,12 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
     'trash',
     'trophy',
     'umbrella',
+    'usd',
     'wallet',
     'water',
     'wine',
     'wrench',
+    'yen',
   ];
   const reset = () => {
     resetName();

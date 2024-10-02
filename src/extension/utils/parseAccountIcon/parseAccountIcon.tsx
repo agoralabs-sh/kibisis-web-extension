@@ -99,6 +99,13 @@ import {
   IoWaterOutline,
   IoWine,
 } from 'react-icons/io5';
+import {
+  FaBitcoin,
+  FaDollarSign,
+  FaEthereum,
+  FaEuroSign,
+  FaYenSign,
+} from 'react-icons/fa';
 import type { IconType } from 'react-icons';
 
 // components
@@ -152,6 +159,9 @@ export default function parseAccountIcon({
       break;
     case 'bicycle':
       icon = IoBicycleOutline;
+      break;
+    case 'bitcoin':
+      icon = FaBitcoin;
       break;
     case 'boat':
       icon = IoBoatOutline;
@@ -224,6 +234,12 @@ export default function parseAccountIcon({
       break;
     case 'egg':
       icon = IoEggOutline;
+      break;
+    case 'ethereum':
+      icon = FaEthereum;
+      break;
+    case 'euro':
+      icon = FaEuroSign;
       break;
     case 'female':
       icon = IoFemaleOutline;
@@ -411,6 +427,9 @@ export default function parseAccountIcon({
     case 'umbrella':
       icon = IoUmbrellaOutline;
       break;
+    case 'usd':
+      icon = FaDollarSign;
+      break;
     case 'water':
       icon = IoWaterOutline;
       break;
@@ -419,6 +438,9 @@ export default function parseAccountIcon({
       break;
     case 'wrench':
       icon = IoBuildOutline;
+      break;
+    case 'yen':
+      icon = FaYenSign;
       break;
     case 'wallet':
     default:
