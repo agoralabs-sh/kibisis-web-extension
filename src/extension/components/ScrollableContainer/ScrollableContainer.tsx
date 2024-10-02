@@ -35,10 +35,10 @@ const ScrollableContainer: FC<IProps> = ({
       w="full"
       {...(showScrollBars && {
         sx: {
-          scrollbarWidth: 'auto',
+          scrollbarWidth: __TARGET__ === 'chrome' ? 'thin' : 'auto',
           msOverflowStyle: 'auto',
           ['::-webkit-scrollbar']: {
-            display: 'block',
+            display: 'contents',
           },
         },
       })}
