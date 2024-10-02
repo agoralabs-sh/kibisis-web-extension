@@ -65,7 +65,7 @@ const AccountAvatarWithBadges: FC<IProps> = ({
   };
 
   return (
-    <AccountAvatar icon={account.icon}>
+    <AccountAvatar account={account}>
       {/*polis account badge*/}
       {systemInfo && systemInfo.polisAccountID === account.id && (
         <AvatarBadge

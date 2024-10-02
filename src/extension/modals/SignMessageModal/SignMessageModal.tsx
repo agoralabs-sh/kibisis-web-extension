@@ -220,10 +220,7 @@ const SignMessageModal: FC<IModalProps> = ({ onClose }) => {
                 'labels.addressToSign'
               )}:`}</Text>
 
-              <AccountItem
-                address={convertPublicKeyToAVMAddress(signer.publicKey)}
-                {...(signer.name && { name: signer.name })}
-              />
+              <AccountItem account={signer} />
             </>
           ) : (
             <>

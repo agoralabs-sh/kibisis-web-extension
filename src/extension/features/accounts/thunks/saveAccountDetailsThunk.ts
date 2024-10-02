@@ -29,7 +29,7 @@ const saveAccountNameThunk: AsyncThunk<
   IBaseAsyncThunkConfig<IMainRootState>
 >(
   ThunkEnum.SaveAccountDetails,
-  async ({ accountId, icon, name }, { getState }) => {
+  async ({ accountId, color, icon, name }, { getState }) => {
     const logger = getState().system.logger;
     const accounts = getState().accounts.items;
     let account = serialize(
@@ -50,6 +50,7 @@ const saveAccountNameThunk: AsyncThunk<
 
     account = {
       ...account,
+      color,
       icon,
       name,
     };
