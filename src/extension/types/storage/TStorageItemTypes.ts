@@ -1,6 +1,10 @@
 // types
 import type { ISerializableNetworkWithTransactionParams } from '@extension/repositories/NetworksRepository';
-import type { IAccount, IActiveAccountDetails } from '../accounts';
+import type {
+  IAccount,
+  IAccountGroup,
+  IActiveAccountDetails,
+} from '../accounts';
 import type { IARC0072Asset, IARC0200Asset, IStandardAsset } from '../assets';
 import type {
   IPasskeyCredential,
@@ -21,6 +25,7 @@ import type { ISystemInfo } from '../system';
 
 type TStorageItemTypes =
   | IAccount
+  | IAccountGroup[]
   | IActiveAccountDetails
   | IAdvancedSettings
   | IAppearanceSettings
