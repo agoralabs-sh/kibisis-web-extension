@@ -48,7 +48,9 @@ const AccountAvatar: FC<IProps> = ({ account, children }) => {
           ? primaryColor
           : account.color
       }
-      icon={<Icon as={parseAccountIcon(account.icon)} color={iconColor} />}
+      icon={parseAccountIcon({
+        accountIcon: account.icon,
+      })}
       size="sm"
     >
       {children}

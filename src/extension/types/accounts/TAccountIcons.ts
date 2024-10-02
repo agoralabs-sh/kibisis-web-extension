@@ -1,5 +1,6 @@
 type TAccountIcons =
   | 'airplane'
+  | 'algorand'
   | 'american-football'
   | 'balloon'
   | 'baseball'
@@ -92,6 +93,7 @@ type TAccountIcons =
   | 'trash'
   | 'trophy'
   | 'umbrella'
+  | 'voi'
   | 'wallet'
   | 'water'
   | 'wine'

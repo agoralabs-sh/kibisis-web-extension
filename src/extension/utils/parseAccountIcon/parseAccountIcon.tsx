@@ -1,4 +1,5 @@
-import type { IconType } from 'react-icons';
+import { Icon } from '@chakra-ui/react';
+import React, { type ReactElement } from 'react';
 import {
   IoAirplaneOutline,
   IoAmericanFootballOutline,
@@ -98,21 +99,39 @@ import {
   IoWaterOutline,
   IoWine,
 } from 'react-icons/io5';
+import type { IconType } from 'react-icons';
+
+// components
+import AlgorandIcon from '@extension/components/AlgorandIcon';
+import VoiIcon from '@extension/components/VoiIcon';
 
 // types
-import type { TAccountIcons } from '@extension/types';
+import type { IOptions } from './types';
+
+// utils
+import calculateIconSize from '@extension/utils/calculateIconSize';
 
 /**
- * Parses the account icon to the IconType. If the account icon is null, it defaults to the wallet icon.
- * @param {TAccountIcons | null} value - The account icon.
- * @returns {IconType} The react-icons IconType for the account icon.
+ * Parses the account icon to an JSX Icon. If the account icon is null, it defaults to the wallet icon.
+ * @param {IOptions} options - The account icon and the size.
+ * @returns {ReactElement} The react-icons IconType for the account icon.
  */
-export default function parseAccountIcon(
-  value: TAccountIcons | null
-): IconType {
-  let icon = IoWalletOutline;
+export default function parseAccountIcon({
+  accountIcon,
+  size,
+}: IOptions): ReactElement {
+  const _size = calculateIconSize(size);
+  let icon: IconType = IoWalletOutline;
 
-  switch (value) {
+  if (accountIcon === 'algorand') {
+    return <AlgorandIcon boxSize={_size} />;
+  }
+
+  if (accountIcon === 'voi') {
+    return <VoiIcon boxSize={_size} />;
+  }
+
+  switch (accountIcon) {
     case 'airplane':
       icon = IoAirplaneOutline;
       break;
@@ -406,5 +425,5 @@ export default function parseAccountIcon(
       break;
   }
 
-  return icon;
+  return <Icon as={icon} boxSize={_size} />;
 }

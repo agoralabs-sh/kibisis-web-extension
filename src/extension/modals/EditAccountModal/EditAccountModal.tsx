@@ -65,7 +65,6 @@ import type { IProps } from './types';
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import calculateIconSize from '@extension/utils/calculateIconSize';
 import parseAccountIcon from '@extension/utils/parseAccountIcon';
 
 const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
@@ -121,6 +120,8 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
     'red.500',
   ];
   const accountIcons: TAccountIcons[] = [
+    'voi',
+    'algorand',
     'airplane',
     'american-football',
     'balloon',
@@ -219,7 +220,6 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
     'wine',
     'wrench',
   ];
-  const iconSize = calculateIconSize('sm');
   const reset = () => {
     resetName();
     setColor(null);
@@ -421,7 +421,10 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
                         bg: buttonHoverBackgroundColor,
                       })}
                     >
-                      <Icon as={parseAccountIcon(value)} boxSize={iconSize} />
+                      {parseAccountIcon({
+                        accountIcon: value,
+                        size: 'sm',
+                      })}
                     </ChakraButton>
                   </WrapItem>
                 ))}
