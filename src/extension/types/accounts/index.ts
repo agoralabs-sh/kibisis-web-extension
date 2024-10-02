@@ -5,3 +5,4 @@ export type { default as IAccountWithExtendedProps } from './IAccountWithExtende
 export type { default as IActiveAccountDetails } from './IActiveAccountDetails';
 export type { default as IInitializeAccountOptions } from './IInitializeAccountOptions';
 export type { default as INewAccount } from './INewAccount';
+export type { default as TAccountIcons } from './TAccountIcons';
