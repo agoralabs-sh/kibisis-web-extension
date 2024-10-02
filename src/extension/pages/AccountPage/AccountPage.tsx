@@ -16,6 +16,7 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { BsFolderMinus, BsFolderPlus } from 'react-icons/bs';
 import {
   IoAdd,
   IoCloudOfflineOutline,
@@ -60,14 +61,13 @@ import { AccountTabEnum } from '@extension/enums';
 import {
   removeAccountByIdThunk,
   saveActiveAccountDetails,
+  saveAccountGroupIDThunk,
   updateAccountsThunk,
 } from '@extension/features/accounts';
 import { setConfirmModal, setWhatsNewModal } from '@extension/features/layout';
+import { create as createNotification } from '@extension/features/notifications';
 import { updateTransactionParamsForSelectedNetworkThunk } from '@extension/features/networks';
-import {
-  setAccountAndType as setReKeyAccount,
-  TReKeyType,
-} from '@extension/features/re-key-account';
+import { setAccountAndType as setReKeyAccount } from '@extension/features/re-key-account';
 import { saveToStorageThunk as saveSettingsToStorageThunk } from '@extension/features/settings';
 import { savePolisAccountIDThunk } from '@extension/features/system';
 
@@ -88,6 +88,7 @@ import {
   useSelectAccounts,
   useSelectActiveAccount,
   useSelectActiveAccountDetails,
+  useSelectActiveAccountGroup,
   useSelectActiveAccountInformation,
   useSelectActiveAccountTransactions,
   useSelectAccountsFetching,
@@ -101,7 +102,9 @@ import {
 } from '@extension/selectors';
 
 // types
+import type { TReKeyType } from '@extension/features/re-key-account';
 import type {
+  IAccountWithExtendedProps,
   IAppThunkDispatch,
   IMainRootState,
   INetwork,
@@ -134,6 +137,7 @@ const AccountPage: FC = () => {
   const activeAccountDetails = useSelectActiveAccountDetails();
   const fetchingAccounts = useSelectAccountsFetching();
   const fetchingSettings = useSelectSettingsFetching();
+  const group = useSelectActiveAccountGroup();
   const online = useSelectIsOnline();
   const network = useSelectSettingsSelectedNetwork();
   const networks = useSelectNetworks();
@@ -175,6 +179,9 @@ const AccountPage: FC = () => {
     }
   };
   const handleAddAccountClick = () => navigate(ADD_ACCOUNT_ROUTE);
+  const handleOnAddGroupClick = () => {
+    // TODO: open select group modal
+  };
   const handleOnEditAccountClick = () => onEditAccountModalOpen();
   const handleOnMakePrimaryClick = () =>
     account && dispatch(savePolisAccountIDThunk(account.id));
@@ -186,6 +193,32 @@ const AccountPage: FC = () => {
         information: false, // get account information
         notifyOnNewTransactions: true,
         refreshTransactions: true, // get latest transactions
+      })
+    );
+  };
+  const handleOnRemoveGroupClick = async () => {
+    let _account: IAccountWithExtendedProps | null;
+
+    if (!account || !group) {
+      return;
+    }
+
+    _account = await dispatch(
+      saveAccountGroupIDThunk({
+        accountID: account.id,
+        groupID: null,
+      })
+    ).unwrap();
+
+    if (!_account) {
+      return;
+    }
+
+    dispatch(
+      createNotification({
+        ephemeral: true,
+        title: t<string>('headings.removedGroup'),
+        type: 'info',
       })
     );
   };
@@ -433,6 +466,24 @@ const AccountPage: FC = () => {
                         },
                       ]
                     : []),
+                  // add/remove to group
+                  ...(group
+                    ? [
+                        {
+                          icon: BsFolderMinus,
+                          label: t<string>('labels.removeFromGroup', {
+                            name: group.name,
+                          }),
+                          onSelect: handleOnRemoveGroupClick,
+                        },
+                      ]
+                    : [
+                        {
+                          icon: BsFolderPlus,
+                          label: t<string>('labels.addToGroup'),
+                          onSelect: handleOnAddGroupClick,
+                        },
+                      ]),
                   // re-key
                   ...(canReKeyAccount()
                     ? [

@@ -402,6 +402,7 @@ const translation: IResourceLanguage = {
     [`removedAsset_${AssetTypeEnum.ARC0200}`]: 'Asset {{symbol}} Hidden!',
     removeCustomNode: 'Remove Custom Node',
     removedCustomNode: 'Removed Custom Node',
+    removedGroup: 'Removed Group',
     removePasskey: 'Remove Passkey',
     scanQrCode: 'Scan QR Code(s)',
     selectAccount: 'Select Account',

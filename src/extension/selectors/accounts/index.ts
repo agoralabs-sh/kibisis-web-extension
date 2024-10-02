@@ -6,6 +6,7 @@ export { default as useSelectAccounts } from './useSelectAccounts';
 export { default as useSelectAccountsSaving } from './useSelectAccountsSaving';
 export { default as useSelectActiveAccount } from './useSelectActiveAccount';
 export { default as useSelectActiveAccountDetails } from './useSelectActiveAccountDetails';
+export { default as useSelectActiveAccountGroup } from './useSelectActiveAccountGroup';
 export { default as useSelectActiveAccountInformation } from './useSelectActiveAccountInformation';
 export { default as useSelectActiveAccountTransactions } from './useSelectActiveAccountTransactions';
 export { default as useSelectActiveAccountTransactionsUpdating } from './useSelectActiveAccountTransactionsUpdating';
