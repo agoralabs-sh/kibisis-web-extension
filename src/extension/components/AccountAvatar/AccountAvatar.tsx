@@ -1,4 +1,4 @@
-import { Avatar, Icon } from '@chakra-ui/react';
+import { Avatar } from '@chakra-ui/react';
 import React, { type FC } from 'react';
 
 // hooks

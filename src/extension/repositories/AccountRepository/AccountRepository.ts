@@ -84,6 +84,7 @@ export default class AccountRepository extends BaseRepository {
     return {
       color: null,
       createdAt: createdAtOrNow,
+      groupID: null,
       icon: null,
       id: id || uuid(),
       name: name || null,
@@ -197,6 +198,7 @@ export default class AccountRepository extends BaseRepository {
     return {
       color: account.color,
       createdAt: account.createdAt,
+      groupID: account.groupID,
       icon: account.icon,
       id: account.id,
       name: account.name,

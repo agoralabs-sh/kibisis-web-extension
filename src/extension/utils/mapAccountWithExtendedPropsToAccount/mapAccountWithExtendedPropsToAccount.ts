@@ -10,6 +10,7 @@ import type { IAccount, IAccountWithExtendedProps } from '@extension/types';
 export default function mapAccountWithExtendedPropsToAccount({
   color,
   createdAt,
+  groupID,
   icon,
   id,
   name,
@@ -22,6 +23,7 @@ export default function mapAccountWithExtendedPropsToAccount({
   return {
     color,
     createdAt,
+    groupID,
     icon,
     id,
     name,
