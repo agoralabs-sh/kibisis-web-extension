@@ -14,8 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { IoArrowBackOutline, IoDownloadOutline } from 'react-icons/io5';
 
 // components
-import AccountItem from '@extension/components/AccountItem';
 import Button from '@extension/components/Button';
+import NewAccountItem from '@extension/components/NewAccountItem';
 import ScanModeModalContent from '@extension/components/ScanModeModalContent';
 import ScanQRCodeViaCameraModalContent from '@extension/components/ScanQRCodeViaCameraModalContent';
 import ScanQRCodeViaScreenCaptureModalContent from '@extension/components/ScanQRCodeViaScreenCaptureModalContent';
@@ -178,7 +178,7 @@ const RegistrationImportAccountViaQRCodeModal: FC<IProps> = ({
                     py={DEFAULT_GAP / 3}
                     w="full"
                   >
-                    <AccountItem
+                    <NewAccountItem
                       address={convertPublicKeyToAVMAddress(keyPair.publicKey)}
                       {...(name && { name })}
                     />

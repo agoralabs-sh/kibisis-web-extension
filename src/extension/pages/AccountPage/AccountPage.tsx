@@ -609,7 +609,6 @@ const AccountPage: FC = () => {
             isOpen={isEditAccountModalOpen}
             onClose={onEditAccountModalClose}
           />
-
           <ShareAddressModal
             address={convertPublicKeyToAVMAddress(
               PrivateKeyRepository.decode(account.publicKey)

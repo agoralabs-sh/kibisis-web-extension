@@ -64,7 +64,10 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // misc
-  const features = ['🖼️ Add Voi mainnet indexers and explorer.'];
+  const features = [
+    '💅 Change account icon.',
+    '💅 Change account background color.',
+  ];
   const fixes: string[] = [];
   // handlers
   const handleClose = () => {

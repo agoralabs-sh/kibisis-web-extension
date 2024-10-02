@@ -1,9 +1,13 @@
 // types
 import IAccountInformation from './IAccountInformation';
 import IAccountTransactions from './IAccountTransactions';
+import TAccountColors from './TAccountColors';
+import TAccountIcons from './TAccountIcons';
 
 /**
+ * @property {TAccountColors | null} color - The background color.
  * @property {number} createdAt - a timestamp (in milliseconds) when this account was created in storage.
+ * @property {TAccountIcons | null} icon - An icon for the account.
  * @property {string} id - a unique identifier (in UUID).
  * @property {number | null} index - the position of the account as it appears in a list.
  * @property {string | null} name - a canonical name given to this account.
@@ -15,7 +19,9 @@ import IAccountTransactions from './IAccountTransactions';
  * @property {number} updatedAt - a timestamp (in milliseconds) for when this account was last saved to storage.
  */
 interface IAccount {
+  color: TAccountColors | null;
   createdAt: number;
+  icon: TAccountIcons | null;
   id: string;
   index: number | null;
   name: string | null;

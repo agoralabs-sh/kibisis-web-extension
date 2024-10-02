@@ -17,9 +17,9 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 // components
-import AccountItem from '@extension/components/AccountItem';
 import Button from '@extension/components/Button';
 import EmptyState from '@extension/components/EmptyState';
+import NewAccountItem from '@extension/components/NewAccountItem';
 
 // constants
 import {
@@ -216,7 +216,7 @@ const ARC0300AccountImportModalContent: FC<
             py={DEFAULT_GAP / 3}
             w="full"
           >
-            <AccountItem
+            <NewAccountItem
               address={convertPublicKeyToAVMAddress(keyPair.publicKey)}
               {...(name && { name })}
             />

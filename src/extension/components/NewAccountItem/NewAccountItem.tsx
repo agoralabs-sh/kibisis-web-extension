@@ -1,14 +1,14 @@
-import { Center, HStack, Text, VStack } from '@chakra-ui/react';
+import { Avatar, Center, HStack, Icon, Text, VStack } from '@chakra-ui/react';
 import React, { type FC } from 'react';
-
-// components
-import AccountAvatar from '@extension/components/AccountAvatar';
+import { IoWalletOutline } from 'react-icons/io5';
 
 // constants
 import { DEFAULT_GAP } from '@extension/constants';
 
 // hooks
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
+import usePrimaryColor from '@extension/hooks/usePrimaryColor';
+import usePrimaryButtonTextColor from '@extension/hooks/usePrimaryButtonTextColor';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
 
 // types
@@ -16,23 +16,31 @@ import type { IProps } from './types';
 
 // utils
 import ellipseAddress from '@extension/utils/ellipseAddress';
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
-const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
+const NewAccountItem: FC<IProps> = ({
+  address,
+  name,
+  subTextColor,
+  textColor,
+}) => {
   // hooks
   const defaultSubTextColor = useSubTextColor();
   const defaultTextColor = useDefaultTextColor();
-  // misc
-  const address = convertPublicKeyToAVMAddress(account.publicKey);
+  const primaryButtonTextColor = usePrimaryButtonTextColor();
+  const primaryColor = usePrimaryColor();
 
   return (
     <HStack m={0} p={0} spacing={DEFAULT_GAP / 3} w="full">
       {/*avatar*/}
       <Center>
-        <AccountAvatar account={account} />
+        <Avatar
+          bg={primaryColor}
+          icon={<Icon as={IoWalletOutline} color={primaryButtonTextColor} />}
+          size="sm"
+        />
       </Center>
 
-      {account.name ? (
+      {name ? (
         <VStack
           alignItems="flex-start"
           flexGrow={1}
@@ -46,7 +54,7 @@ const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
             noOfLines={1}
             textAlign="left"
           >
-            {account.name}
+            {name}
           </Text>
 
           <Text
@@ -77,4 +85,4 @@ const AccountItem: FC<IProps> = ({ account, subTextColor, textColor }) => {
   );
 };
 
-export default AccountItem;
+export default NewAccountItem;

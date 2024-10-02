@@ -35,7 +35,6 @@ import type { IProps } from './types';
 
 // utils
 import calculateIconSize from '@extension/utils/calculateIconSize';
-import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 
 const AccountSelect: FC<IProps> = ({
   _context,
@@ -117,10 +116,7 @@ const AccountSelect: FC<IProps> = ({
           w="full"
         >
           <Stack flexGrow={1} justifyContent="center" w="full">
-            <AccountItem
-              address={convertPublicKeyToAVMAddress(value.publicKey)}
-              {...(value.name && { name: value.name })}
-            />
+            <AccountItem account={value} />
           </Stack>
         </ChakraButton>
       </VStack>

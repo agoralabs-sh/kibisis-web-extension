@@ -1,10 +1,10 @@
+import type { PropsWithChildren } from 'react';
+
 // types
 import type { IAccountWithExtendedProps } from '@extension/types';
 
-interface IProps {
+interface IProps extends PropsWithChildren {
   account: IAccountWithExtendedProps;
-  subTextColor?: string;
-  textColor?: string;
 }
 
 export default IProps;

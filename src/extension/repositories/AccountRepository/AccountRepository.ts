@@ -82,7 +82,9 @@ export default class AccountRepository extends BaseRepository {
     const createdAtOrNow: number = createdAt || new Date().getTime();
 
     return {
+      color: null,
       createdAt: createdAtOrNow,
+      icon: null,
       id: id || uuid(),
       name: name || null,
       networkInformation: networks.reduce<Record<string, IAccountInformation>>(
@@ -193,7 +195,9 @@ export default class AccountRepository extends BaseRepository {
    */
   private _sanitize(account: IAccount): IAccount {
     return {
+      color: account.color,
       createdAt: account.createdAt,
+      icon: account.icon,
       id: account.id,
       name: account.name,
       networkInformation: Object.keys(account.networkInformation).reduce<
