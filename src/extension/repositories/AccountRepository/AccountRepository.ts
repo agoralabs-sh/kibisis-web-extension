@@ -195,7 +195,7 @@ export default class AccountRepository extends BaseRepository {
   private _sanitize(account: IAccount): IAccount {
     return {
       createdAt: account.createdAt,
-      icon: null,
+      icon: account.icon,
       id: account.id,
       name: account.name,
       networkInformation: Object.keys(account.networkInformation).reduce<

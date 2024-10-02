@@ -1,6 +1,8 @@
 import {
+  Button as ChakraButton,
   Heading,
   HStack,
+  Icon,
   Modal,
   ModalBody,
   ModalContent,
@@ -9,8 +11,10 @@ import {
   Text,
   Tooltip,
   VStack,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react';
-import React, { type FC, useEffect } from 'react';
+import React, { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoSaveOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
@@ -18,6 +22,7 @@ import { useDispatch } from 'react-redux';
 // components
 import Button from '@extension/components/Button';
 import GenericInput from '@extension/components/GenericInput';
+import ModalSubHeading from '@extension/components/ModalSubHeading';
 
 // constants
 import {
@@ -27,10 +32,11 @@ import {
 } from '@extension/constants';
 
 // features
-import { saveAccountNameThunk } from '@extension/features/accounts';
+import { saveAccountDetailsThunk } from '@extension/features/accounts';
 import { create as createNotification } from '@extension/features/notifications';
 
 // hooks
+import useButtonHoverBackgroundColor from '@extension/hooks/useButtonHoverBackgroundColor';
 import useDefaultTextColor from '@extension/hooks/useDefaultTextColor';
 import useGenericInput from '@extension/hooks/useGenericInput';
 import useSubTextColor from '@extension/hooks/useSubTextColor';
@@ -49,20 +55,26 @@ import type {
   IAccountWithExtendedProps,
   IAppThunkDispatch,
   IMainRootState,
+  TAccountIcons,
 } from '@extension/types';
 import type { IProps } from './types';
 
 // utils
 import convertPublicKeyToAVMAddress from '@extension/utils/convertPublicKeyToAVMAddress';
 import ellipseAddress from '@extension/utils/ellipseAddress';
+import calculateIconSize from '@extension/utils/calculateIconSize';
+import parseAccountIcon from '@extension/utils/parseAccountIcon';
+import ScrollableContainer from '@extension/components/ScrollableContainer';
 
 const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
+  const _context = 'account-icon-modal';
   const { t } = useTranslation();
   const dispatch = useDispatch<IAppThunkDispatch<IMainRootState>>();
   // selectors
   const account = useSelectActiveAccount();
   const saving = useSelectAccountsSaving();
   // hooks
+  const buttonHoverBackgroundColor = useButtonHoverBackgroundColor();
   const defaultTextColor = useDefaultTextColor();
   const {
     charactersRemaining: nameCharactersRemaining,
@@ -83,13 +95,129 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
     }),
   });
   const subTextColor = useSubTextColor();
+  // states
+  const [icon, setIcon] = useState<TAccountIcons | null>(account?.icon || null);
+  // misc
+  const accountIcons: TAccountIcons[] = [
+    'airplane',
+    'american-football',
+    'balloon',
+    'baseball',
+    'basketball',
+    'beer',
+    'bicycle',
+    'boat',
+    'briefcase',
+    'brush',
+    'bug',
+    'bulb',
+    'buoy',
+    'bus',
+    'business',
+    'cafe',
+    'car',
+    'cart',
+    'cash',
+    'circle',
+    'cloud',
+    'code',
+    'compass',
+    'construct',
+    'credit-card',
+    'cube',
+    'database',
+    'diamond',
+    'dice',
+    'earth',
+    'egg',
+    'female',
+    'file-tray',
+    'film',
+    'fingerprint',
+    'fire',
+    'fish',
+    'fitness',
+    'flag',
+    'flash',
+    'flashlight',
+    'flask',
+    'flower',
+    'football',
+    'footsteps',
+    'gaming',
+    'glasses',
+    'globe',
+    'golf',
+    'hammer',
+    'heart',
+    'home',
+    'key',
+    'leaf',
+    'library',
+    'male',
+    'moon',
+    'music-note',
+    'palette',
+    'paw',
+    'people',
+    'person',
+    'pizza',
+    'planet',
+    'prism',
+    'puzzle',
+    'rainy',
+    'receipt',
+    'restaurant',
+    'rocket',
+    'rose',
+    'school',
+    'shield',
+    'shirt',
+    'shopping-bag',
+    'skull',
+    'snow',
+    'sparkles',
+    'star',
+    'storefront',
+    'sun',
+    'telescope',
+    'tennis',
+    'terminal',
+    'thermometer',
+    'thumbs-up',
+    'ticket',
+    'time',
+    'train',
+    'transgender',
+    'trash',
+    'trophy',
+    'umbrella',
+    'wallet',
+    'water',
+    'wine',
+    'wrench',
+  ];
+  const iconSize = calculateIconSize('sm');
+  const reset = () => {
+    resetName();
+    setIcon(null);
+  };
   // handlers
   const handleCancelClick = () => handleClose();
   const handleClose = () => {
     // reset inputs
-    resetName();
+    reset();
     // close
     onClose && onClose();
+  };
+  const handleOnIconChange = (value: TAccountIcons) => () => {
+    if (value === icon) {
+      setIcon(null);
+
+      return;
+    }
+
+    setIcon(value);
   };
   const handleSaveClick = async () => {
     let _account: IAccountWithExtendedProps | null;
@@ -102,15 +230,16 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    if (account && account.name === nameValue) {
+    if (account && account.name === nameValue && account.icon === icon) {
       handleClose();
 
       return;
     }
 
     _account = await dispatch(
-      saveAccountNameThunk({
+      saveAccountDetailsThunk({
         accountId: account.id,
+        icon,
         name: nameValue,
       })
     ).unwrap();
@@ -132,6 +261,7 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       account?.name && setNameValue(account?.name);
+      account?.icon && setIcon(account.icon);
     }
   }, [isOpen]);
 
@@ -204,6 +334,33 @@ const EditAccountModal: FC<IProps> = ({ isOpen, onClose }) => {
               validate={validateName}
               value={nameValue}
             />
+
+            <ModalSubHeading text={t<string>('headings.selectIcon')} />
+
+            {/*icons*/}
+            <ScrollableContainer w="full">
+              <Wrap justify="center" spacing={1} w="full">
+                {accountIcons.map((value, index) => (
+                  <WrapItem key={`${_context}-select-item-${index}`}>
+                    <ChakraButton
+                      _hover={{
+                        bg: buttonHoverBackgroundColor,
+                      }}
+                      cursor="pointer"
+                      justifyContent="start"
+                      onClick={handleOnIconChange(value)}
+                      p={DEFAULT_GAP / 2}
+                      variant="ghost"
+                      {...(value === icon && {
+                        bg: buttonHoverBackgroundColor,
+                      })}
+                    >
+                      <Icon as={parseAccountIcon(value)} boxSize={iconSize} />
+                    </ChakraButton>
+                  </WrapItem>
+                ))}
+              </Wrap>
+            </ScrollableContainer>
           </VStack>
         </ModalBody>
 

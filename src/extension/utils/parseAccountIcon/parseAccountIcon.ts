@@ -94,8 +94,8 @@ import {
   IoTrashOutline,
   IoTrophyOutline,
   IoUmbrellaOutline,
-  IoWaterOutline,
   IoWalletOutline,
+  IoWaterOutline,
   IoWine,
 } from 'react-icons/io5';
 
@@ -401,6 +401,7 @@ export default function parseAccountIcon(
     case 'wrench':
       icon = IoBuildOutline;
       break;
+    case 'wallet':
     default:
       break;
   }

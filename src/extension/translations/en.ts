@@ -410,6 +410,7 @@ const translation: IResourceLanguage = {
     selectAssets: 'Select Assets',
     selectANetwork: 'Select A Network',
     selectAnOption: 'Select An Option',
+    selectIcon: 'Select Icon',
     selectReceiverAccount: 'Select Receiver Account',
     selectSenderAccount: 'Select Sender Account',
     sendAsset: 'Send {{asset}}',

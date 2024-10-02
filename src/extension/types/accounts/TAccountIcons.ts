@@ -92,6 +92,7 @@ type TAccountIcons =
   | 'trash'
   | 'trophy'
   | 'umbrella'
+  | 'wallet'
   | 'water'
   | 'wine'
   | 'wrench';

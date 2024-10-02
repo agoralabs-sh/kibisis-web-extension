@@ -14,7 +14,7 @@ import {
   removeAccountByIdThunk,
   removeARC0200AssetHoldingsThunk,
   removeStandardAssetHoldingsThunk,
-  saveAccountNameThunk,
+  saveAccountDetailsThunk,
   saveAccountsThunk,
   saveActiveAccountDetails,
   saveNewAccountsThunk,
@@ -221,20 +221,24 @@ const slice = createSlice({
         );
       }
     );
-    /** save account name **/
-    builder.addCase(saveAccountNameThunk.fulfilled, (state: IState, action) => {
-      if (action.payload) {
-        state.items = upsertItemsById<IAccountWithExtendedProps>(state.items, [
-          action.payload,
-        ]);
-      }
+    /** save account details **/
+    builder.addCase(
+      saveAccountDetailsThunk.fulfilled,
+      (state: IState, action) => {
+        if (action.payload) {
+          state.items = upsertItemsById<IAccountWithExtendedProps>(
+            state.items,
+            [action.payload]
+          );
+        }
 
-      state.saving = false;
-    });
-    builder.addCase(saveAccountNameThunk.pending, (state: IState) => {
+        state.saving = false;
+      }
+    );
+    builder.addCase(saveAccountDetailsThunk.pending, (state: IState) => {
       state.saving = true;
     });
-    builder.addCase(saveAccountNameThunk.rejected, (state: IState) => {
+    builder.addCase(saveAccountDetailsThunk.rejected, (state: IState) => {
       state.saving = false;
     });
     /** save accounts **/
