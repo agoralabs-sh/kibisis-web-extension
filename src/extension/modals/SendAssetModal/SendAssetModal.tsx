@@ -552,11 +552,11 @@ const SendAssetModal: FC<IModalProps> = ({ onClose }) => {
       network,
     });
 
-    setMaximumAmountInAtomicUnits(_maximumAmountInAtomicUnits.toString());
+    setMaximumAmountInAtomicUnits(_maximumAmountInAtomicUnits.toFixed());
 
     // if the amount exceeds the new maximum transaction amount, set the amount to the maximum transaction amount
     if (new BigNumber(amountValue).gt(_maximumAmountInAtomicUnits)) {
-      setAmountValue(_maximumAmountInAtomicUnits.toString());
+      setAmountValue(_maximumAmountInAtomicUnits.toFixed());
 
       return;
     }

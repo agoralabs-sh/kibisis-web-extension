@@ -179,7 +179,7 @@ export default class NetworkClient {
 
         return {
           id: assetID,
-          amount: result.toString(),
+          amount: result.toFixed(),
           type: AssetTypeEnum.ARC0200,
         };
       },
@@ -213,7 +213,7 @@ export default class NetworkClient {
           totalSupply = await contract.totalSupply();
 
           return {
-            totalSupply: BigInt(totalSupply.toString()),
+            totalSupply: BigInt(totalSupply.toFixed()),
           };
         } catch (error) {
           switch (error.code) {

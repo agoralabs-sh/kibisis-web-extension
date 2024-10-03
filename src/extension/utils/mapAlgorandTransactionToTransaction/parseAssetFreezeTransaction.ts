@@ -19,7 +19,7 @@ export default function parseAssetFreezeTransaction(
     ...baseTransaction,
     assetId: new BigNumber(
       String(algorandAssetFreezeTransaction['asset-id'] as bigint)
-    ).toString(),
+    ).toFixed(),
     frozenAddress: algorandAssetFreezeTransaction.address,
     type: algorandAssetFreezeTransaction['new-freeze-status']
       ? TransactionTypeEnum.AssetFreeze

@@ -24,7 +24,7 @@ export default function parseApplicationTransaction(
     algorandApplicationTransaction['application-id'] > 0
       ? new BigNumber(
           String(algorandApplicationTransaction['application-id'] as bigint)
-        ).toString()
+        ).toFixed()
       : null;
   let type: IApplicationTransactionTypes = TransactionTypeEnum.ApplicationNoOp;
 
@@ -66,11 +66,11 @@ export default function parseApplicationTransaction(
       : null,
     foreignApps:
       algorandApplicationTransaction['foreign-apps']?.map((value) =>
-        new BigNumber(String(value as bigint)).toString()
+        new BigNumber(String(value as bigint)).toFixed()
       ) || null,
     foreignAssets:
       algorandApplicationTransaction['foreign-assets']?.map((value) =>
-        new BigNumber(String(value as bigint)).toString()
+        new BigNumber(String(value as bigint)).toFixed()
       ) || null,
     innerTransactions:
       innerTransactions?.map(mapAlgorandTransactionToTransaction) || null,

@@ -21,7 +21,7 @@ export default function mapStandardAssetFromAlgorandAsset(
     deleted: algorandAsset.deleted || false,
     freezeAddress: algorandAsset.params.freeze || null,
     iconUrl,
-    id: new BigNumber(String(algorandAsset.index as bigint)).toString(),
+    id: new BigNumber(String(algorandAsset.index as bigint)).toFixed(),
     managerAddress: algorandAsset.params.manager || null,
     metadataHash: algorandAsset.params['metadata-hash'] || null,
     name: algorandAsset.params.name || null,
@@ -29,7 +29,7 @@ export default function mapStandardAssetFromAlgorandAsset(
     reserveAddress: algorandAsset.params.reserve || null,
     totalSupply: new BigNumber(
       String(algorandAsset.params.total as bigint)
-    ).toString(),
+    ).toFixed(),
     type: AssetTypeEnum.Standard,
     unitName: algorandAsset.params['unit-name'] || null,
     unitNameBase64: algorandAsset.params['unit-name-b64'] || null,
