@@ -18,10 +18,10 @@ export default function parseAssetTransferTransaction(
     ...baseTransaction,
     amount: new BigNumber(
       String(algorandAssetTransferTransaction.amount as bigint)
-    ).toString(),
+    ).toFixed(),
     assetId: new BigNumber(
       String(algorandAssetTransferTransaction['asset-id'] as bigint)
-    ).toString(),
+    ).toFixed(),
     receiver: algorandAssetTransferTransaction.receiver,
     type: TransactionTypeEnum.AssetTransfer,
   };

@@ -91,7 +91,7 @@ describe(`${__dirname}/calculateMinimumBalanceRequirementForStandardAssets`, () 
     }: ITestParams) => {
       account.networkInformation[encodedGenesisHash] = {
         ...account.networkInformation[encodedGenesisHash],
-        minAtomicBalance: minBalanceInAtomicUnits.toString(),
+        minAtomicBalance: minBalanceInAtomicUnits.toFixed(),
       };
 
       expect(

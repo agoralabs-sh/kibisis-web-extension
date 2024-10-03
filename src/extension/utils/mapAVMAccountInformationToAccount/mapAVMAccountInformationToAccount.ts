@@ -18,13 +18,13 @@ export default function mapAVMAccountInformationToAccountInformation(
     ...accountInformation,
     atomicBalance: new BigNumber(
       String(avmAccountInformation.amount as bigint)
-    ).toString(),
+    ).toFixed(),
     authAddress: avmAccountInformation['auth-addr'] || null,
     minAtomicBalance: new BigNumber(
       String(avmAccountInformation['min-balance'] as bigint)
-    ).toString(),
+    ).toFixed(),
     standardAssetHoldings: avmAccountInformation.assets.map((value) => ({
-      amount: new BigNumber(String(value.amount as bigint)).toString(),
+      amount: new BigNumber(String(value.amount as bigint)).toFixed(),
       id: new BigNumber(String(value['asset-id'] as bigint)).toString(),
       isFrozen: value['is-frozen'],
       type: AssetTypeEnum.Standard,

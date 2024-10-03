@@ -121,7 +121,7 @@ const createUnsignedTransactionsThunk: AsyncThunk<
       amountInAtomicUnits = convertToAtomicUnit(
         new BigNumber(amountInStandardUnits),
         asset.decimals
-      ).toString(); // convert to atomic units
+      ).toFixed(); // convert to atomic units
 
       switch (asset.type) {
         case AssetTypeEnum.ARC0200:

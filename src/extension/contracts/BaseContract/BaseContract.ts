@@ -202,11 +202,7 @@ export default class BaseContract {
 
     if (!log) {
       this._logger.debug(
-        `${
-          BaseContract.name
-        }#${_functionName}: no log found for application "${this._appId.toString()}" and method "${
-          abiMethod.name
-        }"`
+        `${BaseContract.name}#${_functionName}: no log found for application "${this._appId}" and method "${abiMethod.name}"`
       );
 
       return null;
@@ -246,7 +242,7 @@ export default class BaseContract {
     appArgs,
     suggestedParams,
   }: IBaseApplicationOptions): Promise<IABIResult | null> {
-    const _functionName: string = 'readByMethod';
+    const _functionName = 'readByMethod';
     let response: algosdk.modelsv2.SimulateResponse;
     let transaction: Transaction;
 
@@ -265,7 +261,7 @@ export default class BaseContract {
 
       if (response.txnGroups[0].failureMessage) {
         throw new ReadABIContractError(
-          this._appId.toString(),
+          this._appId,
           response.txnGroups[0].failureMessage
         );
       }
@@ -293,9 +289,7 @@ export default class BaseContract {
   protected async simulateTransactions(
     simulateTransactions: ISimulateTransaction[]
   ): Promise<algosdk.modelsv2.SimulateResponse> {
-    const transactions: Transaction[] = simulateTransactions.map(
-      (value) => value.transaction
-    );
+    const transactions = simulateTransactions.map((value) => value.transaction);
     let request: algosdk.modelsv2.SimulateRequest;
 
     assignGroupID(transactions);
@@ -346,7 +340,7 @@ export default class BaseContract {
    * @returns {string} the base32 encoded address for the application.
    */
   public applicationAddress(): string {
-    return getApplicationAddress(BigInt(this._appId.toString()));
+    return getApplicationAddress(BigInt(this._appId));
   }
 
   /**
@@ -362,7 +356,7 @@ export default class BaseContract {
   public async boxByName(
     name: Uint8Array
   ): Promise<algosdk.modelsv2.Box | null> {
-    const _functionName: string = 'boxByName';
+    const _functionName = 'boxByName';
 
     try {
       return await this._algod
