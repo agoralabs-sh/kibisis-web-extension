@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.3.0...v2.3.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* use fixed integers in atomic unit bignumber conversions  ([#337](https://github.com/agoralabs-sh/kibisis-web-extension/issues/337)) ([ee33fab](https://github.com/agoralabs-sh/kibisis-web-extension/commit/ee33fab67ed8d6aa8d154815eb750589151b420d))
+
 # [2.3.0](https://github.com/agoralabs-sh/kibisis-web-extension/compare/v2.2.1...v2.3.0) (2024-09-30)
 
 
