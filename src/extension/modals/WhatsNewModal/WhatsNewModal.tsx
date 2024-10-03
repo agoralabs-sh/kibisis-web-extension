@@ -66,7 +66,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   // misc
   const features: string[] = [];
   const fixes: string[] = [
-    'Assets with large decimals can successfully transferred.',
+    'Assets with large decimals can successfully be transferred.',
   ];
   // handlers
   const handleClose = () => {
