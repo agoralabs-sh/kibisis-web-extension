@@ -58,10 +58,8 @@ export default class ARC0072Contract extends BaseContract {
       // if the first arg, owner, is not an address
       if (!abiAddressArgType || abiAddressArgType.toString() !== 'address') {
         throw new InvalidABIContractError(
-          this._appId.toString(),
-          `application "${this._appId.toString()}" not valid as method "${
-            ARC0072MethodEnum.BalanceOf
-          }" has an invalid "owner" type`
+          this._appId,
+          `application "${this._appId}" not valid as method "${ARC0072MethodEnum.BalanceOf}" has an invalid "owner" type`
         );
       }
 
@@ -79,8 +77,8 @@ export default class ARC0072Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 
@@ -120,8 +118,8 @@ export default class ARC0072Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 
@@ -165,8 +163,8 @@ export default class ARC0072Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 
@@ -205,8 +203,8 @@ export default class ARC0072Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 
@@ -239,8 +237,8 @@ export default class ARC0072Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 

@@ -28,15 +28,15 @@ export default function parseAssetFreezeTransaction(
         algorandKeyRegistrationTransaction['selection-participation-key'],
       voteFirstValid: new BigNumber(
         String(algorandKeyRegistrationTransaction['vote-first-valid'] as bigint)
-      ).toString(),
+      ).toFixed(),
       voteKeyDilution: new BigNumber(
         String(
           algorandKeyRegistrationTransaction['vote-key-dilution'] as bigint
         )
-      ).toString(),
+      ).toFixed(),
       voteLastValid: new BigNumber(
         String(algorandKeyRegistrationTransaction['vote-last-valid'] as bigint)
-      ).toString(),
+      ).toFixed(),
       voteParticipationKey:
         algorandKeyRegistrationTransaction['vote-participation-key'],
       type: TransactionTypeEnum.KeyRegistrationOnline,

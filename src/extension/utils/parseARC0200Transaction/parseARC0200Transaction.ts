@@ -53,7 +53,7 @@ export default function parseARC0200Transaction(
       amount: ARC0200Contract.formatBase64EncodedUintArg(
         transaction.applicationArgs[2],
         256
-      ).toString(),
+      ).toFixed(),
       receiver: ARC0200Contract.formatBase64EncodedAddressArg(
         transaction.applicationArgs[1]
       ),

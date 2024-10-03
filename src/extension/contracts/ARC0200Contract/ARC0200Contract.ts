@@ -329,7 +329,7 @@ export default class ARC0200Contract extends BaseContract {
       decimals: (decimalResult as BigNumber).toNumber(),
       name: this.trimNullBytes(nameResult as string),
       symbol: this.trimNullBytes(symbolResult as string),
-      totalSupply: (totalSupplyResult as BigNumber).toString(),
+      totalSupply: (totalSupplyResult as BigNumber).toFixed(),
     };
   }
 

@@ -34,7 +34,7 @@ export default function parsePaymentAndReKeyTransaction(
 
   return {
     ...baseTransaction,
-    amount: amount.toString(),
+    amount: amount.toFixed(),
     receiver: algorandPaymentTransaction.receiver,
     type,
   };

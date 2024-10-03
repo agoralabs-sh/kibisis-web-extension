@@ -15,7 +15,7 @@ export default function mapARC0072AssetFromARC0072AssetInformation(
     id: appId,
     totalSupply: new BigNumber(
       String(assetInformation.totalSupply as bigint)
-    ).toString(),
+    ).toFixed(),
     type: AssetTypeEnum.ARC0072,
     verified,
   };

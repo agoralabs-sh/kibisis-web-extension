@@ -179,7 +179,7 @@ export default class NetworkClient {
 
         return {
           id: assetID,
-          amount: result.toString(),
+          amount: result.toFixed(),
           type: AssetTypeEnum.ARC0200,
         };
       },
