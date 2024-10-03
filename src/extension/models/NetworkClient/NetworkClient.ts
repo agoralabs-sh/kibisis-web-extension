@@ -213,7 +213,7 @@ export default class NetworkClient {
           totalSupply = await contract.totalSupply();
 
           return {
-            totalSupply: BigInt(totalSupply.toString()),
+            totalSupply: BigInt(totalSupply.toFixed()),
           };
         } catch (error) {
           switch (error.code) {

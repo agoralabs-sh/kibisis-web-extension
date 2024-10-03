@@ -91,10 +91,10 @@ describe.skip(`${__dirname}#ARC0200Contract`, () => {
       const result: IARC0200AssetInformation = await contract.metadata();
 
       // assert
-      expect(result.decimals).toBe(BigInt(String(decimals.toString())));
+      expect(result.decimals).toBe(BigInt(decimals.toFixed()));
       expect(result.name).toBe(name);
       expect(result.symbol).toBe(symbol);
-      expect(result.totalSupply).toBe(BigInt(String(totalSupply.toString())));
+      expect(result.totalSupply).toBe(BigInt(totalSupply.toFixed()));
     });
   });
 

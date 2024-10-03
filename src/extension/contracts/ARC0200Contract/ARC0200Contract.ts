@@ -75,10 +75,8 @@ export default class ARC0200Contract extends BaseContract {
       // if the first arg, owner, is not an address
       if (!abiAddressArgType || abiAddressArgType.toString() !== 'address') {
         throw new InvalidABIContractError(
-          this._appId.toString(),
-          `application "${this._appId.toString()}" not valid as method "${
-            ARC0200MethodEnum.BalanceOf
-          }" has an invalid "owner" type`
+          this._appId,
+          `application "${this._appId}" not valid as method "${ARC0200MethodEnum.BalanceOf}" has an invalid "owner" type`
         );
       }
 
@@ -96,8 +94,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 
@@ -133,10 +131,8 @@ export default class ARC0200Contract extends BaseContract {
         abiMethod.args[0].type.toString() !== 'address'
       ) {
         throw new InvalidABIContractError(
-          this._appId.toString(),
-          `application "${this._appId.toString()}" not valid as method "${
-            ARC0200MethodEnum.Transfer
-          }" has an invalid "to" type`
+          this._appId,
+          `application "${this._appId}" not valid as method "${ARC0200MethodEnum.Transfer}" has an invalid "to" type`
         );
       }
 
@@ -146,15 +142,13 @@ export default class ARC0200Contract extends BaseContract {
         abiMethod.args[1].type.toString() !== 'uint256'
       ) {
         throw new InvalidABIContractError(
-          this._appId.toString(),
-          `application "${this._appId.toString()}" not valid as method "${
-            ARC0200MethodEnum.Transfer
-          }" has an invalid "value" type`
+          this._appId,
+          `application "${this._appId}" not valid as method "${ARC0200MethodEnum.Transfer}" has an invalid "value" type`
         );
       }
 
       encodedAmount = (abiMethod.args[1].type as ABIType).encode(
-        BigInt(String(amountInAtomicUnits.toString()))
+        BigInt(amountInAtomicUnits.toFixed())
       );
       encodedToAddress = (abiMethod.args[0].type as ABIType).encode(toAddress);
       appArgs = [encodedToAddress, encodedAmount];
@@ -187,10 +181,10 @@ export default class ARC0200Contract extends BaseContract {
         paymentTransaction = makePaymentTxnWithSuggestedParams(
           fromAddress,
           this.applicationAddress(), // send funds to application account
-          BigInt(String(boxStorageAmount.toString())),
+          BigInt(boxStorageAmount.toFixed()),
           undefined,
           new TextEncoder().encode(
-            `initial box storage funding for account "${toAddress}" in application "${this._appId.toString()}"`
+            `initial box storage funding for account "${toAddress}" in application "${this._appId}"`
           ),
           suggestedParams
         );
@@ -254,8 +248,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 
@@ -301,7 +295,7 @@ export default class ARC0200Contract extends BaseContract {
 
       if (response.txnGroups[0].failureMessage) {
         throw new ReadABIContractError(
-          this._appId.toString(),
+          this._appId,
           response.txnGroups[0].failureMessage
         );
       }
@@ -323,8 +317,8 @@ export default class ARC0200Contract extends BaseContract {
     // if any are null, the application is not a valid arc-0200 application
     if (results.some((value) => !value)) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because a result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because a result returned "null"`
       );
     }
 
@@ -365,8 +359,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 
@@ -399,8 +393,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 
@@ -433,8 +427,8 @@ export default class ARC0200Contract extends BaseContract {
 
     if (!result) {
       throw new InvalidABIContractError(
-        this._appId.toString(),
-        `application "${this._appId.toString()}" not valid because the result returned "null"`
+        this._appId,
+        `application "${this._appId}" not valid because the result returned "null"`
       );
     }
 

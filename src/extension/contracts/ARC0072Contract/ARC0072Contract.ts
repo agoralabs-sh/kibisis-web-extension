@@ -104,7 +104,7 @@ export default class ARC0072Contract extends BaseContract {
     try {
       abiMethod = this._abi.getMethodByName(ARC0072MethodEnum.OwnerOf);
       encodedTokenId = (abiMethod.args[0].type as ABIType).encode(
-        BigInt(tokenId.toString())
+        BigInt(tokenId.toFixed())
       );
       result = (await this.readByMethod({
         abiMethod,
@@ -149,7 +149,7 @@ export default class ARC0072Contract extends BaseContract {
     try {
       abiMethod = this._abi.getMethodByName(ARC0072MethodEnum.TokenByIndex);
       encodedIndex = (abiMethod.args[0].type as ABIType).encode(
-        BigInt(index.toString())
+        BigInt(index.toFixed())
       );
       result = (await this.readByMethod({
         abiMethod,
@@ -189,7 +189,7 @@ export default class ARC0072Contract extends BaseContract {
     try {
       abiMethod = this._abi.getMethodByName(ARC0072MethodEnum.TokenURI);
       encodedTokenId = (abiMethod.args[0].type as ABIType).encode(
-        BigInt(tokenId.toString())
+        BigInt(tokenId.toFixed())
       );
       result = (await this.readByMethod({
         abiMethod,
