@@ -64,8 +64,10 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const primaryColorScheme = usePrimaryColorScheme();
   const subTextColor = useSubTextColor();
   // misc
-  const features = ['🖼️ Add Voi mainnet indexers and explorer.'];
-  const fixes: string[] = [];
+  const features: string[] = [];
+  const fixes: string[] = [
+    'Assets with large decimals can successfully be transferred.',
+  ];
   // handlers
   const handleClose = () => {
     // mark as read

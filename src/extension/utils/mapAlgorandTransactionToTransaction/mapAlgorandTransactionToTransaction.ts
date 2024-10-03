@@ -30,7 +30,7 @@ export default function mapAlgorandTransactionToTransaction(
           .multipliedBy(1000) // we want milliseconds, as 'round-time' is in seconds
           .toNumber()
       : null,
-    fee: new BigNumber(String(algorandTransaction.fee as bigint)).toString(),
+    fee: new BigNumber(String(algorandTransaction.fee as bigint)).toFixed(),
     id: algorandTransaction.id || null,
     genesisHash: algorandTransaction['genesis-hash'] || null,
     groupId: algorandTransaction.group || null,

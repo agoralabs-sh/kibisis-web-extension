@@ -35,7 +35,7 @@ export default function parseAssetConfigTransaction(
       reserve: algorandAssetConfigTransaction.params.reserve || null,
       total: new BigNumber(
         String(algorandAssetConfigTransaction.params.total as bigint)
-      ).toString(),
+      ).toFixed(),
       unitName: algorandAssetConfigTransaction.params['unit-name'] || null,
       url: algorandAssetConfigTransaction.params.url || null,
       type: TransactionTypeEnum.AssetCreate,
@@ -53,7 +53,7 @@ export default function parseAssetConfigTransaction(
       ...baseTransaction,
       assetId: new BigNumber(
         String(algorandAssetConfigTransaction['asset-id'] as bigint)
-      ).toString(),
+      ).toFixed(),
       clawback: algorandAssetConfigTransaction.params.clawback,
       creator: algorandAssetConfigTransaction.params.creator,
       decimals: Number(algorandAssetConfigTransaction.params.decimals),
@@ -63,7 +63,7 @@ export default function parseAssetConfigTransaction(
       reserve: algorandAssetConfigTransaction.params.reserve,
       total: new BigNumber(
         String(algorandAssetConfigTransaction.params.total as bigint)
-      ).toString(),
+      ).toFixed(),
       type: TransactionTypeEnum.AssetConfig,
     };
   }
@@ -72,13 +72,13 @@ export default function parseAssetConfigTransaction(
     ...baseTransaction,
     assetId: new BigNumber(
       String(algorandAssetConfigTransaction['asset-id'] as bigint)
-    ).toString(),
+    ).toFixed(),
     creator: algorandAssetConfigTransaction.params.creator,
     decimals: Number(algorandAssetConfigTransaction.params.decimals),
     defaultFrozen: algorandAssetConfigTransaction.params['default-frozen'],
     total: new BigNumber(
       String(algorandAssetConfigTransaction.params.total as bigint)
-    ).toString(),
+    ).toFixed(),
     type: TransactionTypeEnum.AssetDestroy,
   };
 }

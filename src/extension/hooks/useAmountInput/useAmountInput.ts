@@ -35,7 +35,7 @@ export default function useAmountInput({ label, required }: IOptions): IState {
 
       // if the entered value is greater than the maximum allowed, use the max
       if (_value.gt(maximumAmountInStandardUnits)) {
-        setValue(_value.toString());
+        setValue(_value.toFixed());
 
         return;
       }
