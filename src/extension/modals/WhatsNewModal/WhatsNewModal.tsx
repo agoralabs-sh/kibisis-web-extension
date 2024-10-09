@@ -67,6 +67,7 @@ const WhatsNewModal: FC<IModalProps> = ({ onClose }) => {
   const features = [
     '💅 Change account icon.',
     '💅 Change account background color.',
+    '🗃️ Group accounts.',
   ];
   const fixes: string[] = [];
   // handlers
