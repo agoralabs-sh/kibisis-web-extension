@@ -47,10 +47,10 @@ jobs:
       - name: "🔖 Release"
         env:
           # appears on the release commits
-          GIT_AUTHOR_NAME: agoralabs-bot
-          GIT_AUTHOR_EMAIL: tech@agoralabs.sh
-          GIT_COMMITTER_NAME: agoralabs-bot
-          GIT_COMMITTER_EMAIL: tech@agoralabs.sh
+          GIT_AUTHOR_NAME: kibi-bot
+          GIT_AUTHOR_EMAIL: builders@kibis.is
+          GIT_COMMITTER_NAME: kibi-bot
+          GIT_COMMITTER_EMAIL: builders@kibis.is
           # used to push the release commit and create the tags
-          GITHUB_TOKEN: ${{ secrets.WRITE_REPOS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.READ_AND_WRITE_REPOS_TOKEN }}
         run: yarn semantic-release
