@@ -3,7 +3,7 @@ description: Suggest an idea or feature for Kibisis
 title: "[Feature]: "
 labels: ["✨ feature"]
 assignees:
-  - agoralabs-bot
+  - kibi-bot
 
 body:
   # welcome
