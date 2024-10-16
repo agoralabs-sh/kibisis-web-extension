@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/use-dependencies
 
   ##
-  # lint, type-check and test
+  # lint, type-check, build and test
   ##
 
   lint:
@@ -77,13 +77,6 @@ jobs:
           provider_id: ${{ vars.PROVIDER_ID }}
       - name: "🏗️ Build"
         run: yarn build:chrome
-      - name: "🗜️ Zip build"
-        run: zip -qr chrome_build.zip .chrome_build/
-      - name: "📤 Upload build"
-        uses: actions/upload-artifact@v4
-        with:
-          name: chrome_build
-          path: chrome_build.zip
 
   build_edge:
     name: "Build Edge"
@@ -101,13 +94,6 @@ jobs:
           provider_id: ${{ vars.PROVIDER_ID }}
       - name: "🏗️ Build"
         run: yarn build:edge
-      - name: "🗜️ Zip build"
-        run: zip -qr edge_build.zip .edge_build/
-      - name: "📤 Upload build"
-        uses: actions/upload-artifact@v4
-        with:
-          name: edge_build
-          path: edge_build.zip
 
   build_firefox:
     name: "Build Firefox"
@@ -125,50 +111,5 @@ jobs:
           provider_id: ${{ vars.PROVIDER_ID }}
       - name: "🏗️ Build"
         run: yarn build:firefox
-      - name: "🗜️ Zip build"
-        run: zip -qr firefox_build.zip .firefox_build/
-      - name: "📤 Upload build"
-        uses: actions/upload-artifact@v4
-        with:
-          name: firefox_build
-          path: firefox_build.zip
-
-  ##
-  # build validation
-  ##
-
-  validate_firefox:
-    name: "Validate Firefox"
-    needs: [install, build_firefox]
-    runs-on: ubuntu-latest
-    steps:
-      - name: "🛎 Checkout"
-        uses: actions/checkout@v4
-      - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
-      - name: "📥 Download build"
-        uses: actions/download-artifact@v4
-        with:
-          name: firefox_build
-      - name: "🗜️ Unzip build"
-        run: unzip -q firefox_build.zip
       - name: "✅ Validate"
         run: yarn validate:firefox
-
-  ##
-  # clean up
-  ##
-
-  clean_up:
-    name: "Clean Up"
-    needs: validate_firefox
-    runs-on: ubuntu-latest
-    steps:
-      - name: "🗑️ Delete artifacts"
-        uses: geekyeggo/delete-artifact@v4
-        with:
-          failOnError: false
-          name: |
-            chrome_build
-            edge_build
-            firefox_build
