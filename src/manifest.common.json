@@ -1,20 +1,16 @@
 {
   "name": "Kibisis",
   "version": "2.3.1",
-  "description": "An AVM wallet in your browser that goes beyond just DeFi.",
-  "author": "Agora Labs",
+  "description": "The wallet for your lifestyle.",
+  "author": "Kibisis OÜ",
   "icons": {
     "48": "icons/icon-48.png",
     "96": "icons/icon-96.png"
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-        "content-script.js"
-      ]
+      "matches": ["*://*/*"],
+      "js": ["content-script.js"]
     }
   ],
   "omnibox": {

@@ -43,7 +43,7 @@ function main {
     -H "Authorization: Bearer ${GITHUB_TOKEN}" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
     -s \
-    "https://api.github.com/repos/agoralabs-sh/kibisis-web-extension/releases/latest")
+    "https://api.github.com/repos/kibis-is/web-extension/releases/latest")
 
   # check for errors
   if [ $(jq 'has("message")' <<< "${latest_release_result}") == true ]; then

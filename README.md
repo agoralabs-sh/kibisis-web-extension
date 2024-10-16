@@ -9,24 +9,24 @@
 </h1>
 
 <h4 align="center">
-  An AVM wallet that goes beyond just DeFi.
+  The wallet for your lifestyle.
 </h4>
 
 <p align="center">
-  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases/latest">
-    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/agoralabs-sh/kibisis-web-extension?&logo=github">
+  <a href="https://github.com/kibis-is/web-extension/releases/latest">
+    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/kibis-is/web-extension?&logo=github">
   </a>
-  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases/latest">
-    <img alt="GitHub Release Date - Published At" src="https://img.shields.io/github/release-date/agoralabs-sh/kibisis-web-extension?logo=github">
+  <a href="https://github.com/kibis-is/web-extension/releases/latest">
+    <img alt="GitHub Release Date - Published At" src="https://img.shields.io/github/release-date/kibis-is/web-extension?logo=github">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases">
-    <img alt="GitHub Pre-release" src="https://img.shields.io/github/v/release/agoralabs-sh/kibisis-web-extension?include_prereleases&label=pre-release&logo=github">
+  <a href="https://github.com/kibis-is/web-extension/releases">
+    <img alt="GitHub Pre-release" src="https://img.shields.io/github/v/release/kibis-is/web-extension?include_prereleases&label=pre-release&logo=github">
   </a>
-  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/releases">
-    <img alt="GitHub Pre-release Date - Published At" src="https://img.shields.io/github/release-date-pre/agoralabs-sh/kibisis-web-extension?label=pre-release date&logo=github">
+  <a href="https://github.com/kibis-is/web-extension/releases">
+    <img alt="GitHub Pre-release Date - Published At" src="https://img.shields.io/github/release-date-pre/kibis-is/web-extension?label=pre-release date&logo=github">
   </a>
 </p>
 
@@ -45,8 +45,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/agoralabs-sh/kibisis-web-extension/blob/main/COPYING">
-    <img alt="GitHub License" src="https://img.shields.io/github/license/agoralabs-sh/kibisis-web-extension">
+  <a href="https://github.com/kibis-is/web-extension/blob/main/COPYING">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/kibis-is/web-extension">
   </a>
 </p>
 
