@@ -9,8 +9,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*/*"],
-      "js": ["content-script.js"]
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content-script.js"
+      ]
     }
   ],
   "omnibox": {
