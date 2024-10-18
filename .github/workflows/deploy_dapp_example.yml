@@ -6,18 +6,8 @@ on:
       - beta
 
 jobs:
-  install:
-    name: "Install"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "🛎 Checkout"
-        uses: actions/checkout@v4
-      - name: "🔧 Setup"
-        uses: ./.github/actions/use-dependencies
-
-  deploy:
-    name: "Deploy"
-    needs: [install]
+  build:
+    name: "Build"
     runs-on: ubuntu-latest
     steps:
       - name: "🛎 Checkout"
@@ -26,12 +16,22 @@ jobs:
         uses: ./.github/actions/use-dependencies
       - name: "🏗️ Build"
         run: yarn build:dapp-example
-      - name: "🚀 Deploy"
-        uses: peaceiris/actions-gh-pages@v3
+      - name: "📤 Upload artifact"
+        uses: actions/upload-pages-artifact@v3
         with:
-          force_orphan: true # create empty branch if missing
-          personal_token: ${{ secrets.WRITE_REPOS_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./.dapp_example_build
-          user_name: agoralabs-bot
-          user_email: tech@agoralabs.sh
+          path: ./.dapp_example_build
+
+  deploy:
+    name: "Deploy"
+    needs: build
+    permissions:
+      pages: write # to deploy to pages
+      id-token: write # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🚀 Deploy"
+        id: deployment
+        uses: actions/deploy-pages@v4
